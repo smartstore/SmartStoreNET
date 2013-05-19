@@ -1,0 +1,42 @@
+﻿@model CheckoutCompletedModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_Checkout.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+@section orderProgress{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete })
+}
+
+<div class="page checkout-completed-page">
+    
+    <div class="page-title">
+        <h1>@T("Checkout.ThankYou")</h1>
+    </div>
+    
+    <div class="page-body checkout-data">
+        <div class="order-completed">
+            @Html.Widget("checkout_completed_top")
+            <div class="body">
+                <strong>
+                    @T("Checkout.YourOrderHasBeenSuccessfullyProcessed")</strong>
+                <p>
+                    @T("Checkout.OrderNumber"): @Model.OrderId
+                </p>
+                <p>
+                    <a href="@Url.RouteUrl("OrderDetails", new { orderID = @Model.OrderId})">@T("Checkout.PlacedOrderDetails")</a>
+                </p>
+            </div>
+            <div class="select-button">
+                <a value="@T("Checkout.Continue")" class="btn btn-warning order-completed-continue-button" onclick="setLocation('@Url.RouteUrl("HomePage")')">
+                    @T("Checkout.Continue")
+                </a>
+            </div>
+            @Html.Widget("checkout_completed_bottom")
+        </div>
+    </div>
+</div>

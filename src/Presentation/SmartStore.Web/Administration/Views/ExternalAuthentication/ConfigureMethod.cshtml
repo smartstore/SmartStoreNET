@@ -1,0 +1,19 @@
+﻿@model AuthenticationMethodModel
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ExternalAuthenticationMethods.Configure").Text + " - " + @Model.FriendlyName;
+}
+<div class="section-header">
+    <div class="title">
+        @T("Admin.Configuration.ExternalAuthenticationMethods.Configure") - @Model.FriendlyName
+        @Html.ActionLink("(" + T("Admin.Configuration.ExternalAuthenticationMethods.BackToList") + ")", "Methods")
+    </div>
+</div>
+@if (!String.IsNullOrEmpty(Model.ConfigurationActionName))
+{
+    @Html.Action(Model.ConfigurationActionName, Model.ConfigurationControllerName, Model.ConfigurationRouteValues);
+}
+else
+{
+    @T("Admin.Common.ConfigurationNotRequired")
+}

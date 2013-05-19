@@ -1,0 +1,12 @@
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Framework.Themes;
+
+@{
+    var supportRtl = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Rtl;
+}
+@{
+    Html.AppendCssFileParts(Url.Content("~/Themes/Alpha/Content/theme.less"));
+}
+
+@Html.Partial("ConditionalComments")

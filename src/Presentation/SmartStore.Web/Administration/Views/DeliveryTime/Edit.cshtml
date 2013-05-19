@@ -1,0 +1,20 @@
+﻿@model DeliveryTimeModel
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.DeliveryTime.EditDeliveryTimeDetails").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Configuration.DeliveryTime.EditDeliveryTimeDetails") - @Model.Name @Html.ActionLink("(" + @T("Admin.Configuration.DeliveryTime.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+            <button type="submit" id="delivery-time-delete" name="delivery-time-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdate", Model)
+}
+@Html.DeleteConfirmation("delivery-time-delete")

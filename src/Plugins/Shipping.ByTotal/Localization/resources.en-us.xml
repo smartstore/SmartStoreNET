@@ -1,0 +1,72 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Shipping.ByTotal" AppendRootKey="false">
+    <Value>Shipping by total</Value>
+  </LocaleResource>
+	<LocaleResource Name="AddNewRecordTitle">
+		<Value>Add new 'Shipping By Total' record</Value>
+	</LocaleResource>
+  <LocaleResource Name="SettingsTitle">
+    <Value>Shipping By Total Settings</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Fields.Country">
+    <Value>Country</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country.Hint">
+    <Value>If an asterisk is selected, then this shipping rate will apply to all customers, regardless of the country.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince">
+    <Value>State / province</Value> 
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince.Hint">
+    <Value>If an asterisk is selected, then this shipping rate will apply to all customers from the given country, regardless of the state / province.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip">
+    <Value>Zip</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip.Hint">
+    <Value>Zip / postal code. If zip is empty, then this shipping rate will apply to all customers from the given country or state / province, regardless of the zip code.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod">
+    <Value>Shipping method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod.Hint">
+    <Value>The shipping method.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From">
+    <Value>Order total From</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From.Hint">
+    <Value>Order total From</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To">
+    <Value>Order total To</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To.Hint">
+    <Value>Order total To</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage">
+    <Value>Use percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage.Hint">
+    <Value>Check to use 'charge percentage' value.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage">
+    <Value>Charge percentage (of subtotal)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage.Hint">
+    <Value>Charge percentage (of subtotal)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount">
+    <Value>Charge amount</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount.Hint">
+    <Value>Charge amount</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated">
+    <Value>Limit shipping methods to configured ones</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
+    <Value>If you check this option, then your customers will be limited to shipping options configured here. Otherwise, they'll be able to choose any existing shipping options even if they're not configured here (zero shipping fee in this case).</Value>
+  </LocaleResource>
+</Language>

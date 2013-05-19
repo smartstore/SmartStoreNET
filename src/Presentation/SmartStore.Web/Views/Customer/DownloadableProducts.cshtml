@@ -1,0 +1,92 @@
+﻿@model CustomerDownloadableProductsModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+<div class="page account-page downloadable-products-page">
+    <h4 class="muted">@T("Account.MyAccount")</h4>
+    <div class="page-title">
+        <h1>@T("Account.DownloadableProducts")</h1>
+    </div>
+
+    <div class="page-body">
+        @if (Model.Items.Count > 0)
+        {
+            //codehint: sm-edit
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                           @T("DownloadableProducts.Fields.Order")
+                        </th>
+                        <th>
+                            @T("DownloadableProducts.Fields.Date")
+                        </th>
+                        <th>
+                            @T("DownloadableProducts.Fields.Product")
+                        </th>
+                        <th>
+                            @T("DownloadableProducts.Fields.Download")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        var item = Model.Items[i];
+                        <tr>
+                            <td>
+                                <a class="link" href="@Url.RouteUrl("OrderDetails", new { orderId = @item.OrderId })">@item.OrderId</a>
+                            </td>
+                            <td>
+                                @item.CreatedOn.ToString("d")
+                            </td>
+                            <td>
+                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+                                @if (!String.IsNullOrEmpty(item.ProductAttributes))
+                                {
+                                    <div class="attributes">
+                                        @Html.Raw(item.ProductAttributes)
+                                    </div>
+                                }
+                            </td>
+                            <td class="a-center">
+                                @if (item.DownloadId > 0)
+                                {
+                                    <div>
+                                        <a class="link" href="@Url.RouteUrl("GetDownload", new { opvId = item.OrderProductVariantGuid })">@T("DownloadableProducts.Fields.Download")</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        @T("DownloadableProducts.Fields.Download.NA")
+                                    </div>
+                                }
+                                @if (item.LicenseId > 0)
+                                {
+                                    <div>
+                                        <a class="link" href="@Url.RouteUrl("GetLicense", new { opvId = item.OrderProductVariantGuid })">@T("DownloadableProducts.Fields.DownloadLicense")</a>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="no-data">
+                @T("DownloadableProducts.NoItems")
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,5 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Tax.Free" AppendRootKey="false">
+    <Value>Steuerbefreit</Value>
+  </LocaleResource>
+</Language>

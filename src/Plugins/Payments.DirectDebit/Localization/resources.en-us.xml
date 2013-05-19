@@ -1,0 +1,101 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Payments.DirectDebit" AppendRootKey="false">
+		<Value>Direct Debit</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[
+      
+      ]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescriptionText">
+		<Value>Description</Value>
+	</LocaleResource>
+  <LocaleResource Name="DescriptionText.Hint">
+    <Value>Enter info that will be shown to customers during checkout.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee">
+    <Value>Additional fee</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee.Hint">
+    <Value>Determines the additional fee.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="DirectDebitAccountHolder">
+    <Value>Account holder name</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitAccountHolder.Hint">
+    <Value>Holder name of the bank account</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitAccountNumber">
+    <Value>Account number</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitAccountNumber.Hint">
+    <Value>Account number</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBankCode">
+    <Value>Bank code</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBankCode.Hint">
+    <Value>Bank code number</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitCountry">
+    <Value>Country</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitCountry.Hint">
+    <Value>Country of your bank account.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBankName">
+    <Value>Bank name</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBankName.Hint">
+    <Value>Name of your bank.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitIban">
+    <Value>IBAN</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitIban.Hint">
+    <Value>International Bank Account Number</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBic">
+    <Value>BIC</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBic.Hint">
+    <Value>Bank Interchange Code</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="EnterIban">
+    <Value>Enter IBAN</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoEnterIban">
+    <Value>No</Value>
+  </LocaleResource>
+  <LocaleResource Name="YesEnterIban">
+    <Value>Yes</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitAccountHolderRequired">
+    <Value>Please enter the name of the account holder.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitAccountNumberRequired">
+    <Value>Please enter your account number.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBankCodeRequired">
+    <Value>Please enter the bank code.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitIBANRequired">
+    <Value>Please enter the IBAN (International Bank Account Number).</Value>
+  </LocaleResource>
+  <LocaleResource Name="DirectDebitBICRequired">
+    <Value>Please enter the BIC (Bank Interchange Code).</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="PaymentInfoDescription">
+    <Value>
+      <![CDATA[
+        <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
+      ]]>
+    </Value>
+  </LocaleResource>
+  
+</Language>

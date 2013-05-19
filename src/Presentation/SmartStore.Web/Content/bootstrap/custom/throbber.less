@@ -1,0 +1,67 @@
+﻿/*
+SmartStore throbber
+Version: 1, Timestamp: 18.08.2012
+*/
+
+.throbber {
+    display: none;
+    
+    & .throbber-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: #000;
+        .opacity(70);
+        z-index: 2147483640;
+    }
+    
+    &.white .throbber-overlay {
+        background-color: #fff;
+    }
+    
+    & .throbber-content {
+        position: absolute;
+        z-index: 2147483640; 
+        color: #fff;
+        text-shadow: 1px 1px 0 #666;
+        background: url('images/throbber-progress-white-32.gif') 4px 6px no-repeat;
+    }
+    
+    &.large .throbber-content {
+        min-height: 38px;
+        line-height: 32px;
+        max-width: 400px;
+        font-size: 24px;
+        font-family: @pageTitleFontFamily;
+        font-weight: @pageTitleFontWeight;
+        padding-left: 44px;
+    }
+    &.small .throbber-content {
+        .text-overflow();
+        height: 16px;
+		font-size: @baseFontSize;
+        line-height: @baseLineHeight;
+        vertical-align: middle;
+        x-max-width: 250px;
+        padding-left: 24px;
+        background: url('images/throbber-progress-white-32.gif') 0 6px no-repeat;
+    }
+    &.white .throbber-content {
+        color: #000;
+        text-shadow: none;
+    }
+    
+    &.large .throbber-content         { background-image: url('images/throbber-progress-white-32.gif'); }
+    &.small .throbber-content         { background-image: url('images/throbber-progress-white-16.gif'); background-position: 0 0; }
+    &.white.large .throbber-content   { background-image: url('images/throbber-progress-black-32.gif'); }
+    &.white.small .throbber-content   { background-image: url('images/throbber-progress-black-16.gif'); background-position: 0 0; }
+    
+    &.global .throbber-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    &.global .throbber-content {
+        position: fixed;
+    }
+}

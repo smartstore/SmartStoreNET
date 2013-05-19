@@ -1,0 +1,40 @@
+﻿@model Telerik.Web.Mvc.GridModel<CampaignModel>
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Promotions.Campaigns").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-envelope-alt"></i>
+        @T("Admin.Promotions.Campaigns")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<CampaignModel>(Model.Data)
+                    .Name("campaigns-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Width(400)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.CreatedOn)
+                            .Width(100);
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

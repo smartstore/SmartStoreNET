@@ -1,0 +1,11 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasOneProduct" AppendRootKey="false">
+    <Value>Customer has one of these product variants in the cart</Value>
+  </LocaleResource>        
+  <LocaleResource Name="Fields.ProductVariants">
+    <Value>Restricted product variants</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ProductVariants.Hint">
+    <Value>The comma-separated list of product variant identifiers (e.g. 77, 123, 156). You can find a product variant ID on its details page. You can also specify the comma-separated list of product variant identifiers with quantities ({Product variant ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product variant identifiers with quantity range ({Product variant ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
+  </LocaleResource>
+</Language>

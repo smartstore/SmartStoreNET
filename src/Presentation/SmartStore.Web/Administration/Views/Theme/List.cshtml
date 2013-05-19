@@ -1,0 +1,178 @@
+﻿@model ThemeListModel
+
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Admin.Models.Themes;
+
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Themes").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-picture"></i>
+            @T("Admin.Configuration.Themes")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                <i class="icon-ok"></i>
+                &nbsp;@T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    
+    @Html.SmartStore().TabStrip().Name("themes-tab").Items(x =>
+    {
+        x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
+        x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
+    })
+ 
+}
+
+@helper ThemesTab()
+{
+    if (Model.DesktopThemes.Count > 0) 
+    {
+        @ThemeList(Model.DesktopThemes, T("Admin.Configuration.Themes.AvailableDesktopThemes"), false)
+    }
+    
+    if (Model.MobileThemes.Count > 0) 
+    {
+        @ThemeList(Model.MobileThemes, T("Admin.Configuration.Themes.AvailableMobileThemes"), true)
+    }
+    
+    <script>
+        $(function () {
+            $("#themes-tab").on("click", ".set-as-defaulttheme", function (e) {
+                var el = $(this);
+                var name = el.data("name");
+                var mobile = toBool(el.data("mobile"));
+
+                var hidden;
+
+                if (mobile) {
+                    hidden = $('#@Html.FieldIdFor(x => x.DefaultMobileTheme)');
+                }
+                else {
+                    hidden = $('#@Html.FieldIdFor(x => x.DefaultDesktopTheme)');
+                }
+
+                hidden.val(name);
+
+                el.closest("form").submit();
+
+                return false;
+            });
+        });
+    </script>
+}
+
+@helper ThemeList(IList<ThemeManifestModel> themes, string caption, bool mobile) 
+{
+    <fieldset class="">
+        <legend>@caption</legend>
+
+        <div id="theme-list">
+            @foreach (var theme in themes)
+            {
+                <div class="clearfix theme-line @(theme.IsActive ? " active" : "")">
+                    <div class="preview-image pull-left">
+                        <img src="@Url.Content(theme.PreviewImageUrl)" class="img-polaroid" />
+                    </div>
+                    <div class="pull-left">
+                        <div class="theme-name">@T("Admin.Configuration.Themes.Name"): @(theme.Title ?? theme.Name)</div>
+                        <div>@T("Admin.Configuration.Themes.Description"): @theme.Description</div>
+                        <div>@T("Admin.Configuration.Themes.Author"): @theme.Author</div>
+                        <div>@T("Admin.Configuration.Themes.Version"): @theme.Version</div>
+                        <div>@T("Admin.Configuration.Themes.SupportsRtl"): @theme.SupportsRtl</div>
+
+                        <div class="buttons">
+                            <a href="#" class="btn set-as-defaulttheme @(!theme.IsActive ? "btn-primary" : "")" data-mobile="@theme.IsMobileTheme" data-name="@theme.Name" @Html.Attr("disabled", "disabled", theme.IsActive)>
+                                @T("Admin.Common.Activate")
+                            </a>
+                            @if (theme.IsConfigurable) 
+                            {
+                                <a href='@Url.Action("Configure", "Theme", new { theme = theme.Name })' class="btn">
+                                    <i class="icon-cog"></i>
+                                    @T("Admin.Common.Configure")
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </fieldset>
+}
+
+@helper ThemeSettingsTab() 
+{
+    
+    @Html.HiddenFor(x => x.DefaultDesktopTheme)
+    @Html.HiddenFor(x => x.DefaultMobileTheme)
+    
+    @Html.ValidationSummary(false)
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomerToSelectTheme)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowCustomerToSelectTheme)
+                @Html.ValidationMessageFor(model => model.AllowCustomerToSelectTheme)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MobileDevicesSupported)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MobileDevicesSupported)
+                @Html.ValidationMessageFor(model => model.MobileDevicesSupported)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-info fade in">
+                    <button class="close" data-dismiss="alert">x</button>
+                    <h4>@T("Admin.Configuration.Themes.Options.Title")</h4>
+                    <p>@T("Admin.Configuration.Themes.Options.Info")</p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BundleOptimizationEnabled)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.BundleOptimizationEnabled, Model.AvailableBundleOptimizationValues)
+                @Html.ValidationMessageFor(model => model.BundleOptimizationEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CssCacheEnabled)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.CssCacheEnabled, Model.AvailableCssCacheValues)
+                @Html.ValidationMessageFor(model => model.CssCacheEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CssMinifyEnabled)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.CssMinifyEnabled, Model.AvailableCssMinifyValues)
+                @Html.ValidationMessageFor(model => model.CssMinifyEnabled)
+            </td>
+        </tr>
+    </table> 
+}

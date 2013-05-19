@@ -1,0 +1,70 @@
+﻿@model PermissionMappingModel
+@{               
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ACL").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-lock"></i>
+            @T("Admin.Configuration.ACL")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    
+    <table class="adminContent">
+        <tr>
+            <td>
+                @if (Model.AvailablePermissions.Count == 0)
+                {
+                    <text>No permissions defined</text>
+                }
+                else if (Model.AvailableCustomerRoles.Count == 0)
+                {
+                    <text>No customer roles available</text>
+                }
+                else
+                {
+                    <div class="t-widget t-grid">
+                        <table class="table table-hover" cellspacing="0" rules="all" border="0">
+                            <thead  class="t-grid-header">
+                                <tr>
+                                    <th class="t-header" scope="col">
+                                        <b>@T("Admin.Configuration.ACL.Permission")</b>
+                                    </th>
+                                    @foreach (var cr in Model.AvailableCustomerRoles)
+                                    {
+                                        <th class="t-header" scope="col" style="text-align:center">
+                                            <b>@cr.Name</b>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pr in Model.AvailablePermissions)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span>@pr.Name</span>
+                                        </td>
+                                        @foreach (var cr in Model.AvailableCustomerRoles)
+                                        {
+                                            var allowed = Model.Allowed.ContainsKey(pr.SystemName) && Model.Allowed[pr.SystemName][cr.Id];
+                                            <td align="center">
+                                                <input id="allow_@(cr.Id)" class="allow_@(cr.Id)" type="checkbox" value="@(pr.SystemName)" name="allow_@(cr.Id)" @(allowed ? " checked=checked" : null) />
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+
+}

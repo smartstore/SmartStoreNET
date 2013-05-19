@@ -1,0 +1,41 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Tax.CountryStateZip" AppendRootKey="false">
+		<Value>Tax By Country &amp; State &amp; Zip</Value>
+	</LocaleResource>
+  <LocaleResource Name="Fields.Country">
+    <Value>Country</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country.Hint">
+    <Value>The country.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince">
+    <Value>State / province</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince.Hint">
+    <Value>If an asterisk is selected, then this tax rate will apply to all customers from the given country, regardless of the state.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip">
+    <Value>Zip</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip.Hint">
+    <Value>Zip / postal code. If zip is empty, then this tax rate will apply to all customers from the given country or state, regardless of the zip code.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TaxCategory">
+    <Value>Tax category</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TaxCategory.Hint">
+    <Value>The tax category.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Percentage">
+    <Value>Percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Percentage.Hint">
+    <Value>The tax rate.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord">
+    <Value>Add tax rate</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord.Hint">
+    <Value>Adding a new tax rate</Value>
+  </LocaleResource>
+</Language>

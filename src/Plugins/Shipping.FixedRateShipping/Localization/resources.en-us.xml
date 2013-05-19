@@ -1,0 +1,11 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Shipping.FixedRate" AppendRootKey="false">
+    <Value>Fixed rate shipping</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethodName">
+    <Value>Shipping method name</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Rate">
+    <Value>Rate</Value>
+  </LocaleResource>
+</Language>

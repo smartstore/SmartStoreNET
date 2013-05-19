@@ -1,0 +1,412 @@
+﻿@model FeedElmarShopinfoModel
+@using SmartStore.Plugin.Feed.ElmarShopinfo;
+@using SmartStore.Plugin.Feed.ElmarShopinfo.Models;
+@using SmartStore.Web.Framework.Plugins;
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+
+@{
+	Layout = "";
+
+	Html.AddCssFileParts(Url.Content("~/Plugins/PromotionFeed.ElmarShopinfo/Content/smartstore.feed.elmarshopinfo.css"));
+}
+
+@using (Html.BeginForm()) {
+	
+<table>
+<tr>
+    <td class="admin-column1">
+		<img src="@Url.Content("~/Plugins/PromotionFeed.ElmarShopinfo/Content/images/logo150x75.gif")" alt="Elmar Shopinfo" class="config-logo" />
+    </td>
+    <td class="admin-column2">
+		@Html.Raw(@T("Plugins.Feed.ElmarShopinfo.AdminInstruction"))
+    </td>
+</tr>
+</table>
+	
+<table class="adminContent">
+@if (Model.GenerateFeedResult.HasValue()) {
+<tr>
+	<td class="adminTitle">&nbsp;</td>
+	<td class="adminData">
+		<p class="feed-result">@Html.Raw(Model.GenerateFeedResult)</p>
+	</td>
+</tr>
+}
+@if (Model.StaticFileUrl.HasValue()) {
+<tr>
+    <td class="adminTitle">
+        @Html.SmartLabelFor(m => m.StaticFileUrl)
+    </td>
+    <td class="adminData">
+        <a href="@Model.StaticFileUrl" target="_blank">@Model.StaticFileUrl</a>
+    </td>
+</tr>
+}
+@if (Model.StaticFileXmlUrl.HasValue()) {
+<tr>
+    <td class="adminTitle">
+        @Html.SmartLabelFor(m => m.StaticFileXmlUrl)
+    </td>
+    <td class="adminData">
+        <a href="@Model.StaticFileXmlUrl" target="_blank">@Model.StaticFileXmlUrl</a>
+    </td>
+</tr>
+}
+<tr>
+    <td class="adminTitle">&nbsp;</td>
+    <td class="adminData">
+		<button type="submit" name="generate" value="generate" class="btn" onclick="$.throbber.show('@T("Plugins.Feed.ElmarShopinfo.GeneratingNow")');">
+			<i class="icon-@(Model.StaticFileUrl.HasValue() ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.ElmarShopinfo.Generate")
+		</button>
+		<button type="submit" name="save" value="save" class="btn btn-primary">
+			<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+		</button>
+    </td>
+</tr>
+</table>
+	
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#@Html.FieldIdFor(m => m.TaskEnabled)').click(toggleTaskEnabled);
+    	toggleTaskEnabled();
+    	$('#@Html.FieldIdFor(m => m.ExportHotlineCost)').click(toggleHotlineCost);
+    	toggleHotlineCost();
+    });
+
+    function toggleTaskEnabled() {
+    	$('#pnlGenerateStaticFileEachMinutes').toggle($('#@Html.FieldIdFor(m => m.TaskEnabled)').is(':checked'));
+    }
+	function toggleHotlineCost() {
+		$('#pnlHotlineCostPerMinute').toggle($('#@Html.FieldIdFor(m => m.ExportHotlineCost)').is(':checked'));
+	}
+</script>
+	
+@Html.SmartStore().TabStrip().Name("elmar-configure").Items(x => {
+	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.General").Text).Content(@TabGeneral()).Selected(true);
+	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Automation").Text).Content(@TabAutomation());
+	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Address").Text).Content(@TabAddress());
+	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Contact").Text).Content(@TabContact());
+})
+
+@helper TabGeneral() {
+    <table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.BuildDescription)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("BuildDescription", new List<SelectListItem> {
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.Automatic"), Value = "" },		
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.NoSpec"), Value = PluginHelperBase.NotSpecified },	
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescShort"), Value = "short" },
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescLong"), Value = "long" },
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescTitleAndShort"), Value = "titleAndShort" },
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescTitleAndLong"), Value = "titleAndLong" },
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescManuAndTitleAndShort"), Value = "manuAndTitleAndShort" },
+				new SelectListItem { Text = T("Plugins.Feed.ElmarShopinfo.DescManuAndTitleAndLong"), Value = "manuAndTitleAndLong" }
+			})
+            @Html.ValidationMessageFor(m => m.BuildDescription)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.DescriptionToPlainText)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.DescriptionToPlainText)
+            @Html.ValidationMessageFor(m => m.DescriptionToPlainText)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ProductPictureSize)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ProductPictureSize)
+            @Html.ValidationMessageFor(m => m.ProductPictureSize)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.CurrencyId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.CurrencyId, Model.AvailableCurrencies)
+            @Html.ValidationMessageFor(m => m.CurrencyId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Brand)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Brand)
+            @Html.ValidationMessageFor(m => m.Brand)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Availability)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(m => m.Availability)
+            @Html.ValidationMessageFor(m => m.Availability)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Warranty)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(m => m.Warranty)
+            @Html.ValidationMessageFor(m => m.Warranty)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.CategoryMapping)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.CategoryMapping, Model.ElmarCategories)
+            @Html.ValidationMessageFor(m => m.CategoryMapping)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportEanAsIsbn)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(m => m.ExportEanAsIsbn)
+            @Html.ValidationMessageFor(m => m.ExportEanAsIsbn)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportSpecialPrice)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(m => m.ExportSpecialPrice)
+            @Html.ValidationMessageFor(m => m.ExportSpecialPrice)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ShippingCost)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ShippingCost)
+            @Html.ValidationMessageFor(m => m.ShippingCost)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ShippingTime)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ShippingTime)
+            @Html.ValidationMessageFor(m => m.ShippingTime)
+        </td>
+    </tr>
+	</table>
+}
+		
+@helper TabAutomation() {
+	<table class="adminContent">
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.TaskEnabled)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.TaskEnabled)
+            @Html.ValidationMessageFor(m => m.TaskEnabled)
+        </td>
+    </tr>
+    <tr id="pnlGenerateStaticFileEachMinutes">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.GenerateStaticFileEachMinutes)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.GenerateStaticFileEachMinutes)
+            @Html.ValidationMessageFor(m => m.GenerateStaticFileEachMinutes)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+		<td class="adminTitle">&nbsp;</td>
+        <td class="adminData">
+			<p>@T("Plugins.Feed.ElmarShopinfo.UpdateInfo")</p>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.UpdateDay)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.UpdateDay, Model.DayList)
+            @Html.ValidationMessageFor(m => m.UpdateDay)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.UpdateHourFrom)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.UpdateHourFrom, Model.HourList)
+            @Html.ValidationMessageFor(m => m.UpdateHourFrom)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.UpdateHourTo)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.UpdateHourTo, Model.HourList)
+            @Html.ValidationMessageFor(m => m.UpdateHourTo)
+        </td>
+    </tr>
+	</table>
+}
+
+@helper TabAddress() {
+	<table class="adminContent">
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.BranchOffice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.BranchOffice)
+            @Html.ValidationMessageFor(m => m.BranchOffice)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AddressName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AddressName)
+            @Html.ValidationMessageFor(m => m.AddressName)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AddressStreet)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AddressStreet)
+            @Html.ValidationMessageFor(m => m.AddressStreet)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AddressPostalCode)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AddressPostalCode)
+            @Html.ValidationMessageFor(m => m.AddressPostalCode)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AddressCity)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AddressCity)
+            @Html.ValidationMessageFor(m => m.AddressCity)
+        </td>
+    </tr>
+	</table>
+}
+
+@helper TabContact() {
+	<table class="adminContent">
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.PublicMail)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.PublicMail)
+            @Html.ValidationMessageFor(m => m.PublicMail)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.PrivateMail)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.PrivateMail)
+            @Html.ValidationMessageFor(m => m.PrivateMail)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.OrderPhone)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.OrderPhone)
+            @Html.ValidationMessageFor(m => m.OrderPhone)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.OrderFax)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.OrderFax)
+            @Html.ValidationMessageFor(m => m.OrderFax)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Hotline)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Hotline)
+            @Html.ValidationMessageFor(m => m.Hotline)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportHotlineCost)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExportHotlineCost)
+            @Html.ValidationMessageFor(m => m.ExportHotlineCost)
+        </td>
+    </tr>
+	<tr id="pnlHotlineCostPerMinute">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.HotlineCostPerMinute)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.HotlineCostPerMinute)
+            @Html.ValidationMessageFor(m => m.HotlineCostPerMinute)
+        </td>
+    </tr>
+	</table>	
+}		
+}

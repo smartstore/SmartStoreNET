@@ -1,0 +1,32 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Payments.Invoice" AppendRootKey="false">
+    <Value>Rechnung</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+      
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="DescriptionText">
+    <Value>Beschreibung</Value>
+  </LocaleResource>
+  <LocaleResource Name="DescriptionText.Hint">
+    <Value>Geben Sie hier die Beschreibung an, die dem Kunden im Bestellprozess angezeigt wird.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee">
+    <Value>Zusätzliche Gebühr</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee.Hint">
+    <Value>Bestimmt die Gebühr die dem Kunden für die Nutzung dieser Zahlart berechnet wird.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInfoDescription">
+    <Value>
+      <![CDATA[
+        <p>Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.
+        </p><p>P.S. Dieser Text kann im Admin-Bereich editiert werden.</p>
+      ]]>
+    </Value>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,59 @@
+﻿@model CheckoutConfirmModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+<div class="page checkout-page">
+    <div class="page-title">
+        <h1>@T("Checkout.ConfirmYourOrder")</h1>
+    </div>
+    <div class="page-body checkout-data">
+        @*set "data-ajax" attribute to "false"*@
+        @using (Html.BeginRouteForm("CheckoutConfirm", FormMethod.Post,
+                new Dictionary<string, Object> { { "data-ajax", "false" }, { "id", "confirm-order-form" } }))
+        {
+            @Html.Widget("mobile_checkout_confirm_top")
+
+            if (Model.Warnings.Count > 0)
+            {
+            <div class="message-error">
+                <ul>
+                    @for (int i = 0; i < Model.Warnings.Count; i++)
+                    {
+                        <li>@Model.Warnings[i]</li>
+                    }
+                </ul>
+            </div>
+            }
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#confirm-order-form').submit(function () {
+                        $('#nextstep').addClass('ui-disabled');
+                    });
+                });
+            </script>
+            
+            <div class="confirm-order">
+                <div class="select-button">
+                    @if (!String.IsNullOrEmpty(Model.MinOrderTotalWarning))
+                    {
+                        @Model.MinOrderTotalWarning
+                    }
+                    else
+                    {
+                        <input type="submit" name="nextstep" value="@T("Checkout.ConfirmButton")" />
+                    }
+                </div>
+            </div>  
+            @Html.Widget("mobile_checkout_confirm_bottom")
+        }
+        <div class="order-summary-body">
+            @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
+        </div>
+    </div>
+</div>

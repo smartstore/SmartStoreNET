@@ -1,0 +1,98 @@
+﻿@model LanguageModel
+
+@using Telerik.Web.Mvc.UI;
+@{
+    var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
+}
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+
+<script type="text/javascript">
+    function toggleFlags() {
+        $('#pnlAllFlags').toggle();
+        if ($('#pnlAllFlags').css('display') == 'none') {
+            $('#displayAllFlags').html('@T("Admin.Common.Show")');
+        }
+        else {
+            $('#displayAllFlags').html('@T("Admin.Common.Hide")');
+        }
+    }
+</script>
+
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.LanguageCulture)
+        </td>
+        <td class="adminData">
+            @* codehint: sm-edit *@
+            @Html.DropDownListFor(x => x.LanguageCulture, cultures.Select(x => 
+                new SelectListItem { Value = x.IetfLanguageTag, Text = string.Format("{0} [{1}]", x.DisplayName, x.IetfLanguageTag) }))
+            @Html.ValidationMessageFor(model => model.LanguageCulture)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UniqueSeoCode)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.UniqueSeoCode)
+            @Html.ValidationMessageFor(model => model.UniqueSeoCode)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FlagImageFileName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.FlagImageFileName)
+            @Html.ValidationMessageFor(model => model.FlagImageFileName)
+            <br/>
+            <a id="displayAllFlags" href="javascript:toggleFlags();">@T("Admin.Common.Show")</a>
+            <div id="pnlAllFlags" style="display: none">
+                @foreach (var fileName in Model.FlagFileNames)
+                {
+                    <img alt="" src="@Url.Content("~/Content/Images/flags/" + fileName)"/>
+                    @fileName
+                    <text>, </text>
+                }
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Rtl)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Rtl)
+            @Html.ValidationMessageFor(model => model.Rtl)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Published)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Published)
+            @Html.ValidationMessageFor(model => model.Published)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayOrder)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplayOrder)
+            @Html.ValidationMessageFor(model => model.DisplayOrder)
+        </td>
+    </tr>
+</table>

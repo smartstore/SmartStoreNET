@@ -1,0 +1,124 @@
+﻿@model ActivityLogSearchModel
+@using Telerik.Web.Mvc;
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-fire"></i>
+            @T("Admin.Configuration.ActivityLog.ActivityLog")
+        </div>
+        <div class="options">
+            <a href="@Url.Action("ClearAll")" class="btn btn-primary">@T("Admin.Common.Clear")</a>
+        </div>
+    </div>
+    <p>
+    </p>
+    <table width="100%">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CreatedOnFrom)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CreatedOnFrom)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CreatedOnTo)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CreatedOnTo)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerEmail)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomerEmail)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ActivityLogTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("ActivityLogTypeId", Model.ActivityLogType)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                
+                <button type="submit" id="btnSearch" class="btn">
+                    <i class="icon-search"></i>
+                    @T("Admin.Common.Search")
+                </button>
+            </td>
+        </tr>
+    </table>    
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ActivityLogModel>()
+                        .Name("activityLog-grid")
+                        .DataKeys(x =>
+                        {
+                            x.Add(y => y.Id).RouteKey("Id");
+                        })
+                        .ClientEvents(events => events.OnDataBinding("onDataBinding"))
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.ActivityLogTypeName)
+                                .Centered();
+                            columns.Bound(x => x.CustomerId)
+                                .Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+                            columns.Bound(x => x.Comment)
+                                .Centered();                        
+                            columns.Bound(x => x.CreatedOn)
+                                .Centered();
+                            columns.Command(commands =>
+                            {
+                                commands.Delete().Localize(T);
+                            }).Width(90);
+                        })
+                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                        .DataBinding(dataBinding =>
+                        {
+                            dataBinding.Ajax().Select("ListLogs", "ActivityLog")
+                                .Delete("AcivityLogDelete", "ActivityLog");
+                        })
+                        .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('#btnSearch').click(function () {
+                var grid = $('#activityLog-grid').data('tGrid');
+                grid.currentPage = 1; //new search. Set page size to 1
+                grid.ajaxRequest();
+                return false;
+            });
+        });
+
+        function onDataBinding(e) {
+            var searchModel = {
+                CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
+                CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val(),
+                CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+                ActivityLogTypeId: $('#ActivityLogTypeId').val()
+            };
+            e.data = searchModel;
+        }
+
+   </script>    
+}

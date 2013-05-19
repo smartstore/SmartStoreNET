@@ -1,0 +1,74 @@
+﻿@model Telerik.Web.Mvc.GridModel<CountryModel>
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Countries").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-globe"></i>
+        @T("Admin.Configuration.Countries")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<CountryModel>()
+                    .Name("countries-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Width(250)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.AllowsBilling)
+                             .Width(50)
+                             .Template(item => @Html.SymbolForBool(item.AllowsBilling))
+                             .ClientTemplate(@Html.SymbolForBool("AllowsBilling"))
+                             .Centered();
+                        columns.Bound(x => x.AllowsShipping)
+                             .Width(50)
+                             .Template(item => @Html.SymbolForBool(item.AllowsShipping))
+                             .ClientTemplate(@Html.SymbolForBool("AllowsShipping"))
+                             .Centered();
+                        columns.Bound(x => x.TwoLetterIsoCode)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.ThreeLetterIsoCode)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.NumericIsoCode)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.SubjectToVat)
+                             .Width(50)
+                             .Template(item => @Html.SymbolForBool(item.SubjectToVat))
+                             .ClientTemplate(@Html.SymbolForBool("SubjectToVat"))
+                             .Centered();
+                        columns.Bound(x => x.NumberOfStates)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.Published)
+                             .Width(50)
+                             .Template(item => @Html.SymbolForBool(item.Published))
+                             .ClientTemplate(@Html.SymbolForBool("Published"))
+                             .Centered();
+                        //columns.Bound(x => x.Id)
+                        //    .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                        //    .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                        //    .Width(50)
+                        //    .Centered()
+                        //    .HeaderTemplate(T("Admin.Common.Edit").Text);
+                    })
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("CountryList", "Country"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

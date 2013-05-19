@@ -1,0 +1,187 @@
+﻿@model int
+@using SmartStore.Core;
+@using SmartStore.Web.Framework.UI;
+@{
+    
+    //other variables
+    var randomNumber = CommonHelper.GenerateRandomInteger();
+    var clientId = "download" + randomNumber;
+    var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+    var download = downloadService.GetDownloadById(Model);
+    
+    Html.AddCssFileParts(Url.Content("~/Content/fileupload/jquery.fileupload-single-ui.css")); // codehint: sm-add
+}
+
+@*codehint: sm-add*@
+@Scripts.Render("~/bundles/fileupload-single") 
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#cbUseDownloadURL@(randomNumber)').click(toggleDownloadRecordType@(randomNumber));
+
+        
+        $('#saveDownloadUrl@(randomNumber)').click(function () {
+                var downloadUrl = $("#downloadurl@(randomNumber)").val();
+                $('#saveDownloadUrl@(randomNumber)').attr('disabled', true);
+                $.ajax({
+                    cache:false,
+                    type: "POST",
+                    url: '@(Url.Action("SaveDownloadUrl", "Download"))',
+                    data: { "downloadUrl": downloadUrl },
+                    success: function (data) {
+                         $('#pnlDownloadURLResult@(randomNumber)').fadeIn("slow").delay(1000).fadeOut("slow");
+                         //$("#@(clientId + "value") input").val(data.downloadId);
+                         $('#@(clientId).fileupload input.hidden').val(data.downloadId);
+                         $('#saveDownloadUrl@(randomNumber)').attr('disabled', false);
+
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        alert('Failed to save download object.')
+                        $('#saveDownloadUrl@(randomNumber)').attr('disabled', false);
+                    }  
+                });
+            });
+
+        toggleDownloadRecordType@(randomNumber)();
+    });
+
+    function toggleDownloadRecordType@(randomNumber)() {
+        if ($('#cbUseDownloadURL@(randomNumber)').is(':checked')) {
+                $('#pnlDownloadURL@(randomNumber)').show();
+                $('#pnlDownloadFile@(randomNumber)').hide();
+            }
+            else {
+                $('#pnlDownloadURL@(randomNumber)').hide();
+                $('#pnlDownloadFile@(randomNumber)').show();
+            }
+        }
+
+</script>
+<div style="font-weight: bold; margin-bottom: 3px">@(download != null ? download.Filename : "")</div>
+
+<table class="adminContent" border="0" style="width:100%; border: 1px solid #ccc; background: #f7f7f7">
+        <colgroup>
+            <col width="100px">
+            <col width="*">
+        </colgroup>
+        <tr>
+            <td class="adminTitle">
+                @T("Admin.Download.UseDownloadURL"):
+            </td>
+            <td class="adminData">
+                <input type="checkbox" name="cbUseDownloadURL@(randomNumber)" id="cbUseDownloadURL@(randomNumber)" 
+                @if (download != null && download.UseDownloadUrl)
+                {
+                    <text>checked="checked"</text>
+                }
+                />
+            </td>
+        </tr>
+        <tr id="pnlDownloadURL@(randomNumber)">
+            <td class="adminTitle">
+                @T("Admin.Download.DownloadURL"):
+            </td>
+            <td class="adminData">
+                <input type="text" name="downloadurl@(randomNumber)" id="downloadurl@(randomNumber)"
+                @if (download != null && !String.IsNullOrEmpty(download.DownloadUrl))
+                {
+                    <text>value="@(download.DownloadUrl)"</text>
+                }
+                />
+                <button type="button" name="saveDownloadUrl@(randomNumber)" id="saveDownloadUrl@(randomNumber)" class="btn"><i class="icon-ok"></i>&nbsp;@T("Admin.Download.SaveDownloadURL")</button>
+                <div id="pnlDownloadURLResult@(randomNumber)" style="display:none;">@T("Admin.Download.DownloadURLSaved")</div>
+            </td>
+        </tr>
+        <tr id="pnlDownloadFile@(randomNumber)">
+            <td class="adminTitle">
+                @T("Admin.Download.UploadFile"):
+            </td>
+            <td class="adminData">
+                <div>
+
+                    <div id="@clientId" class="fileupload">
+    
+                        @Html.HiddenFor(x => x, new { @class = "hidden"} )
+
+                        <button class="btn remove" @Html.Attr("style", "display:none", download == null)>
+                            <i class="icon-trash"></i>
+                            @T("Admin.Download.RemoveDownload")
+                        </button>
+
+                        <span class="btn btn-primary fileinput-button">
+                            <i class="icon-upload-alt"></i>
+                            <span>@T("Common.Fileuploader.Upload")</span>
+                            <input id="fileupload-@randomNumber" type="file" name="file" />
+                        </span>
+
+                        <button class="btn btn-warning cancel">
+                            <i class="icon-remove"></i>
+                            <span>@T("Common.Fileuploader.Cancel")</span>
+                        </button>
+
+                        <!-- The global progress information -->
+                        <div class="span5 fileupload-progress fade">
+                            <!-- The global progress bar -->
+                            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                <div class="bar" style="width:0%;"></div>
+                            </div>
+                            <!-- The extended global progress information -->
+                            <div class="progress-extended">&nbsp;</div>
+                        </div>
+
+                    </div>
+
+                    <script type="text/javascript">
+                    $(function () {
+                        $(function () {
+
+                            var el = $('#@clientId'),
+                                elHidden = el.find('.hidden'),
+                                elRemove = el.find('.remove');
+
+                            $('#@clientId').fileupload({
+                                url: '@(Url.Content("~/Admin/Download/AsyncUpload"))',
+                                dataType: 'json',
+
+                                done: function (e, data) {
+                                    var result = data.result;
+                                    if (result.success) {
+                                        $('#@(clientId + "downloadurl")').html('<a href="' + result.downloadUrl + '">@T("Admin.Download.DownloadUploadedFile"): <strong>' + result.fileName + '</strong></a>');
+                                        elHidden.val(result.downloadId);
+                                        elRemove.show();
+                                    }
+                                },
+
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    if (errorThrown === 'abort') {
+                                        //alert('File Upload has been canceled');
+                                    }
+                                }
+                            });
+
+                            elRemove.click(function (e) {
+                                $('#@(clientId + "downloadurl")').html("&nbsp;");
+                                elHidden.val(0);
+                                $(this).hide();
+                                e.preventDefault();
+                            });
+                                            
+
+                        });
+                    });
+                </script>
+                </div>
+                <div id="@(clientId + "downloadurl")">
+                    @if (download != null)
+                    {
+                        <a href="@(Url.Action("DownloadFile", "Download", new { downloadId = Model }))">@T("Admin.Download.DownloadUploadedFile"): <strong>@download.Filename@download.Extension</strong></a>
+                    }
+                </div>
+                <div>
+
+                </div>
+            </td>
+        </tr>
+</table>
+
+

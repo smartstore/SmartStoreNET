@@ -1,0 +1,11 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Tax.FixedRate" AppendRootKey="false">
+		<Value>Fixed rate</Value>
+	</LocaleResource>
+  <LocaleResource Name="Fields.TaxCategoryName">
+    <Value>Tax category</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Rate">
+    <Value>Rate</Value>
+  </LocaleResource>
+</Language>

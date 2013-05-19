@@ -1,0 +1,83 @@
+﻿@model LanguageModel
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Languages.EditLanguageDetails").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Configuration.Languages.EditLanguageDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn">@T("Admin.Configuration.Languages.Export")</a>
+            <a href="#importxml-window" data-toggle="modal" class="btn">@T("Admin.Configuration.Languages.Import")</a>
+            <button type="submit" id="language-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdate", Model)
+}
+@Html.DeleteConfirmation("language-delete")
+@*import resources form*@
+@{Html.SmartStore().Window()
+        .Name("importxml-window")
+        .Title(T("Admin.Configuration.Languages.Import").Text)
+        .Content(@<text>
+    @using (Html.BeginForm("ImportXml", "Language", new { id = Model.Id }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div style="margin-bottom: 8px">
+            <strong>@T("Admin.Configuration.Languages.XmlFile"):</strong> <input type="file" id="importxmlfile" name="importxmlfile" />
+        </div>
+
+        <label class="radio">
+            @Html.RadioButton("mode", "3", true, new { id = "importxmlmode_3" })
+            @T("Admin.Configuration.Languages.Import.InsertUpdate")
+        </label>
+        <label class="radio">
+            @Html.RadioButton("mode", "1", false, new { id = "importxmlmode_1" })
+            @T("Admin.Configuration.Languages.Import.Insert")
+        </label>
+        <label class="radio">
+            @Html.RadioButton("mode", "2", false, new { id = "importxmlmode_2" })
+            @T("Admin.Configuration.Languages.Import.Update")
+        </label>
+        <hr />
+        <label class="checkbox">
+            @Html.CheckBox("updatetouched", false, new { id = "importxmlupdatetouched" })
+            <span class="caption">@T("Admin.Configuration.Languages.Import.UpdateTouched")</span>
+        </label>
+        
+    }
+    </text>)
+    .FooterContent(@<text>
+        <button id="importxmlsubmit" type="button" class="btn btn-primary">@T("Admin.Configuration.Languages.Import")</button>
+        <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+    </text>)
+        .Width(400)
+        .Modal(true)
+        .Visible(false)
+        .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#importxmlsubmit").click(function (e) {
+            e.preventDefault();
+            $('#importxml-window').find("form").submit();
+        });
+
+        $("#importxml-window input[name=mode]").on("change", function (e) {
+            var id = $(this).attr("id");
+            var chk = $("#importxmlupdatetouched");
+            if (id == "importxmlmode_1") {
+                chk.attr("disabled", "true").parent().find(">span").addClass("muted");
+            }
+            else {
+                chk.removeAttr("disabled").parent().find(">span").removeClass("muted");
+            }
+        });
+    });
+
+</script>

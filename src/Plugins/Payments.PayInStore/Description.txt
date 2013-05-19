@@ -1,0 +1,7 @@
+﻿FriendlyName: Pay In Store
+SystemName: Payments.PayInStore
+Version: 1.00
+SupportedVersions: 1.0
+DisplayOrder: 1
+FileName: SmartStore.Plugin.Payments.PayInStore.dll
+ResourceRootKey: Plugins.Payment.PayInStore

@@ -1,0 +1,22 @@
+﻿#tsBox {
+    font-size: 80%;
+}
+#tsBox #tsInnerBox {
+    vertical-align: middle;
+    margin-top: 0px;
+    padding: 2px;
+}
+#tsBox #tsSeal {
+    text-align: center;
+    padding: 2px;
+}
+#tsBox #tsSeal input {
+    border: 0px none;
+}
+#tsBox #tsText {
+    text-align: center;
+    padding: 2px;
+}
+#tsBox #tsText a {
+    padding-bottom: 4px;
+}

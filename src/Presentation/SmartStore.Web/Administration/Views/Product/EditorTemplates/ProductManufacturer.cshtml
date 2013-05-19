@@ -1,0 +1,13 @@
+﻿
+<select name="Manufacturer" 
+        id="Manufacturer" 
+        class="autowidth" 
+        style="width: 95%"
+        data-select-url='@Url.Action("AllManufacturers", "Manufacturer")'>
+</select>
+
+<script>
+    $(function () {
+        $('#Manufacturer').selectWrapper();
+    });
+</script>

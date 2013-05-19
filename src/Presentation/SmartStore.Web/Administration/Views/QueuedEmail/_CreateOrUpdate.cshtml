@@ -1,0 +1,131 @@
+﻿@model QueuedEmailModel
+           
+
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Priority)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Priority)
+            @Html.ValidationMessageFor(model => model.Priority)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.From)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.From)
+            @Html.ValidationMessageFor(model => model.From)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FromName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.FromName)
+            @Html.ValidationMessageFor(model => model.FromName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.To)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.To)
+            @Html.ValidationMessageFor(model => model.To)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ToName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ToName)
+            @Html.ValidationMessageFor(model => model.ToName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CC)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.CC)
+            @Html.ValidationMessageFor(model => model.CC)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Bcc)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Bcc)
+            @Html.ValidationMessageFor(model => model.Bcc)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Subject)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Subject)
+            @Html.ValidationMessageFor(model => model.Subject)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Body)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Body, "RichEditor")
+            @Html.ValidationMessageFor(model => model.Body)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CreatedOn)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.CreatedOn)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SentTries)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.SentTries)
+            @Html.ValidationMessageFor(model => model.SentTries)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SentOn)
+        </td>
+        <td class="adminData">
+            @if (Model.SentOn.HasValue)
+            {
+                @Html.DisplayFor(model => model.SentOn)
+            }
+            else
+            {
+                <text>Not sent yet</text>
+            }
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.EmailAccountName)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.EmailAccountName)
+        </td>
+    </tr>
+</table>

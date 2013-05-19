@@ -1,0 +1,97 @@
+﻿@model ProductModel
+@using Telerik.Web.Mvc.UI;
+@{
+	//page title
+	ViewBag.Title = T("Admin.Catalog.Products.EditProductDetails").Text;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "product-form" })) {
+    <div class="section-header">
+        <div class="title">
+            @if (!String.IsNullOrEmpty(Model.PictureThumbnailUrl)) {
+                <img src="@Url.Content(Model.PictureThumbnailUrl)" class="img-polaroid" />
+			}
+            @T("Admin.Catalog.Products.EditProductDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Catalog.Products.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <!--
+            <input type="submit" value="@T("Admin.Common.Preview")" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { productId = Model.Id, SeName = "" })', 800, 600, true); return false;" class="t-button" />
+            -->
+            <button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { SeName = Model.SeName })', 800, 600, true); return false;" class="btn">
+                <i class="icon-eye-open"></i>
+                @T("Admin.Common.Preview")
+            </button>
+            <button type="submit" value="save" class="btn btn-primary">
+                <i class="icon-ok icon-white"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+            <a href="#copyproduct-window" data-toggle="modal" class="btn">@T("Admin.Catalog.Products.Copy")</a>
+            <button type="submit" id="product-delete" class="btn btn-danger">
+                <i class="icon-trash icon-white"></i>
+                @T("Admin.Common.Delete")
+            </button>
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdate", Model)
+}
+@Html.DeleteConfirmation("product-delete")
+
+@*copy product form*@
+@*codehint: sm-edit*@
+@{Html.SmartStore().Window()
+		.Name("copyproduct-window")
+		.Title(T("Admin.Catalog.Products.Copy").Text)
+		.Content(@<text>
+    @using (Html.BeginForm("CopyProduct", "Product", FormMethod.Post, new { style = "margin:0;" })) {
+        @Html.HiddenFor(model => Model.CopyProductModel.Id)
+
+		<div class="dialog-content-container">
+			<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CopyProductModel.Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.CopyProductModel.Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CopyProductModel.Published)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.CopyProductModel.Published)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
+				</td>
+			</tr>
+			</table>
+		</div>
+	}
+    </text>)
+    .FooterContent(@<text>
+        <button id="copyproduct" type="button" class="btn btn-primary">
+            <i class="icon-copy"></i>
+            @T("Admin.Catalog.Products.Copy")
+        </button>
+    </text>)
+		.Width(500)
+        .Height(500)
+		.Modal(true)
+		.Visible(false)
+		.Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#copyproduct").click(function (e) {
+            e.preventDefault();
+            $('#copyproduct-window').find('form').submit();
+        });
+    });
+</script>

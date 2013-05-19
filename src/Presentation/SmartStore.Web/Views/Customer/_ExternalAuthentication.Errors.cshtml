@@ -1,0 +1,13 @@
+﻿@{
+    var errors = ExternalAuthorizerHelper.RetrieveErrorsToDisplay(true);
+}
+@using SmartStore.Services.Authentication.External;
+@if (errors != null && errors.Count > 0)
+{
+    <div class="alert alert-error">
+        @for (int i = 0; i < errors.Count; i++)
+        {
+            <p>@errors[i]</p>
+        }
+    </div>
+}

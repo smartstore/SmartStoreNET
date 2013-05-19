@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+// codehint: sm-add (whole file)
+
+namespace SmartStore.Core.Domain.Themes
+{
+    
+    public class ThemeVariable : BaseEntity
+    {
+
+        /// <summary>
+        /// Gets or sets the theme the attribute belongs to
+        /// </summary>
+        public string Theme { get; set; }
+
+        /// <summary>
+        /// Gets or sets the theme attribute name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the theme attribute value
+        /// </summary>
+        public string Value { get; set; }
+
+        public override bool Equals(BaseEntity other)
+        {
+            var equals = base.Equals(other);
+            if (!equals)
+            {
+                var o2 = other as ThemeVariable;
+                if (o2 != null)
+                {
+                    equals = this.Theme.Equals(o2.Theme, StringComparison.OrdinalIgnoreCase) && this.Name == o2.Name;
+                }
+            }
+            return equals;
+        }
+    }
+
+}

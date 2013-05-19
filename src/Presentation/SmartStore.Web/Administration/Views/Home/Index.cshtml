@@ -1,0 +1,81 @@
+﻿@{
+    //page title
+    ViewBag.Title = T("Admin.Dashboard").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-bar-chart"></i>
+        @T("Admin.Dashboard.StoreStatistics")
+    </div>
+</div>
+<table class="dashboard">
+    @Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_top" })
+    <tr>
+        
+        <td class="leftcol" style="width: 25%; min-width: 240px; padding-right: 20px; vertical-align: top">
+            
+            @Html.Action("ReportRegisteredCustomers", "Customer")
+            @Html.Action("OrderIncompleteReport", "Order")
+
+@*            <div class="widget">
+                <div class="widget-header">
+                    <i class="icon-bookmark"></i>
+                    <h3>Shortcuts</h3>
+                </div>
+                <div class="widget-content">
+                    <div class="shortcuts">
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Neues Produkt</span>
+                        </a>
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Shortcut</span>
+                        </a>
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Shortcut</span>
+                        </a>
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Shortcut</span>
+                        </a>
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Shortcut</span>
+                        </a>
+                        <a class="shortcut" href="#">
+                            <i class="shortcut-icon icon-list-alt"></i>
+                            <span class="shortcut-label">Shortcut</span>
+                        </a>
+                    </div>
+                </div>
+            </div>*@
+
+        </td>
+
+        <td class="maincol" style="vertical-align: top">
+            <table class="stats">
+                <tbody>
+                    <tr>
+                        <td class="orderaveragereport">
+                            @Html.Action("OrderAverageReport", "Order")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="stats">
+                <tr>
+                    <td class="bestsellers alpha">
+                        @Html.Action("BestsellersBriefReportByQuantity", "Order")
+                    </td>
+                    <td class="bestsellers omega">
+                        @Html.Action("BestsellersBriefReportByAmount", "Order")
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    @Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_bottom" })
+</table>

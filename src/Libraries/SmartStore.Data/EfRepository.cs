@@ -1,0 +1,218 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Validation;
+using System.Linq;
+using System.Linq.Expressions;
+using SmartStore.Core;
+using SmartStore.Core.Data;
+
+namespace SmartStore.Data
+{
+    /// <summary>
+    /// Entity Framework repository
+    /// </summary>
+    public partial class EfRepository<T> : IRepository<T> where T : BaseEntity
+    {
+        private readonly IDbContext _context;
+        private IDbSet<T> _entities;
+
+        public EfRepository(IDbContext context)
+        {
+            this._context = context;
+            this.AutoCommitEnabled = true;
+        }
+
+        #region interface members
+
+        public virtual IQueryable<T> Table
+        {
+            get
+            {
+                return this.Entities;
+            }
+        }
+
+        public T Create()
+        {
+            return this.Entities.Create();
+        }
+
+        public T GetById(object id)
+        {
+            return this.Entities.Find(id);
+        }
+
+        public void Insert(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException("entity");
+
+            this.Entities.Add(entity);
+
+            if (this.AutoCommitEnabled)
+                Commit();
+        }
+
+        public void InsertRange(IEnumerable<T> entities, int batchSize = 100)
+        {
+            try
+            {
+                if (entities == null)
+                    throw new ArgumentNullException("entities");
+
+                if (entities.HasItems())
+                {
+                    if (batchSize <= 0)
+                    {
+                        // insert all in one step
+                        entities.Each(x => this.Entities.Add(x));
+                        if (this.AutoCommitEnabled)
+                            _context.SaveChanges();
+                    }
+                    else
+                    {
+                        int i = 1;
+                        bool saved = false;
+                        foreach (var entity in entities)
+                        {
+                            this.Entities.Add(entity);
+                            saved = false;
+                            if (i % batchSize == 0)
+                            {
+                                if (this.AutoCommitEnabled)
+                                    _context.SaveChanges();
+                                i = 0;
+                                saved = true;
+                            }
+                            i++;
+                        }
+
+                        if (!saved)
+                        {
+                            if (this.AutoCommitEnabled)
+                                _context.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (DbEntityValidationException ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Update(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException("entity");
+
+            if (this.AutoCommitEnabled)
+            {
+                Commit();
+            }
+            else
+            {
+                try
+                {
+                    this.Entities.Attach(entity);
+                    InternalContext.Entry(entity).State = System.Data.EntityState.Modified;
+                }
+                finally { }
+            }
+        }
+
+        public void Delete(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException("entity");
+
+            if (InternalContext.Entry(entity).State == System.Data.EntityState.Detached)
+            {
+                this.Entities.Attach(entity);
+            }
+
+            this.Entities.Remove(entity);
+
+            if (this.AutoCommitEnabled)
+                Commit();
+        }
+
+        public IQueryable<T> Expand(IQueryable<T> query, string path)
+        {
+            Guard.ArgumentNotNull(query, "query");
+            Guard.ArgumentNotEmpty(path, "path");
+
+            return query.Include(path);
+        }
+
+        public IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path)
+        {
+            Guard.ArgumentNotNull(query, "query");
+            Guard.ArgumentNotNull(path, "path");
+
+            return query.Include(path);
+        }
+
+        public IDictionary<string, object> GetModifiedProperties(T entity)
+        {
+            var props = new Dictionary<string, object>();
+
+            var ctx = InternalContext;
+            var entry = ctx.Entry(entity);
+            var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
+                                        where entry.Property(p).IsModified
+                                        select p;
+            foreach (var name in modifiedPropertyNames)
+            {
+                props.Add(name, entry.Property(name).OriginalValue);
+            }
+
+            return props;
+        }
+
+        public IDbContext Context
+        {
+            get { return _context; }
+        }
+
+        public bool AutoCommitEnabled { get; set; }
+
+        #endregion
+
+        #region Helpers
+
+        private void Commit()
+        {
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                throw ex;
+            }
+        }
+
+        protected internal ObjectContextBase InternalContext
+        {
+            get { return _context as ObjectContextBase; }
+        }
+
+        private DbSet<T> Entities
+        {
+            get
+            {
+                if (_entities == null)
+                {
+                    _entities = _context.Set<T>();
+                }
+                return _entities as DbSet<T>;
+            }
+        }
+
+        #endregion
+
+    }
+}

@@ -1,0 +1,417 @@
+// bootstrap.custom.less overrides
+// specific tweaks & hacks
+// -------------------------------------------------------------
+
+
+// GENERAL STUFF
+// -------------
+
+.transparent						{ opacity: 0 !important; filter: Alpha(opacity=0) !important; }
+.o0 								{ opacity: 0 !important; filter: Alpha(Opacity=0) !important; visibility: hidden }
+.o10 								{ opacity: .1; filter: Alpha(Opacity=10) }
+.o20 								{ opacity: .2; filter: Alpha(Opacity=20) }
+.o30 								{ opacity: .3; filter: Alpha(Opacity=30) }
+.o40 								{ opacity: .4; filter: Alpha(Opacity=40) }
+.o50 								{ opacity: .5; filter: Alpha(Opacity=50) }
+.o60 								{ opacity: .6; filter: Alpha(Opacity=60) }
+.o70 								{ opacity: .7; filter: Alpha(Opacity=70) }
+.o80 								{ opacity: .8; filter: Alpha(Opacity=80) }
+.o90 								{ opacity: .9; filter: Alpha(Opacity=90) }
+.o100 								{ opacity: 1; filter:  Alpha(Opacity=100) }
+
+
+// NICER PAGE TITLES & TYPO STUFF
+// ------------------------------
+
+.ellipsis {
+	.text-overflow();
+}
+
+.font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.title-typo() {
+	font-family: @pageTitleFontFamily;
+	font-weight: @pageTitleFontWeight;
+	color: @pageTitleColor;
+}
+
+.page-title {
+	
+	x-padding-bottom: 8px;
+	x-border-bottom: 1px solid @grayLighter;
+	margin: 0 0 18px 0;
+
+	h1, h2, h3, h4, h5, h6 {
+		.title-typo();
+	}
+
+	small { 
+		color: inherit;
+		font-weight: inherit;
+	}
+}
+
+.modal-header.page-title {
+	margin-bottom: 0;
+}
+
+// THUMB ZOOMER
+// ------------
+
+.zoomable-thumb {
+    max-width: 50px;
+    max-height: 32px;
+}
+
+.zoomable-thumb-clone {
+    border: 1px solid #bbb;
+}
+
+// MORE RESET
+// ------------
+::-moz-selection {
+	background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+	background: #b3d4fc;
+    text-shadow: none;
+}
+
+nav ul, 
+nav li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; 
+}
+
+
+// ALERT STYLES
+// ------------
+
+// Base alert styles
+
+.alert {
+	border-color: darken(@warningBorder, 4%) darken(@warningBorder, 4%) darken(@warningBorder, 8%);
+	#gradient > .vertical(lighten(@warningBackground, 5%), @warningBackground); // default is warning status
+	.box-shadow(inset 0 1px 0 rgba(255,255,255, .3)); // a smooth inset shadow, always looks good
+}
+
+.alert-success {
+	border-color: darken(@successBorder, 4%) darken(@successBorder, 4%) darken(@successBorder, 8%);
+	#gradient > .vertical(lighten(@successBackground, 5%), @successBackground);
+}
+
+.alert-info {
+	border-color: darken(@infoBorder, 4%) darken(@infoBorder, 4%) darken(@infoBorder, 8%);
+	#gradient > .vertical(lighten(@infoBackground, 5%), @infoBackground);
+}
+
+.alert-error,
+.alert-danger {
+	border-color: darken(@errorBorder, 4%) darken(@errorBorder, 4%) darken(@errorBorder, 8%);
+	#gradient > .vertical(lighten(@errorBackground, 5%), @errorBackground);
+}
+
+.alert > *:first-child {
+	margin-top: 0;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0;
+}
+
+.alert .validation-summary-errors > ul {
+	margin-bottom: 0;
+}
+
+
+// WELL TWEAKS
+// ------------
+.well > *:first-child {
+	margin-top: 0;
+}
+
+.well > *:last-child {
+	margin-bottom: 0;
+}
+
+.well {
+	h2, h3, h4, h5 {
+		//.title-typo();
+		font-weight: normal;
+		color: #bbb;
+	}
+}
+
+// TOOLTIP TWEAKS
+// ---------------
+.tooltip-inner {
+	white-space: pre-wrap;
+}
+
+
+// ICONS
+// --------------
+
+// not required anymore with FontAwesome 3.0
+[class^="icon-"], 
+[class*=" icon-"] {
+	font-size: 14px; // looks better with 'FontAwesome'
+	/*.btn-large & { 
+		font-size: 18px; // but enlarge it in large buttons
+	}*/
+}
+
+
+// BUTTON STYLES
+// -------------
+
+// fix for tooltip <> btn-group bug in V2.2.1
+// see: https://github.com/twitter/bootstrap/issues/5783
+.btn-group > .btn + .tooltip + .btn {
+	margin-left: -1px;
+}
+
+.btn-group-wrapper {
+    text-align: center;
+}
+
+.btn-group-wrapper > .btn-group {
+    margin: 0 auto; 
+    text-align: center;
+    width: inherit;
+    display: inline-block;
+}
+
+// add gradient to buttons in ie < 10 with png mask
+.iepre10 .btn {
+	background-image: url('../images/btn-mask.png');
+	background-position: 50% 50%;
+	background-repeat: repeat-x;
+	outline: 0;
+	&:hover,
+	&:active {
+		background-position: 50% 50%;
+	}
+	&:active {
+		background-image: none;
+	}
+}
+
+
+// FORMS (GENERAL)
+// --------------
+
+legend > a {
+    text-decoration: none !important;
+}
+
+
+// FORMS (SELECT)
+// --------------
+
+select {
+	width: auto; // tb sets 220px, not good...
+	min-width: 120px; // ...but too small is also bad
+}
+
+// FORMS (PROMPTS)
+// ---------------
+// (MC): add neat shadow and hover effect to prompts
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input {
+	.box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 1px 0 rgba(255,255,255, .3)");
+
+	// Hover state
+	&:hover {
+		@inputHoverBorderColor: darken(@inputBorder, 8%);
+		border: 1px solid @inputHoverBorderColor;
+	}
+
+	// Focus state
+	&:focus {
+		color: #000;
+		outline: 0;
+		outline: thin dotted \9; /* IE6-9 */
+	}	
+
+}
+
+
+// NAV STYLES
+// ------------
+
+// remove outline from focussed nav links
+.nav > li > a:focus {
+	outline: 0;
+}
+
+// add icon support to nav tabs and pills
+.nav > li > a > img,
+.nav > li > a > [class^="icon-"], 
+.nav > li > a > [class*=" icon-"] {
+	vertical-align: baseline;
+	margin-right: 4px;
+}
+
+// make nav pills look nicer
+.nav.nav-pills > li > a {
+	.transition(none);
+}
+.nav-pills > .active > a,
+.nav-pills > .active > a:hover {
+	text-shadow: 0 1px 0 mix(@linkColor, #000, 80%);
+	#gradient > .vertical(darken(@linkColor, 8%), @linkColor);
+	.box-shadow(~'0px 1px 6px rgba(0,0,0, 0.3) inset, 0px 1px 0px #fff');
+}
+
+.tab-content {
+	overflow: visible; // was 'auto'. Fixes dropdown problem.
+}
+
+.tabs-left .tab-content,
+.tab-content .tab-content {
+	overflow: auto; // restore in nested panels, buggy otherwise
+}
+
+.ie .tabs-left .nav-tabs {
+	min-width: 200px;
+}
+
+.nav-tabs > li > a > span.tab-caption {
+	display: inline-block;
+	margin-right: 8px;
+	white-space: nowrap;
+}
+  
+
+
+// DROPDOWN STYLES
+// ---------------
+
+// add 'disabled' style to dropdown-menu items (will be officially implemented in a future bootstrap release)
+
+.nav .disabled > a,	
+.dropdown-menu .disabled > a,
+.dropdown-menu .disabled > a:hover {	
+	color: @dropdownLinkColor;
+	.opacity(40);
+	pointer-events: none;	
+}
+	
+// Nuke hover effects
+.nav .disabled > a:hover,	
+.dropdown-menu .disabled > a:hover {
+	text-decoration: none;
+	background-color: transparent;	
+	cursor: default;
+}
+
+.dropdown-menu li > a > img {
+	// adjust icon alignment a bit.
+	vertical-align: -1px;
+}
+
+
+// LABEL-BADGE ENHANCEMENTS
+// -------------------------
+
+.nav.nav-tabs .badge,
+.nav.nav-tabs .label {
+	// labels & badges within tabs "push" the tab item
+	// downwards: kill the ugly solid table line
+	vertical-align: text-top;
+}
+
+// JQUERY UI STUFF
+// -------------------------
+
+.ui-effects-transfer,
+.transfer {
+	border: 2px dotted #555 !important;
+	background: transparent;
+	z-index: 100000;
+
+}
+
+.ui-menu {
+	padding: 5px 0;
+	margin: 2px 0 0; // override default ul
+	background-color: @dropdownBackground;
+	border: 1px solid #ccc; // Fallback for IE7-8
+	border: 1px solid @dropdownBorder;
+	*border-right-width: 2px;
+	*border-bottom-width: 2px;
+	border-top: none;
+	.border-radius(6px);
+	.box-shadow(0 5px 10px rgba(0,0,0,.2));
+	-webkit-background-clip: padding-box;
+		-moz-background-clip: padding;
+			background-clip: padding-box;
+}
+
+.ui-autocomplete {
+	border-color: @inputBorder; // goes nice with textboxes
+	.box-shadow(0 5px 10px rgba(0,0,0,.12));
+	border-top: none !important;
+}
+.ui-autocomplete.ui-corner-all {
+	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);	
+}
+
+.ui-autocomplete-loading {
+	background-image: url('images/throbber-progress-black-16.gif');
+	background-repeat: no-repeat;
+	background-position: 98% center;
+}
+
+.ui-autocomplete .ui-menu-item a {
+	.border-radius(0);
+	padding: 3px 16px;
+	font-family: @baseFontFamily;
+    font-weight: normal;
+    color: @dropdownLinkColor;
+	.small();
+
+	&:hover,
+	&.ui-state-hover {
+		color: @dropdownLinkColorHover !important;
+		background: @dropdownLinkBackgroundHover !important;
+	}
+}
+
+// MVC UI adaptation
+// -------------------------
+
+.validation-summary-errors {
+	.alert();
+	.alert-error();
+
+	ul {
+		margin-bottom: 0;
+	}
+}

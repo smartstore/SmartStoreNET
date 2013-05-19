@@ -1,0 +1,97 @@
+﻿@model ManufacturerListModel
+@using Telerik.Web.Mvc.UI
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.Catalog.Manufacturers").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-legal"></i>
+        @T("Admin.Catalog.Manufacturers")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("ExportXml")" class="btn"><i class="icon-upload"></i>&nbsp;@T("Admin.Common.ExportToXml")</a>
+    </div>
+</div>
+<table width="100%">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchManufacturerName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.SearchManufacturerName)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+        </td>
+    </tr>
+</table>
+<p></p>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<ManufacturerModel>(Model.Manufacturers.Data)
+                    .Name("manufacturers-grid")
+                    .ClientEvents(events => events
+                        .OnDataBinding("onDataBinding"))
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name).Width(300)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\'Edit/<#= Id #>'><#= Name #></a>");
+                        
+                            // .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            //.ClientTemplate("<a href=\"Edit/<#= Id #>'><#= Name #></a>");
+                        
+                        columns.Bound(x => x.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(100)
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .Pageable(settings => settings.Total(Model.Manufacturers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Manufacturer"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //search button
+        $('#btnSearch').click(function () {
+            //search
+            var grid = $('#manufacturers-grid').data('tGrid');
+            grid.currentPage = 1; //new search. Set page size to 1
+            grid.ajaxRequest();
+            return false;
+        });
+
+        $("#@Html.FieldIdFor(model => model.SearchManufacturerName)").keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#btnSearch").click();
+                return false;
+            }
+        });
+    });
+
+    function onDataBinding(e) {
+        var searchModel = {
+            SearchManufacturerName: $('#@Html.FieldIdFor(model => model.SearchManufacturerName)').val()
+        };
+        e.data = searchModel;
+    }
+</script>

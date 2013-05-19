@@ -1,0 +1,61 @@
+﻿@model Telerik.Web.Mvc.GridModel<RecurringPaymentModel>
+@using Telerik.Web.Mvc.UI
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.RecurringPayments").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-repeat"></i>
+        @T("Admin.RecurringPayments")
+    </div>
+    <div class="options">
+        
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<RecurringPaymentModel>(Model.Data)
+                    .Name("recurringpayments-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.CustomerId)
+                               .Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+                               .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>")
+                               .Width(100);
+                        columns.Bound(x => x.CycleLength)
+                            .Width(50);
+                        columns.Bound(x => x.CyclePeriodStr)
+                            .Width(100)
+                            .Centered();
+                        columns.Bound(x => x.IsActive)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.IsActive))
+                            .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                            .Centered();
+                        columns.Bound(x => x.StartDate)
+                            .Width(100)
+                            .Centered();
+                        columns.Bound(x => x.NextPaymentDate)
+                            .Width(100);
+                        columns.Bound(x => x.TotalCycles)
+                            .Width(50);
+                        columns.Bound(x => x.CyclesRemaining)
+                            .Width(50);
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "RecurringPayment"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

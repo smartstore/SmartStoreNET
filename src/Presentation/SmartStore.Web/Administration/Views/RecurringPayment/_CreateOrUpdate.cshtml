@@ -1,0 +1,155 @@
+﻿@model RecurringPaymentModel
+
+@using SmartStore.Core.Domain.Catalog;
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("recurringpayment-edit").Items(x =>
+{
+    var tabInfo = x.Add().Text(T("Admin.RecurringPayments.Info").Text).Content(TabInfo());
+    var tabHistory = x.Add().Text(T("Admin.RecurringPayments.History").Text).Content(TabHistory());
+
+    var selectedTab = (string)ViewData["selectedTab"];
+    switch (selectedTab)
+    {
+        case "info":
+            tabInfo.Selected(true);
+            break;
+        case "history":
+            tabHistory.Selected(true);
+            break;
+        default:
+            tabInfo.Selected(true);
+            break;
+    }
+    
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "recurringpayment-edit"));
+})
+@helper TabInfo()
+    {
+        
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.InitialOrderId)
+            </td>
+            <td class="adminData">
+                @Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = Model.InitialOrderId }, new { })
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerEmail)
+            </td>
+            <td class="adminData">
+                @Html.ActionLink(Model.CustomerEmail, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CycleLength)
+            </td>
+            <td class="adminData">
+                @Html.Telerik().IntegerTextBoxFor(model => model.CycleLength).MinValue(1)
+                @Html.ValidationMessageFor(model => model.CycleLength)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CyclePeriodId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.CyclePeriodId, ((RecurringProductCyclePeriod)Model.CyclePeriodId).ToSelectList())
+                @Html.ValidationMessageFor(model => model.CyclePeriodId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TotalCycles)
+            </td>
+            <td class="adminData">
+                @Html.Telerik().IntegerTextBoxFor(model => model.TotalCycles).MinValue(1)
+                @Html.ValidationMessageFor(model => model.TotalCycles)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CyclesRemaining)
+            </td>
+            <td class="adminData">
+                @Model.CyclesRemaining
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PaymentType)
+            </td>
+            <td class="adminData">
+                @Model.PaymentType
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StartDate)
+            </td>
+            <td class="adminData">
+                @Model.StartDate
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsActive)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive)
+            </td>
+        </tr>
+    </table>
+}
+@helper TabHistory()
+    { 
+    <table class="adminContent">
+        <tr>
+            <td>
+                @if (!String.IsNullOrEmpty(Model.NextPaymentDate))
+                        {
+                    @T("Admin.RecurringPayments.History.NextPaymentDate")
+                    <text>:</text> @Model.NextPaymentDate
+                    <button type="submit" name="processnextpayment" value="processnextpayment" class="btn">@T("Admin.RecurringPayments.History.ProcessNextPayment")</button>
+                        }
+                @if (Model.CanCancelRecurringPayment)
+                        {
+                    <button type="submit" name="cancelpayment" value="cancelpayment" class="btn">@T("Admin.RecurringPayments.History.CancelPayment")</button>
+                        }
+            </td>
+        </tr>
+    </table>
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<RecurringPaymentModel.RecurringPaymentHistoryModel>(Model.History)
+                    .Name("history-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.OrderId)
+                            .Width(100)
+                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
+                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\">" + T("Admin.Common.View").Text + "</a>");
+                        columns.Bound(x => x.OrderStatus).Width(200);
+                        columns.Bound(x => x.PaymentStatus).Width(200);
+                        columns.Bound(x => x.ShippingStatus).Width(200);
+                        columns.Bound(x => x.CreatedOn).Width(200);
+
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax().Select("HistoryList", "RecurringPayment", new { recurringPaymentId = Model.Id });
+                    })
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+}

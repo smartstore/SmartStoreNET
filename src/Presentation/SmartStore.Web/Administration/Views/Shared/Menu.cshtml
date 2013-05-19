@@ -1,0 +1,153 @@
+﻿@model TreeNode<SmartStore.Web.Framework.UI.MenuItem>
+
+@*@using Telerik.Web.Mvc.UI;*@
+@using SmartStore.Services.Security;
+@using SmartStore.Core.Domain.Security;
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
+
+@functions {
+    public string GetNodeLink(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node) 
+    {
+        if (node.HasChildren) 
+        {
+            return "javascript:void(0)";
+        }
+        return node.Value.GenerateUrl(this.ViewContext.RequestContext);
+    }
+
+    public string GetItemText(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node)
+    {
+        string result = null;
+        
+        if (node.Value.ResKey.HasValue())
+        {
+            result = T(node.Value.ResKey).ToHtmlString();
+        }
+            
+        if (!result.HasValue())
+        {
+            result = node.Value.Text;
+        }
+
+        return result;
+    }
+}
+
+<ul class="nav nav-smart">
+@{
+    foreach (var node in Model.Children)
+    {
+        var item = node.Value;
+
+        if (!item.Visible)
+        {
+            continue;
+        }
+        
+        var imageUrl = item.ImageUrl;
+        if (!imageUrl.HasValue())
+        {
+            imageUrl = "~/Administration/Content/images/ap-default-white.png";
+        }
+
+        string itemText = GetItemText(node);
+
+        if (ViewBag.SelectedMenuItem == itemText)
+        {
+            //item.Selected = true;
+        }
+
+        var itemUrl = GetNodeLink(node);
+
+        <li class="divider-vertical"></li>
+        <li data-id="@item.Id" @Html.Attr("class", "dropdown", node.HasChildren)>
+            <a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
+                <img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
+                <span class="navbar-label">@itemText</span>
+            </a>
+            @if (node.HasChildren)
+            {
+                @CreateDropdown(node.Children, true)
+            }
+        </li>
+        
+    }   
+}
+    <li class="divider-vertical"></li>
+
+</ul>
+
+
+@helper CreateDropdown(IEnumerable<TreeNode<SmartStore.Web.Framework.UI.MenuItem>> nodes, bool isRoot)
+{
+    if (isRoot)
+    {
+        @Html.Raw("<div class='dropdown-menu'><div class='dropdown-menu-inner clearfix'>")
+    }
+
+    var isFirst = true;
+    
+    <ul class='@(isRoot ? "drop-list" : "dropdown-menu")'>
+    @foreach (var node in nodes)
+    {
+        var item = node.Value;
+
+        if (!item.Visible)
+        {
+            continue;
+        }
+        
+        string itemText = GetItemText(node);
+
+        if (item.IsGroupHeader)
+        {
+            if (!isFirst)
+            {
+                <li class="divider"></li>
+            }
+            if (item.Text.HasValue() && item.Text != "[SKIP]")
+            {
+                <li data-id="@item.Id" class="nav-header">@itemText</li>
+            }
+            isFirst = false;
+            continue;
+        }
+
+        string liClass = null;
+        if (isRoot)
+        {
+            liClass = "drop-list-item";
+            if (node.HasChildren)
+            {
+                liClass += " dropdown-submenu";
+            }
+        }
+        <li data-id="@item.Id" class='@liClass'>
+            <a href="@GetNodeLink(node)">
+                @itemText
+            </a>
+            @if (node.HasChildren)
+            {
+                @CreateDropdown(node.Children, false)
+            }
+        </li>
+        
+            isFirst = false;
+    }
+    </ul>
+    
+        if (isRoot)
+        {
+            @Html.Raw("</div></div>")
+        }
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        $('.navbar ul.nav-smart > li.dropdown').navbar();
+    });
+
+</script>
+

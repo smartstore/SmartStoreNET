@@ -1,0 +1,211 @@
+﻿@model ProductOverviewModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+@{
+    //prepare "Add to cart" AJAX link
+    string addtocartlink = "";
+    if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+    }
+    else
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id });
+    }
+
+    //codehint: sm-add begin
+    string leftContentWidth = (Model.ThumbDimension + 20).ToString() + "px";
+    
+    int ratingPercent = 0;
+    if (Model.TotalReviews != 0)
+    {
+        ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+    }
+
+    string reviewTitel = "";
+    if (Model.TotalReviews > 0)
+    {
+        reviewTitel = Model.TotalReviews + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
+    }
+
+    bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;  
+    
+    //codehint: sm-add end
+}
+
+<div class="pull-left" style="width:@leftContentWidth">
+    <figure class="picture">
+        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+            <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
+        </a>
+    </figure>
+    @if (Model.ShowReviews) {
+    <div class="reviews" style="width:@leftContentWidth">
+        <div class="rating" title="@reviewTitel">
+            <div style="width: @(ratingPercent)%"></div>
+        </div>
+    </div>
+    }
+</div>
+<div class="" style="margin-left:@leftContentWidth">
+    <div class="data">
+        <h3 class="name">
+            <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.Name">@Model.Name</a>
+        </h3>
+        @if (Model.ShortDescription.HasValue()) 
+        {
+        <p class="description" title="@Model.ShortDescription">
+            @Html.Raw(Model.ShortDescription)
+        </p>
+        }
+
+        <div class="clearfix">
+            <div class="pull-left attribute-block">
+                <table class="attributes" style="width:100%">
+                    @if (Model.ShowSku && !String.IsNullOrWhiteSpace(Model.Sku)) 
+                    {
+                    <tr valign="top">
+                        <td class="attr-label"><strong>@T("Products.Sku"):</strong></td>
+                        <td>@Model.Sku</td>
+                    </tr>
+                    }
+
+                    @if (Model.Manufacturers.Count > 0)
+                    {
+                    <tr valign="top">
+                        <td class="attr-label"><strong>@(Model.Manufacturers.Count == 1 ? T("Products.Manufacturer") : T("Products.Manufacturers")):</strong></td>
+                        <td>
+                            @for (int i = 0; i < Model.Manufacturers.Count; i++)
+                            {
+                                var item = Model.Manufacturers[i];
+                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
+                                if (i != Model.Manufacturers.Count - 1)
+                                {
+                                <text>,</text>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    }
+
+                    @if (Model.ShowWeight && Model.Weight.HasValue())
+                    {
+                    <tr valign="top">
+                        <td class="attr-label"><strong>@T("Products.Weight"):</strong></td>
+                        <td>@Model.Weight</td>
+                    </tr>
+                    }
+
+                    @if (Model.ShowDimensions)
+                    {
+                    <tr valign="top">
+                        <td class="attr-label"><strong>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</strong></td>
+                        <td>@Model.Dimensions</td>
+                    </tr>
+                    }
+
+                </table>
+                        
+                @if (Model.Manufacturers.Any(x => x.PictureModel != null))
+                {
+                    <div class="manufacturer-pics">
+
+                    @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null))
+                    {
+                        <div class="manufacturer-item">
+                            <div class="picture">
+                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+                                    <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
+                            </div>
+                        </div>
+                    }
+
+                    </div>
+                }
+            </div>
+            <div class="pull-right price-block">
+                <div class="prices">
+                    @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
+                    {
+                        <p class="old-product-price">
+                            <span class="prefix">@T("Products.Price.OldPrice")<text>:</text></span>
+                            <span class="price">@Model.ProductPrice.OldPrice</span>
+                        </p>
+                    }
+                    <p class="product-price">
+                        <span class="price text-success">@Model.ProductPrice.Price</span>
+                    </p>
+                </div>
+                @if (Model.TransportSurcharge.HasValue())
+                {
+                <div class="transport-charge muted">
+                    @Model.TransportSurcharge
+                </div>
+                }
+                
+                @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
+                {
+                <div class="base-price muted">
+                    @Model.BasePriceInfo
+                </div>
+                }
+
+                @if (Model.ShowLegalInfo)
+                {
+                <div class="legal-info muted">
+                    @Html.Raw(Model.LegalInfo)
+                </div>
+                }
+            </div>
+        </div>
+        
+        <div class="clearfix">
+            
+            @if (showQuicklinks)
+            {
+                <div class="pull-left quicklinks">
+                    @if (!Model.ProductPrice.DisableWishListButton)
+                    {
+                        <a href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            class="ajax-cart-link"
+                            data-form-selector="#product-details-form"
+                            data-type="wishlist"
+                            data-action="add">
+                            <i class="icon-gift"></i>
+                            @T("Categories.Wishlist")
+                        </a>
+                    }
+                    @if (Model.CompareEnabled)
+                    {
+                        <a href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.Id })">
+                            <i class="icon-retweet"></i>
+                            @T("Categories.Compare")
+                        </a>
+                    }
+               </div>
+           }
+
+           <div class="buttons pull-right">     
+                <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn" title="@T("Products.Details")" rel="tooltip">
+                    <i class="icon-info-sign"></i>
+                </a>
+                 
+                @if (!Model.ProductPrice.DisableBuyButton)
+                {
+                    <a href='@addtocartlink'
+                        class="btn btn-warning ajax-cart-link"
+                        data-type="cart"
+                        data-action="add">
+                        @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
+                        <i class="icon-shopping-cart"></i>      
+                    </a>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div>
+    @Html.Widget("productbox_add_info")
+</div>

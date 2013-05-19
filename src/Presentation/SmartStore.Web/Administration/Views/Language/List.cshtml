@@ -1,0 +1,49 @@
+﻿@model Telerik.Web.Mvc.GridModel<LanguageModel>
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Languages").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-globe"></i>
+        @T("Admin.Configuration.Languages")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<LanguageModel>()
+                    .Name("languages-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }));
+                        columns.Bound(x => x.LanguageCulture)
+                            .Width(150)
+                            .Centered();
+                        columns.Template(
+                                @<div>
+                                    @Html.ActionLink(T("Admin.Configuration.Languages.Resources.View").Text, "Resources", new { languageId = item.Id })
+                                </div>
+                            ).Width(200)
+                            .Centered()
+                            .Title(T("Admin.Configuration.Languages.Resources.View").Text);
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(100)
+                            .Centered();
+                        columns.Bound(x => x.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                    })
+                    //.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Language"))
+                    .EnableCustomBinding(false))
+        </td>
+    </tr>
+</table>

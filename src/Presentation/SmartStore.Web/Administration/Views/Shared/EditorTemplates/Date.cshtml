@@ -1,0 +1,37 @@
+﻿@* codehint: sm-edit *@
+@functions{   
+    private DateTime? Value
+    {
+        get
+        {
+            DateTime? value = null;
+            if (ViewData.Model != null)
+            {
+                value = Convert.ToDateTime(ViewData.Model, System.Globalization.CultureInfo.CurrentCulture);
+            }
+            return value;
+        }
+    }
+}
+
+@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+    var value = String.Empty;
+    if (Value.HasValue && Value.Value > DateTime.MinValue) 
+    {
+        value = Model.Value.ToShortDateString();
+    }
+}
+
+<div class="input-append date" id="@id" data-date="@value">
+    <input class="span2" type="text" name="@name" value="@value"><span class="add-on"><i class="icon-calendar"></i></span>
+</div>
+
+<script>
+    $(function () {
+        $("#@id").datepicker( {language: 'glob'} );
+    });
+</script>
+
+

@@ -1,0 +1,68 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Mobile.SMS.Clickatell" AppendRootKey="false">
+    <Value>Clickatell SMS Provider</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>To receive an SMS notification when an order is placed from your store you need
+        to follow a few simple steps, which are shown below:</p>
+        <ul>
+            <li><a href="https://www.clickatell.com" target='_blank'>Register for a Clickatell account here</a></li>
+            <li>Clickatell works with all countries and includes 10 free messages so you can test SMS notifications</li>
+            <li>Fill in the form below with your Clickatell account details, including the number you want the notification messages to be sent to</li>
+            <li>Click 'Save' button</li>
+            <li>Now when you receive a new order, an SMS text message will be sent to the number you enter below automatically</li>
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="TestFailed">
+    <Value>Test message sending failed</Value>
+  </LocaleResource>
+  <LocaleResource Name="TestSuccess">
+    <Value>Test message was sent</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Enabled">
+    <Value>Enabled</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Enabled.Hint">
+    <Value>Check to enable SMS provider</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ApiId">
+    <Value>API ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ApiId.Hint">
+    <Value>Clickatell API ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Password">
+    <Value>Password</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Password.Hint">
+    <Value>Clickatell password</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.PhoneNumber">
+    <Value>Phone number</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.PhoneNumber.Hint">
+    <Value>Your phone number</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Username">
+    <Value>Username</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Username.Hint">
+    <Value>Clickatell username</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TestMessage">
+    <Value>Message text</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TestMessage.Hint">
+    <Value>Text of the test message</Value>
+  </LocaleResource>
+  <LocaleResource Name="SendTest">
+    <Value>Send</Value>
+  </LocaleResource>
+  <LocaleResource Name="SendTest.Hint">
+    <Value>Send test message</Value>
+  </LocaleResource>
+</Language>

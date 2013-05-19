@@ -1,0 +1,58 @@
+﻿@model Telerik.Web.Mvc.GridModel<BlogPostModel>
+@using Telerik.Web.Mvc.UI
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.ContentManagement.Blog.BlogPosts").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-edit"></i>
+        @T("Admin.ContentManagement.Blog.BlogPosts")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<BlogPostModel>()
+                    .Name("blogpost-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Title)
+                            .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Title#></a>");
+                        columns.Bound(x => x.LanguageName);
+                        columns.Bound(x => x.Comments)
+                            .Centered()
+                            .Template(
+                            @<div>
+                                    @Html.ActionLink(T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByBlogPostId = item.Id })
+                                </div>
+                            )
+                            .ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\">" + T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+                        columns.Bound(x => x.StartDate)
+                            .Centered();
+                        columns.Bound(x => x.EndDate)
+                            .Centered();
+                        columns.Bound(x => x.CreatedOn)
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Width(50)
+                            .Centered()
+                            .HeaderTemplate(T("Admin.Common.Edit").Text)
+                            .Filterable(false);
+                    })
+                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

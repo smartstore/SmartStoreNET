@@ -1,0 +1,6 @@
+﻿@model FooterModel
+@using SmartStore.Web.Models.Common;
+@*display some info link at the footer*@
+@Html.Action("InfoBlock", "Common")
+@Html.Action("ChangeDeviceBlock", "Common")
+@Html.Widget("mobile_footer")

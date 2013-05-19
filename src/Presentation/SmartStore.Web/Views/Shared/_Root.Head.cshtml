@@ -1,0 +1,81 @@
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+@using SmartStore.Services.Localization;
+@using SmartStore.Core.Domain.Localization;
+
+@{
+    var displayMiniProfiler = EngineContext.Current.Resolve<SmartStore.Core.Domain.StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+
+    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+    
+    // add css assets
+    Html.AppendCssFileParts(
+        "~/Content/jquery-ui/base/css",
+        "~/Content/shared-ui");
+    
+    // add js assets
+    Html.AppendScriptParts(ResourceLocation.Head, 
+        "~/bundles/modernizr",
+        "~/bundles/jquery");
+    Html.AppendScriptParts(ResourceLocation.Foot,
+        "~/bundles/jquery-ui-core",
+        "~/bundles/jquery-ui",
+        "~/bundles/jquery-val",
+        "~/bundles/system",
+        "~/bundles/bootstrap",
+        "~/bundles/bootstrap-custom",
+        "~/bundles/shared-ui",
+        "~/bundles/shop");
+}
+<!DOCTYPE html>
+<html @Html.Partial("LanguageAttributes")>
+<head>
+    <title>@Html.SmartTitle(true)</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta name="description" content="@(Html.SmartMetaDescription())" />
+    <meta name="keywords" content="@(Html.SmartMetaKeywords())" />
+    <meta name="generator" content="SmartStore.NET" />
+
+    @*This is used so that themes can inject content into the header*@
+    @Html.Partial("Head")
+    @Html.Widget("head_html_tag")
+
+    <script>
+        window.Res = {
+            "Common.Notification": "@T("Common.Notification").ToString().EncodeJsString()",
+            "Products.Longdesc.More": "@T("Products.Longdesc.More").ToString().EncodeJsString()",
+            "Products.Longdesc.Less": "@T("Products.Longdesc.Less").ToString().EncodeJsString()"
+        }
+    </script>
+
+    @Html.SmartCssFiles(ResourceLocation.Head)
+    @Html.SmartScripts(ResourceLocation.Head)
+    <script>
+        // globals
+        // jquery CDN fallback
+        if (typeof jQuery == 'undefined') {
+            var e = document.createElement('script');
+            e.src = '@Url.Content("~/Scripts/jquery-1.8.3.js")';
+            e.type = 'text/javascript';
+            document.getElementsByTagName("head")[0].appendChild(e);
+        }
+    </script>
+
+    @Html.CanonicalUrls()
+    @Html.Action("RssHeaderLink", "News")
+    @Html.Action("RssHeaderLink", "Blog")
+    @*Favicon - upload favicon.ico file to the root directory*@
+    @Html.Action("Favicon", "Common")
+    @if (displayMiniProfiler)
+    {
+        @StackExchange.Profiling.MiniProfiler.RenderIncludes();
+    }
+    <!--Powered by SmartStore.net - http://www.smartstore.com-->
+</head>
+<body class="@Html.BodyCssClass()">
+    @RenderBody()
+    @Html.SmartCssFiles(ResourceLocation.Foot)
+    @Html.SmartScripts(ResourceLocation.Foot)
+</body>
+</html>

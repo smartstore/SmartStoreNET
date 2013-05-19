@@ -1,0 +1,26 @@
+﻿@model CheckoutPaymentInfoModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.Common;
+<div class="checkout-data">
+    @Html.Widget("op_checkout_payment_info_top")
+    <div class="payment-info">
+        <div class="body">
+            @Html.Action(Model.PaymentInfoActionName, Model.PaymentInfoControllerName, Model.PaymentInfoRouteValues)
+        </div>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="message-error">
+        @Html.ValidationSummary(false)
+    </div>
+    @Html.Widget("op_checkout_payment_info_bottom")
+    @if (Model.DisplayOrderTotals)
+    {
+        <div class="clear">
+        </div>
+        <div class="order-summary-body">
+            @Html.Action("OrderSummary", "ShoppingCart")
+        </div>
+    }
+</div>

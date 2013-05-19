@@ -1,0 +1,120 @@
+﻿@model CustomerModel
+@{
+    //page title
+    ViewBag.Title = T("Admin.Customers.Customers.EditCustomerDetails").Text;
+}
+@using Telerik.Web.Mvc.UI
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Customers.Customers.EditCustomerDetails") - @Model.LastName @Model.FirstName
+            @Html.ActionLink("(" + T("Admin.Customers.Customers.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+
+            <a href="#sendemail-window" data-toggle="modal" class="btn">@T("Admin.Customers.Customers.SendEmail")</a>
+            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn">@T("Admin.Customers.Customers.SendPM")</a>
+            <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdate", Model)
+}
+@Html.DeleteConfirmation("customer-delete")
+@*send email form*@
+@{Html.SmartStore().Window()
+    .Name("sendemail-window")
+    .Title(T("Admin.Customers.Customers.SendEmail").Text)
+    .Content(@<text>
+        @using (Html.BeginForm("SendEmail", "Customer", new { id = Model.Id }))
+        {
+            <table style="text-align: left;">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.SendEmail.Subject)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.SendEmail.Subject)
+                        @Html.ValidationMessageFor(model => model.SendEmail.Subject)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.SendEmail.Body)
+                    </td>
+                    <td class="adminData">
+                        @Html.TextAreaFor(model => model.SendEmail.Body, new { style = "Width: 450px; Height: 350px;" })
+                        @Html.ValidationMessageFor(model => model.SendEmail.Body)
+                    </td>
+                </tr>
+            </table>
+        }
+        </text>)
+    .FooterContent(@<text>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">@T("Common.Close")</button>
+        <button id="sendemail" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendEmail")</button>
+    </text>)
+    .Width(600)
+    .Height(460)
+    .Modal(true)
+    .Visible(false)
+    .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#sendemail").click(function (e) {
+            e.preventDefault();
+            $("#sendemail-window").find("form").submit();
+        });
+    });
+</script>
+
+@*send PM form*@
+@{Html.SmartStore().Window()
+        .Name("sendprivatemessage-window")
+        .Title(T("Admin.Customers.Customers.SendPM").Text)
+        .Content(@<text>
+    @using (Html.BeginForm("SendPm", "Customer", new { id = Model.Id }))
+    {
+        <table style="text-align: left;">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SendPm.Subject)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.SendPm.Subject)
+                    @Html.ValidationMessageFor(model => model.SendPm.Subject)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SendPm.Message)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(model => model.SendPm.Message, new { style = "Width: 350px; Height: 250px;" })
+                    @Html.ValidationMessageFor(model => model.SendPm.Message)
+                </td>
+            </tr>
+        </table>
+    }
+    </text>)
+    .FooterContent(@<text>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">@T("Common.Close")</button>
+        <button id="sendprivatemessage" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendPM")</button>
+    </text>)
+        .Width(600)
+        .Height(460)
+        .Modal(true)
+        .Visible(false)
+        .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#sendprivatemessage").click(function (e) {
+            e.preventDefault();
+            $("#sendprivatemessage-window").find("form").submit();
+        });
+    });
+</script>

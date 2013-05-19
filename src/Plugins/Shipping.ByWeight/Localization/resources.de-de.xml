@@ -1,0 +1,65 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Shipping.ByWeight" AppendRootKey="false">
+    <Value>Versand nach Gewicht</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country">
+    <Value>Land</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country.Hint">
+    <Value>Bei Angabe eines Asterisks steht diese Versandart allen Kunden, ungeachtet des Landes, zur Verfügung.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod">
+    <Value>Versandart</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod.Hint">
+    <Value>Die Versandart.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From">
+    <Value>Auftragsgewicht ab</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From.Hint">
+    <Value>Auftragsgewicht ab.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To">
+    <Value>Auftragsgewicht bis zu</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To.Hint">
+    <Value>Auftragsgewicht bis zu.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage">
+    <Value>Berechne nach Prozentsatz</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage.Hint">
+    <Value>Aktivieren Sie diese Option für die Berechnung nach einem Prozentsatz.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage">
+    <Value>Prozentsatz (der Zwischensumme)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage.Hint">
+    <Value>Prozentsatz (der Zwischensumme).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount">
+    <Value>Fester Betrag</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount.Hint">
+    <Value>Fester Betrag.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated">
+    <Value>Beschränke die Versandarten auf die hier konfigurierten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
+    <Value>Wenn diese Option aktiv ist, wird die Anzeige der Versandarten auf die hier konfigurierten beschränkt. Anderfalls ist es möglich, jede verfügbare Versandart zu wählen auch wenn diese nicht hier konfiguriert sind (keine Versandart-Gebühren in diesem Fall)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CalculatePerWeightUnit">
+    <Value>Berechnung nach Gewichtseinheiten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CalculatePerWeightUnit.Hint">
+    <Value>Wenn diese Option aktiv ist, werden Raten mit der Gewichtseinheit multipliziert (g, kg, etc). Diese Option wird bei festen Raten (ohne prozentuale Berechnung) angewendet.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord">
+    <Value>Datensatz hinzufügen</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord.Hint">
+    <Value>Fügt einen neuen Datensatz zu.</Value>
+  </LocaleResource>
+</Language>

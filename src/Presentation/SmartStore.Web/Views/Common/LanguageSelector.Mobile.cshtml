@@ -1,0 +1,23 @@
+﻿@model LanguageSelectorModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+
+@if (Model.AvailableLanguages.Count > 1)
+{
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    
+    <div class="language-selector">
+        <div class="title">
+            @T("Languages")
+        </div>
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                <li @(lang.Id == Model.CurrentLanguageId ? " data-icon=false" : null)><a href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null)" data-ajax="false">
+                    @lang.Name</a></li>
+            }
+        </ul>
+    </div>
+}

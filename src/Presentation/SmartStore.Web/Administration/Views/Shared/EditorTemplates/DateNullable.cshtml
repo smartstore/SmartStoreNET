@@ -1,0 +1,25 @@
+﻿@model System.DateTime?
+
+@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+    var value = String.Empty; // Model > DateTime.MinValue ? Model : null;
+    if (Model.HasValue && Model.Value > DateTime.MinValue) 
+    {
+        value = Model.Value.ToShortDateString();
+    }
+}
+
+<div class="input-append date" id="@id" data-date="@value">
+    <input class="span2" type="text" name="@name" value="@value"><span class="add-on"><i class="icon-calendar"></i></span>
+</div>
+
+<script>
+    $(function () {
+        $("#@id").datepicker({
+            language: 'glob'
+        });
+    });
+</script>
+
+

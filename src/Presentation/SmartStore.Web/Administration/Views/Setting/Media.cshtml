@@ -1,0 +1,164 @@
+﻿@model MediaSettingsModel
+@using Telerik.Web.Mvc.UI;
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Settings.Media").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-picture"></i>
+            @T("Admin.Configuration.Settings.Media")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    
+    <script>
+        $(function () {
+            $("#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)").click(togglePictureZoomType);
+            togglePictureZoomType();
+        });
+
+        function togglePictureZoomType() {
+            if ($('#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)').is(':checked')) {
+                $('#pnlPictureZoomType').show();
+            }
+            else {
+                $('#pnlPictureZoomType').hide();
+            }
+        }
+    </script>
+    
+@Html.ValidationSummary(false)
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PicturesStoredIntoDatabase)
+            </td>
+            <td class="adminData">
+                @if (Model.PicturesStoredIntoDatabase)
+                {
+                    @T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database")
+                }
+                else
+                {
+                    @T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
+                }
+                
+            <button type="submit" name="change-picture-storage" value="change-picture-storage" class="t-button">@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Change")</button>
+            NOTE: Do not forget to backup your database before changing this option.
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AvatarPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AvatarPictureSize)
+                @Html.ValidationMessageFor(model => model.AvatarPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductThumbPictureSize)
+                @Html.ValidationMessageFor(model => model.ProductThumbPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+                @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductDetailsPictureSize)
+                @Html.ValidationMessageFor(model => model.ProductDetailsPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DefaultPictureZoomEnabled)
+                @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+        </tr>
+        <tr id="pnlPictureZoomType">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PictureZoomType)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.PictureZoomType, Model.AvailablePictureZoomTypes)
+                @Html.ValidationMessageFor(model => model.PictureZoomType)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductVariantPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductVariantPictureSize)
+                @Html.ValidationMessageFor(model => model.ProductVariantPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CategoryThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CategoryThumbPictureSize)
+                @Html.ValidationMessageFor(model => model.CategoryThumbPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ManufacturerThumbPictureSize)
+                @Html.ValidationMessageFor(model => model.ManufacturerThumbPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CartThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CartThumbPictureSize)
+                @Html.ValidationMessageFor(model => model.CartThumbPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MiniCartThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MiniCartThumbPictureSize)
+                @Html.ValidationMessageFor(model => model.MiniCartThumbPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaximumImageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MaximumImageSize)
+                @Html.ValidationMessageFor(model => model.MaximumImageSize)
+            </td>
+        </tr>
+    </table>
+}

@@ -1,0 +1,43 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.GoogleAnalytics" AppendRootKey="false">
+    <Value>Google Analytics</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Google Analytics ist ein kostenloser Statistikdienst von Google. Der Dienst erfasst Statistiken über Besucher und Ecommerce-Konversion auf Ihrer Webseite</p>
+        <p>Führen Sie die folgenden Schritte aus um Google Analytics auf Ihrer Webseite einzubinden:</p>
+        <ul>
+            <li><a href="http://www.google.com/analytics/" target="_blank">erstellen Sie hier einen "Google Analytics"-Account</a> und folgen Sie dem Wizard um Ihre Webseite zuzufügen</li>
+            <li>Kopieren Sie die "Google Analytics"-ID in das entspechende Feld in folgendem Formular</li>
+            <li>Kopieren Sie den Tracking-Code in die "Tracking-Code"-Box in folgendem Formular</li>
+            <li>KLicken Sie den "Speichern"-Button und Google Analytics wird in Ihre Webseite integriert</li>
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="GoogleId">
+    <Value>ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="GoogleId.Hint">
+    <Value>Geben Sie hier Ihre "Google Analytics"-ID an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrackingScript">
+    <Value>Tracking-Code mit {ECOMMERCE}-Zeile</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrackingScript.Hint">
+    <Value>Kopieren Sie den von Google erzeugten Tracking-Code in dieses Feld. {GOOGLEID} und {ECOMMERCE} werden automatisch ersetzt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EcommerceScript">
+    <Value>Tracking-Code für {ECOMMERCE}-Teil, mit {DETAILS}-Zeile</Value>
+  </LocaleResource>
+  <LocaleResource Name="EcommerceScript.Hint">
+    <Value>Kopieren Sie den von Google erzeugten Tracking-Code in dieses Feld. {ORDERID}, {SITE}, {TOTAL}, {TAX}, {SHIP}, {CITY}, {STATEPROVINCE}, {COUNTRY} und {DETAILS} werden automatisch ersetzt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EcommerceDetailScript">
+    <Value>Tracking-Code für {DETAILS}-Teil</Value>
+  </LocaleResource>
+  <LocaleResource Name="EcommerceDetailScript.Hint">
+    <Value>Kopieren Sie den von Google erzeugten Tracking-Code in dieses Feld. {ORDERID}, {PRODUCTSKU}, {PRODUCTNAME}, {CATEGORYNAME}, {UNITPRICE} und {QUANTITY} werden automatisch ersetzt.</Value>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://protection.action.b2b.ts.nhp.com/" name="TSProtectionService" targetNamespace="http://protection.action.b2b.ts.nhp.com/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xs:schema targetNamespace="http://protection.action.b2b.ts.nhp.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="CertificateStatus">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="certificationLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="stateEnum" type="xs:string" />
+          <xs:element minOccurs="0" name="tsID" type="xs:string" />
+          <xs:element minOccurs="0" name="typeEnum" type="xs:string" />
+          <xs:element minOccurs="0" name="url" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="protectionItem">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:baseEntity">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="currency" type="tns:currencyEnum" />
+              <xs:element minOccurs="0" name="grossFee" type="xs:decimal" />
+              <xs:element minOccurs="0" name="netFee" type="xs:decimal" />
+              <xs:element minOccurs="0" name="protectedAmountDecimal" type="xs:decimal" />
+              <xs:element name="protectionDurationInt" type="xs:int" />
+              <xs:element minOccurs="0" name="tsProductID" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="baseEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="creationDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="id" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="currencyEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="EUR" />
+          <xs:enumeration value="USD" />
+          <xs:enumeration value="AUD" />
+          <xs:enumeration value="CAD" />
+          <xs:enumeration value="CHF" />
+          <xs:enumeration value="DKK" />
+          <xs:enumeration value="GBP" />
+          <xs:enumeration value="JPY" />
+          <xs:enumeration value="NZD" />
+          <xs:enumeration value="SEK" />
+          <xs:enumeration value="PLN" />
+          <xs:enumeration value="NOK" />
+          <xs:enumeration value="BGN" />
+          <xs:enumeration value="LVL" />
+          <xs:enumeration value="LTL" />
+          <xs:enumeration value="RON" />
+          <xs:enumeration value="RUB" />
+          <xs:enumeration value="TRY" />
+          <xs:enumeration value="CZK" />
+          <xs:enumeration value="HUF" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="protectionItemArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:protectionItem" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </types>
+  <message name="TSProtection_checkCertificateResponse">
+    <part name="certificateStatus" type="tns:CertificateStatus" />
+  </message>
+  <message name="TSProtection_getProtectionItemsResponse">
+    <part name="getProtectionItems" type="tns:protectionItemArray" />
+  </message>
+  <message name="TSProtection_pingResponse">
+    <part name="return" type="xsd:int" />
+  </message>
+  <message name="TSProtection_checkLogin">
+    <part name="tsId" type="xsd:string" />
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+  </message>
+  <message name="TSProtection_checkShopStatus">
+    <part name="tsId" type="xsd:string" />
+    <part name="tsProductId" type="xsd:string" />
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+  </message>
+  <message name="TSProtection_checkLoginResponse">
+    <part name="checkLogin" type="xsd:long" />
+  </message>
+  <message name="TSProtection_alive" />
+  <message name="TSProtection_protectWithAverageDeliveryDays">
+    <part name="tsId" type="xsd:string" />
+    <part name="tsProductId" type="xsd:string" />
+    <part name="amount" type="xsd:decimal" />
+    <part name="currency" type="xsd:string" />
+    <part name="paymentType" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="shopCustomerID" type="xsd:string" />
+    <part name="shopOrderID" type="xsd:string" />
+    <part name="orderDate" type="xsd:dateTime" />
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+  </message>
+  <message name="TSProtection_checkCertificate">
+    <part name="tsId" type="xsd:string" />
+  </message>
+  <message name="TSProtection_checkShopStatusResponse">
+    <part name="shopStatus" type="xsd:long" />
+  </message>
+  <message name="TSProtection_protectWithAverageDeliveryDaysResponse">
+    <part name="protectionNumber" type="xsd:long" />
+  </message>
+  <message name="TSProtection_ping">
+    <part name="arg0" type="xsd:int" />
+  </message>
+  <message name="TSProtection_getProtectionItems">
+    <part name="tsId" type="xsd:string" />
+  </message>
+  <message name="TSProtection_aliveResponse">
+    <part name="return" type="xsd:int" />
+  </message>
+  <portType name="TSProtection">
+    <operation name="alive">
+      <input message="tns:TSProtection_alive" />
+      <output message="tns:TSProtection_aliveResponse" />
+    </operation>
+    <operation name="checkCertificate" parameterOrder="tsId">
+      <input message="tns:TSProtection_checkCertificate" />
+      <output message="tns:TSProtection_checkCertificateResponse" />
+    </operation>
+    <operation name="checkLogin" parameterOrder="tsId wsUser wsPassword">
+      <input message="tns:TSProtection_checkLogin" />
+      <output message="tns:TSProtection_checkLoginResponse" />
+    </operation>
+    <operation name="checkShopStatus" parameterOrder="tsId tsProductId wsUser wsPassword">
+      <input message="tns:TSProtection_checkShopStatus" />
+      <output message="tns:TSProtection_checkShopStatusResponse" />
+    </operation>
+    <operation name="getProtectionItems" parameterOrder="tsId">
+      <input message="tns:TSProtection_getProtectionItems" />
+      <output message="tns:TSProtection_getProtectionItemsResponse" />
+    </operation>
+    <operation name="ping" parameterOrder="arg0">
+      <input message="tns:TSProtection_ping" />
+      <output message="tns:TSProtection_pingResponse" />
+    </operation>
+    <operation name="protectWithAverageDeliveryDays" parameterOrder="tsId tsProductId amount currency paymentType buyerEmail shopCustomerID shopOrderID orderDate wsUser wsPassword">
+      <input message="tns:TSProtection_protectWithAverageDeliveryDays" />
+      <output message="tns:TSProtection_protectWithAverageDeliveryDaysResponse" />
+    </operation>
+  </portType>
+  <binding name="TSProtectionBinding" type="tns:TSProtection">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <operation name="alive">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="checkCertificate">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="checkLogin">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="checkShopStatus">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="getProtectionItems">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="ping">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="protectWithAverageDeliveryDays">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://protection.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="TSProtectionService">
+    <port name="TSProtectionPort" binding="tns:TSProtectionBinding">
+      <soap:address location="https://qa.trustedshops.com:443/ts/services/TsProtection" />
+    </port>
+  </service>
+</definitions>

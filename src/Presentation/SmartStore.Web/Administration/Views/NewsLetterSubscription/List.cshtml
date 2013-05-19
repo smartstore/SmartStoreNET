@@ -1,0 +1,124 @@
+﻿@model NewsLetterSubscriptionListModel
+@using Telerik.Web.Mvc.UI
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.Promotions.newsLetterSubscriptions").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-envelope-alt"></i>
+        @T("Admin.Promotions.newsLetterSubscriptions")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("ExportCsv")" class="t-button">@T("Admin.Common.ExportToCsv")</a>
+        <a" href="#importcsv-window" data-toggle="modal" class="btn">@T("Admin.Common.ImportFromCsv")</a>
+    </div>
+</div>
+<table width="100%">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchEmail)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.SearchEmail)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions"
+                class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+        </td>
+    </tr>
+</table>
+<p>
+</p>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<NewsLetterSubscriptionModel>(Model.NewsLetterSubscriptions.Data)
+                        .Name("newsLetterSubscriptions-grid")
+                        .DataKeys(x =>
+                        {
+                            x.Add(y => y.Id).RouteKey("Id");
+                        })
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.Email)
+                                .Width(300);
+                            columns.Bound(x => x.Active)
+                                .Template(item => @Html.SymbolForBool(item.Active))
+                                .ClientTemplate(@Html.SymbolForBool("Active"))
+                                .Width(100);
+                            columns.Bound(x => x.CreatedOn)
+                                .ReadOnly()
+                                .Width(150);
+                            columns.Command(commands =>
+                            {
+                                commands.Edit().Localize(T);
+                                commands.Delete().Localize(T);
+                            }).Width(180);
+
+                        })
+                        .Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                        .DataBinding(dataBinding => dataBinding.Ajax()
+                            .Select("SubscriptionList", "NewsLetterSubscription")
+                            .Update("SubscriptionUpdate", "NewsLetterSubscription")
+                            .Delete("SubscriptionDelete", "NewsLetterSubscription"))
+                            .ClientEvents(events => events.OnDataBinding("onDataBinding"))
+                            .ClientEvents(x => x.OnError("grid_onError"))
+                        .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#search-newsLetterSubscriptions').click(function () {
+            var grid = $('#newsLetterSubscriptions-grid').data('tGrid');
+            grid.currentPage = 1; //new search. Set page size to 1
+            grid.ajaxRequest();
+            return false;
+        });
+    });
+
+    function onDataBinding(e) {
+        var searchModel = {
+            SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val()
+        };
+        e.data = searchModel;
+    }
+
+    function grid_onError(e) {
+        alert(e.XMLHttpRequest.responseText);
+        e.preventDefault();
+    }
+</script>
+@*import emails form*@
+@{Html.SmartStore().Window()
+        .Name("importcsv-window")
+        .Title(T("Admin.Common.ImportFromCsv").Text)
+        .Content(@<text>
+    @using (Html.BeginForm("ImportCsv", "NewsLetterSubscription", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+             @T("Admin.Common.CsvFile"): <input type="file" id="importcsvfile" name="importcsvfile" />
+        </div>
+    }
+    </text>)
+    .FooterContent(@<text>
+        <button id="importcsv" type="button" class="btn btn-primary">@T("Admin.Common.ImportFromCsv")</button>
+    </text>)
+        .Width(400)
+        .Modal(true)
+        .Visible(false)
+        .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#importcsv").click(function (e) {
+            e.preventDefault();
+            $('#importcsv-window').find('form').submit();
+        });
+    });
+</script>

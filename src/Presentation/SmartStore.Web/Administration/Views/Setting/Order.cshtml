@@ -1,0 +1,168 @@
+﻿@model OrderSettingsModel
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Domain.Orders;
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Settings.Order").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-bar-chart"></i>
+            @T("Admin.Configuration.Settings.Order")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    @Html.ValidationSummary(false)
+
+    
+     
+    @Html.SmartStore().TabStrip().Name("ordersettings-edit").Items(x =>
+    {
+        x.Add().Text(T("Admin.Configuration.Settings.Order.OrderSettings").Text).Content(TabOrderSettings()).Selected(true);
+        x.Add().Text(T("Admin.Configuration.Settings.Order.ReturnRequestSettings").Text).Content(TabReturnRequestSettings());
+        
+        //generate an event
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "ordersettings-edit"));
+    })
+}
+@helper TabOrderSettings()
+    {
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsReOrderAllowed)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IsReOrderAllowed)
+                @Html.ValidationMessageFor(model => model.IsReOrderAllowed)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MinOrderSubtotalAmount)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MinOrderSubtotalAmount)
+                @Html.ValidationMessageFor(model => model.MinOrderSubtotalAmount) @Model.PrimaryStoreCurrencyCode
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MinOrderTotalAmount)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MinOrderTotalAmount)
+                @Html.ValidationMessageFor(model => model.MinOrderTotalAmount) @Model.PrimaryStoreCurrencyCode
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AnonymousCheckoutAllowed)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AnonymousCheckoutAllowed)
+                @Html.ValidationMessageFor(model => model.AnonymousCheckoutAllowed)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TermsOfServiceEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TermsOfServiceEnabled)
+                @Html.ValidationMessageFor(model => model.TermsOfServiceEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OnePageCheckoutEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.OnePageCheckoutEnabled)
+                @Html.ValidationMessageFor(model => model.OnePageCheckoutEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.GiftCards_Activated_OrderStatusId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.GiftCards_Activated_OrderStatusId, Model.GiftCards_Activated_OrderStatuses, T("Common.PleaseSelect").Text)
+                @Html.ValidationMessageFor(model => model.GiftCards_Activated_OrderStatusId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.GiftCards_Deactivated_OrderStatusId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.GiftCards_Deactivated_OrderStatusId, Model.GiftCards_Deactivated_OrderStatuses, T("Common.PleaseSelect").Text)
+                @Html.ValidationMessageFor(model => model.GiftCards_Deactivated_OrderStatusId)
+            </td>
+        </tr>
+        @if (Model.OrderIdent.HasValue)
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.OrderIdent)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.OrderIdent)
+                </td>
+            </tr>
+        }
+    </table>
+}
+@helper TabReturnRequestSettings()
+    {
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle" colspan="2">
+                @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription1")
+                <br />
+                <br />
+                @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription2")
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ReturnRequestsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ReturnRequestsEnabled)
+                @Html.ValidationMessageFor(model => model.ReturnRequestsEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumberOfDaysReturnRequestAvailable)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NumberOfDaysReturnRequestAvailable)
+                @Html.ValidationMessageFor(model => model.NumberOfDaysReturnRequestAvailable)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ReturnRequestReasonsParsed)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ReturnRequestReasonsParsed)
+                @Html.ValidationMessageFor(model => model.ReturnRequestReasonsParsed)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ReturnRequestActionsParsed)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ReturnRequestActionsParsed)
+                @Html.ValidationMessageFor(model => model.ReturnRequestActionsParsed)
+            </td>
+        </tr>
+    </table>
+}

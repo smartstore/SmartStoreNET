@@ -1,0 +1,342 @@
+﻿@model ProductListModel
+@using Telerik.Web.Mvc.UI
+
+@* 
+    TODO: (MC) clean out comments 
+    TODO: (MC) get thumbnail dims and set <img> width/height to prevent flickering (maybe max-width/height)
+*@
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    var trueTemplate = "#if (Published) {# <img src='" + Url.Content("~/Administration/Themes/SmartStore/Content/images/checkmark.png") + "' /> #} #";
+    
+    //page title
+    ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-sitemap"></i>
+            @T("Admin.Catalog.Products.Manage")
+        </div>
+        <div class="options btn-toolbar">
+            <a href="@Url.Action("Create")" class="btn btn-primary">
+                <i class="icon-plus"></i>
+                @T("Admin.Common.AddNew")
+            </a>
+            @if (Model.DisplayPdfDownloadCatalog)
+            {
+                <a href="@Url.Action("DownloadCatalogAsPdf")" class="btn">@T("Admin.Catalog.Products.List.DownloadPDF")</a>
+            }
+            <div class="btn-group" style="vertical-align: middle">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                Export
+                <span class="icon-caret-down"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
+                <li><a id="exportxml-selected" href="javascript:void(0)">@T("Admin.Common.ExportToXml.Selected")</a></li>
+                <li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
+                <li><a id="exportexcel-selected" href="javascript:void(0)">@T("Admin.Common.ExportToExcel.Selected")</a></li>
+              </ul>
+            </div>
+            @*<button type="submit" id="importexcel2" name="importexcel2" value="importexcel2" class="btn">@T("Admin.Common.ImportFromExcel")</button>*@
+            <a id="importexcel" href="#importexcel-window" class="btn" role="button" data-toggle="modal">@T("Admin.Common.ImportFromExcel")</a>
+            <button type="submit" id="delete-selected" class="btn btn-danger"><i class="icon-trash"></i>&nbsp;@T("Admin.Common.Delete.Selected")</button>
+        </div>
+    </div>
+
+       <table width="100%">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.SearchProductName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchCategoryId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchManufacturerId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.GoDirectlyToSku)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.GoDirectlyToSku)
+                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="t-button">@T("Admin.Common.Go")</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" id="search-products" value="search-products" class="t-button">@T("Admin.Common.Search")</button>
+            </td>
+        </tr>
+    </table>
+    <p>
+    </p>
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel>(Model.Products.Data)
+                    .Name("products-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Id)
+                        .Filterable(false)
+                        .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+                        .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                        .Title("<input id='mastercheckbox' type='checkbox'/>")
+                        .Width(50)
+                        .HtmlAttributes(new { style = "text-align:center" })
+                        .HeaderHtmlAttributes(new { style = "text-align:center" });
+
+                        if (Model.DisplayProductPictures)
+                        {
+                            columns.Bound(x => x.PictureThumbnailUrl)
+                                .Width(50)
+                                .Template(
+                                    @<text>
+                                        <img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
+                                    </text>
+                                )
+                                .ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
+                        }
+                        columns.Bound(x => x.Name)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .DetailView(details => details.ClientTemplate(
+                            Html.Telerik().Grid<ProductVariantModel>()
+                            .Name("variants-grid-<#= Id #>")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(pv => pv.Name)
+                                .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
+                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
+                                columns.Bound(pv => pv.Sku).Width(100);
+                                columns.Bound(pv => pv.Price).Width(100);
+                                columns.Bound(pv => pv.StockQuantity).Width(100);
+                                columns.Bound(pv => pv.Published)
+                                    .Width(100)
+                                    .Template(item => @Html.SymbolForBool(item.Published))
+                                    .ClientTemplate(@Html.SymbolForBool("Published"))
+                                    .Centered();
+                            })
+                            .DataBinding(dataBinding => dataBinding.Ajax()
+                                .Select("GetVariants", "Product", new
+                                {
+                                    productId =
+                                        "<#= Id #>"
+                                }))
+                            .ToHtmlString()
+                        )
+                        .Template(
+
+
+                            @<text>
+                            @(Html.Telerik().Grid(item.ProductVariantModels)
+                                                .Name("variants-grid-" + item.Id)
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(pv => pv.Name)
+                                                    .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
+                                                    .ClientTemplate("<a href=\""+ @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
+                                                    columns.Bound(pv => pv.Sku).Width(100);
+                                                    columns.Bound(pv => pv.Price).Width(100);
+                                                    columns.Bound(pv => pv.StockQuantity).Width(100);
+                                                    columns.Bound(pv => pv.Published)
+                                                    .Width(100)
+                                                    .Template(pv => pv.Published.ToString().ToLower())
+                                                    .Centered();
+                                                })
+                                        )
+                            </text>
+
+
+                                            )
+                                            )
+                                            .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                                            .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+                                            .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+                                            .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+
+        var selectedIds = [];
+
+        $(document).ready(function () {
+
+            $("#products-grid").thumbZoomer();
+
+            //search button
+            $('#search-products').click(function () {
+                //search
+                var grid = $('#products-grid').data('tGrid');
+                grid.currentPage = 1; //new search. Set page size to 1
+                grid.ajaxRequest();
+                //clear selected checkboxes
+                $('.checkboxGroups').attr('checked', false).change();
+                selectedIds = [];
+                return false;
+            });
+
+            $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#search-products").click();
+                    return false;
+                }
+            });
+            $("#@Html.FieldIdFor(model => model.GoDirectlyToSku)").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#go-to-product-by-sku").click();
+                    return false;
+                }
+            });
+
+            //"Export Excel selected" button
+            $('#exportexcel-selected').click(function (e) {
+                e.preventDefault();
+                //redirect to required URL
+                setLocation('@(Url.Action("ExportExcelSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+                return false;
+            });
+
+            //"Export XML selected" button
+            $('#exportxml-selected').click(function (e) {
+                e.preventDefault();
+                //redirect to required URL
+                setLocation('@(Url.Action("ExportXmlSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+                return false;
+            });
+
+            $('#mastercheckbox').click(function () {
+                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+            });
+
+            //"Delete (selected)" button
+            $('#delete-selected').click(function (e) {
+                e.preventDefault();
+                //redirect to required URL
+                setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+                return false;
+            });
+
+            //wire up checkboxes. 
+            $('#products-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+                var $check = $(this);
+                if ($check.is(":checked") == true) {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked == -1) {
+                        //add id to selectedIds.  
+                        selectedIds.push($check.val());
+                    }
+                }
+                else {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked > -1) {
+                        //remove id from selectedIds.  
+                        selectedIds = $.grep(selectedIds, function (item, index) {
+                            return item != $check.val();
+                        });
+                    }
+                }
+                productsGrid_updateMasterCheckbox();
+            });
+        });
+
+        function productsGrid_onDataBinding(e) {
+            var searchModel = {
+                SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+                SearchCategoryId: $('#SearchCategoryId').val(),
+                SearchManufacturerId: $('#SearchManufacturerId').val()
+            };
+            e.data = searchModel;
+        }
+
+        function productsGrid_onDataBound(e) {
+            $('#products-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+                var currentId = $(this).val();
+                var checked = jQuery.inArray(currentId, selectedIds);
+                //set checked based on if current checkbox's value is in selectedIds.  
+                $(this).attr('checked', checked > -1);
+            });
+
+            productsGrid_updateMasterCheckbox();
+        }
+
+        function productsGrid_updateMasterCheckbox() {
+            var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox]').length;
+            var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+        }
+    </script>  
+}
+@*import products form*@
+@{Html.SmartStore().Window()
+        .Name("importexcel-window")
+        .Title(T("Admin.Common.ImportFromExcel").Text)
+        .Content(@<text>
+            @using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <table style="text-align: left;">
+                    <tr>
+                        <td>
+                            <strong>@T("Admin.Common.ExcelFile"): </strong>
+                        </td>
+                        <td>
+                            <input type="file" id="importexcelfile" name="importexcelfile" />
+                        </td>
+                    </tr>
+                </table>
+            }
+            </text>)
+        .FooterContent(@<text>
+            <button type="submit" class="btn btn-primary import-from-excel">@T("Admin.Common.ImportFromExcel")</button>
+            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+        </text>)
+        .Modal(true)
+        .Visible(false)
+        .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(".import-from-excel").click(function (e) {
+            $('#importexcel-window').data('modal').close();
+            $.throbber.show({
+                message: '@T("Admin.Common.ImportFromExcelProgress")'
+            });
+        });
+
+    });
+</script>
+

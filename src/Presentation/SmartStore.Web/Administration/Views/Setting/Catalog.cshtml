@@ -1,0 +1,643 @@
+﻿@model CatalogSettingsModel
+@using Telerik.Web.Mvc.UI;
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-book"></i>
+            @T("Admin.Configuration.Settings.Catalog")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#@Html.FieldIdFor(model => model.ShowCategoryProductNumber)").click(toggleShowCategoryProductNumberIncludingSubcategories);
+            $("#@Html.FieldIdFor(model => model.EmailAFriendEnabled)").click(toggleEmailAFriend);
+            $("#@Html.FieldIdFor(model => model.RecentlyViewedProductsEnabled)").click(toggleRecentlyViewedProducts);
+            $("#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)").click(toggleRecentlyAddedProducts);
+            $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
+            $("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
+            $("#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)").click(toggleTagPageSize);
+            $("#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)").click(toggleSearchPageSize);
+            $("#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)").click(toggleProductSearchAutoComplete);
+            $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
+
+            toggleShowCategoryProductNumberIncludingSubcategories();
+            toggleEmailAFriend();
+            toggleRecentlyViewedProducts();
+            toggleRecentlyAddedProducts();
+            toggleBestsellersOnHomepage();
+            toggleProductsAlsoPurchasedNumber();
+            toggleTagPageSize();
+            toggleSearchPageSize();
+            toggleProductSearchAutoComplete();
+            toggleCompareProducts();
+        });
+
+        function toggleShowCategoryProductNumberIncludingSubcategories() {
+            if ($('#@Html.FieldIdFor(model => model.ShowCategoryProductNumber)').is(':checked')) {
+                $('#pnlShowCategoryProductNumberIncludingSubcategories').show();
+            }
+            else {
+                $('#pnlShowCategoryProductNumberIncludingSubcategories').hide();
+            }
+        }
+
+        function toggleEmailAFriend() {
+            if ($('#@Html.FieldIdFor(model => model.EmailAFriendEnabled)').is(':checked')) {
+                $('#pnlAllowAnonymousUsersToEmailAFriend').show();
+            }
+            else {
+                $('#pnlAllowAnonymousUsersToEmailAFriend').hide();
+            }
+        }
+
+        function toggleRecentlyViewedProducts() {
+            if ($('#@Html.FieldIdFor(model => model.RecentlyViewedProductsEnabled)').is(':checked')) {
+                $('#pnlRecentlyViewedProductsNumber').show();
+            }
+            else {
+                $('#pnlRecentlyViewedProductsNumber').hide();
+            }
+        }
+
+        function toggleRecentlyAddedProducts() {
+            if ($('#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)').is(':checked')) {
+                $('#pnlRecentlyAddedProductsNumber').show();
+            }
+            else {
+                $('#pnlRecentlyAddedProductsNumber').hide();
+            }
+        }
+
+        function toggleBestsellersOnHomepage() {
+            if ($('#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)').is(':checked')) {
+                $('#pnlNumberOfBestsellersOnHomepage').show();
+            }
+            else {
+                $('#pnlNumberOfBestsellersOnHomepage').hide();
+            }
+        }
+
+        function toggleProductsAlsoPurchasedNumber() {
+            if ($('#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)').is(':checked')) {
+                $('#pnlProductsAlsoPurchasedNumber').show();
+            }
+            else {
+                $('#pnlProductsAlsoPurchasedNumber').hide();
+            }
+        }
+
+        function toggleTagPageSize() {
+            if ($('#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)').is(':checked')) {
+                $('#pnlTagPageSizeOptions').show();
+            } else {
+                $('#pnlTagPageSizeOptions').hide();
+            }
+        }
+
+        function toggleSearchPageSize() {
+            if ($('#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)').is(':checked')) {
+                $('#pnlSearchPageSizeOptions').show();
+            } else {
+                $('#pnlSearchPageSizeOptions').hide();
+            }
+        }
+
+        function toggleProductSearchAutoComplete() {
+            if ($('#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)').is(':checked')) {
+                $('#pnlProductSearchAutoCompleteNumberOfProducts').show();
+            }
+            else {
+                $('#pnlProductSearchAutoCompleteNumberOfProducts').hide();
+            }
+        }
+        
+        function toggleCompareProducts() {
+            if ($('#@Html.FieldIdFor(model => model.CompareProductsEnabled)').is(':checked')) {
+                $('#pnlIncludeShortDescriptionInCompareProducts').show();
+                $('#pnlIncludeFullDescriptionInCompareProducts').show();
+            } else {
+                $('#pnlIncludeShortDescriptionInCompareProducts').hide();
+                $('#pnlIncludeFullDescriptionInCompareProducts').hide();
+            }
+        }
+        
+    </script>
+
+    @Html.ValidationSummary(false)
+
+    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
+    {
+        x.Add().Text(T("Admin.Configuration.Settings.Catalog.MiscSettings").Text).Content(@TabMiscSettings()).Selected(true);
+        x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductListSettings").Text).Content(@TabProductListSettings());
+        x.Add().Text(T("Admin.Configuration.Settings.Catalog.UserSettings").Text).Content(@TabUserSettings());
+        x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductDetailSettings").Text).Content(@TabProductDetailSettings());
+        x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductSearchSettings").Text).Content(@TabProductSearchSettings());
+    }))
+    
+@helper TabMiscSettings()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductSku)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowProductSku)
+                @Html.ValidationMessageFor(model => model.ShowProductSku)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerPartNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowManufacturerPartNumber)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerPartNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowGtin)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowGtin)
+                @Html.ValidationMessageFor(model => model.ShowGtin)
+            </td>
+        </tr>
+
+        @*codehint: sm-add begin*@
+        <tr id="pnlDisplayWeight">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowWeight)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowWeight)
+                @Html.ValidationMessageFor(model => model.ShowWeight)
+            </td>
+        </tr>
+        <tr id="pnlDisplayDimensions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDimensions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowDimensions)
+                @Html.ValidationMessageFor(model => model.ShowDimensions)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IgnoreDiscounts)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IgnoreDiscounts)
+                @Html.ValidationMessageFor(model => model.IgnoreDiscounts)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IgnoreFeaturedProducts)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IgnoreFeaturedProducts)
+                @Html.ValidationMessageFor(model => model.IgnoreFeaturedProducts)
+            </td>
+        </tr>
+
+                <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CompareProductsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CompareProductsEnabled)
+                @Html.ValidationMessageFor(model => model.CompareProductsEnabled)
+            </td>
+        </tr>
+        <tr id="pnlIncludeShortDescriptionInCompareProducts">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IncludeShortDescriptionInCompareProducts)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IncludeShortDescriptionInCompareProducts)
+                @Html.ValidationMessageFor(model => model.IncludeShortDescriptionInCompareProducts)
+            </td>
+        </tr>
+        <tr id="pnlIncludeFullDescriptionInCompareProducts">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IncludeFullDescriptionInCompareProducts)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IncludeFullDescriptionInCompareProducts)
+                @Html.ValidationMessageFor(model => model.IncludeFullDescriptionInCompareProducts)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowBestsellersOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowBestsellersOnHomepage)
+                @Html.ValidationMessageFor(model => model.ShowBestsellersOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlNumberOfBestsellersOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumberOfBestsellersOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NumberOfBestsellersOnHomepage)
+                @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
+            </td>
+        </tr>
+    </table>
+}
+        
+@helper TabProductListSettings()
+{
+    <table>
+
+        @*codehint: sm-add end*@
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowProductSorting)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowProductSorting)
+                @Html.ValidationMessageFor(model => model.AllowProductSorting)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowProductViewModeChanging)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowProductViewModeChanging)
+                @Html.ValidationMessageFor(model => model.AllowProductViewModeChanging)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductsFromSubcategories)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowProductsFromSubcategories)
+                @Html.ValidationMessageFor(model => model.ShowProductsFromSubcategories)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowCategoryProductNumber)
+                @Html.ValidationMessageFor(model => model.ShowCategoryProductNumber)
+            </td>
+        </tr>
+        <tr id="pnlShowCategoryProductNumberIncludingSubcategories">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+                @Html.ValidationMessageFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CategoryBreadcrumbEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CategoryBreadcrumbEnabled)
+                @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
+            </td>
+        </tr>
+        <!-- codehint: sm-add -->
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductLists)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowDeliveryTimesInProductLists)
+                @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowBasePriceInProductLists)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowBasePriceInProductLists)
+                @Html.ValidationMessageFor(model => model.ShowBasePriceInProductLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultPageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DefaultPageSizeOptions)
+                @Html.ValidationMessageFor(model => model.DefaultPageSizeOptions)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumberOfProductTags)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NumberOfProductTags)
+                @Html.ValidationMessageFor(model => model.NumberOfProductTags)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductsByTagPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductsByTagPageSize)
+                @Html.ValidationMessageFor(model => model.ProductsByTagPageSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultViewMode)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
+                @Html.ValidationMessageFor(model => model.DefaultViewMode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
+                @Html.ValidationMessageFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
+            </td>
+        </tr>
+        <tr id="pnlTagPageSizeOptions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductsByTagPageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductsByTagPageSizeOptions)
+                @Html.ValidationMessageFor(model => model.ProductsByTagPageSizeOptions)
+            </td>
+        </tr>
+    </table>
+}
+
+@helper TabUserSettings()
+{
+    <table>
+        <!-- codehint: sm-add begin -->
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductReviewsInProductLists)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowProductReviewsInProductLists)
+                @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductLists)
+            </td>
+        </tr>
+        <!-- codehint: sm-add end -->
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductReviewsMustBeApproved)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductReviewsMustBeApproved)
+                @Html.ValidationMessageFor(model => model.ProductReviewsMustBeApproved)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowAnonymousUsersToReviewProduct)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowAnonymousUsersToReviewProduct)
+                @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToReviewProduct)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NotifyStoreOwnerAboutNewProductReviews)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NotifyStoreOwnerAboutNewProductReviews)
+                @Html.ValidationMessageFor(model => model.NotifyStoreOwnerAboutNewProductReviews)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AskQuestionEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AskQuestionEnabled)
+                @Html.ValidationMessageFor(model => model.AskQuestionEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EmailAFriendEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EmailAFriendEnabled)
+                @Html.ValidationMessageFor(model => model.EmailAFriendEnabled)
+            </td>
+        </tr>
+        <tr id="pnlAllowAnonymousUsersToEmailAFriend">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailAFriend)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowAnonymousUsersToEmailAFriend)
+                @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailAFriend)
+            </td>
+        </tr>
+    </table>
+}
+    
+@helper TabProductDetailSettings()
+{
+    <table>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyViewedProductsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyViewedProductsEnabled)
+                @Html.ValidationMessageFor(model => model.RecentlyViewedProductsEnabled)
+            </td>
+        </tr>
+        <tr id="pnlRecentlyViewedProductsNumber">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyViewedProductsNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyViewedProductsNumber)
+                @Html.ValidationMessageFor(model => model.RecentlyViewedProductsNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyAddedProductsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyAddedProductsEnabled)
+                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsEnabled)
+            </td>
+        </tr>
+        <tr id="pnlRecentlyAddedProductsNumber">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyAddedProductsNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyAddedProductsNumber)
+                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowShareButton)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowShareButton)
+                @Html.ValidationMessageFor(model => model.ShowShareButton)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductsAlsoPurchasedEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductsAlsoPurchasedEnabled)
+                @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedEnabled)
+            </td>
+        </tr>
+        <tr id="pnlProductsAlsoPurchasedNumber">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductsAlsoPurchasedNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductsAlsoPurchasedNumber)
+                @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedNumber)
+            </td>
+        </tr>
+		@*codehint: sm-add*@
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayAllImagesNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayAllImagesNumber)
+                @Html.ValidationMessageFor(model => model.DisplayAllImagesNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EnableDynamicPriceUpdate)
+                @Html.ValidationMessageFor(model => model.EnableDynamicPriceUpdate)
+            </td>
+        </tr>
+    </table>
+}    
+@helper TabProductSearchSettings()
+{
+    <table>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchPageProductsPerPage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SearchPageProductsPerPage)
+                @Html.ValidationMessageFor(model => model.SearchPageProductsPerPage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
+                @Html.ValidationMessageFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
+            </td>
+        </tr>
+        <tr id="pnlSearchPageSizeOptions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductSearchPageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSearchPageSizeOptions)
+                @Html.ValidationMessageFor(model => model.ProductSearchPageSizeOptions)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSearchAutoCompleteEnabled)
+                @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteEnabled)
+            </td>
+        </tr>
+        <tr id="pnlProductSearchAutoCompleteNumberOfProducts">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
+                @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
+            </td>
+        </tr>
+    </table>
+} 
+    <table>
+
+        @* codehint: Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen in der View *@
+@*        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyAddedProductsPageSize)
+                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSize">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
+                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSizeOptions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RecentlyAddedProductsPageSizeOptions)
+                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSizeOptions)
+            </td>
+        </tr>*@
+        @*codehint: sm-add end*@
+
+    </table>
+}

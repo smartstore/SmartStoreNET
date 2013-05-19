@@ -1,0 +1,315 @@
+﻿@model ManufacturerModel
+
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("manufacturer-edit").Items(x =>
+{
+    x.Add().Text(T("Admin.Catalog.Manufacturers.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
+    x.Add().Text(T("Admin.Catalog.Manufacturers.Products").Text).Content(TabProducts());
+    
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "manufacturer-edit"));
+})
+@helper TabInfo()
+    { 
+    @(Html.LocalizedEditor<ManufacturerModel, ManufacturerLocalizedModel>("manufacturer-info-localized",
+                @<table class="adminContent">
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].Name)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => Model.Locales[item].Name)
+                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].Description)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => model.Locales[item].Description, "RichEditor")
+                            @Html.ValidationMessageFor(model => model.Locales[item].Description)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                        </td>
+                    </tr>
+                </table>
+                ,
+                @<table class="adminContent">
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Name)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => model.Name)
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Description)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(x => x.Description, "RichEditor")
+                            @Html.ValidationMessageFor(model => model.Description)
+                        </td>
+                    </tr>
+                </table>
+            ))
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerTemplateId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.ManufacturerTemplateId, Model.AvailableManufacturerTemplates)
+                @Html.ValidationMessageFor(model => model.ManufacturerTemplateId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PictureId)
+                @Html.ValidationMessageFor(model => model.PictureId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PriceRanges)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.PriceRanges)
+                @Html.ValidationMessageFor(model => model.PriceRanges)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+    </table>
+}
+@helper TabSeo()
+    {
+    @(Html.LocalizedEditor<ManufacturerModel, ManufacturerLocalizedModel>("manufacturer-seo-localized",
+               @<table class="adminContent">
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                       </td>
+                       <td class="adminData">
+                           @Html.EditorFor(model => model.Locales[item].MetaKeywords)
+                           @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(model => model.Locales[item].MetaDescription)
+                           @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
+                           @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.Locales[item].SeName)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(model => model.Locales[item].SeName)
+                           @Html.ValidationMessageFor(model => model.Locales[item].SeName)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td colspan="2">
+                           @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                       </td>
+                   </tr>
+               </table>
+               ,
+               @<table class="adminContent">
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.MetaKeywords)
+                       </td>
+                       <td class="adminData">
+                           @Html.EditorFor(x => x.MetaKeywords)
+                           @Html.ValidationMessageFor(model => model.MetaKeywords)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.MetaDescription)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(x => x.MetaDescription)
+                           @Html.ValidationMessageFor(model => model.MetaDescription)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.MetaTitle)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(x => x.MetaTitle)
+                           @Html.ValidationMessageFor(model => model.MetaTitle)
+                       </td>
+                   </tr>
+                   <tr>
+                       <td class="adminTitle">
+                           @Html.SmartLabelFor(model => model.SeName)
+                       </td>
+                       <td class="adminData">
+                           @Html.TextAreaFor(x => x.SeName)
+                           @Html.ValidationMessageFor(model => model.SeName)
+                       </td>
+                   </tr>
+               </table>)) 
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomersToSelectPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.AllowCustomersToSelectPageSize)
+                @Html.ValidationMessageFor(model => model.AllowCustomersToSelectPageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSize">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.PageSize)
+                @Html.ValidationMessageFor(model => model.PageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSizeOptions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.PageSizeOptions)
+                @Html.ValidationMessageFor(model => model.PageSizeOptions)
+            </td>
+        </tr>
+    </table>
+}
+@helper TabProducts()
+    {
+    if (Model.Id > 0)
+    {
+        var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+            <table class="adminContent">
+                <tr>
+                    <td>
+            @(Html.Telerik().Grid<ManufacturerModel.ManufacturerProductModel>()
+                .Name("products-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("ProductList", "Manufacturer", new { manufacturerId = Model.Id })
+                            .Update("ProductUpdate", "Manufacturer")
+                            .Delete("ProductDelete", "Manufacturer");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.ProductName)
+                            .Width(500)
+                            .ReadOnly();
+                        columns.Bound(x => x.IsFeaturedProduct)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
+                            .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder1)
+                            .Width(100)
+                            .Centered();
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        })
+                        .Width(180);
+                    })
+                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .EnableCustomBinding(true))
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100%">
+                        <input type="submit" id="btnAddNewProduct" name="btnAddNewProduct" value="@T("Admin.Catalog.Manufacturers.Products.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Manufacturer", new { manufacturerId = Model.Id, btnId = "btnRefreshProducts", formId = "manufacturer-form" }))', 800, 700, true); return false;" class="t-button" />
+                        <input type="submit" id="btnRefreshProducts" name="btnRefreshProducts" style="display: none" />
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $('#btnRefreshProducts').click(function () {
+                                    //refresh grid
+                                    var optionsGrid = $("#products-grid");
+                                    optionsGrid.data('tGrid').ajaxRequest();
+
+                                    //return false to don't reload a page
+                                    return false;
+                                });
+                            });
+                        </script>
+                    </td>
+                </tr>
+            </table>
+    }
+    else
+    {
+            @T("Admin.Catalog.Manufacturers.Products.SaveBeforeEdit")
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").click(togglePageSize);
+        togglePageSize();
+    });
+
+    function togglePageSize() {
+        if ($('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked')) {
+            $('#pnlPageSize').hide();
+            $('#pnlPageSizeOptions').show();
+        } else {
+            $('#pnlPageSize').show();
+            $('#pnlPageSizeOptions').hide();
+        }
+    }
+</script>

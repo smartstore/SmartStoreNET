@@ -1,0 +1,180 @@
+@font-face {
+	font-family: 'Fontastic';
+	src:url('fonts/Fontastic.eot');
+	src:url('fonts/Fontastic.eot?#iefix') format('embedded-opentype'),
+		url('fonts/Fontastic.svg#Fontastic') format('svg'),
+		url('fonts/Fontastic.woff') format('woff'),
+		url('fonts/Fontastic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+[data-icon]:before {
+	font-family: 'Fontastic';
+	content: attr(data-icon);
+	speak: none;
+	font-weight: normal;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Use the following CSS code if you want to have a class per icon */
+[class^="sm-icon-"]:before, [class*=" sm-icon-"]:before {
+	font-family: 'Fontastic';
+	font-style: normal;
+	speak: none;
+	font-weight: normal;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+.sm-icon-database:before {
+	content: "\21";
+}
+.sm-icon-user:before {
+	content: "\22";
+}
+.sm-icon-cog:before {
+	content: "\23";
+}
+.sm-icon-stats-up:before {
+	content: "\24";
+}
+.sm-icon-gift:before {
+	content: "\25";
+}
+.sm-icon-cube:before {
+	content: "\26";
+}
+.sm-icon-help:before {
+	content: "\27";
+}
+.sm-icon-loop:before {
+	content: "\28";
+}
+.sm-icon-tag:before {
+	content: "\29";
+}
+.sm-icon-gift-2:before {
+	content: "\2b";
+}
+.sm-icon-home:before {
+	content: "\2d";
+}
+.sm-icon-earth:before {
+	content: "\2e";
+}
+.sm-icon-loop-alt2:before {
+	content: "\33";
+}
+.sm-icon-layers:before {
+	content: "\34";
+}
+.sm-icon-tag-stroke:before {
+	content: "\36";
+}
+.sm-icon-archive:before {
+	content: "\3c";
+}
+.sm-icon-cog-2:before {
+	content: "\3d";
+}
+.sm-icon-refresh:before {
+	content: "\3e";
+}
+.sm-icon-tag-2:before {
+	content: "\3f";
+}
+.sm-icon-tag-3:before {
+	content: "\40";
+}
+.sm-icon-chart:before {
+	content: "\43";
+}
+.sm-icon-cube-2:before {
+	content: "\44";
+}
+.sm-icon-megaphone:before {
+	content: "\45";
+}
+.sm-icon-box:before {
+	content: "\46";
+}
+.sm-icon-layout:before {
+	content: "\47";
+}
+.sm-icon-layout-2:before {
+	content: "\48";
+}
+.sm-icon-layout-3:before {
+	content: "\49";
+}
+.sm-icon-layout-4:before {
+	content: "\4a";
+}
+.sm-icon-stats:before {
+	content: "\4b";
+}
+.sm-icon-discout:before {
+	content: "\4c";
+}
+.sm-icon-retweet:before {
+	content: "\4d";
+}
+.sm-icon-tags:before {
+	content: "\4e";
+}
+.sm-icon-users:before {
+	content: "\4f";
+}
+.sm-icon-user-2:before {
+	content: "\50";
+}
+.sm-icon-price:before {
+	content: "\51";
+}
+.sm-icon-retweet-2:before {
+	content: "\52";
+}
+.sm-icon-download:before {
+	content: "\53";
+}
+.sm-icon-upload:before {
+	content: "\54";
+}
+.sm-icon-home-2:before {
+	content: "\55";
+}
+.sm-icon-dots-three:before {
+	content: "\56";
+}
+.sm-icon-users-2:before {
+	content: "\57";
+}
+.sm-icon-contact:before {
+	content: "\2a";
+}
+.sm-icon-camera:before {
+	content: "\2c";
+}
+.sm-icon-cart:before {
+	content: "\2f";
+}
+.sm-icon-bag:before {
+	content: "\30";
+}
+.sm-icon-shopping:before {
+	content: "\31";
+}
+.sm-icon-cart-2:before {
+	content: "\32";
+}
+.sm-icon-cart-3:before {
+	content: "\35";
+}
+.sm-icon-cart-4:before {
+	content: "\37";
+}
+.sm-icon-basket:before {
+	content: "\38";
+}

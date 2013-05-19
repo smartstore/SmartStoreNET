@@ -1,0 +1,30 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Manual" AppendRootKey="false">
+		<Value>Credit card</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[
+      
+      ]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFee">
+		<Value>Additional fee</Value>
+	</LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFee.Hint">
+    <Value>Enter additional fee to charge your customers.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFeePercentage">
+    <Value>Additional fee. Use percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
+    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TransactMode">
+    <Value>After checkout mark payment as</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TransactMode.Hint">
+    <Value>Specify transaction mode.</Value>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,96 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalDirect" AppendRootKey="false">
+		<Value>PayPal Express</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<p>If you're using this gateway ensure that your primary store currency is supported by Paypal!</p>
+<ol>
+<li>Log into your PayPal account.</li>
+<li>Click on <b>Profile</b> from the Home Menu.</li>
+<li>Under <b>Account Information</b> choose <b>API Access</b>.</li>
+<li>Choose <b>Request API credentials</b>.</li>
+<li>Choose <b>API Signature</b> as the credential type.</li>
+<li>Enable the checkbox and agree to the license <b>Terms-I agree to the API Certificate Terms of Use and terms incorporated therein</b> and press the Submit button.</li>
+</ol>
+<p>Before being able to receive IPN (Instant Payment Notification) messages (optional), you'll need to activate this service; follow these steps:</p>
+<ol>
+<li>Log in to your Premier or Business account.</li>
+<li>Click the Profile subtab.</li>
+<li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
+<li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
+<li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/PaymentPayPalDirect/IPNHandler</b>).</li>
+<li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
+</ol>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.UseSandbox">
+		<Value>Use Sandbox</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.UseSandbox.Hint">
+		<Value>Check to enable Sandbox (testing environment).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.TransactMode">
+		<Value>Transaction mode</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.TransactMode.Hint">
+		<Value>Specify transaction mode.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.ApiAccountName">
+		<Value>API Account Name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.ApiAccountName.Hint">
+		<Value>Specify API account name.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.ApiAccountPassword">
+		<Value>API Account Password</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.ApiAccountPassword.Hint">
+		<Value>Specify API account password.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Signature">
+		<Value>Signature</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Signature.Hint">
+		<Value>Specify signature.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFee">
+		<Value>Additional fee</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFee.Hint">
+		<Value>Enter additional fee to charge your customers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFeePercentage">
+		<Value>Additional fee. Use percentage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
+		<Value>Determines whether to apply a percentage additional fee to the order total. A fixed value is used if not enabled.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NoModuleLoading">
+		<Value>PayPal Direct module cannot be loaded.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NewPaymentStatus">
+		<Value>New payment status</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnLogInfo">
+		<Value>PayPal Direct IPN. Recurring info.</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnOrderNotFound">
+		<Value>PayPal Direct IPN. Order cannot be found.</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnFailed">
+		<Value>PayPal Direct IPN. Failed to retrieve notification.</Value>
+	</LocaleResource>
+	<LocaleResource Name="RecurringPayment">
+		<Value>recurring payment</Value>
+	</LocaleResource>
+	<LocaleResource Name="NotSupportedPeriod">
+		<Value>Not supported cycle period.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ModeAuthAndCapture">
+		<Value>Immediately debit</Value>
+	</LocaleResource>
+	<LocaleResource Name="ModeAuth">
+		<Value>Authorize and debit when goods are shipped</Value>
+	</LocaleResource>
+</Language>

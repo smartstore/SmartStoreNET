@@ -1,0 +1,7 @@
+﻿FriendlyName: Fixed tax rate provider
+SystemName: Tax.FixedRate
+Version: 1.00
+SupportedVersions: 1.0
+DisplayOrder: 1
+FileName: SmartStore.Plugin.Tax.FixedRate.dll
+ResourceRootKey: Plugins.Tax.FixedRate

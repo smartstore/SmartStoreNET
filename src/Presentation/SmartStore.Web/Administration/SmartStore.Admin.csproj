@@ -1,0 +1,1163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{152C761A-DD2E-4C1F-AF89-DFB2547A3BCA}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartStore.Admin</RootNamespace>
+    <AssemblyName>SmartStore.Admin</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.3.1.7705, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=2.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\AutoMapper.2.2.1-ci9000\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="dotless.AspNet">
+      <HintPath>..\..\..\packages\dotless.1.3.1.0-custom\lib\dotless.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=3.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\FluentValidation.3.4.6.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Web.Optimization.1.0.0\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\WebGrease.1.1.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="AdminAreaRegistration.cs" />
+    <Compile Include="Controllers\ActivityLogController.cs" />
+    <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CheckoutAttributeController.cs" />
+    <Compile Include="Controllers\AffiliateController.cs" />
+    <Compile Include="Controllers\CampaignController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\ImageBrowserController.cs" />
+    <Compile Include="Controllers\ExternalAuthenticationController.cs" />
+    <Compile Include="Controllers\DeliveryTimeController.cs" />
+    <Compile Include="Controllers\ContentSliderController.cs" />
+    <Compile Include="Controllers\ThemeController.cs" />
+    <Compile Include="Controllers\NetAdvImageController.cs" />
+    <Compile Include="Controllers\ScheduleTaskController.cs" />
+    <Compile Include="Controllers\WidgetController.cs" />
+    <Compile Include="Controllers\OnlineCustomerController.cs" />
+    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\PollController.cs" />
+    <Compile Include="Controllers\ShoppingCartController.cs" />
+    <Compile Include="Controllers\ManufacturerController.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
+    <Compile Include="Controllers\TopicController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\MessageTemplateController.cs" />
+    <Compile Include="Controllers\ProductReviewController.cs" />
+    <Compile Include="Controllers\ReturnRequestController.cs" />
+    <Compile Include="Controllers\RecurringPaymentController.cs" />
+    <Compile Include="Controllers\GiftCardController.cs" />
+    <Compile Include="Controllers\DiscountController.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
+    <Compile Include="Controllers\SpecificationAttributeController.cs" />
+    <Compile Include="Controllers\ProductAttributeController.cs" />
+    <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\CustomerRoleController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\ForumController.cs" />
+    <Compile Include="Controllers\NewsLetterSubscriptionController.cs" />
+    <Compile Include="Controllers\CountryController.cs" />
+    <Compile Include="Controllers\ShippingController.cs" />
+    <Compile Include="Controllers\TaxController.cs" />
+    <Compile Include="Controllers\MeasureController.cs" />
+    <Compile Include="Controllers\CurrencyController.cs" />
+    <Compile Include="Controllers\EmailAccountController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
+    <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ProductVariantController.cs" />
+    <Compile Include="Controllers\QueuedEmailController.cs" />
+    <Compile Include="Infrastructure\AdminBundleProvider.cs" />
+    <Compile Include="Infrastructure\RouteProvider.cs" />
+    <Compile Include="MappingExtensions.cs" />
+    <Compile Include="Infrastructure\AdminStartupTask.cs" />
+    <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
+    <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
+    <Compile Include="Models\Catalog\BulkEditProductVariantModel.cs" />
+    <Compile Include="Models\Catalog\BulkEditListModel.cs" />
+    <Compile Include="Models\Catalog\CategoryListModel.cs" />
+    <Compile Include="Models\Catalog\ManufacturerListModel.cs" />
+    <Compile Include="Models\Catalog\ProductReviewListModel.cs" />
+    <Compile Include="Models\Catalog\ManufacturerModel.cs" />
+    <Compile Include="Models\Catalog\CopyProductModel.cs" />
+    <Compile Include="Models\Cms\RenderWidgetModel.cs" />
+    <Compile Include="Models\Cms\WidgetModel.cs" />
+    <Compile Include="Models\Common\LanguageSelectorModel.cs" />
+    <Compile Include="Models\Common\MaintenanceModel.cs" />
+    <Compile Include="Models\Common\SystemWarningModel.cs" />
+    <Compile Include="Models\Common\SystemInfoModel.cs" />
+    <Compile Include="Models\Common\UrlRecordListModel.cs" />
+    <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\Plugins\PluginListModel.cs" />
+    <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
+    <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
+    <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
+    <Compile Include="Models\ExternalAuthentication\AuthenticationMethodModel.cs" />
+    <Compile Include="Models\Logging\LogListModel.cs" />
+    <Compile Include="Models\Messages\NewsLetterSubscriptionListModel.cs" />
+    <Compile Include="Models\Orders\ShipmentListModel.cs" />
+    <Compile Include="Models\Orders\ShipmentModel.cs" />
+    <Compile Include="Models\Orders\NeverSoldReportLineModel.cs" />
+    <Compile Include="Models\Orders\NeverSoldReportModel.cs" />
+    <Compile Include="Models\Plugins\MiscPluginModel.cs" />
+    <Compile Include="Models\Plugins\PluginModel.cs" />
+    <Compile Include="Models\Polls\PollAnswerModel.cs" />
+    <Compile Include="Models\Polls\PollModel.cs" />
+    <Compile Include="Models\Security\PermissionRecordModel.cs" />
+    <Compile Include="Models\Security\PermissionMappingModel.cs" />
+    <Compile Include="Models\Logging\ActivityLogModel.cs" />
+    <Compile Include="Models\Logging\ActivityLogSearchModel.cs" />
+    <Compile Include="Models\Logging\ActivityLogTypeModel.cs" />
+    <Compile Include="Models\Common\AddressModel.cs" />
+    <Compile Include="Models\Catalog\CategoryModel.cs" />
+    <Compile Include="Models\Orders\CheckoutAttributeModel.cs" />
+    <Compile Include="Models\Orders\CheckoutAttributeValueModel.cs" />
+    <Compile Include="Models\Affiliates\AffiliateModel.cs" />
+    <Compile Include="Models\Messages\CampaignModel.cs" />
+    <Compile Include="Models\Blogs\BlogPostModel.cs" />
+    <Compile Include="Models\Orders\OrderIncompleteReportLineModel.cs" />
+    <Compile Include="Models\Orders\OrderAverageReportLineSummaryModel.cs" />
+    <Compile Include="Models\Settings\BlogSettingsModel.cs" />
+    <Compile Include="Models\Blogs\BlogCommentModel.cs" />
+    <Compile Include="Models\Settings\CatalogSettingsModel.cs" />
+    <Compile Include="Models\Customers\BestCustomersReportModel.cs" />
+    <Compile Include="Models\Customers\BestCustomerReportLineModel.cs" />
+    <Compile Include="Models\Customers\RegisteredCustomerReportLineModel.cs" />
+    <Compile Include="Models\Customers\CustomerReportsModel.cs" />
+    <Compile Include="Models\Orders\BestsellersReportLineModel.cs" />
+    <Compile Include="Models\Orders\BestsellersReportModel.cs" />
+    <Compile Include="Models\Catalog\ProductTagModel.cs" />
+    <Compile Include="Models\Settings\GeneralCommonSettingsModel.cs" />
+    <Compile Include="Models\Settings\SettingModel.cs" />
+    <Compile Include="Models\Settings\CustomerUserSettingsModel.cs" />
+    <Compile Include="Models\Settings\MediaSettingsModel.cs" />
+    <Compile Include="Models\Settings\ShoppingCartSettingsModel.cs" />
+    <Compile Include="Models\Settings\OrderSettingsModel.cs" />
+    <Compile Include="Models\Settings\RewardPointsSettingsModel.cs" />
+    <Compile Include="Models\Themes\ThemeListModel.cs" />
+    <Compile Include="Models\ShoppingCart\ShoppingCartItemModel.cs" />
+    <Compile Include="Models\ShoppingCart\ShoppingCartModel.cs" />
+    <Compile Include="Models\Tasks\ScheduleTaskModel.cs" />
+    <Compile Include="Models\Themes\ConfigureThemeModel.cs" />
+    <Compile Include="Models\Themes\ThemeManifestModel.cs" />
+    <Compile Include="Models\Topics\TopicModel.cs" />
+    <Compile Include="Models\Shipping\ShippingMethodRestrictionModel.cs" />
+    <Compile Include="Models\News\NewsCommentModel.cs" />
+    <Compile Include="Models\News\NewsItemModel.cs" />
+    <Compile Include="Models\Settings\NewsSettingsModel.cs" />
+    <Compile Include="Models\Orders\OrderAddressModel.cs" />
+    <Compile Include="Models\Orders\OrderListModel.cs" />
+    <Compile Include="Models\Orders\OrderModel.cs" />
+    <Compile Include="Models\Messages\MessageTemplateModel.cs" />
+    <Compile Include="Models\Directory\StateProvinceModel.cs" />
+    <Compile Include="Models\Directory\CountryModel.cs" />
+    <Compile Include="Models\Catalog\ProductReviewModel.cs" />
+    <Compile Include="Models\Orders\ReturnRequestModel.cs" />
+    <Compile Include="Models\Orders\RecurringPaymentModel.cs" />
+    <Compile Include="Models\Orders\GiftCardListModel.cs" />
+    <Compile Include="Models\Orders\GiftCardModel.cs" />
+    <Compile Include="Models\Discounts\DiscountModel.cs" />
+    <Compile Include="Models\Catalog\ProductSpecificationAttributeModel.cs" />
+    <Compile Include="Models\Catalog\SpecificationAttributeOptionModel.cs" />
+    <Compile Include="Models\Catalog\SpecificationAttributeModel.cs" />
+    <Compile Include="Models\Catalog\ProductAttributeModel.cs" />
+    <Compile Include="Models\Messages\QueuedEmailListModel.cs" />
+    <Compile Include="Models\Customers\CustomerAddressModel.cs" />
+    <Compile Include="Models\Customers\CustomerListModel.cs" />
+    <Compile Include="Models\Customers\CustomerModel.cs" />
+    <Compile Include="Models\Customers\CustomerRoleModel.cs" />
+    <Compile Include="Models\Payments\PaymentMethodModel.cs" />
+    <Compile Include="Models\Catalog\ProductListModel.cs" />
+    <Compile Include="Models\Settings\ShippingSettingsModel.cs" />
+    <Compile Include="Models\Forums\ForumGroupModel.cs" />
+    <Compile Include="Models\Forums\ForumModel.cs" />
+    <Compile Include="Models\Settings\ForumSettingsModel.cs" />
+    <Compile Include="Models\Messages\NewsLetterSubscriptionModel.cs" />
+    <Compile Include="Models\Shipping\ShippingRateComputationMethodModel.cs" />
+    <Compile Include="Models\Shipping\ShippingMethodModel.cs" />
+    <Compile Include="Models\Tax\TaxCategoryModel.cs" />
+    <Compile Include="Models\Tax\TaxProviderModel.cs" />
+    <Compile Include="Models\Directory\MeasureDimensionModel.cs" />
+    <Compile Include="Models\Directory\MeasureWeightModel.cs" />
+    <Compile Include="Models\Directory\CurrencyModel.cs" />
+    <Compile Include="Models\Messages\EmailAccountModel.cs" />
+    <Compile Include="Models\Localization\LanguageModel.cs" />
+    <Compile Include="Models\Localization\LanguageResourceModel.cs" />
+    <Compile Include="Models\Logging\LogModel.cs" />
+    <Compile Include="Models\Catalog\ProductModel.cs" />
+    <Compile Include="Models\Catalog\ProductVariantModel.cs" />
+    <Compile Include="Models\Messages\QueuedEmailModel.cs" />
+    <Compile Include="Models\Settings\TaxSettingsModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validators\Catalog\CategoryValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
+    <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
+    <Compile Include="Validators\Common\AddressValidator.cs" />
+    <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
+    <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
+    <Compile Include="Validators\Messages\NewsLetterSubscriptionValidator.cs" />
+    <Compile Include="Validators\Orders\CheckoutAttributeValueValidator.cs" />
+    <Compile Include="Validators\Orders\CheckoutAttributeValidator.cs" />
+    <Compile Include="Validators\Affiliates\AffiliateValidator.cs" />
+    <Compile Include="Validators\Messages\CampaignValidator.cs" />
+    <Compile Include="Validators\Blogs\BlogPostValidator.cs" />
+    <Compile Include="Validators\Plugins\PluginValidator.cs" />
+    <Compile Include="Validators\Polls\PollAnswerValidator.cs" />
+    <Compile Include="Validators\Polls\PollValidator.cs" />
+    <Compile Include="Validators\Settings\GeneralCommonSettingsValidator.cs" />
+    <Compile Include="Validators\Settings\OrderSettingsValidator.cs" />
+    <Compile Include="Validators\Settings\SettingValidator.cs" />
+    <Compile Include="Validators\Settings\RewardPointsSettingsValidator.cs" />
+    <Compile Include="Validators\Tasks\ScheduleTaskValidator.cs" />
+    <Compile Include="Validators\Topics\TopicValidator.cs" />
+    <Compile Include="Validators\News\NewsItemValidator.cs" />
+    <Compile Include="Validators\Messages\MessageTemplateValidator.cs" />
+    <Compile Include="Validators\Messages\EmailAccountValidator.cs" />
+    <Compile Include="Validators\Directory\StateProvinceValidator.cs" />
+    <Compile Include="Validators\Directory\CountryValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductReviewValidator.cs" />
+    <Compile Include="Validators\Orders\ReturnRequestValidator.cs" />
+    <Compile Include="Validators\Orders\RecurringPaymentValidator.cs" />
+    <Compile Include="Validators\Discounts\DiscountValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductVariantAttributeValueModelValidator.cs" />
+    <Compile Include="Validators\Catalog\SpecificationAttributeOptionValidator.cs" />
+    <Compile Include="Validators\Catalog\SpecificationAttributeValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductAttributeValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductVariantValidator.cs" />
+    <Compile Include="Validators\Customers\CustomerRoleValidator.cs" />
+    <Compile Include="Validators\Customers\CustomerValidator.cs" />
+    <Compile Include="Validators\Forums\ForumGroupValidator.cs" />
+    <Compile Include="Validators\Forums\ForumValidator.cs" />
+    <Compile Include="Validators\Messages\QueuedEmailValidator.cs" />
+    <Compile Include="Validators\Shipping\ShippingMethodValidator.cs" />
+    <Compile Include="Validators\Tax\TaxCategoryValidator.cs" />
+    <Compile Include="Validators\Directory\MeasureDimensionValidator.cs" />
+    <Compile Include="Validators\Directory\MeasureWeightValidator.cs" />
+    <Compile Include="Validators\Directory\CurrencyValidator.cs" />
+    <Compile Include="Validators\Localization\LanguageResourceValidator.cs" />
+    <Compile Include="Validators\Localization\LanguageValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\images\1pix.gif" />
+    <Content Include="Content\images\active-false.gif" />
+    <Content Include="Content\images\active-true.gif" />
+    <Content Include="Content\images\admin-gvw-bg.gif" />
+    <Content Include="Content\images\admin-menu-bg.gif" />
+    <Content Include="Content\images\ajax-progress-2.gif" />
+    <Content Include="Content\images\ap-catalog-white.png" />
+    <Content Include="Content\images\ap-catalog.png" />
+    <Content Include="Content\images\ap-chevron.png" />
+    <Content Include="Content\images\ap-cms-white.png" />
+    <Content Include="Content\images\ap-cms.png" />
+    <Content Include="Content\images\ap-customers-white.png" />
+    <Content Include="Content\images\ap-customers.png" />
+    <Content Include="Content\images\ap-dashboard-white.png" />
+    <Content Include="Content\images\ap-dashboard.png" />
+    <Content Include="Content\images\ap-default-white.png" />
+    <Content Include="Content\images\ap-default.png" />
+    <Content Include="Content\images\ap-help-white.png" />
+    <Content Include="Content\images\ap-help.png" />
+    <Content Include="Content\images\ap-marketing-white.png" />
+    <Content Include="Content\images\ap-marketing.png" />
+    <Content Include="Content\images\ap-sales-white.png" />
+    <Content Include="Content\images\ap-sales.png" />
+    <Content Include="Content\images\ap-settings-white.png" />
+    <Content Include="Content\images\ap-settings.png" />
+    <Content Include="Content\images\ap-system-white.png" />
+    <Content Include="Content\images\ap-system.png" />
+    <Content Include="Content\images\checkmark.png" />
+    <Content Include="Content\images\error-message.gif" />
+    <Content Include="Content\images\google-maps.gif" />
+    <Content Include="Content\images\hr.png" />
+    <Content Include="Content\images\ico-content-negative.png" />
+    <Content Include="Content\images\ico-content-o60.png" />
+    <Content Include="Content\images\ico-content.png" />
+    <Content Include="Content\images\fileuploader-loading.gif" />
+    <Content Include="Content\images\icon-plugin-currencyexchange.png" />
+    <Content Include="Content\images\icon-plugin-default.png" />
+    <Content Include="Content\images\icon-plugin-discountrequirement.png" />
+    <Content Include="Content\images\icon-plugin-externalauth.png" />
+    <Content Include="Content\images\icon-plugin-import.png" />
+    <Content Include="Content\images\icon-plugin-mobile.png" />
+    <Content Include="Content\images\icon-plugin-payment.png" />
+    <Content Include="Content\images\icon-plugin-promotionfeed.png" />
+    <Content Include="Content\images\icon-plugin-shipping.png" />
+    <Content Include="Content\images\icon-plugin-tax.png" />
+    <Content Include="Content\images\preloader-32.gif" />
+    <Content Include="Content\images\smnet.png" />
+    <Content Include="Content\images\throbber-synchronizing.gif" />
+    <Content Include="Content\images\success-message.gif" />
+    <Content Include="favicon.ico" />
+    <Content Include="Scripts\admin.common.js" />
+    <Content Include="Scripts\jquery.tmpl.min.js" />
+    <Content Include="Scripts\admin.helpers.js" />
+    <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="sitemap.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\admin.less" />
+    <Content Include="Content\theme.less" />
+    <Content Include="Content\variables.custom.less" />
+    <Content Include="Content\variables.less" />
+    <Content Include="Views\Category\Create.cshtml" />
+    <Content Include="Views\Category\Edit.cshtml" />
+    <Content Include="Views\Category\List.cshtml" />
+    <Content Include="Views\Category\Tree.cshtml" />
+    <Content Include="Views\Category\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\EmailAccount\Create.cshtml" />
+    <Content Include="Views\EmailAccount\List.cshtml" />
+    <Content Include="Views\EmailAccount\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Language\Create.cshtml" />
+    <Content Include="Views\Language\Edit.cshtml" />
+    <Content Include="Views\Language\List.cshtml" />
+    <Content Include="Views\Language\Resources.cshtml" />
+    <Content Include="Views\Language\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Log\List.cshtml" />
+    <Content Include="Views\Shared\Delete.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
+    <Content Include="Views\Shared\Menu.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Plugin\List_original.cshtml" />
+    <Content Include="Views\Shared\Navbar.cshtml" />
+    <Content Include="Views\Shared\RichEditor.cshtml" />
+    <Content Include="Views\Shared\RichEditor.Telerik.cshtml" />
+    <Content Include="Views\Widget\ConfigureWidget.cshtml" />
+    <Content Include="Views\ScheduleTask\List.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
+      <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
+      <Name>SmartStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
+      <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
+      <Name>SmartStore.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
+      <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
+      <Name>SmartStore.Web.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Currency\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Currency\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Currency\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Currency\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\QueuedEmail\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\QueuedEmail\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\QueuedEmail\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\EmailAccount\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Measure\Weights.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Measure\Dimensions.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Tax\Providers.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Tax\ConfigureProvider.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Tax\Categories.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Tax.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\Methods.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\Providers.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\ConfigureProvider.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\Address.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\NewsLetterSubscription\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Forum\CreateForum.cshtml" />
+    <Content Include="Views\Forum\CreateForumGroup.cshtml" />
+    <Content Include="Views\Forum\EditForum.cshtml" />
+    <Content Include="Views\Forum\EditForumGroup.cshtml" />
+    <Content Include="Views\Forum\List.cshtml" />
+    <Content Include="Views\Setting\Forum.cshtml" />
+    <Content Include="Views\Forum\_CreateOrUpdateForum.cshtml" />
+    <Content Include="Views\Forum\_CreateOrUpdateForumGroup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Shipping.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Payment\ConfigureMethod.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Payment\Methods.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CustomerRole\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CustomerRole\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CustomerRole\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CustomerRole\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Customer\AddressCreate.cshtml" />
+    <Content Include="Views\Customer\AddressEdit.cshtml" />
+    <Content Include="Views\Customer\Create.cshtml" />
+    <Content Include="Views\Customer\Edit.cshtml" />
+    <Content Include="Views\Customer\List.cshtml" />
+    <Content Include="Views\Customer\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Customer\_CreateOrUpdateAddress.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Security\AccessDenied.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductAttribute\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductAttribute\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductAttribute\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductAttribute\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\OptionCreatePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\_CreateOrUpdateOption.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SpecificationAttribute\OptionEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_AdminPopupLayout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\EditorTemplates\ProductCategory.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\EditorTemplates\ProductManufacturer.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\RelatedProductAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\CrossSellProductAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Category\ProductAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceCustomer.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\EditorTemplates\ProductAttribute.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\EditorTemplates\AttributeControlType.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\EditAttributeValues.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\ProductAttributeValueCreatePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\ProductAttributeValueEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\_CreateOrUpdateProductAttributeValue.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\Decimal.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_ProductVariantInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\_CreateOrUpdateValue.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\ValueCreatePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CheckoutAttribute\ValueEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Discount\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Discount\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Discount\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Discount\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GiftCard\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GiftCard\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GiftCard\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GiftCard\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ActivityLog\ListTypes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ActivityLog\ListLogs.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\UploadLicenseFilePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\RecurringPayment\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\RecurringPayment\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\RecurringPayment\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ReturnRequest\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ReturnRequest\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ReturnRequest\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductReview\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductReview\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductReview\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Affiliate\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Affiliate\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Affiliate\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Affiliate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\MessageTemplate\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\MessageTemplate\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\MessageTemplate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Campaign\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Campaign\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Campaign\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Campaign\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\AddressEdit.cshtml" />
+    <Content Include="Views\Order\Edit.cshtml" />
+    <Content Include="Views\Order\List.cshtml" />
+    <Content Include="Views\Order\PartiallyRefundOrderPopup.cshtml" />
+    <Content Include="Views\Order\_CreateOrUpdateAddress.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Blog\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Blog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Blog\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Blog\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Blog.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Blog\Comments.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\News.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\News\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\News\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\News\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\News\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\News\Comments.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\Restrictions.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Topic\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Topic\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Topic\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Topic\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Catalog.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\RewardPoints.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Order.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\ShoppingCart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\Media.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\CustomerUser.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\AllSettings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\ProductTags.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\LowStockReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\BestsellersReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Customer\Reports.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Customer\_ReportBestCustomersByOrderTotal.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Customer\_ReportBestCustomersByNumberOfOrders.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Customer\ReportRegisteredCustomers.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\SystemInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\Warnings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\OrderAverageReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\OrderIncompleteReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\Maintenance.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\BestsellersBriefReportByQuantity.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\BestsellersBriefReportByAmount.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_Notifications.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\GeneralCommon.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\LanguageSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\_ProductAttributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Security\Permissions.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Log\View.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manufacturer\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manufacturer\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manufacturer\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manufacturer\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manufacturer\ProductAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ShoppingCart\CurrentCarts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Poll\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Poll\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Poll\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Poll\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Plugin\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\OnlineCustomer\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Measure\EditorTemplates\Decimal8.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Widget\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ExternalAuthentication\ConfigureMethod.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ExternalAuthentication\Methods.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ShoppingCart\CurrentWishlists.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\BulkEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\StateEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\StateCreatePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Country\_CreateOrUpdateState.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\EditMethod.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\CreateMethod.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shipping\_CreateOrUpdateMethod.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Plugin\ConfigureMiscPlugin.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.Telerik.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\NetAdvImage\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\AddProductToOrder.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\AddProductToOrderDetails.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\_ProductAddAttributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\_ProductAddGiftCardInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\NeverSoldReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\ShipmentDetails.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\AddShipment.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\ShipmentList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Plugin\EditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Plugin\_CreateOrUpdatePlugin.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\EditProductTag.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdateProductTag.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Widget\WidgetsByZone.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\PromotionFeeds\" />
+    <Folder Include="Views\Misc\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DeliveryTime\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DeliveryTime\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DeliveryTime\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DeliveryTime\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\Color.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContentSlider\CreateSlide.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContentSlider\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContentSlider\EditSlide.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContentSlider\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\AttributeCombinationCreatePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\AttributeCombinationEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Theme\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Theme\Configure.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\SeNames.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\ConditionalComments.cshtml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+</Project>

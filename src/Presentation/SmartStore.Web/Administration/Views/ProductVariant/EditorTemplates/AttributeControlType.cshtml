@@ -1,0 +1,17 @@
+﻿@using SmartStore.Core.Domain.Catalog;
+@{
+    var controlTypeList = AttributeControlType.DropdownList.ToSelectList();
+}
+
+<select name="AttributeControlType" id="AttributeControlType" class="autowidth">
+@foreach (var item in controlTypeList)
+{
+    <option value="@item.Value">@item.Text</option>  
+}
+</select>
+
+<script>
+    $(function () {
+        $('#AttributeControlType').selectWrapper();
+    });
+</script>

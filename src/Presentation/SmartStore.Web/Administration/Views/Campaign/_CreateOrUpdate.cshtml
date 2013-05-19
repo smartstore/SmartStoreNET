@@ -1,0 +1,74 @@
+﻿@model CampaignModel
+
+@using Telerik.Web.Mvc.UI;
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+@if (Model.Id > 0)
+{
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <b>
+                    @T("Admin.Promotions.Campaigns.Warning")
+                </b>
+                <br />
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TestEmail)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TestEmail)
+                @Html.ValidationMessageFor(model => model.TestEmail)
+                &nbsp;&nbsp;
+                <button type="submit" name="send-test-email" value="send-test-email" class="btn">@T("Admin.Promotions.Campaigns.SendTestEmail")</button>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+            </td>
+            <td class="adminData">
+                <button type="submit" name="send-mass-email" value="send-mass-email" class="btn">@T("Admin.Promotions.Campaigns.SendMassEmail")</button>
+            </td>
+        </tr>
+    </table>
+    <hr />
+}
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Subject)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Subject)
+            @Html.ValidationMessageFor(model => model.Subject)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Body)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Body, "RichEditor")
+            @Html.ValidationMessageFor(model => model.Body)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AllowedTokens)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.AllowedTokens)
+        </td>
+    </tr>
+</table>

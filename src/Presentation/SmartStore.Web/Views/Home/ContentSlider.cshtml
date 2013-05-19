@@ -1,0 +1,89 @@
+﻿@model ContentSliderSettings
+@using SmartStore.Core.Domain.Cms;
+
+@functions
+{
+    private string GetSliderBgExpression()
+    {
+        string result = "";
+        
+        if (Model.BackgroundPictureUrl.HasValue())
+        {
+            result = "background-image:url('{0}');".FormatInvariant(Url.Content(Model.BackgroundPictureUrl));
+        }
+        
+        return result;
+    }
+}
+
+@if(Model.IsActive) 
+{
+
+    <div id="slider" class="slider" style="height: @(Model.ContentSliderHeight); @(GetSliderBgExpression())">
+        <nav class="arrows">
+            <span class="prev"></span>
+            <span class="next"></span>
+        </nav>
+        <ul>
+            @foreach (ContentSliderSlideSettings slide in Model.Slides) 
+            { 
+                if(slide.Published)
+                {
+                    <li id="a6x" class="frame4">
+                        @if (!String.IsNullOrEmpty(@slide.Title))
+                        {
+			                <h2 class="title">@Html.Raw(@slide.Title)</h2>
+                        }
+                        @if (!String.IsNullOrEmpty(@slide.Text))
+                        {
+			                <div class="info">@Html.Raw(slide.Text)</div>
+                        }
+
+                        @if (slide.Button1.Published || slide.Button2.Published || slide.Button3.Published)
+                        {
+                            <div class="buttons">
+                                @*<a class="btn btn-danger" href="~/iphone-5">Jetzt kaufen</a>*@
+
+                                @if (slide.Button1.Published)
+                                {   
+                                    <a class="btn @slide.Button1.Type" href="@slide.Button1.Url">@slide.Button1.Text</a>
+                                }
+                                @if (slide.Button2.Published)
+                                {   
+                                    <a class="btn @slide.Button2.Type" href="@slide.Button2.Url">@slide.Button2.Text</a>
+                                }
+                                @if (slide.Button3.Published)
+                                {   
+                                    <a class="btn @slide.Button3.Type" href="@slide.Button3.Url">@slide.Button3.Text</a>
+                                }
+                            </div>
+                        }
+
+                        @if (!String.IsNullOrEmpty(@slide.PictureUrl))
+                        {
+                            <div class="picture"><img src="@Url.Content(slide.PictureUrl)" /></div>
+                        }
+		            </li>
+                }
+            }
+	    </ul>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            var sequence = null;
+            var options = {
+                autoPlay: @(Model.AutoPlay ? "true" : "false"),
+                autoPlayDelay: @(Model.AutoPlayDelay),
+                nextButton: true,
+                prevButton: true,
+                animateStartingFrameIn: true,
+                transitionThreshold: 500
+            };
+
+            sequence = $("#slider").sequence(options).data("sequence");
+            $.sequence.applyTheme(sequence); // applyTheme is an extension in sequence.jquery.custom.js
+        });
+    </script>
+
+}

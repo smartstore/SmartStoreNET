@@ -1,0 +1,20 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Value>Der Kunde muss einer Kundengruppe zugeordnet sein</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureDiscountNotLoaded">
+    <Value>Rabatt konnte nicht geladen werden</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureRequirementFailed">
+    <Value>Anforderung konnte nicht geladen werden</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureSelectCustomerRole">
+    <Value>Wählen Sie eine Kundengruppe</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CustomerRole">
+		<Value>Benötigte Kundengruppe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.CustomerRole.Hint">
+		<Value>Der Rabatt wird angewendet, wenn der Kunde zur gewählten Kundengruppe gehört.</Value>
+	</LocaleResource>
+</Language>

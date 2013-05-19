@@ -1,0 +1,18 @@
+﻿@model ShoppingCartModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.ShoppingCart;
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.ShoppingCart").Text);
+}
+<div class="page shopping-cart-page">
+    <div class="page-title">
+        <h1>@T("ShoppingCart")</h1>
+    </div>
+    <div class="page-body">
+        @Html.Partial("OrderSummary", Model)
+    </div>
+</div>

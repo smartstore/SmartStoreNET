@@ -1,0 +1,58 @@
+﻿@model BackInStockSubscribeModel
+@using SmartStore.Web.Models.Catalog;
+@{
+    /*pop-up windows*/
+    Layout = "~/Views/Shared/_RootPopup.cshtml";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "back-in-stock-subscription-form" }))
+{
+    <div class="page back-in-stock-subscription-page">
+        <div class="page-title">
+            <h2>
+                @if (Model.AlreadySubscribed)
+                {
+                    @T("BackInStockSubscriptions.AlreadySubscribed")
+                }
+                else
+                {
+                    @T("BackInStockSubscriptions.PopupTitle")
+                }
+            </h2>
+        </div>
+        <div class="page-body">
+            @if (!Model.SubscriptionAllowed)
+            {
+                <div>
+                    @T("BackInStockSubscriptions.NotAllowed")</div>
+            }
+            else if (!Model.IsCurrentCustomerRegistered)
+            {
+                <div>
+                    @T("BackInStockSubscriptions.OnlyRegistered")</div>
+            }
+            else if (!Model.AlreadySubscribed && Model.CurrentNumberOfBackInStockSubscriptions >= Model.MaximumBackInStockSubscriptions)
+            {
+                <div>
+                    @string.Format(T("BackInStockSubscriptions.MaxSubscriptions").Text, Model.MaximumBackInStockSubscriptions)</div>
+            }
+            else
+            {
+                if (!Model.AlreadySubscribed)
+                {
+                <div class="x-tooltip">@T("BackInStockSubscriptions.Tooltip")</div>
+                }
+                <button type="submit" id="back-in-stock-notify-me" class="btn btn-info">
+                    @(Model.AlreadySubscribed ? @T("BackInStockSubscriptions.Unsubscribe").Text : @T("BackInStockSubscriptions.NotifyMe").Text)
+                </button>
+                
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#back-in-stock-notify-me").click(function (e) {
+                            parent.$(".modal").modal("hide");
+                        });
+                    });
+                </script>
+            }
+        </div>
+    </div>
+}

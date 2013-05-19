@@ -1,0 +1,59 @@
+﻿@model SearchBoxModel
+@using SmartStore.Web.Models.Catalog;
+
+    @using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { onsubmit = "return check_small_search_form()", @class = "form-search pull-right" }))
+    {
+        <div class="input-append" style="position: relative">    
+            <input type="text" id="quicksearch" class="x-search-query" placeholder="@T("Search.SearchBox.Tooltip")" 
+                @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q"/>
+            <button type="submit" class="btn btn-warning" title="@T("Search")"><i class="icon-search"></i></button>
+       
+        </div>
+        <script type="text/javascript">
+
+            function check_small_search_form() {
+                var search_terms = $("#quicksearch");
+                if (search_terms.val() == "") {
+                    var frm = search_terms.closest("form");
+                    var shakeOpts = { direction: "right", distance: 4, times: 3, easing: "easeInOutCubic" };
+                    frm.stop(true, true)
+                       .effect("shake", shakeOpts, 100, function() { search_terms.trigger("focus").removeClass("placeholder") } );
+                    return false;
+                }
+
+                return true;
+            }
+            @if (Model.AutoCompleteEnabled)
+            {
+                <text>
+                $(function () {
+                    $('#quicksearch').autocomplete({
+                        delay: 500,
+                        minLength: @(Model.SearchTermMinimumLength.ToString()),
+                        source: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
+			            select: function( event, ui ) {
+			                $("#quicksearch").val(ui.item.label);
+                            setLocation(ui.item.producturl);
+				            return false;
+			            },
+                        open: function( event, ui ) { 
+                            $(this).autocomplete('widget').css({'z-index': '2001', marginTop: "-2px",  width: $("#quicksearch").outerWidth() - 6});
+                            return false;
+                        }
+                    })
+                    .data("autocomplete")._renderItem = function( ul, item ) {
+                        var t = item.label;
+                        //html encode
+                        t = htmlEncode(t);
+                        return $("<li></li>")
+                            .data("item.autocomplete", item)
+                            .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"'>") : null)" + t + "</a>")
+                            .appendTo(ul);
+                    };
+
+                });
+                </text>
+            }
+        </script>
+        @Html.Widget("searchbox")
+    }

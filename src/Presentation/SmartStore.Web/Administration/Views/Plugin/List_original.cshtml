@@ -1,0 +1,128 @@
+﻿@model Telerik.Web.Mvc.GridModel<PluginModel>
+@using Telerik.Web.Mvc.UI
+@{    
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Plugins").Text;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "plugins-form" }))
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-cogs"></i>
+            @T("Admin.Configuration.Plugins")
+        </div>
+        <div class="options">
+            <a href="@Url.Action("ReloadList")" class="btn"><i class="icon-refresh"></i>&nbsp;@T("Admin.Configuration.Plugins.ReloadList")</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#plugins-grid a.install").click(function (e) {
+                $.throbber.show('@T("Admin.Configuration.Plugins.Fields.Install.Progress")');
+            });
+
+            $("#plugins-grid a.uninstall").click(function (e) {
+                $.throbber.show('@T("Admin.Configuration.Plugins.Fields.Uninstall.Progress")');
+            });
+        });
+    </script>    
+    <table class="adminContent">
+        <tr>
+            <td>
+                <h4>@T("Admin.Configuration.Plugins.Description"):</h4>
+                <ol>
+                    <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
+                    <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
+                    <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
+                    <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
+                    <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
+                </ol>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<PluginModel>()
+                    .Name("plugins-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.SystemName);
+                    })
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Group)
+                            .ReadOnly()
+                            .Width(150)
+                            .Centered();
+                        columns.Bound(x => x.FriendlyName)
+                             .Width(150)
+                             .Centered();
+                        columns.Bound(x => x.SystemName)
+                            .ReadOnly()
+                            .Width(150)
+                            .Centered();
+                        columns.Bound(x => x.Version)
+                            .ReadOnly()
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.Author)
+                            .ReadOnly()
+                            .Width(100)
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(50)
+                            .Centered();
+                        columns.Bound(x => x.Installed)
+                            .ReadOnly()
+                            .Width(50)
+                            .Template(x => x.Installed.ToString().ToLower())
+                            .Centered();
+                        columns.Bound(x => x.ConfigurationUrl)
+                            .ReadOnly()
+                            .Width(50)
+                            //allow configuration only when a plugin has a configuration URL specified
+                            .Template(x => (!String.IsNullOrEmpty(x.ConfigurationUrl)) ? string.Format("<a href=\"{0}\">{1}</a>", x.ConfigurationUrl, T("Admin.Configuration.Plugins.Fields.Configure").Text) : "")
+                            .ClientTemplate("<# if (ConfigurationUrl && ConfigurationUrl.length > 0)  { #> <a href=\"<#= ConfigurationUrl #>\">" + T("Admin.Configuration.Plugins.Fields.Configure").Text + "</a> <# } else { #>  <# } #>")
+                            .Centered();
+                        columns.Bound(x => x.SystemName)
+                            .ReadOnly()
+                            .Template(x =>
+                                Html.ActionLink(x.Installed ? T("Admin.Configuration.Plugins.Fields.Uninstall").Text : T("Admin.Configuration.Plugins.Fields.Install").Text,
+                                x.Installed ? "Uninstall" : "Install", new { systemName = x.SystemName }, new { @class = x.Installed ? "uninstall" : "install" }))
+                            .ClientTemplate("<# if (Installed)  { #> <a href=\"" + @Url.Content("~/Admin/Plugin/Uninstall/") + "?systemName=<#= SystemName #>\" class=\"uninstall\">" + T("Admin.Configuration.Plugins.Fields.Uninstall").Text + "</a> <# } else { #> <a href=\"" + @Url.Content("~/Admin/Plugin/Install/") + "?systemName=<#= SystemName #>\" class=\"install\">" + T("Admin.Configuration.Plugins.Fields.Install").Text + "</a> <# } #>")
+                            .Width(50)
+                            .Centered()
+                            .HeaderTemplate(T("Admin.Configuration.Plugins.Fields.Installation").Text);
+                        columns.Bound(x => x.SystemName)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => "<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Plugin/EditPopup") + "?systemName=" + x.SystemName + "&btnId=btnRefresh&formId=plugins-form', 800, 250, true); return false;\" class='t-button' />")
+                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Plugin/EditPopup") + "?systemName=<#= SystemName #>&btnId=btnRefresh&formId=plugins-form', 800, 250, true); return false;\" class='t-button' />")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .DataBinding(dataBinding =>
+                        dataBinding.Ajax()
+                        .Select("ListSelect", "Plugin")
+                    )
+                    .Footer(false))
+            </td>
+        </tr>
+        <tr>
+            <td width="100%">
+                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('#btnRefresh').click(function () {
+                            //refresh grid
+                            var optionsGrid = $("#plugins-grid");
+                            optionsGrid.data('tGrid').ajaxRequest();
+
+                            //return false to don't reload a page
+                            return false;
+                        });
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+}

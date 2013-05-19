@@ -1,0 +1,123 @@
+﻿@model SpecificationAttributeModel
+
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("specificationattribute-edit").Items(x =>
+{
+    x.Add().Text(T("Admin.Catalog.Attributes.SpecificationAttributes.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Catalog.Attributes.SpecificationAttributes.Options").Text).Content(TabOptions());
+    
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "specificationattribute-edit"));
+})
+@helper TabInfo()
+    { 
+    @(Html.LocalizedEditor<SpecificationAttributeModel, SpecificationAttributeLocalizedModel>("specificationattribute-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].Name)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].Name)
+                @Html.ValidationMessageFor(model => model.Locales[item].Name)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Name)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </td>
+        </tr>
+    </table>
+    ))
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+    </table>
+    }
+@helper TabOptions()
+    { 
+        if (Model.Id > 0)
+        {
+            <table class="adminContent">
+                <tr>
+                    <td>
+                        @(Html.Telerik().Grid<SpecificationAttributeOptionModel>()
+                        .Name("specificationattributeoptions-grid")
+                            .DataKeys(x =>
+                            {
+                                x.Add(y => y.Id).RouteKey("optionId");
+                                x.Add(y => y.SpecificationAttributeId).RouteKey("specificationAttributeId");
+                            })
+                            .Columns(columns =>
+                            {
+                                columns.Bound(x => x.Name)
+                                    .Width(300);
+                                    //TODO display localized values here
+                                columns.Bound(x => x.DisplayOrder)
+                                    .Width(100)
+                                    .Centered();
+                                columns.Bound(x => x.Id)
+                                    .Width(50)
+                                    .Centered()
+                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/SpecificationAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=specificationattribute-form', 800, 250, true); return false;\" class='btn' />")
+                                    .Title(T("Admin.Common.Edit").Text);
+                                columns.Command(commands =>
+                                {
+                                    commands.Delete().Localize(T);
+                                })
+                                .Width(50)
+                                .Title(T("Admin.Common.Delete").Text);
+                            })
+                            .DataBinding(dataBinding => 
+                                dataBinding.Ajax().Select("OptionList", "SpecificationAttribute", new { specificationAttributeId = Model.Id })
+                                .Delete("OptionDelete", "SpecificationAttribute"))
+                            .EnableCustomBinding(true))
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100%">
+                        <input type="submit" id="btnAddNewOption" name="btnAddNewOption" value="@T("Admin.Catalog.Attributes.SpecificationAttributes.Options.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("OptionCreatePopup", "SpecificationAttribute", new { specificationAttributeId = Model.Id, btnId = "btnRefresh", formId = "specificationattribute-form" }))', 800, 250, true); return false;" class="btn" />
+                        <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $('#btnRefresh').click(function () {
+                                    //refresh grid
+                                    var optionsGrid = $("#specificationattributeoptions-grid");
+                                    optionsGrid.data('tGrid').ajaxRequest();
+
+                                    //return false to don't reload a page
+                                    return false;
+                                });                                
+                            });
+                        </script>
+                    </td>
+                </tr>
+            </table>
+        }
+        else
+        {
+            @T("Admin.Catalog.Attributes.SpecificationAttributes.Options.SaveBeforeEdit")
+        }
+    }

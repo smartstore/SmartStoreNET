@@ -1,0 +1,42 @@
+﻿@model Telerik.Web.Mvc.GridModel<MessageTemplateModel>
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.ContentManagement.MessageTemplates").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-edit"></i>
+        @T("Admin.ContentManagement.MessageTemplates")
+    </div>
+    <div class="options">
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<MessageTemplateModel>(Model.Data)
+                    .Name("templates-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Width(400)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Name#></a>");
+                        columns.Bound(x => x.IsActive)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.IsActive))
+                            .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "MessageTemplate"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

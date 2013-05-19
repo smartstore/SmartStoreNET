@@ -1,0 +1,70 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.Plugin.Widgets.GoogleAnalytics.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+	
+@using (Html.BeginForm())
+{
+
+    <div class="alert alert-info">
+        @Html.Raw(@T("Plugins.Widgets.GoogleAnalytics.AdminInstruction"))
+    </div>
+    
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ZoneId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ZoneId, Model.AvailableZones)
+            @Html.ValidationMessageFor(model => model.ZoneId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.GoogleId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.GoogleId)
+            @Html.ValidationMessageFor(model => model.GoogleId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TrackingScript)
+        </td>
+        <td class="adminData">
+            @Html.TextAreaFor(model => model.TrackingScript, new { style = "Width: 600px; Height: 200px;" })
+            @Html.ValidationMessageFor(model => model.TrackingScript)
+        </td>
+    </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EcommerceScript)
+		</td>
+		<td class="adminData">
+			@Html.TextAreaFor(model => model.EcommerceScript, new { style = "Width: 600px; Height: 50px;" })
+			@Html.ValidationMessageFor(model => model.EcommerceScript)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EcommerceDetailScript)
+		</td>
+		<td class="adminData">
+			@Html.TextAreaFor(model => model.EcommerceDetailScript, new { style = "Width: 600px; Height: 50px;" })
+			@Html.ValidationMessageFor(model => model.EcommerceDetailScript)
+		</td>
+	</tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td style="padding:10px 0">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                @T("Admin.Common.Save")
+            </button>
+        </td>
+    </tr>
+</table>
+
+}

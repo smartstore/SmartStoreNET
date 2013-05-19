@@ -1,0 +1,71 @@
+﻿@model MenuModel
+@using SmartStore.Web.Models.Common;
+
+<ul class="pull-left">
+    @Html.Widget("header_menu_before")
+
+    @if (Model.IsCustomerImpersonated)
+    {
+        <li class="finish-impersonation">
+            <a href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")">
+                <i class="icon-signout"></i>
+                @Model.CustomerEmailUsername
+            </a>
+        </li>
+    }
+    <li>
+        <a href="@Url.RouteUrl("HomePage")">
+            @T("HomePage")
+        </a>
+    </li>
+    @if (Model.AllowPrivateMessages)
+    {
+        <li>
+            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
+                @T("PrivateMessages.Inbox")
+                @if (Model.UnreadPrivateMessages > 0) 
+                {
+                    <span class="label label-info">@Model.UnreadPrivateMessages</span>
+                }
+            </a>
+        </li>
+    }
+    @if (Model.RecentlyAddedProductsEnabled)
+    {
+        <li>
+            <a href="@Url.RouteUrl("RecentlyAddedProducts")">
+                @T("Products.NewProducts")
+            </a>
+        </li>
+    }
+    <li>
+        <a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
+    </li>
+    <li>
+        <a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+    </li>
+
+    @Html.Widget("header_menu_after")
+</ul>
+
+@if (Model.BlogEnabled || Model.ForumEnabled) {
+    <ul class="pull-left special">
+        @if (Model.BlogEnabled)
+        {
+            <li>
+                <a class="special-blog" href="@Url.RouteUrl("Blog")">
+                    <i class="icon-edit"></i>@T("Blog")
+                </a>
+            </li>
+        }
+        @if (Model.ForumEnabled)
+        {
+            <li>
+                <a class="special-forum" href="@Url.RouteUrl("Boards")">
+                    <i class="icon-group"></i>@T("Forum.Forums")
+                </a>
+            </li>
+        }
+    </ul>
+}
+

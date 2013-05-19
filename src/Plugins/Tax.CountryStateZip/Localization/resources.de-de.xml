@@ -1,0 +1,41 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Tax.CountryStateZip" AppendRootKey="false">
+    <Value>Steuer nach Land &amp; Bundesland &amp; PLZ</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country">
+    <Value>Land</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Country.Hint">
+    <Value>Das Land.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince">
+    <Value>Bundesland</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.StateProvince.Hint">
+    <Value>Bei Angabe eines Asterisks steht diese Versandart allen Kunden, ungeachtet des Bundeslandes, zur Verfügung.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip">
+    <Value>PLZ</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Zip.Hint">
+    <Value>Bei Angabe eines Asterisks steht diese Versandart allen Kunden, ungeachtet der PLZ, zur Verfügung.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TaxCategory">
+    <Value>Steuerklasse</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TaxCategory.Hint">
+    <Value>Die Steuerklasse.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Percentage">
+    <Value>Prozentsatz</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Percentage.Hint">
+    <Value>Der Steuersatz.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord">
+    <Value>Steuersatz anlegen</Value>
+  </LocaleResource>
+  <LocaleResource Name="AddRecord.Hint">
+    <Value>Neuen Steuersatz hinzufügen</Value>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,131 @@
+﻿@model NewsItemModel
+@using SmartStore.Web.Models.News;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+	string avatarSpanning = (Model.AllowCustomersToUploadAvatars ? "padding-left: {0}px; min-height: {0}px;".FormatWith(Model.AvatarPictureSize + 30) : "");
+}
+
+<article class="page news-item-page">
+
+    <div class="news-date muted">
+        @Model.CreatedOn.ToString("D")
+    </div>
+
+    <div class="page-title">
+        <h1>
+            @Model.Title
+        </h1>
+    </div>
+
+    <div class="news-body">
+        @Html.Widget("newsitem_page_before_body")
+        <div class="news-content">
+            @Html.Raw(Model.Full)
+        </div>
+        @Html.Widget("newsitem_page_before_comments")
+
+        @if (Model.AllowComments)
+        {
+            <div class="new-comment well">
+                <h3 class="title">@T("News.Comments.LeaveYourComment")</h3>
+                @using (Html.BeginForm())
+                {
+                    <div>
+                        @if (!ViewData.ModelState.IsValid) 
+                        {
+                            @Html.ValidationSummary(true)
+                        }
+                        @{
+                            string result = TempData["sm.news.addcomment.result"] as string;
+                        }
+                        @if (!String.IsNullOrEmpty(result))
+                        {
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                @result
+                            </div>
+                        }
+                        <div class="forms-box">
+                            <div class="inputs">
+                                @Html.LabelFor(model => model.AddNewComment.CommentTitle)
+                                <div class="input-box">
+                                    @Html.TextBoxFor(model => model.AddNewComment.CommentTitle, new { @class = "comment-title" })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.AddNewComment.CommentTitle)
+                            </div>
+                            <div class="inputs">
+                                @Html.LabelFor(model => model.AddNewComment.CommentText)
+                                <div class="input-box">
+                                    @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
+                            </div>
+                            @if (Model.AddNewComment.DisplayCaptcha)
+                            {
+                                <div class="captcha-box">
+                                    @Html.Raw(Html.GenerateCaptcha())
+                                </div>
+                            }
+                        </div>
+                        <div class="buttons">
+                            <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary news-item-add-comment-button">
+                                @T("News.Comments.SubmitButton")
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+            if (Model.Comments.Count > 0)
+            {
+                <div class="comment-list block">
+
+                    <div class="title block-title">
+                        @T("News.Comments") (@Model.NumberOfComments)
+                    </div>
+
+                    <div class="block-body">
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="comment-item news-comment clearfix" style="@avatarSpanning">
+                            
+							@if (!String.IsNullOrEmpty(comment.CustomerAvatarUrl))
+							{
+								<div class="comment-avatar">								
+									<img src="@(comment.CustomerAvatarUrl)" class="avatar-img img-polaroid" title="avatar" alt="avatar" />
+								</div>
+							}
+                            
+                            <div class="comment-content">
+                                <div class="comment-info">
+                                    @if (comment.AllowViewingProfiles)
+                                    {
+                                        <a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" class="username">@(comment.CustomerName)</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="username">@(comment.CustomerName)</span>
+                                    }
+                                    <span class="comment-time">
+                                        @comment.CreatedOn.ToString("D")
+                                    </span>
+                                </div>
+                                <div class="comment-body">
+                                    @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(comment.CommentText, false, true, false, false, false, false))
+                                </div>
+                            </div>
+                            @Html.Widget("newsitem_page_inside_comment")
+                        </div>
+                    }
+                    </div>
+            </div>
+            }
+        }
+        @Html.Widget("newsitem_page_after_comments")
+    </div>
+</article>

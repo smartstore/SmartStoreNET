@@ -1,0 +1,20 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.ExternalAuth.Facebook" AppendRootKey="false">
+    <Value>Facebook</Value>
+  </LocaleResource>
+  <LocaleResource Name="Login">
+    <Value>Login using Facebook account</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientKeyIdentifier">
+    <Value>Client key identifier</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientKeyIdentifier.Hint">
+    <Value>Enter your client key identifier here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientSecret">
+    <Value>Client secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientSecret.Hint">
+    <Value>Enter your client secret here.</Value>
+  </LocaleResource>  
+</Language>

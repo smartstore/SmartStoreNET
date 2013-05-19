@@ -1,0 +1,29 @@
+﻿@model String
+@using SmartStore.Web.Framework.UI;
+@{
+    Html.AddScriptParts(@Url.Content("~/Content/editors/tinymce/tiny_mce_gzip.js"));
+    Html.AddScriptParts(@Url.Content("~/Content/editors/tinymce/globalinit.js"));
+}
+<script type="text/javascript">
+
+    $(function () {
+        tinyMCE.init(
+            $.extend(
+                true, 
+                {},
+                tiny_mce_global_config, 
+                {
+                    elements: '@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)',
+                    language: '@WorkContext.WorkingLanguage.UniqueSeoCode.ToLower()',
+                    editor_css: '@Url.Content("~/Content/editors/tinymce/themes/advanced/skins/smartstore/ui.less")',
+                    popup_css: '@Url.Content("~/Content/editors/tinymce/themes/advanced/skins/smartstore/dialog.less")'
+                }
+            )
+        );
+    });
+
+</script>
+
+@Html.TextArea(string.Empty, /* Name suffix */
+               ViewData.TemplateInfo.FormattedModelValue /* Initial value */
+)

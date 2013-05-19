@@ -1,0 +1,147 @@
+﻿@model ProductDetailsModel.ProductVariantModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+@using System.Globalization;
+@using System.Text.RegularExpressions;
+@{
+    string pattern = "(?<val>(\\d+[\\s\\,\\.]?)+)";
+    string replacement = String.Format("<span class=\"price-val-for-dyn-upd-{0}\">${{val}}</span> ", Model.ProductVariantPrice.ProductVariantId);  
+}
+
+    @if (Model.AddToCart.CustomerEntersPrice)
+    {
+        <div class="customer-entered-price line">
+            @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
+            @*round price*@
+            @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
+            <div class="price-range">
+                @Model.AddToCart.CustomerEnteredPriceRange
+            </div>
+        </div>
+    }
+
+    @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
+    {
+        <div class="price-details line well">
+
+            @if(!Model.ProductVariantPrice.CallForPrice) 
+            {
+                <div class="clearfix">
+
+                    <div class="pull-right" style="text-align:right;padding: 5px 0 6px 0">
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.OldPrice))
+                        {
+                            @T("Products.Price.OldPrice")<text>:</text>
+                            <span class="old-product-price">@Html.Raw(Model.ProductVariantPrice.OldPrice)</span>
+                            <br />
+                        }
+        
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.OldPrice) ||
+                            !String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        {
+                            @T("Products.Price")<text>:</text>
+                        }
+
+                        <span 
+                        @if (String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        {
+                            <text>class="product-price current text-success"</text>
+                        }
+                        >
+                            <span class="product-price-without-discount">
+                            @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.Price))
+                            {
+                                if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices && String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                                {
+                                    @Html.Raw(Regex.Replace(Model.ProductVariantPrice.Price, pattern, replacement))
+                                }
+                                else
+                                {
+                                    @Html.Raw(Model.ProductVariantPrice.Price)
+                                }
+                            }
+                            </span>
+                        </span>
+                    </div>
+        
+                
+                    <div class="product-price with-discount current pull-left">
+                        <span class="product-price-with-discount">
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        {
+                            if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices)
+                            {
+                                @Html.Raw(Regex.Replace(Model.ProductVariantPrice.PriceWithDiscount, pattern, replacement))
+                            }
+                            else
+                            {
+                                @Html.Raw(Model.ProductVariantPrice.PriceWithDiscount)
+                            }
+                        }
+                        </span>
+                    </div>
+                    
+                </div>
+            } 
+            else 
+            {
+                <h4 class="call-for-price">@T("Products.CallForPrice")</h4>
+            }
+
+            <!-- base price -->
+            <div class="base-price muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
+                @Model.BasePriceInfo
+            </div>
+
+            <!-- delivery time -->
+            <div class="delivery-time">
+                @if (Model.DeliveryTime != null && Model.IsShipEnabled)
+                {
+                    <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+                    
+                    if(Model.DisplayDeliveryTimeAccordingToStock) {
+                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+                        <span class="delivery-time-value">@Model.DeliveryTime.Name</span>
+                    } 
+                    else {
+                        <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+                        <span class="delivery-time-value">@Model.StockAvailablity</span>
+                    }
+                }
+            </div>
+
+            @if(Model.ShowLegalInfo)
+            {
+                <div class="muted legal-info">
+                    @Html.Raw(Model.LegalInfo)
+                </div>
+            }
+        
+        </div>
+        <div class="add-to-cart line">
+            <div class="form-inline clearfix" style="text-align:right;@(Model.IsUnavailable ? "display:none;" : "")">
+                @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" }):
+                @if (Model.AddToCart.AllowedQuantities.Count > 0)
+                {
+                    @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                }
+                @if (!Model.AddToCart.DisableBuyButton)
+                {
+                    <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
+                        href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.AddToCart.ProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 
+                        data-form-selector="#product-details-form"
+                        data-type="cart"
+                        data-action="add">
+                        @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
+                        <i class="icon-plus-sign"></i>
+                    </a>
+                }
+            </div>
+        
+        </div>
+    }
+    @Html.Widget("productdetails_add_info")

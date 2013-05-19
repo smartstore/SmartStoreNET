@@ -1,0 +1,11 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Shipping.FixedRate" AppendRootKey="false">
+    <Value>Versand zum Festpreis</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethodName">
+    <Value>Name der Versandart</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Rate">
+    <Value>Gebühr</Value>
+  </LocaleResource>
+</Language>

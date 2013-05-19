@@ -1,0 +1,46 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsSeal" AppendRootKey="false">
+    <Value>Trusted Shops Seal</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Please find our step by step set up guide detailed below:</p>
+        <ul>
+            <li>1. blaaaaaa Blaaaaa</li>
+            <li>2. blaaaaaa Blaaaaa</li>
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Title">
+    <Value>Trusted-Shops</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="TrustedShopsId">
+    <Value>Trusted-Shops-Id</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId.Hint">
+    <Value>Please enter your Trusted-Shops-Id here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode">
+    <Value>Activate test mode</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode.Hint">
+    <Value>Activate test mode</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName">
+    <Value>Name of the shop</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName.Hint">
+    <Value>Please enter the name of the shop here, as it'll be shown within the widget.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopText">
+    <Value>Descritive text</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopText.Hint">
+    <Value>Please enter a descriptive text, as it'll be shown within the widget.</Value>
+  </LocaleResource>
+  
+</Language>

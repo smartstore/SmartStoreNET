@@ -1,0 +1,14 @@
+﻿@model ProductOverviewModel
+@using SmartStore.Web.Models.Catalog;
+<div class="small-product-item">
+    <div class="product-title">
+        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+            @Model.Name</a>
+    </div>
+    <div class="picture">
+        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+            <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl"
+                                        title="@Model.DefaultPictureModel.Title" /></a>
+    </div>
+    @Html.Widget("productsmallbox")
+</div>

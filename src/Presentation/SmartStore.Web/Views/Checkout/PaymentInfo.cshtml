@@ -1,0 +1,55 @@
+﻿@model CheckoutPaymentInfoModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_Checkout.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+@section orderProgress{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
+}
+<div class="page payment-info-page">
+    <div class="page-title">
+        <h1>@T("Checkout.PaymentInfo")</h1>
+    </div>
+
+    <div class="page-body checkout-data">
+        @using (Html.BeginRouteForm("CheckoutPaymentInfo", FormMethod.Post))
+        {
+            @Html.Widget("checkout_payment_info_top")
+            <div class="payment-info">
+                <div class="body">
+                    @Html.Action(Model.PaymentInfoActionName, Model.PaymentInfoControllerName, Model.PaymentInfoRouteValues)
+                </div>
+                <div class="select-button clearfix">
+                    <a class="btn pull-left" href="@Url.RouteUrl("CheckoutPaymentMethod")">
+                        <i class="icon-caret-left"></i>&nbsp;
+                        @T("Common.Back")
+                    </a>  
+                    <input type="submit" name="nextstep" id="nextstep" style="display:none" />
+
+                    <button class="btn btn-warning pull-right payment-info-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
+                        @T("Checkout.NextButton")
+                        &nbsp;<i class="icon-caret-right"></i>
+                    </button>
+
+                </div>
+            </div>
+            
+            <div class="message-error">
+                @Html.ValidationSummary(false)
+            </div>
+            @Html.Widget("checkout_payment_info_bottom")
+        }
+
+        @*<div class="order-summary-title">
+            @T("Checkout.OrderSummary")
+        </div>
+        <div class="order-summary-body">
+            @Html.Action("OrderSummary", "ShoppingCart")
+        </div>*@
+    </div>
+</div>

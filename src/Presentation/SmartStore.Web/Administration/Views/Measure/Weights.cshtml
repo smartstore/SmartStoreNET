@@ -1,0 +1,71 @@
+﻿@model Telerik.Web.Mvc.GridModel<MeasureWeightModel>
+@using Telerik.Web.Mvc.UI;
+@using System.Linq;
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Measures.Weights").Text;
+}
+<div class="section-header">
+    <div class="title">
+        @T("Admin.Configuration.Measures.Weights")
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            <b>@T("Admin.Configuration.Measures.Weights.Description")</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @(Html.Telerik().Grid(Model.Data)
+                    .Name("measureweight-grid")
+                    .DataKeys(x =>
+                    {
+                        x.Add(y => y.Id).RouteKey("Id");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name).Width(200);
+                        columns.Bound(x => x.SystemKeyword).Width(150);
+                        columns.Bound(x => x.Ratio).Width(100).Format("{0:G29}");
+                        columns.Bound(x => x.DisplayOrder).Width(100);
+                        columns.Bound(x => x.IsPrimaryWeight)
+                            .Width(100)
+                            .Centered()
+                            .Template(item => @Html.SymbolForBool(item.IsPrimaryWeight))
+                            .ClientTemplate(@Html.SymbolForBool("IsPrimaryWeight"))
+                            .ReadOnly();
+                        columns.Command(commands => commands.Select().Text(T("Admin.Telerik.GridLocalization.Select").ToString()))
+                            .Title(T("Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight").Text)
+                            .Width(100);
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        }).Width(180);
+
+                    })
+                    .ToolBar(x => x.Insert())
+                    .Editable(x =>
+                    {
+                        x.Mode(GridEditMode.InLine);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax().Select("Weights", "Measure")
+                            .Update("WeightUpdate", "Measure")
+                            .Delete("WeightDelete", "Measure")
+                            .Insert("WeightAdd", "Measure");
+                    })
+                    .ClientEvents(x => x.OnError("grid_onError"))
+                    .EnableCustomBinding(true))
+            <script type="text/javascript">
+                function grid_onError(e) {
+                    alert(e.XMLHttpRequest.responseText);
+                    e.preventDefault();
+                }
+            </script>
+        </td>
+    </tr>
+</table>

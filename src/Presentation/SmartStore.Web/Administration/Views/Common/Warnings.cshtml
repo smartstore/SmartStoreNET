@@ -1,0 +1,47 @@
+﻿@model IList<SystemWarningModel>
+@{
+    //page title
+    ViewBag.Title = T("Admin.System.Warnings").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-exclamation-sign"></i>
+        @T("Admin.System.Warnings")
+    </div>
+</div>
+<div class="system-warnings">
+    <ul>
+        @foreach (var warning in Model)
+        {
+            <li>
+                @switch (warning.Level)
+                {
+                    case SystemWarningLevel.Pass:
+                        {
+                            <span class="pass">
+                                <i class="icon icon-check"></i>
+                                @warning.Text
+                            </span>
+                        }
+                        break;
+                    case SystemWarningLevel.Warning:
+                        {
+                            <span class="warning">
+                                <i class="icon icon-question-sign"></i>
+                                @warning.Text
+                            </span>
+                        }
+                        break;
+                    case SystemWarningLevel.Fail:
+                        {
+                            <span class="fail">
+                                <i class="icon icon-remove-sign"></i>
+                                @warning.Text
+                            </span>
+                        }
+                        break;
+                }
+            </li>
+        }
+    </ul>
+</div>

@@ -1,0 +1,18 @@
+﻿@model AccountActivationModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.AccountActivation").Text);
+}
+<div class="page account-activation-page">
+    <div class="page-title">
+        <h1>@T("Account.AccountActivation")</h1>
+    </div>
+    <div class="page-body">
+        <strong>
+            @Model.Result
+        </strong>
+    </div>
+</div>

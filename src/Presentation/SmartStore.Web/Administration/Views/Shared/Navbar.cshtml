@@ -1,0 +1,114 @@
+﻿@using SmartStore.Services.Customers;
+
+@{
+    var currentCustomer = this.WorkContext.CurrentCustomer;
+    var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;
+    var userName = usernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+}
+
+<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar-inner">
+    
+    <a class="brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
+        <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
+    </a>
+    
+    <div id="ajax-busy"></div>
+
+    @Html.Widget("admin_menu_before")
+    @Html.Action("Menu", "Common")
+    @Html.Widget("admin_menu_before")
+
+    <div id="navbar-tools" class="btn-toolbar">
+        
+        @if (currentCustomer != null && currentCustomer.IsRegistered())
+        {
+            <text>
+                <div class="btn-group pull-right">
+                    <a id="current-user" class="btn btn-inverse navbar-tool" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id })'>
+                        <i class="icon-user"></i>
+                        <span>@userName</span>
+                     </a>
+                    <a class="btn btn-inverse dropdown-toggle navbar-tool" data-toggle="dropdown" href="javascript:void(0)">
+                        <i class="icon-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Account", "Edit", "Customer", new { id = currentCustomer.Id }, new { })</li>
+                        <li>@Html.ActionLink(T("Admin.Header.Logout").Text, "Logout", "Customer", new { area = "" }, new { @class = "disabled" })</li>
+                    </ul>
+                </div>
+            </text>
+        }
+
+        <div class="btn-group pull-right navbar-tools-group" style="margin-right: 5px">
+            
+            <div class="btn-group">
+                <button class="btn btn-inverse dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
+                    <i class="icon-cogs"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="@Url.Action("Index", "Home", new { area = "" })">
+                            <i class="icon-globe"></i>
+                            @T("Admin.Header.PublicStore")
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("ClearCache", "Common")">
+                            <i class="icon-remove"></i>
+                            @T("Admin.Header.ClearCache")
+                        </a>
+                    </li>
+                    <li>
+                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common")">
+                            <i class="icon-refresh"></i>
+                            @T("Admin.Header.RestartApplication")
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            @Html.Action("LanguageSelector", "Common")
+
+            <div class="btn-group pull-right">
+                <button class="btn btn-inverse dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
+                    <i class="icon-question-sign"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#">@T("Admin.Help.Topics")</a></li>
+                    <li><a href="#">@T("Admin.Help.Forums")</a></li>
+                </ul>
+            </div>
+           
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $("#restart-application").click(function (e) {
+            e.preventDefault();
+            $.throbber.show({
+                message: '@T("Admin.Header.RestartApplication.Progress")',
+                callback: function () {
+                    setLocation($(e.target).data("url"));
+                    
+                }
+            });
+            return false;
+        });
+
+        // add mainmenu tooltips;
+        $('#tools [rel=tooltip]').tooltip({ 
+            placement: 'bottom'
+        });
+
+    });
+          
+</script>
+

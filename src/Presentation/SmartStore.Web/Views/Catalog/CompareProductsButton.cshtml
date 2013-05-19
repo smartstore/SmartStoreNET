@@ -1,0 +1,11 @@
+﻿@model AddToCompareListModel
+@using SmartStore.Web.Models.Catalog;
+<div>
+    <a class="ajax-cart-link"
+        href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.ProductId })"
+        data-type="compare"
+        data-action="add">
+        <i class="icon-retweet"></i>
+        @T("Products.Compare.AddToCompareList")
+    </a>
+</div>

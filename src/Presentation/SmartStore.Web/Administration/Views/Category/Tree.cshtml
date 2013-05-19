@@ -1,0 +1,71 @@
+﻿@model IList<SmartStore.Core.Domain.Catalog.Category>
+@using Telerik.Web.Mvc.UI;
+@{
+    var categoryService = EngineContext.Current.Resolve<SmartStore.Services.Catalog.ICategoryService>();
+    
+    //page title
+    ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-sitemap"></i>
+        @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToListView") + ")", "List")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().TreeView()
+        .Name("category-treeview")
+        .BindTo(Model, (item, category) =>
+        {
+            item.Text = category.Name;
+            item.Value = category.Id.ToString();
+            item.LoadOnDemand = categoryService.GetAllCategoriesByParentCategoryId(category.Id, true).Count > 0;
+            item.Enabled = true;
+            item.ImageUrl = Url.Content(category.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png");
+        })
+        .ClientEvents(events => events
+                        .OnSelect("onSelect")
+                        .OnNodeDropped("onNodeDropped")
+                )
+        .DataBinding(dataBinding => dataBinding
+                            .Ajax().Select("TreeLoadChildren", "Category")
+        )
+        .ShowLines(true)
+                .DragAndDrop(true))
+            <script type="text/javascript">
+            function onNodeDropped(e) {
+                var treeview = $('#category-treeview').data("tTreeView");
+                
+                var item = treeview.getItemValue(e.item);
+                var destination = treeview.getItemValue(e.destinationItem);
+                
+                var data = {};
+                data.item = item;
+                data.destinationitem = destination;
+                data.position = e.dropPosition;
+
+                $.ajax({
+                    cache:false,
+                    url: "@Url.Action("TreeDrop")",
+                    data: data,
+                    type: "POST",
+                    success: function () {
+                        $(this).addClass("done");
+                    }
+                });
+            }
+
+            function onSelect(e) {
+                var itemId = $('#category-treeview').data('tTreeView').getItemValue(e.item);
+                var url = "@(Url.Action("Edit"))" + "/" + itemId;
+                window.location = url;
+            }
+            </script>
+        </td>
+    </tr>
+</table>

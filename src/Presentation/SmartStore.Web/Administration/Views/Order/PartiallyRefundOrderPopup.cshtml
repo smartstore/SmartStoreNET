@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+}
+@model OrderModel
+@using Telerik.Web.Mvc.UI;
+@{    
+    //page title
+    ViewBag.Title = T("Admin.Orders.Fields.PartialRefund").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Orders.Fields.PartialRefund")
+        </div>
+        <div class="options">
+        </div>
+    </div>
+    
+    @Html.ValidationSummary(false)
+    
+    if (ViewBag.RefreshPage == true)
+    {
+    <script type="text/javascript">
+        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+        catch (e){} 
+        window.close();
+    </script>
+    }
+
+
+    <p>
+        <b>
+            @string.Format(T("Admin.Orders.Fields.PartialRefund.OrderInfo").Text, Model.Id)</b>
+    </p>
+    <table width="100%">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AmountToRefund)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AmountToRefund): &nbsp;&nbsp;&nbsp; <span style="white-space: nowrap">
+                    @string.Format(@T("Admin.Orders.Fields.PartialRefund.AmountToRefund.Max").Text, Model.MaxAmountToRefund.ToString("G29"), Model.PrimaryStoreCurrencyCode)</span>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" name="partialrefundorder" value="@T("Admin.Orders.Fields.Refund")" id="partialrefundorder" class="btn" />
+}

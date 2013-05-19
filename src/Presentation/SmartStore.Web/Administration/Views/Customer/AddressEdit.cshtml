@@ -1,0 +1,17 @@
+﻿@model CustomerAddressModel
+@{
+    //page title
+    ViewBag.Title = T("Admin.Customers.Customers.Addresses.EditAddress").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Customers.Customers.Addresses.EditAddress") @Html.ActionLink("(" + T("Admin.Customers.Customers.Addresses.BackToCustomer") + ")", "Edit", new { id = Model.CustomerId })
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdateAddress", Model)
+}

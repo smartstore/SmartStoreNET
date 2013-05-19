@@ -1,0 +1,30 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Manual" AppendRootKey="false">
+		<Value>Kreditkarte</Value>
+	</LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+      
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFee">
+    <Value>Zusätzliche Gebühr</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFee.Hint">
+    <Value>Geben Sie hier die zusätzliche Gebühr an, die Ihren Kunden für die Nutzung dieser Zahlart berechnet werden soll.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFeePercentage">
+    <Value>Zusätzliche Gebühr prozentual berechnen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
+    <Value>Bestimmt ob die zusätzliche Gebühr prozentual zum Gesamtwert der Bestellung berechnet werden soll. Wenn die Option nicht aktiv ist, wird ein fester Wert berechnet.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TransactMode">
+    <Value>Markiere die Zahlung nach dem Abschluß der Bestellung als</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.TransactMode.Hint">
+    <Value>Bestimmen Sie den Transaktionsmodus.</Value>
+  </LocaleResource>
+</Language>

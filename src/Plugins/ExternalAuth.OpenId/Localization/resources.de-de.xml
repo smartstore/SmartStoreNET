@@ -1,0 +1,17 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.ExternalAuth.OpenId" AppendRootKey="false">
+    <Value>OpenID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Login">
+    <Value>Loggen Sie sich mit Ihrem OpenID-Account ein</Value>
+  </LocaleResource>
+  <LocaleResource Name="YourAccount">
+    <Value>Bitte wählen Sie den Anbieter Ihres Accounts</Value>
+  </LocaleResource>
+  <LocaleResource Name="Manually">
+    <Value>Geben Sie Ihre OpenID an</Value>
+  </LocaleResource>
+  <LocaleResource Name="SignIn">
+    <Value>Einloggen</Value>
+  </LocaleResource>
+</Language>

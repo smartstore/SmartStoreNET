@@ -1,0 +1,478 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6BDA8332-939F-45B7-A25E-7A797260AE59}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartStore.Core</RootNamespace>
+    <AssemblyName>SmartStore.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Autofac.3.0.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Autofac.3.0.2\lib\net40\Autofac.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Autofac.Mvc4.3.0.0\lib\net40\Autofac.Integration.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\..\packages\fasterflect.2.1.0\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic">
+      <HintPath>..\..\packages\System.Linq.Dynamic.1.0.0\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Caching\DefaultCacheManager.cs" />
+    <Compile Include="Caching\RequestCache.cs" />
+    <Compile Include="Caching\StaticCache.cs" />
+    <Compile Include="Caching\ICache.cs" />
+    <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Configuration\JsonPersistAttribute.cs" />
+    <Compile Include="Data\EntityState.cs" />
+    <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
+    <Compile Include="Data\Hooks\HookEntityMetadata.cs" />
+    <Compile Include="Data\Hooks\IHook.cs" />
+    <Compile Include="Data\Hooks\IPostActionHook .cs" />
+    <Compile Include="Data\Hooks\IPreActionHook.cs" />
+    <Compile Include="Data\Hooks\PostActionHook.cs" />
+    <Compile Include="Data\Hooks\PostDeleteHook.cs" />
+    <Compile Include="Data\Hooks\PostInsertHook.cs" />
+    <Compile Include="Data\Hooks\PostUpdateHook.cs" />
+    <Compile Include="Data\Hooks\PreActionHook.cs" />
+    <Compile Include="Data\Hooks\PreDeleteHook.cs" />
+    <Compile Include="Data\Hooks\PreInsertHook.cs" />
+    <Compile Include="Data\Hooks\PreUpdateHook.cs" />
+    <Compile Include="Data\IDbContext.cs" />
+    <Compile Include="Data\RepositoryExtensions.cs" />
+    <Compile Include="Domain\Catalog\BasePriceQuotation.cs" />
+    <Compile Include="Domain\Catalog\IProductVariant.cs" />
+    <Compile Include="Domain\Cms\ContentSliderSettings.cs" />
+    <Compile Include="Domain\Common\CompanyInformationSettings.cs" />
+    <Compile Include="Domain\Common\ContactDataSettings.cs" />
+    <Compile Include="Domain\Common\BankConnectionSettings.cs" />
+    <Compile Include="Domain\Common\SocialSettings.cs" />
+    <Compile Include="Domain\Directory\DeliveryTime.cs" />
+    <Compile Include="Domain\Themes\ThemeSettings.cs" />
+    <Compile Include="Domain\Themes\ThemeVariable.cs" />
+    <Compile Include="Extensions\HttpExtensions.cs" />
+    <Compile Include="Extensions\XmlWriterExtensions.cs" />
+    <Compile Include="IO\MimeTypes.cs" />
+    <Compile Include="Linq\Expanders\IPathExpander.cs" />
+    <Compile Include="Linq\Expanders\LambdaPathExpander.cs" />
+    <Compile Include="Linq\Expanders\StringPathExpander.cs" />
+    <Compile Include="Linq\Expressions\ExpressionVisitor.cs" />
+    <Compile Include="Linq\Expressions\MemberAccessPathVisitor.cs" />
+    <Compile Include="Linq\Expressions\MemberAccessPropertyInfoVisitor.cs" />
+    <Compile Include="Pageable.cs" />
+    <Compile Include="Collections\MultiMap.cs" />
+    <Compile Include="Collections\ThreadSafeList.cs" />
+    <Compile Include="Collections\TreeNode.cs" />
+    <Compile Include="ComponentModel\Expando.cs" />
+    <Compile Include="ComponentModel\PropertyBag.cs" />
+    <Compile Include="ComponentModel\SerializationUtils.cs" />
+    <Compile Include="Domain\Catalog\BackInStockSubscription.cs" />
+    <Compile Include="Domain\Catalog\SmartStoreProductVariantAttributeCombination.cs" />
+    <Compile Include="Domain\Cms\WidgetSettings.cs" />
+    <Compile Include="Domain\Common\AddressSettings.cs" />
+    <Compile Include="Domain\Common\FulltextSearchMode.cs" />
+    <Compile Include="Domain\Common\GenericAttribute.cs" />
+    <Compile Include="Domain\Orders\Events.cs" />
+    <Compile Include="Domain\Security\AclRecord.cs" />
+    <Compile Include="Domain\Security\IAclSupported.cs" />
+    <Compile Include="Domain\Seo\ISlugSupported.cs" />
+    <Compile Include="Domain\Seo\PageTitleSeoAdjustment.cs" />
+    <Compile Include="Domain\Seo\SeoSettings.cs" />
+    <Compile Include="Domain\Seo\UrlRecord.cs" />
+    <Compile Include="Domain\Shipping\ShipmentOrderProductVariant.cs" />
+    <Compile Include="Domain\Shipping\Shipment.cs" />
+    <Compile Include="Domain\Tasks\ScheduleTask.cs" />
+    <Compile Include="Domain\Messages\Events.cs" />
+    <Compile Include="Events\AppBeginRequestEvent.cs" />
+    <Compile Include="Events\AppRegisterGlobalFiltersEvent.cs" />
+    <Compile Include="Events\AppInitScheduledTasksEvent.cs" />
+    <Compile Include="Events\AppEndRequestEvent.cs" />
+    <Compile Include="Data\BaseDataProviderManager.cs" />
+    <Compile Include="Data\IDataProvider.cs" />
+    <Compile Include="Data\DataSettings.cs" />
+    <Compile Include="Data\DataSettingsHelper.cs" />
+    <Compile Include="Data\DataSettingsManager.cs" />
+    <Compile Include="Domain\Blogs\BlogExtensions.cs" />
+    <Compile Include="Domain\Catalog\ProductVariantExtensions.cs" />
+    <Compile Include="Domain\Catalog\ManufacturerTemplate.cs" />
+    <Compile Include="Domain\Catalog\CategoryTemplate.cs" />
+    <Compile Include="Domain\Catalog\ProductTemplate.cs" />
+    <Compile Include="Domain\Common\AdminAreaSettings.cs" />
+    <Compile Include="Domain\Customers\ExternalAuthenticationSettings.cs" />
+    <Compile Include="Domain\Customers\ExternalAuthenticationRecord.cs" />
+    <Compile Include="Domain\Customers\SystemCustomerNames.cs" />
+    <Compile Include="Domain\Polls\PollVotingRecord.cs" />
+    <Compile Include="Domain\Polls\PollAnswer.cs" />
+    <Compile Include="Domain\Polls\Poll.cs" />
+    <Compile Include="Domain\Orders\BestsellersReportLine.cs" />
+    <Compile Include="Events\EntityDeleted.cs" />
+    <Compile Include="Events\EntityInserted.cs" />
+    <Compile Include="Events\EntityUpdated.cs" />
+    <Compile Include="Extensions\ConversionExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\HtmlTextWriterExtensions.cs" />
+    <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="Extensions\XmlNodeExtensions.cs" />
+    <Compile Include="Fakes\Extensions.cs" />
+    <Compile Include="Fakes\FakeHttpContext.cs" />
+    <Compile Include="Fakes\FakeHttpRequest.cs" />
+    <Compile Include="Fakes\FakeHttpResponse.cs" />
+    <Compile Include="Fakes\FakeHttpSessionState.cs" />
+    <Compile Include="Fakes\FakeIdentity.cs" />
+    <Compile Include="Fakes\FakePrincipal.cs" />
+    <Compile Include="CollectionTExtensions.cs" />
+    <Compile Include="BaseEntity.cs" />
+    <Compile Include="Caching\Extensions.cs" />
+    <Compile Include="Caching\ICacheManager.cs" />
+    <Compile Include="Caching\NullCache.cs" />
+    <Compile Include="CommonHelper.cs" />
+    <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
+    <Compile Include="Configuration\IConfigurationProvider.cs" />
+    <Compile Include="Configuration\ISettings.cs" />
+    <Compile Include="Configuration\SmartStoreConfig.cs" />
+    <Compile Include="Domain\Affiliates\Affiliate.cs" />
+    <Compile Include="Domain\Blogs\BlogSettings.cs" />
+    <Compile Include="Domain\Blogs\BlogPost.cs" />
+    <Compile Include="Domain\Blogs\BlogComment.cs" />
+    <Compile Include="Domain\Blogs\BlogPostTag.cs" />
+    <Compile Include="Domain\Catalog\CatalogSettings.cs" />
+    <Compile Include="Domain\Catalog\ProductTag.cs" />
+    <Compile Include="Domain\Catalog\ProductReviewHelpfulness.cs" />
+    <Compile Include="Domain\Catalog\PriceRange.cs" />
+    <Compile Include="Domain\Catalog\SpecificationAttributeOptionFilter.cs" />
+    <Compile Include="Domain\Common\CommonSettings.cs" />
+    <Compile Include="Domain\Common\PdfSettings.cs" />
+    <Compile Include="Domain\Customers\BestCustomerReportLine.cs" />
+    <Compile Include="Domain\Orders\OrderAverageReportLine.cs" />
+    <Compile Include="Domain\Orders\OrderAverageReportLineSummary.cs" />
+    <Compile Include="Domain\Topics\Topic.cs" />
+    <Compile Include="Domain\News\NewsComment.cs" />
+    <Compile Include="Domain\News\NewsItem.cs" />
+    <Compile Include="Domain\News\NewsSettings.cs" />
+    <Compile Include="Domain\Localization\ILocalizedEnum.cs" />
+    <Compile Include="Domain\Logging\ActivityLog.cs" />
+    <Compile Include="Domain\Logging\ActivityLogType.cs" />
+    <Compile Include="Domain\Media\MediaSettings.cs" />
+    <Compile Include="Domain\Messages\Campaign.cs" />
+    <Compile Include="Domain\Customers\UserRegistrationType.cs" />
+    <Compile Include="Domain\Customers\CustomerNameFormat.cs" />
+    <Compile Include="Domain\Customers\SystemCustomerAttributeNames.cs" />
+    <Compile Include="Domain\Directory\ExchangeRate.cs" />
+    <Compile Include="Domain\Forums\EditorType.cs" />
+    <Compile Include="Domain\Forums\Forum.cs" />
+    <Compile Include="Domain\Forums\ForumGroup.cs" />
+    <Compile Include="Domain\Forums\ForumPost.cs" />
+    <Compile Include="Domain\Forums\ForumSearchType.cs" />
+    <Compile Include="Domain\Forums\ForumSettings.cs" />
+    <Compile Include="Domain\Forums\ForumSubscription.cs" />
+    <Compile Include="Domain\Forums\ForumTopic.cs" />
+    <Compile Include="Domain\Forums\ForumTopicType.cs" />
+    <Compile Include="Domain\Forums\PrivateMessage.cs" />
+    <Compile Include="Domain\Localization\LocalizationSettings.cs" />
+    <Compile Include="Domain\Media\Download.cs" />
+    <Compile Include="Domain\Media\PictureType.cs" />
+    <Compile Include="Domain\Messages\EmailAccountSettings.cs" />
+    <Compile Include="Domain\Messages\EmailAccount.cs" />
+    <Compile Include="Domain\Messages\MessageTemplatesSettings.cs" />
+    <Compile Include="Domain\Messages\MessageTemplate.cs" />
+    <Compile Include="Domain\Messages\NewsLetterSubscription.cs" />
+    <Compile Include="Domain\Messages\QueuedEmail.cs" />
+    <Compile Include="Domain\Orders\OrderNote.cs" />
+    <Compile Include="Domain\Orders\OrderProductVariant.cs" />
+    <Compile Include="Domain\Orders\OrderStatus.cs" />
+    <Compile Include="Domain\Orders\RecurringPayment.cs" />
+    <Compile Include="Domain\Orders\RecurringPaymentHistory.cs" />
+    <Compile Include="Domain\Orders\OrderSettings.cs" />
+    <Compile Include="Domain\Orders\ReturnRequest.cs" />
+    <Compile Include="Domain\Orders\ReturnRequestStatus.cs" />
+    <Compile Include="Domain\Payments\PaymentSettings.cs" />
+    <Compile Include="Domain\Payments\PaymentStatus.cs" />
+    <Compile Include="Domain\Security\SecuritySettings.cs" />
+    <Compile Include="Domain\Shipping\ShippingStatus.cs" />
+    <Compile Include="Domain\StoreInformationSettings.cs" />
+    <Compile Include="Financial\Currency.cs" />
+    <Compile Include="Financial\Money.cs" />
+    <Compile Include="GenericComparer.cs" />
+    <Compile Include="Data\IRepository.cs" />
+    <Compile Include="IHideObjectMembers.cs" />
+    <Compile Include="Infrastructure\ComparableObject.cs" />
+    <Compile Include="Infrastructure\DateRange.cs" />
+    <Compile Include="Infrastructure\DisposableObject.cs" />
+    <Compile Include="Infrastructure\EnumFriendlyNameAttribute.cs" />
+    <Compile Include="Infrastructure\Error.cs" />
+    <Compile Include="Infrastructure\Guard.cs" />
+    <Compile Include="Infrastructure\ICloneable.cs" />
+    <Compile Include="Infrastructure\IOrdered.cs" />
+    <Compile Include="Infrastructure\IStartupTask.cs" />
+    <Compile Include="Infrastructure\Misc.cs" />
+    <Compile Include="Infrastructure\RegularExpressions.cs" />
+    <Compile Include="Infrastructure\ValueObject.cs" />
+    <Compile Include="IPersistentCollection.cs" />
+    <Compile Include="IWebHelper.cs" />
+    <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
+    <Compile Include="Domain\Security\PermissionRecord.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\ComponentLifeStyle.cs" />
+    <Compile Include="Infrastructure\EngineContext.cs" />
+    <Compile Include="Infrastructure\AppDomainTypeFinder.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\IDependencyRegistrar.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\ContainerConfigurer.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\ContainerManager.cs" />
+    <Compile Include="Infrastructure\EventBroker.cs" />
+    <Compile Include="Infrastructure\IEngine.cs" />
+    <Compile Include="Infrastructure\ITypeFinder.cs" />
+    <Compile Include="Infrastructure\SmartStoreEngine.cs" />
+    <Compile Include="Domain\Common\Address.cs" />
+    <Compile Include="Domain\Customers\CustomerSettings.cs" />
+    <Compile Include="Domain\Customers\CustomerRole.cs" />
+    <Compile Include="Domain\Customers\RewardPointsSettings.cs" />
+    <Compile Include="Domain\Customers\SystemCustomerRoleNames.cs" />
+    <Compile Include="Domain\Directory\MeasureSettings.cs" />
+    <Compile Include="Domain\Directory\Country.cs" />
+    <Compile Include="Domain\Directory\Currency.cs" />
+    <Compile Include="Domain\Directory\CurrencySettings.cs" />
+    <Compile Include="Domain\Directory\MeasureDimension.cs" />
+    <Compile Include="Domain\Directory\MeasureWeight.cs" />
+    <Compile Include="Domain\Catalog\ProductReview.cs" />
+    <Compile Include="Domain\Customers\CustomerContent.cs" />
+    <Compile Include="Domain\Discounts\DiscountUsageHistory.cs" />
+    <Compile Include="Domain\Discounts\DiscountRequirement.cs" />
+    <Compile Include="Domain\Discounts\Discount.cs" />
+    <Compile Include="Domain\Discounts\DiscountLimitationType.cs" />
+    <Compile Include="Domain\Discounts\DiscountType.cs" />
+    <Compile Include="Domain\Localization\ILocalizedEntity.cs" />
+    <Compile Include="Domain\Directory\StateProvince.cs" />
+    <Compile Include="Domain\Orders\CheckoutAttribute.cs" />
+    <Compile Include="Domain\Orders\CheckoutAttributeValue.cs" />
+    <Compile Include="Domain\Orders\GiftCard.cs" />
+    <Compile Include="Domain\Orders\GiftCardUsageHistory.cs" />
+    <Compile Include="Domain\Orders\Order.cs" />
+    <Compile Include="Domain\Customers\RewardPointsHistory.cs" />
+    <Compile Include="Domain\Orders\ShoppingCartSettings.cs" />
+    <Compile Include="Domain\Orders\ShoppingCartItem.cs" />
+    <Compile Include="Domain\Orders\ShoppingCartType.cs" />
+    <Compile Include="Domain\Shipping\ShippingMethod.cs" />
+    <Compile Include="Domain\Shipping\ShippingOption.cs" />
+    <Compile Include="Domain\Shipping\ShippingSettings.cs" />
+    <Compile Include="Domain\Tax\TaxSettings.cs" />
+    <Compile Include="Domain\Tax\TaxBasedOn.cs" />
+    <Compile Include="Domain\Tax\TaxCategory.cs" />
+    <Compile Include="Domain\Tax\TaxDisplayType.cs" />
+    <Compile Include="Domain\Tax\VatNumberStatus.cs" />
+    <Compile Include="Html\BBCodeHelper.cs" />
+    <Compile Include="Html\CodeFormatter\CLikeFormat.cs" />
+    <Compile Include="Html\CodeFormatter\CodeFormat.cs" />
+    <Compile Include="Html\CodeFormatter\CodeFormatHelper.cs" />
+    <Compile Include="Html\CodeFormatter\CSharpFormat.cs" />
+    <Compile Include="Html\CodeFormatter\HighlightOptions.cs" />
+    <Compile Include="Html\CodeFormatter\HtmlFormat.cs" />
+    <Compile Include="Html\CodeFormatter\JavaScriptFormat.cs" />
+    <Compile Include="Html\CodeFormatter\MshFormat.cs" />
+    <Compile Include="Html\CodeFormatter\SourceFormat.cs" />
+    <Compile Include="Html\CodeFormatter\TsqlFormat.cs" />
+    <Compile Include="Html\CodeFormatter\VisualBasicFormat.cs" />
+    <Compile Include="Html\HtmlUtils.cs" />
+    <Compile Include="Html\ResolveLinksHelper.cs" />
+    <Compile Include="IPageable.cs" />
+    <Compile Include="Linq\LinqContainsPredicateBuilder.cs" />
+    <Compile Include="Linq\PredicateBuilder.cs" />
+    <Compile Include="PersistentCollection.cs" />
+    <Compile Include="Plugins\BasePlugin.cs" />
+    <Compile Include="Plugins\PluginFileParser.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
+    <Compile Include="Plugins\PluginDescriptor.cs" />
+    <Compile Include="Infrastructure\Singleton.cs" />
+    <Compile Include="Plugins\IPlugin.cs" />
+    <Compile Include="Plugins\IPluginFinder.cs" />
+    <Compile Include="Plugins\PluginFinder.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\AutofacRequestLifetimeHttpModule.cs" />
+    <Compile Include="Infrastructure\WebAppTypeFinder.cs" />
+    <Compile Include="IWorkContext.cs" />
+    <Compile Include="Domain\Localization\LocalizedProperty.cs" />
+    <Compile Include="Domain\Catalog\ProductSortingEnum.cs" />
+    <Compile Include="Domain\Catalog\AttributeControlType.cs" />
+    <Compile Include="Domain\Catalog\BackorderMode.cs" />
+    <Compile Include="Domain\Catalog\Category.cs" />
+    <Compile Include="Domain\Catalog\CrossSellProduct.cs" />
+    <Compile Include="Domain\Catalog\DownloadActivationType.cs" />
+    <Compile Include="Domain\Catalog\GiftCardType.cs" />
+    <Compile Include="Domain\Catalog\LowStockActivity.cs" />
+    <Compile Include="Domain\Catalog\ManageInventoryMethod.cs" />
+    <Compile Include="Domain\Catalog\Manufacturer.cs" />
+    <Compile Include="Domain\Media\Picture.cs" />
+    <Compile Include="Domain\Catalog\Product.cs" />
+    <Compile Include="Domain\Catalog\ProductAttribute.cs" />
+    <Compile Include="Domain\Catalog\ProductCategory.cs" />
+    <Compile Include="Domain\Catalog\ProductManufacturer.cs" />
+    <Compile Include="Domain\Catalog\ProductPicture.cs" />
+    <Compile Include="Domain\Catalog\ProductSpecificationAttribute.cs" />
+    <Compile Include="Domain\Catalog\ProductVariant.cs" />
+    <Compile Include="Domain\Catalog\ProductVariantAttribute.cs" />
+    <Compile Include="Domain\Catalog\ProductVariantAttributeCombination.cs" />
+    <Compile Include="Domain\Catalog\ProductVariantAttributeValue.cs" />
+    <Compile Include="Domain\Catalog\RecurringProductCyclePeriod.cs" />
+    <Compile Include="Domain\Catalog\RelatedProduct.cs" />
+    <Compile Include="Domain\Catalog\SpecificationAttribute.cs" />
+    <Compile Include="Domain\Catalog\SpecificationAttributeOption.cs" />
+    <Compile Include="Domain\Catalog\TierPrice.cs" />
+    <Compile Include="IO\FileSystemSettings.cs" />
+    <Compile Include="IO\FileSystemStorageProvider.cs" />
+    <Compile Include="IO\IStorageFile.cs" />
+    <Compile Include="IO\IStorageFolder.cs" />
+    <Compile Include="IO\IStorageProvider.cs" />
+    <Compile Include="Domain\Customers\PasswordFormat.cs" />
+    <Compile Include="HttpSecurityMode.cs" />
+    <Compile Include="SmartStoreVersion.cs" />
+    <Compile Include="Themes\IThemeRegistry.cs" />
+    <Compile Include="Themes\ThemeManifest.cs" />
+    <Compile Include="Themes\ThemeManifestMaterializer.cs" />
+    <Compile Include="Themes\ThemeVariableInfo.cs" />
+    <Compile Include="Themes\ThemeVariableType.cs" />
+    <Compile Include="Utilities\ActionDisposable.cs" />
+    <Compile Include="Utilities\CollectionHelper.cs" />
+    <Compile Include="Utilities\DateTimeConvert.cs" />
+    <Compile Include="Utilities\DictionaryConverter.cs" />
+    <Compile Include="Utilities\Inflector.cs" />
+    <Compile Include="Utilities\Prettifier.cs" />
+    <Compile Include="Utilities\Range.cs" />
+    <Compile Include="Utilities\StringTokenizer.cs" />
+    <Compile Include="Utilities\Threading\LockExtensions.cs" />
+    <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
+    <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />
+    <Compile Include="Utilities\Threading\WriteLockDisposable.cs" />
+    <Compile Include="Utilities\TypeHelper.cs" />
+    <Compile Include="Utilities\Wildcard.cs" />
+    <Compile Include="WebHelper.cs" />
+    <Compile Include="Domain\Customers\Customer.cs" />
+    <Compile Include="Domain\Localization\Language.cs" />
+    <Compile Include="Domain\Localization\LocaleStringResource.cs" />
+    <Compile Include="Domain\Logging\Log.cs" />
+    <Compile Include="Domain\Logging\LogLevel.cs" />
+    <Compile Include="Domain\Configuration\Setting.cs" />
+    <Compile Include="IPagedList.cs" />
+    <Compile Include="SmartException.cs" />
+    <Compile Include="PagedList.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,19 @@
+﻿.config-logo {
+	width: 150px;
+	height: 75px;
+	margin-bottom: 20px;
+}
+.feed-result,
+.feed-result a:hover {
+	font-weight: bold;
+}
+button[type=submit] {
+	float: right !important;
+	margin-left: 8px;
+}
+.admin-column1 {
+	width: 170px;
+}
+.admin-column2 {
+	vertical-align: top;
+}

@@ -1,0 +1,198 @@
+﻿@model CountryModel
+
+@using Telerik.Web.Mvc.UI;
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("country-edit").Items(x =>
+{
+    x.Add().Text(T("Admin.Configuration.Countries.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Configuration.Countries.States").Text).Content(TabStates());
+    
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "country-edit"));
+})
+@helper TabInfo()
+    {        
+    @(Html.LocalizedEditor<CountryModel, CountryLocalizedModel>("country-info-localized",
+                @<table class="adminContent">
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].Name)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => Model.Locales[item].Name)
+                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                        </td>
+                    </tr>
+                </table>
+                ,
+                @<table class="adminContent">
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Name)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => model.Name)
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </td>
+                    </tr>
+                </table>
+            ))
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowsBilling)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowsBilling)
+                @Html.ValidationMessageFor(model => model.AllowsBilling)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowsShipping)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowsShipping)
+                @Html.ValidationMessageFor(model => model.AllowsShipping)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TwoLetterIsoCode)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TwoLetterIsoCode)
+                @Html.ValidationMessageFor(model => model.TwoLetterIsoCode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ThreeLetterIsoCode)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ThreeLetterIsoCode)
+                @Html.ValidationMessageFor(model => model.ThreeLetterIsoCode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumericIsoCode)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NumericIsoCode)
+                @Html.ValidationMessageFor(model => model.NumericIsoCode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SubjectToVat)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SubjectToVat)
+                @Html.ValidationMessageFor(model => model.SubjectToVat)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+    </table>
+}
+@helper TabStates()
+    {
+        if (Model.Id > 0)
+        {
+            
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<StateProvinceModel>()
+                    .Name("states-grid")
+                    .DataKeys(x =>
+                    {
+                        x.Add(y => y.Id).RouteKey("Id");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name).Width(250);
+                        //TODO display localized values here
+                        columns.Bound(x => x.Abbreviation).Width(100);
+                        columns.Bound(x => x.Published)
+                             .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                             .Centered();
+                        columns.Bound(x => x.DisplayOrder1).Width(100);
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form', 800, 250, true); return false;\" class='t-button' />")
+                            .Title(T("Admin.Common.Edit").Text);
+                        columns.Command(commands =>
+                        {
+                            commands.Delete().Localize(T);
+                        }).Width(50);
+
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax().Select("States", "Country", new { countryId = Model.Id })
+                            .Delete("StateDelete", "Country");
+                    })
+                    .ClientEvents(x => x.OnError("grid_onError"))
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+        <tr>
+            <td width="100%">
+                <input type="submit" id="btnAddNewState" name="btnAddNewState" value="@T("Admin.Configuration.Countries.States.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))', 800, 250, true); return false;" class="t-button" />
+                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('#btnRefresh').click(function () {
+                            //refresh grid
+                            var optionsGrid = $("#states-grid");
+                            optionsGrid.data('tGrid').ajaxRequest();
+
+                            //return false to don't reload a page
+                            return false;
+                        });
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+<script type="text/javascript">
+    function grid_onError(e) {
+        alert(e.XMLHttpRequest.responseText);
+        e.preventDefault();
+    }
+</script>
+
+
+        }
+        else
+        {
+    @T("Admin.Configuration.Countries.States.SaveBeforeEdit")
+        }
+}

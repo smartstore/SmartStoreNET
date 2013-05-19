@@ -1,0 +1,16 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Mvc;
+
+namespace SmartStore.Admin.Models.Catalog
+{
+    public class ProductReviewListModel : ModelBase
+    {
+        [SmartResourceDisplayName("Admin.Catalog.ProductReviews.List.CreatedOnFrom")]
+        public DateTime? CreatedOnFrom { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.ProductReviews.List.CreatedOnTo")]
+        public DateTime? CreatedOnTo { get; set; }
+    }
+}

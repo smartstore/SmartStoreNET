@@ -1,0 +1,59 @@
+﻿@model PagingFilteringModel
+@using SmartStore.Web.Models.Catalog;
+
+@* codehint: sm-add (whole file) *@
+
+@helper CreateOptionChooser(IList<ListOptionItem> options, string label = "", bool rightFloat = false) {
+    var selectedOption = options.FirstOrDefault(x => x.Selected);
+    var floatClass = rightFloat ? "pull-right" : "pull-left";
+    if (label.HasValue()) {
+        <label class="@floatClass">@label</label>
+    }
+    <div class="btn-group @floatClass">
+        <a class="btn" href="@selectedOption.Url" title="@selectedOption.Text">@selectedOption.Text</a>
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:void()">
+            <span class="icon-caret-down"></span>
+        </a>
+        <ul class="dropdown-menu">
+            @foreach(var opt in options) {
+                <li @Html.Attr("class", "disabled", opt.Selected)>
+                    <a href="@opt.Url">@opt.Text</a>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="product-list-options clearfix">
+
+    @if (Model.AllowProductViewModeChanging)
+    {
+        <div class="product-viewmode pull-right">
+            <div class="btn-group" data-toggle="buttons-radio">
+                @foreach (var mode in Model.AvailableViewModes)
+                {
+                    <a href="@mode.Url" class='btn@(mode.Selected ? " active" : "")' rel="tooltip" title='@T("Categories.ViewMode"): @mode.Text'>
+                        @if ((string)mode.ExtraData == "grid") {
+                            <i class="icon-th"></i>
+                        }
+                        else {
+                            <i class="icon-reorder"></i>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+    }
+    @*sorting*@
+    @if (Model.AllowProductSorting)
+    {
+        @CreateOptionChooser(Model.AvailableSortOptions, T("Categories.OrderBy").Text)
+    }
+    
+    @*page size *@
+    @if (Model.AllowCustomersToSelectPageSize)
+    {
+        @CreateOptionChooser(Model.PageSizeOptions, T("Categories.PageSize").Text)
+    }
+
+</div>

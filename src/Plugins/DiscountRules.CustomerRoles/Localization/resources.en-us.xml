@@ -1,0 +1,20 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Value>Must be assigned to customer role</Value>
+  </LocaleResource>
+	<LocaleResource Name="ConfigureDiscountNotLoaded">
+		<Value>Discount could not be loaded</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigureRequirementFailed">
+		<Value>Failed to load requirement</Value>
+	</LocaleResource>
+  <LocaleResource Name="ConfigureSelectCustomerRole">
+    <Value>Select a customer role</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CustomerRole">
+		<Value>Required customer role</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.CustomerRole.Hint">
+		<Value>Discount will be applied if customer is in the selected customer role.</Value>
+	</LocaleResource>
+</Language>

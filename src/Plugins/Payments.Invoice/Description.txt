@@ -1,0 +1,7 @@
+﻿FriendlyName: Invoice
+SystemName: Payments.Invoice
+Version: 1.00
+SupportedVersions: 1.0
+DisplayOrder: 1
+FileName: SmartStore.Plugin.Payments.Invoice.dll
+ResourceRootKey: Plugins.Payment.Invoice

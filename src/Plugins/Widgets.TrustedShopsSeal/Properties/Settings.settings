@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SmartStore.Plugin.Widgets.TrustedShopsSeal.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SmartStore_Plugin_Widgets_TrustedShopsSeal_com_trustedshops_qa_TSProtectionService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://qa.trustedshops.com:443/ts/services/TsProtection</Value>
+    </Setting>
+    <Setting Name="SmartStore_Plugin_Widgets_TrustedShopsSeal_com_trustedshops_www_TSProtectionService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://www.trustedshops.com:443/ts/services/TsProtection</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

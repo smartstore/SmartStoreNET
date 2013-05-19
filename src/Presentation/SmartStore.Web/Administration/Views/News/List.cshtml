@@ -1,0 +1,62 @@
+﻿@model Telerik.Web.Mvc.GridModel<NewsItemModel>
+@using Telerik.Web.Mvc.UI
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.ContentManagement.News.NewsItems").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-rss"></i>
+        @T("Admin.ContentManagement.News.NewsItems")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<NewsItemModel>()
+                    .Name("newsitem-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Title)
+                            .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Title#></a>");
+                        columns.Bound(x => x.LanguageName);
+                        columns.Bound(x => x.Comments)
+                            .Centered()
+                            .Template(
+                            @<div>
+                                    @Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
+                                </div>
+                            )
+                            .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+                        columns.Bound(x => x.StartDate)
+                            .Centered();
+                        columns.Bound(x => x.EndDate)
+                            .Centered();
+                        columns.Bound(x => x.Published)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.CreatedOn)
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Width(50)
+                            .Centered()
+                            .HeaderTemplate(T("Admin.Common.Edit").Text)
+                            .Filterable(false);
+                    })
+                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
+                    .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

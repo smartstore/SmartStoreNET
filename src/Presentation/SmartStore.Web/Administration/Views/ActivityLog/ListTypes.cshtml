@@ -1,0 +1,70 @@
+﻿@model GridModel<ActivityLogTypeModel>
+@using Telerik.Web.Mvc;
+@using Telerik.Web.Mvc.UI;
+@{  
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLogType").Text;
+}
+@using (Html.BeginForm("SaveTypes", "ActivityLog"))
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-fire"></i>
+            @T("Admin.Configuration.ActivityLog.ActivityLogType")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                <i class="icon-ok icon-white"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    <p>
+    </p>
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ActivityLogTypeModel>()
+                .Name("activityLogType-grid")
+                .BindTo(Model.Data)
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.Name)
+                                .Centered()
+                                .Width("50%");
+                            columns.Bound(x => x.Enabled)
+                                .Centered()
+                                .Template(x => Html.CheckBox("checkBox_" + x.Id.ToString(), x.Enabled, new { id = x.Id, @class = "checkboxGroups" }))
+                                .Title(T("Admin.Configuration.ActivityLog.ActivityLogType.Fields.Enabled").Text + "&nbsp<input id='mastercheckbox' type='checkbox'/>")
+                                .Width("50%")
+                                .HtmlAttributes(new { style = "text-align:center" })
+                                .HeaderHtmlAttributes(new { style = "text-align:center" });
+                        })
+                .Footer(false)
+)
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            updateMasterCheckbox();
+
+            $('#mastercheckbox').click(function () {
+                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+            });
+
+            //wire up checkboxes. 
+            $('#activityLogType-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+                updateMasterCheckbox();
+            });
+        });
+
+        function updateMasterCheckbox() {
+            var numChkBoxes = $('#activityLogType-grid input[type=checkbox][id!=mastercheckbox]').length;
+            var numChkBoxesChecked = $('#activityLogType-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+        }
+   </script>    
+}

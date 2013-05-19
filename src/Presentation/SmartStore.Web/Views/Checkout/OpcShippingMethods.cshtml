@@ -1,0 +1,81 @@
+﻿@model CheckoutShippingMethodModel
+@using SmartStore.Web.Models.Checkout;
+
+@{
+    string marginClass = " no-left-margin";
+    
+    for (int i = 0; i < Model.ShippingMethods.Count; i++)
+    {
+        var shippingMethod = Model.ShippingMethods[i];
+        
+        if(!String.IsNullOrEmpty(shippingMethod.BrandUrl))
+        {
+            marginClass = "";
+            break;
+        }
+    }    
+}
+
+<div class="checkout-data">
+    @Html.Widget("op_checkout_shipping_method_top")
+    <div class="shipping-options">
+        @if (Model.Warnings.Count == 0)
+        {
+            <div>
+                @for (int i = 0; i < Model.ShippingMethods.Count; i++)
+                {
+                    var shippingMethod = Model.ShippingMethods[i];
+
+                    string cssClass = "line";
+                    if (i == 0)
+                    {
+                        cssClass += " alpha";
+                    }
+                    if (i == Model.ShippingMethods.Count - 1)
+                    {
+                        cssClass += " omega";
+                    }
+                    if (i % 2 == 0)
+                    {
+                        cssClass += " odd";
+                    }
+                    else
+                    {
+                        cssClass += " even";
+                    }
+                    cssClass += marginClass;
+                    
+                    <div class="clearfix shipping-option-item @cssClass">
+                        <div class="option-name">
+                            <label for="shippingoption_@(i)" class="radio pull-left">
+                                <input id="shippingoption_@(i)" type="radio" name="shippingoption" value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" checked="@shippingMethod.Selected" />
+                                @shippingMethod.Name
+                                @if (!String.IsNullOrEmpty(shippingMethod.Description))
+                                {
+                                    <div class="option-description">
+                                        @Html.Raw(shippingMethod.Description)
+                                    </div>
+                                }
+                            </label>
+                        </div>
+                        <div class="shipping-fee pull-right text-success">
+                            @shippingMethod.Fee
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="message-error">
+                <ul>
+                    @for (int i = 0; i < Model.Warnings.Count; i++)
+                    {
+                        <li>@Model.Warnings[i]</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+    @Html.Widget("op_checkout_shipping_method_bottom")
+</div>

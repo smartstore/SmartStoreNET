@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.Plugin.Widgets.TrustedShopsSeal.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+	
+@using (Html.BeginForm())
+{
+    
+    <div class="alert alert-info">
+        @Html.Raw(@T("Plugins.Widgets.TrustedShopsSeal.AdminInstruction"))
+    </div>
+    
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ZoneId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ZoneId, Model.AvailableZones)
+            @Html.ValidationMessageFor(model => model.ZoneId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TrustedShopsId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.TrustedShopsId)
+            @Html.ValidationMessageFor(model => model.TrustedShopsId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsTestMode)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.IsTestMode)
+            @Html.ValidationMessageFor(model => model.IsTestMode)
+        </td>
+    </tr>
+
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ShopName)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ShopName)
+            @Html.ValidationMessageFor(model => model.ShopName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ShopText)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ShopText)
+            @Html.ValidationMessageFor(model => model.ShopText)
+        </td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td style="padding:10px 0">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                @T("Admin.Common.Save")
+            </button>
+        </td>
+    </tr>
+</table>
+}

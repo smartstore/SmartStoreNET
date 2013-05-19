@@ -1,0 +1,15 @@
+﻿.config-logo {
+	margin: 0 0 10px 0;
+	width: 298px;
+	height: 40px;
+}
+.feed-result,
+.feed-result a:hover {
+	font-weight: bold;
+}
+.edit-googlecategory {
+	min-width: 460px;
+}
+.google-product-search {
+	margin-bottom: 8px !important;
+}

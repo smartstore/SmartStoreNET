@@ -1,0 +1,482 @@
+﻿@model FeedFroogleModel
+@using SmartStore.Plugin.Feed.Froogle;
+@using SmartStore.Plugin.Feed.Froogle.Models;
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.Plugins;
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Web.Framework.UI;
+
+@{
+	Layout = "";
+
+	Html.AddCssFileParts(Url.Content("~/Content/x-editable/bootstrap-editable.css")); // bundle doesn't work for whatever reason
+	Html.AddCssFileParts(Url.Content("~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css"));
+
+	Html.AppendScriptParts(ResourceLocation.Head, "~/bundles/x-editable");
+}
+
+<p>
+	<img src="@Url.Content("~/Plugins/PromotionFeed.Froogle/Content/images/logo298x40.gif")" alt="Google Merchant Center" class="config-logo" />
+</p>
+
+@(Html.SmartStore().TabStrip().Name("googlebase-configure").Items(x => {
+	x.Add().Text(T("Plugins.Feed.Froogle.General").Text).Content(@TabGeneral()).Selected(true);
+	x.Add().Text(T("Plugins.Feed.Froogle.ProductData").Text).Content(@TabProductData());
+}))
+
+@helper TabGeneral() {
+    <script type="text/javascript">
+    	$(document).ready(function () {
+            $("#@Html.FieldIdFor(m => m.TaskEnabled)").click(toggleTaskEnabled);
+            toggleTaskEnabled();
+        });
+
+    	function toggleTaskEnabled() {
+    		$('#pnlGenerateStaticFileEachMinutes').toggle($('#@Html.FieldIdFor(m => m.TaskEnabled)').is(':checked'));
+        }
+    </script>
+		
+	<form method="POST" action="@Url.Action("ConfigureMiscPlugin", "Plugin", new { area = "Admin", systemName = Model.Helper.SystemName })" novalidate="novalidate">
+    <table class="adminContent">
+    <tr>
+        <td colspan="2">
+			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
+        </td>
+    </tr>
+	@if (Model.GenerateFeedResult.HasValue() || Model.StaticFileUrl.HasValue()) {
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+	}
+    @if (Model.GenerateFeedResult.HasValue()) {
+    <tr>
+		<td class="adminTitle">&nbsp;</td>
+		<td class="adminData">
+			<p class="feed-result">@Html.Raw(Model.GenerateFeedResult)</p>
+		</td>
+    </tr>
+	}
+    @if (Model.StaticFileUrl.HasValue()) {
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.StaticFileUrl)
+        </td>
+        <td class="adminData">
+            <a href="@Model.StaticFileUrl" target="_blank">@Model.StaticFileUrl</a>
+        </td>
+    </tr>
+	}
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.DefaultGoogleCategory)
+        </td>
+        <td class="adminData">
+			<input type="text" id="DefaultGoogleCategory" name="DefaultGoogleCategory" class="text-box single-line valid" style="width:98%;" data-provide="typeahead" data-items="18" 
+				value="@Model.DefaultGoogleCategory" data-source="@Model.AvailableGoogleCategoriesAsJson">
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ProductPictureSize)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ProductPictureSize)
+            @Html.ValidationMessageFor(m => m.ProductPictureSize)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AdditionalImages)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AdditionalImages)
+            @Html.ValidationMessageFor(m => m.AdditionalImages)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.BuildDescription)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("BuildDescription", new List<SelectListItem> {
+				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.Resource("DescShort"), Value = "short" },
+				new SelectListItem { Text = Model.Helper.Resource("DescLong"), Value = "long" },
+				new SelectListItem { Text = Model.Helper.Resource("DescTitleAndShort"), Value = "titleAndShort" },
+				new SelectListItem { Text = Model.Helper.Resource("DescTitleAndLong"), Value = "titleAndLong" },
+				new SelectListItem { Text = Model.Helper.Resource("DescManuAndTitleAndShort"), Value = "manuAndTitleAndShort" },
+				new SelectListItem { Text = Model.Helper.Resource("DescManuAndTitleAndLong"), Value = "manuAndTitleAndLong" }
+			})
+            @Html.ValidationMessageFor(m => m.BuildDescription)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.DescriptionToPlainText)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.DescriptionToPlainText)
+            @Html.ValidationMessageFor(m => m.DescriptionToPlainText)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AppendDescriptionText1)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AppendDescriptionText1)
+            @Html.ValidationMessageFor(m => m.AppendDescriptionText1)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AppendDescriptionText2)
+            @Html.ValidationMessageFor(m => m.AppendDescriptionText2)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AppendDescriptionText3)
+            @Html.ValidationMessageFor(m => m.AppendDescriptionText3)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AppendDescriptionText4)
+            @Html.ValidationMessageFor(m => m.AppendDescriptionText4)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.AppendDescriptionText5)
+            @Html.ValidationMessageFor(m => m.AppendDescriptionText5)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Condition)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("Condition", new List<SelectListItem> {
+				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.Resource("ConditionNew"), Value = "new" },
+				new SelectListItem { Text = Model.Helper.Resource("ConditionUsed"), Value = "used" },
+				new SelectListItem { Text = Model.Helper.Resource("ConditionRefurbished"), Value = "refurbished" }
+			})
+            @Html.ValidationMessageFor(m => m.Condition)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Availability)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("Availability", new List<SelectListItem> {
+				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.Resource("AvailabilityInStock"), Value = "in stock" },
+				new SelectListItem { Text = Model.Helper.Resource("AvailabilityAvailableForOrder"), Value = "available for order" },
+				new SelectListItem { Text = Model.Helper.Resource("AvailabilityOutOfStock"), Value = "out of stock" },
+				new SelectListItem { Text = Model.Helper.Resource("AvailabilityPreorder"), Value = "preorder" }
+			})
+            @Html.ValidationMessageFor(m => m.Availability)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Gender)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("Gender", new List<SelectListItem> {
+				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },	
+				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },
+				new SelectListItem { Text = Model.Helper.Resource("GenderMale"), Value = "male" },
+				new SelectListItem { Text = Model.Helper.Resource("GenderFemale"), Value = "female" },
+				new SelectListItem { Text = Model.Helper.Resource("GenderUnisex"), Value = "unisex" }
+			})
+            @Html.ValidationMessageFor(m => m.Gender)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.AgeGroup)
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("AgeGroup", new List<SelectListItem> {
+				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.Resource("AgeGroupAdult"), Value = "adult" },
+				new SelectListItem { Text = Model.Helper.Resource("AgeGroupKids"), Value = "kids" }
+			})
+            @Html.ValidationMessageFor(m => m.AgeGroup)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Brand)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Brand)
+            @Html.ValidationMessageFor(m => m.Brand)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Color)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Color)
+            @Html.ValidationMessageFor(m => m.Color)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Size)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Size)
+            @Html.ValidationMessageFor(m => m.Size)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Material)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Material)
+            @Html.ValidationMessageFor(m => m.Material)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Pattern)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Pattern)
+            @Html.ValidationMessageFor(m => m.Pattern)
+        </td>
+    </tr>
+    <tr class="adminSeparator">
+        <td colspan="2">
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.CurrencyId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(m => m.CurrencyId, Model.AvailableCurrencies)
+            @Html.ValidationMessageFor(m => m.CurrencyId)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.SpecialPrice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.SpecialPrice)
+            @Html.ValidationMessageFor(m => m.SpecialPrice)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.UseOwnProductNo)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.UseOwnProductNo)
+            @Html.ValidationMessageFor(m => m.UseOwnProductNo)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.OnlineOnly)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.OnlineOnly)
+            @Html.ValidationMessageFor(m => m.OnlineOnly)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.TaskEnabled)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.TaskEnabled)
+            @Html.ValidationMessageFor(m => m.TaskEnabled)
+        </td>
+    </tr>
+    <tr id="pnlGenerateStaticFileEachMinutes">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.GenerateStaticFileEachMinutes)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.GenerateStaticFileEachMinutes)
+            @Html.ValidationMessageFor(m => m.GenerateStaticFileEachMinutes)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">&nbsp;</td>
+        <td class="adminData">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="generate" value="generate" class="btn" onclick="$.throbber.show('@T("Plugins.Feed.Froogle.GeneratingNow")');">
+				<i class="icon-@(Model.StaticFileUrl.HasValue() ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
+            </button>
+        </td>
+    </tr>
+    </table>
+	</form>
+}
+
+@helper TabProductData() {
+    <table class="adminContent">
+    <tr>
+        <td>
+            @Html.Raw(@T("Plugins.Feed.Froogle.GridEditNote"))
+			<p>&nbsp;</p>
+        </td>
+    </tr>
+	<tr>
+		<td>
+
+			<table class="adminContent google-product-search">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(m => m.SearchProductName)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(m => m.SearchProductName)
+
+					<button type="submit" id="search-products" value="search-product" class="btn">
+						<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
+					</button>
+				</td>
+			</tr>
+			</table>
+
+		</td>
+	</tr>
+    <tr>
+        <td>
+			@{
+                var gridPageSize = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+			}
+            @(Html.Telerik().Grid<GoogleProductModel>()
+				.Name("froogleproducts-grid")
+				.DataKeys(keys => {
+					keys.Add(x => x.ProductVariantId).RouteKey("ProductVariantId");
+				})
+				.Columns(c => {
+					c.Bound(x => x.ProductVariantId).ReadOnly().Visible(false);
+					c.Bound(x => x.FullProductVariantName).ReadOnly().Visible(true).Width(440);
+					c.Bound(x => x.GoogleCategory).ClientTemplate(Html.XEditableLink("GoogleCategory", "typeahead"));
+					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
+					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);
+					c.Bound(x => x.Color).ClientTemplate(Html.XEditableLink("Color", "text"));
+					c.Bound(x => x.GoogleSize).ClientTemplate(Html.XEditableLink("GoogleSize", "text"));
+				})
+				.ClientEvents(e => {
+					e.OnDataBound("OnGridDataBound");
+					e.OnDataBinding("OnGridDataBinding");
+				})
+				.DataBinding(dataBinding => {
+					dataBinding.Ajax()
+						.Select("GoogleProductList", "FeedFroogle", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", "" } });
+				})
+				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+				.EnableCustomBinding(true)
+			)
+        </td>
+    </tr>
+    </table>
+	
+    <script type="text/javascript">
+    	$(document).ready(function () {
+    		$.fn.editable.defaults.mode = 'inline';
+    	});
+
+    	$('#search-products').click(function () {
+    		var grid = $('#froogleproducts-grid').data('tGrid');
+    		grid.currentPage = 1;
+    		grid.ajaxRequest();
+    		return false;
+    	});
+
+    	function OnGridDataBinding(e) {
+    		e.data = {
+    			searchProductName: $('#SearchProductName').val()
+    		};
+    	}
+
+    	function OnGridDataBound(e) {
+    		var grid = $('#froogleproducts-grid'),
+				options = {
+					emptytext: '@Model.Helper.Resource("EmptyGridCell")',
+					url: '@Model.GridEditUrl'
+				},
+    			select2Options = {
+    				placeholder: '@Model.Helper.Resource("EmptyGridCell")',
+    				minimumResultsForSearch: 20,
+    				allowClear: true
+    			};
+
+    		grid.find('a.edit-link-googlecategory').editable($.extend(options, {
+    			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)
+    		}));
+
+    		grid.find('a.edit-link-gender').editable($.extend(options, {
+    			select2: select2Options,
+    			source: [
+					{ id: 'male', text: '@Model.Helper.Resource("GenderMale")' },
+					{ id: 'female', text: '@Model.Helper.Resource("GenderFemale")' },
+					{ id: 'unisex', text: '@Model.Helper.Resource("GenderUnisex")' }
+				]
+			}));
+
+    		grid.find('a.edit-link-agegroup').editable($.extend(options, {
+    			select2: select2Options,
+    			source: [
+					{ id: 'adult', text: '@Model.Helper.Resource("AgeGroupAdult")' },
+					{ id: 'kids', text: '@Model.Helper.Resource("AgeGroupKids")' }
+    			]
+			}));
+
+    		grid.find('a.edit-link-color').editable(options);
+
+    		grid.find('a.edit-link-googlesize').editable(options);
+		}
+    </script>
+}

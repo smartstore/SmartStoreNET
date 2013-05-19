@@ -1,0 +1,136 @@
+﻿@model ContentSliderSettingsModel
+@using SmartStore.Admin.Models.ContentSlider
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ContentSlider").Text;
+}
+
+@using (Html.BeginForm())
+{
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-picture"></i>
+        @T("Admin.Configuration.ContentSlider")
+    </div>
+    <div class="options">
+        <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+    </div>
+</div>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#@Html.FieldIdFor(model => model.AutoPlay)").click(toggleAutoPlayDelay);
+            
+            toggleAutoPlayDelay();
+        });
+
+        function toggleAutoPlayDelay() {
+            if ($('#@Html.FieldIdFor(model => model.AutoPlay)').is(':checked')) {
+                $('#autoplaydelay').show();
+            }
+            else {
+                $('#autoplaydelay').hide();
+            }
+        }
+    </script>
+    
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsActive)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ContentSliderHeight)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ContentSliderHeight)
+                @Html.ValidationMessageFor(model => model.ContentSliderHeight)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BackgroundPictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BackgroundPictureId, "Picture")
+                @Html.ValidationMessageFor(model => model.BackgroundPictureId)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AutoPlay)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AutoPlay)
+                @Html.ValidationMessageFor(model => model.AutoPlay)
+            </td>
+        </tr>
+
+        <tr id="autoplaydelay">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AutoPlayDelay)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AutoPlayDelay)
+                @Html.ValidationMessageFor(model => model.AutoPlayDelay)
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+    </table>
+}
+
+<div class="slides-title">
+    <div class="headline">
+        @T("Admin.Configuration.ContentSlider.Slides")
+    </div>
+</div>
+
+<div class="pull-right" style="margin-bottom:10px">
+    <a href="@Url.Action("CreateSlide")" class="btn btn-danger">
+        <i class="icon-plus"></i>
+        @T("Admin.Common.AddNew")
+    </a>
+</div>
+
+<table class="adminContent">
+    <tr>
+        <td>
+            @{int rowIndex = 0;}
+            @(Html.Telerik().Grid<ContentSliderSlideModel>(Model.Slides)
+                    .Name("content-slider-slides-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Title)
+                            .Template(x => Html.ActionLink(x.Title, "EditSlide", new { index = rowIndex++ }));
+                        columns.Bound(x => x.DisplayOrder)
+                            .Centered();
+                        columns.Bound(x => x.LanguageName)
+                            .Centered();
+                        columns.Bound(x => x.Published)
+                            .Centered();
+                    })     
+               )
+        </td>
+    </tr>
+</table>
+
+<div class="pull-right" style="margin-top:10px">
+    <a href="@Url.Action("CreateSlide")" class="btn btn-danger">
+        <i class="icon-plus"></i>
+        @T("Admin.Common.AddNew")
+    </a>
+</div>

@@ -1,0 +1,38 @@
+﻿@model Telerik.Web.Mvc.GridModel<DeliveryTimeModel>
+@using Telerik.Web.Mvc.UI
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.DeliveryTimes").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-time"></i>
+        @T("Admin.Configuration.DeliveryTimes")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="icon-plus"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<DeliveryTimeModel>()
+                    .Name("delivery-times-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.ColorHexValue)
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Centered();
+                    })     
+               )
+        </td>
+    </tr>
+</table>

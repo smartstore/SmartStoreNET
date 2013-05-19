@@ -1,0 +1,119 @@
+﻿@model MessageTemplateModel
+
+@using SmartStore.Core.Domain.Catalog;
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AllowedTokens)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.AllowedTokens)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </td>
+        <td class="adminData">
+            @Model.Name
+            @Html.HiddenFor(model => model.Name)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsActive)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.IsActive)
+            @Html.ValidationMessageFor(model => model.IsActive)
+        </td>
+    </tr>
+</table>
+@(Html.LocalizedEditor<MessageTemplateModel, MessageTemplateLocalizedModel>("messagetemplate-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].BccEmailAddresses)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].BccEmailAddresses)
+                @Html.ValidationMessageFor(model => model.Locales[item].BccEmailAddresses)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].Subject)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].Subject)
+                @Html.ValidationMessageFor(model => model.Locales[item].Subject)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].Body)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].Body, "RichEditor")
+                @Html.ValidationMessageFor(model => model.Locales[item].Body)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
+                @Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BccEmailAddresses)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BccEmailAddresses)
+                @Html.ValidationMessageFor(model => model.BccEmailAddresses)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Subject)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Subject)
+                @Html.ValidationMessageFor(model => model.Subject)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Body)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Body, "RichEditor")
+                @Html.ValidationMessageFor(model => model.Body)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EmailAccountId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
+                @Html.ValidationMessageFor(model => model.EmailAccountId)
+            </td>
+        </tr>
+    </table>
+    ))

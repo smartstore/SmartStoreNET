@@ -1,0 +1,14 @@
+﻿@model SmartStore.Web.Framework.Mvc.DeleteConfirmationModel
+@*codehint: sm-edit*@
+@using (Html.BeginForm(Model.ActionName, Model.ControllerName, new { id = Model.Id }, FormMethod.Post, new { style = "margin:0;" })) {
+    <div class="dialog-content-container">
+        <p>
+            @T("Admin.Common.DeleteConfirmation")
+        </p>
+        @*<div class="form-actions">*@
+		<div style="margin-top:18px;">
+            <button type="submit" class="btn btn-danger" value='@T("Admin.Common.Delete")'>@T("Admin.Common.Delete")</button>
+            <button type="button" class="btn" onclick="closeModalWindow(); return false;">@T("Admin.Common.NoCancel")</button>
+        </div>
+    </div>
+}

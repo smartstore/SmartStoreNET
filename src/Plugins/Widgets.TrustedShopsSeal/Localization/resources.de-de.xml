@@ -1,0 +1,54 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsSeal" AppendRootKey="false">
+    <Value>Trusted-Shops-Siegel</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Um das Trusted-Shops-Siegel auf Ihrer Seite einzubinden, finden Sie nachfolgend eine Schritt-für-Schritt Anleitung:</p>
+        <ul>
+            <li>1. blaaaaaa Blaaaaa</li>
+            <li>2. blaaaaaa Blaaaaa</li>
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Title">
+    <Value>Trusted-Shops</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="TrustedShopsId">
+    <Value>Trusted-Shops-Id</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId.Hint">
+    <Value>Geben Sie hier Ihre Trusted-Shops-Id an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode.Hint">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName">
+    <Value>Name des Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName.Hint">
+    <Value>Geben Sie hier den Namen des Shops an, wie er im Widget angezeigt werden soll.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopText">
+    <Value>Beschreibender Text</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopText.Hint">
+    <Value>Geben Sie hier einen beschreibenden Text an, wie er im Widget angezeigt werden soll.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="CheckIdSuccess">
+    <Value>Die Validierung Ihrer Trusted-Shops-ID war erfolgreich.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdError">
+    <Value>Die Validierung Ihrer Trusted-Shops-ID war nicht erfolgreich.</Value>
+  </LocaleResource>
+  
+
+</Language>

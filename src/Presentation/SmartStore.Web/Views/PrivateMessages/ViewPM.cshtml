@@ -1,0 +1,64 @@
+﻿@model PrivateMessageModel
+@using SmartStore.Web.Models.PrivateMessages;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.ViewPM").Text);
+}
+<div class="page private-message-view-page">
+    <h2>
+        @T("PrivateMessages.View.ViewMessage")
+    </h2>
+    <div class="page-body">
+        <table class="view-message">
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.From")
+                </td>
+                <td>
+                    @Model.CustomerFromName
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.To")
+                </td>
+                <td>
+                    @Model.CustomerToName
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.Subject")
+                </td>
+                <td>
+                    @Model.Subject
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.Message")
+                </td>
+                <td class="message">
+                    @Html.Raw(@Model.Message)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="options">
+                    <button class="btn btn-primary" onclick="setLocation('@Url.RouteUrl("SendPMReply", new { toCustomerId = @Model.FromCustomerId, replyToMessageId = @Model.Id })')">
+                        <i class="icon icon-share-alt"></i>
+                        @T("PrivateMessages.View.ReplyButton")
+                    </button>
+                    <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("DeletePM", new { privateMessageId = @Model.Id })')">
+                        <i class="icon icon-trash"></i>&nbsp;&nbsp;
+                        @T("PrivateMessages.View.DeleteButton")
+                    </button>
+                    <button class="btn" onclick="setLocation('@Url.RouteUrl("PrivateMessages")')">
+                        <i class="icon icon-user"></i>
+                        @T("PrivateMessages.View.BackButton")
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

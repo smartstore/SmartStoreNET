@@ -1,0 +1,8 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.CurrencyExchange.ECB" AppendRootKey="false">
+    <Value>EZB-Wechselkursdienst</Value>
+  </LocaleResource>
+  <LocaleResource Name="SetCurrencyToEURO">
+    <Value>Der EZB-Wechselkursdienst kann nur genutzt werden, wenn der Wechselkurs-Währungscode auf EUR gesetzt ist.</Value>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D303E2D-0367-4F66-AC03-F1658FBBB24D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartStore.Data.Tests</RootNamespace>
+    <AssemblyName>SmartStore.Data.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.1.12217, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.4.3.5\lib\net40\System.Data.SqlServerCe.Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Catalog\CategoryTemplatePersistenceTests.cs" />
+    <Compile Include="Catalog\BackInStockSubscriptionPersistenceTests.cs" />
+    <Compile Include="Catalog\ManufacturerTemplatePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductTemplatePersistenceTests.cs" />
+    <Compile Include="Common\AddressPeristenceTests.cs" />
+    <Compile Include="Catalog\CategoryPersistenceTests.cs" />
+    <Compile Include="Common\GenericAttributePersistenceTests.cs" />
+    <Compile Include="Customers\ExternalAuthenticationRecordPersistenceTests.cs" />
+    <Compile Include="Orders\CheckoutAttributePersistenceTests.cs" />
+    <Compile Include="Orders\CheckoutAttributeValuePersistenceTests.cs" />
+    <Compile Include="Affiliates\AffiliatePersistenceTests.cs" />
+    <Compile Include="Messages\CampaignPersistenceTests.cs" />
+    <Compile Include="Blogs\BlogPostPersistenceTests.cs" />
+    <Compile Include="Logging\ActivityLogPersistenceTests.cs" />
+    <Compile Include="Catalog\ProductTagPersistenceTests.cs" />
+    <Compile Include="Polls\PollPersistenceTests.cs" />
+    <Compile Include="Security\AclRecordPersistenceTests.cs" />
+    <Compile Include="Shipping\ShipmentOrderProductVariantPersistenceTests.cs" />
+    <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
+    <Compile Include="Tasks\ScheduleTaskPersistenceTests.cs" />
+    <Compile Include="Topics\TopicPersistenceTests.cs" />
+    <Compile Include="News\NewsPersistenceTests.cs" />
+    <Compile Include="Forums\ForumGroupPersistenceTests.cs" />
+    <Compile Include="Forums\ForumPersistenceTests.cs" />
+    <Compile Include="Forums\ForumPostPersistenceTests.cs" />
+    <Compile Include="Forums\ForumSubscriptionPersistenceTests.cs" />
+    <Compile Include="Forums\ForumTopicPersistenceTests.cs" />
+    <Compile Include="Logging\LogPersistenceTests.cs" />
+    <Compile Include="Forums\PrivateMessagePersistenceTests.cs" />
+    <Compile Include="Orders\ReturnRequestPersistenceTests.cs" />
+    <Compile Include="Orders\RecurringPaymentHistoryPersistenceTests.cs" />
+    <Compile Include="Orders\RecurringPaymentPersistenceTests.cs" />
+    <Compile Include="Orders\OrderProductVariantPersistenceTests.cs" />
+    <Compile Include="Orders\OrderNotePersistenceTests.cs" />
+    <Compile Include="Media\DownloadPersistenceTests.cs" />
+    <Compile Include="Messages\EmailAccountPersistenceTests.cs" />
+    <Compile Include="Messages\MessageTemplatePersistenceTests.cs" />
+    <Compile Include="Messages\NewsLetterSubscriptionPersistenceTests.cs" />
+    <Compile Include="Security\PermissionRecordPersistenceTests.cs" />
+    <Compile Include="Orders\GiftCardPersistenceTests.cs" />
+    <Compile Include="Orders\GiftCardUsageHistoryPersistenceTests.cs" />
+    <Compile Include="Discounts\DiscountUsageHistoryPersistenceTests.cs" />
+    <Compile Include="Orders\OrderPersistenceTests.cs" />
+    <Compile Include="Messages\QueuedEmailPersistenceTests.cs" />
+    <Compile Include="Customers\RewardPointsHistoryPersistenceTests.cs" />
+    <Compile Include="Shipping\ShippingMethodPersistenceTests.cs" />
+    <Compile Include="Orders\ShoppingCartItemPeristenceTests.cs" />
+    <Compile Include="Tax\TaxCategoryPersistenceTests.cs" />
+    <Compile Include="Discounts\DiscountRequirementPersistenceTests.cs" />
+    <Compile Include="Discounts\DiscountPersistenceTests.cs" />
+    <Compile Include="Customers\CustomerRolePersistenceTests.cs" />
+    <Compile Include="Directory\MeasureWeightPersistenceTests.cs" />
+    <Compile Include="Directory\MeasureDimensionPersistenceTests.cs" />
+    <Compile Include="Directory\CurrencyPersistenceTests.cs" />
+    <Compile Include="Directory\CountryPersistenceTests.cs" />
+    <Compile Include="Directory\StateProvincePersistenceTests.cs" />
+    <Compile Include="Customers\CustomerContentPersistenceTests.cs" />
+    <Compile Include="Localization\LocalizedPropertyPersistenceTests.cs" />
+    <Compile Include="Catalog\TierPricePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductSpecificationAttributePersistenceTests.cs" />
+    <Compile Include="Catalog\SpecificationAttributeOptionPersistenceTests.cs" />
+    <Compile Include="Catalog\SpecificationAttributePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductVariantAttributeValuePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductVariantAttributeCombinationPersistenceTests.cs" />
+    <Compile Include="Catalog\ProductVariantAttributePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductAttributePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductPicturePersistenceTests.cs" />
+    <Compile Include="Catalog\ProductManufacturerPersistenceTests.cs" />
+    <Compile Include="Catalog\ProductCategoryPersistenceTests.cs" />
+    <Compile Include="Catalog\ProductVariantPersistenceTests.cs" />
+    <Compile Include="Catalog\ProductPersistenceTests.cs" />
+    <Compile Include="Media\PicturePersistenceTests.cs" />
+    <Compile Include="Catalog\ManufacturerPersistenceTests.cs" />
+    <Compile Include="Localization\LocaleStringResourcePersistenceTests.cs" />
+    <Compile Include="Customers\CustomerPersistenceTests.cs" />
+    <Compile Include="Configuration\SettingPersistenceTests.cs" />
+    <Compile Include="Localization\LanguagePersistenceTests.cs" />
+    <Compile Include="PersistenceTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemaTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
+      <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
+      <Name>SmartStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SmartStore.Data\SmartStore.Data.csproj">
+      <Project>{ccd7f2c9-6a2c-4cf0-8e89-076b8fc0f144}</Project>
+      <Name>SmartStore.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartStore.Tests\SmartStore.Tests.csproj">
+      <Project>{1d9eb579-3630-468a-be94-49e7df4f6e1d}</Project>
+      <Name>SmartStore.Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cms\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(TargetDir)x86" md "$(TargetDir)x86" 
+xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

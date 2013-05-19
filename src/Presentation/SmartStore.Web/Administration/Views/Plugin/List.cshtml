@@ -1,0 +1,199 @@
+﻿@model PluginListModel
+@using SmartStore.Web.Framework.UI;
+@{    
+    //page title
+    ViewBag.Title = T("Admin.Configuration.Plugins").Text;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "plugins-form" }))
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-cogs"></i>
+            @T("Admin.Configuration.Plugins")
+        </div>
+        <div class="options">
+            <a href="@Url.Action("ReloadList")" class="btn"><i class="icon-refresh"></i>&nbsp;@T("Admin.Configuration.Plugins.ReloadList")</a>
+        </div>
+    </div>
+    
+    <table class="adminContent">
+        <tr>
+            <td>
+                <div class="alert alert-info fade in">
+                    <button class="close" data-dismiss="alert">x</button>
+                    <p style="font-weight: bold">@T("Admin.Configuration.Plugins.Description")</p>
+                    <ol>
+                        <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
+                        <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
+                        <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
+                        <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
+                        <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
+                    </ol>
+                </div>
+    
+                @Html.SmartStore().TabStrip().Name("plugins-tab").Position(TabsPosition.Left).Items(x =>
+                {
+                    bool isFirst = true;
+                    Model.Groups.Each(g =>
+                    {
+                        var tab = x.Add().Text(g.Key)
+                                    .Content(PluginList(g.Value))
+                                    .Badge(g.Value.Count.ToString(), BadgeStyle.Info, g.Value.Count > 0);
+                        if (isFirst)
+                        {
+                            tab.Selected(true);
+                        }
+                        isFirst = false;
+                    });
+                })
+
+                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+            </td>
+        </tr>
+    </table>
+    
+    @helper PluginList(IEnumerable<PluginModel> plugins)
+    {  
+        <table class="table plugins-table">
+
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th style="width: 60%">@T("Common.Plugin")</th>
+                    <th>@T("Admin.Configuration.Plugins.Fields.Installation")</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+
+            @foreach (var plugin in plugins)
+            {
+                <tr @Html.Attr("class", "uninstalled", !plugin.Installed)>
+                    <td class="cell-icon">
+                        <img class="icon" src='@Url.Content(plugin.IconUrl)' />
+                    </td>
+                    <td class="cell-data">
+                        
+                        <div>
+                            @if (plugin.Installed) 
+                            {
+                                <span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+                                if (plugin.CanChangeEnabled)
+                                {
+                                    <span class='label@(plugin.IsEnabled ? " label-success" : "")'>
+                                        @Html.Raw(plugin.IsEnabled ? T("Common.Active") : T("Common.Inactive"))
+                                    </span>
+                                }
+                            }
+                            <span class="plugin-name">@plugin.FriendlyName</span>
+                        </div>
+                        
+                        <div class="plugin-data">
+                            @if (plugin.Author.HasValue()) {
+                                <text><span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Author"):</span> <span class="attr-value">@plugin.Author,</span> </text>
+                            }
+                            <span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Version"):</span> <span class="attr-value">@plugin.Version</span>
+                            <span class="attr-name">@T("Admin.Configuration.Plugins.Fields.SystemName"):</span> <span class="attr-value">@plugin.SystemName</span>
+                        </div>
+
+                        @if (plugin.Description.HasValue()) {
+                            <div class="plugin-description">
+                                @T("Common.Description"): <span class="attr-value">@plugin.Description</span>
+                            </div>
+                        }
+
+                        <div class="plugin-actions">
+                            <i class="icon-edit"></i>
+                            <a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
+                                @T("Admin.Common.Edit")
+                            </a>
+                            @if (plugin.ConfigurationUrl.HasValue())
+                            {
+                                <i class="icon-cog"></i>
+                                <a href="@plugin.ConfigurationUrl" class='plugin-configure'>
+                                    @T("Admin.Configuration.Plugins.Fields.Configure")
+                                </a>
+                            }
+                        </div>
+
+                    </td>
+                    <td class="cell-install">
+                        <div data-plugin-name="@plugin.FriendlyName">
+                            @if (plugin.Installed)
+                            {
+                                <a class="btn plugin-uninstall" href='@Url.Action("Uninstall", new { systemName = plugin.SystemName })'>
+                                    @T("Admin.Configuration.Plugins.Fields.Uninstall")
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-success plugin-install" href='@Url.Action("Install", new { systemName = plugin.SystemName })'>
+                                    <i class="icon-download-alt"></i>
+                                    @T("Admin.Configuration.Plugins.Fields.Install")
+                                </a>
+                            }
+
+                        </div>
+                    </td>
+                </tr>
+            }
+
+            </tbody>
+
+        </table>
+    }
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#plugins-tab').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
+                var el = $(this);
+
+                var confirmText = "",
+                    progressText = "",
+                    isInstall = el.hasClass("plugin-install");
+
+                if (isInstall) {
+                    confirmText = '@T("Admin.Configuration.Plugins.Fields.Install.Confirm").Text';
+                    progressText = '@T("Admin.Configuration.Plugins.Fields.Install.Progress")';
+                }
+                else {
+                    confirmText = '@T("Admin.Configuration.Plugins.Fields.Uninstall.Confirm").Text';
+                    progressText = '@T("Admin.Configuration.Plugins.Fields.Uninstall.Progress")';
+                }
+
+                if (!confirm(_.str.unescapeHTML(confirmText).format(el.parent().data('plugin-name')))) {
+                    return false;
+                }
+
+                e.preventDefault();
+                $.throbber.show({
+                    message: progressText,
+                    callback: function () {
+                        setLocation($(e.currentTarget).attr("href"));
+                    }
+                });
+
+            });
+
+            $('#plugins-tab').on('click', '.plugin-edit', function (e) {
+                OpenWindow(
+                    '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
+                        '@Url.Content("~/Admin/Plugin/EditPopup")',
+                        $(this).data("systemname")
+                    ),
+                    800,
+                    350,
+                    true
+                );
+                return false;
+            });
+
+            $('#btnRefresh').click(function () {
+                // reload page
+                setLocation(location.href);
+                return false;
+            });
+        });
+</script>
+}

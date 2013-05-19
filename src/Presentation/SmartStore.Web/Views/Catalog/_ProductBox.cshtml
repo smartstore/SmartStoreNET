@@ -1,0 +1,166 @@
+﻿@model ProductOverviewModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Catalog;
+@{
+    //prepare "Add to cart" AJAX link
+    string addtocartlink = "";
+    if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+    }
+    else
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id });
+    }
+
+    bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;    
+}
+
+@if (showQuicklinks)
+{
+    <div class="quicklinks">        
+        @if (!Model.ProductPrice.DisableWishListButton)
+        {
+            <a href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                class="ajax-cart-link"
+                data-form-selector="#product-details-form"
+                data-type="wishlist"
+                data-action="add">
+                <i class="icon-gift"></i>
+                @T("Categories.Wishlist")
+            </a>
+        }
+        @if (Model.CompareEnabled)
+        {
+            <a class="ajax-cart-link pull-right"
+                href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.Id })"
+                data-type="compare"
+                data-action="add">
+                <i class="icon-retweet"></i>
+                @T("Categories.Compare")
+            </a>
+        }
+    </div>
+}
+
+<figure class="picture" data-equalized-part="picture" data-equalized-valign="true">
+    <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+        <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
+    </a>
+</figure>
+<div class="data">
+    @{
+        int ratingPercent = 0;
+        if (Model.TotalReviews != 0)
+        {
+            ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+        }
+
+        string reviewTitle = "";
+        if (Model.TotalReviews > 0) 
+        {
+            reviewTitle = Model.TotalReviews + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
+        }
+    }
+
+    @if (Model.ShowReviews) {
+    <div class="reviews" title="@reviewTitle">
+        <div class="rating">
+            <div style="width: @(ratingPercent)%"></div>
+        </div>
+    </div>
+    }
+
+    @{
+        string name = null, nameTitle = null;
+        name = Model.Name.Truncate(50);
+        if (Model.Name.Length > name.Length)
+        {
+            nameTitle = Model.Name;
+        }
+    }
+    <h3 class="name" data-equalized-part="name">
+        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@nameTitle">@name</a>
+    </h3>
+    @{
+        string desc = null, descTitle = null;
+        if (Model.ShortDescription.HasValue()) {
+            desc = Model.ShortDescription.Truncate(50);
+            if (Model.ShortDescription.Length > desc.Length) {
+                descTitle = Model.ShortDescription;
+            }
+        }
+    }
+    <p class="description" title="@descTitle" data-equalized-part="description">
+        @Html.Raw(desc)
+    </p>
+    
+    @if (Model.ShowDeliveryTimes)
+    {
+    <div class="delivery-time" data-equalized-part="delivery-time">
+        @if (Model.DeliveryTime != null && Model.IsShipEnabled)
+        {
+            <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+            if(Model.DisplayDeliveryTimeAccordingToStock)
+            {
+                <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+            }
+            else {
+                <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+            }
+            
+        } else {
+            <text>&nbsp;</text>
+        }
+    </div>
+    }
+
+    <div class="prices" data-equalized-part="prices">
+        @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
+        {
+            <p class="old-product-price">
+                <span class="price">@Model.ProductPrice.OldPrice</span>
+            </p>
+        }
+        <p class="product-price">
+            <span class="price text-success">@Model.ProductPrice.Price</span>
+        </p>
+
+        @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
+        {
+        <div class="base-price muted">
+            @Model.BasePriceInfo
+        </div>
+        }
+
+        @if (Model.TransportSurcharge.HasValue())
+        {
+        <div class="transport-charge muted">
+            @Model.TransportSurcharge
+        </div>
+        }
+    </div>
+
+    <div class="buttons">
+                
+        @if (!Model.ProductPrice.DisableBuyButton)
+        {
+            var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
+            <a href='@addtocartlink' 
+                class="btn btn-warning ajax-cart-link"
+                title="@title" 
+                rel="tooltip"
+                data-type="cart"
+                data-action="add">
+                <i class="icon-shopping-cart"></i>      
+            </a>
+        }
+        <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn">
+            <i class="icon-info-sign"></i>
+            @T("Products.Details")
+        </a>
+    </div>
+
+    @Html.Widget("productbox_add_info")
+    
+</div>

@@ -1,0 +1,9 @@
+﻿@model ProductEmailAFriendModel
+@using SmartStore.Web.Models.Catalog;
+
+<div class="tell-a-friend">
+    <a href="@Url.RouteUrl("ProductEmailAFriend", new { productId = Model.ProductId })" data-role="button" data-ajax="false">
+        <i class="icon-envelope"></i>
+        @T("Products.EmailAFriend")
+    </a>
+</div>

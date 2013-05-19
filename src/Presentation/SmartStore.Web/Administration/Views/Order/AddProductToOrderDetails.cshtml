@@ -1,0 +1,145 @@
+﻿@model OrderModel.AddOrderProductModel.ProductDetailsModel
+@{
+    //page title
+    ViewBag.Title = string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId);
+}
+@*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
+@using (Html.BeginForm("AddProductToOrderDetails", "Order",
+    new RouteValueDictionary(new { orderId = Model.OrderId, productVariantId = Model.ProductVariantId }),
+    FormMethod.Post,
+    new Dictionary<string, Object> { { "enctype", "multipart/form-data" } }))
+{
+    @Html.ValidationSummary(false)
+    <div class="section-header">
+        <div class="title">
+            @string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId)
+            @Html.ActionLink("(" + T("Admin.Orders.Products.AddNew.BackToList") + ")", "AddProductToOrder", new { orderId = Model.OrderId })
+        </div>
+        <div class="options">
+        </div>
+    </div>
+    <div class="clear">
+    </div>
+    <div>
+        @if (Model.Warnings.Count > 0)
+        {
+            <div class="alert alert-error fade in">
+                @foreach (var warning in Model.Warnings)
+                {
+                    @warning
+                    <br />
+                }
+            </div>
+        }
+    </div>
+    <div class="clear">
+    </div>
+    <div>
+
+		@*codehint: sm-edit*@
+		<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UnitPriceInclTax)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.UnitPriceInclTax)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UnitPriceExclTax)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.UnitPriceExclTax)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Quantity)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Quantity)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SubTotalInclTax)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SubTotalInclTax)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SubTotalExclTax)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SubTotalExclTax)
+			</td>
+		</tr>
+		</table>
+		
+@*        <table>
+            <tr>
+                <td>
+                    @Html.SmartLabelFor(model => model.UnitPriceInclTax)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.UnitPriceInclTax)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.SmartLabelFor(model => model.UnitPriceExclTax)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.UnitPriceExclTax)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.SmartLabelFor(model => model.Quantity)
+                </td>
+                <td colspan="2">
+                    @Html.EditorFor(model => model.Quantity)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.SmartLabelFor(model => model.SubTotalInclTax)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.SubTotalInclTax)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.SmartLabelFor(model => model.SubTotalExclTax)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.SubTotalExclTax)
+                </td>
+            </tr>
+        </table>*@
+        
+		<div class="clear"></div>
+
+        <div>
+            @Html.Partial("_ProductAddAttributes", Model.ProductVariantAttributes)
+        </div>
+        <div class="clear">
+        </div>
+        @{
+        var dataDictGiftCard = new ViewDataDictionary();
+        dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = "giftcard";
+            @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
+        }
+        <div class="clear">
+        </div>
+        <p style="margin:12px 0 12px 0;">
+            <strong>@T("Admin.Orders.Products.AddNew.Note2")</strong>
+        </p>
+        <button type="submit" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
+    </div>
+}

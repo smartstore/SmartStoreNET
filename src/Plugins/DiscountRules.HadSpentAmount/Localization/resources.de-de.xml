@@ -1,0 +1,11 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HadSpentAmount" AppendRootKey="false">
+    <Value>Der Kunde hat x.xx ausgegeben</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Amount">
+    <Value>Benötigter ausgegebener Betrag</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Amount.Hint">
+    <Value>Der Rabatt wird angewendet wenn der Kunde den Betrag x.xx ausgegeben hat.</Value>
+  </LocaleResource>
+</Language>

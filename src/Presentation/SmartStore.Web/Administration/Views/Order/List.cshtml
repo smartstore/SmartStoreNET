@@ -1,0 +1,271 @@
+﻿@model OrderListModel
+           
+@using Telerik.Web.Mvc.UI
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    var hideProfitReport = false;
+    
+    //page title
+    ViewBag.Title = T("Admin.Orders").Text;
+}
+
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-bar-chart"></i>
+            @T("Admin.Orders")
+        </div>
+        <div class="options">
+            <a href="@Url.Action("ExportXmlAll")" class="btn">@T("Admin.Common.ExportToXml.All")</a>
+            <button type="submit" id="exportxml-selected" class="btn">@T("Admin.Common.ExportToXml.Selected")</button>
+            <a href="@Url.Action("ExportExcelAll")" class="btn">@T("Admin.Common.ExportToExcel.All")</a>
+            <button type="submit" id="exportexcel-selected" class="btn">@T("Admin.Common.ExportToExcel.Selected")</button>
+        </div>
+    </div>
+    <table width="100%">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StartDate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.StartDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EndDate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.EndDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerEmail)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.CustomerEmail)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OrderStatusId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PaymentStatusId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShippingStatusId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("ShippingStatusId", Model.AvailableShippingStatuses)
+            </td>
+        </tr>
+       <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OrderGuid)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.OrderGuid)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.GoDirectlyToNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.GoDirectlyToNumber)
+                <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">@T("Admin.Common.Go")</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+            </td>
+        </tr>
+    </table>
+     <p>
+    </p>
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<OrderModel>()
+                        .Name("orders-grid")
+                        .ClientEvents(events => events
+                            .OnDataBinding("onDataBinding")
+                            .OnDataBound("onDataBound")
+                            .OnComplete("onComplete"))
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.Id)
+                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                            .Title("<input id='mastercheckbox' type='checkbox'/>")
+                            .Width(50)
+                            .HtmlAttributes(new { style = "text-align:center" })
+                            .HeaderHtmlAttributes(new { style = "text-align:center" });
+
+                            columns.Bound(x => x.Id);
+                            columns.Bound(x => x.OrderStatus);
+                            columns.Bound(x => x.PaymentStatus);
+                            columns.Bound(x => x.ShippingStatus);
+                            columns.Bound(x => x.CustomerEmail);
+                            columns.Bound(x => x.CreatedOn);
+                            columns.Bound(x => x.OrderTotal)
+                                 .FooterTemplate(
+                                 string.Format("<div><b>{0}:</b></div>" +
+                                 (hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\"></span></div>") +
+                                 "<div>{2}: <span id=\"aggregator-tax-block\"></span></div>" +
+                                 "<div>{3}: <span id=\"aggregator-total-block\"></span></div>",
+                                 @T("Admin.Orders.Report.Summary").Text,
+                                 (hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
+                                 @T("Admin.Orders.Report.Tax").Text,
+                                 @T("Admin.Orders.Report.Total").Text));
+                            columns.Bound(x => x.Id)
+                                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", new { id = x.Id }))
+                                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
+                                .Width(50)
+                                .Centered()
+                                .Title(T("Admin.Common.View").Text);
+                        })
+                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                        .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+                        .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+
+        var selectedIds = [];
+        var reportAggregates = "";
+
+        $(document).ready(function () {
+
+            //search button
+            $('#btnSearch').click(function () {
+                //search
+                var grid = $('#orders-grid').data('tGrid');
+                grid.currentPage = 1; //new search. Set page size to 1
+                grid.ajaxRequest();
+                //clear selected checkboxes
+                $('.checkboxGroups').attr('checked', false).change();
+                selectedIds = [];
+                return false;
+            });
+
+
+            //"Export Excel selected" button
+            $('#exportexcel-selected').click(function (e) {
+                e.preventDefault();
+                //redirect to required URL
+                setLocation('@(Url.Action("ExportExcelSelected", "Order"))?selectedIds=' + selectedIds.join(","));
+                return false;
+            });
+
+            //"Export XML selected" button
+            $('#exportxml-selected').click(function (e) {
+                e.preventDefault();
+                //redirect to required URL
+                setLocation('@(Url.Action("ExportXmlSelected", "Order"))?selectedIds=' + selectedIds.join(","));
+                return false;
+            });
+
+            
+            $('#mastercheckbox').click(function () {
+                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+            });
+
+            //wire up checkboxes. 
+            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+                var $check = $(this);
+                if ($check.is(":checked") == true) {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked == -1) {
+                        //add id to selectedIds.  
+                        selectedIds.push($check.val());
+                    }
+                }
+                else {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked > -1) {
+                        //remove id from selectedIds.  
+                        selectedIds = $.grep(selectedIds, function (item, index) {
+                            return item != $check.val();
+                        });
+                    }
+                }
+                updateMasterCheckbox();
+            });
+        });
+
+        function onDataBinding(e) {
+            var searchModel = {
+                    StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+                    EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
+                    CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+                    OrderStatusId: $('#@Html.FieldIdFor(model => model.OrderStatusId)').val(),
+                    PaymentStatusId: $('#@Html.FieldIdFor(model => model.PaymentStatusId)').val(),
+                    ShippingStatusId: $('#@Html.FieldIdFor(model => model.ShippingStatusId)').val(),
+                    OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val()
+                    };
+            e.data = searchModel;
+        }
+    
+        function onDataBound(e) {
+
+            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+                var currentId = $(this).val();
+                var checked = jQuery.inArray(currentId, selectedIds);
+                //set checked based on if current checkbox's value is in selectedIds.  
+                $(this).attr('checked', checked > -1);
+            });
+
+            updateMasterCheckbox();
+
+            reportLoaded(e);
+        }
+
+        function onComplete(e) {
+            var result = e.response;
+            if (result) {
+                reportAggregates = e.response["aggregates"];
+            }
+        }
+
+        function reportLoaded(e) {
+            if (reportAggregates != "") {
+                updateAggregates(reportAggregates);
+            }
+        }
+        function updateAggregates(aggs) {
+            for (var key in aggs) {
+
+                @if (!hideProfitReport)
+                {
+                <text>$('#aggregator-profit-block').text(aggs['aggregatorprofit']);</text>
+                }
+                $('#aggregator-tax-block').text(aggs['aggregatortax']);
+                $('#aggregator-total-block').text(aggs['aggregatortotal']);
+            }
+        }
+
+        function updateMasterCheckbox() {
+            var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
+            var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+        }
+   </script>
+    
+}

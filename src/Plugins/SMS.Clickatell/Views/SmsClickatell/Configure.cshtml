@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.Plugin.Sms.Clickatell.Models.SmsClickatellModel
+@using SmartStore.Web.Framework;
+@using (Html.BeginForm())
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle" colspan="2">
+                @Html.Raw(@T("Plugins.Sms.Clickatell.AdminInstruction"))
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Enabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Enabled)
+                @Html.ValidationMessageFor(model => model.Enabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PhoneNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PhoneNumber)
+                @Html.ValidationMessageFor(model => model.PhoneNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ApiId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ApiId)
+                @Html.ValidationMessageFor(model => model.ApiId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Username)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Username)
+                @Html.ValidationMessageFor(model => model.Username)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Password)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Password)
+                @Html.ValidationMessageFor(model => model.Password)
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td style="padding:10px 0">
+                <button type="submit" name="save" value="save" class="btn btn-primary">
+                    @T("Admin.Common.Save")
+                </button>
+            </td>
+        </tr>
+        <tr class="adminSeparator">
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p>
+                    <strong>@T("Plugins.Sms.Clickatell.SendTest.Hint")</strong>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TestMessage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TestMessage)
+                @Html.ValidationMessageFor(model => model.TestMessage)
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td style="padding:10px 0">
+                <button type="submit" name="test-sms" value="test-sms" class="btn btn-primary">
+                    @T("Plugins.Sms.Clickatell.SendTest")
+                </button>
+            </td>
+        </tr>
+        @if (!String.IsNullOrEmpty(Model.TestSmsResult))
+        {
+            <tr>
+                <td colspan="2" style="color: red">
+                    @Model.TestSmsResult
+                </td>
+            </tr>
+        }
+    </table>
+    
+    
+}

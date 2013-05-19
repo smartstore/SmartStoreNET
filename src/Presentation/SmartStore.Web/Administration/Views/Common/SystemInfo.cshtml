@@ -1,0 +1,101 @@
+﻿@model SystemInfoModel
+@{
+    //page title
+    ViewBag.Title = T("Admin.System.SystemInfo").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="icon icon-info-sign"></i>
+        @T("Admin.System.SystemInfo")
+    </div>
+</div>
+
+<script type="text/javascript">
+    function toggleAndChangeText() {
+        $('#pnlLoadedAssemblies').toggle();
+        if ($('#pnlLoadedAssemblies').css('display') == 'none') {
+            $('#loadedAssembliesTag').html('@T("Admin.Common.Show")');
+        }
+        else {
+            $('#loadedAssembliesTag').html('@T("Admin.Common.Hide")');
+        }
+    }
+</script>
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AppVersion)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.AppVersion)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.OperatingSystem)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.OperatingSystem)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AspNetInfo)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.AspNetInfo)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsFullTrust)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.IsFullTrust)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ServerTimeZone)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.ServerTimeZone)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ServerLocalTime)
+        </td>
+        <td class="adminData">
+            @Model.ServerLocalTime.ToString("F")
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UtcTime)
+        </td>
+        <td class="adminData">
+            @Model.UtcTime.ToString("F")
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.LoadedAssemblies)
+        </td>
+        <td class="adminData">
+            <a id="loadedAssembliesTag" href="javascript:toggleAndChangeText();">@T("Admin.Common.Show")</a>
+            <div id="pnlLoadedAssemblies" style="display:none">
+                @foreach (var assembly in Model.LoadedAssemblies)
+                {
+                    @assembly.FullName
+                    if (!String.IsNullOrEmpty(assembly.Location))
+                    {
+                        <br />
+                        <i>@assembly.Location</i>
+                    }
+                    <br />
+                }
+            </div>
+        </td>
+    </tr>
+</table>

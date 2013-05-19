@@ -1,0 +1,14 @@
+﻿<script>
+    try {
+        if (typeof navigator === 'undefined') navigator = {};
+        html = document.documentElement;
+        if ('mozMatchesSelector' in html) { html.className += ' moz' }
+        else if ('webkitMatchesSelector' in html) { html.className += ' wkit' };
+        html.className += (this.top === this.window ? ' not-' : ' ') + 'framed';
+    } catch (e) { }
+</script>
+<!--[if IE 9]><script>try{html.className+=' ie ie9 iepost8 iepre10'}catch(e){};navigator.isIE=9</script><![endif]-->
+<!--[if IE 8]><script>try{html.className+=' ie ie8 iepre9 iepre10'}catch(e){};navigator.isIE=8</script><![endif]-->
+<!--[if IE 7]><script>try{html.className+=' ie ie7 iepre9 iepre10'}catch(e){};navigator.isIE=7</script><![endif]-->
+<!--[if gt IE 9]><script>try{html.className+=' ie ie10 iepost8'}catch(e){};navigator.isIE=10</script><![endif]-->
+<!--[if !IE]>--><script>var ieMode = 0; try { if (document.documentMode) { ieMode = document.documentMode; html.className += ' ie iepost8 ie' + document.documentMode } else { html.className += ' not-ie' }; } catch (e) { }; navigator.isIE = ieMode</script><!-- <![endif]-->

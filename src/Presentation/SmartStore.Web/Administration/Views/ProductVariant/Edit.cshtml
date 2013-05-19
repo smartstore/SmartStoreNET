@@ -1,0 +1,31 @@
+﻿@model ProductVariantModel
+@{
+    var fullProductName = "";
+    if (!string.IsNullOrWhiteSpace(Model.Name))
+    {
+        fullProductName = Model.ProductName + " (" + Model.Name + ")";
+    }
+    else
+    {
+        fullProductName =  Model.ProductName;
+    }
+
+    //page title
+    ViewBag.Title = string.Format(T("Admin.Catalog.Products.Variants.EditProductVariantDetails").Text, fullProductName);
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "productvariant-form" }))
+{
+    <div class="section-header">
+        <div class="title">
+            @string.Format(T("Admin.Catalog.Products.Variants.EditProductVariantDetails").Text, fullProductName) @Html.ActionLink("(" + T("Admin.Catalog.Products.Variants.BackToProduct") + ")", "Edit", "Product", new { Id = Model.ProductId }, null)
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+            <button type="submit" name="productvariant-delete" id="productvariant-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            
+        </div>
+    </div>
+    @Html.Partial("_CreateOrUpdate", Model)
+}
+@Html.DeleteConfirmation("productvariant-delete")

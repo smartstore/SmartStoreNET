@@ -51,7 +51,7 @@ namespace SmartStore.Web.Framework.Controllers
                 {
                     context.SaveChanges();
                 }
-                catch (Exception ex)
+                catch /*(Exception ex)*/
                 {
                     // do exactly WHAT now?
                 }

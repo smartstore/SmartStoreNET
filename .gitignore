@@ -32,7 +32,7 @@ local.properties
 *-sym.*
 *-symdir
 /src/Plugins/*-sym
-#/src/Presentation/SmartStore.Web/Themes/*-sym
+/src/Presentation/SmartStore.Web/Themes/*-sym
 
 ###########################################################
 ## Ignore Visual Studio temporary files, build results, and

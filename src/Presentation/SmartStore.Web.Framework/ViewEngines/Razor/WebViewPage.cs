@@ -30,7 +30,6 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
         private ThemeManifest _themeManifest;
-        private IThemeVariablesService _themeVarService;
         private ExpandoObject _themeVars;
 
         // codehint: sm-add (mc)

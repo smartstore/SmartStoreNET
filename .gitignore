@@ -203,6 +203,9 @@ Kopie von*
 /src/Presentation/SmartStore.Web/Media
 
 # Import/Export
-/src/Presentation/SmartStore.Web/Content/files/ExportImport/*.xml
-/src/Presentation/SmartStore.Web/Content/files/ExportImport/*.csv
+/src/Presentation/SmartStore.Web/Content/files/[Ee]xport[Ii]mport
+
+# Media
+/src/Presentation/SmartStore.Web/Media/[Tt]humbs
+/src/Presentation/SmartStore.Web/Media/[Uu]ploaded
 

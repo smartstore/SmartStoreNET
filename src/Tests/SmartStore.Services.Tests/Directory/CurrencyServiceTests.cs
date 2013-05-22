@@ -48,7 +48,7 @@ namespace SmartStore.Services.Tests.Directory
                 Name = "Euro",
                 CurrencyCode = "EUR",
                 Rate = 1,
-                DisplayLocale = "",
+                DisplayLocale = "de-DE",
                 CustomFormatting = "€0.00",
                 Published = true,
                 DisplayOrder = 2,

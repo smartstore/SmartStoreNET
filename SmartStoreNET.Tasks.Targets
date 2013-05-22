@@ -55,12 +55,24 @@
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 	</Target>
+	
+	<Target Name="BuildFull">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="Compile"/>
+		<CallTarget Targets="Test"/>
+	</Target>
 
 	<Target Name="Deploy">
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 		<CallTarget Targets="Stage"/>
-		<!--<CallTarget Targets="Package-Zip"/>-->
+	</Target>
+	
+	<Target Name="DeployFull">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="Compile"/>
+		<CallTarget Targets="Test"/>
+		<CallTarget Targets="Stage"/>
 	</Target>
   
 	<!-- Building -->
@@ -155,6 +167,33 @@
 		</PropertyGroup>
 		
 		<Zip Files="@(Zip-Stage)" WorkingDirectory="$(StageFolder)" ZipFileName="$(BuildFolder)\SmartStoreNET.Web.zip" />
+	</Target>
+	
+	<!-- Testing -->
+
+	<Target Name="Test">
+		
+		<PropertyGroup>
+			<TestFolder>$(BuildFolder)\Compile</TestFolder>
+		</PropertyGroup>
+	
+		<!-- TeamCity support -->
+		<ItemGroup>
+			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-2.6.0.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(LibFolder)\nunit\addins" />
+
+		<!-- Compile to "OutputFolder" -->
+		<MSBuild Projects="$(SrcFolder)\$(SlnName).sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform);OutputPath=$(TestFolder)" />
+
+		<!-- Run unit test assemblies -->
+		<CreateItem Include="$(TestFolder)\*.Tests.dll">
+			<Output TaskParameter="Include" ItemName="TestAssemblies" />
+		</CreateItem>
+		
+		<!-- execute test -->
+		<Message Text="Executing test fixtures with NUnit... This is a long running process and could take a few minutes... Dont't panic ;-)"/>
+		<NUnit Assemblies="@(TestAssemblies)" ToolPath="$(LibFolder)\nunit" WorkingDirectory="$(TestFolder)" OutputXmlFile="$(BuildFolder)\SmartStoreNET.Tests.xml" />
 	</Target>
 
 </Project>

@@ -169,7 +169,7 @@ namespace SmartStore.Services.Tests.Catalog
                 Name = "English",
                 LanguageCulture = "en-US"
             };
-            _priceFormatter.FormatPrice(1234.5M, true, currency, language, false, false).ShouldEqual("$1,234.50 (USD)");
+            _priceFormatter.FormatPrice(1234.5M, true, currency, language, false, false).ShouldEqual("$1,234.50");
 
         }
     }

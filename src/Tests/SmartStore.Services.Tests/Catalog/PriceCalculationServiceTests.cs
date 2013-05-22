@@ -9,6 +9,7 @@ using SmartStore.Services.Discounts;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using System.Collections.Generic;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -243,6 +244,7 @@ namespace SmartStore.Services.Tests.Catalog
             //set HasDiscountsApplied property
             productVariant.HasDiscountsApplied = true;
             _discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
+            _discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
             
             _priceCalcService.GetFinalPrice(productVariant, customer, 0, true, 1).ShouldEqual(9.34M);
         }
@@ -267,6 +269,8 @@ namespace SmartStore.Services.Tests.Catalog
                     Published = true
                 }
             };
+
+            _discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
             //customer
             Customer customer = null;
@@ -318,6 +322,7 @@ namespace SmartStore.Services.Tests.Catalog
             //set HasDiscountsApplied property
             productVariant.HasDiscountsApplied = true;
             _discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
+            _discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
             var discount2 = new Discount()
             {

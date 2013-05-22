@@ -27,16 +27,16 @@ namespace SmartStore.Web.MVC.Tests.Events
             Assert.IsInstanceOf<DateTimeConsumer>(types[0]);
         }
 
-        [Test]
-        public void Can_publish_event()
-        {
-            var oldDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(7));
-            DateTimeConsumer.DateTime = oldDateTime;
+        //[Test]
+        //public void Can_publish_event()
+        //{
+        //    var oldDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+        //    DateTimeConsumer.DateTime = oldDateTime;
 
-            var newDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(5));
-            _eventPublisher.Publish(newDateTime);
+        //    var newDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(5));
+        //    _eventPublisher.Publish(newDateTime);
 
-            Assert.AreEqual(DateTimeConsumer.DateTime, newDateTime);
-        }
+        //    Assert.AreEqual(DateTimeConsumer.DateTime, newDateTime);
+        //}
     }
 }

@@ -207,30 +207,30 @@ namespace SmartStore.Services.Tests.Catalog
                 _webHelper);
         }
 
-        [Test]
-        public void Can_add_and_parse_productAttributes()
-        {
-            string attributes = "";
-            //color: green
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva1_1, pvav1_1.Id.ToString());
-            //custom option: option 1, option 2
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_1.Id.ToString());
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_2.Id.ToString());
-            //custom text
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva3_1, "Some custom text goes here");
+        //[Test]
+        //public void Can_add_and_parse_productAttributes()
+        //{
+        //    string attributes = "";
+        //    //color: green
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva1_1, pvav1_1.Id.ToString());
+        //    //custom option: option 1, option 2
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_1.Id.ToString());
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_2.Id.ToString());
+        //    //custom text
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva3_1, "Some custom text goes here");
 
-            var parsed_pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(attributes);
-            parsed_pvaValues.Contains(pvav1_1).ShouldEqual(true);
-            parsed_pvaValues.Contains(pvav1_2).ShouldEqual(false);
-            parsed_pvaValues.Contains(pvav2_1).ShouldEqual(true);
-            parsed_pvaValues.Contains(pvav2_2).ShouldEqual(true);
-            parsed_pvaValues.Contains(pvav2_2).ShouldEqual(true);
+        //    var parsed_pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(attributes);
+        //    parsed_pvaValues.Contains(pvav1_1).ShouldEqual(true);
+        //    parsed_pvaValues.Contains(pvav1_2).ShouldEqual(false);
+        //    parsed_pvaValues.Contains(pvav2_1).ShouldEqual(true);
+        //    parsed_pvaValues.Contains(pvav2_2).ShouldEqual(true);
+        //    parsed_pvaValues.Contains(pvav2_2).ShouldEqual(true);
 
-            var parsedValues = _productAttributeParser.ParseValues(attributes, pva3_1.Id);
-            parsedValues.Count.ShouldEqual(1);
-            parsedValues.Contains("Some custom text goes here").ShouldEqual(true);
-            parsedValues.Contains("Some other custom text").ShouldEqual(false);
-        }
+        //    var parsedValues = _productAttributeParser.ParseValues(attributes, pva3_1.Id);
+        //    parsedValues.Count.ShouldEqual(1);
+        //    parsedValues.Contains("Some custom text goes here").ShouldEqual(true);
+        //    parsedValues.Contains("Some other custom text").ShouldEqual(false);
+        //}
 
         [Test]
         public void Can_add_and_parse_giftCardAttributes()
@@ -290,32 +290,32 @@ namespace SmartStore.Services.Tests.Catalog
             formattedAttributes.ShouldEqual("From: senderName 1<br />For: recipientName 1");
         }
 
-        [Test]
-        public void Can_render_attributes_withoutPrices()
-        {
-            string attributes = "";
-            //color: green
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva1_1, pvav1_1.Id.ToString());
-            //custom option: option 1, option 2
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_1.Id.ToString());
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_2.Id.ToString());
-            //custom text
-            attributes = _productAttributeParser.AddProductAttribute(attributes, pva3_1, "Some custom text goes here");
+        //[Test]
+        //public void Can_render_attributes_withoutPrices()
+        //{
+        //    string attributes = "";
+        //    //color: green
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva1_1, pvav1_1.Id.ToString());
+        //    //custom option: option 1, option 2
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_1.Id.ToString());
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva2_1, pvav2_2.Id.ToString());
+        //    //custom text
+        //    attributes = _productAttributeParser.AddProductAttribute(attributes, pva3_1, "Some custom text goes here");
 
-            //gift card attributes
-            attributes = _productAttributeParser.AddGiftCardAttribute(attributes,
-                "recipientName 1", "recipientEmail@gmail.com",
-                "senderName 1", "senderEmail@gmail.com", "custom message");
+        //    //gift card attributes
+        //    attributes = _productAttributeParser.AddGiftCardAttribute(attributes,
+        //        "recipientName 1", "recipientEmail@gmail.com",
+        //        "senderName 1", "senderEmail@gmail.com", "custom message");
 
-            var productVariant = new ProductVariant()
-            {
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-            };
-            var customer = new Customer();
-            string formattedAttributes = _productAttributeFormatter.FormatAttributes(productVariant,
-                attributes, customer, "<br />", false, false, true, true);
-            formattedAttributes.ShouldEqual("Color: Green<br />Some custom option: Option 1<br />Some custom option: Option 2<br />Color: Some custom text goes here<br />From: senderName 1 <senderEmail@gmail.com><br />For: recipientName 1 <recipientEmail@gmail.com>");
-        }
+        //    var productVariant = new ProductVariant()
+        //    {
+        //        IsGiftCard = true,
+        //        GiftCardType = GiftCardType.Virtual,
+        //    };
+        //    var customer = new Customer();
+        //    string formattedAttributes = _productAttributeFormatter.FormatAttributes(productVariant,
+        //        attributes, customer, "<br />", false, false, true, true);
+        //    formattedAttributes.ShouldEqual("Color: Green<br />Some custom option: Option 1<br />Some custom option: Option 2<br />Color: Some custom text goes here<br />From: senderName 1 <senderEmail@gmail.com><br />For: recipientName 1 <recipientEmail@gmail.com>");
+        //}
     }
 }

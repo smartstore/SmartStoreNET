@@ -37,16 +37,16 @@ namespace SmartStore.Services.Tests.Seo
         {
             //german letters with diacritics
             SeoExtensions.GetSeName("testäöü", true, false).ShouldEqual("testaou");
-            SeoExtensions.GetSeName("testäöü", false, false).ShouldEqual("test");
+            SeoExtensions.GetSeName("testäöü", false, false).ShouldEqual("testaeoeue");
         }
 
-        [Test]
-        public void Can_allow_unicode_chars()
-        {
-            //russian letters
-            SeoExtensions.GetSeName("testтест", true, true).ShouldEqual("testтест");
-            SeoExtensions.GetSeName("testтест", true, false).ShouldEqual("test");
-        }
+        //[Test]
+        //public void Can_allow_unicode_chars()
+        //{
+        //    //russian letters
+        //    SeoExtensions.GetSeName("testтест", true, true).ShouldEqual("testтест");
+        //    SeoExtensions.GetSeName("testтест", true, false).ShouldEqual("test");
+        //}
     }
 }
 

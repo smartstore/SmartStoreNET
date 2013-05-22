@@ -9,29 +9,8 @@ namespace SmartStore.Core.Caching
 
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = 60)
         {
-            return default(T);
+            return acquirer();
         }
-        
-        ///// <summary>
-        ///// Gets or sets the value associated with the specified key.
-        ///// </summary>
-        ///// <typeparam name="T">Type</typeparam>
-        ///// <param name="key">The key of the value to get.</param>
-        ///// <returns>The value associated with the specified key.</returns>
-        //public T Get<T>(string key)
-        //{
-        //    return default(T);
-        //}
-
-        ///// <summary>
-        ///// Adds the specified key and object to the cache.
-        ///// </summary>
-        ///// <param name="key">key</param>
-        ///// <param name="data">Data</param>
-        ///// <param name="cacheTime">Cache time</param>
-        //public void Set(string key, object data, int cacheTime)
-        //{
-        //}
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

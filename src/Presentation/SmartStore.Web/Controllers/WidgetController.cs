@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Services.Cms;
 using SmartStore.Web.Models.Cms;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

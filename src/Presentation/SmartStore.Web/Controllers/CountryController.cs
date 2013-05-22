@@ -6,6 +6,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

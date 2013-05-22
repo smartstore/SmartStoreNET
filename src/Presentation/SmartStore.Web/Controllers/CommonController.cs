@@ -46,6 +46,7 @@ using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.ShoppingCart;
 using SmartStore.Web.Models.Topics;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

@@ -6,6 +6,7 @@ using SmartStore.Services.Topics;
 using SmartStore.Web.Extensions;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Topics;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

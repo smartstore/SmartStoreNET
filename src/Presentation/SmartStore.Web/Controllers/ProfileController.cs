@@ -16,6 +16,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Profile;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

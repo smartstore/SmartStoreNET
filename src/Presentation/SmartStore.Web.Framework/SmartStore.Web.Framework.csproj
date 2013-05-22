@@ -183,6 +183,8 @@
     <Compile Include="Controllers\CustomerLastActivityAttribute.cs" />
     <Compile Include="Controllers\ParameterBasedOnFormNameAndValueAttribute.cs" />
     <Compile Include="Controllers\ParameterBasedOnFormNameAttribute.cs" />
+    <Compile Include="Controllers\SmartAsyncController.cs" />
+    <Compile Include="Controllers\SmartController.cs" />
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\AdminTabStripCreated.cs" />

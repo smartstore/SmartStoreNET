@@ -13,6 +13,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

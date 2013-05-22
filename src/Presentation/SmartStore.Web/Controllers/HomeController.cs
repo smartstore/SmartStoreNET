@@ -7,6 +7,7 @@ using System;
 using SmartStore.Core;
 using SmartStore.Services.Media;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

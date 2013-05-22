@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Web.Models.Newsletter;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

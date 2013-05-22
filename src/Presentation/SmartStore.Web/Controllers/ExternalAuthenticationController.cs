@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Web.Models.Customer;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

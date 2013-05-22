@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {

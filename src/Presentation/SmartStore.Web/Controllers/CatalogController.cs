@@ -562,38 +562,33 @@ namespace SmartStore.Web.Controllers
         // codehint: sm-add (mc)
         private CategoryNavigationModel GetCategoryNavigationModel(int currentCategoryId, int currentProductId) 
         {
-            var profiler = MiniProfiler.Current;
+            var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+            string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
 
-            using (profiler.Step("_GetCategoryNavigationModel_"))
+            var categories = _cacheManager.Get(cacheKey, () =>
             {
-                var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-                string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
+                return PrepareCategoryNavigationModel();
+            });
 
-                var categories = _cacheManager.Get(cacheKey, () =>
-                {
-                    return PrepareCategoryNavigationModel();
-                });
+            var breadcrumb = GetCurrentCategoryPath(currentCategoryId, currentProductId);
 
-                var breadcrumb = GetCurrentCategoryPath(currentCategoryId, currentProductId);
+            // resolve number of products
+            if (_catalogSettings.ShowCategoryProductNumber)
+            {
+                var curId = breadcrumb.LastOrDefault();
+                var curNode = curId == 0 ? categories.Root : categories.SelectNode(x => x.Value.Id == curId);
 
-                // resolve number of products
-                if (_catalogSettings.ShowCategoryProductNumber)
-                {
-                    var curId = breadcrumb.LastOrDefault();
-                    var curNode = curId == 0 ? categories.Root : categories.SelectNode(x => x.Value.Id == curId);
-
-                    this.ResolveCategoryProductsCount(curNode);
-                }
-
-                var model = new CategoryNavigationModel
-                {
-                    Root = categories,
-                    Path = breadcrumb,
-                    CurrentCategoryId = breadcrumb.LastOrDefault()
-                };
-
-                return model;
+                this.ResolveCategoryProductsCount(curNode);
             }
+
+            var model = new CategoryNavigationModel
+            {
+                Root = categories,
+                Path = breadcrumb,
+                CurrentCategoryId = breadcrumb.LastOrDefault()
+            };
+
+            return model;
         }
 
         [NonAction]

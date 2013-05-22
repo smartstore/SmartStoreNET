@@ -242,13 +242,13 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public async Task<JsonResult> Install(InstallModel model)
         {
-            //var result = await InstallCore(model);
-            var result = await Task.Run<InstallationResult>(() => InstallCore(model));
+            var result = await InstallCore(model);
+            //var r = Task.Run<InstallationResult>(() => InstallCore(model));
             return Json(result);
         }
 
         [NonAction]
-        protected virtual InstallationResult InstallCore(InstallModel model)
+        protected virtual async Task<InstallationResult> InstallCore(InstallModel model)
         {
             UpdateResult(x => {
                 x.Progress = 0;

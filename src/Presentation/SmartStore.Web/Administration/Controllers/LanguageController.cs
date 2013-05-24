@@ -398,7 +398,7 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 var xml = _localizationService.ExportResourcesToXml(language);
-                return new XmlDownloadResult(xml, "language_pack.xml");
+                return new XmlDownloadResult(xml, "language-pack-{0}.xml".FormatInvariant(language.UniqueSeoCode));
             }
             catch (Exception exc)
             {

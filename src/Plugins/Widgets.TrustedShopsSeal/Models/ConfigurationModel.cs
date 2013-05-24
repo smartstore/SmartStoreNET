@@ -2,9 +2,12 @@
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
+using FluentValidation.Attributes;
+using SmartStore.Plugin.Widgets.TrustedShopsSeal.Validators;
 
 namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Models
 {
+    [Validator(typeof(TrustedShopsSealValidator))]
     public class ConfigurationModel : ModelBase
     {
          public ConfigurationModel()

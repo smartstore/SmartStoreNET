@@ -10,23 +10,22 @@
 }
 @using SmartStore.Web.Framework;
 
-@*TODO: nur anzeigen wenn nicht Testmode*@
-
-<div class="block block-bordered block-trusted-shops">
+<div class="block block-bordered block-trusted-shops-seal">
     <div class="block-title">
         @T("Plugins.Widgets.TrustedShopsSeal.Title")
     </div>
-    <div class="block-body" style="background: url('@Url.Content("~/Plugins/Widgets.TrustedShopsSeal/Content/images/trusted-shops-bg.jpg")')">
+    <div class="block-body">
 
-        <div id="tsBox" style="">
+        <div id="tsBox">
             <form name="formSiegel" method="post" action= "https://www.trustedshops.com/shop/certificate.php" target="_blank">
                 <input name="shop_id" type="hidden" value="@Model.TrustedShopsId">
                 <div id="tsInnerBox" class="clearfix">
                     <div id="tsSeal">
-                        <input type="image" src="@Url.Content("~/Plugins/Widgets.TrustedShopsSeal/Content/images/TrustedShops-rgb-Siegel_100Hpx.png")" title="Trusted Shops Seal of Approval - click to verify.">
+                        <input type="image" src="@Url.Content("~/Plugins/Widgets.TrustedShopsSeal/Content/images/TrustedShops-rgb-Siegel_100Hpx.png")" 
+                            title="@T("Plugins.Widgets.TrustedShopsSeal.AltContentSealGraphic")">
                     </div>
                     <div id="tsText">
-                        <a title="Information about @Model.ShopName" 
+                        <a title="@Model.ShopName" 
                             href="http://www.trustedshops.com/profile/@(Model.ShopName)_@(Model.TrustedShopsId).html" target="_blank">
                             @Model.ShopName
                         </a>

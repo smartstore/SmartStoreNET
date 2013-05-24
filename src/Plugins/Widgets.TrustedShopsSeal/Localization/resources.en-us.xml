@@ -7,22 +7,24 @@
       <![CDATA[
         <p>Please find our step by step set up guide detailed below:</p>
         <ul>
-            <li>1. blaaaaaa Blaaaaa</li>
-            <li>2. blaaaaaa Blaaaaa</li>
+            <li>Register at <a href="https://www.trustedshops.co.uk/merchants/partners/?smartstore">Trusted Shops</a></li>
+            <li>Enter your Trusted Shops ID in the assigned area below.</li>
+            <li>Enter the name of your shop and a descriptive text, as they should be displayed within the widget.</li>
+            <li>Now the seal will be display in your shop.</li>
         </ul>
       ]]>
     </Value>
   </LocaleResource>
 
   <LocaleResource Name="Title">
-    <Value>Trusted-Shops</Value>
+    <Value>Trusted Shops</Value>
   </LocaleResource>
 
   <LocaleResource Name="TrustedShopsId">
-    <Value>Trusted-Shops-Id</Value>
+    <Value>Trusted Shops Id</Value>
   </LocaleResource>
   <LocaleResource Name="TrustedShopsId.Hint">
-    <Value>Please enter your Trusted-Shops-Id here.</Value>
+    <Value>Please enter your Trusted Shops Id here.</Value>
   </LocaleResource>
   <LocaleResource Name="IsTestMode">
     <Value>Activate test mode</Value>
@@ -41,6 +43,21 @@
   </LocaleResource>
   <LocaleResource Name="ShopText.Hint">
     <Value>Please enter a descriptive text, as it'll be shown within the widget.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="CheckIdSuccess">
+    <Value>The validation of your Trusted Shops Id was successfull.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdError">
+    <Value>The validation of your Trusted Shops Id wasn't successfull.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="MandatoryTrustedShopsId">
+    <Value>Please enter your Trusted Shops ID.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="AltContentSealGraphic">
+    <Value>Trusted Shops Seal of Approval - click to verify.</Value>
   </LocaleResource>
   
 </Language>

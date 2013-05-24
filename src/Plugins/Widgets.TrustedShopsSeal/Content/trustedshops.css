@@ -20,3 +20,7 @@
 #tsBox #tsText a {
     padding-bottom: 4px;
 }
+
+.block-trusted-shops-seal .block-body {
+    background: url(images/trusted-shops-bg.jpg) no-repeat !important;
+}

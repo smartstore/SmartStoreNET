@@ -7,7 +7,7 @@ using SmartStore.Services.Localization;
 namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
 {
     /// <summary>
-    /// Live person provider
+    /// Trusted Shops seal provider
     /// </summary>
     public class TrustedShopsSealPlugin : BasePlugin, IWidgetPlugin
     {

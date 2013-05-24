@@ -1,28 +1,30 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
   <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsSeal" AppendRootKey="false">
-    <Value>Trusted-Shops-Siegel</Value>
+    <Value>Trusted Shops Siegel</Value>
   </LocaleResource>
   <LocaleResource Name="AdminInstruction">
     <Value>
       <![CDATA[
-        <p>Um das Trusted-Shops-Siegel auf Ihrer Seite einzubinden, finden Sie nachfolgend eine Schritt-für-Schritt Anleitung:</p>
+        <p>Um das Trusted Shops Siegel auf Ihrer Seite einzubinden, finden Sie nachfolgend eine Schritt-für-Schritt Anleitung:</p>
         <ul>
-            <li>1. blaaaaaa Blaaaaa</li>
-            <li>2. blaaaaaa Blaaaaa</li>
+            <li>Registrieren Sie sich bei <a href="http://www.trustedshops.de/shopbetreiber/mitgliedschaft_partner.html?smartstore">Trusted Shops</a></li>
+            <li>Geben Sie Ihre Trusted Shops ID in dem vorgesehenen Feld an.</li>
+            <li>Geben Sie optional den Namen Ihres Shops und einen beschreibenden Text an, die Im Widget angezeigt werden sollen.</li>
+            <li>Das Siegel wird nun in der angegebenen Widget-Zone in Ihrem Shop dargestellt.</li>
         </ul>
       ]]>
     </Value>
   </LocaleResource>
 
   <LocaleResource Name="Title">
-    <Value>Trusted-Shops</Value>
+    <Value>Trusted Shops</Value>
   </LocaleResource>
   
   <LocaleResource Name="TrustedShopsId">
-    <Value>Trusted-Shops-Id</Value>
+    <Value>Trusted Shops Id</Value>
   </LocaleResource>
   <LocaleResource Name="TrustedShopsId.Hint">
-    <Value>Geben Sie hier Ihre Trusted-Shops-Id an.</Value>
+    <Value>Geben Sie hier Ihre Trusted Shops Id an.</Value>
   </LocaleResource>
   <LocaleResource Name="IsTestMode">
     <Value>Testmodus aktivieren</Value>
@@ -44,11 +46,19 @@
   </LocaleResource>
 
   <LocaleResource Name="CheckIdSuccess">
-    <Value>Die Validierung Ihrer Trusted-Shops-ID war erfolgreich.</Value>
+    <Value>Die Validierung Ihrer Trusted Shops ID war erfolgreich.</Value>
   </LocaleResource>
   <LocaleResource Name="CheckIdError">
-    <Value>Die Validierung Ihrer Trusted-Shops-ID war nicht erfolgreich.</Value>
+    <Value>Die Validierung Ihrer Trusted Shops ID war nicht erfolgreich.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="MandatoryTrustedShopsId">
+    <Value>Bitte geben Sie Ihre Trusted Shops ID an.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="AltContentSealGraphic">
+    <Value>Trusted Shops Siegel - Klicken Sie hier für eine Bestätigung.</Value>
   </LocaleResource>
   
-
+  
 </Language>

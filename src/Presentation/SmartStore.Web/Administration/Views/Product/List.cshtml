@@ -320,7 +320,7 @@
             }
             </text>)
         .FooterContent(@<text>
-            <button type="submit" class="btn btn-primary import-from-excel">@T("Admin.Common.ImportFromExcel")</button>
+            <button id="importexcelsubmit" type="submit" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
             <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
         </text>)
         .Modal(true)
@@ -330,11 +330,23 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $(".import-from-excel").click(function (e) {
-            $('#importexcel-window').data('modal').close();
-            $.throbber.show({
-                message: '@T("Admin.Common.ImportFromExcelProgress")'
-            });
+        $("#importexcelsubmit").click(function (e) {
+            e.preventDefault();
+
+            var win = $('#importexcel-window');
+            win.data('modal').hide();
+
+            var progress = function () {
+                $.throbber.show({
+                    message: '@T("Admin.Common.ImportFromExcelProgress")',
+                    callback: function () {
+                        win.find("form").submit();
+                    }
+                });
+            };
+
+            _.delay(progress, 200);
+
         });
 
     });

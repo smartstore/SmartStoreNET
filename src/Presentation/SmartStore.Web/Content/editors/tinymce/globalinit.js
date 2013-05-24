@@ -66,6 +66,7 @@ var tiny_mce_global_config;
         height: "350",
         width: "100%",
         verify_html: false,
+        ie7_compat: false,
 
         // Style formats
         style_formats : [
@@ -152,7 +153,7 @@ var tiny_mce_global_config;
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_resizing: true,
 
-        //content_css : "css/content.css",
+        //content_css: "css/content.css",
         convert_urls: false,
 
         // Drop lists for link/image/media/template dialogs

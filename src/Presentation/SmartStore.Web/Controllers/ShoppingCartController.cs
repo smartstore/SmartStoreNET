@@ -1766,7 +1766,7 @@ namespace SmartStore.Web.Controllers
             model.EstimateShipping.CountryId = shippingModel.CountryId;
             model.EstimateShipping.StateProvinceId = shippingModel.StateProvinceId;
             model.EstimateShipping.ZipPostalCode = shippingModel.ZipPostalCode;
-            PrepareShoppingCartModel(model, cart,setEstimateShippingDefaultAddress: false);
+            PrepareShoppingCartModel(model, cart, setEstimateShippingDefaultAddress: false);
 
             if (cart.RequiresShipping())
             {

@@ -563,6 +563,14 @@
     <Content Include="Content\fonts\Fontastic.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bootstrap\font\bootstrap.less" />
+    <Content Include="Content\bootstrap\font\core.less" />
+    <Content Include="Content\bootstrap\font\extras.less" />
+    <Content Include="Content\bootstrap\font\icons.less" />
+    <Content Include="Content\bootstrap\font\mixins.less" />
+    <Content Include="Content\bootstrap\font\path.less" />
+    <Content Include="Content\bootstrap\font\variables.less" />
+    <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font\FontAwesome.otf" />
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />
@@ -2504,7 +2512,6 @@
     <Content Include="Content\bootstrap\custom\checkbox.less" />
     <Content Include="Content\bootstrap\custom\mixins.less" />
     <Content Include="Content\bootstrap\dropdowns.less" />
-    <Content Include="Content\bootstrap\font\font-awesome-ie7.less" />
     <Content Include="Content\bootstrap\font\font-awesome.less" />
     <Content Include="Content\bootstrap\font\fontawesome-webfont.eot">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -4916,6 +4916,15 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="AskQuestionEnabled">
+                    <Value>'Ask question' enabled</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Check to allow customers to send an inquiry concerning a product</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="CategoryBreadcrumbEnabled">
                     <Value>Category breadcrumb enabled</Value>
                     <Children>
@@ -4939,6 +4948,15 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Determines the amount of displayed products per page.</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="DefaultViewMode">
+                    <Value>Default view mode</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Specifies how product lists should be displayed by default. The customer can also change the appearance manually.</Value>
                         <Children />
                       </LocaleResource>
                     </Children>
@@ -6171,6 +6189,15 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Check to enable CAPTCHA</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="CaptchaShowOnAskQuestionPage">
+                    <Value>Show on 'ask question' page</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Check to show CAPTCHA on 'ask question' page</Value>
                         <Children />
                       </LocaleResource>
                     </Children>
@@ -7465,6 +7492,15 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Check to move products from wishlist to the cart when clicking "Add to cart" button. Otherwise, they are copied.</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="ShowConfirmOrderLegalHint">
+                    <Value>Show legal hints in order summary on the confirm order page</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Determines whether to show hints in order summary on the confirm order page. This text can be altered in the language resources.</Value>
                         <Children />
                       </LocaleResource>
                     </Children>

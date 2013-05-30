@@ -317,6 +317,14 @@
               </LocaleResource>
             </Children>
           </LocaleResource>
+          <LocaleResource Name="FullName">
+            <Value>Name</Value>
+            <Children>
+              <LocaleResource Name="Required">
+                <Value>Name wird benötigt</Value>
+              </LocaleResource>
+            </Children>
+          </LocaleResource>
           <LocaleResource Name="Gender">
             <Value>Geschlecht</Value>
             <Children>
@@ -1175,7 +1183,7 @@
         <Value>Kaufen</Value>
       </LocaleResource>
       <LocaleResource Name="ConfirmHint">
-        <Value>Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf &lt;STRONG&gt;[Zurück]&lt;/STRONG&gt; vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf &lt;STRONG&gt;[Kaufen]&lt;/STRONG&gt; Ihre Bestellung.</Value>
+        <Value>Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf &lt;STRONG&gt;[Zurück]&lt;/STRONG&gt; vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf &lt;STRONG&gt;[Jetzt kostenpflichtig Kaufen]&lt;/STRONG&gt; Ihre Bestellung.</Value>
       </LocaleResource>
       <LocaleResource Name="ConfirmOrder">
         <Value>Auftrag bestätigen</Value>
@@ -1433,6 +1441,11 @@
       </LocaleResource>
       <LocaleResource Name="Error">
         <Value>Fehler</Value>
+        <Children>
+          <LocaleResource Name="SendMail">
+            <Value>Fehler beim Versenden der E-Mail. Bitte versuchen Sie es später erneut.</Value>
+          </LocaleResource>
+        </Children>
       </LocaleResource>
       <LocaleResource Name="Export">
         <Value>Exportieren</Value>
@@ -1478,6 +1491,9 @@
       <LocaleResource Name="General">
         <Value>Allgemein</Value>
       </LocaleResource>
+      <LocaleResource Name="Grid">
+        <Value>Grid</Value>
+      </LocaleResource>
       <LocaleResource Name="Hide">
         <Value>Verbergen</Value>
       </LocaleResource>
@@ -1492,6 +1508,9 @@
       </LocaleResource>
       <LocaleResource Name="IsActive">
         <Value>Aktiv</Value>
+      </LocaleResource>
+      <LocaleResource Name="List">
+        <Value>List</Value>
       </LocaleResource>
       <LocaleResource Name="LoadingNextStep">
         <Value>Lade nächsten Schritt…</Value>
@@ -1551,6 +1570,9 @@
       <LocaleResource Name="Product">
         <Value>Artikel</Value>
       </LocaleResource>
+      <LocaleResource Name="Question">
+        <Value>Question</Value>
+      </LocaleResource>
       <LocaleResource Name="Remove">
         <Value>Entfernen</Value>
       </LocaleResource>
@@ -1559,6 +1581,9 @@
       </LocaleResource>
       <LocaleResource Name="Search">
         <Value>Suchen</Value>
+      </LocaleResource>
+      <LocaleResource Name="Send">
+        <Value>Send</Value>
       </LocaleResource>
       <LocaleResource Name="Shopbar">
         <Children>
@@ -1590,6 +1615,9 @@
       </LocaleResource>
       <LocaleResource Name="Show">
         <Value>Anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="Submit">
+        <Value>Submit</Value>
       </LocaleResource>
       <LocaleResource Name="Undefined">
         <Value>undefiniert</Value>
@@ -3151,6 +3179,13 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
+  <LocaleResource Name="OrderSummary">
+    <Children>
+      <LocaleResource Name="ConfirmOrderLegalHint">
+        <Value>Bei Lieferungen in das Nicht-EU-Ausland können zusätzlich Zölle, Steuern und Gebühren anfallen.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
   <LocaleResource Name="Pager">
     <Children>
       <LocaleResource Name="CurrentPage">
@@ -3606,235 +3641,6 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
-  <LocaleResource Name="Plugins">
-    <Children>
-      <LocaleResource Name="FriendlyName">
-        <Children>
-          <LocaleResource Name="CurrencyExchange">
-            <Children>
-              <LocaleResource Name="ECB">
-                <Value>EZB-Wechselkursdienst</Value>
-              </LocaleResource>
-              <LocaleResource Name="MoneyConverter">
-                <Value>The Money Converter Wechselkursdienst</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="DiscountRequirement">
-            <Children>
-              <LocaleResource Name="BillingCountryIs">
-                <Value>Land der Rechnungsadresse ist</Value>
-              </LocaleResource>
-              <LocaleResource Name="HadSpentAmount">
-                <Value>Der Kunde hat x.xx ausgegeben</Value>
-              </LocaleResource>
-              <LocaleResource Name="HasAllProducts">
-                <Value>Der Kunde hat folgende Produktvarianten in seinem Warenkorb</Value>
-              </LocaleResource>
-              <LocaleResource Name="HasOneProduct">
-                <Value>Der Kunde hat einen der folgenden Produktvarianten in seinem Warenkorb</Value>
-              </LocaleResource>
-              <LocaleResource Name="MustBeAssignedToCustomerRole">
-                <Value>Der Kunde muss einer Kundengruppe zugeordnet sein</Value>
-              </LocaleResource>
-              <LocaleResource Name="PurchasedAllProducts">
-                <Value>Der Kunde hat bereits folgende Produktvarianten gekauft</Value>
-              </LocaleResource>
-              <LocaleResource Name="PurchasedOneProduct">
-                <Value>Der Kunde hat bereits einen der folgenden Produktvarianten gekauft</Value>
-              </LocaleResource>
-              <LocaleResource Name="ShippingCountryIs">
-                <Value>Land der Lieferadresse ist</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="ExternalAuth">
-            <Children>
-              <LocaleResource Name="Facebook">
-                <Value>Facebook</Value>
-              </LocaleResource>
-              <LocaleResource Name="OpenId">
-                <Value>OpenID</Value>
-              </LocaleResource>
-              <LocaleResource Name="Twitter">
-                <Value>Twitter</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Misc">
-            <Children>
-              <LocaleResource Name="MailChimp">
-                <Value>MailChimp E-Mail Synchronisierung</Value>
-              </LocaleResource>
-              <LocaleResource Name="WebServices">
-                <Value>Web Services</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Mobile">
-            <Children>
-              <LocaleResource Name="SMS">
-                <Children>
-                  <LocaleResource Name="Clickatell">
-                    <Value>Clickatell SMS-Anbieter</Value>
-                  </LocaleResource>
-                </Children>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Payments">
-            <Children>
-              <LocaleResource Name="CashOnDelivery">
-                <Value>Nachnahme</Value>
-              </LocaleResource>
-              <LocaleResource Name="CheckMoneyOrder">
-                <Value>Scheck</Value>
-              </LocaleResource>
-              <LocaleResource Name="DirectDebit">
-                <Value>Lastschrifteinzug (ELV)</Value>
-              </LocaleResource>
-              <LocaleResource Name="GoogleCheckout">
-                <Value>Google Checkout</Value>
-              </LocaleResource>
-              <LocaleResource Name="Invoice">
-                <Value>Rechnung</Value>
-              </LocaleResource>
-              <LocaleResource Name="IPaymentCreditCard">
-                <Value>iPayment Kreditkarte</Value>
-              </LocaleResource>
-              <LocaleResource Name="IPaymentDirectDebit">
-                <Value>iPayment Lastschriftverfahren</Value>
-              </LocaleResource>
-              <LocaleResource Name="Manual">
-                <Value>Kreditkarte</Value>
-              </LocaleResource>
-              <LocaleResource Name="PayInStore">
-                <Value>Barzahlung</Value>
-              </LocaleResource>
-              <LocaleResource Name="PayPalDirect">
-                <Value>PayPal Express</Value>
-              </LocaleResource>
-              <LocaleResource Name="PayPalStandard">
-                <Value>PayPal Standard</Value>
-              </LocaleResource>
-              <LocaleResource Name="PostFinanceECommerce">
-                <Value>PostFinance</Value>
-              </LocaleResource>
-              <LocaleResource Name="Prepayment">
-                <Value>Vorkasse</Value>
-              </LocaleResource>
-              <LocaleResource Name="Sofortueberweisung">
-                <Value>Sofortüberweisung</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Shipping">
-            <Children>
-              <LocaleResource Name="ByTotal">
-                <Value>Versand nach Gesamtsumme</Value>
-              </LocaleResource>
-              <LocaleResource Name="ByWeight">
-                <Value>Versand nach Gewicht</Value>
-              </LocaleResource>
-              <LocaleResource Name="FedEx">
-                <Value>FedEx</Value>
-              </LocaleResource>
-              <LocaleResource Name="FixedRate">
-                <Value>Versand zum Festpreis</Value>
-              </LocaleResource>
-              <LocaleResource Name="UPS">
-                <Value>UPS (United Parcel Service)</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Tax">
-            <Children>
-              <LocaleResource Name="CountryStateZip">
-                <Value>Steuer nach Land, Bundesland und PLZ</Value>
-              </LocaleResource>
-              <LocaleResource Name="FixedRate">
-                <Value>Fester Steuersatz</Value>
-              </LocaleResource>
-              <LocaleResource Name="Free">
-                <Value>Steuerbefreit</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-          <LocaleResource Name="Widgets">
-            <Children>
-              <LocaleResource Name="GoogleAnalytics">
-                <Value>Google Analytics</Value>
-              </LocaleResource>
-              <LocaleResource Name="LivePersonChat">
-                <Value>LivePerson (Chat)</Value>
-              </LocaleResource>
-            </Children>
-          </LocaleResource>
-        </Children>
-      </LocaleResource>
-      <LocaleResource Name="KnownGroup">
-        <Children>
-          <LocaleResource Name="Admin">
-            <Value>Administration</Value>
-          </LocaleResource>
-          <LocaleResource Name="Analytics">
-            <Value>Analyse &amp; Statistiken</Value>
-          </LocaleResource>
-          <LocaleResource Name="Api">
-            <Value>API</Value>
-          </LocaleResource>
-          <LocaleResource Name="CMS">
-            <Value>Content Management</Value>
-          </LocaleResource>
-          <LocaleResource Name="CurrencyExchange">
-            <Value>Wechselkursdienst</Value>
-          </LocaleResource>
-          <LocaleResource Name="DiscountRequirement">
-            <Value>Rabattkonditionen</Value>
-          </LocaleResource>
-          <LocaleResource Name="ExternalAuth">
-            <Value>Authentifizierung</Value>
-          </LocaleResource>
-          <LocaleResource Name="Import">
-            <Value>Import</Value>
-          </LocaleResource>
-          <LocaleResource Name="Marketing">
-            <Value>Marketing</Value>
-          </LocaleResource>
-          <LocaleResource Name="Misc">
-            <Value>Sonstige</Value>
-          </LocaleResource>
-          <LocaleResource Name="Mobile">
-            <Value>Mobile</Value>
-          </LocaleResource>
-          <LocaleResource Name="Payment">
-            <Value>Zahlarten &amp; Zahlungsschnittstellen</Value>
-          </LocaleResource>
-          <LocaleResource Name="PromotionFeed">
-            <Value>Preissuchmaschinen &amp; Vergleichsportale</Value>
-          </LocaleResource>
-          <LocaleResource Name="Security">
-            <Value>Sicherheit</Value>
-          </LocaleResource>
-          <LocaleResource Name="SEO">
-            <Value>SEO</Value>
-          </LocaleResource>
-          <LocaleResource Name="Shipping">
-            <Value>Versand &amp; Logistik</Value>
-          </LocaleResource>
-          <LocaleResource Name="Social">
-            <Value>Social</Value>
-          </LocaleResource>
-          <LocaleResource Name="Tax">
-            <Value>Steuern</Value>
-          </LocaleResource>
-          <LocaleResource Name="Widget">
-            <Value>Widgets</Value>
-          </LocaleResource>
-        </Children>
-      </LocaleResource>
-    </Children>
-  </LocaleResource>
   <LocaleResource Name="Polls">
     <Children>
       <LocaleResource Name="OnlyRegisteredUsersVote">
@@ -3983,6 +3789,27 @@
     <Children>
       <LocaleResource Name="AlsoPurchased">
         <Value>Benutzer, die diesen Artikel gekauft haben, haben auch gekauft</Value>
+      </LocaleResource>
+      <LocaleResource Name="AskQuestion">
+        <Value>Question about product?</Value>
+        <Children>
+          <LocaleResource Name="Question">
+            <Children>
+              <LocaleResource Name="Required">
+                <Value>Question is required</Value>
+              </LocaleResource>
+              <LocaleResource Name="Text">
+                <Value>Ich habe folgende Fragen zum Artikel {0}:</Value>
+              </LocaleResource>
+            </Children>
+          </LocaleResource>
+          <LocaleResource Name="Sent">
+            <Value>Vielen Dank. Ihre Anfage wurde erfolgreich gesendet.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Title">
+            <Value>Frage zum Artikel</Value>
+          </LocaleResource>
+        </Children>
       </LocaleResource>
       <LocaleResource Name="Availability">
         <Value>Verfügbarkeit</Value>

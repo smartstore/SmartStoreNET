@@ -4916,6 +4916,15 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="AskQuestionEnabled">
+                    <Value>''Produktanfragen'' ermöglichen</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt fest, ob Kunden eine Anfrage zu einem Produkt stellen können</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="CategoryBreadcrumbEnabled">
                     <Value>Kategorien-Breadcrumb aktivieren</Value>
                     <Children>
@@ -4939,6 +4948,15 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Legt die Anzahl der dargestellten Produkte pro Seite fest.</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="DefaultViewMode">
+                    <Value>Standard Listendarstellung</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt fest, wie Produktlisten standardmäßig dargestellt werden sollen. Der Kunde kann die Darstellung im Shop ändern.</Value>
                         <Children />
                       </LocaleResource>
                     </Children>
@@ -6171,6 +6189,15 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Aktiviert die Benutzung von Captcha.</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="CaptchaShowOnAskQuestionPage">
+                    <Value>Auf der Seite ''Produktanfrage'' zeigen</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt fest, ob ein CAPTCHA auf der ''Produktanfrage''-Seite angezeigt werden soll.</Value>
                         <Children />
                       </LocaleResource>
                     </Children>
@@ -7469,6 +7496,15 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="ShowConfirmOrderLegalHint">
+                    <Value>Rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite anzeigen</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Bestimmt, ob rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite angezeigt werden. Dieser Text kann in den Sprachresourcen geändert werden.</Value>
+                        <Children />
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="ShowDiscountBox">
                     <Value>Zeige die Rabattbox im Warenkorb</Value>
                     <Children>
@@ -7957,7 +7993,7 @@
             <Value>Themes</Value>
             <Children>
               <LocaleResource Name="Author">
-                <Value>Author</Value>
+                <Value>Autor</Value>
                 <Children />
               </LocaleResource>
               <LocaleResource Name="AvailableDesktopThemes">

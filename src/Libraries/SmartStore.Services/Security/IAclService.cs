@@ -8,7 +8,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 
-namespace SmartStore.Services.Seo
+namespace SmartStore.Services.Security
 {
     /// <summary>
     /// ACL service inerface

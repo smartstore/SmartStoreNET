@@ -7,7 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 
-namespace SmartStore.Services.Seo
+namespace SmartStore.Services.Security
 {
     /// <summary>
     /// ACL service

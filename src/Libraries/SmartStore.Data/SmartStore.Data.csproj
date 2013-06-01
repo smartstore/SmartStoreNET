@@ -85,6 +85,7 @@
     <Compile Include="Initializers\CreateTablesIfNotExist.cs" />
     <Compile Include="EfDataProviderManager.cs" />
     <Compile Include="IEfDataProvider.cs" />
+    <Compile Include="Mapping\Stores\StoreMap.cs" />
     <Compile Include="Mapping\Themes\ThemeVariableMap.cs" />
     <Compile Include="ObjectContextBase.cs" />
     <Compile Include="Mapping\Catalog\BackInStockSubscriptionMap.cs" />

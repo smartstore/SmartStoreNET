@@ -62,6 +62,7 @@ using dotless.Core.Parameters;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Framework
 {
@@ -204,6 +205,7 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerHttpRequest();
             builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerHttpRequest();
+			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerHttpRequest();
 
             builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerHttpRequest();
 

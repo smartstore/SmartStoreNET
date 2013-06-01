@@ -378,7 +378,9 @@
     <Compile Include="Shipping\Tracking\ShipmentStatusEvent.cs" />
     <Compile Include="Shipping\Tracking\GeneralShipmentTracker.cs" />
     <Compile Include="Shipping\Tracking\IShipmentTracker.cs" />
+    <Compile Include="Stores\IStoreMappingService.cs" />
     <Compile Include="Stores\IStoreService.cs" />
+    <Compile Include="Stores\StoreMappingService.cs" />
     <Compile Include="Stores\StoreService.cs" />
     <Compile Include="Tasks\ScheduleTaskService.cs" />
     <Compile Include="Tasks\IScheduleTaskService.cs" />

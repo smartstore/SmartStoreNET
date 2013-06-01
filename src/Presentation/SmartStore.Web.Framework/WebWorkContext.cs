@@ -6,6 +6,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Fakes;
 using SmartStore.Services.Authentication;
@@ -13,6 +14,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework
@@ -26,6 +28,7 @@ namespace SmartStore.Web.Framework
 
         private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
+		private readonly IStoreService _storeService;
         private readonly IAuthenticationService _authenticationService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
@@ -35,6 +38,9 @@ namespace SmartStore.Web.Framework
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
 
+		private Store _cachedStore;
+		private bool _storeIsLoaded;
+
         private Customer _cachedCustomer;
         private Customer _originalCustomerIfImpersonated;
         private bool _cachedIsAdmin;
@@ -42,6 +48,7 @@ namespace SmartStore.Web.Framework
         public WebWorkContext(ICacheManager cacheManager,
             HttpContextBase httpContext,
             ICustomerService customerService,
+			IStoreService storeService,
             IAuthenticationService authenticationService,
             ILanguageService languageService,
             ICurrencyService currencyService,
@@ -52,6 +59,7 @@ namespace SmartStore.Web.Framework
             this._cacheManager = cacheManager;
             this._httpContext = httpContext;
             this._customerService = customerService;
+			this._storeService = storeService;
             this._authenticationService = authenticationService;
             this._languageService = languageService;
             this._currencyService = currencyService;
@@ -90,6 +98,34 @@ namespace SmartStore.Web.Framework
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
+
+		/// <summary>
+		/// Gets or sets the current store
+		/// </summary>
+		public Store CurrentStore
+		{
+			get
+			{
+				if (_storeIsLoaded)
+					return _cachedStore;
+
+				Store store = null;
+				if (_httpContext != null)
+				{
+					//TODO determine the current store by HTTP_HOST
+				}
+
+				if (store == null)
+				{
+					//load the first found store
+					store = _storeService.GetAllStores().FirstOrDefault();
+				}
+
+				_storeIsLoaded = true;
+				_cachedStore = store;
+				return _cachedStore;
+			}
+		}
 
         /// <summary>
         /// Gets or sets the current customer

@@ -205,7 +205,12 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerHttpRequest();
             builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerHttpRequest();
+
 			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerHttpRequest();
+			//pass MemoryCacheManager to SettingService as cacheManager (cache settings between requests)
+			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>()
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.InstancePerHttpRequest();
 
             builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerHttpRequest();
 

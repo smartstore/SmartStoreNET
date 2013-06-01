@@ -47,6 +47,7 @@ namespace SmartStore.Services.Security
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
         /// <param name="entity">Entity</param>
+		/// <param name="customerRoleId">Customer role id</param>
         void InsertAclRecord<T>(T entity, int customerRoleId) where T : BaseEntity, IAclSupported;
 
         /// <summary>

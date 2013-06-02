@@ -11,6 +11,14 @@ PRIMARY KEY CLUSTERED
 	[Id] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+
+DECLARE @DEFAULT_STORE_NAME nvarchar(400)
+SELECT @DEFAULT_STORE_NAME = [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.storename' 
+
+--create the first store
+INSERT INTO [Store] ([Name], [DisplayOrder])
+VALUES (@DEFAULT_STORE_NAME, 1)
+
 END
 GO
 
@@ -146,7 +154,7 @@ set @resources='
   <LocaleResource Name="Admin.Configuration.Stores.NoStoresDefined">
 	<Value>No stores defined.</Value>
 	<T>Keine Shops vorhanden.</T>
-  </LocaleResource>  
+  </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Manufacturers.Stores">
 	<Value>Stores</Value>
 	<T>Shops</T>
@@ -166,6 +174,11 @@ set @resources='
   <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the manufacturer will be shown.</Value>
 	<T>Bitte Shops auswählen für die der Hersteller verfügbar ist.</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.Configuration.Stores.CannotDeleteOnlyStore">
+	<Value>You cannot delete the only configured store.</Value>
+	<T>Der einzigste konfigurierte Shop kann nicht gelöscht werden.</T>
   </LocaleResource>
 
 </Language>

@@ -39,7 +39,6 @@ namespace SmartStore.Web.Framework
         private readonly ICacheManager _cacheManager;
 
 		private Store _cachedStore;
-		private bool _storeIsLoaded;
 
         private Customer _cachedCustomer;
         private Customer _originalCustomerIfImpersonated;
@@ -106,7 +105,7 @@ namespace SmartStore.Web.Framework
 		{
 			get
 			{
-				if (_storeIsLoaded)
+				if (_cachedStore != null)
 					return _cachedStore;
 
 				Store store = null;
@@ -121,7 +120,6 @@ namespace SmartStore.Web.Framework
 					store = _storeService.GetAllStores().FirstOrDefault();
 				}
 
-				_storeIsLoaded = true;
 				_cachedStore = store;
 				return _cachedStore;
 			}

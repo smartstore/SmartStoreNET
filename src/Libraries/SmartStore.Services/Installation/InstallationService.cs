@@ -41,6 +41,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Seo;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Core.Caching;
 using SmartStore.Utilities.Threading;
@@ -59,6 +60,7 @@ namespace SmartStore.Services.Installation
         private float _totalSteps;
         private float _currentStep;
 
+		private readonly IRepository<Store> _storeRepository;
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
         private readonly IRepository<TaxCategory> _taxCategoryRepository;
@@ -103,6 +105,7 @@ namespace SmartStore.Services.Installation
         public InstallationService(
             IDbContext context, // codehint: sm-add
             ISettingService settingService, // codehint: sm-add
+			IRepository<Store> storeRepository,
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
             IRepository<TaxCategory> taxCategoryRepository,
@@ -142,6 +145,7 @@ namespace SmartStore.Services.Installation
         {
             this._dbContext = context; // codehint: sm-add
             this._settingService = settingService; // codehint: sm-add
+			this._storeRepository = storeRepository;
             this._measureDimensionRepository = measureDimensionRepository;
             this._measureWeightRepository = measureWeightRepository;
             this._taxCategoryRepository = taxCategoryRepository;
@@ -307,6 +311,20 @@ namespace SmartStore.Services.Installation
             }
 
         }
+
+		private void InstallStores()
+		{
+			var stores = new List<Store>()
+            {
+                new Store()
+                {
+                    Name = "Your store name",
+                    DisplayOrder = 1,
+                },
+            };
+
+			stores.ForEach(x => _storeRepository.Insert(x));
+		}
 
         private void InstallMeasureDimensions()
         {
@@ -5444,6 +5462,7 @@ namespace SmartStore.Services.Installation
             _settingService.SetSetting<bool>("Media.Images.StoreInDB", _installContext.StoreMediaInDB);
 
             InstallLanguages(context.Language);
+			InstallStores();
             InstallMeasureDimensions();
             InstallMeasureWeights();
             InstallTaxCategories();

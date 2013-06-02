@@ -5,6 +5,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Events;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Stores
 {
@@ -24,6 +25,7 @@ namespace SmartStore.Services.Stores
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICacheManager _cacheManager;
+		private readonly ILocalizationService _localizationService;
 
 		#endregion
 
@@ -37,11 +39,13 @@ namespace SmartStore.Services.Stores
 		/// <param name="eventPublisher">Event published</param>
 		public StoreService(ICacheManager cacheManager,
 			IRepository<Store> storeRepository,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			ILocalizationService localizationService)
 		{
 			this._cacheManager = cacheManager;
 			this._storeRepository = storeRepository;
 			this._eventPublisher = eventPublisher;
+			this._localizationService = localizationService;
 		}
 
 		#endregion
@@ -56,6 +60,10 @@ namespace SmartStore.Services.Stores
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
+
+			var allStores = GetAllStores();
+			if (allStores.Count == 1)
+				throw new Exception(_localizationService.GetResource("Admin.Configuration.Stores.CannotDeleteOnlyStore"));
 
 			_storeRepository.Delete(store);
 

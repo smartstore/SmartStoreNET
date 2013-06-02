@@ -264,7 +264,8 @@ namespace SmartStore.Web.Controllers
             while (category != null && //category is not null
                 !category.Deleted && //category is not deleted
                 category.Published && //category is published
-                _aclService.Authorize(category)) //ACL
+				_aclService.Authorize(category) && //ACL
+				_storeMappingService.Authorize(category)) //Store mapping
             {
                 breadCrumb.Add(category);
                 category = _categoryService.GetCategoryById(category.ParentCategoryId);
@@ -1462,6 +1463,10 @@ namespace SmartStore.Web.Controllers
             if (!_aclService.Authorize(category))
                 return RedirectToRoute("HomePage");
 
+			//Store mapping
+			if (!_storeMappingService.Authorize(category))
+				return RedirectToRoute("HomePage");            
+
             //'Continue shopping' URL
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastContinueShoppingPage, _webHelper.GetThisPageUrl(false));
 
@@ -1650,9 +1655,9 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageCategories()
         {
-            var categories = _categoryService.GetAllCategoriesDisplayedOnHomePage();
-            //ACL
-            categories = categories.Where(c => _aclService.Authorize(c)).ToList();
+			var categories = _categoryService.GetAllCategoriesDisplayedOnHomePage()
+				.Where(c => _aclService.Authorize(c) && _storeMappingService.Authorize(c))
+				.ToList();
 
             var listModel = categories
                 .Select(x =>
@@ -2336,7 +2341,8 @@ namespace SmartStore.Web.Controllers
 
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_BREADCRUMB_MODEL_KEY, product.Id, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
+            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_BREADCRUMB_MODEL_KEY, product.Id, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds),
+				_workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new ProductDetailsModel.ProductBreadcrumbModel()

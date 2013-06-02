@@ -163,7 +163,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {1} : language id
         /// {2} : comma separated list of customer roles
         /// </remarks>
-        public const string PRODUCT_BREADCRUMB_MODEL_KEY = "sm.pres.product.breadcrumb-{0}-{1}-{2}";
+        public const string PRODUCT_BREADCRUMB_MODEL_KEY = "sm.pres.product.breadcrumb-{0}-{1}-{2}-{3}";
         public const string PRODUCT_BREADCRUMB_PATTERN_KEY = "sm.pres.product.breadcrumb";
 
         /// <summary>

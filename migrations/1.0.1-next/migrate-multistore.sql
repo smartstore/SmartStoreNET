@@ -181,6 +181,27 @@ set @resources='
 	<T>Der einzigste konfigurierte Shop kann nicht gelöscht werden.</T>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Catalog.Categories.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the category is available only at certain stores.</Value>
+	<T>Legt fest, ob die Warengruppe nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the category will be shown.</Value>
+	<T>Bitte Shops auswählen für die die Warengruppe verfügbar ist.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

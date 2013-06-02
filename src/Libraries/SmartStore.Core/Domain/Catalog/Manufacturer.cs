@@ -1,13 +1,14 @@
 using System;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Catalog
 {
     /// <summary>
     /// Represents a manufacturer
     /// </summary>
-    public partial class Manufacturer : BaseEntity, ILocalizedEntity, ISlugSupported
+	public partial class Manufacturer : BaseEntity, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
     {
         /// <summary>
         /// Gets or sets the name
@@ -63,6 +64,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the available price ranges
         /// </summary>
         public string PriceRanges { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published

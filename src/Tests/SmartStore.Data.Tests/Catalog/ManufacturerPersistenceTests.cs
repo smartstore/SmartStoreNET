@@ -42,6 +42,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.PageSizeOptions.ShouldEqual("4, 2, 8, 12");
             fromDb.PriceRanges.ShouldEqual("1-3;");
             fromDb.Published.ShouldEqual(true);
+			fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.Deleted.ShouldEqual(false);
             fromDb.DisplayOrder.ShouldEqual(5);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));

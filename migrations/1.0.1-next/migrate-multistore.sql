@@ -69,6 +69,24 @@ BEGIN
 END
 GO
 
+--Store mapping for manufacturers
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Manufacturer]') and NAME='LimitedToStores')
+BEGIN
+	ALTER TABLE [Manufacturer]
+	ADD [LimitedToStores] bit NULL
+END
+GO
+
+UPDATE [Manufacturer]
+SET [LimitedToStores] = 0
+WHERE [LimitedToStores] IS NULL
+GO
+
+ALTER TABLE [Manufacturer] ALTER COLUMN [LimitedToStores] bit NOT NULL
+GO
+
+
+
 
 
 --new locale resources
@@ -123,6 +141,31 @@ set @resources='
   <LocaleResource Name="Admin.Configuration.Stores.Deleted">
 	<Value>The store has been deleted successfully.</Value>
 	<T>Der Shop wurde erfolgreich gelöscht.</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.Configuration.Stores.NoStoresDefined">
+	<Value>No stores defined.</Value>
+	<T>Keine Shops vorhanden.</T>
+  </LocaleResource>  
+  <LocaleResource Name="Admin.Catalog.Manufacturers.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the manufacturer is available only at certain stores.</Value>
+	<T>Legt fest, ob der Hersteller nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the manufacturer will be shown.</Value>
+	<T>Bitte Shops auswählen für die der Hersteller verfügbar ist.</T>
   </LocaleResource>
 
 </Language>

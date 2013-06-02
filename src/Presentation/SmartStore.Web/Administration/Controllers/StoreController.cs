@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Stores;
@@ -152,9 +153,17 @@ namespace SmartStore.Admin.Controllers
 				//No store found with the specified id
 				return RedirectToAction("List");
 
-			SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
-			_storeService.DeleteStore(store);
-			return RedirectToAction("List");
+			try
+			{
+				_storeService.DeleteStore(store);
+				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
+				return RedirectToAction("List");
+			}
+			catch (Exception exc)
+			{
+				ErrorNotification(exc);
+				return RedirectToAction("Edit", new { id = store.Id });
+			}
 		}
 	}
 }

@@ -34,6 +34,7 @@ using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
 using SmartStore.Services.Logging;
+using SmartStore.Services.Stores;
 // codehint: begin sm-add
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Tax;
@@ -82,6 +83,7 @@ namespace SmartStore.Web.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
         private readonly IAclService _aclService;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
         private readonly ICustomerActivityService _customerActivityService;
@@ -124,6 +126,7 @@ namespace SmartStore.Web.Controllers
             IWorkflowMessageService workflowMessageService, IProductTagService productTagService,
             IOrderReportService orderReportService, IGenericAttributeService genericAttributeService,
             IBackInStockSubscriptionService backInStockSubscriptionService, IAclService aclService,
+			IStoreMappingService storeMappingService,
             IPermissionService permissionService, IDownloadService downloadService,
             ICustomerActivityService customerActivityService,
             MediaSettings mediaSettings, CatalogSettings catalogSettings,
@@ -163,6 +166,7 @@ namespace SmartStore.Web.Controllers
             this._genericAttributeService = genericAttributeService;
             this._backInStockSubscriptionService = backInStockSubscriptionService;
             this._aclService = aclService;
+			this._storeMappingService = storeMappingService;
             this._permissionService = permissionService;
             this._downloadService = downloadService;
             this._customerActivityService = customerActivityService;
@@ -1693,6 +1697,10 @@ namespace SmartStore.Web.Controllers
             //It allows him to preview a manufacturer before publishing
             if (!manufacturer.Published && !_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return RedirectToRoute("HomePage");
+
+			//Store mapping
+			if (!_storeMappingService.Authorize(manufacturer))
+				return RedirectToRoute("HomePage");
 
             //'Continue shopping' URL
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastContinueShoppingPage, _webHelper.GetThisPageUrl(false));

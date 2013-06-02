@@ -3836,36 +3836,14 @@ namespace SmartStore.Services.Installation
                 new EmailAccount
                 {
                     Email = "test@mail.com",
-                    DisplayName = "General contact",
+                    DisplayName = "Store name",
                     Host = "smtp.mail.com",
                     Port = 25,
                     Username = "123",
                     Password = "123",
                     EnableSsl = false,
                     UseDefaultCredentials = false
-                },
-            new EmailAccount
-                {
-                    Email = "test@mail.com",
-                    DisplayName = "Sales representative",
-                    Host = "smtp.mail.com",
-                    Port = 25,
-                    Username = "123",
-                    Password = "123",
-                    EnableSsl = false,
-                    UseDefaultCredentials = false
-                },
-            new EmailAccount
-                {
-                    Email = "test@mail.com",
-                    DisplayName = "Customer support",
-                    Host = "smtp.mail.com",
-                    Port = 25,
-                    Username = "123",
-                    Password = "123",
-                    EnableSsl = false,
-                    UseDefaultCredentials = false
-                },
+                }
             };
             this.Alter(entities);
             return entities;
@@ -3873,8 +3851,7 @@ namespace SmartStore.Services.Installation
 
         public IList<MessageTemplate> MessageTemplates()
         {
-            //var eaGeneral = this.EmailAccounts().SingleOrDefault(x => x.DisplayName == "General contact");
-            var eaGeneral = this.EmailAccounts().FirstOrDefault(x => x.Email != null);
+			var eaGeneral = this.EmailAccounts().FirstOrDefault(x => x.Email != null);
 
             string cssString = @"<style type=""text/css"">address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px;                        font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:800px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; }</style>";
             string templateHeader = cssString + "<center><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\" bgcolor=\"#ffffff\" class=\"template-body\"><tbody><tr><td>";

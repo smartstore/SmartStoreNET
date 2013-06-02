@@ -129,7 +129,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : current manufacturer id
         /// {1} : language id
         /// </remarks>
-        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}";
+        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "sm.pres.manufacturer.navigation";
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : product id
         /// {1} : language id
         /// </remarks>
-        public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}";
+        public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}-{2}";
         public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "sm.pres.product.manufacturers";
 
         /// <summary>

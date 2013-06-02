@@ -17,8 +17,8 @@ namespace SmartStore.Services.Catalog
     {
         #region Constants
         private const string MANUFACTURERS_BY_ID_KEY = "SmartStore.manufacturer.id-{0}";
-        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}";
-        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}";
+        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
+        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}-{2}";
         private const string PRODUCTMANUFACTURERS_BY_ID_KEY = "SmartStore.productmanufacturer.id-{0}";
         private const string MANUFACTURERS_PATTERN_KEY = "SmartStore.manufacturer.";
         private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "SmartStore.productmanufacturer.";
@@ -233,7 +233,7 @@ namespace SmartStore.Services.Catalog
             if (manufacturerId == 0)
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);
 
-            string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = from pm in _productManufacturerRepository.Table
@@ -280,7 +280,7 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return new List<ProductManufacturer>();
 
-            string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
 				{
 					var query = from pm in _productManufacturerRepository.Table

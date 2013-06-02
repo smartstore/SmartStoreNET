@@ -1820,7 +1820,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
-            string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _workContext.WorkingLanguage.Id);
+			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
                 {
                     var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
@@ -2371,7 +2371,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ProductManufacturers(int productId, bool preparePictureModel =  false)
         {
-            string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _workContext.WorkingLanguage.Id);
+			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = _manufacturerService.GetProductManufacturersByProductId(productId)

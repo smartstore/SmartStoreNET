@@ -13,6 +13,7 @@ using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Orders
 {
@@ -37,6 +38,7 @@ namespace SmartStore.Services.Orders
         private readonly IEventPublisher _eventPublisher;
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
+		private readonly IStoreMappingService _storeMappingService;
         #endregion
 
         #region Ctor
@@ -58,6 +60,7 @@ namespace SmartStore.Services.Orders
         /// <param name="eventPublisher">Event publisher</param>
         /// <param name="permissionService">Permission service</param>
         /// <param name="aclService">ACL service</param>
+		/// <param name="storeMappingService">Store mapping service</param>
         public ShoppingCartService(IRepository<ShoppingCartItem> sciRepository,
             IWorkContext workContext, ICurrencyService currencyService,
             IProductService productService, ILocalizationService localizationService,
@@ -69,7 +72,8 @@ namespace SmartStore.Services.Orders
             ShoppingCartSettings shoppingCartSettings,
             IEventPublisher eventPublisher,
             IPermissionService permissionService, 
-            IAclService aclService)
+            IAclService aclService,
+			IStoreMappingService storeMappingService)
         {
             this._sciRepository = sciRepository;
             this._workContext = workContext;
@@ -85,6 +89,7 @@ namespace SmartStore.Services.Orders
             this._eventPublisher = eventPublisher;
             this._permissionService = permissionService;
             this._aclService = aclService;
+			this._storeMappingService = storeMappingService;
         }
 
         #endregion
@@ -277,6 +282,12 @@ namespace SmartStore.Services.Orders
             {
                 warnings.Add(_localizationService.GetResource("ShoppingCart.ProductUnpublished"));
             }
+
+			//Store mapping
+			if (!_storeMappingService.Authorize(product, _workContext.CurrentStore))
+			{
+				warnings.Add(_localizationService.GetResource("ShoppingCart.ProductUnpublished"));
+			}
 
             //disabled "add to cart" button
             if (shoppingCartType == ShoppingCartType.ShoppingCart && productVariant.DisableBuyButton)

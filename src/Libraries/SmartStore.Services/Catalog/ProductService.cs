@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
@@ -40,6 +41,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly IRepository<AclRecord> _aclRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
@@ -73,6 +75,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="tierPriceRepository">Tier price repository</param>
         /// <param name="localizedPropertyRepository">Localized property repository</param>
         /// <param name="aclRepository">ACL record repository</param>
+		/// <param name="storeMappingRepository">Store mapping repository</param>
         /// <param name="productPictureRepository">Product picture repository</param>
         /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
         /// <param name="productAttributeService">Product attribute service</param>
@@ -95,6 +98,7 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductPicture> productPictureRepository,
             IRepository<LocalizedProperty> localizedPropertyRepository,
             IRepository<AclRecord> aclRepository,
+			IRepository<StoreMapping> storeMappingRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
             IProductAttributeService productAttributeService,
@@ -116,6 +120,7 @@ namespace SmartStore.Services.Catalog
             this._productPictureRepository = productPictureRepository;
             this._localizedPropertyRepository = localizedPropertyRepository;
             this._aclRepository = aclRepository;
+			this._storeMappingRepository = storeMappingRepository;
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
             this._productAttributeService = productAttributeService;
@@ -344,6 +349,9 @@ namespace SmartStore.Services.Catalog
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
+			//Current store
+			ctx.CurrentStoreId = _workContext.CurrentStore.Id;
+
             if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
             {
                 //stored procedures are enabled and supported by the database. 
@@ -466,6 +474,16 @@ namespace SmartStore.Services.Catalog
                 pOrderBy.Value = (int)ctx.OrderBy;
                 pOrderBy.DbType = DbType.Int32;
 
+				var pAllowedCustomerRoleIds = _dataProvider.GetParameter();
+				pAllowedCustomerRoleIds.ParameterName = "AllowedCustomerRoleIds";
+				pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
+				pAllowedCustomerRoleIds.DbType = DbType.String;
+
+				var pStoreId = _dataProvider.GetParameter();
+				pStoreId.ParameterName = "StoreId";
+				pStoreId.Value = ctx.CurrentStoreId;
+				pStoreId.DbType = DbType.Int32;
+
                 var pPageIndex = _dataProvider.GetParameter();
                 pPageIndex.ParameterName = "PageIndex";
                 pPageIndex.Value = ctx.PageIndex;
@@ -475,11 +493,6 @@ namespace SmartStore.Services.Catalog
                 pPageSize.ParameterName = "PageSize";
                 pPageSize.Value = ctx.PageSize;
                 pPageSize.DbType = DbType.Int32;
-
-                var pAllowedCustomerRoleIds = _dataProvider.GetParameter();
-                pAllowedCustomerRoleIds.ParameterName = "AllowedCustomerRoleIds";
-                pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
-                pAllowedCustomerRoleIds.DbType = DbType.String;
 
                 var pShowHidden = _dataProvider.GetParameter();
                 pShowHidden.ParameterName = "ShowHidden";
@@ -519,9 +532,10 @@ namespace SmartStore.Services.Catalog
                     pFilteredSpecs,
                     pLanguageId,
                     pOrderBy,
+					pAllowedCustomerRoleIds,
+					pStoreId,
                     pPageIndex,
                     pPageSize,
-                    pAllowedCustomerRoleIds,
                     pShowHidden,
                     pLoadFilterableSpecificationAttributeOptionIds,
                     pFilterableSpecificationAttributeOptionIds,
@@ -691,6 +705,16 @@ namespace SmartStore.Services.Catalog
                         where !p.SubjectToAcl || (acl.EntityName == "Product" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
                         select p;
             }
+
+			//Store mapping
+			if (!ctx.ShowHidden)
+			{
+				query = from p in query
+						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
+						from sm in p_sm.DefaultIfEmpty()
+						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.CurrentStoreId == sm.StoreId)
+						select p;
+			}
 
             // product variants
             // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 

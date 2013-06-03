@@ -80,6 +80,7 @@ CREATE PROCEDURE [ProductLoadAllPaged]
 	@LanguageId			int = 0,
 	@OrderBy			int = 0, --0 position, 5 - Name: A to Z, 6 - Name: Z to A, 10 - Price: Low to High, 11 - Price: High to Low, 15 - creation date
 	@AllowedCustomerRoleIds	nvarchar(MAX) = null,	--a list of customer role IDs (comma-separated list) for which a product should be shown (if a subjet to ACL)
+	@StoreId			int = 0,
 	@PageIndex			int = 0, 
 	@PageSize			int = 2147483644,
 	@ShowHidden			bit = 0,
@@ -112,6 +113,10 @@ BEGIN
 		
 		IF @UseFullTextSearch = 1
 		BEGIN
+			--remove wrong chars (' ")
+			SET @Keywords = REPLACE(@Keywords, '''', '')
+			SET @Keywords = REPLACE(@Keywords, '"', '')
+
 			--full-text search
 			IF @FullTextMode = 0 
 			BEGIN
@@ -530,6 +535,16 @@ BEGIN
 					FROM [AclRecord] acl
 					WHERE [acl].EntityId = p.Id AND [acl].EntityName = ''Product''
 				)
+			))'
+	END
+
+	--show hidden and filter by store
+	IF @ShowHidden = 0
+	BEGIN
+		SET @sql = @sql + '
+		AND (p.LimitedToStores = 0 OR EXISTS (
+			SELECT 1 FROM [StoreMapping] sm
+			WHERE [sm].EntityId = p.Id AND [sm].EntityName = ''Product'' and [sm].StoreId=' + CAST(@StoreId AS nvarchar(max)) + '
 			))'
 	END
 	

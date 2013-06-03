@@ -217,7 +217,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[NonAction]
-		private void PrepareStoresMappingModel(CategoryModel model, Category manufacturer, bool excludeProperties)
+		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
@@ -233,9 +233,9 @@ namespace SmartStore.Admin.Controllers
 				.ToList();
 			if (!excludeProperties)
 			{
-				if (manufacturer != null)
+				if (category != null)
 				{
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
 				}
 				else
 				{

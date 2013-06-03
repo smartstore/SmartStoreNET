@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -41,5 +42,12 @@ namespace SmartStore.Admin.Models.Localization
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+		//Store mapping
+		[SmartResourceDisplayName("Admin.Catalog.Languages.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Languages.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
     }
 }

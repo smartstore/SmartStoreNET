@@ -330,6 +330,10 @@ namespace SmartStore.Services.Catalog
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
+
+			//Current store
+			ctx.CurrentStoreId = _workContext.CurrentStore.Id;
+
             bool searchLocalizedValue = false;
             if (ctx.LanguageId > 0)
             {
@@ -340,7 +344,7 @@ namespace SmartStore.Services.Catalog
                 else
                 {
                     //ensure that we have at least two published languages
-                    var totalPublishedLanguages = _languageService.GetLanguagesCount(false);
+					var totalPublishedLanguages = _languageService.GetAllLanguages(storeId: ctx.CurrentStoreId).Count;
                     searchLocalizedValue = totalPublishedLanguages >= 2;
                 }
             }
@@ -348,9 +352,6 @@ namespace SmartStore.Services.Catalog
             //Access control list. Allowed customer roles
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-
-			//Current store
-			ctx.CurrentStoreId = _workContext.CurrentStore.Id;
 
             if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
             {

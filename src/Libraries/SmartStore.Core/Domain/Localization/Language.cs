@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Localization
 {
     /// <summary>
     /// Represents a language
     /// </summary>
-    public partial class Language : BaseEntity
+	public partial class Language : BaseEntity, IStoreMappingSupported
     {
         private ICollection<LocaleStringResource> _localeStringResources;
 
@@ -33,6 +34,11 @@ namespace SmartStore.Core.Domain.Localization
         /// Gets or sets a value indicating whether the language supports "Right-to-left"
         /// </summary>
         public bool Rtl { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the language is published

@@ -165,8 +165,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					// codehint: sm-edit (meaning in that context unclear)
-					//model.SelectedCustomerRoleIds = new int[0];
+					model.SelectedStoreIds = new int[0];
 				}
 			}
 		}
@@ -345,7 +344,7 @@ namespace SmartStore.Admin.Controllers
             });
             //templates
             PrepareTemplatesModel(model);
-			//Store
+			//Stores
 			PrepareStoresMappingModel(model, manufacturer, false);
 
             return View(model);
@@ -396,7 +395,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
-			//Store
+			//Stores
 			PrepareStoresMappingModel(model, manufacturer, true);
 
             return View(model);

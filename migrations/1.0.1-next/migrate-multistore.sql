@@ -76,7 +76,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the manufacturer will be shown.</Value>
-	<T>Bitte Shops auswählen für die der Hersteller verfügbar ist.</T>
+	<T>Bitte Shops auswählen, für die der Hersteller verfügbar ist.</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Stores.CannotDeleteOnlyStore">
@@ -102,7 +102,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the category will be shown.</Value>
-	<T>Bitte Shops auswählen für die die Warengruppe verfügbar ist.</T>
+	<T>Bitte Shops auswählen, für die die Warengruppe verfügbar ist.</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Catalog.Products.Stores">
@@ -123,7 +123,32 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Products.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the product will be shown.</Value>
-	<T>Bitte Shops auswählen für die der Artikel verfügbar ist.</T>
+	<T>Bitte Shops auswählen, für die der Artikel verfügbar ist.</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.Catalog.Languages.Info">
+	<Value>Info</Value>
+	<T>Info</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Languages.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Languages.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Languages.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the language is available only at certain stores.</Value>
+	<T>Legt fest, ob die Sprache nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Languages.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Languages.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the language will be shown.</Value>
+	<T>Bitte Shops auswählen, für die die Sprache verfügbar ist.</T>
   </LocaleResource>
   
 </Language>
@@ -908,3 +933,16 @@ BEGIN
 	DROP TABLE #PageIndex
 END
 GO
+
+
+--Store mapping for languages
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Language]') and NAME='LimitedToStores')
+BEGIN
+	ALTER TABLE [Language] ADD [LimitedToStores] bit NULL
+END
+GO
+UPDATE [Language] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
+GO
+ALTER TABLE [Language] ALTER COLUMN [LimitedToStores] bit NOT NULL
+GO
+

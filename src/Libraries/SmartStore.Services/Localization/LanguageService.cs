@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Events;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Localization
 {
@@ -16,7 +17,7 @@ namespace SmartStore.Services.Localization
     public partial class LanguageService : ILanguageService
     {
         #region Constants
-        private const string LANGUAGES_ALL_KEY = "SmartStore.language.all-{0}";
+        private const string LANGUAGES_ALL_KEY = "SmartStore.language.all-{0}-{1}";
         private const string LANGUAGES_COUNT = "SmartStore.language.count-{0}";
         private const string LANGUAGES_BY_ID_KEY = "SmartStore.language.id-{0}";
         private const string LANGUAGES_BY_CULTURE_KEY = "SmartStore.language.culture-{0}";
@@ -26,6 +27,7 @@ namespace SmartStore.Services.Localization
         #region Fields
 
         private readonly IRepository<Language> _languageRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly ICustomerService _customerService;
         private readonly ICacheManager _cacheManager;
         private readonly ISettingService _settingService;
@@ -47,6 +49,7 @@ namespace SmartStore.Services.Localization
         /// <param name="eventPublisher">Event published</param>
         public LanguageService(ICacheManager cacheManager,
             IRepository<Language> languageRepository,
+			IRepository<StoreMapping> storeMappingRepository,
             ICustomerService customerService,
             ISettingService settingService,
             LocalizationSettings localizationSettings,
@@ -54,6 +57,7 @@ namespace SmartStore.Services.Localization
         {
             this._cacheManager = cacheManager;
             this._languageRepository = languageRepository;
+			this._storeMappingRepository = storeMappingRepository;
             this._customerService = customerService;
             this._settingService = settingService;
             this._localizationSettings = localizationSettings;
@@ -109,16 +113,35 @@ namespace SmartStore.Services.Localization
         /// Gets all languages
         /// </summary>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Language collection</returns>
-        public virtual IList<Language> GetAllLanguages(bool showHidden = false)
+		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
         {
-            string key = string.Format(LANGUAGES_ALL_KEY, showHidden);
+            string key = string.Format(LANGUAGES_ALL_KEY, showHidden, storeId);
             return _cacheManager.Get(key, () =>
             {
                 var query = _languageRepository.Table;
                 if (!showHidden)
                     query = query.Where(l => l.Published);
                 query = query.OrderBy(l => l.DisplayOrder);
+
+				//Store mapping
+				if (storeId > 0)
+				{
+					query = from l in query
+							join sm in _storeMappingRepository.Table on l.Id equals sm.EntityId into l_sm
+							from sm in l_sm.DefaultIfEmpty()
+							where !l.LimitedToStores || (sm.EntityName == "Language" && storeId == sm.StoreId)
+							select l;
+
+					//only distinct languages (group by ID)
+					query = from l in query
+							group l by l.Id	into lGroup
+							orderby lGroup.Key
+							select lGroup.FirstOrDefault();
+					query = query.OrderBy(l => l.DisplayOrder);
+				}
+
                 var languages = query.ToList();
                 return languages;
             });
@@ -153,9 +176,9 @@ namespace SmartStore.Services.Localization
 
             string key = string.Format(LANGUAGES_BY_ID_KEY, languageId);
             return _cacheManager.Get(key, () =>
-                                              {
-                                                  return _languageRepository.GetById(languageId);
-                                              });
+                {
+                    return _languageRepository.GetById(languageId);
+                });
         }
 
         /// <summary>

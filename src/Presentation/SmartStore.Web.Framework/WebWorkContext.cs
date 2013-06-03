@@ -253,8 +253,7 @@ namespace SmartStore.Web.Framework
                                 if (langByCulture != null && langByCulture.Published)
                                 {
                                     //the language is found. now we need to save it
-                                    if (this.CurrentCustomer != null &&
-                                        !langByCulture.Equals(this.CurrentCustomer.Language))
+                                    if (this.CurrentCustomer != null && !langByCulture.Equals(this.CurrentCustomer.Language))
                                     {
                                         this.CurrentCustomer.Language = langByCulture;
                                         _customerService.UpdateCustomer(this.CurrentCustomer);
@@ -264,14 +263,22 @@ namespace SmartStore.Web.Framework
                         }
                     }
                 }
-                if (this.CurrentCustomer != null && this.CurrentCustomer.Language != null && this.CurrentCustomer.Language.Published)
+                var allStoreLanguages = _languageService.GetAllLanguages(storeId: this.CurrentStore.Id);
+                if (allStoreLanguages.Count > 0)
                 {
-                    return this.CurrentCustomer.Language;
+                    //find current customer language
+                    foreach (var lang in allStoreLanguages)
+                    {
+                        if (this.CurrentCustomer != null && this.CurrentCustomer.LanguageId == lang.Id)
+                        {
+                            return lang;
+                        }
+                    }                    
                 }
 
                 // codehint: sm-add
                 // Fallback to browser detected language
-                Language lang = null;
+                Language browserLanguage = null;
 
 				if (_httpContext != null && _httpContext.Request != null && _httpContext.Request.UserLanguages != null)
                 {
@@ -280,24 +287,26 @@ namespace SmartStore.Web.Framework
                     {
                         foreach (var culture in userLangs)
                         {
-                            lang = _languageService.GetLanguageByCulture(culture);
-                            if (lang != null && lang.Published)
+                            browserLanguage = _languageService.GetLanguageByCulture(culture);
+                            if (browserLanguage != null && browserLanguage.Published)
                             {
                                 //the language is found. now we need to save it
-                                if (this.CurrentCustomer != null && !lang.Equals(this.CurrentCustomer.Language))
+                                if (this.CurrentCustomer != null && !browserLanguage.Equals(this.CurrentCustomer.Language))
                                 {
-                                    this.CurrentCustomer.Language = lang;
+                                    this.CurrentCustomer.Language = browserLanguage;
                                     _customerService.UpdateCustomer(this.CurrentCustomer);
                                 }
-                                return lang;
+                                return browserLanguage;
                             }
                         }
                     }
                 }
 
                 // Absolute fallback
-                lang = _languageService.GetAllLanguages().FirstOrDefault();
-                return lang;
+				if (allStoreLanguages.Count > 0)
+					return allStoreLanguages.FirstOrDefault();
+
+				return _languageService.GetAllLanguages().FirstOrDefault();
             }
             set
             {

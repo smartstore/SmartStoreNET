@@ -109,6 +109,7 @@ namespace SmartStore.Services.Catalog
 			//Store mapping
 			if (!showHidden)
 			{
+				//Store mapping
 				var currentStoreId = _workContext.CurrentStore.Id;
 
 				query = from m in query
@@ -119,9 +120,10 @@ namespace SmartStore.Services.Catalog
 
 				//only distinct manufacturers (group by ID)
 				query = from m in query
-						group m by m.Id into mGroup
+						group m by m.Id	into mGroup
 						orderby mGroup.Key
 						select mGroup.FirstOrDefault();
+
 				query = query.OrderBy(m => m.DisplayOrder);
 			}
 
@@ -244,9 +246,9 @@ namespace SmartStore.Services.Catalog
                             orderby pm.DisplayOrder
                             select pm;
 
-				//Store mapping
 				if (!showHidden)
 				{
+					//Store mapping
 					var currentStoreId = _workContext.CurrentStore.Id;
 
 					query = from pm in query
@@ -261,6 +263,7 @@ namespace SmartStore.Services.Catalog
 							group pm by pm.Id into pmGroup
 							orderby pmGroup.Key
 							select pmGroup.FirstOrDefault();
+
 					query = query.OrderBy(pm => pm.DisplayOrder);
 				}
 
@@ -292,9 +295,9 @@ namespace SmartStore.Services.Catalog
 								orderby pm.DisplayOrder
 								select pm;
 
-					//Store mapping
 					if (!showHidden)
 					{
+						//Store mapping
 						var currentStoreId = _workContext.CurrentStore.Id;
 
 						query = from pm in query
@@ -309,6 +312,7 @@ namespace SmartStore.Services.Catalog
 								group pm by pm.Id into mGroup
 								orderby mGroup.Key
 								select mGroup.FirstOrDefault();
+
 						query = query.OrderBy(pm => pm.DisplayOrder);
 					}
 

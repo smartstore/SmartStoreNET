@@ -115,32 +115,20 @@ namespace SmartStore.Services.Catalog
             query = query.Where(c => !c.Deleted);
             query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
             
-            // ACL (access control list)
             if (!showHidden)
             {
+				// ACL (access control list)
                 var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                     .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
-                query = from c in query
-                        join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
-                        from acl in c_acl.DefaultIfEmpty()
-                        where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                        select c;
+				query = from c in query
+						join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
+						from acl in c_acl.DefaultIfEmpty()
+						where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
+						select c;
 
-                // only distinct categories (group by ID)
-                query = from c in query
-                        group c by c.Id
-                        into cGroup
-                        orderby cGroup.Key
-                        select cGroup.FirstOrDefault();
-                query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
-            }
-
-			//Store mapping
-			if (!showHidden)
-			{
+				//Store mapping
 				var currentStoreId = _workContext.CurrentStore.Id;
-
 				query = from c in query
 						join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
 						from sm in c_sm.DefaultIfEmpty()
@@ -152,8 +140,9 @@ namespace SmartStore.Services.Catalog
 						group c by c.Id	into cGroup
 						orderby cGroup.Key
 						select cGroup.FirstOrDefault();
+
 				query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
-			}
+            }
 
             var unsortedCategories = query.ToList();
 
@@ -182,32 +171,20 @@ namespace SmartStore.Services.Catalog
                 query = query.Where(c => !c.Deleted);
                 query = query.OrderBy(c => c.DisplayOrder);
 
-                // ACL (access control list)
                 if (!showHidden)
                 {
+					// ACL (access control list)
                     var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                         .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
-                    query = from c in query
-                            join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
-                            from acl in c_acl.DefaultIfEmpty()
-                            where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                            select c;
+					query = from c in query
+							join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
+							from acl in c_acl.DefaultIfEmpty()
+							where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
+							select c;
 
-                    // only distinct categories (group by ID)
-                    query = from c in query
-                            group c by c.Id
-                            into cGroup
-                            orderby cGroup.Key
-                            select cGroup.FirstOrDefault();
-                    query = query.OrderBy(c => c.DisplayOrder);
-                }
-
-				//Multi-store
-				if (!showHidden)
-				{
+					//Store mapping
 					var currentStoreId = _workContext.CurrentStore.Id;
-
 					query = from c in query
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
 							from sm in c_sm.DefaultIfEmpty()
@@ -219,8 +196,9 @@ namespace SmartStore.Services.Catalog
 							group c by c.Id	into cGroup
 							orderby cGroup.Key
 							select cGroup.FirstOrDefault();
+
 					query = query.OrderBy(c => c.DisplayOrder);
-				}
+                }
 
                 var categories = query.ToList();
                 return categories;
@@ -369,32 +347,21 @@ namespace SmartStore.Services.Catalog
                             orderby pc.DisplayOrder
                             select pc;
 
-                //ACL (access control list)
                 if (!showHidden)
                 {
+					//ACL (access control list)
                     var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                         .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
-                    query = from pc in query
-                            join c in _categoryRepository.Table on pc.CategoryId equals c.Id
-                            join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
-                            from acl in c_acl.DefaultIfEmpty()
-                            where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                            select pc;
+					query = from pc in query
+							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+							join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
+							from acl in c_acl.DefaultIfEmpty()
+							where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
+							select pc;
 
-                    //only distinct categories (group by ID)
-                    query = from c in query
-                            group c by c.Id
-                            into cGroup
-                            orderby cGroup.Key
-                            select cGroup.FirstOrDefault();
-                }
-
-				//Store mapping
-				if (!showHidden)
-				{
+					//Store mapping
 					var currentStoreId = _workContext.CurrentStore.Id;
-
 					query = from pc in query
 							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
@@ -407,8 +374,9 @@ namespace SmartStore.Services.Catalog
 							group c by c.Id	into cGroup
 							orderby cGroup.Key
 							select cGroup.FirstOrDefault();
+
 					query = query.OrderBy(pc => pc.DisplayOrder);
-				}
+                }
 
                 var productCategories = new PagedList<ProductCategory>(query, pageIndex, pageSize);
                 return productCategories;
@@ -437,32 +405,21 @@ namespace SmartStore.Services.Catalog
                             orderby pc.DisplayOrder
                             select pc;
 
-                //ACL (access control list)
                 if (!showHidden)
                 {
+					//ACL (access control list)
                     var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                         .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
-                    query = from pc in query
-                            join c in _categoryRepository.Table on pc.CategoryId equals c.Id
-                            join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
-                            from acl in c_acl.DefaultIfEmpty()
-                            where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                            select pc;
+					query = from pc in query
+							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+							join acl in _aclRepository.Table on c.Id equals acl.EntityId into c_acl
+							from acl in c_acl.DefaultIfEmpty()
+							where !c.SubjectToAcl || (acl.EntityName == "Category" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
+							select pc;
 
-                    //only distinct categories (group by ID)
-                    query = from c in query
-                            group c by c.Id
-                            into cGroup
-                            orderby cGroup.Key
-                            select cGroup.FirstOrDefault();
-                }
-
-				//Store mapping
-				if (!showHidden)
-				{
+					//Store mapping
 					var currentStoreId = _workContext.CurrentStore.Id;
-
 					query = from pc in query
 							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
@@ -475,8 +432,9 @@ namespace SmartStore.Services.Catalog
 							group pc by pc.Id into pcGroup
 							orderby pcGroup.Key
 							select pcGroup.FirstOrDefault();
+
 					query = query.OrderBy(pc => pc.DisplayOrder);
-				}
+                }
 
                 var productCategories = query.ToList();
                 return productCategories;

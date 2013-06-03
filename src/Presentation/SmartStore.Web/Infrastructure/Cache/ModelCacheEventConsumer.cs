@@ -378,8 +378,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : current store ID
         /// </remarks>
-        public const string AVAILABLE_CURRENCIES_MODEL_KEY = "sm.pres.currencies.all-{0}";
+        public const string AVAILABLE_CURRENCIES_MODEL_KEY = "sm.pres.currencies.all-{0}-{1}";
         public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "sm.pres.currencies.";
 
         public const string SHOPHEADER_MODEL_KEY = "sm.pres.shopheader";

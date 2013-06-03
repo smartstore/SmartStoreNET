@@ -8,6 +8,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Tests.Catalog
     public class PriceFormatterTests : ServiceTest
     {
         IRepository<Currency> _currencyRepo;
+		IRepository<StoreMapping> _storeMappingRepo;
         ICurrencyService _currencyService;
         ICustomerService _customerService;
         CurrencySettings _currencySettings;
@@ -68,10 +70,12 @@ namespace SmartStore.Services.Tests.Catalog
             _currencyRepo = MockRepository.GenerateMock<IRepository<Currency>>();
             _currencyRepo.Expect(x => x.Table).Return(new List<Currency>() { currency1, currency2 }.AsQueryable());
 
+			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+
             _customerService = MockRepository.GenerateMock<ICustomerService>();
 
             var pluginFinder = new PluginFinder();
-            _currencyService = new CurrencyService(cacheManager, _currencyRepo,
+			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingRepo,
                 _customerService, _currencySettings, pluginFinder, null);
             
             _taxSettings = new TaxSettings();

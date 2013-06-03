@@ -291,6 +291,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
                 .ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<CurrencyModel, Currency>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())

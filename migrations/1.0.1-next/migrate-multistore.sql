@@ -151,6 +151,31 @@ set @resources='
 	<T>Bitte Shops auswählen, für die die Sprache verfügbar ist.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Catalog.Currencies.Info">
+	<Value>Info</Value>
+	<T>Info</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Currencies.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Currencies.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Currencies.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the currency is available only at certain stores.</Value>
+	<T>Legt fest, ob die Währung nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Currencies.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Currencies.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the currency will be shown.</Value>
+	<T>Bitte Shops auswählen, für die die Währung verfügbar ist.</T>
+  </LocaleResource>
+  
 </Language>
 '
 
@@ -944,5 +969,17 @@ GO
 UPDATE [Language] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
 GO
 ALTER TABLE [Language] ALTER COLUMN [LimitedToStores] bit NOT NULL
+GO
+
+
+--Store mapping for currencies
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Currency]') and NAME='LimitedToStores')
+BEGIN
+	ALTER TABLE [Currency] ADD [LimitedToStores] bit NULL
+END
+GO
+UPDATE [Currency] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
+GO
+ALTER TABLE [Currency] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 

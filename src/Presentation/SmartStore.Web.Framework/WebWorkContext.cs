@@ -308,6 +308,7 @@ namespace SmartStore.Web.Framework
 				if (allStoreLanguages.Count > 0)
 					return allStoreLanguages.FirstOrDefault();
 
+				//if not found in languages filtered by the current store, then return any language
 				return _languageService.GetAllLanguages().FirstOrDefault();
             }
             set
@@ -336,10 +337,18 @@ namespace SmartStore.Web.Framework
                         return primaryStoreCurrency;
                 }
 
-                if (this.CurrentCustomer != null &&
-                    this.CurrentCustomer.Currency != null &&
-                    this.CurrentCustomer.Currency.Published)
-                    return this.CurrentCustomer.Currency;
+				var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: this.CurrentStore.Id);
+				if (allStoreCurrencies.Count > 0)
+				{
+					//find current customer language
+					foreach (var currency in allStoreCurrencies)
+					{
+						if (this.CurrentCustomer != null && this.CurrentCustomer.CurrencyId == currency.Id)
+						{
+							return currency;
+						}
+					}
+				}
 
                 // codehint: sm-edit
                 primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
@@ -347,6 +356,11 @@ namespace SmartStore.Web.Framework
                 {
                     return primaryStoreCurrency;
                 }
+
+				if (allStoreCurrencies.Count > 0)
+					return allStoreCurrencies.FirstOrDefault();
+
+				//if not found in languages filtered by the current store, then return any language
                 return _currencyService.GetAllCurrencies().FirstOrDefault();
             }
             set

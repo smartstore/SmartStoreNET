@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -51,6 +52,13 @@ namespace SmartStore.Admin.Models.Directory
         public bool IsPrimaryStoreCurrency { get; set; }
 
         public IList<CurrencyLocalizedModel> Locales { get; set; }
+
+		//Store mapping
+		[SmartResourceDisplayName("Admin.Catalog.Currencies.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Currencies.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
     }
 
     public class CurrencyLocalizedModel : ILocalizedModelLocal

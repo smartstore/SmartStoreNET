@@ -186,7 +186,9 @@ namespace SmartStore.Web.Framework
                             var customerByCookie = _customerService.GetCustomerByGuid(customerGuid);
                             if (customerByCookie != null &&
                                 //this customer (from cookie) should not be registered
-                                !customerByCookie.IsRegistered())
+                                !customerByCookie.IsRegistered() &&
+								//it should not be a built-in 'search engine' customer account
+								!customerByCookie.IsSearchEngineAccount())
                                 customer = customerByCookie;
                         }
                     }
@@ -407,6 +409,9 @@ namespace SmartStore.Web.Framework
             });
         }
 
+		/// <summary>
+		/// Get or set value indicating whether we're in admin area
+		/// </summary>
         public bool IsAdmin
         {
             get

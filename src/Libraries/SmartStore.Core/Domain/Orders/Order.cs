@@ -73,6 +73,11 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public Guid OrderGuid { get; set; }
 
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>

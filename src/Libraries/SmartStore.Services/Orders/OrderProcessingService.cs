@@ -554,7 +554,7 @@ namespace SmartStore.Services.Orders
                     //load shopping cart
 					cart = customer.ShoppingCartItems
 						.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-						.Where(sci => sci.StoreId == storeId)
+						.Where(sci => sci.StoreId == processPaymentRequest.StoreId)
 						.ToList();
 
                     if (cart.Count == 0)
@@ -577,7 +577,7 @@ namespace SmartStore.Services.Orders
                     foreach (var sci in cart)
                     {
                         var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.ShoppingCartType,
-							sci.ProductVariant, storeId, sci.AttributesXml,
+							sci.ProductVariant, processPaymentRequest.StoreId, sci.AttributesXml,
                             sci.CustomerEnteredPrice, sci.Quantity, false);
                         if (sciWarnings.Count > 0)
                         {
@@ -963,6 +963,7 @@ namespace SmartStore.Services.Orders
 
                         var order = new Order()
                         {
+							StoreId = processPaymentRequest.StoreId,
                             OrderGuid = processPaymentRequest.OrderGuid,
                             CustomerId = customer.Id,
                             CustomerLanguageId = customerLanguage.Id,
@@ -1381,7 +1382,7 @@ namespace SmartStore.Services.Orders
             ReduceRewardPoints(order);
 
             //cancel recurring payments
-            var recurringPayments = _orderService.SearchRecurringPayments(0, order.Id, null);
+            var recurringPayments = _orderService.SearchRecurringPayments(0, 0, order.Id, null);
             foreach (var rp in recurringPayments)
             {
                 //use errors?
@@ -1434,6 +1435,7 @@ namespace SmartStore.Services.Orders
                 //payment info
                 var paymentInfo = new ProcessPaymentRequest()
                 {
+					StoreId = initialOrder.StoreId,
                     CustomerId = customer.Id,
                     OrderGuid = Guid.NewGuid(),
                     IsRecurringPayment = true,
@@ -1746,7 +1748,7 @@ namespace SmartStore.Services.Orders
             _orderService.UpdateOrder(order);
 
             //cancel recurring payments
-            var recurringPayments = _orderService.SearchRecurringPayments(0, order.Id, null);
+            var recurringPayments = _orderService.SearchRecurringPayments(0, 0, order.Id, null);
             foreach (var rp in recurringPayments)
             {
                 //use errors?
@@ -2474,7 +2476,7 @@ namespace SmartStore.Services.Orders
             foreach (var opv in order.OrderProductVariants)
             {
                 _shoppingCartService.AddToCart(opv.Order.Customer, opv.ProductVariant,
-					 ShoppingCartType.ShoppingCart, _workContext.CurrentStore.Id, opv.AttributesXml,
+					 ShoppingCartType.ShoppingCart, opv.Order.StoreId, opv.AttributesXml,
                     opv.UnitPriceExclTax, opv.Quantity, false);
             }
         }

@@ -1408,11 +1408,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            var orders = _orderService.GetOrdersByCustomerId(customerId);
+			var orders = _orderService.SearchOrders(0, customerId,
+				null, null, null, null, null, null, null, 0, int.MaxValue);
 
             var model = new GridModel<CustomerModel.OrderModel>
             {
-                Data = orders.OrderBy(x => x.CreatedOnUtc).PagedForCommand(command)
+				Data = orders.PagedForCommand(command)
                     .Select(order =>
                     {
                         var orderModel = new CustomerModel.OrderModel();

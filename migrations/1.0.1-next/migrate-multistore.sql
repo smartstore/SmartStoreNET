@@ -1081,3 +1081,18 @@ BEGIN
 END
 GO
 
+--Store mapping to orders
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Order]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [Order]
+	ADD [StoreId] bit NULL
+END
+GO
+
+DECLARE @DEFAULT_STORE_ID int
+SELECT @DEFAULT_STORE_ID = [Id] FROM [Store] ORDER BY [DisplayOrder]
+UPDATE [Order] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [Order] ALTER COLUMN [StoreId] int NOT NULL
+GO

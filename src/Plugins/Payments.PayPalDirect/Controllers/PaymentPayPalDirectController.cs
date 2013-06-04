@@ -264,7 +264,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 
 							var initialOrder = _orderService.GetOrderByGuid(orderNumberGuid);
 							if (initialOrder != null) {
-								var recurringPayments = _orderService.SearchRecurringPayments(0, initialOrder.Id, null);
+								var recurringPayments = _orderService.SearchRecurringPayments(0, 0, initialOrder.Id, null);
 								foreach (var rp in recurringPayments) {
 									switch (newPaymentStatus) {
 										case PaymentStatus.Authorized:

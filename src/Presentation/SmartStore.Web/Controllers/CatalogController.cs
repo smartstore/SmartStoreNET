@@ -2112,7 +2112,8 @@ namespace SmartStore.Web.Controllers
 
             //save item
             addToCartWarnings.AddRange(_shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                productVariant, cartType, attributes, customerEnteredPriceConverted, quantity, true));
+				productVariant, cartType, _workContext.CurrentStore.Id, 
+				attributes, customerEnteredPriceConverted, quantity, true));
 
             #region Set already entered values
 
@@ -2551,7 +2552,10 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult CrossSellProducts(int? productThumbPictureSize)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				 .Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+				 .ToList();
 
             var products = _productService.GetCrosssellProductsByShoppingCart(cart, _shoppingCartSettings.CrossSellsNumber);
 			//ACL and store mapping

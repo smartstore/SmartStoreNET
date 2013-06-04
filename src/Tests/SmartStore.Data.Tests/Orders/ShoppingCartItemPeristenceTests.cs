@@ -2,6 +2,7 @@
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
@@ -40,7 +41,17 @@ namespace SmartStore.Data.Tests.Orders
 
             fromDb.ProductVariant.ShouldNotBeNull();
 
+			fromDb.Store.ShouldNotBeNull();
         }
+
+		protected Store GetTestStore()
+		{
+			return new Store
+			{
+				Name = "Store 1",
+				DisplayOrder = 1,
+			};
+		}
 
         protected Customer GetTestCustomer()
         {

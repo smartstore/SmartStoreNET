@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
@@ -185,6 +186,7 @@ namespace SmartStore.Data.Tests.Customers
         {
             var customer = GetTestCustomer();
             var productVariant = GetTestProductVariant();
+			var store = GetTestStore();
 
             customer.ShoppingCartItems.Add
             (
@@ -196,7 +198,8 @@ namespace SmartStore.Data.Tests.Customers
                     Quantity = 2,
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                     UpdatedOnUtc = new DateTime(2010, 01, 02),
-                    ProductVariant = productVariant
+                    ProductVariant = productVariant,
+					Store = store
                 }
             );
 
@@ -339,6 +342,15 @@ namespace SmartStore.Data.Tests.Customers
                 DisplayOrder = 1
             };
         }
+
+		protected Store GetTestStore()
+		{
+			return new Store
+			{
+				Name = "Store 1",
+				DisplayOrder = 1
+			};
+		}
 
     }
 }

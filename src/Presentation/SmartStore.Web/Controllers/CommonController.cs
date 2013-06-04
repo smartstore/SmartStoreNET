@@ -476,9 +476,17 @@ namespace SmartStore.Web.Controllers
                 IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
                 DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
-                ShoppingCartItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList().GetTotalProducts(),
+				ShoppingCartItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
-                WishlistItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList().GetTotalProducts(),
+				WishlistItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage,
@@ -511,7 +519,9 @@ namespace SmartStore.Web.Controllers
             }
 
             //subtotal
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+            var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == _workContext.CurrentStore.Id)
+				.ToList();
             decimal subtotal = 0;
             if (cart.Count > 0)
             {
@@ -533,10 +543,18 @@ namespace SmartStore.Web.Controllers
                 IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
                 DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
-                ShoppingCartItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList().GetTotalProducts(),
+				ShoppingCartItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 ShoppingCartAmount = _priceFormatter.FormatPrice(subtotal, true, false),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
-                WishlistItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList().GetTotalProducts(),
+				WishlistItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage,
@@ -1030,9 +1048,17 @@ namespace SmartStore.Web.Controllers
                 IsAuthenticated = customer.IsRegistered(),
                 DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
-                ShoppingCartItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList().GetTotalProducts(),
+				ShoppingCartItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
-                WishlistItems = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList().GetTotalProducts(),
+				WishlistItems = customer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.ToList()
+					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage

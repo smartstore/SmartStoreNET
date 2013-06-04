@@ -21,7 +21,6 @@ namespace SmartStore.Services.Tests.Directory
     {
         IRepository<Currency> _currencyRepository;
 		IRepository<StoreMapping> _storeMappingRepo;
-        ICustomerService _customerService;
         CurrencySettings _currencySettings;
         IEventPublisher _eventPublisher;
         ICurrencyService _currencyService;
@@ -79,8 +78,6 @@ namespace SmartStore.Services.Tests.Directory
 			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 
             var cacheManager = new NullCache();
-            
-            _customerService = MockRepository.GenerateMock<ICustomerService>();
 
             _currencySettings = new CurrencySettings();
             _currencySettings.PrimaryStoreCurrencyId = currencyUSD.Id;
@@ -91,7 +88,7 @@ namespace SmartStore.Services.Tests.Directory
             
             var pluginFinder = new PluginFinder();
             _currencyService = new CurrencyService(cacheManager,
-				_currencyRepository, _storeMappingRepo, _customerService,
+				_currencyRepository, _storeMappingRepo, 
                 _currencySettings, pluginFinder, _eventPublisher);
         }
         

@@ -255,9 +255,9 @@ namespace SmartStore.Web.Framework
                                 if (langByCulture != null && langByCulture.Published)
                                 {
                                     //the language is found. now we need to save it
-                                    if (this.CurrentCustomer != null && !langByCulture.Equals(this.CurrentCustomer.Language))
+									if (this.CurrentCustomer != null && langByCulture.Id != this.CurrentCustomer.LanguageId)
                                     {
-                                        this.CurrentCustomer.Language = langByCulture;
+										this.CurrentCustomer.LanguageId = langByCulture.Id;
                                         _customerService.UpdateCustomer(this.CurrentCustomer);
                                     }
                                 }
@@ -271,7 +271,7 @@ namespace SmartStore.Web.Framework
                     //find current customer language
                     foreach (var lang in allStoreLanguages)
                     {
-                        if (this.CurrentCustomer != null && this.CurrentCustomer.LanguageId == lang.Id)
+                        if (this.CurrentCustomer != null &&	this.CurrentCustomer.LanguageId == lang.Id)
                         {
                             return lang;
                         }
@@ -293,9 +293,9 @@ namespace SmartStore.Web.Framework
                             if (browserLanguage != null && browserLanguage.Published)
                             {
                                 //the language is found. now we need to save it
-                                if (this.CurrentCustomer != null && !browserLanguage.Equals(this.CurrentCustomer.Language))
+                                if (this.CurrentCustomer != null && browserLanguage.Id != this.CurrentCustomer.LanguageId)
                                 {
-                                    this.CurrentCustomer.Language = browserLanguage;
+                                    this.CurrentCustomer.LanguageId = browserLanguage.Id;
                                     _customerService.UpdateCustomer(this.CurrentCustomer);
                                 }
                                 return browserLanguage;
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Framework
                 if (this.CurrentCustomer == null)
                     return;
 
-                this.CurrentCustomer.Language = value;
+				this.CurrentCustomer.LanguageId = value != null ? value.Id : 0;
                 _customerService.UpdateCustomer(this.CurrentCustomer);
             }
         }
@@ -343,7 +343,7 @@ namespace SmartStore.Web.Framework
 					//find current customer language
 					foreach (var currency in allStoreCurrencies)
 					{
-						if (this.CurrentCustomer != null && this.CurrentCustomer.CurrencyId == currency.Id)
+						if (this.CurrentCustomer != null &&	this.CurrentCustomer.CurrencyId == currency.Id)
 						{
 							return currency;
 						}
@@ -368,7 +368,7 @@ namespace SmartStore.Web.Framework
                 if (this.CurrentCustomer == null)
                     return;
 
-                this.CurrentCustomer.Currency = value;
+				this.CurrentCustomer.CurrencyId = value != null ? value.Id : 0;
                 _customerService.UpdateCustomer(this.CurrentCustomer);
             }
         }

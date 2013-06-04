@@ -39,11 +39,6 @@ namespace SmartStore.Data.Mapping.Orders
                 .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.CustomerId);
 
-            this.HasOptional(o => o.Affiliate)
-                .WithMany()
-                .HasForeignKey(o => o.AffiliateId);
-
-
             //this.HasRequired(o => o.BillingAddress).WithOptional().Map(x => x.MapKey("BillingAddressId")).WillCascadeOnDelete(false);
             //this.HasOptional(o => o.ShippingAddress).WithOptionalDependent().Map(x => x.MapKey("ShippingAddressId")).WillCascadeOnDelete(false);
             this.HasRequired(o => o.BillingAddress)

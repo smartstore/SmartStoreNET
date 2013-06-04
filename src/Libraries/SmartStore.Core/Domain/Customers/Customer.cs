@@ -68,12 +68,12 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets the language identifier
         /// </summary>
-        public int? LanguageId { get; set; }
+        public int LanguageId { get; set; }
 
         /// <summary>
         /// Gets or sets the currency identifier
         /// </summary>
-        public int? CurrencyId { get; set; }
+        public int CurrencyId { get; set; }
 
         /// codehint: sm-edit
         /// <summary>
@@ -131,7 +131,7 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
-        public int? AffiliateId { get; set; }
+        public int AffiliateId { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether the customer is active
@@ -208,21 +208,6 @@ namespace SmartStore.Core.Domain.Customers
         #endregion
 
         #region Navigation properties
-
-        /// <summary>
-        /// Gets or sets the affiliate
-        /// </summary>
-        public virtual Affiliate Affiliate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the language
-        /// </summary>
-        public virtual Language Language { get; set; }
-
-        /// <summary>
-        /// Gets or sets the currency
-        /// </summary>
-        public virtual Currency Currency { get; set; }
 
         /// <summary>
         /// Gets or sets customer generated content

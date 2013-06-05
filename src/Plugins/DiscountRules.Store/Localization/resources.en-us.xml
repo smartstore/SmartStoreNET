@@ -1,0 +1,14 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.Store" AppendRootKey="false">
+    <Value>Restricted to store</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SelectStore">
+    <Value>Select store</Value>
+  </LocaleResource>
+	<LocaleResource Name="Fields.Store">
+		<Value>Store</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Store.Hint">
+    <Value>Select the store in which this discount will be valid.</Value>
+  </LocaleResource>
+</Language>

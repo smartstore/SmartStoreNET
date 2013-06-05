@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Topics;
@@ -88,7 +89,13 @@ namespace SmartStore.Services.Seo
 
         private void WriteProducts()
         {
-            var products = _productService.GetAllProducts(false);
+			var ctx = new ProductSearchContext()
+			{
+				OrderBy = ProductSortingEnum.CreatedOn,
+				PageSize = int.MaxValue
+			};
+
+			var products = _productService.SearchProducts(ctx);
             foreach (var product in products)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)

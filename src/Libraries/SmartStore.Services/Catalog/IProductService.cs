@@ -19,13 +19,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         void DeleteProduct(Product product);
 
-        /// <summary>
-        /// Gets all products
-        /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product collection</returns>
-        IList<Product> GetAllProducts(bool showHidden = false);
-
 		/// <remarks>codehint: sm-add</remarks>
 		IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured);
 

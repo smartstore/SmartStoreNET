@@ -311,9 +311,16 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			bool hasGiftCards = false;
 			var sb = new StringBuilder();
 			var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-			var products = _productService.GetAllProducts(false);
 			var categories = _categoryService.GetAllCategories();
 			Category category;
+
+			var ctx = new ProductSearchContext()
+			{
+				OrderBy = ProductSortingEnum.CreatedOn,
+				PageSize = int.MaxValue
+			};
+
+			var products = _productService.SearchProducts(ctx);
 
 			foreach (var item in categories) {
 				item.PictureId = 0;		// we misuse that as counter

@@ -368,7 +368,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				writer.WriteElementString("description", "Information about products");
 
 				var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-				var products = _productService.GetAllProducts(false);
+				var ctx = new ProductSearchContext()
+				{
+					OrderBy = ProductSortingEnum.CreatedOn,
+					PageSize = int.MaxValue
+				};
+
+				var products = _productService.SearchProducts(ctx);
 
 				foreach (var product in products) {
 					var manufacturer = _manufacturerService.GetProductManufacturersByProductId((product.Id)).FirstOrDefault();

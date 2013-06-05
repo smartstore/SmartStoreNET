@@ -19,6 +19,7 @@ using SmartStore.Admin.Models.Plugins;
 using SmartStore.Admin.Models.Polls;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Models.Shipping;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Models.Tax;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Admin.Models.Themes;
@@ -38,6 +39,7 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Plugins;
@@ -986,5 +988,25 @@ namespace SmartStore.Admin
         }
 
         #endregion
+
+
+		#region Stores
+
+		public static StoreModel ToModel(this Store entity)
+		{
+			return Mapper.Map<Store, StoreModel>(entity);
+		}
+
+		public static Store ToEntity(this StoreModel model)
+		{
+			return Mapper.Map<StoreModel, Store>(model);
+		}
+
+		public static Store ToEntity(this StoreModel model, Store destination)
+		{
+			return Mapper.Map(model, destination);
+		}
+
+		#endregion
     }
 }

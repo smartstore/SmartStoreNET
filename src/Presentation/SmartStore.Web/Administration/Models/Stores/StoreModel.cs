@@ -13,6 +13,10 @@ namespace SmartStore.Admin.Models.Stores
 		[AllowHtml]
 		public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.Hosts")]
+		[AllowHtml]
+		public string Hosts { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 	}

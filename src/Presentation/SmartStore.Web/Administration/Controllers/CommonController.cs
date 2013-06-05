@@ -281,6 +281,7 @@ namespace SmartStore.Admin.Controllers
             model.ServerTimeZone = TimeZone.CurrentTimeZone.StandardName;
             model.ServerLocalTime = DateTime.Now;
             model.UtcTime = DateTime.UtcNow;
+			model.HttpHost = _webHelper.ServerVariables("HTTP_HOST");
             //Environment.GetEnvironmentVariable("USERNAME");
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {

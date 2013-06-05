@@ -81,12 +81,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableStores = _storeService
 				.GetAllStores()
-				.Select(s => new StoreModel()
-				{
-					Id = s.Id,
-					Name = s.Name,
-					DisplayOrder = s.DisplayOrder
-				})
+				.Select(s => s.ToModel())
 				.ToList();
 			if (!excludeProperties)
 			{

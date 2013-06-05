@@ -45,12 +45,7 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var storeModels = _storeService.GetAllStores()
-				.Select(x => new StoreModel()
-				{
-					Id = x.Id,
-					Name = x.Name,
-					DisplayOrder = x.DisplayOrder
-				})
+				.Select(x => x.ToModel())
 				.ToList();
 
 			var gridModel = new GridModel<StoreModel>
@@ -82,11 +77,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var store = new Store()
-				{
-					Name = model.Name,
-					DisplayOrder = model.DisplayOrder
-				};
+				var store = model.ToEntity();
 				_storeService.InsertStore(store);
 
 				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Added"));
@@ -107,12 +98,7 @@ namespace SmartStore.Admin.Controllers
 				//No store found with the specified id
 				return RedirectToAction("List");
 
-			var model = new StoreModel()
-			{
-				Id = store.Id,
-				Name = store.Name,
-				DisplayOrder = store.DisplayOrder
-			};
+			var model = store.ToModel();
 			return View(model);
 		}
 
@@ -130,8 +116,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
-				store.Name = model.Name;
-				store.DisplayOrder = model.DisplayOrder;
+				store = model.ToEntity(store);
 				_storeService.UpdateStore(store);
 
 				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Updated"));

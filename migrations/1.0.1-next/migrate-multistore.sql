@@ -202,6 +202,23 @@ set @resources='
 	<T>Shop</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts">
+	<Value>HOST values</Value>
+	<T>HOST Werte</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts.Hint">
+	<Value>The comma separated list of possible HTTP_POST values (for example, "yourstore.com,www.yourstore.com"). This property is required only when you have run a multi-store solution to determine the current store.</Value>
+	<T>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "yourstore.com,www.yourstore.com"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.System.SystemInfo.HTTPHOST">
+	<Value>HTTP_HOST</Value>
+	<T>HTTP_HOST</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.System.SystemInfo.HTTPHOST.Hint">
+	<Value>HTTP_HOST is used when you have run a multi-store solution to determine the current store.</Value>
+	<T>HTTP_HOST wird in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
+  </LocaleResource>
+  
 </Language>
 '
 
@@ -283,6 +300,7 @@ BEGIN
 CREATE TABLE [dbo].[Store](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] nvarchar(400) NOT NULL,
+	[Hosts] nvarchar(1000) NULL,
 	[DisplayOrder] int NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -294,8 +312,8 @@ DECLARE @DEFAULT_STORE_NAME nvarchar(400)
 SELECT @DEFAULT_STORE_NAME = [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.storename' 
 
 --create the first store
-INSERT INTO [Store] ([Name], [DisplayOrder])
-VALUES (@DEFAULT_STORE_NAME, 1)
+INSERT INTO [Store] ([Name], [Hosts], [DisplayOrder])
+VALUES (@DEFAULT_STORE_NAME, N'yourstore.com,www.yourstore.com', 1)
 
 END
 GO

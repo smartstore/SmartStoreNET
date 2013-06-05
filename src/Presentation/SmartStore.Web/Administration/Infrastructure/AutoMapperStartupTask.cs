@@ -49,6 +49,8 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Admin.Models.Stores;
 
 namespace SmartStore.Admin.Infrastructure
 {
@@ -561,6 +563,10 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PurchasedWithOrderProductVariant, mo => mo.Ignore())
                 .ForMember(dest => dest.IsRecipientNotified, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
+			//stores
+			Mapper.CreateMap<Store, StoreModel>()
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+			Mapper.CreateMap<StoreModel, Store>();
 
             //Settings
             Mapper.CreateMap<TaxSettings, TaxSettingsModel>()

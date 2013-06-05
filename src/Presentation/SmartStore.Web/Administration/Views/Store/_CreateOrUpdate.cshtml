@@ -12,6 +12,15 @@
             @Html.ValidationMessageFor(model => model.Name)
         </td>
     </tr>
+   <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Hosts)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Hosts)
+            @Html.ValidationMessageFor(model => model.Hosts)
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisplayOrder):

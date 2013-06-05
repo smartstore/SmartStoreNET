@@ -33,6 +33,9 @@ namespace SmartStore.Admin.Models.Common
         [SmartResourceDisplayName("Admin.System.SystemInfo.UTCTime")]
         public DateTime UtcTime { get; set; }
 
+		[SmartResourceDisplayName("Admin.System.SystemInfo.HTTPHOST")]
+		public string HttpHost { get; set; }
+
         [SmartResourceDisplayName("Admin.System.SystemInfo.LoadedAssemblies")]
         public IList<LoadedAssembly> LoadedAssemblies { get; set; }
 

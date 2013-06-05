@@ -26,6 +26,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
@@ -66,6 +67,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IGiftCardService _giftCardService;
         private readonly IDownloadService _downloadService;
 	    private readonly IShipmentService _shipmentService;
+		private readonly IStoreService _storeService;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -95,7 +97,7 @@ namespace SmartStore.Admin.Controllers
             IProductAttributeFormatter productAttributeFormatter, IShoppingCartService shoppingCartService,
             ICheckoutAttributeFormatter checkoutAttributeFormatter, 
             IGiftCardService giftCardService, IDownloadService downloadService,
-            IShipmentService shipmentService,
+			IShipmentService shipmentService, IStoreService storeService,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings)
 		{
@@ -127,6 +129,7 @@ namespace SmartStore.Admin.Controllers
             this._giftCardService = giftCardService;
             this._downloadService = downloadService;
             this._shipmentService = shipmentService;
+			this._storeService = storeService;
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -154,6 +157,8 @@ namespace SmartStore.Admin.Controllers
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.OrderGuid = order.OrderGuid;
+			var store = _storeService.GetStoreById(order.StoreId);
+			model.StoreName = store != null ? store.Name : "Unknown";
             model.CustomerId = order.CustomerId;
             model.CustomerIp = order.CustomerIp;
             model.VatNumber = order.VatNumber;
@@ -597,15 +602,29 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
+			//order statuses
             var model = new OrderListModel();
             model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailableOrderStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
+			//payment statuses
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
+			//shipping statuses
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
             model.AvailableShippingStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
+			//stores
+			foreach (var store in _storeService.GetAllStores())
+			{
+				model.AvailableStores.Add(new SelectListItem()
+				{
+					Text = store.Name,
+					Value = store.Id.ToString()
+				});
+			}
+			model.AvailableStores.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
 		}
@@ -627,15 +646,17 @@ namespace SmartStore.Admin.Controllers
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
             //load orders
-			var orders = _orderService.SearchOrders(0, 0, startDateValue, endDateValue, orderStatus,
+			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatus,
                 paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, command.Page - 1, command.PageSize);
             var gridModel = new GridModel<OrderModel>
             {
                 Data = orders.Select(x =>
                 {
+					var store = _storeService.GetStoreById(x.StoreId);
                     return new OrderModel()
                     {
                         Id = x.Id,
+						StoreName = store != null ? store.Name : "Unknown",
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
                         PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
@@ -649,10 +670,10 @@ namespace SmartStore.Admin.Controllers
 
             //summary report
             //implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
-		    var reportSummary = _orderReportService.GetOrderAverageReportLine
-		        (orderStatus, paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
-		    var profit = _orderReportService.ProfitReport
-                (orderStatus, paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
+			var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatus,
+				paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
+			var profit = _orderReportService.ProfitReport(model.StoreId, orderStatus,
+				paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
 		    var aggregator = new OrderModel()
 		    {
                 aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
@@ -2379,7 +2400,7 @@ namespace SmartStore.Admin.Controllers
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
             //group by product variants (not products)
-            var report = _orderReportService.BestSellersReport(null, null,
+			var report = _orderReportService.BestSellersReport(0, null, null,
                 null, null, null, 0, recordsToReturn, orderBy, 1, true);
 
             var model = report.Select(x =>
@@ -2477,7 +2498,7 @@ namespace SmartStore.Admin.Controllers
             //return first 100 records
 
             //group by product variants (not products)
-            var items = _orderReportService.BestSellersReport(startDateValue, endDateValue,
+			var items = _orderReportService.BestSellersReport(0, startDateValue, endDateValue,
                 orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, 1, true);
             var gridModel = new GridModel<BestsellersReportLineModel>
             {
@@ -2540,7 +2561,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult PendingTodayReport()
         {
-            var report = _orderReportService.OrderAverageReport(OrderStatus.Pending);
+            var report = _orderReportService.OrderAverageReport(0, OrderStatus.Pending);
             var data = new { 
                 Count = report.CountTodayOrders, 
                 Amount = _priceFormatter.FormatPrice(report.SumTodayOrders, true, false)
@@ -2553,10 +2574,10 @@ namespace SmartStore.Admin.Controllers
         protected virtual IList<OrderAverageReportLineSummaryModel> GetOrderAverageReportModel()
         {
             var report = new List<OrderAverageReportLineSummary>();
-            report.Add(_orderReportService.OrderAverageReport(OrderStatus.Pending));
-            report.Add(_orderReportService.OrderAverageReport(OrderStatus.Processing));
-            report.Add(_orderReportService.OrderAverageReport(OrderStatus.Complete));
-            report.Add(_orderReportService.OrderAverageReport(OrderStatus.Cancelled));
+			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Pending));
+			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Processing));
+			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Complete));
+			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled));
             var model = report.Select(x =>
             {
                 return new OrderAverageReportLineSummaryModel()
@@ -2600,7 +2621,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new List<OrderIncompleteReportLineModel>();
             //not paid
-            var psPending = _orderReportService.GetOrderAverageReportLine(null, PaymentStatus.Pending, null, null, null, null, true);
+			var psPending = _orderReportService.GetOrderAverageReportLine(0, null, PaymentStatus.Pending, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
@@ -2609,7 +2630,7 @@ namespace SmartStore.Admin.Controllers
             });
             
             //not shipped
-            var ssPending = _orderReportService.GetOrderAverageReportLine(null, null, ShippingStatus.NotYetShipped, null, null, null, true);
+			var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, ShippingStatus.NotYetShipped, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
@@ -2617,7 +2638,7 @@ namespace SmartStore.Admin.Controllers
                 Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false)
             });
             //pending
-            var osPending = _orderReportService.GetOrderAverageReportLine(OrderStatus.Pending, null, null, null, null, null, true);
+			var osPending = _orderReportService.GetOrderAverageReportLine(0, OrderStatus.Pending, null, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),

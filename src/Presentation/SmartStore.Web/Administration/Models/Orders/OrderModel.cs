@@ -27,6 +27,10 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderGuid")]
         public Guid OrderGuid { get; set; }
 
+		//store
+		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
+		public string StoreName { get; set; }
+
         //customer info
         [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }

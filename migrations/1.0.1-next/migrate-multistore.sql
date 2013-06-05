@@ -181,6 +181,27 @@ set @resources='
 	<T>Shop</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Orders.List.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.List.Store.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Nach bestimmten Shop suchen.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.Fields.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.Fields.Store.Hint">
+	<Value>A store name in which this order was placed.</Value>
+	<T>Name des Shops für diese Bestellung.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Customers.Customers.Orders.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  
 </Language>
 '
 

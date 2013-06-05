@@ -2514,9 +2514,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             //load and cache report
-            var productIds = _cacheManager.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId), () =>
+			var productIds = _cacheManager.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _workContext.CurrentStore.Id), () =>
                 _orderReportService
-                .GetProductsAlsoPurchasedById(productId, _catalogSettings.ProductsAlsoPurchasedNumber)
+				.GetProductsAlsoPurchasedById(_workContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
                 .Select(x => x.Id)
                 .ToArray()
                 );
@@ -2683,11 +2683,11 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             //load and cache report
-            var report = _cacheManager.Get(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, 
+			var report = _cacheManager.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _workContext.CurrentStore.Id), 
                 () =>
                     //group by products (not product variants)
                     _orderReportService
-                    .BestSellersReport(null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage, groupBy: 2));
+					.BestSellersReport(_workContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage, groupBy: 2));
 
             //load products
             var products = _productService.GetProductsByIds(report.Select(x => x.EntityId).ToArray());

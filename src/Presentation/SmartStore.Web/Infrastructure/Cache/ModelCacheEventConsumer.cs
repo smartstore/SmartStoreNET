@@ -245,7 +245,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <summary>
         /// Key for bestsellers identifiers displayed on the home page
         /// </summary>
-        public const string HOMEPAGE_BESTSELLERS_IDS_KEY = "sm.pres.bestsellers.homepage";
+		/// <remarks>
+		/// {0} : current store id
+		/// </remarks>
+        public const string HOMEPAGE_BESTSELLERS_IDS_KEY = "sm.pres.bestsellers.homepage-{0}";
         public const string HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY = "sm.pres.bestsellers.homepage";
 
         /// <summary>
@@ -253,8 +256,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : current product id
+		/// {1} : current store id
         /// </remarks>
-        public const string PRODUCTS_ALSO_PURCHASED_IDS_KEY = "sm.pres.alsopuchased-{0}";
+        public const string PRODUCTS_ALSO_PURCHASED_IDS_KEY = "sm.pres.alsopuchased-{0}-{1}";
         public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "sm.pres.alsopuchased";
 
         /// <summary>

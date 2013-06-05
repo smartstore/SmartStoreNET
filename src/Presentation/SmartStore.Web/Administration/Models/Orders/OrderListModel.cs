@@ -14,6 +14,7 @@ namespace SmartStore.Admin.Models.Orders
             AvailableOrderStatuses = new List<SelectListItem>();
             AvailablePaymentStatuses = new List<SelectListItem>();
             AvailableShippingStatuses = new List<SelectListItem>();
+			AvailableStores = new List<SelectListItem>();
         }
 
         [SmartResourceDisplayName("Admin.Orders.List.StartDate")]
@@ -33,6 +34,9 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.List.ShippingStatus")]
         public int ShippingStatusId { get; set; }
 
+		[SmartResourceDisplayName("Admin.Orders.List.Store")]
+		public int StoreId { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.OrderGuid")]
         [AllowHtml]
         public string OrderGuid { get; set; }
@@ -46,5 +50,6 @@ namespace SmartStore.Admin.Models.Orders
         public IList<SelectListItem> AvailableOrderStatuses { get; set; }
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }
         public IList<SelectListItem> AvailableShippingStatuses { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

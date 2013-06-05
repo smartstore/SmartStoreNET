@@ -122,7 +122,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var returnRequests = new List<ReturnRequestModel>();
-            foreach (var rr in _orderService.SearchReturnRequests(0, 0, null).PagedForCommand(command))
+            foreach (var rr in _orderService.SearchReturnRequests(0, 0, 0, null).PagedForCommand(command))
             {
                 var m = new ReturnRequestModel();
                 if (PrepareReturnRequestModel(m, rr, false))

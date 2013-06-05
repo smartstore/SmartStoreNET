@@ -8,6 +8,11 @@ namespace SmartStore.Core.Domain.Orders
     /// </summary>
     public partial class ReturnRequest : BaseEntity
     {
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the order product variant identifier
         /// </summary>

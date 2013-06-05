@@ -449,7 +449,7 @@ namespace SmartStore.Admin.Controllers
                     opvModel.RecurringInfo = string.Format(_localizationService.GetResource("Admin.Orders.Products.RecurringPeriod"), opv.ProductVariant.RecurringCycleLength, opv.ProductVariant.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
 
                 //return requests
-                opvModel.ReturnRequestIds = _orderService.SearchReturnRequests(0, opv.Id, null)
+                opvModel.ReturnRequestIds = _orderService.SearchReturnRequests(0, 0, opv.Id, null)
                     .Select(rr=> rr.Id).ToList();
                 //gift cards
                 opvModel.PurchasedGiftCardIds = _giftCardService.GetGiftCardsByPurchasedWithOrderProductVariantId(opv.Id)

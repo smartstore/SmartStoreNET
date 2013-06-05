@@ -163,7 +163,8 @@ namespace SmartStore.Web.Controllers
             model.HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars;
             model.HideRewardPoints = !_rewardPointsSettings.Enabled;
             model.HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions;
-            model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(customer.Id, 0, null).Count == 0;
+            model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled ||
+				_orderService.SearchReturnRequests(_workContext.CurrentStore.Id, customer.Id, 0, null).Count == 0;
             model.HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab;
             model.HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab;
             return model;
@@ -1278,7 +1279,7 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerReturnRequestsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.ReturnRequests;
-            var returnRequests = _orderService.SearchReturnRequests(customer.Id, 0, null);
+			var returnRequests = _orderService.SearchReturnRequests(_workContext.CurrentStore.Id, customer.Id, 0, null);
             foreach (var returnRequest in returnRequests)
             {
                 var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);

@@ -182,6 +182,7 @@ namespace SmartStore.Web.Controllers
                 {
                     var rr = new ReturnRequest()
                     {
+						StoreId = _workContext.CurrentStore.Id,
                         OrderProductVariantId = opv.Id,
                         Quantity = quantity,
                         CustomerId = _workContext.CurrentCustomer.Id,

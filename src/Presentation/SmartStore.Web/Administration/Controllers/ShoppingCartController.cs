@@ -106,6 +106,7 @@ namespace SmartStore.Admin.Controllers
                     var sciModel = new ShoppingCartItemModel()
                     {
                         Id = sci.Id,
+						Store = sci.Store != null ? sci.Store.Name : "Unknown",
                         ProductVariantId = sci.ProductVariantId,
                         Quantity = sci.Quantity,
                         FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?
@@ -186,6 +187,7 @@ namespace SmartStore.Admin.Controllers
                     var sciModel = new ShoppingCartItemModel()
                     {
                         Id = sci.Id,
+						Store = sci.Store != null ? sci.Store.Name : "Unknown",
                         ProductVariantId = sci.ProductVariantId,
                         Quantity = sci.Quantity,
                         FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?

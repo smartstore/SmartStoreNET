@@ -176,6 +176,11 @@ set @resources='
 	<T>Bitte Shops auswählen, für die die Währung verfügbar ist.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.CurrentCarts.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  
 </Language>
 '
 

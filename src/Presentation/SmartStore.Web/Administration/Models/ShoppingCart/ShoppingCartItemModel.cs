@@ -6,6 +6,8 @@ namespace SmartStore.Admin.Models.ShoppingCart
 {
     public class ShoppingCartItemModel : EntityModelBase
     {
+		[SmartResourceDisplayName("Admin.CurrentCarts.Store")]
+		public string Store { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]
         public int ProductVariantId { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]

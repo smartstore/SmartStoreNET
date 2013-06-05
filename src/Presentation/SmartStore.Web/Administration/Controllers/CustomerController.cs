@@ -31,6 +31,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -1589,6 +1590,7 @@ namespace SmartStore.Admin.Controllers
                     var sciModel = new ShoppingCartItemModel()
                     {
                         Id = sci.Id,
+						Store = sci.Store != null ? sci.Store.Name : "Unknown",
                         ProductVariantId = sci.ProductVariantId,
                         Quantity = sci.Quantity,
                         FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?

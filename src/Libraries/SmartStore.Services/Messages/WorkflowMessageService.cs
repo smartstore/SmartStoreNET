@@ -96,9 +96,10 @@ namespace SmartStore.Services.Messages
             return email.Id;
         }
 
-        private MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName, int languageId)
+        private MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName,
+			int languageId, int storeId)
         {
-            var messageTemplate = _messageTemplateService.GetMessageTemplateByName(messageTemplateName);
+			var messageTemplate = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, storeId);
             if (messageTemplate == null)
                 return null;
 
@@ -151,14 +152,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewCustomer.Notification", languageId);
+			var messageTemplate = GetLocalizedActiveMessageTemplate("NewCustomer.Notification", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
@@ -184,14 +186,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.WelcomeMessage", languageId);
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.WelcomeMessage", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
@@ -217,14 +220,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.EmailValidationMessage", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.EmailValidationMessage", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
@@ -250,14 +254,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.PasswordRecovery", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.PasswordRecovery", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
@@ -287,14 +292,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
@@ -321,14 +327,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.CustomerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.CustomerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
@@ -359,13 +366,15 @@ namespace SmartStore.Services.Messages
                 throw new Exception("Order cannot be loaded");
 
             languageId = EnsureLanguageIsActive(languageId);
-            var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentSent.CustomerNotification", languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentSent.CustomerNotification", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
 			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
@@ -397,13 +406,15 @@ namespace SmartStore.Services.Messages
                 throw new Exception("Order cannot be loaded");
 
             languageId = EnsureLanguageIsActive(languageId);
-            var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentDelivered.CustomerNotification", languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentDelivered.CustomerNotification", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
 			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
@@ -431,14 +442,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCompleted.CustomerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCompleted.CustomerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
@@ -465,14 +477,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCancelled.CustomerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCancelled.CustomerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
@@ -501,14 +514,15 @@ namespace SmartStore.Services.Messages
             var order = orderNote.Order;
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewOrderNote", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewOrderNote", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderNoteTokens(tokens, orderNote);
 			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, orderNote.Order.Customer);
@@ -536,14 +550,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("recurringPayment");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
 			_messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
@@ -576,14 +591,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("subscription");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, subscription);
 
             //event notification
@@ -610,8 +626,9 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("subscription");
 
             languageId = EnsureLanguageIsActive(languageId);
-
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", languageId);
+			var store = _workContext.CurrentStore;
+			
+            var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -653,18 +670,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("product");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Service.EmailAFriend", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Service.EmailAFriend", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
-
-			//var customerProductTokens = GenerateTokens(customer, product);
-			//customerProductTokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
-			//customerProductTokens.Add(new Token("EmailAFriend.Email", customerEmail));
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddProductTokens(tokens, product);
 			tokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
@@ -694,14 +708,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("product");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Product.AskQuestion", languageId);
+            var messageTemplate = GetLocalizedActiveMessageTemplate("Product.AskQuestion", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
 
             // TODO: (MC) create message template
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddProductTokens(tokens, product);
             tokens.Add(new Token("ProductQuestion.Message", question, true));
@@ -735,14 +750,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Wishlist.EmailAFriend", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Wishlist.EmailAFriend", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			tokens.Add(new Token("Wishlist.PersonalMessage", personalMessage, true));
 			tokens.Add(new Token("Wishlist.Email", customerEmail));
@@ -775,14 +791,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("returnRequest");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
 			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
 
@@ -810,14 +827,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("returnRequest");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
 			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
 
@@ -852,15 +870,17 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
             }
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumTopic", languageId);
-            if (messageTemplate == null || !messageTemplate.IsActive)
-            {
-                return 0;
-            }
+			var store = _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumTopic", languageId, store.Id);
+			if (messageTemplate == null)
+			{
+				return 0;
+			}
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
 			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum);
 
@@ -893,15 +913,17 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
             }
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumPost", languageId);
-            if (messageTemplate == null || !messageTemplate.IsActive)
+			var store = _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumPost", languageId, store.Id);
+            if (messageTemplate == null)
             {
                 return 0;
             }
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic,
 				friendlyForumTopicPageIndex, forumPost.Id);
@@ -930,15 +952,17 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("privateMessage");
             }
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewPM", languageId);
-            if (messageTemplate == null || !messageTemplate.IsActive)
+			var store = _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewPM", languageId, store.Id);
+            if (messageTemplate == null)
             {
                 return 0;
             }
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddPrivateMessageTokens(tokens, privateMessage);
 
             //event notification
@@ -968,10 +992,6 @@ namespace SmartStore.Services.Messages
 
             languageId = EnsureLanguageIsActive(languageId);
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("GiftCard.Notification", languageId);
-            if (messageTemplate == null)
-                return 0;
-
 			Store store = null;
 			var order = giftCard.PurchasedWithOrderProductVariant != null ?
 				giftCard.PurchasedWithOrderProductVariant.Order :
@@ -980,6 +1000,11 @@ namespace SmartStore.Services.Messages
 				store = _storeService.GetStoreById(order.StoreId);
 			if (store == null)
 				store = _workContext.CurrentStore;
+
+			var messageTemplate = GetLocalizedActiveMessageTemplate("GiftCard.Notification", languageId, store.Id);
+			if (messageTemplate == null)
+				return 0;
+
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
@@ -1008,14 +1033,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("productReview");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Product.ProductReview", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Product.ProductReview", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddProductReviewTokens(tokens, productReview);
 
             //event notification
@@ -1041,13 +1067,14 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("productVariant");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddProductVariantTokens(tokens, productVariant);
 
             //event notification
@@ -1076,14 +1103,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			tokens.Add(new Token("VatValidationResult.Name", vatName));
 			tokens.Add(new Token("VatValidationResult.Address", vatAddress));
@@ -1111,14 +1139,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("blogComment");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Blog.BlogComment", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Blog.BlogComment", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddBlogCommentTokens(tokens, blogComment);
 
             //event notification
@@ -1144,14 +1173,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("newsComment");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("News.NewsComment", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("News.NewsComment", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddNewsCommentTokens(tokens, newsComment);
 
             //event notification
@@ -1177,14 +1207,15 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("subscription");
 
             languageId = EnsureLanguageIsActive(languageId);
+			var store = _workContext.CurrentStore;
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.BackInStock", languageId);
-            if (messageTemplate == null)
+			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.BackInStock", languageId, store.Id);
+			if (messageTemplate == null)
                 return 0;
 
 			//tokens
 			var tokens = new List<Token>();
-			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, subscription.Customer);
 			_messageTokenProvider.AddBackInStockTokens(tokens, subscription);
 

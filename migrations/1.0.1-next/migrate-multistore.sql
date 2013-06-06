@@ -257,6 +257,15 @@ set @resources='
 	<T>Bestimmten Shop durchsuchen.</T>
   </LocaleResource>
   
+ <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store.Hint">
+	<Value>Choose a store this message template is assigned to.</Value>
+	<T>Shop auswählen, zu dem diese Nachrichtenvorlage gehört.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

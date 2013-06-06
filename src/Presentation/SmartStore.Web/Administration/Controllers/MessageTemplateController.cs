@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -23,6 +24,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IMessageTokenProvider _messageTokenProvider;
         private readonly IPermissionService _permissionService;
+		private readonly IStoreService _storeService;
         private readonly EmailAccountSettings _emailAccountSettings;
         #endregion Fields
 
@@ -31,8 +33,9 @@ namespace SmartStore.Admin.Controllers
         public MessageTemplateController(IMessageTemplateService messageTemplateService, 
             IEmailAccountService emailAccountService, ILanguageService languageService, 
             ILocalizedEntityService localizedEntityService,
-            ILocalizationService localizationService, IMessageTokenProvider messageTokenProvider, 
-            IPermissionService permissionService, EmailAccountSettings emailAccountSettings)
+            ILocalizationService localizationService, IMessageTokenProvider messageTokenProvider,
+			IPermissionService permissionService, IStoreService storeService, 
+			EmailAccountSettings emailAccountSettings)
         {
             this._messageTemplateService = messageTemplateService;
             this._emailAccountService = emailAccountService;
@@ -41,6 +44,7 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._messageTokenProvider = messageTokenProvider;
             this._permissionService = permissionService;
+			this._storeService = storeService;
             this._emailAccountSettings = emailAccountSettings;
         }
 
@@ -57,6 +61,7 @@ namespace SmartStore.Admin.Controllers
 
             return sb.ToString();
         }
+
         #endregion
         
         #region Utilities
@@ -102,13 +107,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
 
-            var messageTemplates = _messageTemplateService.GetAllMessageTemplates();
-            var gridModel = new GridModel<MessageTemplateModel>
-            {
-                Data = messageTemplates.Select(x => x.ToModel()),
-                Total = messageTemplates.Count
-            };
-            return View(gridModel);
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -117,12 +116,18 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
 
-            var messageTemplates = _messageTemplateService.GetAllMessageTemplates();
-            var gridModel = new GridModel<MessageTemplateModel>
-            {
-                Data = messageTemplates.Select(x => x.ToModel()),
-                Total = messageTemplates.Count
-            };
+            var messageTemplates = _messageTemplateService.GetAllMessageTemplates(0);
+			var gridModel = new GridModel<MessageTemplateModel>
+			{
+				Data = messageTemplates.Select(x =>
+				{
+					var model = x.ToModel();
+					var store = _storeService.GetStoreById(x.StoreId);
+					model.StoreName = store != null ? store.Name : "Unknown";
+					return model;
+				}),
+				Total = messageTemplates.Count
+			};
             return new JsonResult
             {
                 Data = gridModel
@@ -145,6 +150,13 @@ namespace SmartStore.Admin.Controllers
             //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
+			//stores
+			foreach (var store in _storeService.GetAllStores())
+				model.AvailableStores.Add(store.ToModel());
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -187,6 +199,9 @@ namespace SmartStore.Admin.Controllers
             //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
+			//stores
+			foreach (var store in _storeService.GetAllStores())
+				model.AvailableStores.Add(store.ToModel());
             return View(model);
         }
         

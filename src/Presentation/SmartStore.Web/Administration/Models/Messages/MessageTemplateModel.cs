@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -15,6 +16,7 @@ namespace SmartStore.Admin.Models.Messages
         {
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
+			AvailableStores = new List<StoreModel>();
         }
 
 
@@ -43,6 +45,12 @@ namespace SmartStore.Admin.Models.Messages
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Store")]
+		public string StoreName { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Store")]
+		public int StoreId { get; set; }
+		public IList<StoreModel> AvailableStores { get; set; }
 
         public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }

@@ -7,6 +7,11 @@ namespace SmartStore.Core.Domain.Messages
     /// </summary>
     public partial class MessageTemplate : BaseEntity, ILocalizedEntity
     {
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>

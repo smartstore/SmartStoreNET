@@ -13,6 +13,7 @@ namespace SmartStore.Services.Seo
     /// </summary>
     public partial class SitemapGenerator : BaseSitemapGenerator, ISitemapGenerator
     {
+		private readonly IWorkContext _workContext;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IManufacturerService _manufacturerService;
@@ -20,10 +21,11 @@ namespace SmartStore.Services.Seo
         private readonly CommonSettings _commonSettings;
         private readonly IWebHelper _webHelper;
 
-        public SitemapGenerator(ICategoryService categoryService,
+		public SitemapGenerator(IWorkContext workContext, ICategoryService categoryService,
             IProductService productService, IManufacturerService manufacturerService,
             ITopicService topicService, CommonSettings commonSettings, IWebHelper webHelper)
         {
+			this._workContext = workContext;
             this._categoryService = categoryService;
             this._productService = productService;
             this._manufacturerService = manufacturerService;
@@ -92,7 +94,8 @@ namespace SmartStore.Services.Seo
 			var ctx = new ProductSearchContext()
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = int.MaxValue
+				PageSize = int.MaxValue,
+				StoreId = _workContext.CurrentStore.Id
 			};
 
 			var products = _productService.SearchProducts(ctx);

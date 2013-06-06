@@ -142,7 +142,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = activityLog.TotalCount
             };
-            return new JsonResult { Data = gridModel};;
+            return new JsonResult { Data = gridModel};
         }
 
         [GridAction(EnableCustomBinding = true)]

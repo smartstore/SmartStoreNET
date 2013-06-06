@@ -100,8 +100,8 @@ namespace SmartStore.Services.Catalog
         public bool ShowHidden { get; set; }
 
 		/// <summary>
-		/// Current store id
+		/// Store identifier; 0 to load all records
 		/// </summary>
-		public int CurrentStoreId { get; set; }
+		public int StoreId { get; set; }
     }
 }

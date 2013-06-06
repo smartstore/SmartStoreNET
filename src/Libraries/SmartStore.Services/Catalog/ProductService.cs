@@ -315,9 +315,7 @@ namespace SmartStore.Services.Catalog
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
 
-			//Current store
-			ctx.CurrentStoreId = _workContext.CurrentStore.Id;
-
+			//search by keyword
             bool searchLocalizedValue = false;
             if (ctx.LanguageId > 0)
             {
@@ -328,10 +326,14 @@ namespace SmartStore.Services.Catalog
                 else
                 {
                     //ensure that we have at least two published languages
-					var totalPublishedLanguages = _languageService.GetAllLanguages(storeId: ctx.CurrentStoreId).Count;
+					var totalPublishedLanguages = _languageService.GetAllLanguages(storeId: ctx.StoreId).Count;
                     searchLocalizedValue = totalPublishedLanguages >= 2;
                 }
             }
+
+			//validate "categoryIds" parameter
+			if (ctx.CategoryIds != null && ctx.CategoryIds.Contains(0))
+				ctx.CategoryIds.Remove(0);
 
             //Access control list. Allowed customer roles
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
@@ -399,6 +401,11 @@ namespace SmartStore.Services.Catalog
                 pManufacturerId.Value = ctx.ManufacturerId;
                 pManufacturerId.DbType = DbType.Int32;
 
+				var pStoreId = _dataProvider.GetParameter();
+				pStoreId.ParameterName = "StoreId";
+				pStoreId.Value = ctx.StoreId;
+				pStoreId.DbType = DbType.Int32;
+
                 var pProductTagId = _dataProvider.GetParameter();
                 pProductTagId.ParameterName = "ProductTagId";
                 pProductTagId.Value = ctx.ProductTagId;
@@ -464,11 +471,6 @@ namespace SmartStore.Services.Catalog
 				pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
 				pAllowedCustomerRoleIds.DbType = DbType.String;
 
-				var pStoreId = _dataProvider.GetParameter();
-				pStoreId.ParameterName = "StoreId";
-				pStoreId.Value = ctx.CurrentStoreId;
-				pStoreId.DbType = DbType.Int32;
-
                 var pPageIndex = _dataProvider.GetParameter();
                 pPageIndex.ParameterName = "PageIndex";
                 pPageIndex.Value = ctx.PageIndex;
@@ -505,6 +507,7 @@ namespace SmartStore.Services.Catalog
                     "ProductLoadAllPaged",
                     pCategoryIds,
                     pManufacturerId,
+					pStoreId,
                     pProductTagId,
                     pFeaturedProducts,
                     pPriceMin,
@@ -518,7 +521,6 @@ namespace SmartStore.Services.Catalog
                     pLanguageId,
                     pOrderBy,
 					pAllowedCustomerRoleIds,
-					pStoreId,
                     pPageIndex,
                     pPageSize,
                     pShowHidden,
@@ -553,10 +555,9 @@ namespace SmartStore.Services.Catalog
                 // if we use standard Distinct() method, then all fields will be compared (low performance)
                 // it'll not work in SQL Server Compact when searching products by a keyword)
                 query = from p in query
-                        group p by p.Id
-                            into pGroup
-                            orderby pGroup.Key
-                            select pGroup.FirstOrDefault();
+                        group p by p.Id into pGroup
+						orderby pGroup.Key
+						select pGroup.FirstOrDefault();
 
                 //sort products
                 if (ctx.OrderBy == ProductSortingEnum.Position && ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
@@ -689,14 +690,17 @@ namespace SmartStore.Services.Catalog
                         from acl in p_acl.DefaultIfEmpty()
                         where !p.SubjectToAcl || (acl.EntityName == "Product" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
                         select p;
+            }
 
+			if (ctx.StoreId > 0)
+			{
 				//Store mapping
 				query = from p in query
 						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
 						from sm in p_sm.DefaultIfEmpty()
-						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.CurrentStoreId == sm.StoreId)
+						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.StoreId == sm.StoreId)
 						select p;
-            }
+			}
 
             // product variants
             // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 

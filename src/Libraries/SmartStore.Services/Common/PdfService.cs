@@ -44,6 +44,7 @@ namespace SmartStore.Services.Common
         private readonly IProductService _productService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IWebHelper _webHelper;
+		private readonly IWorkContext _workContext;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -72,7 +73,7 @@ namespace SmartStore.Services.Common
             MeasureSettings measureSettings, PdfSettings pdfSettings, TaxSettings taxSettings,
             StoreInformationSettings storeInformationSettings, AddressSettings addressSettings,
             CompanyInformationSettings companyInformationSettings, BankConnectionSettings bankConnectionSettings,
-            ContactDataSettings contactDataSettings)
+			ContactDataSettings contactDataSettings, IWorkContext workContext)
         {
             this._localizationService = localizationService;
             this._orderService = orderService;
@@ -92,6 +93,7 @@ namespace SmartStore.Services.Common
             this._taxSettings = taxSettings;
             this._storeInformationSettings = storeInformationSettings;
             this._addressSettings = addressSettings;
+			this._workContext = workContext;
 
             //codehint: sm-add
             this._companyInformationSettings = companyInformationSettings;
@@ -145,7 +147,8 @@ namespace SmartStore.Services.Common
 
             var doc = new Document(pageSize, 40, 40, 40, 80);
             var writer = PdfWriter.GetInstance(doc, stream);
-            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings, _storeInformationSettings, _localizationService, lang);
+            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings,
+				_localizationService, lang, _workContext);
             doc.Open();
             
             //fonts
@@ -279,7 +282,7 @@ namespace SmartStore.Services.Common
                 cell.AddElement(paragraph);
 
                 //url
-                paragraph = new Paragraph(_storeInformationSettings.StoreUrl, font);
+				paragraph = new Paragraph(_workContext.CurrentStore.Url, font);
                 paragraph.Alignment = Element.ALIGN_RIGHT;
                 cell.AddElement(paragraph);
 
@@ -999,13 +1002,14 @@ namespace SmartStore.Services.Common
             private readonly CompanyInformationSettings _companyInformationSettings;
             private readonly BankConnectionSettings _bankConnectionSettings;
             private readonly ContactDataSettings _contactDataSettings;
-            private readonly StoreInformationSettings _storeInformationSettings;
+			private readonly IWorkContext _workContext;
             private readonly Language _lang;
 
             public OrderPdfPageEvents(IPictureService pictureService, PdfSettings pdfSettings, 
                 CompanyInformationSettings companyInformationSettings, BankConnectionSettings bankConnectionSettings,
-                ContactDataSettings contactDataSettings, StoreInformationSettings storeInformationSettings,
-                ILocalizationService localizationService, Language lang)
+                ContactDataSettings contactDataSettings, 
+                ILocalizationService localizationService, Language lang,
+				IWorkContext workContext)
             {
                 this._localizationService = localizationService;
                 this._pictureService = pictureService;
@@ -1013,7 +1017,7 @@ namespace SmartStore.Services.Common
                 this._companyInformationSettings = companyInformationSettings;
                 this._bankConnectionSettings = bankConnectionSettings;
                 this._contactDataSettings = contactDataSettings;
-                this._storeInformationSettings = storeInformationSettings;
+				this._workContext = workContext;
                 this._lang = lang;
             }
 
@@ -1087,7 +1091,7 @@ namespace SmartStore.Services.Common
                 cellInfo.AddElement(new Phrase(_companyInformationSettings.ZipCode + " " + _companyInformationSettings.City, font));
                 cellInfo.AddElement(new Phrase(_companyInformationSettings.CountryName + (!String.IsNullOrEmpty(_companyInformationSettings.StateName) ? (", " + _companyInformationSettings.StateName) : ""), font));
 
-                cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Url", _lang.Id), _storeInformationSettings.StoreUrl), font));
+                cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Url", _lang.Id), _workContext.CurrentStore.Url), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Mail", _lang.Id), _contactDataSettings.ContactEmailAddress), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Fon", _lang.Id), _contactDataSettings.CompanyTelephoneNumber), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Fax", _lang.Id), _contactDataSettings.CompanyFaxNumber), font));

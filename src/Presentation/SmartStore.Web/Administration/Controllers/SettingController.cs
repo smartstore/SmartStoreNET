@@ -726,8 +726,6 @@ namespace SmartStore.Admin.Controllers
             //store information
             var model = new GeneralCommonSettingsModel();
             model.StoreInformationSettings.LogoPictureId = _storeInformationSettings.LogoPictureId;
-            model.StoreInformationSettings.StoreName = _storeInformationSettings.StoreName;
-            model.StoreInformationSettings.StoreUrl = _storeInformationSettings.StoreUrl;
             model.StoreInformationSettings.StoreClosed = _storeInformationSettings.StoreClosed;
             model.StoreInformationSettings.StoreClosedAllowForAdmins = _storeInformationSettings.StoreClosedAllowForAdmins;
 
@@ -860,13 +858,6 @@ namespace SmartStore.Admin.Controllers
             
             //store information
             _storeInformationSettings.LogoPictureId = model.StoreInformationSettings.LogoPictureId;
-            _storeInformationSettings.StoreName = model.StoreInformationSettings.StoreName;
-            if (model.StoreInformationSettings.StoreUrl == null)
-                model.StoreInformationSettings.StoreUrl = "";
-            _storeInformationSettings.StoreUrl = model.StoreInformationSettings.StoreUrl;
-            //ensure we have "/" at the end
-            if (!_storeInformationSettings.StoreUrl.EndsWith("/"))
-                _storeInformationSettings.StoreUrl += "/";
             _storeInformationSettings.StoreClosed = model.StoreInformationSettings.StoreClosed;
             _storeInformationSettings.StoreClosedAllowForAdmins = model.StoreInformationSettings.StoreClosedAllowForAdmins;
 

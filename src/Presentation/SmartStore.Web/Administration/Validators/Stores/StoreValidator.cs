@@ -11,6 +11,9 @@ namespace SmartStore.Admin.Validators.Stores
 			RuleFor(x => x.Name)
 				.NotNull()
 				.WithMessage(localizationService.GetResource("Admin.Configuration.Stores.Fields.Name.Required"));
+			RuleFor(x => x.Url)
+				.NotNull()
+				.WithMessage(localizationService.GetResource("Admin.Configuration.Stores.Fields.Url.Required"));
 		}
 	}
 }

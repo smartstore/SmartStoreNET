@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using SmartStore.Core.Domain;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Common
@@ -9,22 +10,26 @@ namespace SmartStore.Services.Common
     /// </summary>
     public partial class KeepAliveTask : ITask
     {
-        private readonly StoreInformationSettings _storeInformationSettings;
-        public KeepAliveTask(StoreInformationSettings storeInformationSettings)
+		private readonly IStoreService _storeService;
+
+		public KeepAliveTask(IStoreService storeService)
         {
-            this._storeInformationSettings = storeInformationSettings;
+			this._storeService = storeService;
         }
         /// <summary>
         /// Executes a task
         /// </summary>
         public void Execute()
         {
-            var storeUrl = _storeInformationSettings.StoreUrl.TrimEnd('\\').EnsureEndsWith("/");
-            string url = storeUrl + "keepalive/index";
-            using (var wc = new WebClient())
-            {
-                wc.DownloadString(url); 
-            }
+			var stores = _storeService.GetAllStores();
+			foreach (var store in stores)
+			{
+				string url = store.Url + "keepalive";
+				using (var wc = new WebClient())
+				{
+					wc.DownloadString(url);
+				}
+			}
         }
     }
 }

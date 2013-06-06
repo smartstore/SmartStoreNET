@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -9,9 +10,11 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
@@ -25,6 +28,8 @@ namespace SmartStore.Services.Messages
         private readonly ITokenizer _tokenizer;
         private readonly IEmailAccountService _emailAccountService;
         private readonly IMessageTokenProvider _messageTokenProvider;
+		private readonly IStoreService _storeService;
+		private readonly IWorkContext _workContext;
 
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
@@ -37,6 +42,8 @@ namespace SmartStore.Services.Messages
             IQueuedEmailService queuedEmailService, ILanguageService languageService,
             ITokenizer tokenizer, IEmailAccountService emailAccountService,
             IMessageTokenProvider messageTokenProvider,
+			IStoreService storeService,
+			IWorkContext workContext,
             EmailAccountSettings emailAccountSettings,
             IEventPublisher eventPublisher)
         {
@@ -46,6 +53,8 @@ namespace SmartStore.Services.Messages
             this._tokenizer = tokenizer;
             this._emailAccountService = emailAccountService;
             this._messageTokenProvider = messageTokenProvider;
+			this._storeService = storeService;
+			this._workContext = workContext;
 
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
@@ -85,175 +94,6 @@ namespace SmartStore.Services.Messages
 
             _queuedEmailService.InsertQueuedEmail(email);
             return email.Id;
-        }
-
-        private IList<Token> GenerateTokens(Customer customer)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddCustomerTokens(tokens, customer);
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(Customer customer, Product product)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddCustomerTokens(tokens, customer);
-            _messageTokenProvider.AddProductTokens(tokens, product);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(Order order, int languageId)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddOrderTokens(tokens, order, languageId);
-            _messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
-
-            return tokens;
-        }
-        private IList<Token> GenerateTokens(OrderNote orderNote, int languageId)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddOrderNoteTokens(tokens, orderNote);
-            _messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, languageId);
-            _messageTokenProvider.AddCustomerTokens(tokens, orderNote.Order.Customer);
-
-            return tokens;
-        }
-        private IList<Token> GenerateTokens(Shipment shipment, int languageId)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
-            _messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
-            _messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
-
-            return tokens;
-        }
-        private IList<Token> GenerateTokens(RecurringPayment recurringPayment, int languageId)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, languageId);
-            _messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
-            _messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
-
-            return tokens;
-        }
-
-
-        private IList<Token> GenerateTokens(ReturnRequest returnRequest, OrderProductVariant opv)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
-            _messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(GiftCard giftCard)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddGiftCardTokens(tokens, giftCard);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(NewsLetterSubscription subscription)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, subscription);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(ProductReview productReview)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddProductReviewTokens(tokens, productReview);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(BlogComment blogComment)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddBlogCommentTokens(tokens, blogComment);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(NewsComment newsComment)
-        {
-            var tokens = new List<Token>();
-
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddNewsCommentTokens(tokens, newsComment);
-
-            return tokens;
-        }
-        private IList<Token> GenerateTokens(ProductVariant productVariant)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddProductVariantTokens(tokens, productVariant);
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(ForumTopic forumTopic)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
-            _messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum);
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(ForumPost forumPost, int friendlyForumTopicPageIndex,
-            int appendPostIdentifier)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddForumPostTokens(tokens, forumPost);
-            _messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic,
-                friendlyForumTopicPageIndex, appendPostIdentifier);
-            _messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum);
-
-            return tokens;
-        }
-
-        private IList<Token> GenerateTokens(PrivateMessage privateMessage)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddPrivateMessageTokens(tokens, privateMessage);
-            return tokens;
-        }
-        private IList<Token> GenerateTokens(BackInStockSubscription stockSubscription)
-        {
-            var tokens = new List<Token>();
-            _messageTokenProvider.AddStoreTokens(tokens);
-            _messageTokenProvider.AddCustomerTokens(tokens, stockSubscription.Customer);
-            _messageTokenProvider.AddBackInStockTokens(tokens, stockSubscription);
-            return tokens;
         }
 
         private MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName, int languageId)
@@ -316,16 +156,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerTokens = GenerateTokens(customer);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerTokens);
+			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -346,16 +189,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerTokens = GenerateTokens(customer);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerTokens);
+			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -376,16 +222,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerTokens = GenerateTokens(customer);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerTokens);
+			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -406,16 +255,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerTokens = GenerateTokens(customer);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerTokens);
+			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -440,16 +292,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(order, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -470,16 +326,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(order, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -503,16 +363,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var shipmentTokens = GenerateTokens(shipment, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, shipmentTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, shipmentTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -536,16 +401,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var shipmentTokens = GenerateTokens(shipment, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, shipmentTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, shipmentTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -566,16 +436,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(order, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -596,16 +470,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(order, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -628,16 +506,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(orderNote, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderNoteTokens(tokens, orderNote);
+			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, orderNote.Order.Customer);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -658,7 +541,12 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var tokens = GenerateTokens(recurringPayment, languageId);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, languageId);
+			_messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
+			_messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -693,16 +581,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(subscription);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, subscription);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = subscription.Email;
             var toName = "";
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -724,16 +615,17 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(subscription);
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = subscription.Email;
             var toName = "";
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -766,18 +658,26 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerProductTokens = GenerateTokens(customer, product);
-            customerProductTokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
-            customerProductTokens.Add(new Token("EmailAFriend.Email", customerEmail));
+			//var customerProductTokens = GenerateTokens(customer, product);
+			//customerProductTokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
+			//customerProductTokens.Add(new Token("EmailAFriend.Email", customerEmail));
+
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
+			_messageTokenProvider.AddProductTokens(tokens, product);
+			tokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
+			tokens.Add(new Token("EmailAFriend.Email", customerEmail));
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerProductTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = friendsEmail;
             var toName = "";
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerProductTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -800,7 +700,10 @@ namespace SmartStore.Services.Messages
                 return 0;
 
             // TODO: (MC) create message template
-            var tokens = GenerateTokens(customer, product);
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
+			_messageTokenProvider.AddProductTokens(tokens, product);
             tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
             tokens.Add(new Token("ProductQuestion.SenderName", senderName));
@@ -837,18 +740,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var customerTokens = GenerateTokens(customer);
-            customerTokens.Add(new Token("Wishlist.PersonalMessage", personalMessage, true));
-            customerTokens.Add(new Token("Wishlist.Email", customerEmail));
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
+			tokens.Add(new Token("Wishlist.PersonalMessage", personalMessage, true));
+			tokens.Add(new Token("Wishlist.Email", customerEmail));
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, customerTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = friendsEmail;
             var toName = "";
             return SendNotification(messageTemplate, emailAccount,
-                languageId, customerTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -874,16 +780,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(returnRequest, opv);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -905,16 +815,20 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var orderTokens = GenerateTokens(returnRequest, opv);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, orderTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = returnRequest.Customer.Email;
             var toName = returnRequest.Customer.GetFullName();
             return SendNotification(messageTemplate, emailAccount,
-                languageId, orderTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -944,7 +858,11 @@ namespace SmartStore.Services.Messages
                 return 0;
             }
 
-            var tokens = GenerateTokens(forumTopic);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
+			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -981,7 +899,13 @@ namespace SmartStore.Services.Messages
                 return 0;
             }
 
-            var tokens = GenerateTokens(forumPost, friendlyForumTopicPageIndex, forumPost.Id);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
+			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic,
+				friendlyForumTopicPageIndex, forumPost.Id);
+			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -1012,16 +936,19 @@ namespace SmartStore.Services.Messages
                 return 0;
             }
 
-            var privateMessageTokens = GenerateTokens(privateMessage);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddPrivateMessageTokens(tokens, privateMessage);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, privateMessageTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = privateMessage.ToCustomer.Email;
             var toName = privateMessage.ToCustomer.GetFullName();
 
-            return SendNotification(messageTemplate, emailAccount, languageId, privateMessageTokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
         }
 
         #endregion
@@ -1045,15 +972,26 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var giftCardTokens = GenerateTokens(giftCard);
-
+			Store store = null;
+			var order = giftCard.PurchasedWithOrderProductVariant != null ?
+				giftCard.PurchasedWithOrderProductVariant.Order :
+				null;
+			if (order != null)
+				store = _storeService.GetStoreById(order.StoreId);
+			if (store == null)
+				store = _workContext.CurrentStore;
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, store);
+			_messageTokenProvider.AddGiftCardTokens(tokens, giftCard);
+            
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, giftCardTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = giftCard.RecipientEmail;
             var toName = giftCard.RecipientName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, giftCardTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1075,16 +1013,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var productReviewTokens = GenerateTokens(productReview);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddProductReviewTokens(tokens, productReview);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, productReviewTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, productReviewTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1105,16 +1046,18 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var productVariantTokens = GenerateTokens(productVariant);
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddProductVariantTokens(tokens, productVariant);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, productVariantTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, productVariantTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1138,18 +1081,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var vatSubmittedTokens = GenerateTokens(customer);
-            vatSubmittedTokens.Add(new Token("VatValidationResult.Name", vatName));
-            vatSubmittedTokens.Add(new Token("VatValidationResult.Address", vatAddress));
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, customer);
+			tokens.Add(new Token("VatValidationResult.Name", vatName));
+			tokens.Add(new Token("VatValidationResult.Address", vatAddress));
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, vatSubmittedTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, vatSubmittedTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1170,16 +1116,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var blogCommentTokens = GenerateTokens(blogComment);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddBlogCommentTokens(tokens, blogComment);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, blogCommentTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, blogCommentTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1200,16 +1149,19 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var newsCommentTokens = GenerateTokens(newsComment);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddNewsCommentTokens(tokens, newsComment);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, newsCommentTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
             return SendNotification(messageTemplate, emailAccount,
-                languageId, newsCommentTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 
@@ -1230,17 +1182,21 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            var subscriptionTokens = GenerateTokens(subscription);
+			//tokens
+			var tokens = new List<Token>();
+			_messageTokenProvider.AddStoreTokens(tokens, _workContext.CurrentStore);
+			_messageTokenProvider.AddCustomerTokens(tokens, subscription.Customer);
+			_messageTokenProvider.AddBackInStockTokens(tokens, subscription);
 
             //event notification
-            _eventPublisher.MessageTokensAdded(messageTemplate, subscriptionTokens);
+            _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
             var customer = subscription.Customer;
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
             return SendNotification(messageTemplate, emailAccount,
-                languageId, subscriptionTokens,
+                languageId, tokens,
                 toEmail, toName);
         }
 

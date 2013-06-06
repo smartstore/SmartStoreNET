@@ -24,12 +24,11 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         private readonly ILogger _logger;
         private readonly ICategoryService _categoryService;
         private readonly GoogleAnalyticsSettings _googleAnalyticsSettings;
-        private readonly StoreInformationSettings _storeInformationSettings;
 
         public WidgetsGoogleAnalyticsController(IWorkContext workContext, ISettingService settingService,
             IOrderService orderService, ILogger logger, 
             ICategoryService categoryService, 
-            GoogleAnalyticsSettings trackingScriptsSettings, StoreInformationSettings storeInformationSettings)
+            GoogleAnalyticsSettings trackingScriptsSettings)
         {
             this._workContext = workContext;
             this._settingService = settingService;
@@ -37,7 +36,6 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
             this._logger = logger;
             this._categoryService = categoryService;
             this._googleAnalyticsSettings = trackingScriptsSettings;
-            this._storeInformationSettings = storeInformationSettings;
         }
 
         [AdminAuthorize]
@@ -183,7 +181,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                 analyticsEcommerceScript = _googleAnalyticsSettings.EcommerceScript + "\n";
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{GOOGLEID}", _googleAnalyticsSettings.GoogleId);
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{ORDERID}", order.Id.ToString());
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SITE}", _storeInformationSettings.StoreUrl.Replace("http://", "").Replace("/", ""));
+				analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SITE}", _workContext.CurrentStore.Url.Replace("http://", "").Replace("/", ""));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TAX}", order.OrderTax.ToString("0.00", usCulture));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SHIP}", order.OrderShippingInclTax.ToString("0.00", usCulture));

@@ -78,6 +78,8 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				var store = model.ToEntity();
+				//ensure we have "/" at the end
+				store.Url.EnsureEndsWith("/");
 				_storeService.InsertStore(store);
 
 				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Added"));
@@ -117,6 +119,8 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				store = model.ToEntity(store);
+				//ensure we have "/" at the end
+				store.Url.EnsureEndsWith("/");
 				_storeService.UpdateStore(store);
 
 				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Updated"));

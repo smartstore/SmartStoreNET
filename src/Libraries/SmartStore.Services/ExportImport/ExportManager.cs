@@ -872,16 +872,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Products";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} products", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Category = "Products";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} products", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();
@@ -1294,16 +1296,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Orders";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} orders", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Category = "Orders";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} orders", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();
@@ -1518,16 +1522,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Customers";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} customers", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Category = "Customers";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} customers", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();

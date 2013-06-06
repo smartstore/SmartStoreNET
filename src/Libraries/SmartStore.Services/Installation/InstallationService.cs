@@ -319,6 +319,7 @@ namespace SmartStore.Services.Installation
                 new Store()
                 {
                     Name = "Your store name",
+					Url = "http://www.yourStore.com/",
 					Hosts = "yourstore.com,www.yourstore.com",
                     DisplayOrder = 1,
                 },

@@ -7,12 +7,13 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Messages
 {
     public partial interface IMessageTokenProvider
     {
-        void AddStoreTokens(IList<Token> tokens);
+		void AddStoreTokens(IList<Token> tokens, Store store);
 
         void AddOrderTokens(IList<Token> tokens, Order order, int languageId);
 

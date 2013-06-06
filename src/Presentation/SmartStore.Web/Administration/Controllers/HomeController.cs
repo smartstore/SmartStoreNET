@@ -15,7 +15,7 @@ namespace SmartStore.Admin.Controllers
     public class HomeController : AdminControllerBase
     {
         #region Fields
-        private readonly StoreInformationSettings _storeInformationSettings;
+		private readonly IWorkContext _workContext;
         private readonly CommonSettings _commonSettings;
         private readonly ISettingService _settingService;
 
@@ -23,10 +23,10 @@ namespace SmartStore.Admin.Controllers
 
         #region Ctor
 
-        public HomeController(StoreInformationSettings storeInformationSettings,
+		public HomeController(IWorkContext workContext, 
             CommonSettings commonSettings, ISettingService settingService)
         {
-            this._storeInformationSettings = storeInformationSettings;
+			this._workContext = workContext;
             this._commonSettings = commonSettings;
             this._settingService = settingService;
         }
@@ -49,7 +49,7 @@ namespace SmartStore.Admin.Controllers
                     SmartStoreVersion.CurrentVersion,
                     Request.Url.IsLoopback,
                     _commonSettings.HideAdvertisementsOnAdminArea,
-                    _storeInformationSettings.StoreUrl);
+					_workContext.CurrentStore.Url);
 
                 //specify timeout (5 secs)
                 var request = WebRequest.Create(feedUrl);

@@ -339,7 +339,7 @@ namespace SmartStore.Web.Controllers
                     LogoUrl = logoUrl,
                     LogoWidth = logoSize.Width,
                     LogoHeight = logoSize.Height,
-                    LogoTitle = _storeInformationSettings.StoreName
+                    LogoTitle = _workContext.CurrentStore.Name
                 };
             });
             
@@ -598,7 +598,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new FooterModel()
             {
-                StoreName = _storeInformationSettings.StoreName,
+                StoreName = _workContext.CurrentStore.Name,
                 LegalInfo = string.Format(_localizationService.GetResource("Tax.LegalInfoFooter"), taxInfo, shippingInfoLink),
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = _themeSettings.AllowCustomerToSelectTheme && AvailableStoreThemes.Count > 1,          
@@ -702,7 +702,7 @@ namespace SmartStore.Web.Controllers
             {
                 string email = model.Email.Trim();
                 string fullName = model.FullName;
-                string subject = string.Format(_localizationService.GetResource("ContactUs.EmailSubject"), _storeInformationSettings.StoreName);
+				string subject = string.Format(_localizationService.GetResource("ContactUs.EmailSubject"), _workContext.CurrentStore.Name);
 
                 var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
                 if (emailAccount == null)

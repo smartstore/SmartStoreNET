@@ -108,7 +108,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public string StoreName {
 			get {
 				if (_storeName == null) {
-					_storeName = EngineContext.Current.Resolve<StoreInformationSettings>().StoreName;
+					_storeName = EngineContext.Current.Resolve<IWorkContext>().CurrentStore.Name;
 				}
 				return _storeName;
 			}

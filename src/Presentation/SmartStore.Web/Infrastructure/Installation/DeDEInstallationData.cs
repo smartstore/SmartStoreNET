@@ -2143,8 +2143,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter<StoreInformationSettings>(x =>
                 {
-                    x.StoreName = "Ihr Shop-Name";
-                    x.StoreUrl = "www.[mein-shop].de";
                     // [...]
                 })
 

@@ -118,6 +118,8 @@ namespace SmartStore.Web.Framework
 					//load the first found store
 					store = allStores.FirstOrDefault();
 				}
+				if (store == null)
+					throw new Exception("No store could be loaded");
 
 				_cachedStore = store;
 				return _cachedStore;

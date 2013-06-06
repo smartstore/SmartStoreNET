@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
@@ -571,9 +572,9 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
             
-            if (!String.IsNullOrEmpty(_storeSettings.StoreUrl)) 
+            if (!String.IsNullOrEmpty(_workContext.CurrentStore.Url)) 
             {
-                sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _storeSettings.StoreUrl));
+				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _workContext.CurrentStore.Url));
             }
             if (!String.IsNullOrEmpty(_contactDataSettings.CompanyEmailAddress)) 
             {
@@ -634,10 +635,10 @@ namespace SmartStore.Services.Messages
 
         #region Methods
 
-        public virtual void AddStoreTokens(IList<Token> tokens)
+		public virtual void AddStoreTokens(IList<Token> tokens, Store store)
         {
-            tokens.Add(new Token("Store.Name", _storeSettings.StoreName));
-            tokens.Add(new Token("Store.URL", _storeSettings.StoreUrl, true));
+			tokens.Add(new Token("Store.Name", store.Name));
+			tokens.Add(new Token("Store.URL", store.Url, true));
             var defaultEmailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
             if (defaultEmailAccount == null)
                 defaultEmailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();

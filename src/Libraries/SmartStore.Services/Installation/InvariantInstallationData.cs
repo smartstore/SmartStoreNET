@@ -4398,8 +4398,6 @@ namespace SmartStore.Services.Installation
                 new StoreInformationSettings()
                 {
                     LogoPictureId = imgCompanyLogo.Id,
-                    StoreName = "Your store name",
-                    StoreUrl = "http://www.yourStore.com/",
                     StoreClosed = false,
                     StoreClosedAllowForAdmins = true,
                     

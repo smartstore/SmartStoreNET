@@ -55,14 +55,6 @@ namespace SmartStore.Admin.Models.Settings
             [UIHint("Picture")]
             public int LogoPictureId { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreName")]
-            [AllowHtml]
-            public string StoreName { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreUrl")]
-            [AllowHtml]
-            public string StoreUrl { get; set; }
-
             // codehint: sm-delete
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosed")]

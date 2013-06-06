@@ -248,6 +248,15 @@ set @resources='
 	<T>Bitte eine Shop-URL angeben.</T>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Catalog.Products.List.SearchStore">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Products.List.SearchStore.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Bestimmten Shop durchsuchen.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

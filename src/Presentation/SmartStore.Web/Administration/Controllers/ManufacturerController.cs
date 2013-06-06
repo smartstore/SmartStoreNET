@@ -515,9 +515,7 @@ namespace SmartStore.Admin.Controllers
 
             // codehint: sm-edit
             var ctx = new ProductSearchContext();
-
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.FilteredSpecs = new List<int>();
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = _adminAreaSettings.GridPageSize;
             ctx.ShowHidden = true;

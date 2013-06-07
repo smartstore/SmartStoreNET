@@ -609,7 +609,12 @@ namespace SmartStore.Web.Controllers
             var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };
             foreach (var t in topics)
             {
-                var topic = _topicService.GetTopicBySystemName(t);
+				//load by store
+				var topic = _topicService.GetTopicBySystemName(t, _workContext.CurrentStore.Id);
+				if (topic == null)
+					//not found. let's find topic assigned to all stores
+					topic = _topicService.GetTopicBySystemName(t, 0);
+
                 if (topic != null)
                 {
                     model.Topics.Add(t, topic.Title);
@@ -794,7 +799,9 @@ namespace SmartStore.Web.Controllers
             }
             if (_commonSettings.SitemapIncludeTopics)
             {
-                var topics = _topicService.GetAllTopics().ToList().FindAll(t => t.IncludeInSitemap);
+				var topics = _topicService.GetAllTopics(_workContext.CurrentStore.Id)
+					 .ToList()
+					 .FindAll(t => t.IncludeInSitemap);
                 model.Topics = topics.Select(topic => new TopicModel()
                 {
                     Id = topic.Id,

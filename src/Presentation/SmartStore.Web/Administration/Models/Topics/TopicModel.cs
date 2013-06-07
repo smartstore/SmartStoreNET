@@ -14,7 +14,14 @@ namespace SmartStore.Admin.Models.Topics
         public TopicModel()
         {
             Locales = new List<TopicLocalizedModel>();
+			AvailableStores = new List<SelectListItem>();
         }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Store")]
+		public string StoreName { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Store")]
+		public int StoreId { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]

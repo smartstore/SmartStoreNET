@@ -508,7 +508,11 @@ namespace SmartStore.Services.Messages
             var sb = new StringBuilder();
             sb.AppendLine("<table border=\"0\" style=\"width:100%;\" class=\"legal-infos\">");
 
-            var topic = _topicService.GetTopicBySystemName(systemName);
+			//load by store
+			var topic = _topicService.GetTopicBySystemName(systemName, _workContext.CurrentStore.Id);
+			if (topic == null)
+				//not found. let's find topic assigned to all stores
+				topic = _topicService.GetTopicBySystemName(systemName, 0);
 
             sb.AppendLine("<tr><td style=\"color:#aaa\">");
             sb.AppendLine(topic.Title);

@@ -4,6 +4,7 @@ using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
@@ -20,6 +21,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
+		private readonly IStoreService _storeService;
 
         #endregion Fields
 
@@ -27,13 +29,14 @@ namespace SmartStore.Admin.Controllers
 
         public TopicController(ITopicService topicService, ILanguageService languageService,
             ILocalizedEntityService localizedEntityService, ILocalizationService localizationService,
-            IPermissionService permissionService)
+			IPermissionService permissionService, IStoreService storeService)
         {
             this._topicService = topicService;
             this._languageService = languageService;
             this._localizedEntityService = localizedEntityService;
             this._localizationService = localizationService;
             this._permissionService = permissionService;
+			this._storeService = storeService;
         }
 
         #endregion
@@ -86,31 +89,39 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
-            var topics = _topicService.GetAllTopics();
-            var gridModel = new GridModel<TopicModel>
-            {
-                Data = topics.Select(x => x.ToModel()),
-                Total = topics.Count
-            };
-            return View(gridModel);
+			var model = new TopicListModel();
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
+			return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
+		public ActionResult List(GridCommand command, TopicListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
-            var topics = _topicService.GetAllTopics();
+            var topics = _topicService.GetAllTopics(model.SearchStoreId);
             var gridModel = new GridModel<TopicModel>
             {
-                Data = topics.Select(x => x.ToModel()),
+                Data = topics.Select(x =>
+                {
+                    var tModel = x.ToModel();
+                    var store = _storeService.GetStoreById(x.StoreId);
+                    tModel.StoreName = x.StoreId == 0 ?
+                        _localizationService.GetResource("Admin.ContentManagement.Topics.Fields.Store.AllStores")
+                        : (store != null ? store.Name : "Unknown");
+                    return tModel;
+                }),
                 Total = topics.Count
             };
             return new JsonResult
-            {
-                Data = gridModel
-            };
+			{
+				Data = gridModel
+			};
         }
 
         #endregion
@@ -123,6 +134,10 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new TopicModel();
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.Topics.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             //locales
             AddLocales(_languageService, model.Locales);
             return View(model);
@@ -151,6 +166,12 @@ namespace SmartStore.Admin.Controllers
             }
 
             //If we got this far, something failed, redisplay form
+
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.Topics.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
             return View(model);
         }
 
@@ -166,6 +187,10 @@ namespace SmartStore.Admin.Controllers
 
             var model = topic.ToModel();
             model.Url = Url.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.Topics.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -210,6 +235,13 @@ namespace SmartStore.Admin.Controllers
 
 
             //If we got this far, something failed, redisplay form
+
+
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.Topics.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
             return View(model);
         }
 

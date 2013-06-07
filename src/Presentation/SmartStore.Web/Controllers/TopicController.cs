@@ -40,7 +40,12 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected TopicModel PrepareTopicModel(string systemName)
         {
-            var topic = _topicService.GetTopicBySystemName(systemName);
+			//load by store
+			var topic = _topicService.GetTopicBySystemName(systemName, _workContext.CurrentStore.Id);
+			if (topic == null)
+				//not found. let's find topic assigned to all stores
+				topic = _topicService.GetTopicBySystemName(systemName, 0);
+
             if (topic == null)
                 return null;
 
@@ -65,7 +70,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult TopicDetails(string systemName)
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
@@ -75,7 +80,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult TopicDetailsPopup(string systemName)
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
@@ -89,7 +94,7 @@ namespace SmartStore.Web.Controllers
         //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult TopicBlock(string systemName)
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)

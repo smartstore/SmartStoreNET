@@ -11,20 +11,22 @@ namespace SmartStore.Data.Tests.Topics
         public void Can_save_and_load_topic()
         {
             var topic = new Topic
-                               {
-                                   SystemName = "SystemName 1",
-                                   IncludeInSitemap = true,
-                                   IsPasswordProtected = true,
-                                   Password = "password",
-                                   Title = "Title 1",
-                                   Body = "Body 1",
-                                   MetaKeywords = "Meta keywords",
-                                   MetaDescription = "Meta description",
-                                   MetaTitle = "Meta title",
-                               };
+            {
+				StoreId = 1,
+                SystemName = "SystemName 1",
+                IncludeInSitemap = true,
+                IsPasswordProtected = true,
+                Password = "password",
+                Title = "Title 1",
+                Body = "Body 1",
+                MetaKeywords = "Meta keywords",
+                MetaDescription = "Meta description",
+                MetaTitle = "Meta title",
+            };
 
             var fromDb = SaveAndLoadEntity(topic);
             fromDb.ShouldNotBeNull();
+			fromDb.StoreId.ShouldEqual(1);
             fromDb.SystemName.ShouldEqual("SystemName 1");
             fromDb.IncludeInSitemap.ShouldEqual(true);
             fromDb.IsPasswordProtected.ShouldEqual(true);

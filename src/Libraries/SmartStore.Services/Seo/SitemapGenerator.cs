@@ -111,7 +111,7 @@ namespace SmartStore.Services.Seo
 
         private void WriteTopics()
         {
-            var topics = _topicService.GetAllTopics().ToList().FindAll(t => t.IncludeInSitemap);
+			var topics = _topicService.GetAllTopics(_workContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
             foreach (var topic in topics)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)

@@ -254,7 +254,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Products.List.SearchStore.Hint">
 	<Value>Search by a specific store.</Value>
-	<T>Bestimmten Shop durchsuchen.</T>
+	<T>Nach bestimmten Shop suchen.</T>
   </LocaleResource>
   
  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store">
@@ -287,7 +287,28 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore.Hint">
 	<Value>Search by a specific store.</Value>
-	<T>Anhand eines bestimmten Shops suchen.</T>
+	<T>Nach bestimmten Shop suchen.</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Store.Hint">
+	<Value>Choose a store this topic is assigned to.</Value>
+	<T>Shop auswählen, zu dem diese Seite gehört.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Store.AllStores">
+	<Value>All stores</Value>
+	<T>Alle Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.List.SearchStore">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.List.SearchStore.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Nach bestimmten Shop suchen.</T>
   </LocaleResource>
   
 </Language>
@@ -1087,11 +1108,12 @@ BEGIN
 	ALTER TABLE [Language] ADD [LimitedToStores] bit NULL
 END
 GO
+
 UPDATE [Language] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
 GO
+
 ALTER TABLE [Language] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
-
 
 --Store mapping for currencies
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Currency]') and NAME='LimitedToStores')
@@ -1099,8 +1121,10 @@ BEGIN
 	ALTER TABLE [Currency] ADD [LimitedToStores] bit NULL
 END
 GO
+
 UPDATE [Currency] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
 GO
+
 ALTER TABLE [Currency] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
@@ -1246,4 +1270,18 @@ UPDATE [MessageTemplate] SET [StoreId] = 0 WHERE [StoreId] IS NULL
 GO
 
 ALTER TABLE [MessageTemplate] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+--Store mapping to topics
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Topic]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [Topic]
+	ADD [StoreId] bit NULL
+END
+GO
+
+UPDATE [Topic] SET [StoreId] = 0 WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [Topic] ALTER COLUMN [StoreId] int NOT NULL
 GO

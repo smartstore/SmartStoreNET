@@ -3,16 +3,16 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
-namespace SmartStore.Admin.Models.Messages
+namespace SmartStore.Admin.Models.Topics
 {
-	public class MessageTemplateListModel : ModelBase
+	public class TopicListModel : ModelBase
 	{
-		public MessageTemplateListModel()
+		public TopicListModel()
 		{
 			AvailableStores = new List<SelectListItem>();
 		}
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.List.SearchStore")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.List.SearchStore")]
 		public int SearchStoreId { get; set; }
 		public IList<SelectListItem> AvailableStores { get; set; }
 	}

@@ -8,6 +8,12 @@ namespace SmartStore.Services.Messages
     /// </summary>
     public partial interface IMessageTemplateService
     {
+		/// <summary>
+		/// Delete a message template
+		/// </summary>
+		/// <param name="messageTemplate">Message template</param>
+		void DeleteMessageTemplate(MessageTemplate messageTemplate);
+
         /// <summary>
         /// Inserts a message template
         /// </summary>

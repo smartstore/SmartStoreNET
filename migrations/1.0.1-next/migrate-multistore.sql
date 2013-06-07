@@ -266,6 +266,11 @@ set @resources='
 	<T>Shop auswählen, zu dem diese Nachrichtenvorlage gehört.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Deleted">
+	<Value>The message template has been deleted successfully.</Value>
+	<T>Die Nachrichtenvorlage wurde erfolgreich gelöscht.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

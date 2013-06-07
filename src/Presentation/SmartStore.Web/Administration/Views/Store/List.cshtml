@@ -19,7 +19,9 @@
                     .Name("stores-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Name);
+						columns.Bound(x => x.Name)
+							.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>");
                         columns.Bound(x => x.DisplayOrder)
                             .Centered()
                             .Width(100);

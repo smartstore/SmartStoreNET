@@ -310,7 +310,24 @@ set @resources='
 	<Value>Search by a specific store.</Value>
 	<T>Nach bestimmten Shop suchen.</T>
   </LocaleResource>
-  
+
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Store.Hint">
+	<Value>Choose a store this news is assigned to.</Value>
+	<T>Shop auswählen, zu dem diese News gehört.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.List.SearchStore">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.List.SearchStore.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Nach bestimmten Shop suchen.</T>
+  </LocaleResource>
+    
 </Language>
 '
 
@@ -1284,4 +1301,20 @@ UPDATE [Topic] SET [StoreId] = 0 WHERE [StoreId] IS NULL
 GO
 
 ALTER TABLE [Topic] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+--Store mapping to news
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[News]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [News]
+	ADD [StoreId] bit NULL
+END
+GO
+
+DECLARE @DEFAULT_STORE_ID int
+SELECT @DEFAULT_STORE_ID = [Id] FROM [Store] ORDER BY [DisplayOrder]
+UPDATE [News] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [News] ALTER COLUMN [StoreId] int NOT NULL
 GO

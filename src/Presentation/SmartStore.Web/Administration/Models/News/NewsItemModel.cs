@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -11,12 +12,23 @@ namespace SmartStore.Admin.Models.News
     [Validator(typeof(NewsItemValidator))]
     public class NewsItemModel : EntityModelBase
     {
+		public NewsItemModel()
+		{
+			this.AvailableStores = new List<SelectListItem>();
+		}
+
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         [AllowHtml]
         public string LanguageName { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Store")]
+		public string StoreName { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Store")]
+		public int StoreId { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]

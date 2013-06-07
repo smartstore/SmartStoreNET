@@ -39,7 +39,10 @@
 				.Name("templates-grid")
 				.Columns(columns =>
 				{
-					columns.Bound(x => x.Name);
+					columns.Bound(x => x.Name)
+						.Width(350)
+						.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+						.ClientTemplate("<a href=\"Edit/<#= Id #>'><#Name#></a>");
 					columns.Bound(x => x.StoreName);
 					columns.Bound(x => x.Subject);
 					columns.Bound(x => x.IsActive)

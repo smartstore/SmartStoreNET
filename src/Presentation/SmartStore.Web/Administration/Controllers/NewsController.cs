@@ -11,6 +11,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.News;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
@@ -30,6 +31,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IStoreService _storeService;
         
 		#endregion
 
@@ -38,7 +40,8 @@ namespace SmartStore.Admin.Controllers
         public NewsController(INewsService newsService, ILanguageService languageService,
             IDateTimeHelper dateTimeHelper, ICustomerContentService customerContentService,
             ILocalizationService localizationService, IPermissionService permissionService,
-            IUrlRecordService urlRecordService, AdminAreaSettings adminAreaSettings)
+            IUrlRecordService urlRecordService, IStoreService storeService,
+			AdminAreaSettings adminAreaSettings)
         {
             this._newsService = newsService;
             this._languageService = languageService;
@@ -47,6 +50,7 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._permissionService = permissionService;
             this._urlRecordService = urlRecordService;
+			this._storeService = storeService;
             this._adminAreaSettings = adminAreaSettings;
 		}
 
@@ -64,33 +68,22 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
                 return AccessDeniedView();
 
-            var news = _newsService.GetAllNews(0, 0, _adminAreaSettings.GridPageSize, true);
-            var gridModel = new GridModel<NewsItemModel>
-            {
-                Data = news.Select(x =>
-                {
-                    var m = x.ToModel();
-                    if (x.StartDateUtc.HasValue)
-                        m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
-                    if (x.EndDateUtc.HasValue)
-                        m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    m.LanguageName = x.Language.Name;
-                    m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
-                    return m;
-                }),
-                Total = news.TotalCount
-            };
-            return View(gridModel);
+			var model = new NewsItemListModel();
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
+			return View(model);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
-                return AccessDeniedView();
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult List(GridCommand command, NewsItemListModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+				return AccessDeniedView();
 
-            var news = _newsService.GetAllNews(0, command.Page - 1, command.PageSize, true);
+			var news = _newsService.GetAllNews(0, model.SearchStoreId, command.Page - 1, command.PageSize, true);
             var gridModel = new GridModel<NewsItemModel>
             {
                 Data = news.Select(x =>
@@ -103,6 +96,8 @@ namespace SmartStore.Admin.Controllers
                     m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
                     m.LanguageName = x.Language.Name;
                     m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
+					var store = _storeService.GetStoreById(x.StoreId);
+					m.StoreName = store != null ? store.Name : "Unknown";
                     return m;
                 }),
                 Total = news.TotalCount
@@ -120,6 +115,9 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = new NewsItemModel();
+			//stores
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             //default values
             model.Published = true;
             model.AllowComments = true;
@@ -150,6 +148,9 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+			//stores
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             return View(model);
         }
 
@@ -167,6 +168,9 @@ namespace SmartStore.Admin.Controllers
             var model = newsItem.ToModel();
             model.StartDate = newsItem.StartDateUtc;
             model.EndDate = newsItem.EndDateUtc;
+			//stores
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             return View(model);
         }
 
@@ -198,6 +202,9 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+			//stores
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             return View(model);
         }
 

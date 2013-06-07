@@ -12,6 +12,11 @@ namespace SmartStore.Core.Domain.News
     {
         private ICollection<NewsComment> _newsComments;
 
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the language identifier
         /// </summary>

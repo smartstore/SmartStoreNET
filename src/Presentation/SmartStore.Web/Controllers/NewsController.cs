@@ -145,10 +145,10 @@ namespace SmartStore.Web.Controllers
             if (!_newsSettings.Enabled || !_newsSettings.ShowNewsOnMainPage)
                 return Content("");
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_NEWSMODEL_KEY, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_NEWSMODEL_KEY, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-                var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, 0, _newsSettings.MainPageNewsCount);
+				var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id, 0, _newsSettings.MainPageNewsCount);
                 return new HomePageNewsItemsModel()
                 {
                     WorkingLanguageId = _workContext.WorkingLanguage.Id,
@@ -185,7 +185,7 @@ namespace SmartStore.Web.Controllers
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
-            var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id,
+			var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id,
                 command.PageNumber - 1, command.PageSize);
             model.PagingFilteringContext.LoadPagedList(newsItems);
 
@@ -214,7 +214,7 @@ namespace SmartStore.Web.Controllers
                 return new RssActionResult() { Feed = feed };
 
             var items = new List<SyndicationItem>();
-            var newsItems = _newsService.GetAllNews(languageId, 0, int.MaxValue);
+			var newsItems = _newsService.GetAllNews(languageId, _workContext.CurrentStore.Id, 0, int.MaxValue);
             foreach (var n in newsItems)
             {
                 string newsUrl = Url.RouteUrl("NewsItem", new { SeName = n.GetSeName(n.LanguageId, ensureTwoPublishedLanguages: false) }, "http");

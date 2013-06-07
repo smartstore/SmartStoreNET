@@ -123,7 +123,9 @@ namespace SmartStore.Admin.Controllers
 				{
 					var model = x.ToModel();
 					var store = _storeService.GetStoreById(x.StoreId);
-					model.StoreName = store != null ? store.Name : "Unknown";
+					model.StoreName = x.StoreId == 0 ?
+						_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Fields.Store.AllStores")
+						: (store != null ? store.Name : "Unknown");
 					return model;
 				}),
 				Total = messageTemplates.Count
@@ -151,12 +153,9 @@ namespace SmartStore.Admin.Controllers
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
 			//stores
-			foreach (var store in _storeService.GetAllStores())
-				model.AvailableStores.Add(store.ToModel());
-			model.AvailableStores = _storeService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -200,11 +199,11 @@ namespace SmartStore.Admin.Controllers
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
 			//stores
-			foreach (var store in _storeService.GetAllStores())
-				model.AvailableStores.Add(store.ToModel());
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Fields.Store.AllStores"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
             return View(model);
         }
-
 
 		[HttpPost]
 		public ActionResult Delete(int id)
@@ -218,7 +217,6 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			_messageTemplateService.DeleteMessageTemplate(messageTemplate);
-
 
 			SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
 			return RedirectToAction("List");

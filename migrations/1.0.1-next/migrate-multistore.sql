@@ -271,6 +271,11 @@ set @resources='
 	<T>Die Nachrichtenvorlage wurde erfolgreich gelöscht.</T>
   </LocaleResource>
   
+ <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store.AllStores">
+	<Value>All stores</Value>
+	<T>Alle Shops</T>
+  </LocaleResource>
+  
 </Language>
 '
 
@@ -1213,4 +1218,18 @@ UPDATE [ReturnRequest] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] IS NULL
 GO
 
 ALTER TABLE [ReturnRequest] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+--Store mapping to message templates
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[MessageTemplate]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [MessageTemplate]
+	ADD [StoreId] bit NULL
+END
+GO
+
+UPDATE [MessageTemplate] SET [StoreId] = 0 WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [MessageTemplate] ALTER COLUMN [StoreId] int NOT NULL
 GO

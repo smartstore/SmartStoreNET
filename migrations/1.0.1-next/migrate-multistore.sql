@@ -281,6 +281,15 @@ set @resources='
 	<T>Vorlage kopieren</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Anhand eines bestimmten Shops suchen.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

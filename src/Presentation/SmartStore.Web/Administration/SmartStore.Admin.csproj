@@ -211,6 +211,7 @@
     <Compile Include="Models\Common\SystemInfoModel.cs" />
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\Plugins\PluginListModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />

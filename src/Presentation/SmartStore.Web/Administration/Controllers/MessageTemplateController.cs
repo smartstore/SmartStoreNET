@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
@@ -171,6 +172,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[FormValueRequired("save", "save-continue")]
         public ActionResult Edit(MessageTemplateModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
@@ -220,6 +222,31 @@ namespace SmartStore.Admin.Controllers
 
 			SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
 			return RedirectToAction("List");
+		}
+
+		[HttpPost, ActionName("Edit")]
+		[FormValueRequired("message-template-copy")]
+		public ActionResult CopyTemplate(MessageTemplateModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
+				return AccessDeniedView();
+
+			var messageTemplate = _messageTemplateService.GetMessageTemplateById(model.Id);
+			if (messageTemplate == null)
+				//No message template found with the specified id
+				return RedirectToAction("List");
+
+			try
+			{
+				var newMessageTemplate = _messageTemplateService.CopyMessageTemplate(messageTemplate);
+				SuccessNotification("The message template has been copied successfully");
+				return RedirectToAction("Edit", new { id = newMessageTemplate.Id });
+			}
+			catch (Exception exc)
+			{
+				ErrorNotification(exc.Message);
+				return RedirectToAction("Edit", new { id = model.Id });
+			}
 		}
 
         #endregion

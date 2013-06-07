@@ -275,6 +275,11 @@ set @resources='
 	<Value>All stores</Value>
 	<T>Alle Shops</T>
   </LocaleResource>
+
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Copy">
+	<Value>Copy template</Value>
+	<T>Vorlage kopieren</T>
+  </LocaleResource>
   
 </Language>
 '

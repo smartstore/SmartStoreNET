@@ -149,20 +149,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
             [AllowHtml]
             public string ReCaptchaPrivateKey { get; set; }
-
-
-
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseSSL")]
-            public bool UseSsl { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SharedSSLUrl")]
-            [AllowHtml]
-            public string SharedSslUrl { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.NonSharedSSLUrl")]
-            [AllowHtml]
-            public string NonSharedSslUrl { get; set; }
         }
 
         public partial class PdfSettingsModel

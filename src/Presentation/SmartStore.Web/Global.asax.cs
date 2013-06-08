@@ -109,11 +109,8 @@ namespace SmartStore.Web
             //MiniProfilerEF.Initialize_EF42();
 
             //we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
-            var mobileDisplayMode = DisplayModeProvider
-                .Instance
-                .Modes
-                .Where(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId)
-                .FirstOrDefault();
+			var mobileDisplayMode = DisplayModeProvider.Instance.Modes
+				.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
 

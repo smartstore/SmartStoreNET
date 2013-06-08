@@ -41,11 +41,6 @@ namespace SmartStore.Core
         bool IsCurrentConnectionSecured();
         
         /// <summary>
-        /// Gets the security mode as configured statically in <c>web.config</c>
-        /// </summary>
-        HttpSecurityMode SecurityMode { get; }
-
-        /// <summary>
         /// Gets server variable by name
         /// </summary>
         /// <param name="name">Name</param>

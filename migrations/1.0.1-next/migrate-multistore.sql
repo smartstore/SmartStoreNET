@@ -311,13 +311,29 @@ set @resources='
 	<T>Nach bestimmten Shop suchen.</T>
   </LocaleResource>
 
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Store">
-	<Value>Store</Value>
-	<T>Shop</T>
+ <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Info">
+	<Value>Info</Value>
+	<T>Info</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Store.Hint">
-	<Value>Choose a store this news is assigned to.</Value>
-	<T>Shop auswählen, zu dem diese News gehört.</T>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the news is available only at certain stores.</Value>
+	<T>Legt fest, ob die News nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the news will be shown.</Value>
+	<T>Bitte Shops auswählen, für die die News angezeigt werden soll.</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.News.NewsItems.List.SearchStore">
 	<Value>Store</Value>
@@ -1361,17 +1377,15 @@ ALTER TABLE [Topic] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping to news
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[News]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[News]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [News]
-	ADD [StoreId] bit NULL
+	ADD [LimitedToStores] bit NULL
 END
 GO
 
-DECLARE @DEFAULT_STORE_ID int
-SELECT @DEFAULT_STORE_ID = [Id] FROM [Store] ORDER BY [DisplayOrder]
-UPDATE [News] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] IS NULL
+UPDATE [News] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
 GO
 
-ALTER TABLE [News] ALTER COLUMN [StoreId] int NOT NULL
+ALTER TABLE [News] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO

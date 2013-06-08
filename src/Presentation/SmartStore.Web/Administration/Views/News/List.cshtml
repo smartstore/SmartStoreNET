@@ -47,7 +47,6 @@
                             .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Title#></a>");
                         columns.Bound(x => x.LanguageName);
-						columns.Bound(x => x.StoreName);
                         columns.Bound(x => x.Comments)
                             .Centered()
                             .Template(

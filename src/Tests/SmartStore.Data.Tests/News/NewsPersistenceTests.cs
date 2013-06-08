@@ -16,7 +16,6 @@ namespace SmartStore.Data.Tests.News
         {
             var news = new NewsItem
             {
-				StoreId = 1,
                 Title = "Title 1",
                 Short = "Short 1",
                 Full = "Full 1",
@@ -26,6 +25,7 @@ namespace SmartStore.Data.Tests.News
                 AllowComments = true,
                 ApprovedCommentCount = 1,
                 NotApprovedCommentCount = 2,
+				LimitedToStores = true,
                 CreatedOnUtc = new DateTime(2010, 01, 03),
                 MetaTitle = "MetaTitle 1",
                 MetaDescription = "MetaDescription 1",
@@ -39,7 +39,6 @@ namespace SmartStore.Data.Tests.News
 
             var fromDb = SaveAndLoadEntity(news);
             fromDb.ShouldNotBeNull();
-			fromDb.StoreId.ShouldEqual(1);
             fromDb.Title.ShouldEqual("Title 1");
             fromDb.Short.ShouldEqual("Short 1");
             fromDb.Full.ShouldEqual("Full 1");
@@ -49,6 +48,7 @@ namespace SmartStore.Data.Tests.News
             fromDb.AllowComments.ShouldEqual(true);
             fromDb.ApprovedCommentCount.ShouldEqual(1);
             fromDb.NotApprovedCommentCount.ShouldEqual(2);
+			fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 03));
             fromDb.MetaTitle.ShouldEqual("MetaTitle 1");
             fromDb.MetaDescription.ShouldEqual("MetaDescription 1");

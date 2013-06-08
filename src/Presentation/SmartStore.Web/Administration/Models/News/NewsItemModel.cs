@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.News;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -14,7 +15,7 @@ namespace SmartStore.Admin.Models.News
     {
 		public NewsItemModel()
 		{
-			this.AvailableStores = new List<SelectListItem>();
+			this.AvailableStores = new List<StoreModel>();
 		}
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
@@ -24,11 +25,12 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string LanguageName { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Store")]
-		public string StoreName { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Store")]
-		public int StoreId { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
+		//Store mapping
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Events;
 
@@ -15,15 +16,19 @@ namespace SmartStore.Services.Topics
         #region Fields
 
         private readonly IRepository<Topic> _topicRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
         #region Ctor
 
-        public TopicService(IRepository<Topic> topicRepository, IEventPublisher eventPublisher)
+        public TopicService(IRepository<Topic> topicRepository,
+			IRepository<StoreMapping> storeMappingRepository,
+			IEventPublisher eventPublisher)
         {
             _topicRepository = topicRepository;
+			_storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
         }
 
@@ -70,11 +75,28 @@ namespace SmartStore.Services.Topics
             if (String.IsNullOrEmpty(systemName))
                 return null;
 
-            var query = from t in _topicRepository.Table
-						where t.SystemName == systemName && t.StoreId == storeId
-                        select t;
+			var query = _topicRepository.Table;
+			query = query.Where(t => t.SystemName == systemName);
+			query = query.OrderBy(t => t.Id);
 
-            return query.FirstOrDefault();
+			//Store mapping
+			if (storeId > 0)
+			{
+				query = from t in query
+						join sm in _storeMappingRepository.Table on t.Id equals sm.EntityId into t_sm
+						from sm in t_sm.DefaultIfEmpty()
+						where !t.LimitedToStores || (sm.EntityName == "Topic" && storeId == sm.StoreId)
+						select t;
+
+				//only distinct items (group by ID)
+				query = from t in query
+						group t by t.Id into tGroup
+						orderby tGroup.Key
+						select tGroup.FirstOrDefault();
+				query = query.OrderBy(t => t.Id);
+			}
+
+			return query.FirstOrDefault();
         }
 
         /// <summary>
@@ -85,34 +107,26 @@ namespace SmartStore.Services.Topics
 		public virtual IList<Topic> GetAllTopics(int storeId)
         {
 			var query = _topicRepository.Table;
-			query = query.OrderBy(t => t.SystemName).ThenBy(t => t.StoreId);
-			var allTopics = query.ToList();
-			if (storeId == 0)
-				return allTopics;
+			query = query.OrderBy(t => t.SystemName);
 
-			//filter topics
-			var topics = new List<Topic>();
-			var allSystemNames = allTopics
-				.Select(x => x.SystemName)
-				.Distinct(StringComparer.InvariantCultureIgnoreCase)
-				.ToList();
-			foreach (var systemName in allSystemNames)
+			//Store mapping
+			if (storeId > 0)
 			{
-				//find a topic assigned to the passed storeId
-				var topic = allTopics
-					.FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase) &&
-						x.StoreId == storeId);
+				query = from t in query
+						join sm in _storeMappingRepository.Table on t.Id equals sm.EntityId into t_sm
+						from sm in t_sm.DefaultIfEmpty()
+						where !t.LimitedToStores || (sm.EntityName == "Topic" && storeId == sm.StoreId)
+						select t;
 
-				//not found. let's find a topic assigned to all stores in this case
-				if (topic == null)
-					topic = allTopics
-						.FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase) &&
-						x.StoreId == 0);
-
-				if (topic != null)
-					topics.Add(topic);
+				//only distinct items (group by ID)
+				query = from t in query
+						group t by t.Id	into tGroup
+						orderby tGroup.Key
+						select tGroup.FirstOrDefault();
+				query = query.OrderBy(t => t.SystemName);
 			}
-			return topics;
+
+			return query.ToList();
         }
 
         /// <summary>

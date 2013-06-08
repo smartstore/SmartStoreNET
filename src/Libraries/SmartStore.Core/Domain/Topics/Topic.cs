@@ -1,17 +1,13 @@
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Topics
 {
     /// <summary>
     /// Represents a topic
     /// </summary>
-    public partial class Topic : BaseEntity, ILocalizedEntity
+	public partial class Topic : BaseEntity, ILocalizedEntity, IStoreMappingSupported
     {
-		/// <summary>
-		/// Gets or sets the store identifier
-		/// </summary>
-		public int StoreId { get; set; }
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -56,5 +52,10 @@ namespace SmartStore.Core.Domain.Topics
         /// Gets or sets the meta title
         /// </summary>
         public string MetaTitle { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
     }
 }

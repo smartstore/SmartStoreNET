@@ -257,30 +257,39 @@ set @resources='
 	<T>Nach bestimmten Shop suchen.</T>
   </LocaleResource>
   
- <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store.Hint">
-	<Value>Choose a store this message template is assigned to.</Value>
-	<T>Shop auswählen, zu dem diese Nachrichtenvorlage gehört.</T>
-  </LocaleResource>
   
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Info">
+	<Value>Info</Value>
+	<T>Info</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the message template is available only at certain stores.</Value>
+	<T>Legt fest, ob die Vorlage nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the message template will be active.</Value>
+	<T>Bitte Shops auswählen, für die die Vorlage verfügbar ist.</T>
+  </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Deleted">
 	<Value>The message template has been deleted successfully.</Value>
 	<T>Die Nachrichtenvorlage wurde erfolgreich gelöscht.</T>
   </LocaleResource>
-  
- <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Store.AllStores">
-	<Value>All stores</Value>
-	<T>Alle Shops</T>
-  </LocaleResource>
-
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Copy">
 	<Value>Copy template</Value>
 	<T>Vorlage kopieren</T>
   </LocaleResource>
-  
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore">
 	<Value>Store</Value>
 	<T>Shop</T>
@@ -1356,17 +1365,17 @@ ALTER TABLE [ReturnRequest] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping to message templates
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[MessageTemplate]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[MessageTemplate]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [MessageTemplate]
-	ADD [StoreId] bit NULL
+	ADD [LimitedToStores] bit NULL
 END
 GO
 
-UPDATE [MessageTemplate] SET [StoreId] = 0 WHERE [StoreId] IS NULL
+UPDATE [MessageTemplate] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
 GO
 
-ALTER TABLE [MessageTemplate] ALTER COLUMN [StoreId] int NOT NULL
+ALTER TABLE [MessageTemplate] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping for topics

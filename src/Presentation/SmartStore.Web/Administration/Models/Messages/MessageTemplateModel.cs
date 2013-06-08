@@ -16,7 +16,7 @@ namespace SmartStore.Admin.Models.Messages
         {
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
-			AvailableStores = new List<SelectListItem>();
+			AvailableStores = new List<StoreModel>();
         }
 
 
@@ -46,11 +46,12 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Store")]
-		public string StoreName { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Store")]
-		public int StoreId { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
+		//Store mapping
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
         public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }

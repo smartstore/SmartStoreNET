@@ -131,7 +131,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableEmailAccounts, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.StoreName, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<MessageTemplateModel, MessageTemplate>();
             //queued email

@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
@@ -26,6 +27,7 @@ namespace SmartStore.Services.Messages
         private readonly IRepository<MessageTemplate> _messageTemplateRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ILanguageService _languageService;
+		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
@@ -38,14 +40,17 @@ namespace SmartStore.Services.Messages
         /// Ctor
         /// </summary>
         /// <param name="cacheManager">Cache manager</param>
+		/// <param name="storeMappingRepository">Store mapping repository</param>
 		/// <param name="languageService">Language service</param>
 		/// <param name="localizedEntityService">Localized entity service</param>
+		/// <param name="storeMappingService">Store mapping service</param>
         /// <param name="messageTemplateRepository">Message template repository</param>
         /// <param name="eventPublisher">Event published</param>
         public MessageTemplateService(ICacheManager cacheManager,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
+			IStoreMappingService storeMappingService,
             IRepository<MessageTemplate> messageTemplateRepository,
             IEventPublisher eventPublisher)
         {
@@ -53,6 +58,7 @@ namespace SmartStore.Services.Messages
 			this._storeMappingRepository = storeMappingRepository;
 			this._languageService = languageService;
 			this._localizedEntityService = localizedEntityService;
+			this._storeMappingService = storeMappingService;
 			this._messageTemplateRepository = messageTemplateRepository;
 			this._eventPublisher = eventPublisher;
         }
@@ -246,6 +252,13 @@ namespace SmartStore.Services.Messages
 				var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang.Id, false, false);
 				if (emailAccountId > 0)
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.EmailAccountId, emailAccountId, lang.Id);
+			}
+
+			//store mapping
+			var selectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
+			foreach (var id in selectedStoreIds)
+			{
+				_storeMappingService.InsertStoreMapping(mtCopy, id);
 			}
 
 			return mtCopy;

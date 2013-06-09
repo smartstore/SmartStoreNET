@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Data.Tests.Catalog
 {
@@ -14,6 +15,11 @@ namespace SmartStore.Data.Tests.Catalog
         {
             var backInStockSubscription = new BackInStockSubscription()
                                      {
+										 Store = new Store
+										 {
+											 Name = "Store 1",
+											 Url = "http://www.yourstore.com",
+										 },
                                          ProductVariant = new ProductVariant
                                          {
                                              Name = "Product variant name 1",
@@ -42,6 +48,8 @@ namespace SmartStore.Data.Tests.Catalog
 
             var fromDb = SaveAndLoadEntity(backInStockSubscription);
             fromDb.ShouldNotBeNull();
+
+			fromDb.Store.ShouldNotBeNull();
 
             fromDb.ProductVariant.ShouldNotBeNull();
             fromDb.ProductVariant.Name.ShouldEqual("Product variant name 1");

@@ -9,6 +9,10 @@ namespace SmartStore.Data.Mapping.Catalog
         {
             this.ToTable("BackInStockSubscription");
             this.HasKey(x => x.Id);
+
+			this.HasRequired(sci => sci.Store)
+				.WithMany()
+				.HasForeignKey(sci => sci.StoreId);
             
             this.HasRequired(x => x.ProductVariant)
                 .WithMany()

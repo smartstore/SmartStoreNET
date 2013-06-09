@@ -1792,7 +1792,9 @@ namespace SmartStore.Web.Controllers
 
             var customer = _workContext.CurrentCustomer;
             var pageSize = 10;
-            var list = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id, pageIndex, pageSize);
+			var list = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id,
+				 _workContext.CurrentStore.Id, pageIndex, pageSize);
+
 
             var model = new CustomerBackInStockSubscriptionsModel(list);
             model.NavigationModel = GetCustomerNavigationModel(customer);

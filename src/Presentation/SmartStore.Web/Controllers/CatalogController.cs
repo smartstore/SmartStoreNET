@@ -1304,7 +1304,8 @@ namespace SmartStore.Web.Controllers
             {
                 //out of stock
                 model.DisplayBackInStockSubscription = true;
-                model.BackInStockAlreadySubscribed = _backInStockSubscriptionService.FindSubscription(_workContext.CurrentCustomer.Id, productVariant.Id) != null;
+				model.BackInStockAlreadySubscribed = _backInStockSubscriptionService
+					 .FindSubscription(_workContext.CurrentCustomer.Id, productVariant.Id, _workContext.CurrentStore.Id) != null;
             }
 
             #endregion
@@ -2747,7 +2748,9 @@ namespace SmartStore.Web.Controllers
             model.ProductVariantId = variant.Id;
             model.IsCurrentCustomerRegistered = _workContext.CurrentCustomer.IsRegistered();
             model.MaximumBackInStockSubscriptions = _catalogSettings.MaximumBackInStockSubscriptions;
-            model.CurrentNumberOfBackInStockSubscriptions = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, 0, 1).TotalCount;
+			model.CurrentNumberOfBackInStockSubscriptions = _backInStockSubscriptionService
+				 .GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id, 0, 1)
+				 .TotalCount;
             if (variant.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
                 variant.BackorderMode == BackorderMode.NoBackorders &&
                 variant.AllowBackInStockSubscriptions &&
@@ -2755,7 +2758,8 @@ namespace SmartStore.Web.Controllers
             {
                 //out of stock
                 model.SubscriptionAllowed = true;
-                model.AlreadySubscribed = _backInStockSubscriptionService.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id) != null;
+				model.AlreadySubscribed = _backInStockSubscriptionService
+					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _workContext.CurrentStore.Id) != null;
             }
             return View(model);
         }
@@ -2776,8 +2780,8 @@ namespace SmartStore.Web.Controllers
                 variant.StockQuantity <= 0)
             {
                 //out of stock
-                var subscription = _backInStockSubscriptionService.FindSubscription(_workContext.CurrentCustomer.Id,
-                                                                                    variant.Id);
+				var subscription = _backInStockSubscriptionService
+					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _workContext.CurrentStore.Id);
                 if (subscription != null)
                 {
                     //unsubscribe
@@ -2786,7 +2790,9 @@ namespace SmartStore.Web.Controllers
                 }
                 else
                 {
-                    if (_backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, 0, 1).TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
+					if (_backInStockSubscriptionService
+						.GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id, 0, 1)
+						.TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
                         return Content(string.Format(_localizationService.GetResource("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
             
                     //subscribe   
@@ -2794,6 +2800,7 @@ namespace SmartStore.Web.Controllers
                     {
                         Customer = _workContext.CurrentCustomer,
                         ProductVariant = variant,
+						Store = _workContext.CurrentStore,
                         CreatedOnUtc = DateTime.UtcNow
                     };
                     _backInStockSubscriptionService.InsertSubscription(subscription);

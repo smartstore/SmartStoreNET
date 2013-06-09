@@ -1209,7 +1209,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("subscription");
 
             languageId = EnsureLanguageIsActive(languageId);
-			var store = _workContext.CurrentStore;
+			var store = subscription.Store ?? _workContext.CurrentStore;
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.BackInStock", languageId, store.Id);
 			if (messageTemplate == null)

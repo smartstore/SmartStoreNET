@@ -954,7 +954,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("privateMessage");
             }
 
-			var store = _workContext.CurrentStore;
+			var store = privateMessage.Store ?? _workContext.CurrentStore;
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewPM", languageId, store.Id);
             if (messageTemplate == null)

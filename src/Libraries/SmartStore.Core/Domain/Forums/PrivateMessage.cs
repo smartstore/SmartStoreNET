@@ -1,5 +1,6 @@
 ﻿using System;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Forums
 {
@@ -8,6 +9,11 @@ namespace SmartStore.Core.Domain.Forums
     /// </summary>
     public partial class PrivateMessage : BaseEntity
     {
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the customer identifier who sent the message
         /// </summary>
@@ -47,6 +53,11 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the date and time of instance creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the store
+		/// </summary>
+		public Store Store { get; set; }
 
         /// <summary>
         /// Gets the customer who sent the message

@@ -968,6 +968,7 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets private messages
         /// </summary>
+		/// <param name="storeId">The store identifier; pass 0 to load all messages</param>
         /// <param name="fromCustomerId">The customer identifier who sent the message</param>
         /// <param name="toCustomerId">The customer identifier who should receive the message</param>
         /// <param name="isRead">A value indicating whether loaded messages are read. false - to load not read messages only, 1 to load read messages only, null to load all messages</param>
@@ -977,11 +978,13 @@ namespace SmartStore.Services.Forums
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Private messages</returns>
-        public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(int fromCustomerId,
+		public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(int storeId, int fromCustomerId,
             int toCustomerId, bool? isRead, bool? isDeletedByAuthor, bool? isDeletedByRecipient,
             string keywords, int pageIndex, int pageSize)
         {
-            var query =  _forumPrivateMessageRepository.Table;
+			var query = _forumPrivateMessageRepository.Table;
+			if (storeId > 0)
+				query = query.Where(pm => storeId == pm.StoreId);
             if (fromCustomerId > 0)
                 query = query.Where(pm => fromCustomerId == pm.FromCustomerId);
             if (toCustomerId > 0)
@@ -1026,8 +1029,10 @@ namespace SmartStore.Services.Forums
                 throw new SmartException("Recipient could not be loaded");
             }
 
-            //UI notification            
-            _genericAttributeService.SaveAttribute(customerTo, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, false);
+			//UI notification        
+			var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, privateMessage.StoreId);
+
+			_genericAttributeService.SaveAttribute(customerTo, notifiedAboutNewPrivateMessagesAttributeKey, false);
 
             //Email notification
             if (_forumSettings.NotifyAboutPrivateMessages)

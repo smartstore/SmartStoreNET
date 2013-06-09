@@ -1042,6 +1042,7 @@ namespace SmartStore.Admin.Controllers
 
                 var privateMessage = new PrivateMessage
                 {
+					Store = _workContext.CurrentStore,
                     ToCustomerId = customer.Id,
                     FromCustomerId = _workContext.CurrentCustomer.Id,
                     Subject = model.SendPm.Subject,

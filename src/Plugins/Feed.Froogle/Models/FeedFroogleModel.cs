@@ -38,12 +38,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
         public string GenerateFeedResult { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.StaticFileUrl")]
+		public List<GeneratedFeedFile> GeneratedFiles { get; set; }
+
         [SmartResourceDisplayName("Plugins.Feed.Froogle.TaskEnabled")]
         public bool TaskEnabled { get; set; }
         [SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
         public int GenerateStaticFileEachMinutes { get; set; }
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.StaticFileUrl")]
-        public string StaticFileUrl { get; set; }
 
 		// codehint: sm-add (begin)
 		public PluginHelperFeed Helper { get; set; }
@@ -202,4 +203,5 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		public string AgeGroupLocalize { get; set; }
 		// codehint: sm-add (end)
 	}	// class
+
 }

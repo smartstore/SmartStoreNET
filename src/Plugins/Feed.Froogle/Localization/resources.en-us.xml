@@ -18,9 +18,6 @@
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Default Google category is not set</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClickHere">
-		<Value>Click here</Value>
-	</LocaleResource>
 	<LocaleResource Name="GeneratingNow">
 		<Value>Generating the feed...</Value>
 	</LocaleResource>
@@ -70,8 +67,8 @@
 		<Value>Size</Value>
 	</LocaleResource>
 	<LocaleResource Name="SuccessResult">
-		<Value>Feed has been successfully generated. {0} to see generated feed.</Value>
-	</LocaleResource>
+		<Value>Feed has been successfully generated.</Value>
+	</LocaleResource>	
 	<LocaleResource Name="TaskEnabled">
 		<Value>Automatically generate feed</Value>
 	</LocaleResource>

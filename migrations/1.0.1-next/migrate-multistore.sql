@@ -409,6 +409,55 @@ set @resources='
 	<T></T>
   </LocaleResource>
   
+  <LocaleResource Name="Plugins.Feed.Froogle.ClickHere">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Froogle.SuccessResult">
+	<Value>Feed has been successfully generated.</Value>
+	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Billiger.ClickHere">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Billiger.SuccessResult">
+	<Value>Feed has been successfully generated.</Value>
+	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.ClickHere">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.SuccessResult">
+	<Value>Feed has been successfully generated.</Value>
+	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl.Hint">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Guenstiger.ClickHere">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Guenstiger.SuccessResult">
+	<Value>Feed has been successfully generated.</Value>
+	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Shopwahl.ClickHere">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Shopwahl.SuccessResult">
+	<Value>Feed has been successfully generated.</Value>
+	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

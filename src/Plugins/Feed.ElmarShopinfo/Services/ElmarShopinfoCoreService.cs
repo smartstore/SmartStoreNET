@@ -20,6 +20,8 @@ using SmartStore.Services.Payments;
 using System.Web.Mvc;
 using SmartStore.Core.Fakes;
 using System.Web.Routing;
+using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 {
@@ -32,6 +34,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		private readonly ICategoryService _categoryService;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
 		private readonly IPaymentService _paymentService;
+		private readonly IStoreService _storeService;
 
 		public ElmarShopinfoCoreService(
 			ElmarShopinfoSettings settings,
@@ -39,7 +42,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			IManufacturerService manufacturerService,
 			ICategoryService categoryService,
 			IRepository<ProductCategory> productCategoryRepository,
-			IPaymentService paymentService) {
+			IPaymentService paymentService, 
+			IStoreService storeService) {
 
 			Settings = settings;
 			_productService = productService;
@@ -47,6 +51,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			_categoryService = categoryService;
 			_productCategoryRepository = productCategoryRepository;
 			_paymentService = paymentService;
+			_storeService = storeService;
 
 			_helper = new PluginHelperFeed("PromotionFeed.ElmarShopinfo", "SmartStore.Plugin.Feed.ElmarShopinfo", () => {
 				return Settings as PromotionFeedSettings;
@@ -55,11 +60,6 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 		public ElmarShopinfoSettings Settings { get; set; }
 		public PluginHelperFeed Helper { get { return _helper; } }
-		private string PathXml {
-			get {
-                return Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport", Settings.StaticFileNameXml);
-			}
-		}
 
 		private string Availability(ProductVariant variant) {
 			if (Settings.Availability.IsCaseInsensitiveEqual(PluginHelperFeed.NotSpecified))
@@ -129,13 +129,13 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				});
 			}
 		}
-		private string WriteItem(StreamWriter writer, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency, StringBuilder sb) {
+		private string WriteItem(StreamWriter writer, Store store, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency, StringBuilder sb) {
 			sb.Clear();
 
 			string shippingTime = (variant.DeliveryTime == null ? Settings.ShippingTime : variant.DeliveryTime.Name);
 			string brand = (manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand);
 			string measureUnit = (variant.BasePrice != null && variant.BasePrice.Enabled ? variant.BasePrice.MeasureUnit : "");
-			string imageUrl = Helper.MainImageUrl(product, variant);
+			string imageUrl = Helper.MainProductImageUrl(store, product, variant);
 			string description = Helper.BuildProductDescription(product, variant, manu);
 			
 			string specialPrice = (Settings.ExportSpecialPrice ? Helper.SpecialPrice(variant, true) : "");
@@ -156,14 +156,15 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				specialPrice.HasValue() ? "1" : "0",
 				Helper.ReplaceCsvChars(Helper.CategoryName(product)),
 				Helper.ReplaceCsvChars(measureUnit),
-				Helper.ReplaceCsvChars(Helper.ProductDetailLink(product)),
+				Helper.ReplaceCsvChars(Helper.ProductDetailUrl(store, product)),
 				Helper.ReplaceCsvChars(Settings.Warranty)
 			);
 
 			writer.WriteLine(sb.ToString());
 			return null;
 		}
-		private string CreateXml(Stream stream, int productCount, IPagedList<Category> categories, bool hasGiftCards, Currency currency) {
+		private string CreateXml(Stream stream, Store store, GeneratedFeedFile feedFile, int productCount, IPagedList<Category> categories, bool hasGiftCards, Currency currency)
+		{
 			var xmlSettings = new XmlWriterSettings {
 				Encoding = Encoding.GetEncoding("ISO-8859-1"),
 				Indent = true
@@ -182,8 +183,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					writer.WriteElementString("Currency", currency.CurrencyCode);
 				});
 
-				writer.WriteCData("Name", Helper.StoreName);
-				writer.WriteCData("Url", Helper.StoreLocation);
+				writer.WriteCData("Name", store.Name);
+				writer.WriteCData("Url", store.Url);
 
 				writer.WriteNode("Requests", () => {
 					writer.WriteNode("OfflineRequest", () => {
@@ -198,7 +199,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 						writer.WriteNode("Format", () => {
 							writer.WriteNode("Tabular", () => {
 								writer.WriteNode("CSV", () => {
-									writer.WriteCData("Url", Helper.FeedFileUrl);
+									writer.WriteCData("Url", feedFile.FileUrl);
 									writer.WriteNode("Header", () => {
 										writer.WriteAttributeString("columns", (_captions.Count(c => c == ';') + 1).ToString());
 										writer.WriteCData(_captions);
@@ -305,7 +306,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			return null;
 		}
 
-		public virtual void CreateFeed(Stream streamCsv, Stream streamXml) {
+		public virtual void CreateFeed(Store store, GeneratedFeedFile feedFile, Stream streamCsv, Stream streamXml) {
 			string breakingError = null;
 			int productCount = 0;
 			bool hasGiftCards = false;
@@ -317,7 +318,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			var ctx = new ProductSearchContext()
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = int.MaxValue
+				PageSize = int.MaxValue,
+				StoreId = store.Id
 			};
 
 			var products = _productService.SearchProducts(ctx);
@@ -344,7 +346,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 					foreach (var variant in variants.Where(v => v.Published)) {
 						try {
-							breakingError = WriteItem(writer, product, variant, manufacturer, currency, sb);
+							breakingError = WriteItem(writer, store, product, variant, manufacturer, currency, sb);
 							++productCount;
 
 							if (variant.IsGiftCard)
@@ -368,22 +370,34 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				}
 			}
 
-			breakingError = CreateXml(streamXml, productCount, categories, hasGiftCards, currency);
+			breakingError = CreateXml(streamXml, store, feedFile, productCount, categories, hasGiftCards, currency);
 
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed() {
-			using (var streamCsv = new FileStream(Helper.FeedFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-			using (var streamXml = new FileStream(PathXml, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)) {
-				CreateFeed(streamCsv, streamXml);
+		public virtual void CreateFeed()
+		{
+			var storeLocation = Helper.StoreLocation;
+			var stores = _storeService.GetAllStores();
+
+			foreach (var store in stores)
+			{
+				var feedFile = Helper.FeedFileByStore(store, storeLocation, Settings.StaticFileNameXml);
+				if (feedFile != null)
+				{
+					using (var streamCsv = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+					using (var streamXml = new FileStream(feedFile.CustomProperties["SecondFilePath"] as string, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+					{
+						CreateFeed(store, feedFile, streamCsv, streamXml);
+					}
+				}
 			}
 		}
 		public virtual void SetupModel(FeedElmarShopinfoModel model, ScheduleTask task = null) {
 			CultureInfo culture = new CultureInfo(Helper.Language.LanguageCulture);
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
-			model.StaticFileUrl = Helper.FeedFileUrl;
+			model.GeneratedFiles = Helper.FeedFiles(_storeService.GetAllStores().ToList(), Settings.StaticFileNameXml);
 			model.ElmarCategories = new List<SelectListItem>();
 			model.HourList = new List<SelectListItem> {
 				new	SelectListItem { Text = Helper.Resource("Common.Unspecified"), Value = "" }
@@ -398,10 +412,6 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				new	SelectListItem { Text = culture.DateTimeFormat.GetDayName(DayOfWeek.Saturday), Value = "sat" },
 				new	SelectListItem { Text = culture.DateTimeFormat.GetDayName(DayOfWeek.Sunday), Value = "sun" }
 			};
-
-			if (File.Exists(PathXml)) {
-                model.StaticFileXmlUrl = "{0}Content/files/exportimport/{1}".FormatWith(Helper.StoreLocation, Settings.StaticFileNameXml);
-			}
 
 			if (task != null) {
 				model.GenerateStaticFileEachMinutes = task.Seconds / 60;

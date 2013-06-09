@@ -6,9 +6,6 @@ In order to get more technical infos look at <a href="http://elektronischer-mark
 </p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClickHere">
-		<Value>Click here</Value>
-	</LocaleResource>
 	<LocaleResource Name="GeneratingNow">
 		<Value>Generating the feed...</Value>
 	</LocaleResource>
@@ -58,7 +55,7 @@ In order to get more technical infos look at <a href="http://elektronischer-mark
 		<Value>The size (pixels) for the product image.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SuccessResult">
-		<Value>Feed has been successfully generated. {0} to see generated feed.</Value>
+		<Value>Feed has been successfully generated.</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Automatically generate feed</Value>
@@ -80,12 +77,6 @@ In order to get more technical infos look at <a href="http://elektronischer-mark
 	</LocaleResource>
 	<LocaleResource Name="StaticFileUrl.Hint">
 		<Value>URL of the generated product file.</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileXmlUrl">
-		<Value>URL of the store file (static)</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileXmlUrl.Hint">
-		<Value>URL of the generated store file.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Availability">
 		<Value>Availability</Value>

@@ -43,7 +43,8 @@
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
         </td>
     </tr>
-	@if (Model.GenerateFeedResult.HasValue() || Model.StaticFileUrl.HasValue()) {
+	@if (Model.GenerateFeedResult.HasValue() || Model.GeneratedFiles.Count > 0)
+	{
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -58,13 +59,22 @@
 		</td>
     </tr>
 	}
-    @if (Model.StaticFileUrl.HasValue()) {
+    @if (Model.GeneratedFiles.Count > 0)
+	{
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(m => m.StaticFileUrl)
+            @Html.SmartLabelFor(m => m.GeneratedFiles)
         </td>
         <td class="adminData">
-            <a href="@Model.StaticFileUrl" target="_blank">@Model.StaticFileUrl</a>
+            @for (int i = 0; i <= Model.GeneratedFiles.Count - 1; i++)
+            {
+                var generatedFile = Model.GeneratedFiles[i];
+                @generatedFile.StoreName <text>-</text> <a href="@generatedFile.FileUrl" target="_blank">@generatedFile.FileUrl</a> 
+                if (i != Model.GeneratedFiles.Count - 1)
+                {
+                <br />
+                }
+            }
         </td>
     </tr>
 	}
@@ -353,7 +363,7 @@
                 <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>
             <button type="submit" name="generate" value="generate" class="btn" onclick="$.throbber.show('@T("Plugins.Feed.Froogle.GeneratingNow")');">
-				<i class="icon-@(Model.StaticFileUrl.HasValue() ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
+				<i class="icon-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
             </button>
         </td>
     </tr>

@@ -3,6 +3,7 @@ using System.IO;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Plugin.Feed.Froogle.Domain;
 using SmartStore.Plugin.Feed.Froogle.Models;
@@ -20,7 +21,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		string[] GetTaxonomyList();
 		void UpdateInsert(int pk, string name, string value);
 		GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null);
-		void CreateFeed(Stream stream);
+		void CreateFeed(Stream stream, Store store);
 		void CreateFeed();
 		void SetupModel(FeedFroogleModel model, ScheduleTask task = null);
     }

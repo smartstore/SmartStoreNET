@@ -1,5 +1,7 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.Froogle.Data;
 using SmartStore.Plugin.Feed.Froogle.Services;
@@ -49,7 +51,7 @@ namespace SmartStore.Plugin.Feed.Froogle
             var settings = new FroogleSettings()
             {
                 ProductPictureSize = 125,
-				StaticFileName = "google_merchant_center_{0}.xml".FormatWith(HttpContext.Current.Request.Url.Authority.Prettify().ToLower()),
+				StaticFileName = "google_merchant_center_{0}.xml".FormatWith(CommonHelper.GenerateRandomDigitCode(10)),
 				CurrencyId = _googleService.Helper.CurrencyID,
 				Condition = "new",
 				OnlineOnly = true,

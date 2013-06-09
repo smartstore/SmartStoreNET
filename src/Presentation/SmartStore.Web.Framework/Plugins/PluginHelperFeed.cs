@@ -14,6 +14,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -33,32 +36,6 @@ namespace SmartStore.Web.Framework.Plugins
 
 		private PromotionFeedSettings BaseSettings { get { return _settingsFunc(); } }
 
-		public string FeedFilePath {
-			get {
-                string path = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
-
-				if (!Directory.Exists(path))
-					Directory.CreateDirectory(path);
-
-				return Path.Combine(path, BaseSettings.StaticFileName);
-			}
-		}
-		public string FeedFileUrl {
-			get {
-				if (File.Exists(FeedFilePath)) {
-                    return "{0}Content/files/exportimport/{1}".FormatWith(StoreLocation, BaseSettings.StaticFileName);
-				}
-				return null;
-			}
-		}
-		public string GeneratedFeedResult {
-			get {
-                string clickHereStr = string.Format("<a href=\"{0}Content/files/exportimport/{1}\" target=\"_blank\">{2}</a>",
-					StoreLocation, BaseSettings.StaticFileName, Resource("ClickHere"));
-
-				return string.Format(Resource("SuccessResult"), clickHereStr);
-			}
-		}
 		private string ScheduleTaskType {
 			get {
 				return "{0}.StaticFileGenerationTask, {0}".FormatWith(_namespace);
@@ -256,11 +233,51 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return "";
 		}
-		public string ProductDetailLink(Product product) {
-			return "{0}{1}".FormatWith(StoreLocation, product.GetSeName(Language.Id));
+		public string ProductDetailUrl(Store store, Product product) {
+			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
+		}
+		public GeneratedFeedFile FeedFileByStore(Store store, string storeLocation, string secondFileName = null)
+		{
+			if (store != null)
+			{
+				string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
+				string url = "{0}content/files/exportimport/{1}_".FormatWith(storeLocation ?? StoreLocation, store.Id);
+
+				if (!Directory.Exists(dir))
+					Directory.CreateDirectory(dir);
+
+				var feedFile = new GeneratedFeedFile()
+				{
+					StoreName = store.Name,
+					FilePath = Path.Combine(dir, store.Id + "_" + BaseSettings.StaticFileName),
+					FileUrl = url + BaseSettings.StaticFileName
+				};
+
+				if (secondFileName.HasValue())
+				{
+					feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, store.Id + "_" + secondFileName));
+					feedFile.CustomProperties.Add("SecondFileUrl", url + secondFileName);
+				}
+				return feedFile;
+			}
+			return null;
+		}
+		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null)
+		{
+			var lst = new List<GeneratedFeedFile>();
+			var storeLocation = StoreLocation;
+
+			foreach (var store in stores)
+			{
+				var feedFile = FeedFileByStore(store, storeLocation, secondFileName);
+
+				if (feedFile != null && File.Exists(feedFile.FilePath))
+					lst.Add(feedFile);
+			}
+			return lst;
 		}
 
-		public string MainImageUrl(Product product, ProductVariant variant) {
+		public string MainProductImageUrl(Store store, Product product, ProductVariant variant) {
 			string url;
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			var picture = pictureService.GetPictureById(variant.PictureId);
@@ -270,14 +287,15 @@ namespace SmartStore.Web.Framework.Plugins
 
 			//always use HTTP when getting image URL
 			if (picture != null)
-				url = pictureService.GetPictureUrl(picture, BaseSettings.ProductPictureSize);
+				url = pictureService.GetPictureUrl(picture, BaseSettings.ProductPictureSize, storeLocation: store.Url);
 			else
-				url = pictureService.GetDefaultPictureUrl(BaseSettings.ProductPictureSize);
+				url = pictureService.GetDefaultPictureUrl(BaseSettings.ProductPictureSize, storeLocation: store.Url);
 
 			return url;
 		}
-		public List<string> AdditionalImages(Product product, string mainImageUrl, int maxImages = 10) {
-			List<string> urls = new List<string>();
+		public List<string> AdditionalProductImages(Store store, Product product, string mainImageUrl, int maxImages = 10)
+		{
+			var urls = new List<string>();
 
 			if (BaseSettings.AdditionalImages) {
 				var pictureService = EngineContext.Current.Resolve<IPictureService>();
@@ -285,7 +303,8 @@ namespace SmartStore.Web.Framework.Plugins
 
 				foreach (var pic in pics) {
 					if (pic != null) {
-						string url = pictureService.GetPictureUrl(pic, BaseSettings.ProductPictureSize);
+						string url = pictureService.GetPictureUrl(pic, BaseSettings.ProductPictureSize, storeLocation: store.Url);
+
 						if (url.HasValue() && (mainImageUrl.IsNullOrEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(url))) {
 							urls.Add(url);
 							if (urls.Count >= maxImages)
@@ -339,5 +358,13 @@ namespace SmartStore.Web.Framework.Plugins
 		public string ShippingTime { get; set; }
 		public string Brand { get; set; }
 		public bool UseOwnProductNo { get; set; }
+	}	// class
+
+
+	public class GeneratedFeedFile : ModelBase
+	{
+		public string StoreName { get; set; }
+		public string FilePath { get; set; }
+		public string FileUrl { get; set; }
 	}	// class
 }

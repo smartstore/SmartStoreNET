@@ -11,10 +11,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Models
 		public string GenerateFeedResult { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.StaticFileUrl")]
-		public string StaticFileUrl { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl")]
-		public string StaticFileXmlUrl { get; set; }
+		public List<GeneratedFeedFile> GeneratedFiles { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.BuildDescription")]
 		public string BuildDescription { get; set; }

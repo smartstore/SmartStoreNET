@@ -1566,3 +1566,10 @@ BEGIN
 	DROP COLUMN [SelectedPaymentMethodSystemName]
 END
 GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='UseRewardPointsDuringCheckout')
+BEGIN
+	ALTER TABLE [Customer]
+	DROP COLUMN [UseRewardPointsDuringCheckout]
+END
+GO

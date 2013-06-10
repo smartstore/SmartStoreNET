@@ -36,5 +36,6 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WorkingDesktopThemeName { get { return "WorkingDesktopThemeName"; } }
         public static string DontUseMobileVersion { get { return "DontUseMobileVersion"; } }
 		public static string TaxDisplayTypeId { get { return "TaxDisplayTypeId"; } }
+		public static string UseRewardPointsDuringCheckout { get { return "UseRewardPointsDuringCheckout"; } }
     }
 }

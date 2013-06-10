@@ -919,8 +919,8 @@ namespace SmartStore.Services.Orders
             #region Reward points
 
             if (_rewardPointsSettings.Enabled &&
-                customer != null && customer.UseRewardPointsDuringCheckout &&
-                !ignoreRewardPonts)
+				!ignoreRewardPonts && customer != null &&
+				customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _workContext.CurrentStore.Id))
             {
                 int rewardPointsBalance = customer.GetRewardPointsBalance();
                 decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);

@@ -32,6 +32,9 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ForumTopic> _forumTopics;
         private ICollection<ForumPost> _forumPosts;
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
         public Customer()
         {
             this.CustomerGuid = Guid.NewGuid();
@@ -44,21 +47,43 @@ namespace SmartStore.Core.Domain.Customers
         [DataMember]
         public Guid CustomerGuid { get; set; }
 
+		/// <summary>
+		/// Gets or sets the username
+		/// </summary>
         [DataMember]
         public string Username { get; set; }
+
+		/// <summary>
+		/// Gets or sets the email
+		/// </summary>
         [DataMember]
         public string Email { get; set; }
+
+		/// <summary>
+		/// Gets or sets the password
+		/// </summary>
         [DataMember]
         public string Password { get; set; }
 
+		/// <summary>
+		/// Gets or sets the password format
+		/// </summary>
         public int PasswordFormatId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the password format
+		/// </summary>
         public PasswordFormat PasswordFormat
         {
             get { return (PasswordFormat)PasswordFormatId; }
             set { this.PasswordFormatId = (int)value; }
         }
 
+		/// <summary>
+		/// Gets or sets the password salt
+		/// </summary>
         public string PasswordSalt { get; set; }
+
         /// <summary>
         /// Gets or sets the admin comment
         /// </summary>
@@ -106,11 +131,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets the applied gift card coupon codes (serialized)
         /// </summary>
         public string GiftCardCouponCodes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to use reward points during checkout
-        /// </summary>
-        public bool UseRewardPointsDuringCheckout { get; set; }
 
         /// <summary>
         /// Gets or sets the time zone identifier

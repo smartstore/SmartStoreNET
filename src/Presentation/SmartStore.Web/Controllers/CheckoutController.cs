@@ -221,12 +221,13 @@ namespace SmartStore.Web.Controllers
                 }
 
                 //find a selected (previously) shipping method
-				var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _workContext.CurrentStore.Id);
-                if (shippingOption != null)
+				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _workContext.CurrentStore.Id);
+				if (selectedShippingOption != null)
                 {
                     var shippingOptionToSelect = model.ShippingMethods.ToList()
-                        .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(shippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                        !String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && so.ShippingRateComputationMethodSystemName.Equals(shippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
+						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && 
+						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
                     if (shippingOptionToSelect != null)
                         shippingOptionToSelect.Selected = true;
                 }
@@ -739,8 +740,12 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             //reward points
-            _workContext.CurrentCustomer.UseRewardPointsDuringCheckout = model.UseRewardPoints;
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+			if (_rewardPointsSettings.Enabled)
+			{
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
+					_workContext.CurrentStore.Id);
+			}
 
             //Check whether payment workflow is required
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
@@ -1446,8 +1451,12 @@ namespace SmartStore.Web.Controllers
                 TryUpdateModel(model);
 
                 //reward points
-                _workContext.CurrentCustomer.UseRewardPointsDuringCheckout = model.UseRewardPoints;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+				if (_rewardPointsSettings.Enabled)
+				{
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+						SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
+						_workContext.CurrentStore.Id);
+				}
 
                 //Check whether payment workflow is required
                 bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);

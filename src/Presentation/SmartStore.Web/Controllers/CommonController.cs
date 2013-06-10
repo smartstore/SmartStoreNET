@@ -903,7 +903,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-                SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion);
+				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _workContext.CurrentStore.Id);
 
             string returnurl = _webHelper.GetUrlReferrer();
             if (String.IsNullOrEmpty(returnurl))

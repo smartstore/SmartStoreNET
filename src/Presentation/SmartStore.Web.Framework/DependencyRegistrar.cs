@@ -186,12 +186,12 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<CustomerRegistrationService>().As<ICustomerRegistrationService>().InstancePerHttpRequest();
             builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settngs between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<PermissionService>().As<IPermissionService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settings between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<AclService>().As<IAclService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
@@ -207,7 +207,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerHttpRequest();
 
 			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerHttpRequest();
-			//pass MemoryCacheManager to SettingService as cacheManager (cache settings between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
 			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>()
 				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
 				.InstancePerHttpRequest();
@@ -215,16 +215,16 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerHttpRequest();
 
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settngs between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<SettingService>().As<ISettingService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
-            //pass MemoryCacheManager to LocalizationService as cacheManager (cache locales between requests)
+			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizationService>().As<ILocalizationService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to LocalizedEntityService as cacheManager (cache locales between requests)
+			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();

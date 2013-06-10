@@ -74,7 +74,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         public virtual bool CustomerDontUseMobileVersion()
         {
-            return _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.DontUseMobileVersion);
+			return _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.DontUseMobileVersion, _workContext.CurrentStore.Id);
         }
 
         #endregion

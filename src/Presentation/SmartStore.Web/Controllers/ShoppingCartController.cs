@@ -556,7 +556,7 @@ namespace SmartStore.Web.Controllers
                         model.OrderReviewData.ShippingAddress.PrepareModel(shippingAddress, false, _addressSettings);
                     
                     //selected shipping method
-                    var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption);
+					var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption, _workContext.CurrentStore.Id);
                     if (shippingOption != null)
                         model.OrderReviewData.ShippingMethod = shippingOption.Name;
                 }
@@ -1906,7 +1906,7 @@ namespace SmartStore.Web.Controllers
                         model.Shipping = _priceFormatter.FormatShippingPrice(shoppingCartShipping, true);
 
                         //selected shipping method
-                        var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption);
+						var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption, _workContext.CurrentStore.Id);
                         if (shippingOption != null)
                             model.SelectedShippingMethod = shippingOption.Name;
                     }

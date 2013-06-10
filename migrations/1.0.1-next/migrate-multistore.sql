@@ -1544,3 +1544,10 @@ GO
 DELETE FROM [GenericAttribute]
 WHERE [KeyGroup] =N'Customer' and [Key]=N'LastContinueShoppingPage' and [StoreId] = 0
 GO
+
+DELETE FROM [GenericAttribute]
+WHERE [KeyGroup] =N'Customer' and [Key]=N'LastShippingOption' and [StoreId] = 0
+GO
+DELETE FROM [GenericAttribute]
+WHERE [KeyGroup] =N'Customer' and [Key]=N'OfferedShippingOptions' and [StoreId] = 0
+GO

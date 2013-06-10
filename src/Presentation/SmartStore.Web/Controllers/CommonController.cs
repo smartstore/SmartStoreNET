@@ -513,9 +513,9 @@ namespace SmartStore.Web.Controllers
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-                    !customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id))
                 {
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _workContext.CurrentStore.Id);
                     alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
                 }
             }
@@ -1046,9 +1046,9 @@ namespace SmartStore.Web.Controllers
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-                    !customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id))
                 {
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _workContext.CurrentStore.Id);
                     alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
                 }
             }

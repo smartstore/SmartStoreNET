@@ -114,7 +114,7 @@ namespace SmartStore.Services.Orders
             //reset checkout data
             if (resetCheckoutData)
             {
-                _customerService.ResetCheckoutData(shoppingCartItem.Customer);
+				_customerService.ResetCheckoutData(shoppingCartItem.Customer, shoppingCartItem.StoreId);
             }
 
             //delete item
@@ -799,7 +799,7 @@ namespace SmartStore.Services.Orders
             }
 
             //reset checkout info
-            _customerService.ResetCheckoutData(customer);
+			_customerService.ResetCheckoutData(customer, storeId);
 
 			var cart = customer.ShoppingCartItems
 				 .Where(sci => sci.ShoppingCartType == shoppingCartType)
@@ -905,7 +905,7 @@ namespace SmartStore.Services.Orders
                 if (resetCheckoutData)
                 {
                     //reset checkout data
-                    _customerService.ResetCheckoutData(customer);
+					_customerService.ResetCheckoutData(customer, shoppingCartItem.StoreId);
                 }
                 if (newQuantity > 0)
                 {

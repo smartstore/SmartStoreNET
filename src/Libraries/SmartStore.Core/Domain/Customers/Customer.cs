@@ -93,11 +93,6 @@ namespace SmartStore.Core.Domain.Customers
         public int VatNumberStatusId { get; set; }
 
         /// <summary>
-        /// Gets or sets the last payment method system name (selected one)
-        /// </summary>
-        public string SelectedPaymentMethodSystemName { get; set; }
-
-        /// <summary>
         /// Gets or sets the selected checkout attributes (serialized)
         /// </summary>
         public string CheckoutAttributes { get; set; }

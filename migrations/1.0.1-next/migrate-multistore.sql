@@ -1559,3 +1559,10 @@ BEGIN
 	DROP COLUMN [TaxDisplayTypeId]
 END
 GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='SelectedPaymentMethodSystemName')
+BEGIN
+	ALTER TABLE [Customer]
+	DROP COLUMN [SelectedPaymentMethodSystemName]
+END
+GO

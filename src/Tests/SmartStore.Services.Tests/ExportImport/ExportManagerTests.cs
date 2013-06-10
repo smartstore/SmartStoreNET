@@ -29,7 +29,6 @@ namespace SmartStore.Services.Tests.ExportImport
         IPictureService _pictureService;
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IExportManager _exportManager;
-        StoreInformationSettings _storeInformationSettings;
 
         [SetUp]
         public new void SetUp()
@@ -40,9 +39,8 @@ namespace SmartStore.Services.Tests.ExportImport
             _pictureService = MockRepository.GenerateMock<IPictureService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
 
-            _storeInformationSettings = new StoreInformationSettings();
             _exportManager = new ExportManager(_categoryService,
-                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService, _storeInformationSettings);
+                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService);
         }
 
         //[Test]

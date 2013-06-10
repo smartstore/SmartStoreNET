@@ -561,7 +561,9 @@ namespace SmartStore.Web.Controllers
                         model.OrderReviewData.ShippingMethod = shippingOption.Name;
                 }
                 //payment info
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, _workContext.CurrentStore.Id);
+				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
                 model.OrderReviewData.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id) : "";
             }
             #endregion
@@ -1868,10 +1870,7 @@ namespace SmartStore.Web.Controllers
             model.IsEditable = isEditable;
 
             if (cart.Count > 0)
-            {
-                //payment method (if already selected)
-                string paymentMethodSystemName = _workContext.CurrentCustomer != null ? _workContext.CurrentCustomer.SelectedPaymentMethodSystemName : null;
-                
+            {              
                 //subtotal
                 decimal subtotalBase = decimal.Zero;
                 decimal orderSubTotalDiscountAmountBase = decimal.Zero;
@@ -1913,6 +1912,8 @@ namespace SmartStore.Web.Controllers
                 }
 
                 //payment method fee
+				string paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					SystemCustomerAttributeNames.SelectedPaymentMethod, _workContext.CurrentStore.Id);
                 decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
                 decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 if (paymentMethodAdditionalFeeWithTaxBase > decimal.Zero)

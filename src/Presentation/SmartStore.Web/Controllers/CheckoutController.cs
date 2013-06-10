@@ -296,15 +296,18 @@ namespace SmartStore.Web.Controllers
             }
             
             //find a selected (previously) payment method
-            if (!String.IsNullOrEmpty(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName))
+			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				 SystemCustomerAttributeNames.SelectedPaymentMethod,
+				 _genericAttributeService, _workContext.CurrentStore.Id);
+			if (!String.IsNullOrEmpty(selectedPaymentMethodSystemName))
             {
                 var paymentMethodToSelect = model.PaymentMethods.ToList()
-                    .Find(pm => pm.PaymentMethodSystemName.Equals(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+					.Find(pm => pm.PaymentMethodSystemName.Equals(selectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
                 if (paymentMethodToSelect != null)
                     paymentMethodToSelect.Selected = true;
             }
             //if no option has been selected, let's do it for the first one
-            if (model.PaymentMethods.Where(so => so.Selected).FirstOrDefault() == null)
+			if (model.PaymentMethods.FirstOrDefault(so => so.Selected) == null)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
                 if (paymentMethodToSelect != null)
@@ -628,7 +631,8 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null, _workContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.LastShippingOption, null, _workContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
 
@@ -692,8 +696,8 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
             if (!isPaymentWorkflowRequired)
             {
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _workContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentInfo");
             }
 
@@ -705,9 +709,12 @@ namespace SmartStore.Web.Controllers
             {
                 //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                 //so customer doesn't have to choose a payment method
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutPaymentInfo");
+
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.SelectedPaymentMethod,
+					paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName,
+					_workContext.CurrentStore.Id);
+				return RedirectToRoute("CheckoutPaymentInfo");
             }
 
             return View(paymentMethodModel);
@@ -739,9 +746,9 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
             if (!isPaymentWorkflowRequired)
             {
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutPaymentInfo");
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					  SystemCustomerAttributeNames.SelectedPaymentMethod, null, _workContext.CurrentStore.Id);
+				return RedirectToRoute("CheckoutPaymentInfo");
             }
             //payment method 
             if (String.IsNullOrEmpty(paymentmethod))
@@ -752,9 +759,9 @@ namespace SmartStore.Web.Controllers
                 return PaymentMethod();
 
             //save
-            _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentmethod;
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+				 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _workContext.CurrentStore.Id);
+            
             return RedirectToRoute("CheckoutPaymentInfo");
         }
 
@@ -781,8 +788,12 @@ namespace SmartStore.Web.Controllers
             {
                 return RedirectToRoute("CheckoutConfirm");
             }
-            
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+
+			//load payment method
+			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				SystemCustomerAttributeNames.SelectedPaymentMethod,
+				_genericAttributeService, _workContext.CurrentStore.Id);
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
@@ -816,7 +827,11 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("CheckoutConfirm");
             }
 
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+			//load payment method
+			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				SystemCustomerAttributeNames.SelectedPaymentMethod,
+				_genericAttributeService, _workContext.CurrentStore.Id);
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
@@ -901,7 +916,9 @@ namespace SmartStore.Web.Controllers
                 //place order
 				processPaymentRequest.StoreId = _workContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-                processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.SelectedPaymentMethodSystemName;
+				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod,
+					 _genericAttributeService, _workContext.CurrentStore.Id);
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {
@@ -1112,11 +1129,13 @@ namespace SmartStore.Web.Controllers
                         {
                             //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                             //so customer doesn't have to choose a payment method
-                            _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+							var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
+							_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+								SystemCustomerAttributeNames.SelectedPaymentMethod,
+								selectedPaymentMethodSystemName, _workContext.CurrentStore.Id);
 
-                            var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
-                            if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+							if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
                                 throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1148,8 +1167,8 @@ namespace SmartStore.Web.Controllers
                     else
                     {
                         //payment is not required
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                        _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+							 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _workContext.CurrentStore.Id);
 
                         var confirmOrderModel = PrepareConfirmOrderModel(cart);
                         return Json(new
@@ -1339,10 +1358,11 @@ namespace SmartStore.Web.Controllers
                     {
                         //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                         //so customer doesn't have to choose a payment method
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                        _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+						var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
+						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+							SystemCustomerAttributeNames.SelectedPaymentMethod, selectedPaymentMethodSystemName, _workContext.CurrentStore.Id);
 
-                        var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
                         if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
                             throw new Exception("Selected payment method can't be parsed");
 
@@ -1375,8 +1395,8 @@ namespace SmartStore.Web.Controllers
                 else
                 {
                     //payment is not required
-                    _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+						SystemCustomerAttributeNames.SelectedPaymentMethod, null, _workContext.CurrentStore.Id);
 
                     var confirmOrderModel = PrepareConfirmOrderModel(cart);
                     return Json(new
@@ -1434,8 +1454,8 @@ namespace SmartStore.Web.Controllers
                 if (!isPaymentWorkflowRequired)
                 {
                     //payment is not required
-                    _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+						 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _workContext.CurrentStore.Id);
 
                     var confirmOrderModel = PrepareConfirmOrderModel(cart);
                     return Json(new
@@ -1454,9 +1474,8 @@ namespace SmartStore.Web.Controllers
                     throw new Exception("Selected payment method can't be parsed");
 
                 //save
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentmethod;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _workContext.CurrentStore.Id);                
 
                 var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst);
                 return Json(new
@@ -1495,9 +1514,11 @@ namespace SmartStore.Web.Controllers
                 if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                     throw new Exception("Anonymous checkout is not allowed");
 
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
-                if (paymentMethod == null)
+				var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					SystemCustomerAttributeNames.SelectedPaymentMethod,
+					_genericAttributeService, _workContext.CurrentStore.Id);
+				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
+				if (paymentMethod == null)
                     throw new Exception("Payment method is not selected");
 
                 var paymentControllerType = paymentMethod.GetControllerType();
@@ -1581,7 +1602,9 @@ namespace SmartStore.Web.Controllers
 
 				processPaymentRequest.StoreId = _workContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-                processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.SelectedPaymentMethodSystemName;
+				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod,
+					 _genericAttributeService, _workContext.CurrentStore.Id);
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {

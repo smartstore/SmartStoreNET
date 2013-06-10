@@ -28,6 +28,7 @@ namespace SmartStore.Core.Domain.Customers
         public static string ImpersonatedCustomerId { get { return "ImpersonatedCustomerId"; } }
 
 		//depends on store
+		public static string SelectedPaymentMethod { get { return "SelectedPaymentMethod"; } }
 		public static string LastShippingOption { get { return "LastShippingOption"; } }
 		public static string OfferedShippingOptions { get { return "OfferedShippingOptions"; } }
 		public static string LastContinueShoppingPage { get { return "LastContinueShoppingPage"; } }

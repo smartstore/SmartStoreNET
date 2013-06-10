@@ -200,7 +200,8 @@ namespace SmartStore.Web.Controllers
         {
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-            string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY, parentCategoryId, showHidden, string.Join(",", customerRolesIds));
+			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY, 
+				parentCategoryId, showHidden, string.Join(",", customerRolesIds), _workContext.CurrentStore.Id);
             return _cacheManager.Get(cacheKey, () =>
             {
                 var categoriesIds = new List<int>();
@@ -568,7 +569,8 @@ namespace SmartStore.Web.Controllers
         private CategoryNavigationModel GetCategoryNavigationModel(int currentCategoryId, int currentProductId) 
         {
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-            string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
+			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY,
+				_workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds), _workContext.CurrentStore.Id);
 
             var categories = _cacheManager.Get(cacheKey, () =>
             {

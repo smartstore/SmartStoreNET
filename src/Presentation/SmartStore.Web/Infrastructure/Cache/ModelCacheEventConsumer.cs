@@ -136,12 +136,12 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for CategoryNavigationModel caching
         /// </summary>
         /// <remarks>
-        /// {0} : current category id
-        /// {1} : current product id
-        /// {2} : language id
-        /// {3} : comma separated list of customer roles
+		/// {0} : parent category id
+		/// {1} : show hidden?
+		/// {2} : comma separated list of customer roles
+		/// {3} : current store id
         /// </remarks>
-        public const string CATEGORY_NAVIGATION_MODEL_KEY = "sm.pres.category.navigation-{0}-{1}";
+        public const string CATEGORY_NAVIGATION_MODEL_KEY = "sm.pres.category.navigation-{0}-{1}-{2}";
         public const string CATEGORY_NAVIGATION_PATTERN_KEY = "sm.pres.category.navigation";
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {1} : show hidden?
         /// {2} : comma separated list of customer roles
         /// </remarks>
-        public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}";
+        public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}-{3}";
         public const string CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY = "sm.pres.category.childidentifiers";
 
         /// <summary>

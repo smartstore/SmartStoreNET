@@ -221,12 +221,12 @@ namespace SmartStore.Web.Controllers
                 }
 
                 //find a selected (previously) shipping method
-				var lastShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption, _workContext.CurrentStore.Id);
-                if (lastShippingOption != null)
+				var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _workContext.CurrentStore.Id);
+                if (shippingOption != null)
                 {
                     var shippingOptionToSelect = model.ShippingMethods.ToList()
-                        .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(lastShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                        !String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && so.ShippingRateComputationMethodSystemName.Equals(lastShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+                        .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(shippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                        !String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && so.ShippingRateComputationMethodSystemName.Equals(shippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
                     if (shippingOptionToSelect != null)
                         shippingOptionToSelect.Selected = true;
                 }
@@ -601,7 +601,7 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null, _workContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _workContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
             
@@ -632,7 +632,7 @@ namespace SmartStore.Web.Controllers
             if (!cart.RequiresShipping())
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
-					 SystemCustomerAttributeNames.LastShippingOption, null, _workContext.CurrentStore.Id);
+					 SystemCustomerAttributeNames.SelectedShippingOption, null, _workContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
 
@@ -669,7 +669,7 @@ namespace SmartStore.Web.Controllers
                 return ShippingMethod();
 
             //save
-			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, shippingOption, _workContext.CurrentStore.Id);
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _workContext.CurrentStore.Id);
             
             return RedirectToRoute("CheckoutPaymentMethod");
         }
@@ -1113,7 +1113,7 @@ namespace SmartStore.Web.Controllers
                 else
                 {
                     //shipping is not required
-					_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null, _workContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _workContext.CurrentStore.Id);
 
 
                     //Check whether payment workflow is required
@@ -1342,7 +1342,7 @@ namespace SmartStore.Web.Controllers
                     throw new Exception("Selected shipping method can't be loaded");
 
                 //save
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, shippingOption, _workContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _workContext.CurrentStore.Id);
 
 
                 //Check whether payment workflow is required

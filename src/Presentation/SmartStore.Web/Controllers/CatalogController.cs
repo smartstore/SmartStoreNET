@@ -1473,7 +1473,10 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("HomePage");            
 
             //'Continue shopping' URL
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastContinueShoppingPage, _webHelper.GetThisPageUrl(false));
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+				SystemCustomerAttributeNames.LastContinueShoppingPage,
+				_webHelper.GetThisPageUrl(false),
+				_workContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0) command.PageNumber = 1; // codehint: sm-edit
 
@@ -1715,7 +1718,10 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("HomePage");
 
             //'Continue shopping' URL
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastContinueShoppingPage, _webHelper.GetThisPageUrl(false));
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+				SystemCustomerAttributeNames.LastContinueShoppingPage,
+				_webHelper.GetThisPageUrl(false),
+				_workContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0) command.PageNumber = 1; // codehint: sm-edit
 
@@ -3551,7 +3557,10 @@ namespace SmartStore.Web.Controllers
                 model = new SearchModel();
 
             //'Continue shopping' URL
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastContinueShoppingPage, _webHelper.GetThisPageUrl(false));
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+				SystemCustomerAttributeNames.LastContinueShoppingPage,
+				_webHelper.GetThisPageUrl(false),
+				_workContext.CurrentStore.Id);
 
             if (command.PageSize <= 0)
                 command.PageSize = _catalogSettings.SearchPageProductsPerPage; //_catalogSettings.SearchPageProductsPerPage;

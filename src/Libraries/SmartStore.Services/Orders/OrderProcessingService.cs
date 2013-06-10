@@ -491,7 +491,7 @@ namespace SmartStore.Services.Orders
                 decimal customerCurrencyRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-					var currencyTmp = _currencyService.GetCurrencyById(customer.CurrencyId);
+					var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
 					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
                     var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);

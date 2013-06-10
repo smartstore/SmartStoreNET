@@ -96,11 +96,6 @@ namespace SmartStore.Core.Domain.Customers
         public int LanguageId { get; set; }
 
         /// <summary>
-        /// Gets or sets the currency identifier
-        /// </summary>
-        public int CurrencyId { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the customer is tax exempt
         /// </summary>
         [DataMember]

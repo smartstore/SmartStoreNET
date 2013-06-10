@@ -1573,3 +1573,10 @@ BEGIN
 	DROP COLUMN [UseRewardPointsDuringCheckout]
 END
 GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='CurrencyId')
+BEGIN
+	ALTER TABLE [Customer]
+	DROP COLUMN [CurrencyId]
+END
+GO

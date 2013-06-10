@@ -270,12 +270,12 @@ namespace SmartStore.Web.Framework
                     }
                 }
                 var allStoreLanguages = _languageService.GetAllLanguages(storeId: this.CurrentStore.Id);
-                if (allStoreLanguages.Count > 0)
+                if (allStoreLanguages.Count > 0 && this.CurrentCustomer != null)
                 {
                     //find current customer language
                     foreach (var lang in allStoreLanguages)
                     {
-                        if (this.CurrentCustomer != null &&	this.CurrentCustomer.LanguageId == lang.Id)
+                        if (this.CurrentCustomer.LanguageId == lang.Id)
                         {
                             return lang;
                         }
@@ -345,9 +345,11 @@ namespace SmartStore.Web.Framework
 				if (allStoreCurrencies.Count > 0)
 				{
 					//find current customer language
+					var customerCurrencyId = this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId,
+						_genericAttributeService, this.CurrentStore.Id);
 					foreach (var currency in allStoreCurrencies)
 					{
-						if (this.CurrentCustomer != null &&	this.CurrentCustomer.CurrencyId == currency.Id)
+						if (customerCurrencyId == currency.Id)
 						{
 							return currency;
 						}
@@ -369,12 +371,11 @@ namespace SmartStore.Web.Framework
             }
             set
             {
-                if (this.CurrentCustomer == null)
-                    return;
-
-				this.CurrentCustomer.CurrencyId = value != null ? value.Id : 0;
-                _customerService.UpdateCustomer(this.CurrentCustomer);
-            }
+				var currencyId = value != null ? value.Id : 0;
+				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
+					SystemCustomerAttributeNames.CurrencyId,
+					currencyId, this.CurrentStore.Id);
+			}
         }
 
         /// <summary>

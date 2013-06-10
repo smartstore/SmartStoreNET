@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using SmartStore.Core.Domain;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tasks;
 

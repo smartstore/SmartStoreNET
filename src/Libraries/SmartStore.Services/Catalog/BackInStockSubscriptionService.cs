@@ -3,8 +3,10 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Events;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Services.Catalog
 {
@@ -17,6 +19,7 @@ namespace SmartStore.Services.Catalog
 
         private readonly IRepository<BackInStockSubscription> _backInStockSubscriptionRepository;
         private readonly IWorkflowMessageService _workflowMessageService;
+		private readonly IWorkContext _workContext;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
@@ -28,13 +31,16 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="backInStockSubscriptionRepository">Back in stock subscription repository</param>
         /// <param name="workflowMessageService">Workflow message service</param>
+		/// <param name="workContext">Work context</param>
         /// <param name="eventPublisher">Event publisher</param>
         public BackInStockSubscriptionService(IRepository<BackInStockSubscription> backInStockSubscriptionRepository,
             IWorkflowMessageService workflowMessageService,
+			IWorkContext workContext,
             IEventPublisher eventPublisher)
         {
             this._backInStockSubscriptionRepository = backInStockSubscriptionRepository;
             this._workflowMessageService = workflowMessageService;
+			this._workContext = workContext;
             this._eventPublisher = eventPublisher;
         }
 
@@ -193,7 +199,9 @@ namespace SmartStore.Services.Catalog
                 //ensure that customer is registered (simple and fast way)
                 if (CommonHelper.IsValidEmail(subscription.Customer.Email))
                 {
-					_workflowMessageService.SendBackInStockNotification(subscription, subscription.Customer.LanguageId);
+					var customer = subscription.Customer;
+					var customerLanguageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, subscription.StoreId);
+					_workflowMessageService.SendBackInStockNotification(subscription, customerLanguageId);
                     result++;
                 }
             }

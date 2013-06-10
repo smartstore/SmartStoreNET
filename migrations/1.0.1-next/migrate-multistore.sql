@@ -1580,3 +1580,10 @@ BEGIN
 	DROP COLUMN [CurrencyId]
 END
 GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='LanguageId')
+BEGIN
+	ALTER TABLE [Customer]
+	DROP COLUMN [LanguageId]
+END
+GO

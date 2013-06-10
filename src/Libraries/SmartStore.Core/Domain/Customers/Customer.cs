@@ -91,11 +91,6 @@ namespace SmartStore.Core.Domain.Customers
         public string AdminComment { get; set; }
 
         /// <summary>
-        /// Gets or sets the language identifier
-        /// </summary>
-        public int LanguageId { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the customer is tax exempt
         /// </summary>
         [DataMember]

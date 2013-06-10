@@ -24,6 +24,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -56,7 +57,8 @@ namespace SmartStore.Services.Tests.Orders
         [SetUp]
         public new void SetUp()
         {
-            _workContext = null;
+			_workContext = MockRepository.GenerateMock<IWorkContext>();
+			_workContext.Expect(x => x.CurrentStore).Return(new Store() { Id = 1 });
 
             var pluginFinder = new PluginFinder();
             var cacheManager = new NullCache();

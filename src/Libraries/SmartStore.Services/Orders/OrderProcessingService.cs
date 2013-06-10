@@ -620,7 +620,7 @@ namespace SmartStore.Services.Orders
                     //    customerTaxDisplayType = _taxSettings.TaxDisplayType;
 
                     // codehint: sm-edit
-                    customerTaxDisplayType = _workContext.GetTaxDisplayTypeFor(customer);
+					customerTaxDisplayType = _workContext.GetTaxDisplayTypeFor(customer, processPaymentRequest.StoreId);
                 }
                 else
                 {

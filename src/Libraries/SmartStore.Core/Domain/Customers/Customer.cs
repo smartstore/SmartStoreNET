@@ -75,12 +75,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public int CurrencyId { get; set; }
 
-        /// codehint: sm-edit
-        /// <summary>
-        /// Gets or sets the tax display type identifier
-        /// </summary>
-        public int? TaxDisplayTypeId { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the customer is tax exempt
         /// </summary>
@@ -174,21 +168,6 @@ namespace SmartStore.Core.Domain.Customers
         public DateTime LastActivityDateUtc { get; set; }
         
         #region Custom properties
-
-        /// <summary>
-        /// Gets the tax display type
-        /// </summary>
-        public TaxDisplayType? TaxDisplayType
-        {
-            get
-            {
-                return (TaxDisplayType)this.TaxDisplayTypeId;
-            }
-            set
-            {
-                this.TaxDisplayTypeId = (int)value;
-            }
-        }
 
         /// <summary>
         /// Gets the VAT number status

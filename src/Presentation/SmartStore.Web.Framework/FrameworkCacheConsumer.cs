@@ -32,7 +32,14 @@ namespace SmartStore.Web.Framework
         public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}";
         public const string THEMEVARS_PATTERN_KEY = "sm.pres.themevars";
 
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "sm.fw.customerroles.taxdisplaytypes-{0}";
+		/// <summary>
+		/// Key for tax display type caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : customer role ids
+		/// {1} : store identifier
+		/// </remarks>
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "sm.fw.customerroles.taxdisplaytypes-{0}-{1}";
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "sm.fw.customerroles.taxdisplaytypes";
 
         private readonly ICacheManager _cacheManager;

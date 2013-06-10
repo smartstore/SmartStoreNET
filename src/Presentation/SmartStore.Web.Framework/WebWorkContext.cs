@@ -32,6 +32,7 @@ namespace SmartStore.Web.Framework
         private readonly IAuthenticationService _authenticationService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
+		private readonly IGenericAttributeService _genericAttributeService;
         private readonly TaxSettings _taxSettings;
         private readonly CurrencySettings _currencySettings;
         private readonly LocalizationSettings _localizationSettings;
@@ -51,6 +52,7 @@ namespace SmartStore.Web.Framework
             IAuthenticationService authenticationService,
             ILanguageService languageService,
             ICurrencyService currencyService,
+			IGenericAttributeService genericAttributeService,
             TaxSettings taxSettings, CurrencySettings currencySettings,
             LocalizationSettings localizationSettings,
             IWebHelper webHelper)
@@ -61,6 +63,7 @@ namespace SmartStore.Web.Framework
 			this._storeService = storeService;
             this._authenticationService = authenticationService;
             this._languageService = languageService;
+			this._genericAttributeService = genericAttributeService;
             this._currencyService = currencyService;
             this._taxSettings = taxSettings;
             this._currencySettings = currencySettings;
@@ -381,33 +384,34 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-                return GetTaxDisplayTypeFor(this.CurrentCustomer);
+				return GetTaxDisplayTypeFor(this.CurrentCustomer, this.CurrentStore.Id);
             }
             set
             {
                 if (!_taxSettings.AllowCustomersToSelectTaxDisplayType)
                     return;
 
-                this.CurrentCustomer.TaxDisplayType = value;
-                _customerService.UpdateCustomer(this.CurrentCustomer);
+				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
+					 SystemCustomerAttributeNames.TaxDisplayTypeId,
+					 (int)value, this.CurrentStore.Id);
             }
         }
 
-        public TaxDisplayType GetTaxDisplayTypeFor(Customer customer)
+        public TaxDisplayType GetTaxDisplayTypeFor(Customer customer, int storeId)
         {
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType)
             {
                 if (customer != null)
                 {
-                    if (customer.TaxDisplayType.HasValue)
-                    {
-                        return customer.TaxDisplayType.Value;
-                    }
+					int? taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
+
+					if (taxDisplayType.HasValue)
+						return (TaxDisplayType)taxDisplayType.Value;
                 }
             }
 
             var customerRoles = customer.CustomerRoles;
-            string key = string.Format(FrameworkCacheConsumer.CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY, String.Join(",", customerRoles.Select(x => x.Id)));
+            string key = string.Format(FrameworkCacheConsumer.CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY, String.Join(",", customerRoles.Select(x => x.Id)), storeId);
             return _cacheManager.Get(key, () =>
             {
                 var roleTaxDisplayTypes = customerRoles

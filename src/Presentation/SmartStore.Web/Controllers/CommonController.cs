@@ -572,7 +572,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Footer()
         {
-            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer) == TaxDisplayType.IncludingTax)
+            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _workContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
                 ? _localizationService.GetResource("Tax.InclVAT") 
                 : _localizationService.GetResource("Tax.ExclVAT");
 

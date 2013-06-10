@@ -44,7 +44,7 @@ namespace SmartStore.Core
         /// <summary>
         /// Gets the tax display type for a given customer
         /// </summary>
-        TaxDisplayType GetTaxDisplayTypeFor(Customer customer);
+        TaxDisplayType GetTaxDisplayTypeFor(Customer customer, int storeId);
 
         /// <summary>
         /// Get or set value indicating whether we're in admin area

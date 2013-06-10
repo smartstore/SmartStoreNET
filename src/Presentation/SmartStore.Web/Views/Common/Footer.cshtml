@@ -99,7 +99,7 @@
 
                 <div id="newsletter-subscribe-block">
 
-                    @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = @T("Newsletter.Email") })
+                    @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = T("Newsletter.Email") })
                     @Html.ValidationMessageFor(x => x.NewsletterEmail)
 
                     <button id="newsletter-subscribe-button" class="btn btn-success pull-right">@T("Newsletter.Button")</button>

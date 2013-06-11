@@ -11,7 +11,6 @@ namespace SmartStore.Data.Mapping.Catalog
             this.HasKey(pa => pa.Id);
             this.Property(pa => pa.Alias).HasMaxLength(100);
             this.Property(pa => pa.Name).IsRequired();
-            this.Property(pa => pa.Description);
         }
     }
 }

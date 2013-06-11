@@ -11,8 +11,6 @@ namespace SmartStore.Data.Mapping.Blogs
             //commented because it's already configured by CustomerContentMap class
             //this.HasKey(pr => pr.Id);
 
-            this.Property(bc => bc.CommentText);
-
             this.HasRequired(bc => bc.BlogPost)
                 .WithMany(bp => bp.BlogComments)
                 .HasForeignKey(bc => bc.BlogPostId);

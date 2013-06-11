@@ -44,7 +44,7 @@ namespace SmartStore.Services.Common
 				return default(TPropType);
 			props = props.Where(x => x.StoreId == storeId).ToList();
 			if (props.Count == 0)
-                return default(TPropType);
+				return default(TPropType);
 
             var prop = props.FirstOrDefault(ga =>
                 ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant

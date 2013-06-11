@@ -40,7 +40,7 @@ namespace SmartStore.Services.Common
         /// <param name="entityId">Entity identifier</param>
         /// <param name="keyGroup">Key group</param>
         /// <returns>Get attributes</returns>
-        IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup);
+		IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup);
         
         /// <summary>
         /// Save attribute value

@@ -124,7 +124,7 @@ namespace SmartStore.Services.Common
         /// <param name="entityId">Entity identifier</param>
         /// <param name="keyGroup">Key group</param>
         /// <returns>Get attributes</returns>
-        public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
+		public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
         {
             string key = string.Format(GENERICATTRIBUTE_KEY, entityId, keyGroup);
             return _cacheManager.Get(key, () =>
@@ -154,8 +154,8 @@ namespace SmartStore.Services.Common
             string keyGroup = entity.GetUnproxiedEntityType().Name;
 
 			var props = GetAttributesForEntity(entity.Id, keyGroup)
-				.Where(x => x.StoreId == storeId)
-				.ToList();
+				 .Where(x => x.StoreId == storeId)
+				 .ToList();
             var prop = props.FirstOrDefault(ga =>
                 ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
 

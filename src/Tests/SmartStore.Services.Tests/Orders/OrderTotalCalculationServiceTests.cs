@@ -988,7 +988,7 @@ namespace SmartStore.Services.Tests.Orders
                             {
                                 new GenericAttribute()
                                     {
-                                        StoreId = 1,
+                                        StoreId = _store.Id,
                                         EntityId = customer.Id,
                                         Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
                                         KeyGroup = "Customer",
@@ -1341,7 +1341,7 @@ namespace SmartStore.Services.Tests.Orders
                             {
                                 new GenericAttribute()
                                     {
-                                        StoreId = 1,
+                                        StoreId = _store.Id,
                                         EntityId = customer.Id,
                                         Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
                                         KeyGroup = "Customer",

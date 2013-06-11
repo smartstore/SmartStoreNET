@@ -443,7 +443,6 @@ namespace SmartStore.Admin.Controllers
                     Username = model.Username,
                     AdminComment = model.AdminComment,
                     IsTaxExempt = model.IsTaxExempt,
-                    TimeZoneId = model.TimeZoneId,
                     Active = model.Active,
                     CreatedOnUtc = DateTime.UtcNow,
                     LastActivityDateUtc = DateTime.UtcNow,
@@ -451,6 +450,8 @@ namespace SmartStore.Admin.Controllers
                 _customerService.InsertCustomer(customer);
                 
                 //form fields
+				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                 if (_customerSettings.GenderEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
@@ -574,12 +575,12 @@ namespace SmartStore.Admin.Controllers
             model.IsTaxExempt = customer.IsTaxExempt;
             model.Active = customer.Active;
             model.AffiliateId = customer.AffiliateId;
-            model.TimeZoneId = customer.TimeZoneId;
+			model.TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
             foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-                model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == customer.TimeZoneId) });
+				model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
@@ -691,7 +692,6 @@ namespace SmartStore.Admin.Controllers
                 {
                     customer.AdminComment = model.AdminComment;
                     customer.IsTaxExempt = model.IsTaxExempt;
-                    customer.TimeZoneId = model.TimeZoneId;
                     customer.Active = model.Active;
                     //email
                     if (!String.IsNullOrWhiteSpace(model.Email))
@@ -739,10 +739,12 @@ namespace SmartStore.Admin.Controllers
 								(int)VatNumberStatus.Empty);
 						}
                     }
-					// codehint: sm-edit (CS3351, can following line really be removed?)
+					// codehint: sm-edit (CS3351, decided not to remove UpdateCustomer here)
 					_customerService.UpdateCustomer(customer);
 
                     //form fields
+					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);

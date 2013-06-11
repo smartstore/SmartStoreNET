@@ -549,8 +549,10 @@ namespace SmartStore.Web.Controllers
                 if (registrationResult.Success)
                 {
                     //properties
-                    if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-                        customer.TimeZoneId = model.TimeZoneId;
+					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+					{
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
+					}
                     //VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
@@ -566,8 +568,6 @@ namespace SmartStore.Web.Controllers
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
-                    //save
-                    _customerService.UpdateCustomer(customer);
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
@@ -969,7 +969,9 @@ namespace SmartStore.Web.Controllers
 
                     //properties
                     if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-                        customer.TimeZoneId = model.TimeZoneId;
+					{
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
+					}
                     //VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
@@ -989,8 +991,6 @@ namespace SmartStore.Web.Controllers
 								_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
 						}
                     }
-                    //save
-                    _customerService.UpdateCustomer(customer);
 
                     //form fields
                     if (_customerSettings.GenderEnabled)

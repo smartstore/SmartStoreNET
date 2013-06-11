@@ -112,11 +112,6 @@ namespace SmartStore.Core.Domain.Customers
         public string GiftCardCouponCodes { get; set; }
 
         /// <summary>
-        /// Gets or sets the time zone identifier
-        /// </summary>
-        public string TimeZoneId { get; set; }
-
-        /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
         public int AffiliateId { get; set; }

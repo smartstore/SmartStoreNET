@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Common;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -14,18 +18,21 @@ namespace SmartStore.Services.Tests.Helpers
     public class DateTimeHelperTests : ServiceTest
     {
         IWorkContext _workContext;
-        ICustomerService _customerService;
+		IGenericAttributeService _genericAttributeService;
         ISettingService _settingService;
         DateTimeSettings _dateTimeSettings;
         IDateTimeHelper _dateTimeHelper;
+		Store _store;
 
         [SetUp]
         public new void SetUp()
         {
-            _customerService = MockRepository.GenerateMock<ICustomerService>();
+			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _settingService = MockRepository.GenerateMock<ISettingService>();
 
+			_store = new Store() { Id = 1 };
             _workContext = MockRepository.GenerateMock<IWorkContext>();
+			_workContext.Expect(x => x.CurrentStore).Return(_store);
 
             _dateTimeSettings = new DateTimeSettings()
             {
@@ -33,7 +40,7 @@ namespace SmartStore.Services.Tests.Helpers
                 DefaultStoreTimeZoneId = ""
             };
 
-            _dateTimeHelper = new DateTimeHelper(_workContext, _customerService,
+			_dateTimeHelper = new DateTimeHelper(_workContext, _genericAttributeService,
                 _settingService, _dateTimeSettings);
         }
 
@@ -61,8 +68,22 @@ namespace SmartStore.Services.Tests.Helpers
 
             var customer = new Customer()
             {
-                TimeZoneId = "Russian Standard Time" //(GMT+03:00) Moscow, St. Petersburg, Volgograd
+				Id = 10
             };
+
+			_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
+				 .Return(new List<GenericAttribute>()
+                            {
+                                new GenericAttribute()
+                                    {
+                                        StoreId = _store.Id,
+                                        EntityId = customer.Id,
+                                        Key = SystemCustomerAttributeNames.TimeZoneId,
+                                        KeyGroup = "Customer",
+                                        Value = "Russian Standard Time" //(GMT+03:00) Moscow, St. Petersburg, Volgograd
+                                    }
+                            });
+
             var timeZone = _dateTimeHelper.GetCustomerTimeZone(customer);
             timeZone.ShouldNotBeNull();
             timeZone.Id.ShouldEqual("Russian Standard Time");
@@ -76,8 +97,22 @@ namespace SmartStore.Services.Tests.Helpers
 
             var customer = new Customer()
             {
-                TimeZoneId = "Russian Standard Time" //(GMT+03:00) Moscow, St. Petersburg, Volgograd
+				Id = 10
             };
+
+			_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
+				 .Return(new List<GenericAttribute>()
+                            {
+                                new GenericAttribute()
+                                    {
+                                        StoreId = _store.Id,
+                                        EntityId = customer.Id,
+                                        Key = SystemCustomerAttributeNames.TimeZoneId,
+                                        KeyGroup = "Customer",
+                                        Value = "Russian Standard Time" //(GMT+03:00) Moscow, St. Petersburg, Volgograd
+                                    }
+                            });
+
             var timeZone = _dateTimeHelper.GetCustomerTimeZone(customer);
             timeZone.ShouldNotBeNull();
             timeZone.Id.ShouldEqual("E. Europe Standard Time");

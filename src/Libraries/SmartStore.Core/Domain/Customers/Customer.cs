@@ -97,17 +97,6 @@ namespace SmartStore.Core.Domain.Customers
         public bool IsTaxExempt { get; set; }
 
         /// <summary>
-        /// Gets or sets a VAT number (including counry code)
-        /// </summary>
-        [DataMember]
-        public string VatNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the VAT number status identifier
-        /// </summary>
-        public int VatNumberStatusId { get; set; }
-
-        /// <summary>
         /// Gets or sets the selected checkout attributes (serialized)
         /// </summary>
         public string CheckoutAttributes { get; set; }
@@ -172,25 +161,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public DateTime LastActivityDateUtc { get; set; }
         
-        #region Custom properties
-
-        /// <summary>
-        /// Gets the VAT number status
-        /// </summary>
-        public VatNumberStatus VatNumberStatus
-        {
-            get
-            {
-                return (VatNumberStatus)this.VatNumberStatusId;
-            }
-            set
-            {
-                this.VatNumberStatusId = (int)value;
-            }
-        }
-        
-        #endregion
-
         #region Navigation properties
 
         /// <summary>

@@ -1292,13 +1292,10 @@ IF EXISTS (SELECT 1
 BEGIN
 	ALTER TABLE dbo.[Customer]
 	DROP CONSTRAINT Customer_Currency
+	
+	EXEC ('UPDATE [Customer] SET [CurrencyId] = 0 WHERE [CurrencyId] IS NULL')
+	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [CurrencyId] int NOT NULL')
 END
-GO
-
-UPDATE [Customer] SET [CurrencyId] = 0 WHERE [CurrencyId] IS NULL
-GO
-
-ALTER TABLE [Customer] ALTER COLUMN [CurrencyId] int NOT NULL
 GO
 
 IF EXISTS (SELECT 1
@@ -1309,13 +1306,10 @@ IF EXISTS (SELECT 1
 BEGIN
 	ALTER TABLE dbo.[Customer]
 	DROP CONSTRAINT Customer_Language
+	
+	EXEC ('UPDATE [Customer] SET  = 0 WHERE [LanguageId] IS NULL')
+	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [LanguageId] int NOT NULL')
 END
-GO
-
-UPDATE [Customer] SET [LanguageId] = 0 WHERE [LanguageId] IS NULL
-GO
-
-ALTER TABLE [Customer] ALTER COLUMN [LanguageId] int NOT NULL
 GO
 
 IF EXISTS (SELECT 1
@@ -1324,8 +1318,7 @@ IF EXISTS (SELECT 1
            AND parent_obj = Object_id('Customer')
            AND Objectproperty(id,N'IsForeignKey') = 1)
 BEGIN
-	ALTER TABLE dbo.[Customer]
-	DROP CONSTRAINT Affiliate_AffiliatedCustomers
+	ALTER TABLE dbo.[Customer] DROP CONSTRAINT Affiliate_AffiliatedCustomers
 END
 GO
 
@@ -1341,8 +1334,7 @@ IF EXISTS (SELECT 1
            AND parent_obj = Object_id('Order')
            AND Objectproperty(id,N'IsForeignKey') = 1)
 BEGIN
-	ALTER TABLE dbo.[Order]
-	DROP CONSTRAINT Affiliate_AffiliatedOrders
+	ALTER TABLE dbo.[Order] DROP CONSTRAINT Affiliate_AffiliatedOrders
 END
 GO
 
@@ -1356,8 +1348,7 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ShoppingCartItem]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [ShoppingCartItem]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [ShoppingCartItem] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1384,8 +1375,7 @@ GO
 --Store mapping to orders
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Order]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Order]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [Order] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1400,8 +1390,7 @@ GO
 --Store mapping to return requests
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ReturnRequest]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [ReturnRequest]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [ReturnRequest] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1416,8 +1405,7 @@ GO
 --Store mapping to message templates
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[MessageTemplate]') and NAME='LimitedToStores')
 BEGIN
-	ALTER TABLE [MessageTemplate]
-	ADD [LimitedToStores] bit NULL
+	ALTER TABLE [MessageTemplate] ADD [LimitedToStores] bit NULL
 END
 GO
 
@@ -1430,8 +1418,7 @@ GO
 --Store mapping for topics
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Topic]') and NAME='LimitedToStores')
 BEGIN
-	ALTER TABLE [Topic]
-	ADD [LimitedToStores] bit NULL
+	ALTER TABLE [Topic]	ADD [LimitedToStores] bit NULL
 END
 GO
 
@@ -1444,8 +1431,7 @@ GO
 --Store mapping to news
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[News]') and NAME='LimitedToStores')
 BEGIN
-	ALTER TABLE [News]
-	ADD [LimitedToStores] bit NULL
+	ALTER TABLE [News] ADD [LimitedToStores] bit NULL
 END
 GO
 
@@ -1459,8 +1445,7 @@ GO
 --Store mapping to BackInStockSubscription
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[BackInStockSubscription]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [BackInStockSubscription]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [BackInStockSubscription] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1488,8 +1473,7 @@ GO
 --Store mapping to Forums_PrivateMessage
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Forums_PrivateMessage]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Forums_PrivateMessage]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [Forums_PrivateMessage] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1517,8 +1501,7 @@ GO
 --GenericAttributes cuold be limited to some specific store name
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[GenericAttribute]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [GenericAttribute]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [GenericAttribute] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1555,35 +1538,42 @@ GO
 --Moved several properties from [Customer] to [GenericAtrribute]
 IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='TaxDisplayTypeId')
 BEGIN
-	ALTER TABLE [Customer]
-	DROP COLUMN [TaxDisplayTypeId]
+	ALTER TABLE [Customer] DROP COLUMN [TaxDisplayTypeId]
 END
 GO
 
 IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='SelectedPaymentMethodSystemName')
 BEGIN
-	ALTER TABLE [Customer]
-	DROP COLUMN [SelectedPaymentMethodSystemName]
+	ALTER TABLE [Customer] DROP COLUMN [SelectedPaymentMethodSystemName]
 END
 GO
 
 IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='UseRewardPointsDuringCheckout')
 BEGIN
-	ALTER TABLE [Customer]
-	DROP COLUMN [UseRewardPointsDuringCheckout]
+	ALTER TABLE [Customer] DROP COLUMN [UseRewardPointsDuringCheckout]
 END
 GO
 
 IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='CurrencyId')
 BEGIN
-	ALTER TABLE [Customer]
-	DROP COLUMN [CurrencyId]
+	ALTER TABLE [Customer] DROP COLUMN [CurrencyId]
 END
 GO
 
 IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='LanguageId')
 BEGIN
-	ALTER TABLE [Customer]
-	DROP COLUMN [LanguageId]
+	ALTER TABLE [Customer] DROP COLUMN [LanguageId]
+END
+GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='VatNumber')
+BEGIN
+	ALTER TABLE [Customer] DROP COLUMN [VatNumber]
+END
+GO
+
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='VatNumberStatusId')
+BEGIN
+	ALTER TABLE [Customer] DROP COLUMN [VatNumberStatusId]
 END
 GO

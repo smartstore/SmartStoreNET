@@ -1406,12 +1406,6 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = customer.IsTaxExempt;
                     col++;
 
-                    worksheet.Cells[row, col].Value = customer.VatNumber;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.VatNumberStatusId;
-                    col++;
-
                     worksheet.Cells[row, col].Value = customer.TimeZoneId;
                     col++;
 
@@ -1447,6 +1441,8 @@ namespace SmartStore.Services.ExportImport
                     var stateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                     var phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                     var fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
+					var vatNumber = customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumber);
+					var vatNumberStatusId = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumberStatusId);
 
                     var avatarPictureId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
                     var forumPostCount = customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount);
@@ -1487,6 +1483,12 @@ namespace SmartStore.Services.ExportImport
 
                     worksheet.Cells[row, col].Value = fax;
                     col++;
+
+					worksheet.Cells[row, col].Value = vatNumber;
+					col++;
+
+					worksheet.Cells[row, col].Value = vatNumberStatusId;
+					col++;
 
                     worksheet.Cells[row, col].Value = avatarPictureId;
                     col++;
@@ -1553,8 +1555,6 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("PasswordFormatId", null, customer.PasswordFormatId.ToString());
                 xmlWriter.WriteElementString("PasswordSalt", null, customer.PasswordSalt);
                 xmlWriter.WriteElementString("IsTaxExempt", null, customer.IsTaxExempt.ToString());
-                xmlWriter.WriteElementString("VatNumber", null, customer.VatNumber);
-                xmlWriter.WriteElementString("VatNumberStatusId", null, customer.VatNumberStatusId.ToString());
                 xmlWriter.WriteElementString("TimeZoneId", null, customer.TimeZoneId);
 				xmlWriter.WriteElementString("AffiliateId", null, customer.AffiliateId.ToString());
                 xmlWriter.WriteElementString("Active", null, customer.Active.ToString());
@@ -1579,6 +1579,8 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("StateProvinceId", null, customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId).ToString());
                 xmlWriter.WriteElementString("Phone", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone));
                 xmlWriter.WriteElementString("Fax", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax));
+				xmlWriter.WriteElementString("VatNumber", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber));
+				xmlWriter.WriteElementString("VatNumberStatusId", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumberStatusId));
 
                 var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
                 bool subscribedToNewsletters = newsletter != null && newsletter.Active;

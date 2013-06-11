@@ -126,11 +126,22 @@ namespace SmartStore.Services.Messages
 
         }
 
-        private int EnsureLanguageIsActive(int languageId)
+		private int EnsureLanguageIsActive(int languageId, int storeId)
         {
+			//load language by specified ID
             var language = _languageService.GetLanguageById(languageId);
+
             if (language == null || !language.Published)
-                language = _languageService.GetAllLanguages().FirstOrDefault();
+			{
+				//load any language from the specified store
+				language = _languageService.GetAllLanguages(storeId: storeId).FirstOrDefault();
+			}
+			if (language == null || !language.Published)
+			{
+				//load any language
+				language = _languageService.GetAllLanguages().FirstOrDefault();
+			}
+
 			if (language == null)
 				throw new Exception("No active language could be loaded");
             return language.Id;
@@ -153,8 +164,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewCustomer.Notification", languageId, store.Id);
             if (messageTemplate == null)
@@ -187,8 +198,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.WelcomeMessage", languageId, store.Id);
             if (messageTemplate == null)
@@ -221,8 +232,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.EmailValidationMessage", languageId, store.Id);
 			if (messageTemplate == null)
@@ -255,8 +266,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.PasswordRecovery", languageId, store.Id);
 			if (messageTemplate == null)
@@ -293,8 +304,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -328,8 +339,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.CustomerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -367,8 +378,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new Exception("Order cannot be loaded");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentSent.CustomerNotification", languageId, store.Id);
             if (messageTemplate == null)
@@ -407,8 +418,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new Exception("Order cannot be loaded");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentDelivered.CustomerNotification", languageId, store.Id);
             if (messageTemplate == null)
@@ -443,8 +454,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCompleted.CustomerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -478,8 +489,8 @@ namespace SmartStore.Services.Messages
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCancelled.CustomerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -515,8 +526,8 @@ namespace SmartStore.Services.Messages
 
             var order = orderNote.Order;
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(order.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewOrderNote", languageId, store.Id);
 			if (messageTemplate == null)
@@ -551,8 +562,8 @@ namespace SmartStore.Services.Messages
             if (recurringPayment == null)
                 throw new ArgumentNullException("recurringPayment");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -592,8 +603,8 @@ namespace SmartStore.Services.Messages
             if (subscription == null)
                 throw new ArgumentNullException("subscription");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", languageId, store.Id);
 			if (messageTemplate == null)
@@ -627,8 +638,8 @@ namespace SmartStore.Services.Messages
             if (subscription == null)
                 throw new ArgumentNullException("subscription");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 			
             var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", languageId, store.Id);
             if (messageTemplate == null)
@@ -671,8 +682,8 @@ namespace SmartStore.Services.Messages
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Service.EmailAFriend", languageId, store.Id);
 			if (messageTemplate == null)
@@ -708,10 +719,10 @@ namespace SmartStore.Services.Messages
 
             if (product == null)
                 throw new ArgumentNullException("product");
-
-            languageId = EnsureLanguageIsActive(languageId);
+			
 			var store = _workContext.CurrentStore;
-
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
+			
             var messageTemplate = GetLocalizedActiveMessageTemplate("Product.AskQuestion", languageId, store.Id);
             if (messageTemplate == null)
                 return 0;
@@ -751,8 +762,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
-			var store = _workContext.CurrentStore;
+            var store = _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Wishlist.EmailAFriend", languageId, store.Id);
 			if (messageTemplate == null)
@@ -792,8 +803,8 @@ namespace SmartStore.Services.Messages
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -828,8 +839,8 @@ namespace SmartStore.Services.Messages
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -992,8 +1003,6 @@ namespace SmartStore.Services.Messages
             if (giftCard == null)
                 throw new ArgumentNullException("giftCard");
 
-            languageId = EnsureLanguageIsActive(languageId);
-
 			Store store = null;
 			var order = giftCard.PurchasedWithOrderProductVariant != null ?
 				giftCard.PurchasedWithOrderProductVariant.Order :
@@ -1002,6 +1011,8 @@ namespace SmartStore.Services.Messages
 				store = _storeService.GetStoreById(order.StoreId);
 			if (store == null)
 				store = _workContext.CurrentStore;
+
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("GiftCard.Notification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -1034,8 +1045,8 @@ namespace SmartStore.Services.Messages
             if (productReview == null)
                 throw new ArgumentNullException("productReview");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Product.ProductReview", languageId, store.Id);
 			if (messageTemplate == null)
@@ -1068,8 +1079,8 @@ namespace SmartStore.Services.Messages
             if (productVariant == null)
                 throw new ArgumentNullException("productVariant");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -1104,8 +1115,8 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", languageId, store.Id);
 			if (messageTemplate == null)
@@ -1140,8 +1151,8 @@ namespace SmartStore.Services.Messages
             if (blogComment == null)
                 throw new ArgumentNullException("blogComment");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Blog.BlogComment", languageId, store.Id);
 			if (messageTemplate == null)
@@ -1174,9 +1185,9 @@ namespace SmartStore.Services.Messages
             if (newsComment == null)
                 throw new ArgumentNullException("newsComment");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = _workContext.CurrentStore;
-
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
+			
 			var messageTemplate = GetLocalizedActiveMessageTemplate("News.NewsComment", languageId, store.Id);
 			if (messageTemplate == null)
                 return 0;
@@ -1208,8 +1219,8 @@ namespace SmartStore.Services.Messages
             if (subscription == null)
                 throw new ArgumentNullException("subscription");
 
-            languageId = EnsureLanguageIsActive(languageId);
 			var store = subscription.Store ?? _workContext.CurrentStore;
+            languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.BackInStock", languageId, store.Id);
 			if (messageTemplate == null)

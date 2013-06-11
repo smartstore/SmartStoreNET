@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
@@ -88,6 +89,29 @@ namespace SmartStore.Services.Stores
 				var stores = query.ToList();
 				return stores;
 			});
+		}
+
+		/// <summary>
+		/// Gets all stores
+		/// </summary>
+		/// <returns>Store collection</returns>
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual IList<SelectListItem> GetAllStoresAsListItems(IList<Store> stores = null)
+		{
+			if (stores == null)
+				stores = GetAllStores();
+
+			var lst = new List<SelectListItem>();
+
+			foreach (var store in stores)
+			{
+				lst.Add(new SelectListItem
+				{
+					Text = store.Name,
+					Value = store.Id.ToString()
+				});
+			}
+			return lst;
 		}
 
 		/// <summary>

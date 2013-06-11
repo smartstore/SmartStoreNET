@@ -252,4 +252,10 @@
 	<LocaleResource Name="SearchProductName.Hint">
 		<Value>Produkte nach Stichwörtern suchen.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
+	</LocaleResource>
 </Language>

@@ -17,6 +17,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.Mvc;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -276,6 +277,36 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return lst;
 		}
+		public void StartCreatingFeeds(IStoreService storeService, Func<FileStream, Store, bool> createFeed)
+		{
+			var storeLocation = StoreLocation;
+			var stores = new List<Store>();
+
+			if (BaseSettings.StoreId != 0)
+			{
+				var storeById = storeService.GetStoreById(BaseSettings.StoreId);
+				if (storeById != null)
+					stores.Add(storeById);
+			}
+
+			if (stores.Count == 0)
+			{
+				stores.AddRange(storeService.GetAllStores());
+			}
+
+			foreach (var store in stores)
+			{
+				var feedFile = FeedFileByStore(store, storeLocation);
+				if (feedFile != null)
+				{
+					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+					{
+						if (!createFeed(stream, store))
+							break;
+					}
+				}
+			}
+		}
 
 		public string MainProductImageUrl(Store store, Product product, ProductVariant variant) {
 			string url;
@@ -358,6 +389,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public string ShippingTime { get; set; }
 		public string Brand { get; set; }
 		public bool UseOwnProductNo { get; set; }
+		public int StoreId { get; set; }
 	}	// class
 
 

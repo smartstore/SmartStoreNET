@@ -18,6 +18,7 @@ using Telerik.Web.Mvc;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
+using System.Web.Mvc;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -419,26 +420,22 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				throw new SmartException(breakingError);
 		}
 		public virtual void CreateFeed() {
-			var storeLocation = Helper.StoreLocation;
-			var stores = _storeService.GetAllStores();
-
-			foreach (var store in stores)
+			Helper.StartCreatingFeeds(_storeService, (stream, store) =>
 			{
-				var feedFile = Helper.FeedFileByStore(store, storeLocation);
-				if (feedFile != null)
-				{
-					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-					{
-						CreateFeed(stream, store);
-					}
-				}
-			}
+				CreateFeed(stream, store);
+				return true;
+			});
 		}
 		public virtual void SetupModel(FeedFroogleModel model, ScheduleTask task = null) {
+			var stores = _storeService.GetAllStores().ToList();
+
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();
-			model.GeneratedFiles = Helper.FeedFiles(_storeService.GetAllStores().ToList());
+			model.GeneratedFiles = Helper.FeedFiles(stores);
 			model.Helper = Helper;
+
+			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
 
 			if (task != null) {
 				model.GenerateStaticFileEachMinutes = task.Seconds / 60;

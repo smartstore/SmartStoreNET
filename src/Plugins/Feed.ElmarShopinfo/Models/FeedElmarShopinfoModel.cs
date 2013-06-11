@@ -8,6 +8,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Models
     public class FeedElmarShopinfoModel
 	{
 		#region General
+
 		public string GenerateFeedResult { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.StaticFileUrl")]
@@ -50,6 +51,11 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Models
 		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.CategoryMapping")]
 		public string CategoryMapping { get; set; }
 		public List<SelectListItem> ElmarCategories { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.ElmarShopinfo.Store")]
+		public int StoreId { get; set; }
+		public List<SelectListItem> AvailableStores { get; set; }
+
 		#endregion
 		
 		#region Automation
@@ -142,6 +148,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Models
 				ExportHotlineCost = settings.ExportHotlineCost;
 				HotlineCostPerMinute = settings.HotlineCostPerMinute;
 				CategoryMapping = settings.CategoryMapping;
+				StoreId = settings.StoreId;
 			}
 			else {
 				settings.ProductPictureSize = ProductPictureSize;
@@ -171,6 +178,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Models
 				settings.ExportHotlineCost = ExportHotlineCost;
 				settings.HotlineCostPerMinute = HotlineCostPerMinute;
 				settings.CategoryMapping = CategoryMapping;
+				settings.StoreId = StoreId;
 			}
 		}
     }	// class

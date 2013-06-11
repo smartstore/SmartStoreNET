@@ -417,6 +417,15 @@ set @resources='
 	<Value>Feed has been successfully generated.</Value>
 	<T>Feed wurde erfolgreich erstellt.</T>
   </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Froogle.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Froogle.Store.Hint">
+	<Value>Select the store that will be used to generate the feed.</Value>
+	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Feed.Billiger.ClickHere">
 	<Value></Value>
 	<T></T>
@@ -425,6 +434,15 @@ set @resources='
 	<Value>Feed has been successfully generated.</Value>
 	<T>Feed wurde erfolgreich erstellt.</T>
   </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Billiger.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Billiger.Store.Hint">
+	<Value>Select the store that will be used to generate the feed.</Value>
+	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.ClickHere">
 	<Value></Value>
 	<T></T>
@@ -432,6 +450,14 @@ set @resources='
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
 	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store.Hint">
+	<Value>Select the store that will be used to generate the feed.</Value>
+	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl">
 	<Value></Value>
@@ -441,6 +467,7 @@ set @resources='
 	<Value></Value>
 	<T></T>
   </LocaleResource>
+  
   <LocaleResource Name="Plugins.Feed.Guenstiger.ClickHere">
 	<Value></Value>
 	<T></T>
@@ -449,6 +476,15 @@ set @resources='
 	<Value>Feed has been successfully generated.</Value>
 	<T>Feed wurde erfolgreich erstellt.</T>
   </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Guenstiger.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Guenstiger.Store.Hint">
+	<Value>Select the store that will be used to generate the feed.</Value>
+	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Feed.Shopwahl.ClickHere">
 	<Value></Value>
 	<T></T>
@@ -456,6 +492,14 @@ set @resources='
   <LocaleResource Name="Plugins.Feed.Shopwahl.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
 	<T>Feed wurde erfolgreich erstellt.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Shopwahl.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Feed.Shopwahl.Store.Hint">
+	<Value>Select the store that will be used to generate the feed.</Value>
+	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
   </LocaleResource>
   
 </Language>

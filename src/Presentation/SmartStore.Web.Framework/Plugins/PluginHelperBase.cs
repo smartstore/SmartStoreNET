@@ -15,6 +15,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Framework.Plugins
 {

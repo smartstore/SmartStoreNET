@@ -241,4 +241,10 @@ Mehr Informationen finden Sie unter <a href="http://elektronischer-markt.de/nav?
 	<LocaleResource Name="UpdateHourTo.Hint">
 		<Value>Obere Grenze des Zeitfensters. Wird kein Zeitfenster angegeben, kann die Aktualisierung zu einer beliebigen Zeit stattfinden.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
+	</LocaleResource>
 </Language>

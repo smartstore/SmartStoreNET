@@ -378,7 +378,19 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		public virtual void CreateFeed()
 		{
 			var storeLocation = Helper.StoreLocation;
-			var stores = _storeService.GetAllStores();
+			var stores = new List<Store>();
+
+			if (Settings.StoreId != 0)
+			{
+				var storeById = _storeService.GetStoreById(Settings.StoreId);
+				if (storeById != null)
+					stores.Add(storeById);
+			}
+
+			if (stores.Count == 0)
+			{
+				stores.AddRange(_storeService.GetAllStores());
+			}
 
 			foreach (var store in stores)
 			{
@@ -395,13 +407,18 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		}
 		public virtual void SetupModel(FeedElmarShopinfoModel model, ScheduleTask task = null) {
 			CultureInfo culture = new CultureInfo(Helper.Language.LanguageCulture);
+			var stores = _storeService.GetAllStores().ToList();
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
-			model.GeneratedFiles = Helper.FeedFiles(_storeService.GetAllStores().ToList(), Settings.StaticFileNameXml);
+			model.GeneratedFiles = Helper.FeedFiles(stores, Settings.StaticFileNameXml);
 			model.ElmarCategories = new List<SelectListItem>();
 			model.HourList = new List<SelectListItem> {
 				new	SelectListItem { Text = Helper.Resource("Common.Unspecified"), Value = "" }
 			};
+
+			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
+
 			model.DayList = new List<SelectListItem> {
 				new	SelectListItem { Text = Helper.Resource("Daily"), Value = "daily" },
 				new	SelectListItem { Text = culture.DateTimeFormat.GetDayName(DayOfWeek.Monday), Value = "mon" },

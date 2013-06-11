@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Stores
@@ -19,6 +20,13 @@ namespace SmartStore.Services.Stores
 		/// </summary>
 		/// <returns>Store collection</returns>
 		IList<Store> GetAllStores();
+
+		/// <summary>
+		/// Gets all stores
+		/// </summary>
+		/// <returns>Store collection</returns>
+		/// <remarks>codehint: sm-add</remarks>
+		IList<SelectListItem> GetAllStoresAsListItems(IList<Store> stores = null);
 
 		/// <summary>
 		/// Gets a store 

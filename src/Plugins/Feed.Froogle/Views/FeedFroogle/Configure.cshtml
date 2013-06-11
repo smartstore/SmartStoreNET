@@ -115,7 +115,16 @@
             <hr />
         </td>
     </tr>
-    <tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.StoreId):
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores)
+			@Html.ValidationMessageFor(model => model.StoreId)
+		</td>
+	</tr>
+	<tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(m => m.BuildDescription)
         </td>

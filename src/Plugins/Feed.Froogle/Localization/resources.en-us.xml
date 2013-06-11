@@ -252,4 +252,10 @@
 	<LocaleResource Name="SearchProductName.Hint">
 		<Value>Search products by keywords.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Store</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Select the store that will be used to generate the feed.</Value>
+	</LocaleResource>
 </Language>

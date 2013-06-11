@@ -104,6 +104,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
 		public string SearchProductName { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Store")]
+		public int StoreId { get; set; }
+		public List<SelectListItem> AvailableStores { get; set; }
+
 		public string GridEditUrl {
 			get {
 				if (_gridEditUrl == null) {
@@ -140,6 +144,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				Pattern = settings.Pattern;
 				OnlineOnly = settings.OnlineOnly;
 				DescriptionToPlainText = settings.DescriptionToPlainText;
+				StoreId = settings.StoreId;
 			}
 			else {
 				settings.AppendDescriptionText1 = AppendDescriptionText1;
@@ -165,6 +170,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.Pattern = Pattern;
 				settings.OnlineOnly = OnlineOnly;
 				settings.DescriptionToPlainText = DescriptionToPlainText;
+				settings.StoreId = StoreId;
 			}
 		}
 		// codehint: sm-add (end)

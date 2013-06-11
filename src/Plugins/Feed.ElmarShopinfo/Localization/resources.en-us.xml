@@ -242,4 +242,10 @@ In order to get more technical infos look at <a href="http://elektronischer-mark
 	<LocaleResource Name="UpdateHourTo.Hint">
 		<Value>Upper period limit when the update should take place. Without a period the updating can start at any time.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Store</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Select the store that will be used to generate the feed.</Value>
+	</LocaleResource>
 </Language>

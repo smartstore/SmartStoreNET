@@ -32,6 +32,13 @@ namespace SmartStore.Services.Configuration
 		/// <returns>Settings</returns>
 		IList<Setting> GetAllSettings();
 
+		/// <summary>
+		/// Load settings
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
+		T LoadSetting<T>(int storeId = 0) where T : ISettings, new();
+
         /// <summary>
         /// Set setting value
         /// </summary>

@@ -17,52 +17,69 @@ namespace SmartStore.Services.Configuration
         public ConfigurationProvider(ISettingService settingService)
         {
             this._settingService = settingService;
-            this.BuildConfiguration();
+			this.LoadSettings(0);
         }
 
-        public TSettings Settings { get; protected set; }
+		public TSettings Settings { get; protected set; }
 
-        private void BuildConfiguration()
+		public void LoadSettings(int storeId)
         {
             // codehint: sm-add
             if (typeof(TSettings).HasAttribute<JsonPersistAttribute>(true))
             {
-                BuildConfigurationJson();
+                BuildConfigurationJson(storeId);
                 return;
             }
 
             Settings = (TSettings)typeof(TSettings).CreateInstance();
 
-            // get properties we can write to
-            var properties = from prop in typeof(TSettings).Properties(Flags.InstancePublic)
-                             where prop.CanWrite && prop.CanRead
-                             let setting = _settingService.GetSettingByKey<string>(typeof(TSettings).Name + "." + prop.Name)
-                             let converter = CommonHelper.GetCustomTypeConverter(prop.PropertyType)
-                             where setting != null
-                             where converter.CanConvertFrom(typeof(string)) && converter.IsValid(setting)
-                             let value = converter.ConvertFromInvariantString(setting)
-                             select new { prop, value };
+			foreach (var prop in typeof(TSettings).GetProperties())
+			{
+				// get properties we can read and write to
+				if (!prop.CanRead || !prop.CanWrite)
+					continue;
 
-            // assign properties
-            properties.ToList().ForEach(p => Settings.TrySetPropertyValue(p.prop.Name, p.value));
+				var key = typeof(TSettings).Name + "." + prop.Name;
+				//load by store
+				string setting = _settingService.GetSettingByKey<string>(key, storeId: storeId);
+				if (setting == null && storeId > 0)
+				{
+					//load for all stores if not found
+					setting = _settingService.GetSettingByKey<string>(key, storeId: 0);
+				}
+
+				if (setting == null)
+					continue;
+
+				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+					continue;
+
+				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).IsValid(setting))
+					continue;
+
+				object value = CommonHelper.GetCustomTypeConverter(prop.PropertyType).ConvertFromInvariantString(setting);
+
+				//set property
+				prop.SetValue(Settings, value, null);
+			}
         }
 
         // codehint: sm-add
-        private void BuildConfigurationJson()
+		private void BuildConfigurationJson(int storeId)
         {
             Type t = typeof(TSettings);
             string key = t.Namespace + "." + t.Name;
 
             this.Settings = Activator.CreateInstance<TSettings>();
 
-            var rawSetting = _settingService.GetSettingByKey<string>(key);
+            var rawSetting = _settingService.GetSettingByKey<string>(key, storeId: storeId);
             if (rawSetting.HasValue())
             {
                 JsonConvert.PopulateObject(rawSetting, this.Settings);
             }
         }
 
-        public void SaveSettings(TSettings settings)
+		public void SaveSettings(TSettings settings)
         {
             // codehint: sm-add
             if (typeof(TSettings).HasAttribute<JsonPersistAttribute>(true))

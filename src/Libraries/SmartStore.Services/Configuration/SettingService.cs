@@ -201,6 +201,17 @@ namespace SmartStore.Services.Configuration
 			return settings;
 		}
 
+		/// Load settings
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
+		public virtual T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
+		{
+			var provider = EngineContext.Current.Resolve<IConfigurationProvider<T>>();
+			provider.LoadSettings(storeId);
+			return provider.Settings;
+		}
+
         /// <summary>
         /// Set setting value
         /// </summary>
@@ -222,8 +233,7 @@ namespace SmartStore.Services.Configuration
 			if (settingForCaching != null)
 			{
 				//update
-				var settingId = settingForCaching.Id;
-				var setting = GetSettingById(settingId);
+				var setting = GetSettingById(settingForCaching.Id);
 				setting.Value = valueStr;
 				UpdateSetting(setting, clearCache);
 			}

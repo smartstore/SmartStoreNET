@@ -59,6 +59,11 @@ namespace SmartStore.Services.Tests.Configuration
             return settings;
         }
 
+		public T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
+		{
+			throw new NotImplementedException();
+		}
+
         public void SaveSetting<T>(T settingInstance) where T : ISettings, new()
         {
             throw new NotImplementedException();

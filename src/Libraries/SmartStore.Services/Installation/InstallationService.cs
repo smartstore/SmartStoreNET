@@ -664,15 +664,28 @@ namespace SmartStore.Services.Installation
                 foreach (var setting in settings)
                 {
                     Type settingType = setting.GetType();
-                    Type configProviderGenericType = typeof(IConfigurationProvider<>).MakeGenericType(settingType);
+					Type settingServiceType = typeof(ISettingService);
 
-                    var configProvider = EngineContext.Current.Resolve(configProviderGenericType);
-                    if (configProvider != null)
-                    {
-                        // call "SaveSettings" with reflection, as we have no strong typing
-                        // and thus no intellisense.
-                        configProvider.GetType().GetMethod("SaveSettings").Invoke(configProvider, new object[] { setting });
-                    }
+					var settingService = EngineContext.Current.Resolve(settingServiceType);
+					if (settingService != null)
+					{
+						// call "SaveSettings" with reflection, as we have no strong typing
+						// and thus no intellisense.
+						var method = settingService.GetType().GetMethod("SaveSetting");
+						var genericMethod = method.MakeGenericMethod(settingType);
+
+						genericMethod.Invoke(settingService, new object[] { setting });
+					}
+					
+					//Type configProviderGenericType = typeof(IConfigurationProvider<>).MakeGenericType(settingType);
+
+					//var configProvider = EngineContext.Current.Resolve(configProviderGenericType);
+					//if (configProvider != null)
+					//{
+					//	// call "SaveSettings" with reflection, as we have no strong typing
+					//	// and thus no intellisense.
+					//	configProvider.GetType().GetMethod("SaveSettings").Invoke(configProvider, new object[] { setting });
+					//}
                 }
 
                 IncreaseProgress();

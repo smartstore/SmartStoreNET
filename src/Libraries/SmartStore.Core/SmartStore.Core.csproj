@@ -236,7 +236,6 @@
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
-    <Compile Include="Configuration\IConfigurationProvider.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Configuration\SmartStoreConfig.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />

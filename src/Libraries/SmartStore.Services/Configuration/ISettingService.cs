@@ -53,8 +53,8 @@ namespace SmartStore.Services.Configuration
         /// Save settings object
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
-        /// <param name="settingInstance">Setting instance</param>
-        void SaveSetting<T>(T settingInstance) where T : ISettings, new();
+		/// <param name="settings">Setting instance</param>
+		void SaveSetting<T>(T settings) where T : ISettings, new();
 
 		/// <summary>
 		/// Deletes a setting

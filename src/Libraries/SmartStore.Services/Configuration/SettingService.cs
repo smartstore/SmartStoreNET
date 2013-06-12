@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
@@ -9,6 +10,7 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data;
 using SmartStore.Services.Events;
+using Fasterflect;
 
 namespace SmartStore.Services.Configuration
 {
@@ -146,7 +148,52 @@ namespace SmartStore.Services.Configuration
             _eventPublisher.EntityUpdated(setting);
         }
 
-        #endregion
+		/// <remarks>codehint: sm-add</remarks>
+		private T LoadSettingsJson<T>(int storeId = 0)
+		{
+			Type t = typeof(T);
+			string key = t.Namespace + "." + t.Name;
+
+			T settings = Activator.CreateInstance<T>();
+
+			var rawSetting = GetSettingByKey<string>(key, storeId: storeId);
+			if (rawSetting.HasValue())
+			{
+				JsonConvert.PopulateObject(rawSetting, settings);
+			}
+			return settings;
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		private void SaveSettingsJson<T>(T settings)
+		{
+			Type t = typeof(T);
+			string key = t.Namespace + "." + t.Name;
+			var storeId = 0;
+
+			var rawSettings = JsonConvert.SerializeObject(settings);
+			SetSetting(key, rawSettings, storeId, false);
+
+			// and now clear cache
+			ClearCache();
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		private void DeleteSettingsJson<T>()
+		{
+			Type t = typeof(T);
+			string key = t.Namespace + "." + t.Name;
+
+			var setting = GetAllSettings()
+				.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+
+			if (setting != null)
+			{
+				DeleteSetting(setting);
+			}
+		}
+
+		#endregion
 
         #region Methods
 
@@ -207,9 +254,45 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
 		public virtual T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
 		{
-			var provider = EngineContext.Current.Resolve<IConfigurationProvider<T>>();
-			provider.LoadSettings(storeId);
-			return provider.Settings;
+			// codehint: sm-add
+			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+			{
+				return LoadSettingsJson<T>(storeId);
+			}
+
+			var settings = Activator.CreateInstance<T>();
+
+			foreach (var prop in typeof(T).GetProperties())
+			{
+				// get properties we can read and write to
+				if (!prop.CanRead || !prop.CanWrite)
+					continue;
+
+				var key = typeof(T).Name + "." + prop.Name;
+				//load by store
+				string setting = GetSettingByKey<string>(key, storeId: storeId);
+				if (setting == null && storeId > 0)
+				{
+					//load for all stores if not found
+					setting = GetSettingByKey<string>(key, storeId: 0);
+				}
+
+				if (setting == null)
+					continue;
+
+				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+					continue;
+
+				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).IsValid(setting))
+					continue;
+
+				object value = CommonHelper.GetCustomTypeConverter(prop.PropertyType).ConvertFromInvariantString(setting);
+
+				//set property
+				prop.SetValue(settings, value, null);
+			}
+
+			return settings;
 		}
 
         /// <summary>
@@ -254,11 +337,36 @@ namespace SmartStore.Services.Configuration
         /// Save settings object
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
-        /// <param name="settingInstance">Setting instance</param>
-        public virtual void SaveSetting<T>(T settingInstance) where T : ISettings, new()
+		/// <param name="settings">Setting instance</param>
+		public virtual void SaveSetting<T>(T settings) where T : ISettings, new()
         {
-            //We should be sure that an appropriate ISettings object will not be cached in IoC tool after updating (by default cached per HTTP request)
-            EngineContext.Current.Resolve<IConfigurationProvider<T>>().SaveSettings(settingInstance);
+			// codehint: sm-add
+			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+			{
+				SaveSettingsJson<T>(settings);
+				return;
+			}
+
+			var properties = from prop in typeof(T).GetProperties()
+							 where prop.CanWrite && prop.CanRead
+							 where CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string))
+							 select prop;
+
+			/* We do not clear cache after each setting update.
+			 * This behavior can increase performance because cached settings will not be cleared 
+			 * and loaded from database after each update */
+			foreach (var prop in properties)
+			{
+				string key = typeof(T).Name + "." + prop.Name;
+				var storeId = 0;
+				// Duck typing is not supported in C#. That's why we're using dynamic type
+				dynamic value = settings.TryGetPropertyValue(prop.Name);
+
+				SetSetting(key, value ?? "", storeId, false);
+			}
+
+			//and now clear cache
+			ClearCache();
         }
 
 		/// <summary>
@@ -285,7 +393,26 @@ namespace SmartStore.Services.Configuration
         /// <typeparam name="T">Type</typeparam>
         public virtual void DeleteSetting<T>() where T : ISettings, new()
         {
-            EngineContext.Current.Resolve<IConfigurationProvider<T>>().DeleteSettings();
+			// codehint: sm-add
+			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+			{
+				DeleteSettingsJson<T>();
+				return;
+			}
+
+			var properties = from prop in typeof(T).GetProperties()
+							 select prop;
+
+			var settingsToDelete = new List<Setting>();
+			var allSettings = GetAllSettings();
+			foreach (var prop in properties)
+			{
+				string key = typeof(T).Name + "." + prop.Name;
+				settingsToDelete.AddRange(allSettings.Where(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)));
+			}
+
+			foreach (var setting in settingsToDelete)
+				DeleteSetting(setting);
         }
 
 		/// <summary>

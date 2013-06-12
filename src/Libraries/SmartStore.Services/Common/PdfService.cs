@@ -23,6 +23,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using System.Globalization;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Common
 {
@@ -44,7 +45,8 @@ namespace SmartStore.Services.Common
         private readonly IProductService _productService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IWebHelper _webHelper;
-		private readonly IWorkContext _workContext;
+		private readonly IStoreService _storeService;
+		private readonly IStoreContext _storeContext;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -68,12 +70,13 @@ namespace SmartStore.Services.Common
             IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter,
             ICurrencyService currencyService, IMeasureService measureService,
             IPictureService pictureService, IProductService productService,
-            IProductAttributeParser productAttributeParser, IWebHelper webHelper,
+			IProductAttributeParser productAttributeParser, IStoreService storeService,
+			IStoreContext storeContext, IWebHelper webHelper,
             CatalogSettings catalogSettings, CurrencySettings currencySettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, TaxSettings taxSettings,
             StoreInformationSettings storeInformationSettings, AddressSettings addressSettings,
             CompanyInformationSettings companyInformationSettings, BankConnectionSettings bankConnectionSettings,
-			ContactDataSettings contactDataSettings, IWorkContext workContext)
+			ContactDataSettings contactDataSettings)
         {
             this._localizationService = localizationService;
             this._orderService = orderService;
@@ -85,6 +88,8 @@ namespace SmartStore.Services.Common
             this._pictureService = pictureService;
             this._productService = productService;
             this._productAttributeParser = productAttributeParser;
+			this._storeService = storeService;
+			this._storeContext = storeContext;
             this._webHelper = webHelper;
             this._currencySettings = currencySettings;
             this._catalogSettings = catalogSettings;
@@ -93,7 +98,6 @@ namespace SmartStore.Services.Common
             this._taxSettings = taxSettings;
             this._storeInformationSettings = storeInformationSettings;
             this._addressSettings = addressSettings;
-			this._workContext = workContext;
 
             //codehint: sm-add
             this._companyInformationSettings = companyInformationSettings;
@@ -148,7 +152,7 @@ namespace SmartStore.Services.Common
             var doc = new Document(pageSize, 40, 40, 40, 80);
             var writer = PdfWriter.GetInstance(doc, stream);
             writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings,
-				_localizationService, lang, _workContext);
+				_localizationService, lang, _storeContext);
             doc.Open();
             
             //fonts
@@ -177,6 +181,8 @@ namespace SmartStore.Services.Common
                     headerTable.SetWidths(new[] { 50, 50 });
 
                 //store info
+				var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
+
                 var cell = new PdfPCell();
                 cell.Border = Rectangle.NO_BORDER;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -282,7 +288,7 @@ namespace SmartStore.Services.Common
                 cell.AddElement(paragraph);
 
                 //url
-				paragraph = new Paragraph(_workContext.CurrentStore.Url, font);
+				paragraph = new Paragraph(store.Url, font);
                 paragraph.Alignment = Element.ALIGN_RIGHT;
                 cell.AddElement(paragraph);
 
@@ -1002,14 +1008,14 @@ namespace SmartStore.Services.Common
             private readonly CompanyInformationSettings _companyInformationSettings;
             private readonly BankConnectionSettings _bankConnectionSettings;
             private readonly ContactDataSettings _contactDataSettings;
-			private readonly IWorkContext _workContext;
+			private readonly IStoreContext _storeContext;
             private readonly Language _lang;
 
             public OrderPdfPageEvents(IPictureService pictureService, PdfSettings pdfSettings, 
                 CompanyInformationSettings companyInformationSettings, BankConnectionSettings bankConnectionSettings,
                 ContactDataSettings contactDataSettings, 
                 ILocalizationService localizationService, Language lang,
-				IWorkContext workContext)
+				IStoreContext storeContext)
             {
                 this._localizationService = localizationService;
                 this._pictureService = pictureService;
@@ -1017,7 +1023,7 @@ namespace SmartStore.Services.Common
                 this._companyInformationSettings = companyInformationSettings;
                 this._bankConnectionSettings = bankConnectionSettings;
                 this._contactDataSettings = contactDataSettings;
-				this._workContext = workContext;
+				this._storeContext = storeContext;
                 this._lang = lang;
             }
 
@@ -1091,7 +1097,7 @@ namespace SmartStore.Services.Common
                 cellInfo.AddElement(new Phrase(_companyInformationSettings.ZipCode + " " + _companyInformationSettings.City, font));
                 cellInfo.AddElement(new Phrase(_companyInformationSettings.CountryName + (!String.IsNullOrEmpty(_companyInformationSettings.StateName) ? (", " + _companyInformationSettings.StateName) : ""), font));
 
-                cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Url", _lang.Id), _workContext.CurrentStore.Url), font));
+                cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Url", _lang.Id), _storeContext.CurrentStore.Url), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Mail", _lang.Id), _contactDataSettings.ContactEmailAddress), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Fon", _lang.Id), _contactDataSettings.CompanyTelephoneNumber), font));
                 cellContact.AddElement(new Phrase(String.Format(_localizationService.GetResource("PDFInvoice.Footer.Fax", _lang.Id), _contactDataSettings.CompanyFaxNumber), font));

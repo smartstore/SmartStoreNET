@@ -10,13 +10,10 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 {
     public partial class HasOneProductDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
-		private readonly IWorkContext _workContext;
         private readonly ILocalizationService _localizationService;
 
-		public HasOneProductDiscountRequirementRule(IWorkContext workContext, 
-			ILocalizationService localizationService)
+		public HasOneProductDiscountRequirementRule(ILocalizationService localizationService)
         {
-			_workContext = workContext;
             _localizationService = localizationService;
         }
 
@@ -53,7 +50,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
                 return false;
 
             //cart
-			var cart = request.Customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart && x.StoreId == _workContext.CurrentStore.Id);
+			var cart = request.Customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart && x.StoreId == request.Store.Id);
             
 
             bool found = false;

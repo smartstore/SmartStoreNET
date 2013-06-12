@@ -11,13 +11,11 @@ namespace SmartStore.Plugin.DiscountRules.Store
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly ISettingService _settingService;
-		private readonly IWorkContext _workContext;
 
-		public StoreDiscountRequirementRule(ILocalizationService localizationService, ISettingService settingService, IWorkContext workContext)
+		public StoreDiscountRequirementRule(ILocalizationService localizationService, ISettingService settingService)
 		{
-			this._localizationService = _localizationService;
+			this._localizationService = localizationService;
 			this._settingService = settingService;
-			this._workContext = workContext;
 		}
 
 		/// <summary>
@@ -41,7 +39,7 @@ namespace SmartStore.Plugin.DiscountRules.Store
 			if (storeId == 0)
 				return false;
 
-			bool result = _workContext.CurrentStore.Id == storeId;
+			bool result = request.Store.Id == storeId;
 			return result;
 		}
 

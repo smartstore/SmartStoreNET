@@ -14,14 +14,11 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IOrderService _orderService;
-		private readonly IWorkContext _workContext;
 
-		public HadSpentAmountDiscountRequirementRule(ILocalizationService localizationService, IOrderService orderService,
-			IWorkContext workContext)
+		public HadSpentAmountDiscountRequirementRule(ILocalizationService localizationService, IOrderService orderService)
         {
             _localizationService = localizationService;
 			_orderService = orderService;
-			_workContext = workContext;
         }
 
         /// <summary>
@@ -43,7 +40,7 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
             if (request.Customer == null || request.Customer.IsGuest())
                 return false;
 
-			var orders = _orderService.SearchOrders(_workContext.CurrentStore.Id, request.Customer.Id,
+			var orders = _orderService.SearchOrders(request.Store.Id, request.Customer.Id,
 				null, null, OrderStatus.Complete, null, null, null, null, 0, int.MaxValue);
             decimal spentAmount = orders.Sum(o => o.OrderTotal);
             return spentAmount > request.DiscountRequirement.SpentAmount;

@@ -62,6 +62,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICurrencyService _currencyService;
         private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
         private readonly ISitemapGenerator _sitemapGenerator;
@@ -101,7 +102,8 @@ namespace SmartStore.Web.Controllers
             IManufacturerService manufacturerService, ITopicService topicService,
             ILanguageService languageService, ICompareProductsService compareProductsService,
             ICurrencyService currencyService, ILocalizationService localizationService,
-            IWorkContext workContext, IPictureService pictureService,
+            IWorkContext workContext, IStoreContext storeContext,
+			IPictureService pictureService,
             IQueuedEmailService queuedEmailService, IEmailAccountService emailAccountService,
             ISitemapGenerator sitemapGenerator, IThemeContext themeContext,
             IThemeRegistry themeRegistry, IForumService forumService,
@@ -124,6 +126,7 @@ namespace SmartStore.Web.Controllers
             this._currencyService = currencyService;
             this._localizationService = localizationService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._queuedEmailService = queuedEmailService;
             this._emailAccountService = emailAccountService;
             this._sitemapGenerator = sitemapGenerator;
@@ -174,10 +177,10 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected LanguageSelectorModel PrepareLanguageSelectorModel()
         {
-			var availableLanguages = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _workContext.CurrentStore.Id), () =>
+			var availableLanguages = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _storeContext.CurrentStore.Id), () =>
             {
                 var result = _languageService
-					.GetAllLanguages(storeId: _workContext.CurrentStore.Id)
+					.GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
                     .Select(x => new LanguageModel()
                     {
                         Id = x.Id,
@@ -226,10 +229,10 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected CurrencySelectorModel PrepareCurrencySelectorModel()
         {
-			var availableCurrencies = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id), () =>
+			var availableCurrencies = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id), () =>
             {
                 var result = _currencyService
-					.GetAllCurrencies(storeId: _workContext.CurrentStore.Id)
+					.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)
                     .Select(x => new CurrencyModel()
                     {
                         Id = x.Id,
@@ -291,7 +294,7 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
             if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
             {
-				var privateMessages = _forumservice.GetAllPrivateMessages(_workContext.CurrentStore.Id,
+				var privateMessages = _forumservice.GetAllPrivateMessages(_storeContext.CurrentStore.Id,
 					 0, customer.Id, false, null, false, string.Empty, 0, 1);
 
                 if (privateMessages.TotalCount > 0)
@@ -340,7 +343,7 @@ namespace SmartStore.Web.Controllers
                     LogoUrl = logoUrl,
                     LogoWidth = logoSize.Width,
                     LogoHeight = logoSize.Height,
-                    LogoTitle = _workContext.CurrentStore.Name
+                    LogoTitle = _storeContext.CurrentStore.Name
                 };
             });
             
@@ -462,11 +465,11 @@ namespace SmartStore.Web.Controllers
                 unreadMessage = string.Format(_localizationService.GetResource("PrivateMessages.TotalUnread"), unreadMessageCount);
 
                 //notifications here
-				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id);
+				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id);
 				if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _workContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
                     alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
                 }
             }
@@ -480,13 +483,13 @@ namespace SmartStore.Web.Controllers
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
 				ShoppingCartItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
 				WishlistItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
@@ -513,16 +516,16 @@ namespace SmartStore.Web.Controllers
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _workContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
                     alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
                 }
             }
 
             //subtotal
             var cart = _workContext.CurrentCustomer.ShoppingCartItems
-				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == _workContext.CurrentStore.Id)
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == _storeContext.CurrentStore.Id)
 				.ToList();
             decimal subtotal = 0;
             if (cart.Count > 0)
@@ -547,14 +550,14 @@ namespace SmartStore.Web.Controllers
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
 				ShoppingCartItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 ShoppingCartAmount = _priceFormatter.FormatPrice(subtotal, true, false),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
 				WishlistItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
@@ -572,7 +575,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Footer()
         {
-            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _workContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
+            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
                 ? _localizationService.GetResource("Tax.InclVAT") 
                 : _localizationService.GetResource("Tax.ExclVAT");
 
@@ -600,7 +603,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new FooterModel()
             {
-                StoreName = _workContext.CurrentStore.Name,
+                StoreName = _storeContext.CurrentStore.Name,
                 LegalInfo = string.Format(_localizationService.GetResource("Tax.LegalInfoFooter"), taxInfo, shippingInfoLink),
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = _themeSettings.AllowCustomerToSelectTheme && AvailableStoreThemes.Count > 1,          
@@ -612,7 +615,7 @@ namespace SmartStore.Web.Controllers
             foreach (var t in topics)
             {
 				//load by store
-				var topic = _topicService.GetTopicBySystemName(t, _workContext.CurrentStore.Id);
+				var topic = _topicService.GetTopicBySystemName(t, _storeContext.CurrentStore.Id);
 				if (topic == null)
 					//not found. let's find topic assigned to all stores
 					topic = _topicService.GetTopicBySystemName(t, 0);
@@ -709,7 +712,7 @@ namespace SmartStore.Web.Controllers
             {
                 string email = model.Email.Trim();
                 string fullName = model.FullName;
-				string subject = string.Format(_localizationService.GetResource("ContactUs.EmailSubject"), _workContext.CurrentStore.Name);
+				string subject = string.Format(_localizationService.GetResource("ContactUs.EmailSubject"), _storeContext.CurrentStore.Name);
 
                 var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
                 if (emailAccount == null)
@@ -786,7 +789,7 @@ namespace SmartStore.Web.Controllers
                 productSearchContext.OrderBy = ProductSortingEnum.Position;
                 productSearchContext.PageSize = 200;
                 productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				productSearchContext.StoreId = _workContext.CurrentStore.Id;
+				productSearchContext.StoreId = _storeContext.CurrentStore.Id;
 
                 var products = _productService.SearchProducts(productSearchContext);
 
@@ -801,7 +804,7 @@ namespace SmartStore.Web.Controllers
             }
             if (_commonSettings.SitemapIncludeTopics)
             {
-				var topics = _topicService.GetAllTopics(_workContext.CurrentStore.Id)
+				var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id)
 					 .ToList()
 					 .FindAll(t => t.IncludeInSitemap);
                 model.Topics = topics.Select(topic => new TopicModel()
@@ -903,7 +906,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _workContext.CurrentStore.Id);
+				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _storeContext.CurrentStore.Id);
 
             string returnurl = _webHelper.GetUrlReferrer();
             if (String.IsNullOrEmpty(returnurl))
@@ -1007,7 +1010,7 @@ namespace SmartStore.Web.Controllers
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 //URLs are localizable. Append SEO code
-				foreach (var language in _languageService.GetAllLanguages(storeId: _workContext.CurrentStore.Id))
+				foreach (var language in _languageService.GetAllLanguages(storeId: _storeContext.CurrentStore.Id))
                 {
                     foreach (var path in localizableDisallowPaths)
                     {
@@ -1046,9 +1049,9 @@ namespace SmartStore.Web.Controllers
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _workContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _workContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
                     alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
                 }
             }
@@ -1060,13 +1063,13 @@ namespace SmartStore.Web.Controllers
                 ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
 				ShoppingCartItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
 				WishlistItems = customer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
-					.Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 					.ToList()
 					.GetTotalProducts(),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,

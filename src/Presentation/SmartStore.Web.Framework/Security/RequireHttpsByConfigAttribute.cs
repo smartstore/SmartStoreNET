@@ -47,8 +47,8 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (!currentConnectionSecured)
                         {
-							var workContext = EngineContext.Current.Resolve<IWorkContext>();
-							var currentStore = workContext.CurrentStore;
+							var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+							var currentStore = storeContext.CurrentStore;
 
 							if (currentStore != null && currentStore.GetSecurityMode() > HttpSecurityMode.Unsecured)
                             {

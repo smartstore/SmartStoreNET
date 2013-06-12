@@ -152,6 +152,7 @@
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IO\MimeTypes.cs" />
+    <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />
     <Compile Include="Linq\Expanders\LambdaPathExpander.cs" />
     <Compile Include="Linq\Expanders\StringPathExpander.cs" />

@@ -6,7 +6,6 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Fakes;
 using SmartStore.Services.Authentication;
@@ -14,13 +13,12 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework
 {
     /// <summary>
-    /// Working context for web application
+	/// Work context for web application
     /// </summary>
     public partial class WebWorkContext : IWorkContext
     {
@@ -28,7 +26,7 @@ namespace SmartStore.Web.Framework
 
         private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
-		private readonly IStoreService _storeService;
+		private readonly IStoreContext _storeContext;
         private readonly IAuthenticationService _authenticationService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
@@ -39,16 +37,13 @@ namespace SmartStore.Web.Framework
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
 
-		private Store _cachedStore;
-
         private Customer _cachedCustomer;
         private Customer _originalCustomerIfImpersonated;
-        private bool _cachedIsAdmin;
 
         public WebWorkContext(ICacheManager cacheManager,
             HttpContextBase httpContext,
             ICustomerService customerService,
-			IStoreService storeService,
+			IStoreContext storeContext,
             IAuthenticationService authenticationService,
             ILanguageService languageService,
             ICurrencyService currencyService,
@@ -60,7 +55,7 @@ namespace SmartStore.Web.Framework
             this._cacheManager = cacheManager;
             this._httpContext = httpContext;
             this._customerService = customerService;
-			this._storeService = storeService;
+			this._storeContext = storeContext;
             this._authenticationService = authenticationService;
             this._languageService = languageService;
 			this._genericAttributeService = genericAttributeService;
@@ -100,34 +95,6 @@ namespace SmartStore.Web.Framework
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
-
-		/// <summary>
-		/// Gets or sets the current store
-		/// </summary>
-		public Store CurrentStore
-		{
-			get
-			{
-				if (_cachedStore != null)
-					return _cachedStore;
-
-				//ty to determine the current store by HTTP_HOST
-				var host = _webHelper.ServerVariables("HTTP_HOST");
-				var allStores = _storeService.GetAllStores();
-				var store = allStores.FirstOrDefault(s => s.ContainsHostValue(host));
-
-				if (store == null)
-				{
-					//load the first found store
-					store = allStores.FirstOrDefault();
-				}
-				if (store == null)
-					throw new Exception("No store could be loaded");
-
-				_cachedStore = store;
-				return _cachedStore;
-			}
-		}
 
         /// <summary>
         /// Gets or sets the current customer
@@ -260,24 +227,24 @@ namespace SmartStore.Web.Framework
                                 {
                                     //the language is found. now we need to save it
 									if (this.CurrentCustomer != null && this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-										_genericAttributeService, this.CurrentStore.Id) != langByCulture.Id)
+										_genericAttributeService, _storeContext.CurrentStore.Id) != langByCulture.Id)
                                     {
 										_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-											 SystemCustomerAttributeNames.LanguageId, langByCulture.Id, this.CurrentStore.Id);
+											 SystemCustomerAttributeNames.LanguageId, langByCulture.Id, _storeContext.CurrentStore.Id);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                var allStoreLanguages = _languageService.GetAllLanguages(storeId: this.CurrentStore.Id);
+				var allStoreLanguages = _languageService.GetAllLanguages(storeId: _storeContext.CurrentStore.Id);
                 if (allStoreLanguages.Count > 0 && this.CurrentCustomer != null)
                 {
                     //find current customer language
                     foreach (var lang in allStoreLanguages)
                     {
 						if (this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-							_genericAttributeService, this.CurrentStore.Id) == lang.Id)
+							_genericAttributeService, _storeContext.CurrentStore.Id) == lang.Id)
                         {
                             return lang;
                         }
@@ -300,10 +267,10 @@ namespace SmartStore.Web.Framework
                             {
                                 //the language is found. now we need to save it
 								if (this.CurrentCustomer != null && this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-										_genericAttributeService, this.CurrentStore.Id) != browserLanguage.Id)
+										_genericAttributeService, _storeContext.CurrentStore.Id) != browserLanguage.Id)
                                 {
 									_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-										 SystemCustomerAttributeNames.LanguageId, browserLanguage.Id, this.CurrentStore.Id);
+										 SystemCustomerAttributeNames.LanguageId, browserLanguage.Id, _storeContext.CurrentStore.Id);
                                 }
                                 return browserLanguage;
                             }
@@ -322,7 +289,7 @@ namespace SmartStore.Web.Framework
             {
 				var languageId = value != null ? value.Id : 0;
 				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-					SystemCustomerAttributeNames.LanguageId, languageId, this.CurrentStore.Id);
+					SystemCustomerAttributeNames.LanguageId, languageId, _storeContext.CurrentStore.Id);
 			}
         }
 
@@ -342,12 +309,12 @@ namespace SmartStore.Web.Framework
                         return primaryStoreCurrency;
                 }
 
-				var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: this.CurrentStore.Id);
+				var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
 				if (allStoreCurrencies.Count > 0)
 				{
 					//find current customer language
 					var customerCurrencyId = this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId,
-						_genericAttributeService, this.CurrentStore.Id);
+						_genericAttributeService, _storeContext.CurrentStore.Id);
 					foreach (var currency in allStoreCurrencies)
 					{
 						if (customerCurrencyId == currency.Id)
@@ -375,7 +342,7 @@ namespace SmartStore.Web.Framework
 				var currencyId = value != null ? value.Id : 0;
 				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
 					SystemCustomerAttributeNames.CurrencyId,
-					currencyId, this.CurrentStore.Id);
+					currencyId, _storeContext.CurrentStore.Id);
 			}
         }
 
@@ -386,7 +353,7 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-				return GetTaxDisplayTypeFor(this.CurrentCustomer, this.CurrentStore.Id);
+				return GetTaxDisplayTypeFor(this.CurrentCustomer, _storeContext.CurrentStore.Id);
             }
             set
             {
@@ -395,7 +362,7 @@ namespace SmartStore.Web.Framework
 
 				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
 					 SystemCustomerAttributeNames.TaxDisplayTypeId,
-					 (int)value, this.CurrentStore.Id);
+					 (int)value, _storeContext.CurrentStore.Id);
             }
         }
 
@@ -433,17 +400,7 @@ namespace SmartStore.Web.Framework
 		/// <summary>
 		/// Get or set value indicating whether we're in admin area
 		/// </summary>
-        public bool IsAdmin
-        {
-            get
-            {
-                return _cachedIsAdmin;
-            }
-            set
-            {
-                _cachedIsAdmin = value;
-            }
-        }
+		public bool IsAdmin { get; set; }
 
         //// codehint (sm-add)
         //public bool IsPublic

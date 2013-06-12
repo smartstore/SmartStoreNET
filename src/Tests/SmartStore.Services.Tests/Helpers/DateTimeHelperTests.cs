@@ -18,6 +18,7 @@ namespace SmartStore.Services.Tests.Helpers
     public class DateTimeHelperTests : ServiceTest
     {
         IWorkContext _workContext;
+		IStoreContext _storeContext;
 		IGenericAttributeService _genericAttributeService;
         ISettingService _settingService;
         DateTimeSettings _dateTimeSettings;
@@ -30,9 +31,11 @@ namespace SmartStore.Services.Tests.Helpers
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _settingService = MockRepository.GenerateMock<ISettingService>();
 
+			_workContext = MockRepository.GenerateMock<IWorkContext>();
+
 			_store = new Store() { Id = 1 };
-            _workContext = MockRepository.GenerateMock<IWorkContext>();
-			_workContext.Expect(x => x.CurrentStore).Return(_store);
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
             _dateTimeSettings = new DateTimeSettings()
             {

@@ -1,7 +1,6 @@
 ﻿using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Core
@@ -20,11 +19,6 @@ namespace SmartStore.Core
         /// Gets or sets the original customer (in case the current one is impersonated)
         /// </summary>
         Customer OriginalCustomerIfImpersonated { get; }
-
-		/// <summary>
-		/// Gets or sets the current store
-		/// </summary>
-		Store CurrentStore { get; }
 
         /// <summary>
         /// Get or set current user working language

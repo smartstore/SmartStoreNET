@@ -16,6 +16,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly ITopicService _topicService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
 
@@ -25,10 +26,13 @@ namespace SmartStore.Web.Controllers
 
         public TopicController(ITopicService topicService,
             ILocalizationService localizationService,
-            IWorkContext workContext, ICacheManager cacheManager)
+            IWorkContext workContext,
+			IStoreContext storeContext,
+			ICacheManager cacheManager)
         {
             this._topicService = topicService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._localizationService = localizationService;
             this._cacheManager = cacheManager;
         }
@@ -41,7 +45,7 @@ namespace SmartStore.Web.Controllers
         protected TopicModel PrepareTopicModel(string systemName)
         {
 			//load by store
-			var topic = _topicService.GetTopicBySystemName(systemName, _workContext.CurrentStore.Id);
+			var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
             if (topic == null)
                 return null;
 
@@ -66,7 +70,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult TopicDetails(string systemName)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
@@ -76,7 +80,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult TopicDetailsPopup(string systemName)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
@@ -90,7 +94,7 @@ namespace SmartStore.Web.Controllers
         //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult TopicBlock(string systemName)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)

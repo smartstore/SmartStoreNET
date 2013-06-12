@@ -64,6 +64,7 @@ namespace SmartStore.Web.Controllers
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly ITaxService _taxService;
         private readonly ICurrencyService _currencyService;
         private readonly IPictureService _pictureService;
@@ -116,7 +117,8 @@ namespace SmartStore.Web.Controllers
             ICategoryTemplateService categoryTemplateService,
             IManufacturerTemplateService manufacturerTemplateService,
             IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser, 
-            IWorkContext workContext, ITaxService taxService, ICurrencyService currencyService,
+            IWorkContext workContext, IStoreContext storeContext,
+			ITaxService taxService, ICurrencyService currencyService,
             IPictureService pictureService, ILocalizationService localizationService,
             IPriceCalculationService priceCalculationService, IPriceFormatter priceFormatter,
             IWebHelper webHelper, ISpecificationAttributeService specificationAttributeService,
@@ -147,6 +149,7 @@ namespace SmartStore.Web.Controllers
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._taxService = taxService;
             this._currencyService = currencyService;
             this._pictureService = pictureService;
@@ -201,7 +204,7 @@ namespace SmartStore.Web.Controllers
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY, 
-				parentCategoryId, showHidden, string.Join(",", customerRolesIds), _workContext.CurrentStore.Id);
+				parentCategoryId, showHidden, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
             return _cacheManager.Get(cacheKey, () =>
             {
                 var categoriesIds = new List<int>();
@@ -302,7 +305,7 @@ namespace SmartStore.Web.Controllers
 				if (productVariant == null)
 					continue;
 
-                string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _workContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
+                string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
                     ? _localizationService.GetResource("Tax.InclVAT") 
                     : _localizationService.GetResource("Tax.ExclVAT");
 
@@ -570,7 +573,7 @@ namespace SmartStore.Web.Controllers
         {
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY,
-				_workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds), _workContext.CurrentStore.Id);
+				_workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
 
             var categories = _cacheManager.Get(cacheKey, () =>
             {
@@ -626,7 +629,7 @@ namespace SmartStore.Web.Controllers
 
                                 var ctx = new ProductSearchContext();
                                 ctx.CategoryIds = categoryIds;
-								ctx.StoreId = _workContext.CurrentStore.Id;
+								ctx.StoreId = _storeContext.CurrentStore.Id;
                                 node.Value.NumberOfProducts = _productService.CountProducts(ctx);
                             }
                         }
@@ -679,7 +682,7 @@ namespace SmartStore.Web.Controllers
                 //    ctx.CategoryIds = categoryIds;
                 //    //ctx.OrderBy = ProductSortingEnum.Position;
                 //    //ctx.PageSize = 1;
-				//	ctx.StoreId = _workContext.CurrentStore.Id;
+				//	ctx.StoreId = _storeContext.CurrentStore.Id;
 
                 //    //model.NumberOfProducts = _productService.SearchProducts(ctx).TotalCount;
                 //    model.NumberOfProducts = _productService.CountProducts(ctx);
@@ -1253,7 +1256,7 @@ namespace SmartStore.Web.Controllers
 
             //_taxSettings.TaxDisplayType == TaxDisplayType.ExcludingTax;
 
-            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _workContext.CurrentStore.Id) == TaxDisplayType.IncludingTax) 
+            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax) 
                 ? _localizationService.GetResource("Tax.InclVAT") 
                 : _localizationService.GetResource("Tax.ExclVAT");
 
@@ -1307,7 +1310,7 @@ namespace SmartStore.Web.Controllers
                 //out of stock
                 model.DisplayBackInStockSubscription = true;
 				model.BackInStockAlreadySubscribed = _backInStockSubscriptionService
-					 .FindSubscription(_workContext.CurrentCustomer.Id, productVariant.Id, _workContext.CurrentStore.Id) != null;
+					 .FindSubscription(_workContext.CurrentCustomer.Id, productVariant.Id, _storeContext.CurrentStore.Id) != null;
             }
 
             #endregion
@@ -1476,7 +1479,7 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				_webHelper.GetThisPageUrl(false),
-				_workContext.CurrentStore.Id);
+				_storeContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0) command.PageNumber = 1; // codehint: sm-edit
 
@@ -1571,7 +1574,7 @@ namespace SmartStore.Web.Controllers
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
-				ctx.StoreId = _workContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStore.Id;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1616,7 +1619,7 @@ namespace SmartStore.Web.Controllers
 				ctx2.PageIndex = command.PageNumber - 1;
 				ctx2.PageSize = command.PageSize;
 				ctx2.LoadFilterableSpecificationAttributeOptionIds = true;
-				ctx2.StoreId = _workContext.CurrentStore.Id;
+				ctx2.StoreId = _storeContext.CurrentStore.Id;
 
 				var products = _productService.SearchProducts(ctx2);
 
@@ -1721,7 +1724,7 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				_webHelper.GetThisPageUrl(false),
-				_workContext.CurrentStore.Id);
+				_storeContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0) command.PageNumber = 1; // codehint: sm-edit
 
@@ -1761,7 +1764,7 @@ namespace SmartStore.Web.Controllers
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
-				ctx.StoreId = _workContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStore.Id;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1781,7 +1784,7 @@ namespace SmartStore.Web.Controllers
             ctx2.OrderBy = (ProductSortingEnum)command.OrderBy;
             ctx2.PageIndex = command.PageNumber - 1;
             ctx2.PageSize = command.PageSize;
-			ctx2.StoreId = _workContext.CurrentStore.Id;
+			ctx2.StoreId = _storeContext.CurrentStore.Id;
 
             var products = _productService.SearchProducts(ctx2);
 
@@ -1840,7 +1843,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
-			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
+			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
                 {
                     var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
@@ -2126,7 +2129,7 @@ namespace SmartStore.Web.Controllers
 
             //save item
             addToCartWarnings.AddRange(_shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-				productVariant, cartType, _workContext.CurrentStore.Id, 
+				productVariant, cartType, _storeContext.CurrentStore.Id, 
 				attributes, customerEnteredPriceConverted, quantity, true));
 
             #region Set already entered values
@@ -2362,7 +2365,7 @@ namespace SmartStore.Web.Controllers
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
             var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_BREADCRUMB_MODEL_KEY, product.Id, _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds),
-				_workContext.CurrentStore.Id);
+				_storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new ProductDetailsModel.ProductBreadcrumbModel()
@@ -2397,7 +2400,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ProductManufacturers(int productId, bool preparePictureModel =  false)
         {
-			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
+			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = _manufacturerService.GetProductManufacturersByProductId(productId)
@@ -2528,9 +2531,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             //load and cache report
-			var productIds = _cacheManager.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _workContext.CurrentStore.Id), () =>
+			var productIds = _cacheManager.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _storeContext.CurrentStore.Id), () =>
                 _orderReportService
-				.GetProductsAlsoPurchasedById(_workContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
+				.GetProductsAlsoPurchasedById(_storeContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
                 .Select(x => x.Id)
                 .ToArray()
                 );
@@ -2568,7 +2571,7 @@ namespace SmartStore.Web.Controllers
         {
 			var cart = _workContext.CurrentCustomer.ShoppingCartItems
 				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-				 .Where(sci => sci.StoreId == _workContext.CurrentStore.Id)
+				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 				 .ToList();
 
             var products = _productService.GetCrosssellProductsByShoppingCart(cart, _shoppingCartSettings.CrossSellsNumber);
@@ -2647,7 +2650,7 @@ namespace SmartStore.Web.Controllers
                 //ctx.PageIndex = command.PageNumber - 1;
                 //codehint: sm-edit end
                 ctx.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				ctx.StoreId = _workContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStore.Id;
 
                 var products = _productService.SearchProducts(ctx);
 
@@ -2664,7 +2667,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult RecentlyAddedProductsRss()
         {
             var feed = new SyndicationFeed(
-									string.Format("{0}: Recently added products", _workContext.CurrentStore.Name),
+									string.Format("{0}: Recently added products", _storeContext.CurrentStore.Name),
                                     "Information about products",
                                     new Uri(_webHelper.GetStoreLocation(false)),
                                     "RecentlyAddedProductsRSS",
@@ -2679,7 +2682,7 @@ namespace SmartStore.Web.Controllers
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.CreatedOn;
             ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
-			ctx.StoreId = _workContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStore.Id;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -2699,11 +2702,11 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             //load and cache report
-			var report = _cacheManager.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _workContext.CurrentStore.Id), 
+			var report = _cacheManager.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _storeContext.CurrentStore.Id), 
                 () =>
                     //group by products (not product variants)
                     _orderReportService
-					.BestSellersReport(_workContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage, groupBy: 2));
+					.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage, groupBy: 2));
 
             //load products
             var products = _productService.GetProductsByIds(report.Select(x => x.EntityId).ToArray());
@@ -2757,7 +2760,7 @@ namespace SmartStore.Web.Controllers
             model.IsCurrentCustomerRegistered = _workContext.CurrentCustomer.IsRegistered();
             model.MaximumBackInStockSubscriptions = _catalogSettings.MaximumBackInStockSubscriptions;
 			model.CurrentNumberOfBackInStockSubscriptions = _backInStockSubscriptionService
-				 .GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id, 0, 1)
+				 .GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id, 0, 1)
 				 .TotalCount;
             if (variant.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
                 variant.BackorderMode == BackorderMode.NoBackorders &&
@@ -2767,7 +2770,7 @@ namespace SmartStore.Web.Controllers
                 //out of stock
                 model.SubscriptionAllowed = true;
 				model.AlreadySubscribed = _backInStockSubscriptionService
-					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _workContext.CurrentStore.Id) != null;
+					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _storeContext.CurrentStore.Id) != null;
             }
             return View(model);
         }
@@ -2789,7 +2792,7 @@ namespace SmartStore.Web.Controllers
             {
                 //out of stock
 				var subscription = _backInStockSubscriptionService
-					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _workContext.CurrentStore.Id);
+					.FindSubscription(_workContext.CurrentCustomer.Id, variant.Id, _storeContext.CurrentStore.Id);
                 if (subscription != null)
                 {
                     //unsubscribe
@@ -2799,7 +2802,7 @@ namespace SmartStore.Web.Controllers
                 else
                 {
 					if (_backInStockSubscriptionService
-						.GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id, 0, 1)
+						.GetAllSubscriptionsByCustomerId(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id, 0, 1)
 						.TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
                         return Content(string.Format(_localizationService.GetResource("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
             
@@ -2808,7 +2811,7 @@ namespace SmartStore.Web.Controllers
                     {
                         Customer = _workContext.CurrentCustomer,
                         ProductVariant = variant,
-						Store = _workContext.CurrentStore,
+						Store = _storeContext.CurrentStore,
                         CreatedOnUtc = DateTime.UtcNow
                     };
                     _backInStockSubscriptionService.InsertSubscription(subscription);
@@ -3021,7 +3024,7 @@ namespace SmartStore.Web.Controllers
             ctx.OrderBy = (ProductSortingEnum)command.OrderBy;
             ctx.PageIndex = command.PageNumber - 1;
             ctx.PageSize = command.PageSize;
-			ctx.StoreId = _workContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStore.Id;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -3560,7 +3563,7 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				_webHelper.GetThisPageUrl(false),
-				_workContext.CurrentStore.Id);
+				_storeContext.CurrentStore.Id);
 
             if (command.PageSize <= 0)
                 command.PageSize = _catalogSettings.SearchPageProductsPerPage; //_catalogSettings.SearchPageProductsPerPage;
@@ -3694,7 +3697,7 @@ namespace SmartStore.Web.Controllers
                     ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position; // codehint: sm-edit
                     ctx.PageIndex = command.PageNumber - 1;
                     ctx.PageSize = command.PageSize;
-					ctx.StoreId = _workContext.CurrentStore.Id;
+					ctx.StoreId = _storeContext.CurrentStore.Id;
 
                     products = _productService.SearchProducts(ctx);
 
@@ -3734,7 +3737,7 @@ namespace SmartStore.Web.Controllers
             ctx.Keywords = term;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = productNumber;
-			ctx.StoreId = _workContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStore.Id;
 
             var products = _productService.SearchProducts(ctx);
 

@@ -12,6 +12,7 @@ using SmartStore.Services.Events;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tests.Discounts
 {
@@ -23,6 +24,7 @@ namespace SmartStore.Services.Tests.Discounts
         IRepository<DiscountUsageHistory> _discountUsageHistoryRepo;
         IEventPublisher _eventPublisher;
         IDiscountService _discountService;
+		IStoreContext _storeContext;
         
         [SetUp]
         public new void SetUp()
@@ -63,7 +65,7 @@ namespace SmartStore.Services.Tests.Discounts
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
             var pluginFinder = new PluginFinder();
             _discountService = new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
-                _discountUsageHistoryRepo, pluginFinder, _eventPublisher);
+                _discountUsageHistoryRepo, _storeContext, pluginFinder, _eventPublisher);
         }
 
         [Test]

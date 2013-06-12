@@ -16,6 +16,7 @@ namespace SmartStore.Web.Framework.Themes
     public partial class ThemeContext : IThemeContext
     {
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ThemeSettings _themeSettings;
         private readonly IThemeRegistry _themeRegistry;
@@ -29,13 +30,15 @@ namespace SmartStore.Web.Framework.Themes
         private ThemeManifest _currentTheme;
 
         public ThemeContext(
-            IWorkContext workContext, 
+            IWorkContext workContext,
+			IStoreContext storeContext,
             IGenericAttributeService genericAttributeService,
             ThemeSettings themeSettings, 
             IThemeRegistry themeRegistry,
             IMobileDeviceHelper mobileDeviceHelper)
         {
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._genericAttributeService = genericAttributeService;
             this._themeSettings = themeSettings;
             this._themeRegistry = themeRegistry;
@@ -56,7 +59,7 @@ namespace SmartStore.Web.Framework.Themes
                 if (_themeSettings.AllowCustomerToSelectTheme)
                 {
                     if (_workContext.CurrentCustomer != null)
-						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _workContext.CurrentStore.Id);
+						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);
                 }
 
                 //default store theme
@@ -83,7 +86,7 @@ namespace SmartStore.Web.Framework.Themes
                 if (_workContext.CurrentCustomer == null)
                     return;
 
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value, _workContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value, _storeContext.CurrentStore.Id);
 
                 //clear cache
                 this._desktopThemeIsCached = false;

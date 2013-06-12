@@ -50,6 +50,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ILanguageService _languageService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IPermissionService _permissionService;
         private readonly ILocalizationService _localizationService;
         private readonly IImageCache _imageCache; // codehint: sm-add
@@ -63,15 +64,25 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-        public CommonController(IPaymentService paymentService, IShippingService shippingService,
-            ICurrencyService currencyService, IMeasureService measureService,
-            ICustomerService customerService, IUrlRecordService urlRecordService, 
-			IWebHelper webHelper, CurrencySettings currencySettings,
-            MeasureSettings measureSettings, IDateTimeHelper dateTimeHelper,
-            ILanguageService languageService, IWorkContext workContext,
-            IPermissionService permissionService, ILocalizationService localizationService,
-            IImageCache imageCache, SecuritySettings securitySettings, ITypeFinder typeFinder, /* codehint: sm-add */
-            IPluginFinder pluginFinder /* codehint: sm-add */)
+        public CommonController(IPaymentService paymentService,
+			IShippingService shippingService,
+            ICurrencyService currencyService,
+			IMeasureService measureService,
+            ICustomerService customerService,
+			IUrlRecordService urlRecordService, 
+			IWebHelper webHelper,
+			CurrencySettings currencySettings,
+            MeasureSettings measureSettings,
+			IDateTimeHelper dateTimeHelper,
+            ILanguageService languageService,
+			IWorkContext workContext,
+			IStoreContext storeContext,
+            IPermissionService permissionService,
+			ILocalizationService localizationService,
+            IImageCache imageCache,
+			SecuritySettings securitySettings,
+			ITypeFinder typeFinder,
+            IPluginFinder pluginFinder)
         {
             this._paymentService = paymentService;
             this._shippingService = shippingService;
@@ -85,12 +96,13 @@ namespace SmartStore.Admin.Controllers
             this._dateTimeHelper = dateTimeHelper;
             this._languageService = languageService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._permissionService = permissionService;
             this._localizationService = localizationService;
             this._imageCache = imageCache; // codehint: sm-add
             this._securitySettings = securitySettings; // codehint: sm-add
             this._typeFinder = typeFinder; // codehint: sm-add
-            this._pluginFinder = pluginFinder;
+			this._pluginFinder = pluginFinder;	// codehint: sm-add
         }
 
         #endregion
@@ -298,7 +310,7 @@ namespace SmartStore.Admin.Controllers
             var model = new List<SystemWarningModel>();
             
             //store URL
-			var currentStoreUrl = _workContext.CurrentStore.Url;
+			var currentStoreUrl = _storeContext.CurrentStore.Url;
 			if (!String.IsNullOrEmpty(currentStoreUrl) &&
 				(currentStoreUrl.Equals(_webHelper.GetStoreLocation(false), StringComparison.InvariantCultureIgnoreCase)
                 ||
@@ -619,7 +631,7 @@ namespace SmartStore.Admin.Controllers
             var model = new LanguageSelectorModel();
             model.CurrentLanguage = _workContext.WorkingLanguage.ToModel();
 			model.AvailableLanguages = _languageService
-				 .GetAllLanguages(storeId: _workContext.CurrentStore.Id)
+				 .GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
 				 .Select(x => x.ToModel())
 				 .ToList();
             return PartialView(model);
@@ -634,7 +646,7 @@ namespace SmartStore.Admin.Controllers
             var model = new LanguageSelectorModel();
             model.CurrentLanguage = _workContext.WorkingLanguage.ToModel();
 			model.AvailableLanguages = _languageService
-				.GetAllLanguages(storeId: _workContext.CurrentStore.Id)
+				.GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
 				.Select(x => x.ToModel())
 				.ToList();
             return PartialView("LanguageSelector", model);

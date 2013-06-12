@@ -46,6 +46,7 @@ namespace SmartStore.Services.Messages
         private readonly ICurrencyService _currencyService;
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
@@ -74,7 +75,8 @@ namespace SmartStore.Services.Messages
             ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
             IEmailAccountService emailAccountService,
             IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
-            IWorkContext workContext, IDownloadService downloadService,
+            IWorkContext workContext, IStoreContext storeContext,
+			IDownloadService downloadService,
             IOrderService orderService, IPaymentService paymentService,
             IProductAttributeParser productAttributeParser,
             StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
@@ -91,6 +93,7 @@ namespace SmartStore.Services.Messages
             this._currencyService = currencyService;
             this._webHelper = webHelper;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._downloadService = downloadService;
             this._orderService = orderService;
             this._paymentService = paymentService;
@@ -509,7 +512,7 @@ namespace SmartStore.Services.Messages
             sb.AppendLine("<table border=\"0\" style=\"width:100%;\" class=\"legal-infos\">");
 
 			//load by store
-			var topic = _topicService.GetTopicBySystemName(systemName, _workContext.CurrentStore.Id);
+			var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
 			if (topic == null)
 				//not found. let's find topic assigned to all stores
 				topic = _topicService.GetTopicBySystemName(systemName, 0);
@@ -576,9 +579,9 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
             
-            if (!String.IsNullOrEmpty(_workContext.CurrentStore.Url)) 
+            if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
             {
-				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _workContext.CurrentStore.Url));
+				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _storeContext.CurrentStore.Url));
             }
             if (!String.IsNullOrEmpty(_contactDataSettings.CompanyEmailAddress)) 
             {

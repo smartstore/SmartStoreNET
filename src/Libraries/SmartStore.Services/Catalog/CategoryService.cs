@@ -35,6 +35,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<AclRecord> _aclRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
 
@@ -52,6 +53,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="aclRepository">ACL record repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
         /// <param name="workContext">Work context</param>
+		/// <param name="storeContext">Store context</param>
         /// <param name="eventPublisher">Event publisher</param>
         public CategoryService(ICacheManager cacheManager,
             IRepository<Category> categoryRepository,
@@ -60,6 +62,7 @@ namespace SmartStore.Services.Catalog
             IRepository<AclRecord> aclRepository,
 			IRepository<StoreMapping> storeMappingRepository,
             IWorkContext workContext,
+			IStoreContext storeContext,
             IEventPublisher eventPublisher)
         {
             this._cacheManager = cacheManager;
@@ -69,6 +72,7 @@ namespace SmartStore.Services.Catalog
             this._aclRepository = aclRepository;
 			this._storeMappingRepository = storeMappingRepository;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             _eventPublisher = eventPublisher;
         }
 
@@ -128,7 +132,7 @@ namespace SmartStore.Services.Catalog
 						select c;
 
 				//Store mapping
-				var currentStoreId = _workContext.CurrentStore.Id;
+				var currentStoreId = _storeContext.CurrentStore.Id;
 				query = from c in query
 						join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
 						from sm in c_sm.DefaultIfEmpty()
@@ -161,7 +165,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Category collection</returns>
         public IList<Category> GetAllCategoriesByParentCategoryId(int parentCategoryId, bool showHidden = false)
         {
-            string key = string.Format(CATEGORIES_BY_PARENT_CATEGORY_ID_KEY, parentCategoryId, showHidden, _workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id);
+			string key = string.Format(CATEGORIES_BY_PARENT_CATEGORY_ID_KEY, parentCategoryId, showHidden, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = _categoryRepository.Table;
@@ -184,7 +188,7 @@ namespace SmartStore.Services.Catalog
 							select c;
 
 					//Store mapping
-					var currentStoreId = _workContext.CurrentStore.Id;
+					var currentStoreId = _storeContext.CurrentStore.Id;
 					query = from c in query
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
 							from sm in c_sm.DefaultIfEmpty()
@@ -336,7 +340,7 @@ namespace SmartStore.Services.Catalog
             if (categoryId == 0)
                 return new PagedList<ProductCategory>(new List<ProductCategory>(), pageIndex, pageSize);
 
-			string key = string.Format(PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id);
+			string key = string.Format(PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = from pc in _productCategoryRepository.Table
@@ -361,7 +365,7 @@ namespace SmartStore.Services.Catalog
 							select pc;
 
 					//Store mapping
-					var currentStoreId = _workContext.CurrentStore.Id;
+					var currentStoreId = _storeContext.CurrentStore.Id;
 					query = from pc in query
 							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm
@@ -394,7 +398,7 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return new List<ProductCategory>();
 
-			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id);
+			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = from pc in _productCategoryRepository.Table
@@ -419,7 +423,7 @@ namespace SmartStore.Services.Catalog
 							select pc;
 
 					//Store mapping
-					var currentStoreId = _workContext.CurrentStore.Id;
+					var currentStoreId = _storeContext.CurrentStore.Id;
 					query = from pc in query
 							join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 							join sm in _storeMappingRepository.Table on c.Id equals sm.EntityId into c_sm

@@ -151,6 +151,8 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<WebWorkContext>().As<IWorkContext>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
+			//store context
+			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerHttpRequest();
 
             //services
             builder.RegisterType<BackInStockSubscriptionService>().As<IBackInStockSubscriptionService>().InstancePerHttpRequest();

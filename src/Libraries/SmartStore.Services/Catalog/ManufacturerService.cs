@@ -30,7 +30,8 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly IWorkContext _workContext; 
+		private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
         #endregion
@@ -46,6 +47,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="productRepository">Product repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
 		/// <param name="workContext">Work context</param>
+		/// <param name="storeContext">Store context</param>
         /// <param name="eventPublisher">Event published</param>
         public ManufacturerService(ICacheManager cacheManager,
             IRepository<Manufacturer> manufacturerRepository,
@@ -53,6 +55,7 @@ namespace SmartStore.Services.Catalog
             IRepository<Product> productRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IWorkContext workContext,
+			IStoreContext storeContext,
             IEventPublisher eventPublisher)
         {
             _cacheManager = cacheManager;
@@ -61,6 +64,7 @@ namespace SmartStore.Services.Catalog
             _productRepository = productRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_workContext = workContext;
+			_storeContext = storeContext;
             _eventPublisher = eventPublisher;
         }
         #endregion
@@ -110,7 +114,7 @@ namespace SmartStore.Services.Catalog
 			if (!showHidden)
 			{
 				//Store mapping
-				var currentStoreId = _workContext.CurrentStore.Id;
+				var currentStoreId = _storeContext.CurrentStore.Id;
 
 				query = from m in query
 						join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
@@ -235,7 +239,7 @@ namespace SmartStore.Services.Catalog
             if (manufacturerId == 0)
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);
 
-			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentStore.Id);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = from pm in _productManufacturerRepository.Table
@@ -249,7 +253,7 @@ namespace SmartStore.Services.Catalog
 				if (!showHidden)
 				{
 					//Store mapping
-					var currentStoreId = _workContext.CurrentStore.Id;
+					var currentStoreId = _storeContext.CurrentStore.Id;
 
 					query = from pm in query
 							join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
@@ -283,7 +287,7 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return new List<ProductManufacturer>();
 
-			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentStore.Id);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
 				{
 					var query = from pm in _productManufacturerRepository.Table
@@ -298,7 +302,7 @@ namespace SmartStore.Services.Catalog
 					if (!showHidden)
 					{
 						//Store mapping
-						var currentStoreId = _workContext.CurrentStore.Id;
+						var currentStoreId = _storeContext.CurrentStore.Id;
 
 						query = from pm in query
 								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id

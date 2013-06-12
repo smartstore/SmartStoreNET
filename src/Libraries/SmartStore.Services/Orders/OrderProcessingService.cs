@@ -62,6 +62,7 @@ namespace SmartStore.Services.Orders
         private readonly IDiscountService _discountService;
         private readonly IEncryptionService _encryptionService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ICurrencyService _currencyService;
@@ -104,6 +105,7 @@ namespace SmartStore.Services.Orders
         /// <param name="discountService">Discount service</param>
         /// <param name="encryptionService">Encryption service</param>
         /// <param name="workContext">Work context</param>
+		/// <param name="storeContext">Store context</param>
         /// <param name="workflowMessageService">Workflow message service</param>
         /// <param name="customerActivityService">Customer activity service</param>
         /// <param name="currencyService">Currency service</param>
@@ -137,6 +139,7 @@ namespace SmartStore.Services.Orders
             IDiscountService discountService,
             IEncryptionService encryptionService,
             IWorkContext workContext,
+			IStoreContext storeContext,
             IWorkflowMessageService workflowMessageService,
             ICustomerActivityService customerActivityService,
             ICurrencyService currencyService,
@@ -165,6 +168,7 @@ namespace SmartStore.Services.Orders
             this._shoppingCartService = shoppingCartService;
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._workflowMessageService = workflowMessageService;
             this._shippingService = shippingService;
             this._shipmentService = shipmentService;
@@ -546,7 +550,7 @@ namespace SmartStore.Services.Orders
                         throw new SmartException(string.Format("Country '{0}' is not allowed for billing", billingAddress.Country.Name));
                 }
 
-				var storeId = _workContext.CurrentStore.Id;
+				var storeId = _storeContext.CurrentStore.Id;
                 
                 //load and validate customer shopping cart
                 IList<ShoppingCartItem> cart = null;

@@ -36,6 +36,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly IBlogService _blogService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IPictureService _pictureService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerContentService _customerContentService;
@@ -56,16 +57,25 @@ namespace SmartStore.Web.Controllers
         #region Constructors
 
         public BlogController(IBlogService blogService,
-            IWorkContext workContext, IPictureService pictureService, ILocalizationService localizationService,
-            ICustomerContentService customerContentService, IDateTimeHelper dateTimeHelper,
-            IWorkflowMessageService workflowMessageService, IWebHelper webHelper,
-            ICacheManager cacheManager, ICustomerActivityService customerActivityService,
-            MediaSettings mediaSettings, BlogSettings blogSettings,
-            LocalizationSettings localizationSettings, CustomerSettings customerSettings,
+            IWorkContext workContext, 
+			IStoreContext storeContext,
+			IPictureService pictureService,
+			ILocalizationService localizationService,
+            ICustomerContentService customerContentService,
+			IDateTimeHelper dateTimeHelper,
+            IWorkflowMessageService workflowMessageService,
+			IWebHelper webHelper,
+            ICacheManager cacheManager,
+			ICustomerActivityService customerActivityService,
+            MediaSettings mediaSettings,
+			BlogSettings blogSettings,
+            LocalizationSettings localizationSettings,
+			CustomerSettings customerSettings,
             CaptchaSettings captchaSettings)
         {
             this._blogService = blogService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._pictureService = pictureService;
             this._localizationService = localizationService;
             this._customerContentService = customerContentService;
@@ -213,7 +223,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ListRss(int languageId)
         {
             var feed = new SyndicationFeed(
-									string.Format("{0}: Blog", _workContext.CurrentStore.Name),
+									string.Format("{0}: Blog", _storeContext.CurrentStore.Name),
                                     "Blog",
                                     new Uri(_webHelper.GetStoreLocation(false)),
                                     "BlogRSS",
@@ -427,7 +437,7 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: Blog\" />",
-				Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _workContext.CurrentStore.Name);
+				Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _storeContext.CurrentStore.Name);
 
 			return Content(link);
         }

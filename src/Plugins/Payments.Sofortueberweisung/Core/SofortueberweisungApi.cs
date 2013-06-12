@@ -26,7 +26,7 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 		private readonly IWebHelper _webHelper;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly SofortueberweisungPaymentSettings _paymentSettingsSu;
-		private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
@@ -39,7 +39,7 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			IWebHelper webHelper,
 			PaymentSettings paymentSettings,
 			SofortueberweisungPaymentSettings paymentSettingsSu,
-			IWorkContext workContext,
+			IStoreContext storeContext,
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
@@ -48,7 +48,7 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			_webHelper = webHelper;
 			_paymentSettings = paymentSettings;
 			_paymentSettingsSu = paymentSettingsSu;
-			_workContext = workContext;
+			_storeContext = storeContext;
 			_paymentService = paymentService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
@@ -207,7 +207,7 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			XmlDocument docOut;
 			var allowedChars = new char[] { '+', ',', '-', '.' };
 			string orderTotal = Math.Round(payment.Order.OrderTotal, 2).ToString("0.00", CultureInfo.InvariantCulture);
-			string reason1 = "{0} {1}".FormatWith(Helper.Resource("Order"), _workContext.CurrentStore.Name);
+			string reason1 = "{0} {1}".FormatWith(Helper.Resource("Order"), _storeContext.CurrentStore.Name);
 			string reason2 = "{0}, {1}".FormatWith(payment.Order.Id, payment.Order.CreatedOnUtc.ToShortDateString());
 			string userData = "{0}|{1}".FormatWith(payment.Order.Id, payment.Order.OrderGuid.ToString());
 			string pluginUrl = "{0}Plugins/PaymentSofortueberweisung/{{0}}".FormatWith(_webHelper.GetStoreLocation(false));

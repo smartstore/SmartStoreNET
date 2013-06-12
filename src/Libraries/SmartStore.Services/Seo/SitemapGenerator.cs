@@ -13,7 +13,7 @@ namespace SmartStore.Services.Seo
     /// </summary>
     public partial class SitemapGenerator : BaseSitemapGenerator, ISitemapGenerator
     {
-		private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IManufacturerService _manufacturerService;
@@ -21,11 +21,11 @@ namespace SmartStore.Services.Seo
         private readonly CommonSettings _commonSettings;
         private readonly IWebHelper _webHelper;
 
-		public SitemapGenerator(IWorkContext workContext, ICategoryService categoryService,
+		public SitemapGenerator(IStoreContext storeContext, ICategoryService categoryService,
             IProductService productService, IManufacturerService manufacturerService,
             ITopicService topicService, CommonSettings commonSettings, IWebHelper webHelper)
         {
-			this._workContext = workContext;
+			this._storeContext = storeContext;
             this._categoryService = categoryService;
             this._productService = productService;
             this._manufacturerService = manufacturerService;
@@ -95,7 +95,7 @@ namespace SmartStore.Services.Seo
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
 				PageSize = int.MaxValue,
-				StoreId = _workContext.CurrentStore.Id
+				StoreId = _storeContext.CurrentStore.Id
 			};
 
 			var products = _productService.SearchProducts(ctx);
@@ -111,7 +111,7 @@ namespace SmartStore.Services.Seo
 
         private void WriteTopics()
         {
-			var topics = _topicService.GetAllTopics(_workContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
+			var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
             foreach (var topic in topics)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)

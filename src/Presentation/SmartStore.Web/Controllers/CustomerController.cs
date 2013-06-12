@@ -40,12 +40,14 @@ namespace SmartStore.Web.Controllers
     public partial class CustomerController : SmartController
     {
         #region Fields
+
         private readonly IAuthenticationService _authenticationService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly DateTimeSettings _dateTimeSettings;
         private readonly TaxSettings _taxSettings;
         private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly ICustomerService _customerService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerRegistrationService _customerRegistrationService;
@@ -87,7 +89,8 @@ namespace SmartStore.Web.Controllers
             IDateTimeHelper dateTimeHelper,
             DateTimeSettings dateTimeSettings, TaxSettings taxSettings,
             ILocalizationService localizationService,
-            IWorkContext workContext, ICustomerService customerService,
+			IWorkContext workContext, IStoreContext storeContext,
+			ICustomerService customerService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
             ITaxService taxService, RewardPointsSettings rewardPointsSettings,
@@ -112,6 +115,7 @@ namespace SmartStore.Web.Controllers
             this._taxSettings = taxSettings;
             this._localizationService = localizationService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._customerService = customerService;
             this._genericAttributeService = genericAttributeService;
             this._customerRegistrationService = customerRegistrationService;
@@ -164,7 +168,7 @@ namespace SmartStore.Web.Controllers
             model.HideRewardPoints = !_rewardPointsSettings.Enabled;
             model.HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions;
             model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled ||
-				_orderService.SearchReturnRequests(_workContext.CurrentStore.Id, customer.Id, 0, null).Count == 0;
+				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null).Count == 0;
             model.HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab;
             model.HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab;
             return model;
@@ -334,7 +338,7 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerOrderListModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
-			var orders = _orderService.SearchOrders(_workContext.CurrentStore.Id, customer.Id,
+			var orders = _orderService.SearchOrders(_storeContext.CurrentStore.Id, customer.Id,
 				null, null, null, null, null, null, null, 0, int.MaxValue);
             foreach (var order in orders)
             {
@@ -351,7 +355,7 @@ namespace SmartStore.Web.Controllers
                 model.Orders.Add(orderModel);
             }
 
-			var recurringPayments = _orderService.SearchRecurringPayments(_workContext.CurrentStore.Id, 
+			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, 
 				customer.Id, 0, null);
             foreach (var recurringPayment in recurringPayments)
             {
@@ -1286,7 +1290,7 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerReturnRequestsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.ReturnRequests;
-			var returnRequests = _orderService.SearchReturnRequests(_workContext.CurrentStore.Id, customer.Id, 0, null);
+			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null);
             foreach (var returnRequest in returnRequests)
             {
                 var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);
@@ -1800,7 +1804,7 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
             var pageSize = 10;
 			var list = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id,
-				 _workContext.CurrentStore.Id, pageIndex, pageSize);
+				 _storeContext.CurrentStore.Id, pageIndex, pageSize);
 
 
             var model = new CustomerBackInStockSubscriptionsModel(list);

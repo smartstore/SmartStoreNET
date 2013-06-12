@@ -18,7 +18,7 @@ namespace SmartStore.Services.Tests.Configuration
         [SetUp]
         public new void SetUp()
         {
-            config = new ConfigFileSettingService();
+			config = new ConfigFileSettingService(null, null, null);
         }
 
         [Test]

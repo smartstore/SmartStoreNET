@@ -23,8 +23,9 @@ namespace SmartStore.Services.Configuration
         /// <param name="key">Key</param>
         /// <param name="defaultValue">Default value</param>
 		/// <param name="storeId">Store identifier</param>
+		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain is not found</param>
         /// <returns>Setting value</returns>
-		T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0);
+		T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false);
 
 		/// <summary>
 		/// Gets all settings

@@ -156,7 +156,7 @@ namespace SmartStore.Services.Configuration
 
 			T settings = Activator.CreateInstance<T>();
 
-			var rawSetting = GetSettingByKey<string>(key, storeId: storeId);
+			var rawSetting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 			if (rawSetting.HasValue())
 			{
 				JsonConvert.PopulateObject(rawSetting, settings);
@@ -218,8 +218,9 @@ namespace SmartStore.Services.Configuration
         /// <param name="key">Key</param>
         /// <param name="defaultValue">Default value</param>
 		/// <param name="storeId">Store identifier</param>
+		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain is not found</param>
         /// <returns>Setting value</returns>
-		public virtual T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0)
+		public virtual T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false)
         {
             if (String.IsNullOrEmpty(key))
                 return defaultValue;
@@ -228,7 +229,13 @@ namespace SmartStore.Services.Configuration
 			key = key.Trim().ToLowerInvariant();
 			if (settings.ContainsKey(key))
 			{
-				var setting = settings[key].FirstOrDefault(x => x.StoreId == storeId);
+				var settingsByKey = settings[key];
+				var setting = settingsByKey.FirstOrDefault(x => x.StoreId == storeId);
+
+				//load shared value?
+				if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
+					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
+
 				if (setting != null)
 					return CommonHelper.To<T>(setting.Value);
 			}
@@ -270,13 +277,7 @@ namespace SmartStore.Services.Configuration
 
 				var key = typeof(T).Name + "." + prop.Name;
 				//load by store
-				string setting = GetSettingByKey<string>(key, storeId: storeId);
-				if (setting == null && storeId > 0)
-				{
-					//load for all stores if not found
-					setting = GetSettingByKey<string>(key, storeId: 0);
-				}
-
+				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 				if (setting == null)
 					continue;
 
@@ -400,12 +401,9 @@ namespace SmartStore.Services.Configuration
 				return;
 			}
 
-			var properties = from prop in typeof(T).GetProperties()
-							 select prop;
-
 			var settingsToDelete = new List<Setting>();
 			var allSettings = GetAllSettings();
-			foreach (var prop in properties)
+			foreach (var prop in typeof(T).GetProperties())
 			{
 				string key = typeof(T).Name + "." + prop.Name;
 				settingsToDelete.AddRange(allSettings.Where(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)));

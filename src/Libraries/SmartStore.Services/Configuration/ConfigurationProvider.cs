@@ -82,10 +82,11 @@ namespace SmartStore.Services.Configuration
             foreach (var prop in properties)
             {
                 string key = typeof(TSettings).Name + "." + prop.Name;
+				var storeId = 0;
                 // Duck typing is not supported in C#. That's why we're using dynamic type
                 dynamic value = settings.TryGetPropertyValue(prop.Name);
 
-                _settingService.SetSetting(key, value ?? "", false);
+                _settingService.SetSetting(key, value ?? "", storeId, false);
    
             }
 
@@ -100,9 +101,10 @@ namespace SmartStore.Services.Configuration
         {
             Type t = typeof(TSettings);
             string key = t.Namespace + "." + t.Name;
+			var storeId = 0;
 
             var rawSettings = JsonConvert.SerializeObject(settings);
-            _settingService.SetSetting(key, rawSettings, false);
+            _settingService.SetSetting(key, rawSettings, storeId, false);
 
             // and now clear cache
             _settingService.ClearCache();
@@ -122,17 +124,16 @@ namespace SmartStore.Services.Configuration
             var properties = from prop in typeof(TSettings).GetProperties()
                              select prop;
 
-            var settingList = new List<Setting>();
-            foreach (var prop in properties)
-            {
-                string key = typeof(TSettings).Name + "." + prop.Name;
-                var setting = _settingService.GetSettingByKey(key);
-                if (setting != null)
-                    settingList.Add(setting);
-            }
+			var settingsToDelete = new List<Setting>();
+			var allSettings = _settingService.GetAllSettings();
+			foreach (var prop in properties)
+			{
+				string key = typeof(TSettings).Name + "." + prop.Name;
+				settingsToDelete.AddRange(allSettings.Where(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)));
+			}
 
-            foreach (var setting in settingList)
-                _settingService.DeleteSetting(setting);
+			foreach (var setting in settingsToDelete)
+				_settingService.DeleteSetting(setting);
         }
 
         // codehint: sm-add
@@ -141,11 +142,13 @@ namespace SmartStore.Services.Configuration
             Type t = typeof(TSettings);
             string key = t.Namespace + "." + t.Name;
 
-            var setting = _settingService.GetSettingByKey(key);
-            if (setting != null)
-            {
-                _settingService.DeleteSetting(setting);
-            }
+			var setting = _settingService.GetAllSettings()
+				.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+
+			if (setting != null)
+			{
+				_settingService.DeleteSetting(setting);
+			}
         }
     }
 }

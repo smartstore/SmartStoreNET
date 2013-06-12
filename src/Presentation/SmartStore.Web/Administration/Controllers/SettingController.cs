@@ -41,6 +41,7 @@ using Telerik.Web.Mvc;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Themes;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -67,7 +68,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IWebHelper _webHelper;
         private readonly IFulltextService _fulltextService;
         private readonly IMaintenanceService _maintenanceService;
-
+		private readonly IStoreService _storeService;
 
         private BlogSettings _blogSettings;
         private ForumSettings _forumSettings;
@@ -112,8 +113,8 @@ namespace SmartStore.Admin.Controllers
             IThemeRegistry themeRegistry, ICustomerService customerService, 
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             IWebHelper webHelper, IFulltextService fulltextService,
-            IMaintenanceService maintenanceService, BlogSettings blogSettings,
-            ForumSettings forumSettings, NewsSettings newsSettings,
+			IMaintenanceService maintenanceService, IStoreService storeService, 
+			BlogSettings blogSettings, ForumSettings forumSettings, NewsSettings newsSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
             CurrencySettings currencySettings, OrderSettings orderSettings,
@@ -145,6 +146,7 @@ namespace SmartStore.Admin.Controllers
             this._webHelper = webHelper;
             this._fulltextService = fulltextService;
             this._maintenanceService = maintenanceService;
+			this._storeService = storeService;
 
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
@@ -1142,24 +1144,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
             
-            var settings = _settingService
-                .GetAllSettings()
-                .OrderBy(x => x.Key)
-                .ToList();
-            var model = new GridModel<SettingModel>
-            {
-                Data = settings.Take(_adminAreaSettings.GridPageSize).Select(x => 
-                {
-                    return new SettingModel()
-                    {
-                        Id = x.Value.Key,
-                        Name = x.Key,
-                        Value = x.Value.Value
-                    };
-                }),
-                Total = settings.Count
-            };
-            return View(model);
+            return View();
         }
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult AllSettings(GridCommand command)
@@ -1169,13 +1154,27 @@ namespace SmartStore.Admin.Controllers
 
             var settings = _settingService
                 .GetAllSettings()
-                .OrderBy(x => x.Key)
-                .Select(x => new SettingModel()
-                    {
-                        Id = x.Value.Key,
-                        Name = x.Key,
-                        Value = x.Value.Value
-                    })
+				.Select(x =>
+				{
+					string storeName = "";
+					if (x.StoreId == 0)
+					{
+						storeName = _localizationService.GetResource("Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores");
+					}
+					else
+					{
+						var store = _storeService.GetStoreById(x.StoreId);
+						storeName = store != null ? store.Name : "Unknown";
+					}
+					var settingModel = new SettingModel()
+					{
+						Id = x.Id,
+						Name = x.Name,
+						Value = x.Value,
+						StoreName = storeName
+					};
+					return settingModel;
+				})
                 .ForCommand(command)
                 .ToList();
             
@@ -1208,10 +1207,13 @@ namespace SmartStore.Admin.Controllers
             }
 
             var setting = _settingService.GetSettingById(model.Id);
-            if (setting.Name != model.Name)
+			if (setting == null)
+				return Content(_localizationService.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
+
+			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
                 _settingService.DeleteSetting(setting);
 
-            _settingService.SetSetting(model.Name, model.Value);
+			_settingService.SetSetting(model.Name, model.Value, setting.StoreId);
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -1236,7 +1238,8 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
-            _settingService.SetSetting(model.Name, model.Value);
+			var storeId = 0;
+			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log
             _customerActivityService.InsertActivity("AddNewSetting", _localizationService.GetResource("ActivityLog.AddNewSetting"), model.Name);

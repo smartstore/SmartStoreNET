@@ -1,5 +1,4 @@
-﻿@model Telerik.Web.Mvc.GridModel<SettingModel>
-@{
+﻿@{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
     //page title
@@ -21,7 +20,7 @@
     </tr>
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Data)
+            @(Html.Telerik().Grid<SettingModel>()
                     .Name("settings-grid")
                     .DataKeys(x =>
                     {
@@ -29,8 +28,9 @@
                     })
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Name).EditorTemplateName("String").Width(300);
+						columns.Bound(x => x.Name).EditorTemplateName("String");
                         columns.Bound(x => x.Value).EditorTemplateName("String");
+						columns.Bound(x => x.StoreName).ReadOnly();
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
@@ -44,7 +44,7 @@
                         x.Mode(GridEditMode.InLine);
                     })
                     .Filterable()
-                    .Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding =>
                     {
                         dataBinding.Ajax().Select("AllSettings", "Setting")

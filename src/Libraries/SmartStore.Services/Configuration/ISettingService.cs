@@ -17,20 +17,20 @@ namespace SmartStore.Services.Configuration
         Setting GetSettingById(int settingId);
 
         /// <summary>
-        /// Get setting by key
-        /// </summary>
-        /// <param name="key">Key</param>
-        /// <returns>Setting object</returns>
-        Setting GetSettingByKey(string key);
-
-        /// <summary>
         /// Get setting value by key
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
         /// <param name="key">Key</param>
         /// <param name="defaultValue">Default value</param>
+		/// <param name="storeId">Store identifier</param>
         /// <returns>Setting value</returns>
-        T GetSettingByKey<T>(string key, T defaultValue = default(T));
+		T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0);
+
+		/// <summary>
+		/// Gets all settings
+		/// </summary>
+		/// <returns>Settings</returns>
+		IList<Setting> GetAllSettings();
 
         /// <summary>
         /// Set setting value
@@ -38,20 +38,9 @@ namespace SmartStore.Services.Configuration
         /// <typeparam name="T">Type</typeparam>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
+		/// <param name="storeId">Store identifier</param>
         /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-        void SetSetting<T>(string key, T value, bool clearCache = true);
-
-        /// <summary>
-        /// Deletes a setting
-        /// </summary>
-        /// <param name="setting">Setting</param>
-        void DeleteSetting(Setting setting);
-
-        /// <summary>
-        /// Gets all settings
-        /// </summary>
-        /// <returns>Setting collection</returns>
-        IDictionary<string, KeyValuePair<int, string>> GetAllSettings();
+        void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true);
 
         /// <summary>
         /// Save settings object
@@ -59,6 +48,12 @@ namespace SmartStore.Services.Configuration
         /// <typeparam name="T">Type</typeparam>
         /// <param name="settingInstance">Setting instance</param>
         void SaveSetting<T>(T settingInstance) where T : ISettings, new();
+
+		/// <summary>
+		/// Deletes a setting
+		/// </summary>
+		/// <param name="setting">Setting</param>
+		void DeleteSetting(Setting setting);
 
         /// <summary>
         /// Delete all settings

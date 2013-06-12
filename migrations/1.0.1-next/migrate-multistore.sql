@@ -502,6 +502,19 @@ set @resources='
 	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Configuration.Settings.NoneWithThatId">
+	<Value>No setting could be loaded with the specified ID.</Value>
+	<T>Eine Einstellung mit dieser ID wurde nicht gefunden.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores">
+	<Value>All stores</Value>
+	<T>Alle Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+    
 </Language>
 '
 
@@ -1626,4 +1639,19 @@ IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='T
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [TimeZoneId]
 END
+GO
+
+
+--Store mapping to Setting
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Setting]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [Setting]
+	ADD [StoreId] bit NULL
+END
+GO
+
+UPDATE [Setting] SET [StoreId] = 0 WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [Setting] ALTER COLUMN [StoreId] int NOT NULL
 GO

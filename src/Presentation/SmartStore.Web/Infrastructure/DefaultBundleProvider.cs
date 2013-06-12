@@ -69,7 +69,7 @@ namespace SmartStore.Web.Infrastructure
                 "~/Scripts/modernizr-{version}.js"));
 
             // jquery
-            var jQueryCdnPath = "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js";
+            var jQueryCdnPath = "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js";
             bundles.Add(new ScriptBundle("~/bundles/jquery", jQueryCdnPath).Include(
                 "~/Scripts/jquery-1.8.3.js"));
 

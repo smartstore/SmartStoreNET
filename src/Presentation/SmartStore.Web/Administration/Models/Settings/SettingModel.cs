@@ -18,7 +18,7 @@ namespace SmartStore.Admin.Models.Settings
         public string Value { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.AllSettings.Fields.StoreName")]
-		[AllowHtml]
-		public string StoreName { get; set; }
+		public string Store { get; set; }
+		public int StoreId { get; set; }
     }
 }

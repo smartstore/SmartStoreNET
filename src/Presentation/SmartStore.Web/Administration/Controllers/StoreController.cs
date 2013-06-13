@@ -38,6 +38,29 @@ namespace SmartStore.Admin.Controllers
 			return View();
 		}
 
+		/// <remarks>codehint: sm-add</remarks>
+		public ActionResult AllStores(string label, int selectedId)
+		{
+			var stores = _storeService.GetAllStores();
+
+			stores.Insert(0, new Store 
+			{
+				Id = 0,
+				Name = _localizationService.GetResource("Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores")
+			});
+
+			var list = 
+				from m in stores
+				select new
+				{
+					id = m.Id.ToString(),
+					text = m.Name,
+					selected = m.Id == selectedId
+				};
+
+			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+		}
+
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
 		{

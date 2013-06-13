@@ -1171,7 +1171,8 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						Name = x.Name,
 						Value = x.Value,
-						StoreName = storeName
+						Store = storeName,
+						StoreId = x.StoreId
 					};
 					return settingModel;
 				})
@@ -1210,10 +1211,16 @@ namespace SmartStore.Admin.Controllers
 			if (setting == null)
 				return Content(_localizationService.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
 
-			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
-                _settingService.DeleteSetting(setting);
+			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
 
-			_settingService.SetSetting(model.Name, model.Value, setting.StoreId);
+			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) ||
+				setting.StoreId != storeId)
+			{
+				//setting name or store has been changed
+				_settingService.DeleteSetting(setting);
+			}
+
+			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -1238,7 +1245,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
-			var storeId = 0;
+			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
 			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log

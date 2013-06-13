@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Configuration;
 
@@ -34,6 +36,27 @@ namespace SmartStore.Services.Configuration
 		IList<Setting> GetAllSettings();
 
 		/// <summary>
+		/// Determines whether a setting exists
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>true -setting exists; false - does not exist</returns>
+		bool SettingExists<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector, int storeId = 0)
+			where T : ISettings, new();
+
+		/// <remarks>codehint: sm-add</remarks>
+		StoreDependingSetting<TPropType> SettingExists<T, TPropType>(int storeId, T settings, Expression<Func<T, TPropType>> keySelector) 
+			where T : ISettings, new();
+
+		/// <remarks>codehint: sm-add</remarks>
+		void UpdateSetting<T, TPropType>(StoreDependingSetting<TPropType> dependingSetting, int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
+			where T : ISettings, new();
+
+		/// <summary>
 		/// Load settings
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>
@@ -55,7 +78,21 @@ namespace SmartStore.Services.Configuration
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
 		/// <param name="settings">Setting instance</param>
-		void SaveSetting<T>(T settings) where T : ISettings, new();
+		/// <param name="storeId">Store identifier</param>
+		void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new();
+
+		/// <summary>
+		/// Save settings object
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store ID</param>
+		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
+		void SaveSetting<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector,
+			int storeId = 0, bool clearCache = true) where T : ISettings, new();
 
 		/// <summary>
 		/// Deletes a setting
@@ -68,6 +105,17 @@ namespace SmartStore.Services.Configuration
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
         void DeleteSetting<T>() where T : ISettings, new();
+
+		/// <summary>
+		/// Delete settings object
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store ID</param>
+		void DeleteSetting<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new();
 
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.

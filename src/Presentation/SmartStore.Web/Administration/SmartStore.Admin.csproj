@@ -259,6 +259,7 @@
     <Compile Include="Models\Settings\ShoppingCartSettingsModel.cs" />
     <Compile Include="Models\Settings\OrderSettingsModel.cs" />
     <Compile Include="Models\Settings\RewardPointsSettingsModel.cs" />
+    <Compile Include="Models\Settings\StoreScopeConfigurationModel.cs" />
     <Compile Include="Models\Stores\StoreModel.cs" />
     <Compile Include="Models\Themes\ThemeListModel.cs" />
     <Compile Include="Models\ShoppingCart\ShoppingCartItemModel.cs" />
@@ -1151,6 +1152,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Setting\EditorTemplates\Store.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\StoreScopeConfiguration.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

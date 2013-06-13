@@ -643,13 +643,7 @@ namespace SmartStore.Admin.Controllers
             {
                 _workContext.WorkingLanguage = language;
             }
-            var model = new LanguageSelectorModel();
-            model.CurrentLanguage = _workContext.WorkingLanguage.ToModel();
-			model.AvailableLanguages = _languageService
-				.GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
-				.Select(x => x.ToModel())
-				.ToList();
-            return PartialView("LanguageSelector", model);
+			return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
         public ActionResult ClearCache()

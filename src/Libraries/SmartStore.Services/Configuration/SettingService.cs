@@ -11,6 +11,8 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Data;
 using SmartStore.Services.Events;
 using Fasterflect;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SmartStore.Services.Configuration
 {
@@ -255,6 +257,60 @@ namespace SmartStore.Services.Configuration
 			return settings;
 		}
 
+		/// <summary>
+		/// Determines whether a setting exists
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Entity</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>true -setting exists; false - does not exist</returns>
+		public virtual bool SettingExists<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector, int storeId = 0)
+			where T : ISettings, new()
+		{
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException(string.Format(
+					"Expression '{0}' refers to a method, not a property.",
+					keySelector));
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException(string.Format(
+					   "Expression '{0}' refers to a field, not a property.",
+					   keySelector));
+			}
+
+			string key = typeof(T).Name + "." + propInfo.Name;
+
+			string setting = GetSettingByKey<string>(key, storeId: storeId);
+			return setting != null;
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual StoreDependingSetting<TPropType> SettingExists<T, TPropType>(int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
+			where T : ISettings, new()
+		{
+			return new StoreDependingSetting<TPropType>(
+				SettingExists(settings, keySelector, storeId)
+			);
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual void UpdateSetting<T, TPropType>(StoreDependingSetting<TPropType> dependingSetting, int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
+			where T : ISettings, new()
+		{
+			if (dependingSetting.OverrideForStore || storeId == 0)
+				SaveSetting(settings, keySelector, storeId, false);
+			else if (storeId > 0)
+				DeleteSetting(settings, keySelector, storeId);
+		}
+
 		/// Load settings
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>
@@ -339,7 +395,8 @@ namespace SmartStore.Services.Configuration
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
 		/// <param name="settings">Setting instance</param>
-		public virtual void SaveSetting<T>(T settings) where T : ISettings, new()
+		/// <param name="storeId">Store identifier</param>
+		public virtual void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
 			// codehint: sm-add
 			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
@@ -348,19 +405,20 @@ namespace SmartStore.Services.Configuration
 				return;
 			}
 
-			var properties = from prop in typeof(T).GetProperties()
-							 where prop.CanWrite && prop.CanRead
-							 where CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string))
-							 select prop;
-
 			/* We do not clear cache after each setting update.
 			 * This behavior can increase performance because cached settings will not be cleared 
 			 * and loaded from database after each update */
-			foreach (var prop in properties)
+			foreach (var prop in typeof(T).GetProperties())
 			{
+				// get properties we can read and write to
+				if (!prop.CanRead || !prop.CanWrite)
+					continue;
+
+				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+					continue;
+
 				string key = typeof(T).Name + "." + prop.Name;
-				var storeId = 0;
-				// Duck typing is not supported in C#. That's why we're using dynamic type
+				//Duck typing is not supported in C#. That's why we're using dynamic type
 				dynamic value = settings.TryGetPropertyValue(prop.Name);
 
 				SetSetting(key, value ?? "", storeId, false);
@@ -369,6 +427,41 @@ namespace SmartStore.Services.Configuration
 			//and now clear cache
 			ClearCache();
         }
+
+		/// Save settings object
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store ID</param>
+		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
+		public virtual void SaveSetting<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector,
+			int storeId = 0, bool clearCache = true) where T : ISettings, new()
+		{
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException(string.Format(
+					"Expression '{0}' refers to a method, not a property.",
+					keySelector));
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException(string.Format(
+					   "Expression '{0}' refers to a field, not a property.",
+					   keySelector));
+			}
+
+			string key = typeof(T).Name + "." + propInfo.Name;
+			//Duck typing is not supported in C#. That's why we're using dynamic type
+			dynamic value = settings.TryGetPropertyValue(propInfo.Name);
+
+			SetSetting(key, value ?? "", storeId, false);
+		}
 
 		/// <summary>
 		/// Deletes a setting
@@ -412,6 +505,46 @@ namespace SmartStore.Services.Configuration
 			foreach (var setting in settingsToDelete)
 				DeleteSetting(setting);
         }
+
+		/// Delete settings object
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store ID</param>
+		public virtual void DeleteSetting<T, TPropType>(T settings,
+			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new()
+		{
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException(string.Format(
+					"Expression '{0}' refers to a method, not a property.",
+					keySelector));
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException(string.Format(
+					   "Expression '{0}' refers to a field, not a property.",
+					   keySelector));
+			}
+
+			string key = typeof(T).Name + "." + propInfo.Name;
+			key = key.Trim().ToLowerInvariant();
+
+			var allSettings = GetAllSettingsCached();
+			var settingForCaching = allSettings.ContainsKey(key) ?
+				allSettings[key].FirstOrDefault(x => x.StoreId == storeId) : null;
+			if (settingForCaching != null)
+			{
+				//update
+				var setting = GetSettingById(settingForCaching.Id);
+				DeleteSetting(setting);
+			}
+		}
 
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.

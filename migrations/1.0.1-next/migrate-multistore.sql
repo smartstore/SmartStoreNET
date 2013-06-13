@@ -514,6 +514,23 @@ set @resources='
 	<Value>Store</Value>
 	<T>Shop</T>
   </LocaleResource>
+  
+  <LocaleResource Name="Admin.Configuration.Settings.StoreScope">
+	<Value>Multi-store configuration for</Value>
+	<T>Multi-Shop Konfiguration für</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.StoreScope.AllStores">
+	<Value>All stores</Value>
+	<T>Alle shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll">
+	<Value>Check/uncheck all</Value>
+	<T>Alle aus/abwählen</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll.Hint">
+	<Value>(check boxes if you want to set a custom value for this shop)</Value>
+	<T>(Kontrollkästchen, falls Sie für diesen Shop separate Werte festlegen möchten)</T>
+  </LocaleResource>
     
 </Language>
 '

@@ -1,28 +1,31 @@
-﻿using SmartStore.Web.Framework;
+﻿using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
     public class NewsSettingsModel
     {
+		public int ActiveStoreScopeConfiguration { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.Enabled")]
-        public bool Enabled { get; set; }
+		public StoreDependingSetting<bool> Enabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.AllowNotRegisteredUsersToLeaveComments")]
-        public bool AllowNotRegisteredUsersToLeaveComments { get; set; }
+        public StoreDependingSetting<bool> AllowNotRegisteredUsersToLeaveComments { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.NotifyAboutNewNewsComments")]
-        public bool NotifyAboutNewNewsComments { get; set; }
+        public StoreDependingSetting<bool> NotifyAboutNewNewsComments { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.ShowNewsOnMainPage")]
-        public bool ShowNewsOnMainPage { get; set; }
+        public StoreDependingSetting<bool> ShowNewsOnMainPage { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.MainPageNewsCount")]
-        public int MainPageNewsCount { get; set; }
+        public StoreDependingSetting<int> MainPageNewsCount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.NewsArchivePageSize")]
-        public int NewsArchivePageSize { get; set; }
+        public StoreDependingSetting<int> NewsArchivePageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.ShowHeaderRSSUrl")]
-        public bool ShowHeaderRssUrl { get; set; }
+        public StoreDependingSetting<bool> ShowHeaderRssUrl { get; set; }
     }
 }

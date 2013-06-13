@@ -100,6 +100,11 @@
             }, 300);
         });
 
+		// 
+        $('.multi-store-override-option').each(function (k, v) {
+        	checkOverridenStoreValue(v, $(v).attr('data-for-input-id'));
+        });
+
         // sticky section-header
         var navbar = $("#navbar");
         var navbarHeight = navbar.outerHeight() || 0;

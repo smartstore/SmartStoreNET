@@ -42,6 +42,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Stores;
+using SmartStore.Admin.Models.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -69,6 +70,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IFulltextService _fulltextService;
         private readonly IMaintenanceService _maintenanceService;
 		private readonly IStoreService _storeService;
+		private readonly IWorkContext _workContext;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         private BlogSettings _blogSettings;
         private ForumSettings _forumSettings;
@@ -113,7 +116,8 @@ namespace SmartStore.Admin.Controllers
             IThemeRegistry themeRegistry, ICustomerService customerService, 
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             IWebHelper webHelper, IFulltextService fulltextService,
-			IMaintenanceService maintenanceService, IStoreService storeService, 
+			IMaintenanceService maintenanceService, IStoreService storeService,
+			IWorkContext workContext, IGenericAttributeService genericAttributeService,
 			BlogSettings blogSettings, ForumSettings forumSettings, NewsSettings newsSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
@@ -147,6 +151,8 @@ namespace SmartStore.Admin.Controllers
             this._fulltextService = fulltextService;
             this._maintenanceService = maintenanceService;
 			this._storeService = storeService;
+			this._workContext = workContext;
+			this._genericAttributeService = genericAttributeService;
 
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
@@ -182,6 +188,56 @@ namespace SmartStore.Admin.Controllers
 		#endregion 
 
         #region Methods
+
+		[NonAction]
+		private int GetActiveStoreScopeConfiguration()
+		{
+			//ensure that we have 2 (or more) stores
+			if (_storeService.GetAllStores().Count < 2)
+				return 0;
+
+			var storeId = _workContext.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration);
+			var store = _storeService.GetStoreById(storeId);
+			return store != null ? store.Id : 0;
+		}
+
+		[ChildActionOnly]
+		public ActionResult StoreScopeConfiguration()
+		{
+			var allStores = _storeService.GetAllStores();
+			if (allStores.Count < 2)
+				return Content("");
+
+			var model = new StoreScopeConfigurationModel();
+			foreach (var s in allStores)
+			{
+				model.Stores.Add(new StoreModel()
+				{
+					Id = s.Id,
+					Name = s.Name
+				});
+			}
+			model.StoreId = GetActiveStoreScopeConfiguration();
+
+			return PartialView(model);
+		}
+
+		public ActionResult ChangeStoreScopeConfiguration(int storeid, string returnUrl = "")
+		{
+			var store = _storeService.GetStoreById(storeid);
+			if (store != null || storeid == 0)
+			{
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration, storeid);
+			}
+			//url referrer
+			if (String.IsNullOrEmpty(returnUrl))
+				returnUrl = _webHelper.GetUrlReferrer();
+			//home page
+			if (String.IsNullOrEmpty(returnUrl))
+				returnUrl = Url.Action("Index", "Home");
+			return Redirect(returnUrl);
+		}
 
         public ActionResult Blog()
         {
@@ -243,7 +299,21 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _newsSettings.ToModel();
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
+			var model = newsSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.Enabled = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.Enabled);
+				model.AllowNotRegisteredUsersToLeaveComments = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.AllowNotRegisteredUsersToLeaveComments);
+				model.NotifyAboutNewNewsComments = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.NotifyAboutNewNewsComments);
+				model.ShowNewsOnMainPage = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.ShowNewsOnMainPage);
+				model.MainPageNewsCount = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.MainPageNewsCount);
+				model.NewsArchivePageSize = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.NewsArchivePageSize);
+				model.ShowHeaderRssUrl = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.ShowHeaderRssUrl);
+			}
             return View(model);
         }
         [HttpPost]
@@ -252,8 +322,25 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _newsSettings = model.ToEntity(_newsSettings);
-            _settingService.SaveSetting(_newsSettings);
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
+			newsSettings = model.ToEntity(newsSettings);
+
+			/* We do not clear cache after each setting update.
+			 * This behavior can increase performance because cached settings will not be cleared 
+			 * and loaded from database after each update */
+
+			_settingService.UpdateSetting(model.Enabled, storeScope, newsSettings, x => x.Enabled);
+			_settingService.UpdateSetting(model.AllowNotRegisteredUsersToLeaveComments, storeScope, newsSettings, x => x.AllowNotRegisteredUsersToLeaveComments);
+			_settingService.UpdateSetting(model.NotifyAboutNewNewsComments, storeScope, newsSettings, x => x.NotifyAboutNewNewsComments);
+			_settingService.UpdateSetting(model.ShowNewsOnMainPage, storeScope, newsSettings, x => x.ShowNewsOnMainPage);
+			_settingService.UpdateSetting(model.MainPageNewsCount, storeScope, newsSettings, x => x.MainPageNewsCount);
+			_settingService.UpdateSetting(model.NewsArchivePageSize, storeScope, newsSettings, x => x.NewsArchivePageSize);
+			_settingService.UpdateSetting(model.ShowHeaderRssUrl, storeScope, newsSettings, x => x.ShowHeaderRssUrl);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));

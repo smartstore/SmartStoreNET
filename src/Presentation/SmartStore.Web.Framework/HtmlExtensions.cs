@@ -18,7 +18,8 @@ using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc.UI;
 using SmartStore.Utilities;
 using System.Web;
-using System.Threading; // codehint: sm-add
+using System.Threading;
+using SmartStore.Services.Configuration; // codehint: sm-add
 
 namespace SmartStore.Web.Framework
 {
@@ -186,6 +187,32 @@ namespace SmartStore.Web.Framework
         {
             return null;
         }
+
+		/// <remarks>codehint: sm-edit</remarks>
+		public static MvcHtmlString OverrideStoreCheckboxFor<TModel, TValue>(this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, StoreDependingSetting<TValue>>> setting, int activeStoreScopeConfiguration)
+		{
+			var result = new StringBuilder();
+			if (activeStoreScopeConfiguration > 0)
+			{
+				//render only when a certain store is chosen
+				const string cssClass = "multi-store-override-option";
+				var fieldId = helper.FieldIdFor(setting);
+				var onClick = "checkOverridenStoreValue(this, '{0}')".FormatWith(fieldId);
+
+				bool overrideForStore = setting.Compile().Invoke(helper.ViewData.Model).OverrideForStore;
+
+				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
+				{
+				    { "class", cssClass },
+				    { "onclick", onClick },
+				    { "data-for-input-id", fieldId },
+				});
+
+				result.Append(checkbox);
+			}
+			return MvcHtmlString.Create(result.ToString());
+		}
 
         public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)
         {

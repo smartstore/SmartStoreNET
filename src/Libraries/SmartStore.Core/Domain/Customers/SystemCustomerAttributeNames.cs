@@ -29,6 +29,7 @@ namespace SmartStore.Core.Domain.Customers
         public static string AccountActivationToken { get { return "AccountActivationToken"; } }
         public static string LastVisitedPage { get { return "LastVisitedPage"; } }
         public static string ImpersonatedCustomerId { get { return "ImpersonatedCustomerId"; } }
+		public static string AdminAreaStoreScopeConfiguration { get { return "AdminAreaStoreScopeConfiguration"; } }
 
 		//depends on store
 		public static string CurrencyId { get { return "CurrencyId"; } }

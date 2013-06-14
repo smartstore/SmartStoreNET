@@ -74,8 +74,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
 
         private BlogSettings _blogSettings;
-        private ForumSettings _forumSettings;
-        private NewsSettings _newsSettings;
         private ShippingSettings _shippingSettings;
         private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
@@ -92,7 +90,6 @@ namespace SmartStore.Admin.Controllers
         private readonly SecuritySettings _securitySettings;
         private readonly PdfSettings _pdfSettings;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 	    private readonly CommonSettings _commonSettings;
@@ -118,7 +115,7 @@ namespace SmartStore.Admin.Controllers
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-			BlogSettings blogSettings, ForumSettings forumSettings, NewsSettings newsSettings,
+			BlogSettings blogSettings, 
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
             CurrencySettings currencySettings, OrderSettings orderSettings,
@@ -126,7 +123,7 @@ namespace SmartStore.Admin.Controllers
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings, StoreInformationSettings storeInformationSettings,
             SeoSettings seoSettings,SecuritySettings securitySettings, PdfSettings pdfSettings,
-            LocalizationSettings localizationSettings, AdminAreaSettings adminAreaSettings,
+            LocalizationSettings localizationSettings, 
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
             CommonSettings commonSettings, CompanyInformationSettings companyInformationSettings,
             ContactDataSettings contactDataSettings, BankConnectionSettings bankConnectionSettings,
@@ -155,8 +152,6 @@ namespace SmartStore.Admin.Controllers
 			this._genericAttributeService = genericAttributeService;
 
             this._blogSettings = blogSettings;
-            this._forumSettings = forumSettings;
-            this._newsSettings = newsSettings;
             this._shippingSettings = shippingSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
@@ -173,7 +168,6 @@ namespace SmartStore.Admin.Controllers
             this._securitySettings = securitySettings;
             this._pdfSettings = pdfSettings;
             this._localizationSettings = localizationSettings;
-            this._adminAreaSettings = adminAreaSettings;
             this._captchaSettings = captchaSettings;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._commonSettings = commonSettings;
@@ -271,9 +265,37 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _forumSettings.ToModel();
-            model.ForumEditorValues = _forumSettings.ForumEditor.ToSelectList();
-            return View(model);
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
+			var model = forumSettings.ToModel();
+			model.ForumEditorValues = forumSettings.ForumEditor.ToSelectList();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.ForumsEnabled = _settingService.SettingExists(storeScope, forumSettings, x => x.ForumsEnabled);
+				model.RelativeDateTimeFormattingEnabled = _settingService.SettingExists(storeScope, forumSettings, x => x.RelativeDateTimeFormattingEnabled);
+				model.ShowCustomersPostCount = _settingService.SettingExists(storeScope, forumSettings, x => x.ShowCustomersPostCount);
+				model.AllowGuestsToCreatePosts = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowGuestsToCreatePosts);
+				model.AllowGuestsToCreateTopics = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowGuestsToCreateTopics);
+				model.AllowCustomersToEditPosts = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowCustomersToEditPosts);
+				model.AllowCustomersToDeletePosts = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowCustomersToDeletePosts);
+				model.AllowCustomersToManageSubscriptions = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowCustomersToManageSubscriptions);
+				model.TopicsPageSize = _settingService.SettingExists(storeScope, forumSettings, x => x.TopicsPageSize);
+				model.PostsPageSize = _settingService.SettingExists(storeScope, forumSettings, x => x.PostsPageSize);
+				model.ForumEditor = _settingService.SettingExists(storeScope, forumSettings, x => x.ForumEditor);
+				model.SignaturesEnabled = _settingService.SettingExists(storeScope, forumSettings, x => x.SignaturesEnabled);
+				model.AllowPrivateMessages = _settingService.SettingExists(storeScope, forumSettings, x => x.AllowPrivateMessages);
+				model.ShowAlertForPM = _settingService.SettingExists(storeScope, forumSettings, x => x.ShowAlertForPM);
+				model.NotifyAboutPrivateMessages = _settingService.SettingExists(storeScope, forumSettings, x => x.NotifyAboutPrivateMessages);
+				model.ActiveDiscussionsFeedEnabled = _settingService.SettingExists(storeScope, forumSettings, x => x.ActiveDiscussionsFeedEnabled);
+				model.ActiveDiscussionsFeedCount = _settingService.SettingExists(storeScope, forumSettings, x => x.ActiveDiscussionsFeedCount);
+				model.ForumFeedsEnabled = _settingService.SettingExists(storeScope, forumSettings, x => x.ForumFeedsEnabled);
+				model.ForumFeedCount = _settingService.SettingExists(storeScope, forumSettings, x => x.ForumFeedCount);
+				model.SearchResultsPageSize = _settingService.SettingExists(storeScope, forumSettings, x => x.SearchResultsPageSize);
+			}
+			
+			return View(model);
         }
         [HttpPost]
         public ActionResult Forum(ForumSettingsModel model)
@@ -281,8 +303,34 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _forumSettings = model.ToEntity(_forumSettings);
-            _settingService.SaveSetting(_forumSettings);
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
+			forumSettings = model.ToEntity(forumSettings);
+
+			_settingService.UpdateSetting(model.ForumsEnabled, storeScope, forumSettings, x => x.ForumsEnabled);
+			_settingService.UpdateSetting(model.RelativeDateTimeFormattingEnabled, storeScope, forumSettings, x => x.RelativeDateTimeFormattingEnabled);
+			_settingService.UpdateSetting(model.ShowCustomersPostCount, storeScope, forumSettings, x => x.ShowCustomersPostCount);
+			_settingService.UpdateSetting(model.AllowGuestsToCreatePosts, storeScope, forumSettings, x => x.AllowGuestsToCreatePosts);
+			_settingService.UpdateSetting(model.AllowGuestsToCreateTopics, storeScope, forumSettings, x => x.AllowGuestsToCreateTopics);
+			_settingService.UpdateSetting(model.AllowCustomersToEditPosts, storeScope, forumSettings, x => x.AllowCustomersToEditPosts);
+			_settingService.UpdateSetting(model.AllowCustomersToDeletePosts, storeScope, forumSettings, x => x.AllowCustomersToDeletePosts);
+			_settingService.UpdateSetting(model.AllowCustomersToManageSubscriptions, storeScope, forumSettings, x => x.AllowCustomersToManageSubscriptions);
+			_settingService.UpdateSetting(model.TopicsPageSize, storeScope, forumSettings, x => x.TopicsPageSize);
+			_settingService.UpdateSetting(model.PostsPageSize, storeScope, forumSettings, x => x.PostsPageSize);
+			_settingService.UpdateSetting(model.ForumEditor, storeScope, forumSettings, x => x.ForumEditor);
+			_settingService.UpdateSetting(model.SignaturesEnabled, storeScope, forumSettings, x => x.SignaturesEnabled);
+			_settingService.UpdateSetting(model.AllowPrivateMessages, storeScope, forumSettings, x => x.AllowPrivateMessages);
+			_settingService.UpdateSetting(model.ShowAlertForPM, storeScope, forumSettings, x => x.ShowAlertForPM);
+			_settingService.UpdateSetting(model.NotifyAboutPrivateMessages, storeScope, forumSettings, x => x.NotifyAboutPrivateMessages);
+			_settingService.UpdateSetting(model.ActiveDiscussionsFeedEnabled, storeScope, forumSettings, x => x.ActiveDiscussionsFeedEnabled);
+			_settingService.UpdateSetting(model.ActiveDiscussionsFeedCount, storeScope, forumSettings, x => x.ActiveDiscussionsFeedCount);
+			_settingService.UpdateSetting(model.ForumFeedsEnabled, storeScope, forumSettings, x => x.ForumFeedsEnabled);
+			_settingService.UpdateSetting(model.ForumFeedCount, storeScope, forumSettings, x => x.ForumFeedCount);
+			_settingService.UpdateSetting(model.SearchResultsPageSize, storeScope, forumSettings, x => x.SearchResultsPageSize);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -306,13 +354,13 @@ namespace SmartStore.Admin.Controllers
 			model.ActiveStoreScopeConfiguration = storeScope;
 			if (storeScope > 0)
 			{
-				model.Enabled = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.Enabled);
-				model.AllowNotRegisteredUsersToLeaveComments = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.AllowNotRegisteredUsersToLeaveComments);
-				model.NotifyAboutNewNewsComments = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.NotifyAboutNewNewsComments);
-				model.ShowNewsOnMainPage = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.ShowNewsOnMainPage);
-				model.MainPageNewsCount = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.MainPageNewsCount);
-				model.NewsArchivePageSize = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.NewsArchivePageSize);
-				model.ShowHeaderRssUrl = _settingService.SettingExists(storeScope, newsSettings, x => newsSettings.ShowHeaderRssUrl);
+				model.Enabled = _settingService.SettingExists(storeScope, newsSettings, x => x.Enabled);
+				model.AllowNotRegisteredUsersToLeaveComments = _settingService.SettingExists(storeScope, newsSettings, x => x.AllowNotRegisteredUsersToLeaveComments);
+				model.NotifyAboutNewNewsComments = _settingService.SettingExists(storeScope, newsSettings, x => x.NotifyAboutNewNewsComments);
+				model.ShowNewsOnMainPage = _settingService.SettingExists(storeScope, newsSettings, x => x.ShowNewsOnMainPage);
+				model.MainPageNewsCount = _settingService.SettingExists(storeScope, newsSettings, x => x.MainPageNewsCount);
+				model.NewsArchivePageSize = _settingService.SettingExists(storeScope, newsSettings, x => x.NewsArchivePageSize);
+				model.ShowHeaderRssUrl = _settingService.SettingExists(storeScope, newsSettings, x => x.ShowHeaderRssUrl);
 			}
             return View(model);
         }

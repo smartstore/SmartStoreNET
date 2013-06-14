@@ -15,6 +15,7 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
+	@Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
     <table class="adminContent">
         <tr>
@@ -22,6 +23,7 @@
                 @Html.SmartLabelFor(model => model.ForumsEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ForumsEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ForumsEnabled)
                 @Html.ValidationMessageFor(model => model.ForumsEnabled)
             </td>
@@ -31,6 +33,7 @@
                 @Html.SmartLabelFor(model => model.RelativeDateTimeFormattingEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.RelativeDateTimeFormattingEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.RelativeDateTimeFormattingEnabled)
                 @Html.ValidationMessageFor(model => model.RelativeDateTimeFormattingEnabled)
             </td>
@@ -40,6 +43,7 @@
                 @Html.SmartLabelFor(model => model.ShowCustomersPostCount)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowCustomersPostCount, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowCustomersPostCount)
                 @Html.ValidationMessageFor(model => model.ShowCustomersPostCount)
             </td>
@@ -49,6 +53,7 @@
                 @Html.SmartLabelFor(model => model.AllowGuestsToCreatePosts)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowGuestsToCreatePosts, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowGuestsToCreatePosts)
                 @Html.ValidationMessageFor(model => model.AllowGuestsToCreatePosts)
             </td>
@@ -58,6 +63,7 @@
                 @Html.SmartLabelFor(model => model.AllowGuestsToCreateTopics)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowGuestsToCreateTopics, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowGuestsToCreateTopics)
                 @Html.ValidationMessageFor(model => model.AllowGuestsToCreateTopics)
             </td>
@@ -67,6 +73,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToEditPosts)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowCustomersToEditPosts, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowCustomersToEditPosts)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToEditPosts)
             </td>
@@ -76,6 +83,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToDeletePosts)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowCustomersToDeletePosts, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowCustomersToDeletePosts)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToDeletePosts)
             </td>
@@ -85,6 +93,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToManageSubscriptions)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowCustomersToManageSubscriptions, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowCustomersToManageSubscriptions)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToManageSubscriptions)
             </td>
@@ -94,6 +103,7 @@
                 @Html.SmartLabelFor(model => model.TopicsPageSize)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.TopicsPageSize, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.TopicsPageSize)
                 @Html.ValidationMessageFor(model => model.TopicsPageSize)
             </td>
@@ -103,6 +113,7 @@
                 @Html.SmartLabelFor(model => model.PostsPageSize)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.PostsPageSize, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.PostsPageSize)
                 @Html.ValidationMessageFor(model => model.PostsPageSize)
             </td>
@@ -112,6 +123,7 @@
                 @Html.SmartLabelFor(model => model.SearchResultsPageSize)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.SearchResultsPageSize, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.SearchResultsPageSize)
                 @Html.ValidationMessageFor(model => model.SearchResultsPageSize)
             </td>
@@ -121,6 +133,7 @@
                 @Html.SmartLabelFor(model => model.ForumEditor)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ForumEditor, Model.ActiveStoreScopeConfiguration)
                 @Html.DropDownListForEnum(model => model.ForumEditor)
                 @Html.ValidationMessageFor(model => model.ForumEditor)
             </td>
@@ -130,6 +143,7 @@
                 @Html.SmartLabelFor(model => model.SignaturesEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.SignaturesEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.SignaturesEnabled)
                 @Html.ValidationMessageFor(model => model.SignaturesEnabled)
             </td>
@@ -144,6 +158,7 @@
                 @Html.SmartLabelFor(model => model.AllowPrivateMessages)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowPrivateMessages, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowPrivateMessages)
                 @Html.ValidationMessageFor(model => model.AllowPrivateMessages)
             </td>
@@ -153,6 +168,7 @@
                 @Html.SmartLabelFor(model => model.ShowAlertForPM)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowAlertForPM, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowAlertForPM)
                 @Html.ValidationMessageFor(model => model.ShowAlertForPM)
             </td>
@@ -162,6 +178,7 @@
                 @Html.SmartLabelFor(model => model.NotifyAboutPrivateMessages)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.NotifyAboutPrivateMessages, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.NotifyAboutPrivateMessages)
                 @Html.ValidationMessageFor(model => model.NotifyAboutPrivateMessages)
             </td>
@@ -176,6 +193,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedsEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ForumFeedsEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ForumFeedsEnabled)
                 @Html.ValidationMessageFor(model => model.ForumFeedsEnabled)
             </td>
@@ -185,6 +203,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedCount)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ForumFeedCount, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ForumFeedCount)
                 @Html.ValidationMessageFor(model => model.ForumFeedCount)
             </td>
@@ -194,6 +213,7 @@
                 @Html.SmartLabelFor(model => model.ActiveDiscussionsFeedEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ActiveDiscussionsFeedEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ActiveDiscussionsFeedEnabled)
                 @Html.ValidationMessageFor(model => model.ActiveDiscussionsFeedEnabled)
             </td>
@@ -203,6 +223,7 @@
                 @Html.SmartLabelFor(model => model.ActiveDiscussionsFeedCount)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ActiveDiscussionsFeedCount, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ActiveDiscussionsFeedCount)
                 @Html.ValidationMessageFor(model => model.ActiveDiscussionsFeedCount)
             </td>

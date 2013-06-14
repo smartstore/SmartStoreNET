@@ -15,7 +15,7 @@ namespace SmartStore.Services.Configuration
 			OverrideForStore = overrideForStore;
 		}
 
-		public T Value { get; set; }
-		public bool OverrideForStore { get; set; }
+		public T Value;
+		public bool OverrideForStore;
 	}
 }

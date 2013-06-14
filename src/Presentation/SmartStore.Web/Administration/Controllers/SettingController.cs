@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 
-        private ShippingSettings _shippingSettings;
         private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
         private RewardPointsSettings _rewardPointsSettings;
@@ -114,7 +113,7 @@ namespace SmartStore.Admin.Controllers
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-            ShippingSettings shippingSettings, TaxSettings taxSettings,
+            TaxSettings taxSettings,
             CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
             CurrencySettings currencySettings, OrderSettings orderSettings,
             ShoppingCartSettings shoppingCartSettings, MediaSettings mediaSettings,
@@ -149,7 +148,6 @@ namespace SmartStore.Admin.Controllers
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
 
-            this._shippingSettings = shippingSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
             this._rewardPointsSettings = rewardPointsSettings;
@@ -398,10 +396,6 @@ namespace SmartStore.Admin.Controllers
 			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
 			newsSettings = model.ToEntity(newsSettings);
 
-			/* We do not clear cache after each setting update.
-			 * This behavior can increase performance because cached settings will not be cleared 
-			 * and loaded from database after each update */
-
 			_settingService.UpdateSetting(model.Enabled, storeScope, newsSettings, x => x.Enabled);
 			_settingService.UpdateSetting(model.AllowNotRegisteredUsersToLeaveComments, storeScope, newsSettings, x => x.AllowNotRegisteredUsersToLeaveComments);
 			_settingService.UpdateSetting(model.NotifyAboutNewNewsComments, storeScope, newsSettings, x => x.NotifyAboutNewNewsComments);
@@ -428,33 +422,60 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _shippingSettings.ToModel();
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
+			var model = shippingSettings.ToModel();//shipping origin
+			var originAddress = shippingSettings.ShippingOriginAddressId > 0
+									 ? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
+									 : null;
 
-            //shipping origin
-            var originAddress = _shippingSettings.ShippingOriginAddressId > 0
-                                     ? _addressService.GetAddressById(_shippingSettings.ShippingOriginAddressId)
-                                     : null;
-            if (originAddress != null)
-                model.ShippingOriginAddress = originAddress.ToModel();
-            else
-                model.ShippingOriginAddress = new AddressModel();
+			model.ShippingOriginAddress = new StoreDependingSetting<AddressModel>()
+			{
+				Value = (originAddress != null ? originAddress.ToModel() : new AddressModel()),
+				OverrideForStore = (storeScope > 0 ? _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) : false)
+			};
 
-            // model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (originAddress != null && c.Id == originAddress.CountryId) });
+			// codehint: sm-delete
+            // model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+			foreach (var c in _countryService.GetAllCountries(true))
+			{
+				model.ShippingOriginAddress.Value.AvailableCountries.Add(
+					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (originAddress != null && c.Id == originAddress.CountryId) }
+				);
+			}
 
             var states = originAddress != null && originAddress.Country != null ? _stateProvinceService.GetStateProvincesByCountryId(originAddress.Country.Id, true).ToList() : new List<StateProvince>();
-            if (states.Count > 0)
-            {
-                foreach (var s in states)
-                    model.ShippingOriginAddress.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == originAddress.StateProvinceId) });
-            }
-            else
-                model.ShippingOriginAddress.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-            model.ShippingOriginAddress.CountryEnabled = true;
-            model.ShippingOriginAddress.StateProvinceEnabled = true;
-            model.ShippingOriginAddress.ZipPostalCodeEnabled = true;
-            model.ShippingOriginAddress.ZipPostalCodeRequired = true;
+			if (states.Count > 0)
+			{
+				foreach (var s in states)
+				{
+					model.ShippingOriginAddress.Value.AvailableStates.Add(
+						new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == originAddress.StateProvinceId) }
+					);
+				}
+			}
+			else
+			{
+				model.ShippingOriginAddress.Value.AvailableStates.Add(
+					new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
+				);
+			}
+
+            model.ShippingOriginAddress.Value.CountryEnabled = true;
+            model.ShippingOriginAddress.Value.StateProvinceEnabled = true;
+            model.ShippingOriginAddress.Value.ZipPostalCodeEnabled = true;
+            model.ShippingOriginAddress.Value.ZipPostalCodeRequired = true;
+
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.FreeShippingOverXEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXEnabled);
+				model.FreeShippingOverXValue = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXValue);
+				model.FreeShippingOverXIncludingTax = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXIncludingTax);
+				model.EstimateShippingEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.EstimateShippingEnabled);
+				model.DisplayShipmentEventsToCustomers = _settingService.SettingExists(storeScope, shippingSettings, x => x.DisplayShipmentEventsToCustomers);
+			}
 
             return View(model);
         }
@@ -464,22 +485,46 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _shippingSettings = model.ToEntity(_shippingSettings);
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
+			shippingSettings = model.ToEntity(shippingSettings);
 
-            var originAddress = _addressService.GetAddressById(_shippingSettings.ShippingOriginAddressId) ??
-                                         new Core.Domain.Common.Address()
-                                         {
-                                             CreatedOnUtc = DateTime.UtcNow,
-                                         };
-            originAddress = model.ShippingOriginAddress.ToEntity(originAddress);
-            if (originAddress.Id > 0)
-                _addressService.UpdateAddress(originAddress);
-            else
-                _addressService.InsertAddress(originAddress);
+			_settingService.UpdateSetting(model.FreeShippingOverXEnabled, storeScope, shippingSettings, x => x.FreeShippingOverXEnabled);
+			_settingService.UpdateSetting(model.FreeShippingOverXValue, storeScope, shippingSettings, x => x.FreeShippingOverXValue);
+			_settingService.UpdateSetting(model.FreeShippingOverXIncludingTax, storeScope, shippingSettings, x => x.FreeShippingOverXIncludingTax);
+			_settingService.UpdateSetting(model.EstimateShippingEnabled, storeScope, shippingSettings, x => x.EstimateShippingEnabled);
+			_settingService.UpdateSetting(model.DisplayShipmentEventsToCustomers, storeScope, shippingSettings, x => x.DisplayShipmentEventsToCustomers);
 
-            _shippingSettings.ShippingOriginAddressId = originAddress.Id;
-            _settingService.SaveSetting(_shippingSettings);
-            
+			if (model.ShippingOriginAddress.OverrideForStore || storeScope == 0)
+			{
+				//update address
+				var addressId = _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) ?
+					shippingSettings.ShippingOriginAddressId : 0;
+				var originAddress = _addressService.GetAddressById(addressId) ??
+					new Core.Domain.Common.Address()
+					{
+						CreatedOnUtc = DateTime.UtcNow,
+					};
+				//update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
+				model.ShippingOriginAddress.Value.Id = addressId;
+				originAddress = model.ShippingOriginAddress.Value.ToEntity(originAddress);
+				if (originAddress.Id > 0)
+					_addressService.UpdateAddress(originAddress);
+				else
+					_addressService.InsertAddress(originAddress);
+				shippingSettings.ShippingOriginAddressId = originAddress.Id;
+
+				_settingService.SaveSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope, false);
+			}
+			else
+			{
+				_settingService.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
+			}
+
+			//now clear settings cache
+			_settingService.ClearCache();
+
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 

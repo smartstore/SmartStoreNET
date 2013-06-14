@@ -190,25 +190,20 @@ namespace SmartStore.Web.Framework
 
 		/// <remarks>codehint: sm-edit</remarks>
 		public static MvcHtmlString OverrideStoreCheckboxFor<TModel, TValue>(this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, StoreDependingSetting<TValue>>> setting, int activeStoreScopeConfiguration, string fieldId = null)
+			Expression<Func<TModel, StoreDependingSetting<TValue>>> setting, int activeStoreScopeConfiguration, string parentSelector = null)
 		{
 			var result = new StringBuilder();
 			if (activeStoreScopeConfiguration > 0)
 			{
-				//render only when a certain store is chosen
-				const string cssClass = "multi-store-override-option";
+				string fieldId = helper.FieldIdFor(setting);
 
-				if (fieldId.IsNullOrEmpty())
-					fieldId = helper.FieldIdFor(setting);
-
-				var onClick = "checkOverridenStoreValue(this, '{0}')".FormatWith(fieldId);
 				bool overrideForStore = setting.Compile().Invoke(helper.ViewData.Model).OverrideForStore;
 
 				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
 				{
-				    { "class", cssClass },
-				    { "onclick", onClick },
-				    { "data-for-input-id", fieldId },
+				    { "class", "multi-store-override-option" },
+				    { "onclick", "checkOverriddenStoreValue(this)" },
+				    { "data-parent-selector", parentSelector.EmptyNull() },
 				});
 
 				result.Append(checkbox);

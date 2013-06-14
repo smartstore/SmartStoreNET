@@ -93,9 +93,9 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShippingOriginAddress, Model.ActiveStoreScopeConfiguration, "pnlShippingOriginAddress")
-                @Html.EditorFor(x => x.ShippingOriginAddress, "Address")
+            <td id="pnlShippingOriginAddress" colspan="2">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShippingOriginAddress, Model.ActiveStoreScopeConfiguration, "#pnlShippingOriginAddress")
+                @Html.EditorFor(model => model.ShippingOriginAddress, "Address")
             </td>
         </tr>        
     </table>

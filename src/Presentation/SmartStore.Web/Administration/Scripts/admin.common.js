@@ -28,31 +28,23 @@ function OpenWindow(query, w, h, scroll) {
     var f = window.open(query, "_blank", winprops);
 }
 
-function checkAllOverridenStoreValue(item) {
-	$('.multi-store-override-option').each(function (k, v) {
-		$(v).attr('checked', item.checked);
-		checkOverridenStoreValue(v, $(v).attr('data-for-input-id'));
+function checkAllOverriddenStoreValue(obj) {
+	$('input.multi-store-override-option').each(function (k, v) {
+		$(v).attr('checked', obj.checked);
+		checkOverridenStoreValue(v);
 	});
 }
+function checkOverriddenStoreValue(obj) {
+	var parentSelector = $(obj).attr('data-parent-selector').toString(),
+		parent = (parentSelector.length > 0 ? $(parentSelector) : $(obj).parent()),
+		inputs = parent.find(':input').not('.multi-store-override-option');
 
-function checkOverridenStoreValue(obj, key) {
-	var elements = $('#' + key + ', #' + key + ' input, #' + key + ' textarea, #' + key + ' select');
-	if (!$(obj).is(':checked')) {
-		elements.attr('disabled', true);
-		//Telerik elements are enabled/disabled some other way
-		var telerikElements = elements.data("tTextBox");
-		if (telerikElements !== undefined) {
-			telerikElements.disable();
-		}
+	if ($(obj).is(':checked')) {
+		inputs.removeAttr('disabled');
 	}
 	else {
-		elements.removeAttr('disabled');
-		//Telerik elements are enabled/disabled some other way
-		var telerikElements = elements.data("tTextBox");
-		if (telerikElements !== undefined) {
-			telerikElements.enable();
-		}
-	};
+		inputs.attr('disabled', true);
+	}
 }
 
 // codehint: sm-add

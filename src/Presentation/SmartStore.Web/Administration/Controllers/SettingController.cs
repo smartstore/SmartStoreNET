@@ -75,7 +75,6 @@ namespace SmartStore.Admin.Controllers
 
         private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
-        private RewardPointsSettings _rewardPointsSettings;
         private readonly CurrencySettings _currencySettings;
         private OrderSettings _orderSettings;
         private ShoppingCartSettings _shoppingCartSettings;
@@ -114,7 +113,7 @@ namespace SmartStore.Admin.Controllers
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
             TaxSettings taxSettings,
-            CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
+            CatalogSettings catalogSettings, 
             CurrencySettings currencySettings, OrderSettings orderSettings,
             ShoppingCartSettings shoppingCartSettings, MediaSettings mediaSettings,
             CustomerSettings customerSettings, AddressSettings addressSettings,
@@ -150,7 +149,6 @@ namespace SmartStore.Admin.Controllers
 
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
-            this._rewardPointsSettings = rewardPointsSettings;
             this._currencySettings = currencySettings;
             this._orderSettings = orderSettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -656,9 +654,30 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _rewardPointsSettings.ToModel();
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-            return View(model);
+
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
+			var model = rewardPointsSettings.ToModel();
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.ActiveStoreScopeConfiguration = storeScope;
+
+			if (storeScope > 0)
+			{
+				model.Enabled = _settingService.SettingExists(storeScope, rewardPointsSettings, x => x.Enabled);
+				model.ExchangeRate = _settingService.SettingExists(storeScope, rewardPointsSettings, x => x.ExchangeRate);
+				model.PointsForRegistration = _settingService.SettingExists(storeScope, rewardPointsSettings, x => x.PointsForRegistration);
+
+				model.PointsForPurchases_Amount = new StoreDependingSetting<decimal>(
+					_settingService.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Amount, storeScope) ||
+					_settingService.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Points, storeScope)
+				);					
+
+				model.PointsForPurchases_Awarded = _settingService.SettingExists(storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Awarded);
+				model.PointsForPurchases_Canceled = _settingService.SettingExists(storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Canceled);
+			}
+			
+			return View(model);
         }
         [HttpPost]
         public ActionResult RewardPoints(RewardPointsSettingsModel model)
@@ -666,18 +685,36 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			//load settings for chosen store scope
+            var storeScope = GetActiveStoreScopeConfiguration();
+			if (ModelState.IsValid)
+			{
+				var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
+				rewardPointsSettings = model.ToEntity(rewardPointsSettings);
 
-            if (ModelState.IsValid)
-            {
-                _rewardPointsSettings = model.ToEntity(_rewardPointsSettings);
-                _settingService.SaveSetting(_rewardPointsSettings);
+				_settingService.UpdateSetting(model.Enabled, storeScope, rewardPointsSettings, x => x.Enabled);
+				_settingService.UpdateSetting(model.ExchangeRate, storeScope, rewardPointsSettings, x => x.ExchangeRate);
+				_settingService.UpdateSetting(model.PointsForRegistration, storeScope, rewardPointsSettings, x => x.PointsForRegistration);
+				
+				_settingService.UpdateSetting(model.PointsForPurchases_Amount, storeScope, rewardPointsSettings, x => x.PointsForPurchases_Amount);
+				_settingService.UpdateSetting(model.PointsForPurchases_Amount, storeScope, rewardPointsSettings, x => x.PointsForPurchases_Points);
 
-                //activity log
-                _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
-                
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"), false);
-            }
+				_settingService.UpdateSetting(model.PointsForPurchases_Awarded, storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Awarded);
+				_settingService.UpdateSetting(model.PointsForPurchases_Canceled, storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Canceled);
+
+				//now clear settings cache
+				_settingService.ClearCache();
+
+				//activity log
+				_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
+
+				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+				return RedirectToAction("RewardPoints");
+			}
+
+			//If we got this far, something failed, redisplay form
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.ActiveStoreScopeConfiguration = storeScope;
             
             return View(model);
         }

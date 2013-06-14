@@ -16,7 +16,9 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-@Html.ValidationSummary(false)
+	@Html.ValidationSummary(false)
+	@Html.Action("StoreScopeConfiguration", "Setting")
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle" colspan="2">
@@ -28,6 +30,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.Enabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.Enabled)
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
@@ -37,6 +40,7 @@
                 @Html.SmartLabelFor(model => model.ExchangeRate)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ExchangeRate, Model.ActiveStoreScopeConfiguration)
                 @T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")
                 @Html.EditorFor(model => model.ExchangeRate, new { Small = true })
                 @Model.PrimaryStoreCurrencyCode
@@ -54,6 +58,7 @@
                 @Html.SmartLabelFor(model => model.PointsForRegistration)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.PointsForRegistration, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.PointsForRegistration, new { Small = true })
                 @Html.ValidationMessageFor(model => model.PointsForRegistration)
             </td>
@@ -62,7 +67,8 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
             </td>
-            <td class="adminData">
+            <td class="adminData" id="pnlPointsForPurchases">
+				@Html.OverrideStoreCheckboxFor(model => Model.PointsForPurchases_Amount, Model.ActiveStoreScopeConfiguration, "#pnlPointsForPurchases")
                 @T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")
                 @Html.EditorFor(model => model.PointsForPurchases_Amount, new { Small = true })
                 @Model.PrimaryStoreCurrencyCode
@@ -79,7 +85,8 @@
                 @Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded).ToSelectList())
+				@Html.OverrideStoreCheckboxFor(model => Model.PointsForPurchases_Awarded, Model.ActiveStoreScopeConfiguration)
+                @Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded.Value).ToSelectList())
                 @Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
             </td>
         </tr>
@@ -88,7 +95,8 @@
                 @Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled).ToSelectList())
+				@Html.OverrideStoreCheckboxFor(model => Model.PointsForPurchases_Canceled, Model.ActiveStoreScopeConfiguration)
+                @Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled.Value).ToSelectList())
                 @Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
             </td>
         </tr>

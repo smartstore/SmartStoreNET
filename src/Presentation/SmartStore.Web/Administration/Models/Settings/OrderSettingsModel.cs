@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
+using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -15,26 +16,29 @@ namespace SmartStore.Admin.Models.Settings
             GiftCards_Activated_OrderStatuses = new List<SelectListItem>();
             GiftCards_Deactivated_OrderStatuses = new List<SelectListItem>();
         }
+
+		public int ActiveStoreScopeConfiguration { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
-        public bool IsReOrderAllowed { get; set; }
+        public StoreDependingSetting<bool> IsReOrderAllowed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount")]
-        public decimal MinOrderSubtotalAmount { get; set; }
+        public StoreDependingSetting<decimal> MinOrderSubtotalAmount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderTotalAmount")]
-        public decimal MinOrderTotalAmount { get; set; }
+        public StoreDependingSetting<decimal> MinOrderTotalAmount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed")]
-        public bool AnonymousCheckoutAllowed { get; set; }
+        public StoreDependingSetting<bool> AnonymousCheckoutAllowed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.TermsOfServiceEnabled")]
-        public bool TermsOfServiceEnabled { get; set; }
+        public StoreDependingSetting<bool> TermsOfServiceEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OnePageCheckoutEnabled")]
-        public bool OnePageCheckoutEnabled { get; set; }
+        public StoreDependingSetting<bool> OnePageCheckoutEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestsEnabled")]
-        public bool ReturnRequestsEnabled { get; set; }
+        public StoreDependingSetting<bool> ReturnRequestsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestReasons")]
         public string ReturnRequestReasonsParsed { get; set; }
@@ -43,7 +47,7 @@ namespace SmartStore.Admin.Models.Settings
         public string ReturnRequestActionsParsed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable")]
-        public int NumberOfDaysReturnRequestAvailable { get; set; }
+        public StoreDependingSetting<int> NumberOfDaysReturnRequestAvailable { get; set; }
         
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.GiftCards_Activated")]

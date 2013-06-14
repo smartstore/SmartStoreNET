@@ -76,7 +76,6 @@ namespace SmartStore.Admin.Controllers
         private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
-        private OrderSettings _orderSettings;
         private ShoppingCartSettings _shoppingCartSettings;
         private MediaSettings _mediaSettings;
         private CustomerSettings _customerSettings;
@@ -114,7 +113,7 @@ namespace SmartStore.Admin.Controllers
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
             TaxSettings taxSettings,
             CatalogSettings catalogSettings, 
-            CurrencySettings currencySettings, OrderSettings orderSettings,
+            CurrencySettings currencySettings, 
             ShoppingCartSettings shoppingCartSettings, MediaSettings mediaSettings,
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings, StoreInformationSettings storeInformationSettings,
@@ -150,7 +149,6 @@ namespace SmartStore.Admin.Controllers
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
-            this._orderSettings = orderSettings;
             this._shoppingCartSettings = shoppingCartSettings;
             this._mediaSettings = mediaSettings;
             this._customerSettings = customerSettings;
@@ -231,7 +229,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
 			var model = blogSettings.ToModel();
@@ -254,7 +252,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
 			blogSettings = model.ToEntity(blogSettings);
@@ -284,11 +282,10 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
 			var model = forumSettings.ToModel();
-			model.ForumEditorValues = forumSettings.ForumEditor.ToSelectList();
 			model.ActiveStoreScopeConfiguration = storeScope;
 			if (storeScope > 0)
 			{
@@ -313,6 +310,7 @@ namespace SmartStore.Admin.Controllers
 				model.ForumFeedCount = _settingService.SettingExists(storeScope, forumSettings, x => x.ForumFeedCount);
 				model.SearchResultsPageSize = _settingService.SettingExists(storeScope, forumSettings, x => x.SearchResultsPageSize);
 			}
+			model.ForumEditorValues = forumSettings.ForumEditor.ToSelectList();
 			
 			return View(model);
         }
@@ -322,7 +320,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
 			forumSettings = model.ToEntity(forumSettings);
@@ -366,7 +364,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
 			var model = newsSettings.ToModel();
@@ -389,7 +387,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
 			newsSettings = model.ToEntity(newsSettings);
@@ -420,13 +418,23 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
-			var model = shippingSettings.ToModel();//shipping origin
+			var model = shippingSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.FreeShippingOverXEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXEnabled);
+				model.FreeShippingOverXValue = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXValue);
+				model.FreeShippingOverXIncludingTax = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXIncludingTax);
+				model.EstimateShippingEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.EstimateShippingEnabled);
+				model.DisplayShipmentEventsToCustomers = _settingService.SettingExists(storeScope, shippingSettings, x => x.DisplayShipmentEventsToCustomers);
+			}
+
 			var originAddress = shippingSettings.ShippingOriginAddressId > 0
-									 ? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
-									 : null;
+				? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
+				: null;
 
 			model.ShippingOriginAddress = new StoreDependingSetting<AddressModel>()
 			{
@@ -465,16 +473,6 @@ namespace SmartStore.Admin.Controllers
             model.ShippingOriginAddress.Value.ZipPostalCodeEnabled = true;
             model.ShippingOriginAddress.Value.ZipPostalCodeRequired = true;
 
-			model.ActiveStoreScopeConfiguration = storeScope;
-			if (storeScope > 0)
-			{
-				model.FreeShippingOverXEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXEnabled);
-				model.FreeShippingOverXValue = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXValue);
-				model.FreeShippingOverXIncludingTax = _settingService.SettingExists(storeScope, shippingSettings, x => x.FreeShippingOverXIncludingTax);
-				model.EstimateShippingEnabled = _settingService.SettingExists(storeScope, shippingSettings, x => x.EstimateShippingEnabled);
-				model.DisplayShipmentEventsToCustomers = _settingService.SettingExists(storeScope, shippingSettings, x => x.DisplayShipmentEventsToCustomers);
-			}
-
             return View(model);
         }
         [HttpPost]
@@ -483,7 +481,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
 			shippingSettings = model.ToEntity(shippingSettings);
@@ -655,13 +653,11 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 
-			//load settings for chosen store scope
+			//load settings for a chosen store scope
 			var storeScope = GetActiveStoreScopeConfiguration();
 			var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
 			var model = rewardPointsSettings.ToModel();
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 			model.ActiveStoreScopeConfiguration = storeScope;
-
 			if (storeScope > 0)
 			{
 				model.Enabled = _settingService.SettingExists(storeScope, rewardPointsSettings, x => x.Enabled);
@@ -676,6 +672,7 @@ namespace SmartStore.Admin.Controllers
 				model.PointsForPurchases_Awarded = _settingService.SettingExists(storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Awarded);
 				model.PointsForPurchases_Canceled = _settingService.SettingExists(storeScope, rewardPointsSettings, x => (int)x.PointsForPurchases_Canceled);
 			}
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 			
 			return View(model);
         }
@@ -685,17 +682,17 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for chosen store scope
-            var storeScope = GetActiveStoreScopeConfiguration();
 			if (ModelState.IsValid)
 			{
+				//load settings for a chosen store scope
+				var storeScope = GetActiveStoreScopeConfiguration();
 				var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
 				rewardPointsSettings = model.ToEntity(rewardPointsSettings);
 
 				_settingService.UpdateSetting(model.Enabled, storeScope, rewardPointsSettings, x => x.Enabled);
 				_settingService.UpdateSetting(model.ExchangeRate, storeScope, rewardPointsSettings, x => x.ExchangeRate);
 				_settingService.UpdateSetting(model.PointsForRegistration, storeScope, rewardPointsSettings, x => x.PointsForRegistration);
-				
+
 				_settingService.UpdateSetting(model.PointsForPurchases_Amount, storeScope, rewardPointsSettings, x => x.PointsForPurchases_Amount);
 				_settingService.UpdateSetting(model.PointsForPurchases_Amount, storeScope, rewardPointsSettings, x => x.PointsForPurchases_Points);
 
@@ -709,14 +706,15 @@ namespace SmartStore.Admin.Controllers
 				_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
 				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
-				return RedirectToAction("RewardPoints");
 			}
-
-			//If we got this far, something failed, redisplay form
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-			model.ActiveStoreScopeConfiguration = storeScope;
-            
-            return View(model);
+			else
+			{
+				//If we got this far, something failed, redisplay form
+				foreach (var modelState in ModelState.Values)
+					foreach (var error in modelState.Errors)
+						ErrorNotification(error.ErrorMessage);
+			}
+			return RedirectToAction("RewardPoints");
         }
 
 
@@ -727,7 +725,23 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _orderSettings.ToModel();
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var orderSettings = _settingService.LoadSetting<OrderSettings>(storeScope);
+			var model = orderSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.IsReOrderAllowed = _settingService.SettingExists(storeScope, orderSettings, x => x.IsReOrderAllowed);
+				model.MinOrderSubtotalAmount = _settingService.SettingExists(storeScope, orderSettings, x => x.MinOrderSubtotalAmount);
+				model.MinOrderTotalAmount = _settingService.SettingExists(storeScope, orderSettings, x => x.MinOrderTotalAmount);
+				model.AnonymousCheckoutAllowed = _settingService.SettingExists(storeScope, orderSettings, x => x.AnonymousCheckoutAllowed);
+				model.TermsOfServiceEnabled = _settingService.SettingExists(storeScope, orderSettings, x => x.TermsOfServiceEnabled);
+				model.OnePageCheckoutEnabled = _settingService.SettingExists(storeScope, orderSettings, x => x.OnePageCheckoutEnabled);
+				model.ReturnRequestsEnabled = _settingService.SettingExists(storeScope, orderSettings, x => x.ReturnRequestsEnabled);
+				model.NumberOfDaysReturnRequestAvailable = _settingService.SettingExists(storeScope, orderSettings, x => x.NumberOfDaysReturnRequestAvailable);
+			}
+
             model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 
             //gift card activation/deactivation
@@ -738,17 +752,17 @@ namespace SmartStore.Admin.Controllers
 
 
             //parse return request actions
-            for (int i = 0; i < _orderSettings.ReturnRequestActions.Count; i++)
+			for (int i = 0; i < orderSettings.ReturnRequestActions.Count; i++)
             {
-                model.ReturnRequestActionsParsed += _orderSettings.ReturnRequestActions[i];
-                if (i != _orderSettings.ReturnRequestActions.Count - 1)
+				model.ReturnRequestActionsParsed += orderSettings.ReturnRequestActions[i];
+				if (i != orderSettings.ReturnRequestActions.Count - 1)
                     model.ReturnRequestActionsParsed += ",";
             }
             //parse return request reasons
-            for (int i = 0; i < _orderSettings.ReturnRequestReasons.Count; i++)
+			for (int i = 0; i < orderSettings.ReturnRequestReasons.Count; i++)
             {
-                model.ReturnRequestReasonsParsed += _orderSettings.ReturnRequestReasons[i];
-                if (i != _orderSettings.ReturnRequestReasons.Count - 1)
+				model.ReturnRequestReasonsParsed += orderSettings.ReturnRequestReasons[i];
+				if (i != orderSettings.ReturnRequestReasons.Count - 1)
                     model.ReturnRequestReasonsParsed += ",";
             }
 
@@ -766,19 +780,39 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+				//load settings for a chosen store scope
+				var storeScope = GetActiveStoreScopeConfiguration();
+				var orderSettings = _settingService.LoadSetting<OrderSettings>(storeScope);
+				orderSettings = model.ToEntity(orderSettings);
+
+				_settingService.UpdateSetting(model.IsReOrderAllowed, storeScope, orderSettings, x => x.IsReOrderAllowed);
+				_settingService.UpdateSetting(model.MinOrderSubtotalAmount, storeScope, orderSettings, x => x.MinOrderSubtotalAmount);
+				_settingService.UpdateSetting(model.MinOrderTotalAmount, storeScope, orderSettings, x => x.MinOrderTotalAmount);
+				_settingService.UpdateSetting(model.AnonymousCheckoutAllowed, storeScope, orderSettings, x => x.AnonymousCheckoutAllowed);
+				_settingService.UpdateSetting(model.TermsOfServiceEnabled, storeScope, orderSettings, x => x.TermsOfServiceEnabled);
+				_settingService.UpdateSetting(model.OnePageCheckoutEnabled, storeScope, orderSettings, x => x.OnePageCheckoutEnabled);
+				_settingService.UpdateSetting(model.ReturnRequestsEnabled, storeScope, orderSettings, x => x.ReturnRequestsEnabled);
+				_settingService.UpdateSetting(model.NumberOfDaysReturnRequestAvailable, storeScope, orderSettings, x => x.NumberOfDaysReturnRequestAvailable);
+
                 model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-                _orderSettings = model.ToEntity(_orderSettings);
 
-                //parse return request actions
-                _orderSettings.ReturnRequestActions.Clear();
-                foreach (var returnAction in model.ReturnRequestActionsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    _orderSettings.ReturnRequestActions.Add(returnAction);
-                //parse return request reasons
-                _orderSettings.ReturnRequestReasons.Clear();
-                foreach (var returnReason in model.ReturnRequestReasonsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    _orderSettings.ReturnRequestReasons.Add(returnReason);
+				//parse return request actions
+				orderSettings.ReturnRequestActions.Clear();
+				foreach (var returnAction in model.ReturnRequestActionsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+					orderSettings.ReturnRequestActions.Add(returnAction);
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, storeScope, false);
+				
+				//parse return request reasons
+				orderSettings.ReturnRequestReasons.Clear();
+				foreach (var returnReason in model.ReturnRequestReasonsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+					orderSettings.ReturnRequestReasons.Add(returnReason);
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, storeScope, false);
 
-                _settingService.SaveSetting(_orderSettings);
+				_settingService.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
+				_settingService.SaveSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId, 0, false);
+
+				//now clear settings cache
+				_settingService.ClearCache();
 
                 //order ident
                 if (model.OrderIdent.HasValue)
@@ -800,6 +834,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
+				//If we got this far, something failed, redisplay form
                 foreach (var modelState in ModelState.Values)
                     foreach (var error in modelState.Errors)
                         ErrorNotification(error.ErrorMessage);

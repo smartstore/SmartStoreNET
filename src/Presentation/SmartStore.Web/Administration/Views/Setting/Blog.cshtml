@@ -15,13 +15,16 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-@Html.ValidationSummary(false)
+	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.Enabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.Enabled)
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
@@ -31,6 +34,7 @@
                 @Html.SmartLabelFor(model => model.PostsPageSize)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.PostsPageSize, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.PostsPageSize)
                 @Html.ValidationMessageFor(model => model.PostsPageSize)
             </td>
@@ -40,6 +44,7 @@
                 @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowNotRegisteredUsersToLeaveComments, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
                 @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
@@ -49,6 +54,7 @@
                 @Html.SmartLabelFor(model => model.NotifyAboutNewBlogComments)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.NotifyAboutNewBlogComments, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.NotifyAboutNewBlogComments)
                 @Html.ValidationMessageFor(model => model.NotifyAboutNewBlogComments)
             </td>
@@ -58,6 +64,7 @@
                 @Html.SmartLabelFor(model => model.NumberOfTags)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.NumberOfTags, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.NumberOfTags)
                 @Html.ValidationMessageFor(model => model.NumberOfTags)
             </td>
@@ -67,6 +74,7 @@
                 @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowHeaderRssUrl, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowHeaderRssUrl)
                 @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
             </td>

@@ -1,26 +1,29 @@
-﻿using SmartStore.Web.Framework;
+﻿using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
     public class BlogSettingsModel : ModelBase
     {
+		public int ActiveStoreScopeConfiguration { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.Enabled")]
-        public bool Enabled { get; set; }
+        public StoreDependingSetting<bool> Enabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.PostsPageSize")]
-        public int PostsPageSize { get; set; }
+        public StoreDependingSetting<int> PostsPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.AllowNotRegisteredUsersToLeaveComments")]
-        public bool AllowNotRegisteredUsersToLeaveComments { get; set; }
+        public StoreDependingSetting<bool> AllowNotRegisteredUsersToLeaveComments { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.NotifyAboutNewBlogComments")]
-        public bool NotifyAboutNewBlogComments { get; set; }
+        public StoreDependingSetting<bool> NotifyAboutNewBlogComments { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.NumberOfTags")]
-        public int NumberOfTags { get; set; }
+        public StoreDependingSetting<int> NumberOfTags { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.ShowHeaderRSSUrl")]
-        public bool ShowHeaderRssUrl { get; set; }
+        public StoreDependingSetting<bool> ShowHeaderRssUrl { get; set; }
     }
 }

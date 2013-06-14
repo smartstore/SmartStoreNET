@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 
-        private BlogSettings _blogSettings;
         private ShippingSettings _shippingSettings;
         private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
@@ -115,7 +114,6 @@ namespace SmartStore.Admin.Controllers
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-			BlogSettings blogSettings, 
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CatalogSettings catalogSettings, RewardPointsSettings rewardPointsSettings,
             CurrencySettings currencySettings, OrderSettings orderSettings,
@@ -151,7 +149,6 @@ namespace SmartStore.Admin.Controllers
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
 
-            this._blogSettings = blogSettings;
             this._shippingSettings = shippingSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
@@ -238,7 +235,21 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _blogSettings.ToModel();
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
+			var model = blogSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.Enabled = _settingService.SettingExists(storeScope, blogSettings, x => x.Enabled);
+				model.PostsPageSize = _settingService.SettingExists(storeScope, blogSettings, x => x.PostsPageSize);
+				model.AllowNotRegisteredUsersToLeaveComments = _settingService.SettingExists(storeScope, blogSettings, x => x.AllowNotRegisteredUsersToLeaveComments);
+				model.NotifyAboutNewBlogComments = _settingService.SettingExists(storeScope, blogSettings, x => x.NotifyAboutNewBlogComments);
+				model.NumberOfTags = _settingService.SettingExists(storeScope, blogSettings, x => x.NumberOfTags);
+				model.ShowHeaderRssUrl = _settingService.SettingExists(storeScope, blogSettings, x => x.ShowHeaderRssUrl);
+			}
+
             return View(model);
         }
         [HttpPost]
@@ -247,8 +258,20 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _blogSettings = model.ToEntity(_blogSettings);
-            _settingService.SaveSetting(_blogSettings);
+			//load settings for chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
+			blogSettings = model.ToEntity(blogSettings);
+
+			_settingService.UpdateSetting(model.Enabled, storeScope, blogSettings, x => x.Enabled);
+			_settingService.UpdateSetting(model.PostsPageSize, storeScope, blogSettings, x => x.PostsPageSize);
+			_settingService.UpdateSetting(model.AllowNotRegisteredUsersToLeaveComments, storeScope, blogSettings, x => x.AllowNotRegisteredUsersToLeaveComments);
+			_settingService.UpdateSetting(model.NotifyAboutNewBlogComments, storeScope, blogSettings, x => x.NotifyAboutNewBlogComments);
+			_settingService.UpdateSetting(model.NumberOfTags, storeScope, blogSettings, x => x.NumberOfTags);
+			_settingService.UpdateSetting(model.ShowHeaderRssUrl, storeScope, blogSettings, x => x.ShowHeaderRssUrl);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));

@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 
-        private TaxSettings _taxSettings;
         private CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
         private ShoppingCartSettings _shoppingCartSettings;
@@ -110,7 +109,6 @@ namespace SmartStore.Admin.Controllers
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-            TaxSettings taxSettings,
             CatalogSettings catalogSettings, 
             CurrencySettings currencySettings, 
             ShoppingCartSettings shoppingCartSettings, 
@@ -145,7 +143,6 @@ namespace SmartStore.Admin.Controllers
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
 
-            this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -534,49 +531,102 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _taxSettings.ToModel();
-            model.TaxBasedOnValues = _taxSettings.TaxBasedOn.ToSelectList();
-            model.TaxDisplayTypeValues = _taxSettings.TaxDisplayType.ToSelectList();
+            //load settings for a chosen store scope
+            var storeScope = GetActiveStoreScopeConfiguration();
+            var taxSettings = _settingService.LoadSetting<TaxSettings>(storeScope);
+            var model = taxSettings.ToModel();
+            model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.PricesIncludeTax = _settingService.SettingExists(storeScope, taxSettings, x => x.PricesIncludeTax);
+				model.AllowCustomersToSelectTaxDisplayType = _settingService.SettingExists(storeScope, taxSettings, x => x.AllowCustomersToSelectTaxDisplayType);
+				model.TaxDisplayType = _settingService.SettingExists(storeScope, taxSettings, x => x.TaxDisplayType);
+				model.DisplayTaxSuffix = _settingService.SettingExists(storeScope, taxSettings, x => x.DisplayTaxSuffix);
+				model.DisplayTaxRates = _settingService.SettingExists(storeScope, taxSettings, x => x.DisplayTaxRates);
+				model.HideZeroTax = _settingService.SettingExists(storeScope, taxSettings, x => x.HideZeroTax);
+				model.HideTaxInOrderSummary = _settingService.SettingExists(storeScope, taxSettings, x => x.HideTaxInOrderSummary);
+				model.TaxBasedOn = _settingService.SettingExists(storeScope, taxSettings, x => x.TaxBasedOn);
+				model.ShippingIsTaxable = _settingService.SettingExists(storeScope, taxSettings, x => x.ShippingIsTaxable);
+				model.ShippingPriceIncludesTax = _settingService.SettingExists(storeScope, taxSettings, x => x.ShippingPriceIncludesTax);
+				model.ShippingTaxClassId = _settingService.SettingExists(storeScope, taxSettings, x => x.ShippingTaxClassId);
+				model.PaymentMethodAdditionalFeeIsTaxable = _settingService.SettingExists(storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeIsTaxable);
+				model.PaymentMethodAdditionalFeeIncludesTax = _settingService.SettingExists(storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeIncludesTax);
+				model.PaymentMethodAdditionalFeeTaxClassId = _settingService.SettingExists(storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeTaxClassId);
+				model.EuVatEnabled = _settingService.SettingExists(storeScope, taxSettings, x => x.EuVatEnabled);
+				model.EuVatShopCountryId = _settingService.SettingExists(storeScope, taxSettings, x => x.EuVatShopCountryId);
+				model.EuVatAllowVatExemption = _settingService.SettingExists(storeScope, taxSettings, x => x.EuVatAllowVatExemption);
+				model.EuVatUseWebService = _settingService.SettingExists(storeScope, taxSettings, x => x.EuVatUseWebService);
+				model.EuVatEmailAdminWhenNewVatSubmitted = _settingService.SettingExists(storeScope, taxSettings, x => x.EuVatEmailAdminWhenNewVatSubmitted);
+			}
+
+            model.TaxBasedOnValues = taxSettings.TaxBasedOn.ToSelectList();
+            model.TaxDisplayTypeValues = taxSettings.TaxDisplayType.ToSelectList();
 
             //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
             // model.ShippingTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
-            foreach (var tc in taxCategories)
-                model.ShippingTaxCategories.Add(new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == _taxSettings.ShippingTaxClassId });
+			foreach (var tc in taxCategories)
+			{
+				model.ShippingTaxCategories.Add(
+					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.ShippingTaxClassId }
+				);
+			}
             // model.PaymentMethodAdditionalFeeTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
-            foreach (var tc in taxCategories)
-                model.PaymentMethodAdditionalFeeTaxCategories.Add(new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == _taxSettings.PaymentMethodAdditionalFeeTaxClassId });
+			foreach (var tc in taxCategories)
+			{
+				model.PaymentMethodAdditionalFeeTaxCategories.Add(
+					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.PaymentMethodAdditionalFeeTaxClassId }
+				);
+			}
 
             //EU VAT countries
             // model.EuVatShopCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.EuVatShopCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == _taxSettings.EuVatShopCountryId });
+			foreach (var c in _countryService.GetAllCountries(true))
+			{
+				model.EuVatShopCountries.Add(
+					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == taxSettings.EuVatShopCountryId }
+				);
+			}
 
             //default tax address
-            var defaultAddress = _taxSettings.DefaultTaxAddressId > 0
-                                     ? _addressService.GetAddressById(_taxSettings.DefaultTaxAddressId)
+            var defaultAddress = taxSettings.DefaultTaxAddressId > 0
+                                     ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId)
                                      : null;
-            if (defaultAddress != null)
-                model.DefaultTaxAddress = defaultAddress.ToModel();
-            else
-                model.DefaultTaxAddress = new AddressModel();
+
+			model.DefaultTaxAddress = new StoreDependingSetting<AddressModel>()
+			{
+				Value = (defaultAddress != null ? defaultAddress.ToModel() : new AddressModel()),
+				OverrideForStore = (storeScope > 0 ? _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) : false)
+			};
 
             // model.DefaultTaxAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.DefaultTaxAddress.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (defaultAddress != null && c.Id == defaultAddress.CountryId) });
+			foreach (var c in _countryService.GetAllCountries(true))
+			{
+				model.DefaultTaxAddress.Value.AvailableCountries.Add(
+					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (defaultAddress != null && c.Id == defaultAddress.CountryId) }
+				);
+			}
 
             var states = defaultAddress != null && defaultAddress.Country != null ? _stateProvinceService.GetStateProvincesByCountryId(defaultAddress.Country.Id, true).ToList() : new List<StateProvince>();
-            if (states.Count > 0)
-            {
-                foreach (var s in states)
-                    model.DefaultTaxAddress.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == defaultAddress.StateProvinceId) });
-            }
-            else
-                model.DefaultTaxAddress.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-            model.DefaultTaxAddress.CountryEnabled = true;
-            model.DefaultTaxAddress.StateProvinceEnabled = true;
-            model.DefaultTaxAddress.ZipPostalCodeEnabled = true;
-            model.DefaultTaxAddress.ZipPostalCodeRequired = true;
+			if (states.Count > 0)
+			{
+				foreach (var s in states)
+				{
+					model.DefaultTaxAddress.Value.AvailableStates.Add(
+						new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == defaultAddress.StateProvinceId) }
+					);
+				}
+			}
+			else
+			{
+				model.DefaultTaxAddress.Value.AvailableStates.Add(
+					new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
+				);
+			}
+            model.DefaultTaxAddress.Value.CountryEnabled = true;
+            model.DefaultTaxAddress.Value.StateProvinceEnabled = true;
+            model.DefaultTaxAddress.Value.ZipPostalCodeEnabled = true;
+            model.DefaultTaxAddress.Value.ZipPostalCodeRequired = true;
 
             return View(model);
         }
@@ -586,24 +636,63 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _taxSettings = model.ToEntity(_taxSettings);
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var taxSettings = _settingService.LoadSetting<TaxSettings>(storeScope);
+			taxSettings = model.ToEntity(taxSettings);
 
-            //codehint: sm-add
-            _taxSettings.AllowCustomersToSelectTaxDisplayType = false;
+			_settingService.UpdateSetting(model.PricesIncludeTax, storeScope, taxSettings, x => x.PricesIncludeTax);
+			//codehint: sm-edit
+			//_settingService.UpdateSetting(model.AllowCustomersToSelectTaxDisplayType, storeScope, taxSettings, x => x.AllowCustomersToSelectTaxDisplayType);
+			_settingService.UpdateSetting(model.TaxDisplayType, storeScope, taxSettings, x => x.TaxDisplayType);
+			_settingService.UpdateSetting(model.DisplayTaxSuffix, storeScope, taxSettings, x => x.DisplayTaxSuffix);
+			_settingService.UpdateSetting(model.DisplayTaxRates, storeScope, taxSettings, x => x.DisplayTaxRates);
+			_settingService.UpdateSetting(model.HideZeroTax, storeScope, taxSettings, x => x.HideZeroTax);
+			_settingService.UpdateSetting(model.HideTaxInOrderSummary, storeScope, taxSettings, x => x.HideTaxInOrderSummary);
+			_settingService.UpdateSetting(model.TaxBasedOn, storeScope, taxSettings, x => x.TaxBasedOn);
+			_settingService.UpdateSetting(model.ShippingIsTaxable, storeScope, taxSettings, x => x.ShippingIsTaxable);
+			_settingService.UpdateSetting(model.ShippingPriceIncludesTax, storeScope, taxSettings, x => x.ShippingPriceIncludesTax);
+			_settingService.UpdateSetting(model.ShippingTaxClassId, storeScope, taxSettings, x => x.ShippingTaxClassId);
+			_settingService.UpdateSetting(model.PaymentMethodAdditionalFeeIsTaxable, storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeIsTaxable);
+			_settingService.UpdateSetting(model.PaymentMethodAdditionalFeeIncludesTax, storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeIncludesTax);
+			_settingService.UpdateSetting(model.PaymentMethodAdditionalFeeTaxClassId, storeScope, taxSettings, x => x.PaymentMethodAdditionalFeeTaxClassId);
+			_settingService.UpdateSetting(model.EuVatEnabled, storeScope, taxSettings, x => x.EuVatEnabled);
+			_settingService.UpdateSetting(model.EuVatShopCountryId, storeScope, taxSettings, x => x.EuVatShopCountryId);
+			_settingService.UpdateSetting(model.EuVatAllowVatExemption, storeScope, taxSettings, x => x.EuVatAllowVatExemption);
+			_settingService.UpdateSetting(model.EuVatUseWebService, storeScope, taxSettings, x => x.EuVatUseWebService);
+			_settingService.UpdateSetting(model.EuVatEmailAdminWhenNewVatSubmitted, storeScope, taxSettings, x => x.EuVatEmailAdminWhenNewVatSubmitted);
 
-            var defaultAddress = _addressService.GetAddressById(_taxSettings.DefaultTaxAddressId) ??
-                                         new Core.Domain.Common.Address()
-                                         {
-                                             CreatedOnUtc = DateTime.UtcNow,
-                                         };
-            defaultAddress = model.DefaultTaxAddress.ToEntity(defaultAddress);
-            if (defaultAddress.Id > 0)
-                _addressService.UpdateAddress(defaultAddress);
-            else
-                _addressService.InsertAddress(defaultAddress);
+			if (model.DefaultTaxAddress.OverrideForStore || storeScope == 0)
+			{
+				//update address
+				var addressId = _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) ?
+					taxSettings.DefaultTaxAddressId : 0;
+				var originAddress = _addressService.GetAddressById(addressId) ??
+					new Core.Domain.Common.Address()
+					{
+						CreatedOnUtc = DateTime.UtcNow,
+					};
+				//update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
+				model.DefaultTaxAddress.Value.Id = addressId;
+				originAddress = model.DefaultTaxAddress.Value.ToEntity(originAddress);
+				if (originAddress.Id > 0)
+					_addressService.UpdateAddress(originAddress);
+				else
+					_addressService.InsertAddress(originAddress);
+				taxSettings.DefaultTaxAddressId = originAddress.Id;
 
-            _taxSettings.DefaultTaxAddressId = defaultAddress.Id;
-            _settingService.SaveSetting(_taxSettings);
+				_settingService.SaveSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope, false);
+			}
+			else if (storeScope > 0)
+			{
+				_settingService.DeleteSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope);
+			}
+
+			//codehint: sm-add
+			taxSettings.AllowCustomersToSelectTaxDisplayType = false;
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));

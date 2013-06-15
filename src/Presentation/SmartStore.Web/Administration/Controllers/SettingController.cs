@@ -77,7 +77,6 @@ namespace SmartStore.Admin.Controllers
         private CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
         private ShoppingCartSettings _shoppingCartSettings;
-        private MediaSettings _mediaSettings;
         private CustomerSettings _customerSettings;
         private AddressSettings _addressSettings;
         private readonly DateTimeSettings _dateTimeSettings;
@@ -114,7 +113,7 @@ namespace SmartStore.Admin.Controllers
             TaxSettings taxSettings,
             CatalogSettings catalogSettings, 
             CurrencySettings currencySettings, 
-            ShoppingCartSettings shoppingCartSettings, MediaSettings mediaSettings,
+            ShoppingCartSettings shoppingCartSettings, 
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings, StoreInformationSettings storeInformationSettings,
             SeoSettings seoSettings,SecuritySettings securitySettings, PdfSettings pdfSettings,
@@ -150,7 +149,6 @@ namespace SmartStore.Admin.Controllers
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
             this._shoppingCartSettings = shoppingCartSettings;
-            this._mediaSettings = mediaSettings;
             this._customerSettings = customerSettings;
             this._addressSettings = addressSettings;
             this._dateTimeSettings = dateTimeSettings;
@@ -877,7 +875,26 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _mediaSettings.ToModel();
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var mediaSettings = _settingService.LoadSetting<MediaSettings>(storeScope);
+			var model = mediaSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.AvatarPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.AvatarPictureSize);
+				model.ProductThumbPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.ProductThumbPictureSize);
+				model.ProductDetailsPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.ProductDetailsPictureSize);
+				model.ProductThumbPictureSizeOnProductDetailsPage = _settingService.SettingExists(storeScope, mediaSettings, x => x.ProductThumbPictureSizeOnProductDetailsPage);
+				model.ProductVariantPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.ProductVariantPictureSize);
+				model.CategoryThumbPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.CategoryThumbPictureSize);
+				model.ManufacturerThumbPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.ManufacturerThumbPictureSize);
+				model.CartThumbPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.CartThumbPictureSize);
+				model.MiniCartThumbPictureSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.MiniCartThumbPictureSize);
+				model.MaximumImageSize = _settingService.SettingExists(storeScope, mediaSettings, x => x.MaximumImageSize);
+				model.DefaultPictureZoomEnabled = _settingService.SettingExists(storeScope, mediaSettings, x => x.DefaultPictureZoomEnabled);
+				model.PictureZoomType = _settingService.SettingExists(storeScope, mediaSettings, x => x.PictureZoomType);
+			}
             model.PicturesStoredIntoDatabase = _pictureService.StoreInDb;
 
             var resKey = "Admin.Configuration.Settings.Media.PictureZoomType.";
@@ -907,8 +924,26 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _mediaSettings = model.ToEntity(_mediaSettings);
-            _settingService.SaveSetting(_mediaSettings);
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var mediaSettings = _settingService.LoadSetting<MediaSettings>(storeScope);
+			mediaSettings = model.ToEntity(mediaSettings);
+
+			_settingService.UpdateSetting(model.AvatarPictureSize, storeScope, mediaSettings, x => x.AvatarPictureSize);
+			_settingService.UpdateSetting(model.ProductThumbPictureSize, storeScope, mediaSettings, x => x.ProductThumbPictureSize);
+			_settingService.UpdateSetting(model.ProductDetailsPictureSize, storeScope, mediaSettings, x => x.ProductDetailsPictureSize);
+			_settingService.UpdateSetting(model.ProductThumbPictureSizeOnProductDetailsPage, storeScope, mediaSettings, x => x.ProductThumbPictureSizeOnProductDetailsPage);
+			_settingService.UpdateSetting(model.ProductVariantPictureSize, storeScope, mediaSettings, x => x.ProductVariantPictureSize);
+			_settingService.UpdateSetting(model.CategoryThumbPictureSize, storeScope, mediaSettings, x => x.CategoryThumbPictureSize);
+			_settingService.UpdateSetting(model.ManufacturerThumbPictureSize, storeScope, mediaSettings, x => x.ManufacturerThumbPictureSize);
+			_settingService.UpdateSetting(model.CartThumbPictureSize, storeScope, mediaSettings, x => x.CartThumbPictureSize);
+			_settingService.UpdateSetting(model.MiniCartThumbPictureSize, storeScope, mediaSettings, x => x.MiniCartThumbPictureSize);
+			_settingService.UpdateSetting(model.MaximumImageSize, storeScope, mediaSettings, x => x.MaximumImageSize);
+			_settingService.UpdateSetting(model.DefaultPictureZoomEnabled, storeScope, mediaSettings, x => x.DefaultPictureZoomEnabled);
+			_settingService.UpdateSetting(model.PictureZoomType, storeScope, mediaSettings, x => x.PictureZoomType);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));

@@ -1,5 +1,4 @@
 ﻿@model ShoppingCartSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
     //page title
     ViewBag.Title = T("Admin.Configuration.Settings.ShoppingCart").Text;
@@ -47,13 +46,16 @@
         
     </script>
     
-@Html.ValidationSummary(false)
+	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisplayCartAfterAddingProduct)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.DisplayCartAfterAddingProduct, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.DisplayCartAfterAddingProduct)
                 @Html.ValidationMessageFor(model => model.DisplayCartAfterAddingProduct)
             </td>
@@ -63,6 +65,7 @@
                 @Html.SmartLabelFor(model => model.DisplayWishlistAfterAddingProduct)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.DisplayWishlistAfterAddingProduct, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.DisplayWishlistAfterAddingProduct)
                 @Html.ValidationMessageFor(model => model.DisplayWishlistAfterAddingProduct)
             </td>
@@ -72,6 +75,7 @@
                 @Html.SmartLabelFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowOutOfStockItemsToBeAddedToWishlist, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
                 @Html.ValidationMessageFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
             </td>
@@ -81,6 +85,7 @@
                 @Html.SmartLabelFor(model => model.MaximumShoppingCartItems)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.MaximumShoppingCartItems, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.MaximumShoppingCartItems)
                 @Html.ValidationMessageFor(model => model.MaximumShoppingCartItems)
             </td>
@@ -90,6 +95,7 @@
                 @Html.SmartLabelFor(model => model.MaximumWishlistItems)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.MaximumWishlistItems, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.MaximumWishlistItems)
                 @Html.ValidationMessageFor(model => model.MaximumWishlistItems)
             </td>
@@ -99,6 +105,7 @@
                 @Html.SmartLabelFor(model => model.ShowProductImagesOnShoppingCart)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowProductImagesOnShoppingCart, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowProductImagesOnShoppingCart)
                 @Html.ValidationMessageFor(model => model.ShowProductImagesOnShoppingCart)
             </td>
@@ -108,6 +115,7 @@
                 @Html.SmartLabelFor(model => model.ShowProductImagesOnWishList)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowProductImagesOnWishList, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowProductImagesOnWishList)
                 @Html.ValidationMessageFor(model => model.ShowProductImagesOnWishList)
             </td>
@@ -117,6 +125,7 @@
                 @Html.SmartLabelFor(model => model.ShowDiscountBox)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowDiscountBox, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowDiscountBox)
                 @Html.ValidationMessageFor(model => model.ShowDiscountBox)
             </td>
@@ -126,6 +135,7 @@
                 @Html.SmartLabelFor(model => model.ShowGiftCardBox)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowGiftCardBox, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowGiftCardBox)
                 @Html.ValidationMessageFor(model => model.ShowGiftCardBox)
             </td>
@@ -135,6 +145,7 @@
                 @Html.SmartLabelFor(model => model.CrossSellsNumber)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.CrossSellsNumber, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.CrossSellsNumber)
                 @Html.ValidationMessageFor(model => model.CrossSellsNumber)
             </td>
@@ -144,6 +155,7 @@
                 @Html.SmartLabelFor(model => model.EmailWishlistEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.EmailWishlistEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.EmailWishlistEnabled)
                 @Html.ValidationMessageFor(model => model.EmailWishlistEnabled)
             </td>
@@ -153,6 +165,7 @@
                 @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailWishlist)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.AllowAnonymousUsersToEmailWishlist, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.AllowAnonymousUsersToEmailWishlist)
                 @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailWishlist)
             </td>
@@ -162,6 +175,7 @@
                 @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.MiniShoppingCartEnabled, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.MiniShoppingCartEnabled)
                 @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
             </td>
@@ -171,6 +185,7 @@
                 @Html.SmartLabelFor(model => model.MiniShoppingCartProductNumber)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.MiniShoppingCartProductNumber, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.MiniShoppingCartProductNumber)
                 @Html.ValidationMessageFor(model => model.MiniShoppingCartProductNumber)
             </td>
@@ -180,6 +195,7 @@
                 @Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowProductImagesInMiniShoppingCart, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowProductImagesInMiniShoppingCart)
                 @Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
             </td>
@@ -191,10 +207,10 @@
                 @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
             </td>
             <td class="adminData">
+				@Html.OverrideStoreCheckboxFor(model => Model.ShowConfirmOrderLegalHint, Model.ActiveStoreScopeConfiguration)
                 @Html.EditorFor(model => model.ShowConfirmOrderLegalHint)
                 @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
             </td>
         </tr>
-            
     </table>
 }

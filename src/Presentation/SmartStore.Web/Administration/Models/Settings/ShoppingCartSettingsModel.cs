@@ -1,56 +1,59 @@
-﻿using SmartStore.Web.Framework;
+﻿using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
     public class ShoppingCartSettingsModel
     {
+		public int ActiveStoreScopeConfiguration { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DisplayCartAfterAddingProduct")]
-        public bool DisplayCartAfterAddingProduct { get; set; }
+        public StoreDependingSetting<bool> DisplayCartAfterAddingProduct { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DisplayWishlistAfterAddingProduct")]
-        public bool DisplayWishlistAfterAddingProduct { get; set; }
+        public StoreDependingSetting<bool> DisplayWishlistAfterAddingProduct { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MaximumShoppingCartItems")]
-        public int MaximumShoppingCartItems { get; set; }
+        public StoreDependingSetting<int> MaximumShoppingCartItems { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MaximumWishlistItems")]
-        public int MaximumWishlistItems { get; set; }
+        public StoreDependingSetting<int> MaximumWishlistItems { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AllowOutOfStockItemsToBeAddedToWishlist")]
-        public bool AllowOutOfStockItemsToBeAddedToWishlist { get; set; }
+        public StoreDependingSetting<bool> AllowOutOfStockItemsToBeAddedToWishlist { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnShoppingCart")]
-        public bool ShowProductImagesOnShoppingCart { get; set; }
+        public StoreDependingSetting<bool> ShowProductImagesOnShoppingCart { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnWishList")]
-        public bool ShowProductImagesOnWishList { get; set; }
+        public StoreDependingSetting<bool> ShowProductImagesOnWishList { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox")]
-        public bool ShowDiscountBox { get; set; }
+        public StoreDependingSetting<bool> ShowDiscountBox { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowGiftCardBox")]
-        public bool ShowGiftCardBox { get; set; }
+        public StoreDependingSetting<bool> ShowGiftCardBox { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber")]
-        public int CrossSellsNumber { get; set; }
+        public StoreDependingSetting<int> CrossSellsNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
-        public bool EmailWishlistEnabled { get; set; }
+        public StoreDependingSetting<bool> EmailWishlistEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AllowAnonymousUsersToEmailWishlist")]
-        public bool AllowAnonymousUsersToEmailWishlist { get; set; }
+        public StoreDependingSetting<bool> AllowAnonymousUsersToEmailWishlist { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartEnabled")]
-        public bool MiniShoppingCartEnabled { get; set; }
+        public StoreDependingSetting<bool> MiniShoppingCartEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesInMiniShoppingCart")]
-        public bool ShowProductImagesInMiniShoppingCart { get; set; }
+        public StoreDependingSetting<bool> ShowProductImagesInMiniShoppingCart { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber")]
-        public int MiniShoppingCartProductNumber { get; set; }
+        public StoreDependingSetting<int> MiniShoppingCartProductNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
-        public bool ShowConfirmOrderLegalHint { get; set; }
+        public StoreDependingSetting<bool> ShowConfirmOrderLegalHint { get; set; }
 
     }
 }

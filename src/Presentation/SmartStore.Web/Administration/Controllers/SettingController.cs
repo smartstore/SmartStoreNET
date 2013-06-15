@@ -75,7 +75,6 @@ namespace SmartStore.Admin.Controllers
 
         private CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
-        private ShoppingCartSettings _shoppingCartSettings;
         private CustomerSettings _customerSettings;
         private AddressSettings _addressSettings;
         private readonly DateTimeSettings _dateTimeSettings;
@@ -111,7 +110,6 @@ namespace SmartStore.Admin.Controllers
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
             CatalogSettings catalogSettings, 
             CurrencySettings currencySettings, 
-            ShoppingCartSettings shoppingCartSettings, 
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings, StoreInformationSettings storeInformationSettings,
             SeoSettings seoSettings,SecuritySettings securitySettings, PdfSettings pdfSettings,
@@ -145,7 +143,6 @@ namespace SmartStore.Admin.Controllers
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
-            this._shoppingCartSettings = shoppingCartSettings;
             this._customerSettings = customerSettings;
             this._addressSettings = addressSettings;
             this._dateTimeSettings = dateTimeSettings;
@@ -937,7 +934,29 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _shoppingCartSettings.ToModel();
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var shoppingCartSettings = _settingService.LoadSetting<ShoppingCartSettings>(storeScope);
+			var model = shoppingCartSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.DisplayCartAfterAddingProduct = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.DisplayCartAfterAddingProduct);
+				model.DisplayWishlistAfterAddingProduct = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.DisplayWishlistAfterAddingProduct);
+				model.MaximumShoppingCartItems = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MaximumShoppingCartItems);
+				model.MaximumWishlistItems = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MaximumWishlistItems);
+				model.AllowOutOfStockItemsToBeAddedToWishlist = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.AllowOutOfStockItemsToBeAddedToWishlist);
+				model.ShowProductImagesOnShoppingCart = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowProductImagesOnShoppingCart);
+				model.ShowProductImagesOnWishList = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowProductImagesOnWishList);
+				model.ShowDiscountBox = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowDiscountBox);
+				model.ShowGiftCardBox = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowGiftCardBox);
+				model.CrossSellsNumber = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.CrossSellsNumber);
+				model.EmailWishlistEnabled = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.EmailWishlistEnabled);
+				model.AllowAnonymousUsersToEmailWishlist = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.AllowAnonymousUsersToEmailWishlist);
+				model.MiniShoppingCartEnabled = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MiniShoppingCartEnabled);
+				model.ShowProductImagesInMiniShoppingCart = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowProductImagesInMiniShoppingCart);
+				model.MiniShoppingCartProductNumber = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MiniShoppingCartProductNumber);
+			}
             return View(model);
         }
         [HttpPost]
@@ -946,9 +965,30 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _shoppingCartSettings = model.ToEntity(_shoppingCartSettings);
-            _settingService.SaveSetting(_shoppingCartSettings);
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var shoppingCartSettings = _settingService.LoadSetting<ShoppingCartSettings>(storeScope);
+			shoppingCartSettings = model.ToEntity(shoppingCartSettings);
 
+			_settingService.UpdateSetting(model.DisplayCartAfterAddingProduct, storeScope, shoppingCartSettings, x => x.DisplayCartAfterAddingProduct);
+			_settingService.UpdateSetting(model.DisplayWishlistAfterAddingProduct, storeScope, shoppingCartSettings, x => x.DisplayWishlistAfterAddingProduct);
+			_settingService.UpdateSetting(model.MaximumShoppingCartItems, storeScope, shoppingCartSettings, x => x.MaximumShoppingCartItems);
+			_settingService.UpdateSetting(model.MaximumWishlistItems, storeScope, shoppingCartSettings, x => x.MaximumWishlistItems);
+			_settingService.UpdateSetting(model.AllowOutOfStockItemsToBeAddedToWishlist, storeScope, shoppingCartSettings, x => x.AllowOutOfStockItemsToBeAddedToWishlist);
+			_settingService.UpdateSetting(model.ShowProductImagesOnShoppingCart, storeScope, shoppingCartSettings, x => x.ShowProductImagesOnShoppingCart);
+			_settingService.UpdateSetting(model.ShowProductImagesOnWishList, storeScope, shoppingCartSettings, x => x.ShowProductImagesOnWishList);
+			_settingService.UpdateSetting(model.ShowDiscountBox, storeScope, shoppingCartSettings, x => x.ShowDiscountBox);
+			_settingService.UpdateSetting(model.ShowGiftCardBox, storeScope, shoppingCartSettings, x => x.ShowGiftCardBox);
+			_settingService.UpdateSetting(model.CrossSellsNumber, storeScope, shoppingCartSettings, x => x.CrossSellsNumber);
+			_settingService.UpdateSetting(model.EmailWishlistEnabled, storeScope, shoppingCartSettings, x => x.EmailWishlistEnabled);
+			_settingService.UpdateSetting(model.AllowAnonymousUsersToEmailWishlist, storeScope, shoppingCartSettings, x => x.AllowAnonymousUsersToEmailWishlist);
+			_settingService.UpdateSetting(model.MiniShoppingCartEnabled, storeScope, shoppingCartSettings, x => x.MiniShoppingCartEnabled);
+			_settingService.UpdateSetting(model.ShowProductImagesInMiniShoppingCart, storeScope, shoppingCartSettings, x => x.ShowProductImagesInMiniShoppingCart);
+			_settingService.UpdateSetting(model.MiniShoppingCartProductNumber, storeScope, shoppingCartSettings, x => x.MiniShoppingCartProductNumber);
+
+			//now clear settings cache
+			_settingService.ClearCache();
+            
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 

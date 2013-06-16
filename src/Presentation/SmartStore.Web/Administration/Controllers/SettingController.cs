@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 
-        private CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
         private CustomerSettings _customerSettings;
         private AddressSettings _addressSettings;
@@ -108,7 +107,6 @@ namespace SmartStore.Admin.Controllers
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-            CatalogSettings catalogSettings, 
             CurrencySettings currencySettings, 
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings, StoreInformationSettings storeInformationSettings,
@@ -141,7 +139,6 @@ namespace SmartStore.Admin.Controllers
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
 
-            this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
             this._customerSettings = customerSettings;
             this._addressSettings = addressSettings;
@@ -542,6 +539,9 @@ namespace SmartStore.Admin.Controllers
 				model.DisplayTaxRates = _settingService.SettingExists(storeScope, taxSettings, x => x.DisplayTaxRates);
 				model.HideZeroTax = _settingService.SettingExists(storeScope, taxSettings, x => x.HideZeroTax);
 				model.HideTaxInOrderSummary = _settingService.SettingExists(storeScope, taxSettings, x => x.HideTaxInOrderSummary);
+				model.ShowLegalHintsInProductList = _settingService.SettingExists(storeScope, taxSettings, x => x.ShowLegalHintsInProductList);
+				model.ShowLegalHintsInProductDetails = _settingService.SettingExists(storeScope, taxSettings, x => x.ShowLegalHintsInProductDetails);
+				model.ShowLegalHintsInFooter = _settingService.SettingExists(storeScope, taxSettings, x => x.ShowLegalHintsInFooter);
 				model.TaxBasedOn = _settingService.SettingExists(storeScope, taxSettings, x => x.TaxBasedOn);
 				model.ShippingIsTaxable = _settingService.SettingExists(storeScope, taxSettings, x => x.ShippingIsTaxable);
 				model.ShippingPriceIncludesTax = _settingService.SettingExists(storeScope, taxSettings, x => x.ShippingPriceIncludesTax);
@@ -646,6 +646,9 @@ namespace SmartStore.Admin.Controllers
 			_settingService.UpdateSetting(model.DisplayTaxRates, storeScope, taxSettings, x => x.DisplayTaxRates);
 			_settingService.UpdateSetting(model.HideZeroTax, storeScope, taxSettings, x => x.HideZeroTax);
 			_settingService.UpdateSetting(model.HideTaxInOrderSummary, storeScope, taxSettings, x => x.HideTaxInOrderSummary);
+			_settingService.UpdateSetting(model.ShowLegalHintsInProductList, storeScope, taxSettings, x => x.ShowLegalHintsInProductList);
+			_settingService.UpdateSetting(model.ShowLegalHintsInProductDetails, storeScope, taxSettings, x => x.ShowLegalHintsInProductDetails);
+			_settingService.UpdateSetting(model.ShowLegalHintsInFooter, storeScope, taxSettings, x => x.ShowLegalHintsInFooter);
 			_settingService.UpdateSetting(model.TaxBasedOn, storeScope, taxSettings, x => x.TaxBasedOn);
 			_settingService.UpdateSetting(model.ShippingIsTaxable, storeScope, taxSettings, x => x.ShippingIsTaxable);
 			_settingService.UpdateSetting(model.ShippingPriceIncludesTax, storeScope, taxSettings, x => x.ShippingPriceIncludesTax);
@@ -706,9 +709,71 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            var model = _catalogSettings.ToModel();
-            model.AvailableDefaultViewModes.Add(new SelectListItem { Value = "grid", Text = _localizationService.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") });
-            model.AvailableDefaultViewModes.Add(new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") });
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
+			var model = catalogSettings.ToModel();
+			model.ActiveStoreScopeConfiguration = storeScope;
+			if (storeScope > 0)
+			{
+				model.ShowProductSku = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowProductSku);
+				model.ShowManufacturerPartNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowManufacturerPartNumber);
+				model.ShowGtin = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowGtin);
+				model.ShowWeight = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowWeight);
+				model.ShowDimensions = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowDimensions);
+				model.AllowProductSorting = _settingService.SettingExists(storeScope, catalogSettings, x => x.AllowProductSorting);
+				model.AllowProductViewModeChanging = _settingService.SettingExists(storeScope, catalogSettings, x => x.AllowProductViewModeChanging);
+				model.ShowProductsFromSubcategories = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowProductsFromSubcategories);
+				model.ShowCategoryProductNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowCategoryProductNumber);
+				model.ShowCategoryProductNumberIncludingSubcategories = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowCategoryProductNumberIncludingSubcategories);
+				model.CategoryBreadcrumbEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.CategoryBreadcrumbEnabled);
+				model.ShowShareButton = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowShareButton);
+				model.ShowBasePriceInProductLists = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowBasePriceInProductLists);
+				model.ShowDeliveryTimesInProductLists = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowDeliveryTimesInProductLists);
+				model.ShowProductReviewsInProductLists = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowProductReviewsInProductLists);		
+				model.ProductReviewsMustBeApproved = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductReviewsMustBeApproved);
+				model.AllowAnonymousUsersToReviewProduct = _settingService.SettingExists(storeScope, catalogSettings, x => x.AllowAnonymousUsersToReviewProduct);
+				model.NotifyStoreOwnerAboutNewProductReviews = _settingService.SettingExists(storeScope, catalogSettings, x => x.NotifyStoreOwnerAboutNewProductReviews);
+				model.EmailAFriendEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.EmailAFriendEnabled);
+				model.AskQuestionEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.AskQuestionEnabled);
+				model.AllowAnonymousUsersToEmailAFriend = _settingService.SettingExists(storeScope, catalogSettings, x => x.AllowAnonymousUsersToEmailAFriend);
+				model.RecentlyViewedProductsNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyViewedProductsNumber);
+				model.RecentlyViewedProductsEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyViewedProductsEnabled);
+				model.RecentlyAddedProductsNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyAddedProductsNumber);
+				model.RecentlyAddedProductsEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyAddedProductsEnabled);
+				model.CompareProductsEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.CompareProductsEnabled);
+				model.ShowBestsellersOnHomepage = _settingService.SettingExists(storeScope, catalogSettings, x => x.ShowBestsellersOnHomepage);
+				model.NumberOfBestsellersOnHomepage = _settingService.SettingExists(storeScope, catalogSettings, x => x.NumberOfBestsellersOnHomepage);
+				model.SearchPageProductsPerPage = _settingService.SettingExists(storeScope, catalogSettings, x => x.SearchPageProductsPerPage);
+				model.ProductSearchAutoCompleteEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductSearchAutoCompleteEnabled);
+				model.ProductSearchAutoCompleteNumberOfProducts = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductSearchAutoCompleteNumberOfProducts);
+				model.ProductsAlsoPurchasedEnabled = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductsAlsoPurchasedEnabled);
+				model.ProductsAlsoPurchasedNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductsAlsoPurchasedNumber);
+				model.EnableDynamicPriceUpdate = _settingService.SettingExists(storeScope, catalogSettings, x => x.EnableDynamicPriceUpdate);
+				model.NumberOfProductTags = _settingService.SettingExists(storeScope, catalogSettings, x => x.NumberOfProductTags);
+				model.ProductsByTagPageSize = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductsByTagPageSize);
+				model.ProductsByTagAllowCustomersToSelectPageSize = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductsByTagAllowCustomersToSelectPageSize);
+				model.DefaultPageSizeOptions = _settingService.SettingExists(storeScope, catalogSettings, x => x.DefaultPageSizeOptions);
+				model.ProductsByTagPageSizeOptions = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductsByTagPageSizeOptions);
+				model.ProductSearchAllowCustomersToSelectPageSize = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductSearchAllowCustomersToSelectPageSize);
+				model.ProductSearchPageSizeOptions = _settingService.SettingExists(storeScope, catalogSettings, x => x.ProductSearchPageSizeOptions);
+				model.RecentlyAddedProductsPageSize = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyAddedProductsPageSize);
+				model.RecentlyAddedProductsAllowCustomersToSelectPageSize = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyAddedProductsAllowCustomersToSelectPageSize);
+				model.RecentlyAddedProductsPageSizeOptions = _settingService.SettingExists(storeScope, catalogSettings, x => x.RecentlyAddedProductsPageSizeOptions);
+				model.DisplayAllImagesNumber = _settingService.SettingExists(storeScope, catalogSettings, x => x.DisplayAllImagesNumber);
+				model.IncludeShortDescriptionInCompareProducts = _settingService.SettingExists(storeScope, catalogSettings, x => x.IncludeShortDescriptionInCompareProducts);
+				model.IncludeFullDescriptionInCompareProducts = _settingService.SettingExists(storeScope, catalogSettings, x => x.IncludeFullDescriptionInCompareProducts);
+				model.IgnoreDiscounts = _settingService.SettingExists(storeScope, catalogSettings, x => x.IgnoreDiscounts);
+				model.IgnoreFeaturedProducts = _settingService.SettingExists(storeScope, catalogSettings, x => x.IgnoreFeaturedProducts);
+				model.DefaultViewMode = _settingService.SettingExists(storeScope, catalogSettings, x => x.DefaultViewMode);
+			}
+
+            model.AvailableDefaultViewModes.Add(
+				new SelectListItem { Value = "grid", Text = _localizationService.GetResource("Common.Grid"), Selected = model.DefaultViewMode.Value.IsCaseInsensitiveEqual("grid") }
+			);
+            model.AvailableDefaultViewModes.Add(
+				new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.Value.IsCaseInsensitiveEqual("list") }
+			);
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
@@ -719,8 +784,64 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _catalogSettings = model.ToEntity(_catalogSettings);
-            _settingService.SaveSetting(_catalogSettings);
+			//load settings for a chosen store scope
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
+			catalogSettings = model.ToEntity(catalogSettings);
+
+			_settingService.UpdateSetting(model.ShowProductSku, storeScope, catalogSettings, x => x.ShowProductSku);
+			_settingService.UpdateSetting(model.ShowManufacturerPartNumber, storeScope, catalogSettings, x => x.ShowManufacturerPartNumber);
+			_settingService.UpdateSetting(model.ShowGtin, storeScope, catalogSettings, x => x.ShowGtin);
+			_settingService.UpdateSetting(model.ShowWeight, storeScope, catalogSettings, x => x.ShowWeight);
+			_settingService.UpdateSetting(model.ShowDimensions, storeScope, catalogSettings, x => x.ShowDimensions);
+			_settingService.UpdateSetting(model.AllowProductSorting, storeScope, catalogSettings, x => x.AllowProductSorting);
+			_settingService.UpdateSetting(model.AllowProductViewModeChanging, storeScope, catalogSettings, x => x.AllowProductViewModeChanging);
+			_settingService.UpdateSetting(model.ShowProductsFromSubcategories, storeScope, catalogSettings, x => x.ShowProductsFromSubcategories);
+			_settingService.UpdateSetting(model.ShowCategoryProductNumber, storeScope, catalogSettings, x => x.ShowCategoryProductNumber);
+			_settingService.UpdateSetting(model.ShowCategoryProductNumberIncludingSubcategories, storeScope, catalogSettings, x => x.ShowCategoryProductNumberIncludingSubcategories);
+			_settingService.UpdateSetting(model.CategoryBreadcrumbEnabled, storeScope, catalogSettings, x => x.CategoryBreadcrumbEnabled);
+			_settingService.UpdateSetting(model.ShowShareButton, storeScope, catalogSettings, x => x.ShowShareButton);
+			_settingService.UpdateSetting(model.ShowBasePriceInProductLists, storeScope, catalogSettings, x => x.ShowBasePriceInProductLists);
+			_settingService.UpdateSetting(model.ShowDeliveryTimesInProductLists, storeScope, catalogSettings, x => x.ShowDeliveryTimesInProductLists);
+			_settingService.UpdateSetting(model.ShowProductReviewsInProductLists, storeScope, catalogSettings, x => x.ShowProductReviewsInProductLists);
+			_settingService.UpdateSetting(model.ProductReviewsMustBeApproved, storeScope, catalogSettings, x => x.ProductReviewsMustBeApproved);
+			_settingService.UpdateSetting(model.AllowAnonymousUsersToReviewProduct, storeScope, catalogSettings, x => x.AllowAnonymousUsersToReviewProduct);
+			_settingService.UpdateSetting(model.NotifyStoreOwnerAboutNewProductReviews, storeScope, catalogSettings, x => x.NotifyStoreOwnerAboutNewProductReviews);
+			_settingService.UpdateSetting(model.EmailAFriendEnabled, storeScope, catalogSettings, x => x.EmailAFriendEnabled);
+			_settingService.UpdateSetting(model.AskQuestionEnabled, storeScope, catalogSettings, x => x.AskQuestionEnabled);
+			_settingService.UpdateSetting(model.AllowAnonymousUsersToEmailAFriend, storeScope, catalogSettings, x => x.AllowAnonymousUsersToEmailAFriend);
+			_settingService.UpdateSetting(model.RecentlyViewedProductsNumber, storeScope, catalogSettings, x => x.RecentlyViewedProductsNumber);
+			_settingService.UpdateSetting(model.RecentlyViewedProductsEnabled, storeScope, catalogSettings, x => x.RecentlyViewedProductsEnabled);
+			_settingService.UpdateSetting(model.RecentlyAddedProductsNumber, storeScope, catalogSettings, x => x.RecentlyAddedProductsNumber);
+			_settingService.UpdateSetting(model.RecentlyAddedProductsEnabled, storeScope, catalogSettings, x => x.RecentlyAddedProductsEnabled);
+			_settingService.UpdateSetting(model.CompareProductsEnabled, storeScope, catalogSettings, x => x.CompareProductsEnabled);
+			_settingService.UpdateSetting(model.ShowBestsellersOnHomepage, storeScope, catalogSettings, x => x.ShowBestsellersOnHomepage);
+			_settingService.UpdateSetting(model.NumberOfBestsellersOnHomepage, storeScope, catalogSettings, x => x.NumberOfBestsellersOnHomepage);
+			_settingService.UpdateSetting(model.SearchPageProductsPerPage, storeScope, catalogSettings, x => x.SearchPageProductsPerPage);
+			_settingService.UpdateSetting(model.ProductSearchAutoCompleteEnabled, storeScope, catalogSettings, x => x.ProductSearchAutoCompleteEnabled);
+			_settingService.UpdateSetting(model.ProductSearchAutoCompleteNumberOfProducts, storeScope, catalogSettings, x => x.ProductSearchAutoCompleteNumberOfProducts);
+			_settingService.UpdateSetting(model.ProductsAlsoPurchasedEnabled, storeScope, catalogSettings, x => x.ProductsAlsoPurchasedEnabled);
+			_settingService.UpdateSetting(model.ProductsAlsoPurchasedNumber, storeScope, catalogSettings, x => x.ProductsAlsoPurchasedNumber);
+			_settingService.UpdateSetting(model.EnableDynamicPriceUpdate, storeScope, catalogSettings, x => x.EnableDynamicPriceUpdate);
+			_settingService.UpdateSetting(model.NumberOfProductTags, storeScope, catalogSettings, x => x.NumberOfProductTags);
+			_settingService.UpdateSetting(model.ProductsByTagPageSize, storeScope, catalogSettings, x => x.ProductsByTagPageSize);
+			_settingService.UpdateSetting(model.ProductsByTagAllowCustomersToSelectPageSize, storeScope, catalogSettings, x => x.ProductsByTagAllowCustomersToSelectPageSize);
+			_settingService.UpdateSetting(model.DefaultPageSizeOptions, storeScope, catalogSettings, x => x.DefaultPageSizeOptions);
+			_settingService.UpdateSetting(model.ProductsByTagPageSizeOptions, storeScope, catalogSettings, x => x.ProductsByTagPageSizeOptions);
+			_settingService.UpdateSetting(model.ProductSearchAllowCustomersToSelectPageSize, storeScope, catalogSettings, x => x.ProductSearchAllowCustomersToSelectPageSize);
+			_settingService.UpdateSetting(model.ProductSearchPageSizeOptions, storeScope, catalogSettings, x => x.ProductSearchPageSizeOptions);
+			_settingService.UpdateSetting(model.RecentlyAddedProductsPageSize, storeScope, catalogSettings, x => x.RecentlyAddedProductsPageSize);
+			_settingService.UpdateSetting(model.RecentlyAddedProductsAllowCustomersToSelectPageSize, storeScope, catalogSettings, x => x.RecentlyAddedProductsAllowCustomersToSelectPageSize);
+			_settingService.UpdateSetting(model.RecentlyAddedProductsPageSizeOptions, storeScope, catalogSettings, x => x.RecentlyAddedProductsPageSizeOptions);
+			_settingService.UpdateSetting(model.DisplayAllImagesNumber, storeScope, catalogSettings, x => x.DisplayAllImagesNumber);
+			_settingService.UpdateSetting(model.IncludeShortDescriptionInCompareProducts, storeScope, catalogSettings, x => x.IncludeShortDescriptionInCompareProducts);
+			_settingService.UpdateSetting(model.IncludeFullDescriptionInCompareProducts, storeScope, catalogSettings, x => x.IncludeFullDescriptionInCompareProducts);
+			_settingService.UpdateSetting(model.IgnoreDiscounts, storeScope, catalogSettings, x => x.IgnoreDiscounts);
+			_settingService.UpdateSetting(model.IgnoreFeaturedProducts, storeScope, catalogSettings, x => x.IgnoreFeaturedProducts);
+			_settingService.UpdateSetting(model.DefaultViewMode, storeScope, catalogSettings, x => x.DefaultViewMode);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -956,6 +1077,7 @@ namespace SmartStore.Admin.Controllers
 				model.MiniShoppingCartEnabled = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MiniShoppingCartEnabled);
 				model.ShowProductImagesInMiniShoppingCart = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowProductImagesInMiniShoppingCart);
 				model.MiniShoppingCartProductNumber = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.MiniShoppingCartProductNumber);
+				model.ShowConfirmOrderLegalHint = _settingService.SettingExists(storeScope, shoppingCartSettings, x => x.ShowConfirmOrderLegalHint);
 			}
             return View(model);
         }
@@ -985,6 +1107,7 @@ namespace SmartStore.Admin.Controllers
 			_settingService.UpdateSetting(model.MiniShoppingCartEnabled, storeScope, shoppingCartSettings, x => x.MiniShoppingCartEnabled);
 			_settingService.UpdateSetting(model.ShowProductImagesInMiniShoppingCart, storeScope, shoppingCartSettings, x => x.ShowProductImagesInMiniShoppingCart);
 			_settingService.UpdateSetting(model.MiniShoppingCartProductNumber, storeScope, shoppingCartSettings, x => x.MiniShoppingCartProductNumber);
+			_settingService.UpdateSetting(model.ShowConfirmOrderLegalHint, storeScope, shoppingCartSettings, x => x.ShowConfirmOrderLegalHint);
 
 			//now clear settings cache
 			_settingService.ClearCache();

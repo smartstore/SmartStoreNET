@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -10,161 +11,163 @@ namespace SmartStore.Admin.Models.Settings
         {
             this.AvailableDefaultViewModes = new List<SelectListItem>();
         }
+
+		public int ActiveStoreScopeConfiguration { get; set; }
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductSku")]
-        public bool ShowProductSku { get; set; }
+        public StoreDependingSetting<bool> ShowProductSku { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPartNumber")]
-        public bool ShowManufacturerPartNumber { get; set; }
+        public StoreDependingSetting<bool> ShowManufacturerPartNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowGtin")]
-        public bool ShowGtin { get; set; }
+        public StoreDependingSetting<bool> ShowGtin { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowWeight")]
-        public bool ShowWeight { get; set; }
+        public StoreDependingSetting<bool> ShowWeight { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDimensions")]
-        public bool ShowDimensions { get; set; }
+        public StoreDependingSetting<bool> ShowDimensions { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductSorting")]
-        public bool AllowProductSorting { get; set; }
+        public StoreDependingSetting<bool> AllowProductSorting { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging")]
-        public bool AllowProductViewModeChanging { get; set; }
+        public StoreDependingSetting<bool> AllowProductViewModeChanging { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
-        public bool ShowProductsFromSubcategories { get; set; }
+        public StoreDependingSetting<bool> ShowProductsFromSubcategories { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowCategoryProductNumber")]
-        public bool ShowCategoryProductNumber { get; set; }
+        public StoreDependingSetting<bool> ShowCategoryProductNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowCategoryProductNumberIncludingSubcategories")]
-        public bool ShowCategoryProductNumberIncludingSubcategories { get; set; }
+        public StoreDependingSetting<bool> ShowCategoryProductNumberIncludingSubcategories { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.CategoryBreadcrumbEnabled")]
-        public bool CategoryBreadcrumbEnabled { get; set; }
+        public StoreDependingSetting<bool> CategoryBreadcrumbEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShareButton")]
-        public bool ShowShareButton { get; set; }
+        public StoreDependingSetting<bool> ShowShareButton { get; set; }
 
         //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBasePriceInProductLists")]
-        public bool ShowBasePriceInProductLists { get; set; }
+        public StoreDependingSetting<bool> ShowBasePriceInProductLists { get; set; }
 
         //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
-        public bool ShowDeliveryTimesInProductLists { get; set; }
+        public StoreDependingSetting<bool> ShowDeliveryTimesInProductLists { get; set; }
 
         //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
-        public bool ShowProductReviewsInProductLists { get; set; }
+        public StoreDependingSetting<bool> ShowProductReviewsInProductLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductReviewsMustBeApproved")]
-        public bool ProductReviewsMustBeApproved { get; set; }
+        public StoreDependingSetting<bool> ProductReviewsMustBeApproved { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToReviewProduct")]
-        public bool AllowAnonymousUsersToReviewProduct { get; set; }
+        public StoreDependingSetting<bool> AllowAnonymousUsersToReviewProduct { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NotifyStoreOwnerAboutNewProductReviews")]
-        public bool NotifyStoreOwnerAboutNewProductReviews { get; set; }
+        public StoreDependingSetting<bool> NotifyStoreOwnerAboutNewProductReviews { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EmailAFriendEnabled")]
-        public bool EmailAFriendEnabled { get; set; }
+        public StoreDependingSetting<bool> EmailAFriendEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AskQuestionEnabled")]
-        public bool AskQuestionEnabled { get; set; }
+        public StoreDependingSetting<bool> AskQuestionEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToEmailAFriend")]
-        public bool AllowAnonymousUsersToEmailAFriend { get; set; }
+        public StoreDependingSetting<bool> AllowAnonymousUsersToEmailAFriend { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyViewedProductsNumber")]
-        public int RecentlyViewedProductsNumber { get; set; }
+        public StoreDependingSetting<int> RecentlyViewedProductsNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyViewedProductsEnabled")]
-        public bool RecentlyViewedProductsEnabled { get; set; }
+        public StoreDependingSetting<bool> RecentlyViewedProductsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyAddedProductsNumber")]
-        public int RecentlyAddedProductsNumber { get; set; }
+        public StoreDependingSetting<int> RecentlyAddedProductsNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyAddedProductsEnabled")]
-        public bool RecentlyAddedProductsEnabled { get; set; }
+        public StoreDependingSetting<bool> RecentlyAddedProductsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.CompareProductsEnabled")]
-        public bool CompareProductsEnabled { get; set; }
+        public StoreDependingSetting<bool> CompareProductsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBestsellersOnHomepage")]
-        public bool ShowBestsellersOnHomepage { get; set; }
+        public StoreDependingSetting<bool> ShowBestsellersOnHomepage { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfBestsellersOnHomepage")]
-        public int NumberOfBestsellersOnHomepage { get; set; }
+        public StoreDependingSetting<int> NumberOfBestsellersOnHomepage { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage")]
-        public int SearchPageProductsPerPage { get; set; }
+        public StoreDependingSetting<int> SearchPageProductsPerPage { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled")]
-        public bool ProductSearchAutoCompleteEnabled { get; set; }
+        public StoreDependingSetting<bool> ProductSearchAutoCompleteEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts")]
-        public int ProductSearchAutoCompleteNumberOfProducts { get; set; }
+        public StoreDependingSetting<int> ProductSearchAutoCompleteNumberOfProducts { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedEnabled")]
-        public bool ProductsAlsoPurchasedEnabled { get; set; }
+        public StoreDependingSetting<bool> ProductsAlsoPurchasedEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedNumber")]
-        public int ProductsAlsoPurchasedNumber { get; set; }
+        public StoreDependingSetting<int> ProductsAlsoPurchasedNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate")]
-        public bool EnableDynamicPriceUpdate { get; set; }
+        public StoreDependingSetting<bool> EnableDynamicPriceUpdate { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfProductTags")]
-        public int NumberOfProductTags { get; set; }
+        public StoreDependingSetting<int> NumberOfProductTags { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSize")]
-        public int ProductsByTagPageSize { get; set; }
+        public StoreDependingSetting<int> ProductsByTagPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagAllowCustomersToSelectPageSize")]
-        public bool ProductsByTagAllowCustomersToSelectPageSize { get; set; }
+        public StoreDependingSetting<bool> ProductsByTagAllowCustomersToSelectPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")]
-        public string DefaultPageSizeOptions { get; set; }
+        public StoreDependingSetting<string> DefaultPageSizeOptions { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSizeOptions")]
-        public string ProductsByTagPageSizeOptions { get; set; }
+        public StoreDependingSetting<string> ProductsByTagPageSizeOptions { get; set; }
 
         //codehint: sm-add begin
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAllowCustomersToSelectPageSize")]
-        public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
+        public StoreDependingSetting<bool> ProductSearchAllowCustomersToSelectPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchPageSizeOptions")]
-        public string ProductSearchPageSizeOptions { get; set; }
+        public StoreDependingSetting<string> ProductSearchPageSizeOptions { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyAddedProductsPageSize")]
-        public int RecentlyAddedProductsPageSize { get; set; }
+        public StoreDependingSetting<int> RecentlyAddedProductsPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyAddedProductsAllowCustomersToSelectPageSize")]
-        public bool RecentlyAddedProductsAllowCustomersToSelectPageSize { get; set; }
+        public StoreDependingSetting<bool> RecentlyAddedProductsAllowCustomersToSelectPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.RecentlyAddedProductsPageSizeOptions")]
-        public string RecentlyAddedProductsPageSizeOptions { get; set; }
+        public StoreDependingSetting<string> RecentlyAddedProductsPageSizeOptions { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber")]
-		public int DisplayAllImagesNumber { get; set; }
+		public StoreDependingSetting<int> DisplayAllImagesNumber { get; set; }
         //codehint: sm-add end
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts")]
-        public bool IncludeShortDescriptionInCompareProducts { get; set; }
+        public StoreDependingSetting<bool> IncludeShortDescriptionInCompareProducts { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFullDescriptionInCompareProducts")]
-        public bool IncludeFullDescriptionInCompareProducts { get; set; }
+        public StoreDependingSetting<bool> IncludeFullDescriptionInCompareProducts { get; set; }
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreDiscounts")]
-        public bool IgnoreDiscounts { get; set; }
+        public StoreDependingSetting<bool> IgnoreDiscounts { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts")]
-        public bool IgnoreFeaturedProducts { get; set; }
+        public StoreDependingSetting<bool> IgnoreFeaturedProducts { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
-        public string DefaultViewMode { get; set; }
+        public StoreDependingSetting<string> DefaultViewMode { get; set; }
 
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
     }

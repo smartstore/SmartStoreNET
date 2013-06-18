@@ -151,7 +151,8 @@ namespace SmartStore.Web.Controllers
         /// <param name="timeout">The connection timeout</param>
         /// <returns>Connection string</returns>
         [NonAction]
-        protected string CreateConnectionString(bool trustedConnection,
+        protected string CreateConnectionString(
+            bool trustedConnection,
             string serverName, string databaseName, 
             string userName, string password, int timeout = 15 /* codehint: sm-edit (was 0) */)
         {
@@ -172,6 +173,7 @@ namespace SmartStore.Web.Controllers
             builder.Pooling = true;
             builder.MinPoolSize = 1;
             builder.MaxPoolSize = 100;
+            builder.Enlist = false;
 
             if (timeout > 0)
             {
@@ -406,7 +408,8 @@ namespace SmartStore.Web.Controllers
                         else
                         {
                             //values
-                            connectionString = CreateConnectionString(model.SqlAuthenticationType == "windowsauthentication",
+                            connectionString = CreateConnectionString(
+                                model.SqlAuthenticationType == "windowsauthentication",
                                 model.SqlServerName, model.SqlDatabaseName,
                                 model.SqlServerUsername, model.SqlServerPassword);
                         }

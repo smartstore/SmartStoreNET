@@ -115,8 +115,7 @@ namespace SmartStore.Web.Framework.Localization
             return result;
         }
 
-        public static string AddLocalizedPathToRawUrl(this string url, string applicationPath,
-            Language language)
+        public static string AddLocalizedPathToRawUrl(this string url, string applicationPath, Language language)
         {
             if (language == null)
                 throw new ArgumentNullException("language");
@@ -178,8 +177,7 @@ namespace SmartStore.Web.Framework.Localization
         /// <param name="applicationPath">Application path</param>
         /// <param name="language">Language</param>
         /// <returns>Result</returns>
-        public static string AddLanguageSeoCodeToRawUrl(this string url, string applicationPath,
-            Language language)
+        public static string AddLanguageSeoCodeToRawUrl(this string url, string applicationPath, Language language)
         {
             if (language == null)
                 throw new ArgumentNullException("language");

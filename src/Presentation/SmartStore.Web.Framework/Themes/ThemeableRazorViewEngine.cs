@@ -7,6 +7,7 @@ namespace SmartStore.Web.Framework.Themes
     {
         public ThemeableRazorViewEngine()
         {
+            // 0: view, 1: controller, 2: area, 3: theme
             AreaViewLocationFormats = new[]
                                           {
                                               //themes
@@ -22,6 +23,7 @@ namespace SmartStore.Web.Framework.Themes
                                               "~/Areas/{2}/Views/Shared/{0}.vbhtml"
                                           };
 
+            // 0: view, 1: controller, 2: area, 3: theme
             AreaMasterLocationFormats = new[]
                                             {
                                                 //themes
@@ -38,6 +40,7 @@ namespace SmartStore.Web.Framework.Themes
                                                 "~/Areas/{2}/Views/Shared/{0}.vbhtml"
                                             };
 
+            // 0: view, 1: controller, 2: area, 3: theme
             AreaPartialViewLocationFormats = new[]
                                                  {
                                                      //themes
@@ -53,6 +56,7 @@ namespace SmartStore.Web.Framework.Themes
                                                     "~/Areas/{2}/Views/Shared/{0}.vbhtml"
                                                  };
 
+            // 0: view, 1: controller, 2: theme
             ViewLocationFormats = new[]
                                       {
                                             //themes
@@ -75,6 +79,7 @@ namespace SmartStore.Web.Framework.Themes
                                             "~/Administration/Views/Shared/{0}.vbhtml",
                                       };
 
+            // 0: view, 1: controller, 2: theme
             MasterLocationFormats = new[]
                                         {
                                             //themes
@@ -90,6 +95,7 @@ namespace SmartStore.Web.Framework.Themes
                                             "~/Views/Shared/{0}.vbhtml"
                                         };
 
+            // 0: view, 1: controller, 2: theme
             PartialViewLocationFormats = new[]
                                              {
                                                  //themes

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
 
@@ -18,6 +19,8 @@ namespace SmartStore.Web.Framework.Themes
 
         private readonly string[] _emptyLocations = null;
         private readonly string _mobileViewModifier = "Mobile";
+        // format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}:{lang}"
+        private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}:{6}";
 
         #endregion
 
@@ -69,14 +72,16 @@ namespace SmartStore.Web.Framework.Themes
                 areaLocations = newLocations.ToArray();
             }
 
-            bool flag = !string.IsNullOrEmpty(areaName);
-            List<ViewLocation> viewLocations = GetViewLocations(locations, flag ? areaLocations : null);
+            bool isArea = !string.IsNullOrEmpty(areaName);
+            List<ViewLocation> viewLocations = GetViewLocations(locations, isArea ? areaLocations : null);
             if (viewLocations.Count == 0)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Properties cannot be null or empty.", new object[] { locationsPropertyName }));
             }
-            bool flag2 = IsSpecificPath(name);
-            string key = this.CreateCacheKey(cacheKeyPrefix, name, flag2 ? string.Empty : controllerName, areaName, theme);
+
+            string lang = this.GetCurrentLanguageSeoCode();
+            bool isSpecificPath = IsSpecificPath(name);
+            string key = this.CreateCacheKey(cacheKeyPrefix, name, isSpecificPath ? string.Empty : controllerName, areaName, theme, lang);
             if (useCache)
             {
                 var cached = this.ViewLocationCache.GetViewLocation(controllerContext.HttpContext, key);
@@ -85,9 +90,9 @@ namespace SmartStore.Web.Framework.Themes
                     return cached;
                 }
             }
-            if (!flag2)
+            if (!isSpecificPath)
             {
-                return this.GetPathFromGeneralName(controllerContext, viewLocations, name, controllerName, areaName, theme, key, ref searchedLocations);
+                return this.GetPathFromGeneralName(controllerContext, viewLocations, name, controllerName, areaName, theme, lang, key, ref searchedLocations);
             }
             return this.GetPathFromSpecificName(controllerContext, name, key, ref searchedLocations);
         }
@@ -114,28 +119,48 @@ namespace SmartStore.Web.Framework.Themes
             return virtualPath;
         }
 
-        protected virtual string GetPathFromGeneralName(ControllerContext controllerContext, List<ViewLocation> locations, string name, string controllerName, string areaName, string theme, string cacheKey, ref string[] searchedLocations)
+        protected virtual string GetPathFromGeneralName(ControllerContext controllerContext, List<ViewLocation> locations, string name, string controllerName, string areaName, string theme, string lang, string cacheKey, ref string[] searchedLocations)
         {
-            string virtualPath = string.Empty;
-            searchedLocations = new string[locations.Count];
+            string result = string.Empty;
+            var tempSearchedLocations = new List<string>();
+
             for (int i = 0; i < locations.Count; i++)
             {
-                string str2 = locations[i].Format(name, controllerName, areaName, theme);
-                if (this.FileExists(controllerContext, str2))
+                var location = locations[i];
+                string virtualPath = location.Format(name, controllerName, areaName, theme, lang);
+
+                if (!this.FileExists(controllerContext, virtualPath))
                 {
-                    searchedLocations = _emptyLocations;
-                    virtualPath = str2;
-                    this.ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, cacheKey, virtualPath);
-                    return virtualPath;
+                    // lang specific view does not exist, try again without lang suffix
+                    tempSearchedLocations.Add(virtualPath);
+                    virtualPath = location.Format(name, controllerName, areaName, theme, null);
                 }
-                searchedLocations[i] = str2;
+
+                if (this.FileExists(controllerContext, virtualPath))
+                {
+                    result = virtualPath;
+                    this.ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, cacheKey, result);
+                    break;
+                }
+
+                tempSearchedLocations.Add(virtualPath);
             }
-            return virtualPath;
+
+            searchedLocations = result.HasValue() ? _emptyLocations : tempSearchedLocations.ToArray();
+            return result;
         }
 
-        protected virtual string CreateCacheKey(string prefix, string name, string controllerName, string areaName, string theme)
+        protected virtual string CreateCacheKey(string prefix, string name, string controllerName, string areaName, string theme, string lang)
         {
-            return string.Format(CultureInfo.InvariantCulture, ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}", new object[] { base.GetType().AssemblyQualifiedName, prefix, name, controllerName, areaName, theme });
+            //return string.Format(CultureInfo.InvariantCulture, ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}", new object[] { base.GetType().AssemblyQualifiedName, prefix, name, controllerName, areaName, theme });
+            return _cacheKeyEntry.FormatInvariant(
+                base.GetType().AssemblyQualifiedName,
+                prefix, 
+                name, 
+                controllerName, 
+                areaName, 
+                theme,
+                lang);
         }
 
         protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
@@ -169,6 +194,19 @@ namespace SmartStore.Web.Framework.Themes
                          && mobileDeviceHelper.MobileDevicesSupported() 
                          && !mobileDeviceHelper.CustomerDontUseMobileVersion();
             return result;
+        }
+
+        protected virtual string GetCurrentLanguageSeoCode()
+        {
+            string result = null;
+            
+            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            if (workContext != null && workContext.WorkingLanguage != null)
+            {
+                result = workContext.WorkingLanguage.UniqueSeoCode;
+            }
+            
+            return result ?? "en";
         }
 
         protected virtual string GetCurrentTheme(ControllerContext controllerContext, bool mobile)
@@ -220,8 +258,8 @@ namespace SmartStore.Web.Framework.Themes
 
         protected virtual ViewEngineResult FindThemeableView(ControllerContext controllerContext, string viewName, string masterName, bool useCache, bool mobile)
         {
-            string[] strArray;
-            string[] strArray2;
+            string[] viewLocationsSearched;
+            string[] masterLocationsSearched;
             if (controllerContext == null)
             {
                 throw new ArgumentNullException("controllerContext");
@@ -234,24 +272,24 @@ namespace SmartStore.Web.Framework.Themes
             // codehint: sm-edit
             var theme = GetCurrentTheme(controllerContext, mobile);
 
-            string requiredString = controllerContext.RouteData.GetRequiredString("controller");
-            string str2 = this.GetPath(controllerContext, this.ViewLocationFormats, this.AreaViewLocationFormats, "ViewLocationFormats", viewName, requiredString, theme, "View", useCache, mobile, out strArray);
-            string str3 = this.GetPath(controllerContext, this.MasterLocationFormats, this.AreaMasterLocationFormats, "MasterLocationFormats", masterName, requiredString, theme, "Master", useCache, mobile, out strArray2);
-            if (!string.IsNullOrEmpty(str2) && (!string.IsNullOrEmpty(str3) || string.IsNullOrEmpty(masterName)))
+            string controllerName = controllerContext.RouteData.GetRequiredString("controller");
+            string viewPath = this.GetPath(controllerContext, this.ViewLocationFormats, this.AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, mobile, out viewLocationsSearched);
+            string masterPath = this.GetPath(controllerContext, this.MasterLocationFormats, this.AreaMasterLocationFormats, "MasterLocationFormats", masterName, controllerName, theme, "Master", useCache, mobile, out masterLocationsSearched);
+            if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
             {
-                return new ViewEngineResult(this.CreateView(controllerContext, str2, str3), this);
+                return new ViewEngineResult(this.CreateView(controllerContext, viewPath, masterPath), this);
             }
-            if (strArray2 == null)
+            if (masterLocationsSearched == null)
             {
-                strArray2 = new string[0];
+                masterLocationsSearched = new string[0];
             }
-            return new ViewEngineResult(strArray.Union<string>(strArray2));
+            return new ViewEngineResult(viewLocationsSearched.Union<string>(masterLocationsSearched));
 
         }
 
         protected virtual ViewEngineResult FindThemeablePartialView(ControllerContext controllerContext, string partialViewName, bool useCache, bool mobile)
         {
-            string[] strArray;
+            string[] searched;
             if (controllerContext == null)
             {
                 throw new ArgumentNullException("controllerContext");
@@ -264,13 +302,13 @@ namespace SmartStore.Web.Framework.Themes
             // codehint: sm-edit
             var theme = GetCurrentTheme(controllerContext, mobile);
 
-            string requiredString = controllerContext.RouteData.GetRequiredString("controller");
-            string str2 = this.GetPath(controllerContext, this.PartialViewLocationFormats, this.AreaPartialViewLocationFormats, "PartialViewLocationFormats", partialViewName, requiredString, theme, "Partial", useCache, mobile, out strArray);
-            if (string.IsNullOrEmpty(str2))
+            string controllerName = controllerContext.RouteData.GetRequiredString("controller");
+            string partialPath = this.GetPath(controllerContext, this.PartialViewLocationFormats, this.AreaPartialViewLocationFormats, "PartialViewLocationFormats", partialViewName, controllerName, theme, "Partial", useCache, mobile, out searched);
+            if (string.IsNullOrEmpty(partialPath))
             {
-                return new ViewEngineResult(strArray);
+                return new ViewEngineResult(searched);
             }
-            return new ViewEngineResult(this.CreatePartialView(controllerContext, str2), this);
+            return new ViewEngineResult(this.CreatePartialView(controllerContext, partialPath), this);
 
         }
     
@@ -288,11 +326,14 @@ namespace SmartStore.Web.Framework.Themes
                 : viewName;
 
             ViewEngineResult result = FindThemeableView(controllerContext, overrideViewName, masterName, useCache, useMobileDevice);
+
             // If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
             if (useMobileDevice && (result == null || result.View == null))
+            {
                 result = FindThemeableView(controllerContext, viewName, masterName, useCache, false);
-            return result;
+            }
 
+            return result;
         }
 
         public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
@@ -305,9 +346,13 @@ namespace SmartStore.Web.Framework.Themes
                 : partialViewName;
 
             ViewEngineResult result = FindThemeablePartialView(controllerContext, overrideViewName, useCache, useMobileDevice);
+
             // If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
             if (useMobileDevice && (result == null || result.View == null))
+            {
                 result = FindThemeablePartialView(controllerContext, partialViewName, useCache, false);
+            }
+
             return result;
         }
     
@@ -321,9 +366,13 @@ namespace SmartStore.Web.Framework.Themes
         {
         }
 
-        public override string Format(string viewName, string controllerName, string areaName, string theme)
+        public override string Format(string viewName, string controllerName, string areaName, string theme, string lang = null)
         {
-            return string.Format(CultureInfo.InvariantCulture, _virtualPathFormatString, viewName, controllerName, areaName, theme);
+            return _virtualPathFormatString.FormatInvariant(
+                lang.HasValue() ? "{0}.{1}".FormatInvariant(viewName, lang) : viewName, 
+                controllerName, 
+                areaName, 
+                theme);
         }
     }
 
@@ -336,9 +385,13 @@ namespace SmartStore.Web.Framework.Themes
             _virtualPathFormatString = virtualPathFormatString;
         }
 
-        public virtual string Format(string viewName, string controllerName, string areaName, string theme)
+        public virtual string Format(string viewName, string controllerName, string areaName, string theme, string lang = null)
         {
-            return string.Format(CultureInfo.InvariantCulture, _virtualPathFormatString, viewName, controllerName, theme);
+            return _virtualPathFormatString.FormatInvariant(
+                lang.HasValue() ? "{0}.{1}".FormatInvariant(viewName, lang) : viewName, 
+                controllerName, 
+                theme);
         }
     }
+
 }

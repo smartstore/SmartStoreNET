@@ -98,8 +98,8 @@ namespace SmartStore.Web.Framework
             //data layer
             var dataSettingsManager = new DataSettingsManager();
             var dataProviderSettings = dataSettingsManager.LoadSettings();
-            builder.Register(c => dataSettingsManager.LoadSettings()).As<DataSettings>().SingleInstance(); // xxx (leer)
-            builder.Register(x => new EfDataProviderManager(x.Resolve<DataSettings>())).As<BaseDataProviderManager>().SingleInstance(); // xxx (perdep)
+            builder.Register(c => dataSettingsManager.LoadSettings()).As<DataSettings>().SingleInstance();
+            builder.Register(x => new EfDataProviderManager(x.Resolve<DataSettings>())).As<BaseDataProviderManager>().SingleInstance();
 
 
             builder.Register(x => (IEfDataProvider)x.Resolve<BaseDataProviderManager>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();

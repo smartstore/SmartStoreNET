@@ -1,5 +1,6 @@
 ﻿@model ContentSliderSettings
 @using SmartStore.Core.Domain.Cms;
+@using SmartStore.Web.Framework.Themes;
 
 @functions
 {
@@ -13,6 +14,14 @@
         }
         
         return result;
+    }
+}
+
+@{
+    if (Model.IsActive) 
+    {
+        Html.AddCssFileParts(Url.ThemeAwareContent("Content/slider.less"));
+        Html.AddScriptParts("~/bundles/slider");
     }
 }
 

@@ -11,7 +11,9 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
 {
@@ -20,40 +22,45 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
     {
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
+		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly IOrderService _orderService;
         private readonly ILogger _logger;
         private readonly ICategoryService _categoryService;
-        private readonly GoogleAnalyticsSettings _googleAnalyticsSettings;
 
-        public WidgetsGoogleAnalyticsController(IWorkContext workContext, 
-			IStoreContext storeContext, ISettingService settingService,
-            IOrderService orderService, ILogger logger, 
-            ICategoryService categoryService, 
-            GoogleAnalyticsSettings trackingScriptsSettings)
+        public WidgetsGoogleAnalyticsController(IWorkContext workContext,
+			IStoreContext storeContext, IStoreService storeService,
+			ISettingService settingService, IOrderService orderService, ILogger logger, 
+            ICategoryService categoryService)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
+			this._storeService = storeService;
             this._settingService = settingService;
             this._orderService = orderService;
             this._logger = logger;
             this._categoryService = categoryService;
-            this._googleAnalyticsSettings = trackingScriptsSettings;
         }
 
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
             var model = new ConfigurationModel();
-            model.GoogleId = _googleAnalyticsSettings.GoogleId;
-            model.TrackingScript = _googleAnalyticsSettings.TrackingScript; 
-            model.EcommerceScript = _googleAnalyticsSettings.EcommerceScript;
-            model.EcommerceDetailScript = _googleAnalyticsSettings.EcommerceDetailScript;
+            model.GoogleId = googleAnalyticsSettings.GoogleId;
+            model.TrackingScript = googleAnalyticsSettings.TrackingScript; 
+            model.EcommerceScript = googleAnalyticsSettings.EcommerceScript;
+            model.EcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
             
-            model.ZoneId = _googleAnalyticsSettings.WidgetZone;
+            model.ZoneId = googleAnalyticsSettings.WidgetZone;
             model.AvailableZones.Add(new SelectListItem() { Text = "<head> HTML tag", Value = "head_html_tag"});
             model.AvailableZones.Add(new SelectListItem() { Text = "Before <body> end HTML tag", Value = "body_end_html_tag_before" });
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(googleAnalyticsSettings, model, storeScope, _settingService);
 
             return View("SmartStore.Plugin.Widgets.GoogleAnalytics.Views.WidgetsGoogleAnalytics.Configure", model);
         }
@@ -61,19 +68,24 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
-            if (!ModelState.IsValid)
-                return Configure();
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
+            googleAnalyticsSettings.GoogleId = model.GoogleId;
+            googleAnalyticsSettings.TrackingScript = model.TrackingScript; 
+            googleAnalyticsSettings.EcommerceScript = model.EcommerceScript;
+            googleAnalyticsSettings.EcommerceDetailScript = model.EcommerceDetailScript;
+            googleAnalyticsSettings.WidgetZone = model.ZoneId;
 
-            //save settings
-            _googleAnalyticsSettings.GoogleId = model.GoogleId;
-            _googleAnalyticsSettings.TrackingScript = model.TrackingScript; 
-            _googleAnalyticsSettings.EcommerceScript = model.EcommerceScript;
-            _googleAnalyticsSettings.EcommerceDetailScript = model.EcommerceDetailScript;
+			_settingService.SaveSetting(googleAnalyticsSettings, x => x.WidgetZone, 0, false);
 
-            _googleAnalyticsSettings.WidgetZone = model.ZoneId;
-            _settingService.SaveSetting(_googleAnalyticsSettings);
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.UpdateSettings(googleAnalyticsSettings, form, storeScope, _settingService);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             return Configure();
         }
@@ -128,9 +140,11 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         //</script>
         private string GetTrackingScript()
         {
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
             string analyticsTrackingScript = "";
-            analyticsTrackingScript = _googleAnalyticsSettings.TrackingScript + "\n";
-            analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", _googleAnalyticsSettings.GoogleId);
+            analyticsTrackingScript = googleAnalyticsSettings.TrackingScript + "\n";
+            analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
             analyticsTrackingScript = analyticsTrackingScript.Replace("{ECOMMERCE}", "");
             return analyticsTrackingScript;
         }
@@ -173,16 +187,18 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         //</script>
         private string GetEcommerceScript(Order order)
         {
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
             var usCulture = new CultureInfo("en-US");
             string analyticsTrackingScript = "";
-            analyticsTrackingScript = _googleAnalyticsSettings.TrackingScript + "\n";
-            analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", _googleAnalyticsSettings.GoogleId);
+			analyticsTrackingScript = googleAnalyticsSettings.TrackingScript + "\n";
+			analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
 
             string analyticsEcommerceScript = "";
             if (order != null)
             {
-                analyticsEcommerceScript = _googleAnalyticsSettings.EcommerceScript + "\n";
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{GOOGLEID}", _googleAnalyticsSettings.GoogleId);
+                analyticsEcommerceScript = googleAnalyticsSettings.EcommerceScript + "\n";
+                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{ORDERID}", order.Id.ToString());
 				analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SITE}", _storeContext.CurrentStore.Url.Replace("http://", "").Replace("/", ""));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
@@ -195,7 +211,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                 var sb = new StringBuilder();
                 foreach (var item in order.OrderProductVariants)
                 {
-                    string analyticsEcommerceDetailScript = _googleAnalyticsSettings.EcommerceDetailScript;
+                    string analyticsEcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
                     //get category
                     string categ = "";
                     var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductVariant.ProductId).FirstOrDefault();

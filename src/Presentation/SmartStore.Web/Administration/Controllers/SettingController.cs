@@ -129,13 +129,7 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private int GetActiveStoreScopeConfiguration()
 		{
-			//ensure that we have 2 (or more) stores
-			if (_storeService.GetAllStores().Count < 2)
-				return 0;
-
-			var storeId = _workContext.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration);
-			var store = _storeService.GetStoreById(storeId);
-			return store != null ? store.Id : 0;
+			return this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 		}
 
 		[ChildActionOnly]

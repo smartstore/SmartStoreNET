@@ -2,14 +2,13 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
-using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
     [Validator(typeof(OrderSettingsValidator))]
-    public class OrderSettingsModel : ModelBase
+	public class OrderSettingsModel : ModelBase
     {
         public OrderSettingsModel()
         {
@@ -17,28 +16,26 @@ namespace SmartStore.Admin.Models.Settings
             GiftCards_Deactivated_OrderStatuses = new List<SelectListItem>();
         }
 
-		public int ActiveStoreScopeConfiguration { get; set; }
-
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
-        public StoreDependingSetting<bool> IsReOrderAllowed { get; set; }
+        public bool IsReOrderAllowed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount")]
-        public StoreDependingSetting<decimal> MinOrderSubtotalAmount { get; set; }
+        public decimal MinOrderSubtotalAmount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderTotalAmount")]
-        public StoreDependingSetting<decimal> MinOrderTotalAmount { get; set; }
+        public decimal MinOrderTotalAmount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed")]
-        public StoreDependingSetting<bool> AnonymousCheckoutAllowed { get; set; }
+        public bool AnonymousCheckoutAllowed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.TermsOfServiceEnabled")]
-        public StoreDependingSetting<bool> TermsOfServiceEnabled { get; set; }
+        public bool TermsOfServiceEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OnePageCheckoutEnabled")]
-        public StoreDependingSetting<bool> OnePageCheckoutEnabled { get; set; }
+        public bool OnePageCheckoutEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestsEnabled")]
-        public StoreDependingSetting<bool> ReturnRequestsEnabled { get; set; }
+        public bool ReturnRequestsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestReasons")]
         public string ReturnRequestReasonsParsed { get; set; }
@@ -47,7 +44,7 @@ namespace SmartStore.Admin.Models.Settings
         public string ReturnRequestActionsParsed { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable")]
-        public StoreDependingSetting<int> NumberOfDaysReturnRequestAvailable { get; set; }
+        public int NumberOfDaysReturnRequestAvailable { get; set; }
         
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.GiftCards_Activated")]

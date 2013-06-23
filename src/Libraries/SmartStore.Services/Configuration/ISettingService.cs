@@ -48,14 +48,6 @@ namespace SmartStore.Services.Configuration
 			Expression<Func<T, TPropType>> keySelector, int storeId = 0)
 			where T : ISettings, new();
 
-		/// <remarks>codehint: sm-add</remarks>
-		StoreDependingSetting<TPropType> SettingExists<T, TPropType>(int storeId, T settings, Expression<Func<T, TPropType>> keySelector) 
-			where T : ISettings, new();
-
-		/// <remarks>codehint: sm-add</remarks>
-		void UpdateSetting<T, TPropType>(StoreDependingSetting<TPropType> dependingSetting, int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
-			where T : ISettings, new();
-
 		/// <summary>
 		/// Load settings
 		/// </summary>
@@ -94,6 +86,9 @@ namespace SmartStore.Services.Configuration
 			Expression<Func<T, TPropType>> keySelector,
 			int storeId = 0, bool clearCache = true) where T : ISettings, new();
 
+		/// <remarks>codehint: sm-add</remarks>
+		void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0) where T : ISettings, new();
+
 		/// <summary>
 		/// Deletes a setting
 		/// </summary>
@@ -116,6 +111,9 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store ID</param>
 		void DeleteSetting<T, TPropType>(T settings,
 			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new();
+
+		/// <remarks>codehint: sm-add</remarks>
+		void DeleteSetting<T>(T settings, string key, int storeId = 0);
 
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.

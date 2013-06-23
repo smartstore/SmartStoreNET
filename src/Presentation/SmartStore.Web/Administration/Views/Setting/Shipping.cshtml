@@ -42,8 +42,7 @@
                 @Html.SmartLabelFor(model => model.FreeShippingOverXEnabled)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.FreeShippingOverXEnabled, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.FreeShippingOverXEnabled)
+                @Html.SettingEditorFor(model => model.FreeShippingOverXEnabled)
                 @Html.ValidationMessageFor(model => model.FreeShippingOverXEnabled)
             </td>
         </tr>
@@ -52,8 +51,7 @@
                 @Html.SmartLabelFor(model => model.FreeShippingOverXValue)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.FreeShippingOverXValue, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.FreeShippingOverXValue)
+                @Html.SettingEditorFor(model => model.FreeShippingOverXValue)
                 @Html.ValidationMessageFor(model => model.FreeShippingOverXValue)
             </td>
         </tr>
@@ -62,8 +60,7 @@
                 @Html.SmartLabelFor(model => model.FreeShippingOverXIncludingTax)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.FreeShippingOverXIncludingTax, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.FreeShippingOverXIncludingTax)
+                @Html.SettingEditorFor(model => model.FreeShippingOverXIncludingTax)
                 @Html.ValidationMessageFor(model => model.FreeShippingOverXIncludingTax)
             </td>
         </tr>
@@ -72,8 +69,7 @@
                 @Html.SmartLabelFor(model => model.EstimateShippingEnabled)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EstimateShippingEnabled, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.EstimateShippingEnabled)
+                @Html.SettingEditorFor(model => model.EstimateShippingEnabled)
                 @Html.ValidationMessageFor(model => model.EstimateShippingEnabled)
             </td>
         </tr>
@@ -82,8 +78,7 @@
                 @Html.SmartLabelFor(model => model.DisplayShipmentEventsToCustomers)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.DisplayShipmentEventsToCustomers, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.DisplayShipmentEventsToCustomers)
+                @Html.SettingEditorFor(model => model.DisplayShipmentEventsToCustomers)
                 @Html.ValidationMessageFor(model => model.DisplayShipmentEventsToCustomers)
             </td>
         </tr>
@@ -94,7 +89,7 @@
         </tr>
         <tr>
             <td id="pnlShippingOriginAddress" colspan="2">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShippingOriginAddress, Model.ActiveStoreScopeConfiguration, "#pnlShippingOriginAddress")
+				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
                 @Html.EditorFor(model => model.ShippingOriginAddress, "Address")
             </td>
         </tr>        

@@ -19,7 +19,8 @@ using Telerik.Web.Mvc.UI;
 using SmartStore.Utilities;
 using System.Web;
 using System.Threading;
-using SmartStore.Services.Configuration; // codehint: sm-add
+using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework.Settings; // codehint: sm-add
 
 namespace SmartStore.Web.Framework
 {
@@ -187,29 +188,6 @@ namespace SmartStore.Web.Framework
         {
             return null;
         }
-
-		/// <remarks>codehint: sm-edit</remarks>
-		public static MvcHtmlString OverrideStoreCheckboxFor<TModel, TValue>(this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, StoreDependingSetting<TValue>>> setting, int activeStoreScopeConfiguration, string parentSelector = null)
-		{
-			var result = new StringBuilder();
-			if (activeStoreScopeConfiguration > 0)
-			{
-				string fieldId = helper.FieldIdFor(setting);
-
-				bool overrideForStore = setting.Compile().Invoke(helper.ViewData.Model).OverrideForStore;
-
-				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
-				{
-				    { "class", "multi-store-override-option" },
-				    { "onclick", "checkOverriddenStoreValue(this)" },
-				    { "data-parent-selector", parentSelector.EmptyNull() },
-				});
-
-				result.Append(checkbox);
-			}
-			return MvcHtmlString.Create(result.ToString());
-		}
 
         public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)
         {
@@ -499,6 +477,44 @@ namespace SmartStore.Web.Framework
 
 			sb.Append("</table>");
 			return MvcHtmlString.Create(sb.ToString());
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		{
+			var data = helper.ViewData["StoreDependingSettingData"] as StoreDependingSettingData;
+
+			if (data.ActiveStoreScopeConfiguration > 0)
+			{
+				var settingKey = ExpressionHelper.GetExpressionText(expression);
+
+				if (!settingKey.Contains("."))
+					settingKey = data.RootSettingClass + "." + settingKey;
+
+				var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
+				var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
+
+				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
+				{
+					{ "class", "multi-store-override-option" },
+					{ "onclick", "checkOverriddenStoreValue(this)" },
+					{ "data-parent-selector", parentSelector.EmptyNull() },
+				});
+
+				return checkbox;
+			}
+			return MvcHtmlString.Empty;
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		{
+			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
+			var editor = helper.EditorFor(expression);
+
+			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}
 
     }

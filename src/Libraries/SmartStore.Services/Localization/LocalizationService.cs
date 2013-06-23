@@ -16,6 +16,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Core.Plugins;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
+using System.Web.Mvc;
 
 namespace SmartStore.Services.Localization
 {
@@ -335,6 +336,13 @@ namespace SmartStore.Services.Localization
             }
             return result;
         }
+
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual SelectListItem GetResourceToSelectListItem(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
+		{
+			string resource = GetResource(resourceKey, languageId, logIfNotFound, defaultValue, returnEmptyIfNotFound);
+			return new SelectListItem() { Text = resource, Value = resource };
+		}
 
         /// <summary>
         /// Export language resources to xml

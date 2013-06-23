@@ -531,6 +531,13 @@ set @resources='
 	<Value>(check boxes if you want to set a custom value for this shop)</Value>
 	<T>(Kontrollkästchen, falls Sie für diesen Shop separate Werte festlegen möchten)</T>
   </LocaleResource>
+  
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys">
+	<Value>Captcha is enabled but the appropriate keys are not entered.</Value>
+	<T>Captcha wurde aktiviert, aber die zugehörigen Schlüssel fehlen.</T>
+  </LocaleResource>
+  
+  
     
 </Language>
 '

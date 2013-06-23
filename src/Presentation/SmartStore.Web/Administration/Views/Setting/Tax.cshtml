@@ -86,8 +86,7 @@
                 @Html.SmartLabelFor(model => model.PricesIncludeTax)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.PricesIncludeTax, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.PricesIncludeTax)
+                @Html.SettingEditorFor(model => model.PricesIncludeTax)
                 @Html.ValidationMessageFor(model => model.PricesIncludeTax)
             </td>
         </tr>
@@ -108,7 +107,7 @@
                 @Html.SmartLabelFor(model => model.TaxDisplayType)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.TaxDisplayType, Model.ActiveStoreScopeConfiguration)
+				@Html.SettingOverrideCheckbox(model => Model.TaxDisplayType)
                 @Html.DropDownListForEnum(model => model.TaxDisplayType)
                 @Html.ValidationMessageFor(model => model.TaxDisplayType)
             </td>
@@ -118,8 +117,7 @@
                 @Html.SmartLabelFor(model => model.DisplayTaxSuffix)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.DisplayTaxSuffix, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.DisplayTaxSuffix)
+                @Html.SettingEditorFor(model => model.DisplayTaxSuffix)
                 @Html.ValidationMessageFor(model => model.DisplayTaxSuffix)
             </td>
         </tr>
@@ -128,8 +126,7 @@
                 @Html.SmartLabelFor(model => model.DisplayTaxRates)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.DisplayTaxRates, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.DisplayTaxRates)
+                @Html.SettingEditorFor(model => model.DisplayTaxRates)
                 @Html.ValidationMessageFor(model => model.DisplayTaxRates)
             </td>
         </tr>
@@ -138,8 +135,7 @@
                 @Html.SmartLabelFor(model => model.HideZeroTax)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.HideZeroTax, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.HideZeroTax)
+                @Html.SettingEditorFor(model => model.HideZeroTax)
                 @Html.ValidationMessageFor(model => model.HideZeroTax)
             </td>
         </tr>
@@ -148,8 +144,7 @@
                 @Html.SmartLabelFor(model => model.HideTaxInOrderSummary)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.HideTaxInOrderSummary, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.HideTaxInOrderSummary)
+                @Html.SettingEditorFor(model => model.HideTaxInOrderSummary)
                 @Html.ValidationMessageFor(model => model.HideTaxInOrderSummary)
             </td>
         </tr>
@@ -163,8 +158,7 @@
                 @Html.SmartLabelFor(model => model.ShowLegalHintsInProductList)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShowLegalHintsInProductList, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShowLegalHintsInProductList)
+                @Html.SettingEditorFor(model => model.ShowLegalHintsInProductList)
                 @Html.ValidationMessageFor(model => model.ShowLegalHintsInProductList)
             </td>
         </tr>
@@ -173,8 +167,7 @@
                 @Html.SmartLabelFor(model => model.ShowLegalHintsInProductDetails)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShowLegalHintsInProductDetails, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShowLegalHintsInProductDetails)
+                @Html.SettingEditorFor(model => model.ShowLegalHintsInProductDetails)
                 @Html.ValidationMessageFor(model => model.ShowLegalHintsInProductDetails)
             </td>
         </tr>
@@ -183,8 +176,7 @@
                 @Html.SmartLabelFor(model => model.ShowLegalHintsInFooter)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShowLegalHintsInFooter, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShowLegalHintsInFooter)
+                @Html.SettingEditorFor(model => model.ShowLegalHintsInFooter)
                 @Html.ValidationMessageFor(model => model.ShowLegalHintsInFooter)
             </td>
         </tr>
@@ -198,7 +190,7 @@
                 @Html.SmartLabelFor(model => model.TaxBasedOn)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.TaxBasedOn, Model.ActiveStoreScopeConfiguration)
+				@Html.SettingOverrideCheckbox(model => Model.TaxBasedOn)
                 @Html.DropDownListForEnum(model => model.TaxBasedOn)
                 @Html.ValidationMessageFor(model => model.TaxBasedOn)
             </td>
@@ -210,7 +202,7 @@
         </tr>
         <tr>
             <td colspan="2" id="pnlDefaultTaxAddress">
-				@Html.OverrideStoreCheckboxFor(model => Model.DefaultTaxAddress, Model.ActiveStoreScopeConfiguration, "#pnlDefaultTaxAddress")
+				@Html.SettingOverrideCheckbox(model => Model.DefaultTaxAddress, "#pnlDefaultTaxAddress")
                 @Html.EditorFor(x => x.DefaultTaxAddress, "Address")
             </td>
         </tr>
@@ -224,8 +216,7 @@
                 @Html.SmartLabelFor(model => model.ShippingIsTaxable)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShippingIsTaxable, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShippingIsTaxable)
+                @Html.SettingEditorFor(model => model.ShippingIsTaxable)
                 @Html.ValidationMessageFor(model => model.ShippingIsTaxable)
             </td>
         </tr>
@@ -234,8 +225,7 @@
                 @Html.SmartLabelFor(model => model.ShippingPriceIncludesTax)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShippingPriceIncludesTax, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShippingPriceIncludesTax)
+                @Html.SettingEditorFor(model => model.ShippingPriceIncludesTax)
                 @Html.ValidationMessageFor(model => model.ShippingPriceIncludesTax)
             </td>
         </tr>
@@ -244,7 +234,7 @@
                 @Html.SmartLabelFor(model => model.ShippingTaxClassId)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.ShippingTaxClassId, Model.ActiveStoreScopeConfiguration)
+				@Html.SettingOverrideCheckbox(model => Model.ShippingTaxClassId)
                 @Html.DropDownListFor(model => model.ShippingTaxClassId, Model.ShippingTaxCategories, T("Common.PleaseSelect").Text)
                 @Html.ValidationMessageFor(model => model.ShippingTaxClassId)
             </td>
@@ -259,8 +249,7 @@
                 @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.PaymentMethodAdditionalFeeIsTaxable, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
+                @Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
         </tr>
@@ -269,8 +258,7 @@
                 @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.PaymentMethodAdditionalFeeIncludesTax, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
+                @Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
             </td>
         </tr>
@@ -279,7 +267,7 @@
                 @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.PaymentMethodAdditionalFeeTaxClassId, Model.ActiveStoreScopeConfiguration)
+				@Html.SettingOverrideCheckbox(model => Model.PaymentMethodAdditionalFeeTaxClassId)
                 @Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect").Text)
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
             </td>
@@ -294,8 +282,7 @@
                 @Html.SmartLabelFor(model => model.EuVatEnabled)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EuVatEnabled, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.EuVatEnabled)
+                @Html.SettingEditorFor(model => model.EuVatEnabled)
                 @Html.ValidationMessageFor(model => model.EuVatEnabled)
             </td>
         </tr>
@@ -304,7 +291,7 @@
                 @Html.SmartLabelFor(model => model.EuVatShopCountryId)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EuVatShopCountryId, Model.ActiveStoreScopeConfiguration)
+				@Html.SettingOverrideCheckbox(model => Model.EuVatShopCountryId)
                 @Html.DropDownListFor(model => model.EuVatShopCountryId, Model.EuVatShopCountries, T("Admin.Address.SelectCountry").Text)
                 @Html.ValidationMessageFor(model => model.EuVatShopCountryId)
             </td>
@@ -314,8 +301,7 @@
                 @Html.SmartLabelFor(model => model.EuVatAllowVatExemption)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EuVatAllowVatExemption, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.EuVatAllowVatExemption)
+                @Html.SettingEditorFor(model => model.EuVatAllowVatExemption)
                 @Html.ValidationMessageFor(model => model.EuVatAllowVatExemption)
             </td>
         </tr>
@@ -324,8 +310,7 @@
                 @Html.SmartLabelFor(model => model.EuVatUseWebService)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EuVatUseWebService, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.EuVatUseWebService)
+                @Html.SettingEditorFor(model => model.EuVatUseWebService)
                 @Html.ValidationMessageFor(model => model.EuVatUseWebService)
             </td>
         </tr>
@@ -334,8 +319,7 @@
                 @Html.SmartLabelFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.EuVatEmailAdminWhenNewVatSubmitted, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
+                @Html.SettingEditorFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
                 @Html.ValidationMessageFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
             </td>
         </tr>

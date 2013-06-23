@@ -8,7 +8,6 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Data;
 using SmartStore.Services.Events;
 using Fasterflect;
 using System.Linq.Expressions;
@@ -292,25 +291,6 @@ namespace SmartStore.Services.Configuration
 			return setting != null;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual StoreDependingSetting<TPropType> SettingExists<T, TPropType>(int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
-			where T : ISettings, new()
-		{
-			return new StoreDependingSetting<TPropType>(
-				SettingExists(settings, keySelector, storeId)
-			);
-		}
-
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual void UpdateSetting<T, TPropType>(StoreDependingSetting<TPropType> dependingSetting, int storeId, T settings, Expression<Func<T, TPropType>> keySelector)
-			where T : ISettings, new()
-		{
-			if (dependingSetting.OverrideForStore || storeId == 0)
-				SaveSetting(settings, keySelector, storeId, false);
-			else if (storeId > 0)
-				DeleteSetting(settings, keySelector, storeId);
-		}
-
 		/// Load settings
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>
@@ -463,6 +443,15 @@ namespace SmartStore.Services.Configuration
 			SetSetting(key, value ?? "", storeId, false);
 		}
 
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0)  where T : ISettings, new()
+		{
+			if (overrideForStore || storeId == 0)
+				SaveSetting(settings, keySelector, storeId, false);
+			else if (storeId > 0)
+				DeleteSetting(settings, keySelector, storeId);
+		}
+
 		/// <summary>
 		/// Deletes a setting
 		/// </summary>
@@ -535,6 +524,12 @@ namespace SmartStore.Services.Configuration
 			string key = typeof(T).Name + "." + propInfo.Name;
 			key = key.Trim().ToLowerInvariant();
 
+			DeleteSetting(settings, key, storeId);
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual void DeleteSetting<T>(T settings, string key, int storeId = 0)
+		{
 			var allSettings = GetAllSettingsCached();
 			var settingForCaching = allSettings.ContainsKey(key) ?
 				allSettings[key].FirstOrDefault(x => x.StoreId == storeId) : null;

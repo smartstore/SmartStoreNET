@@ -24,8 +24,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => Model.Enabled, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.Enabled)
+                @Html.SettingEditorFor(model => model.Enabled)
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -34,8 +33,7 @@
                 @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.AllowNotRegisteredUsersToLeaveComments, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+                @Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
                 @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
         </tr>
@@ -44,8 +42,7 @@
                 @Html.SmartLabelFor(model => model.NotifyAboutNewNewsComments)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.NotifyAboutNewNewsComments, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.NotifyAboutNewNewsComments)
+                @Html.SettingEditorFor(model => model.NotifyAboutNewNewsComments)
                 @Html.ValidationMessageFor(model => model.NotifyAboutNewNewsComments)
             </td>
         </tr>
@@ -54,8 +51,7 @@
                 @Html.SmartLabelFor(model => model.ShowNewsOnMainPage)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.ShowNewsOnMainPage, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShowNewsOnMainPage)
+                @Html.SettingEditorFor(model => model.ShowNewsOnMainPage)
                 @Html.ValidationMessageFor(model => model.ShowNewsOnMainPage)
             </td>
         </tr>
@@ -64,8 +60,7 @@
                 @Html.SmartLabelFor(model => model.MainPageNewsCount)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.MainPageNewsCount, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.MainPageNewsCount)
+                @Html.SettingEditorFor(model => model.MainPageNewsCount)
                 @Html.ValidationMessageFor(model => model.MainPageNewsCount)
             </td>
         </tr>
@@ -74,8 +69,7 @@
                 @Html.SmartLabelFor(model => model.NewsArchivePageSize)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.NewsArchivePageSize, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.NewsArchivePageSize)
+                @Html.SettingEditorFor(model => model.NewsArchivePageSize)
                 @Html.ValidationMessageFor(model => model.NewsArchivePageSize)
             </td>
         </tr>
@@ -84,8 +78,7 @@
                 @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
             </td>
             <td class="adminData">
-				@Html.OverrideStoreCheckboxFor(model => model.ShowHeaderRssUrl, Model.ActiveStoreScopeConfiguration)
-                @Html.EditorFor(model => model.ShowHeaderRssUrl)
+                @Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
                 @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
             </td>
         </tr>

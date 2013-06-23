@@ -73,6 +73,10 @@
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Fasterflect, Version=2.1.0.8328, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\smartstorenet\src\packages\fasterflect.2.1.0\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=3.4.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FluentValidation.3.4.6.0\lib\Net40\FluentValidation.dll</HintPath>
@@ -207,6 +211,8 @@
     <Compile Include="Mvc\Routes\GuidConstraint.cs" />
     <Compile Include="Seo\GenericPathRoute.cs" />
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
+    <Compile Include="Settings\StoreDependingSettingData.cs" />
+    <Compile Include="Settings\StoreDependingSettingHelper.cs" />
     <Compile Include="Themes\DbParameterSource.cs" />
     <Compile Include="Themes\ThemeHtmlExtensions.cs" />
     <Compile Include="Themes\HttpFileReader.cs" />

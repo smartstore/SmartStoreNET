@@ -1665,6 +1665,12 @@ BEGIN
 END
 GO
 
+IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='DiscountCouponCode')
+BEGIN
+	ALTER TABLE [Customer] DROP COLUMN [DiscountCouponCode]
+END
+GO
+
 
 --Store mapping to Setting
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Setting]') and NAME='StoreId')

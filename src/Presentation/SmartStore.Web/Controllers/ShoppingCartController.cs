@@ -81,6 +81,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
@@ -114,6 +115,7 @@ namespace SmartStore.Web.Controllers
             IPermissionService permissionService, 
             IDownloadService downloadService, ICacheManager cacheManager,
             IWebHelper webHelper, ICustomerActivityService customerActivityService,
+			IGenericAttributeService genericAttributeService,
             MediaSettings mediaSettings, ShoppingCartSettings shoppingCartSettings,
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
@@ -150,6 +152,7 @@ namespace SmartStore.Web.Controllers
             this._cacheManager = cacheManager;
             this._webHelper = webHelper;
             this._customerActivityService = customerActivityService;
+			this._genericAttributeService = genericAttributeService;
             
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -254,8 +257,9 @@ namespace SmartStore.Web.Controllers
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
             //gift card and gift card boxes
-            model.DiscountBox.Display= _shoppingCartSettings.ShowDiscountBox;
-            var discount = _discountService.GetDiscountByCouponCode(_workContext.CurrentCustomer.DiscountCouponCode);
+            model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
+			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
+			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
             if (discount != null &&
                 discount.RequiresCouponCode &&
                 _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
@@ -1739,8 +1743,8 @@ namespace SmartStore.Web.Controllers
                     _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
                 if (isDiscountValid)
                 {
-                    _workContext.CurrentCustomer.DiscountCouponCode = discountcouponcode;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+						 SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
                     model.DiscountBox.Message = _localizationService.GetResource("ShoppingCart.DiscountCouponCode.Applied");
                 }
                 else
@@ -2034,8 +2038,8 @@ namespace SmartStore.Web.Controllers
 				.ToList();
             var model = new ShoppingCartModel();
 
-            _workContext.CurrentCustomer.DiscountCouponCode = "";
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+				 SystemCustomerAttributeNames.DiscountCouponCode, null);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);

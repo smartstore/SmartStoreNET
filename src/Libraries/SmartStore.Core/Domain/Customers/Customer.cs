@@ -102,11 +102,6 @@ namespace SmartStore.Core.Domain.Customers
         public string CheckoutAttributes { get; set; }
 
         /// <summary>
-        /// Gets or sets the applied discount coupon code
-        /// </summary>
-        public string DiscountCouponCode { get; set; }
-
-        /// <summary>
         /// Gets or sets the applied gift card coupon codes (serialized)
         /// </summary>
         public string GiftCardCouponCodes { get; set; }

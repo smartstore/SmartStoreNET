@@ -5,10 +5,8 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 
@@ -33,7 +31,6 @@ namespace SmartStore.Data.Tests.Customers
             fromDb.AdminComment.ShouldEqual("some comment here");
             fromDb.IsTaxExempt.ShouldEqual(true);
             fromDb.CheckoutAttributes.ShouldEqual("CheckoutAttributes 1");
-            fromDb.DiscountCouponCode.ShouldEqual("coupon1");
             fromDb.GiftCardCouponCodes.ShouldEqual("GiftCardCouponCodes 1");
             fromDb.Active.ShouldEqual(true);
             fromDb.Deleted.ShouldEqual(false);
@@ -288,7 +285,6 @@ namespace SmartStore.Data.Tests.Customers
                 AdminComment = "some comment here",
                 IsTaxExempt = true,
                 CheckoutAttributes = "CheckoutAttributes 1",
-                DiscountCouponCode= "coupon1",
                 GiftCardCouponCodes = "GiftCardCouponCodes 1",
                 Active = true,
                 Deleted = false,

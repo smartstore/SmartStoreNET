@@ -172,8 +172,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : product id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
-        public const string PRODUCTTAG_BY_PRODUCT_MODEL_KEY = "sm.pres.producttag.byproduct-{0}-{1}";
+        public const string PRODUCTTAG_BY_PRODUCT_MODEL_KEY = "sm.pres.producttag.byproduct-{0}-{1}-{2}";
         public const string PRODUCTTAG_BY_PRODUCT_PATTERN_KEY = "sm.pres.producttag.byproduct";
 
         /// <summary>
@@ -181,8 +182,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language id
+		/// {1} : current store ID
         /// </remarks>
-        public const string PRODUCTTAG_POPULAR_MODEL_KEY = "sm.pres.producttag.popular-{0}";
+        public const string PRODUCTTAG_POPULAR_MODEL_KEY = "sm.pres.producttag.popular-{0}-{1}";
         public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "sm.pres.producttag.popular";
 
         /// <summary>
@@ -191,6 +193,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : product id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
         public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}-{2}";
         public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "sm.pres.product.manufacturers";
@@ -338,8 +341,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : store ID
         /// </remarks>
-        public const string BLOG_TAGS_MODEL_KEY = "sm.pres.blog.tags-{0}";
+        public const string BLOG_TAGS_MODEL_KEY = "sm.pres.blog.tags-{0}-{1}";
         /// <summary>
         /// Key for blog archive (years, months) block model
         /// </summary>

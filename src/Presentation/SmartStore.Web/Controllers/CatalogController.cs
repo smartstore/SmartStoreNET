@@ -2937,7 +2937,7 @@ namespace SmartStore.Web.Controllers
             if (product == null)
                 throw new ArgumentException("No product found with the specified id");
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
                 {
                     var model = product.ProductTags
@@ -2963,7 +2963,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult PopularProductTags()
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new PopularProductTagsModel();

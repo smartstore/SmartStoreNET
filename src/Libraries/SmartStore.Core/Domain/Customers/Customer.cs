@@ -1,17 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Xml;
-using SmartStore.Core.Domain.Affiliates;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Core.Domain.Customers
 {
@@ -100,11 +93,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets the selected checkout attributes (serialized)
         /// </summary>
         public string CheckoutAttributes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the applied gift card coupon codes (serialized)
-        /// </summary>
-        public string GiftCardCouponCodes { get; set; }
 
         /// <summary>
         /// Gets or sets the affiliate identifier
@@ -302,124 +290,6 @@ namespace SmartStore.Core.Domain.Customers
             return result;
         }
 
-        #endregion
-
-        #region Gift cards
-
-        /// <summary>
-        /// Gets coupon codes
-        /// </summary>
-        /// <returns>Coupon codes</returns>
-        public string[] ParseAppliedGiftCardCouponCodes()
-        {
-            string serializedGiftCartCouponCodes = this.GiftCardCouponCodes;
-
-            var couponCodes = new List<string>();
-            if (String.IsNullOrEmpty(serializedGiftCartCouponCodes))
-                return couponCodes.ToArray();
-
-            try
-            {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(serializedGiftCartCouponCodes);
-
-                var nodeList1 = xmlDoc.SelectNodes(@"//GiftCardCouponCodes/CouponCode");
-                foreach (XmlNode node1 in nodeList1)
-                {
-                    if (node1.Attributes != null && node1.Attributes["Code"] != null)
-                    {
-                        string code = node1.Attributes["Code"].InnerText.Trim();
-                        couponCodes.Add(code);
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
-            return couponCodes.ToArray();
-        }
-
-        /// <summary>
-        /// Adds a coupon code
-        /// </summary>
-        /// <param name="couponCode">Coupon code</param>
-        /// <returns>New coupon codes document</returns>
-        public void ApplyGiftCardCouponCode(string couponCode)
-        {
-            string result = string.Empty;
-            try
-            {
-                var serializedGiftCartCouponCodes = this.GiftCardCouponCodes;
-
-                couponCode = couponCode.Trim().ToLower();
-
-                var xmlDoc = new XmlDocument();
-                if (String.IsNullOrEmpty(serializedGiftCartCouponCodes))
-                {
-                    var element1 = xmlDoc.CreateElement("GiftCardCouponCodes");
-                    xmlDoc.AppendChild(element1);
-                }
-                else
-                {
-                    xmlDoc.LoadXml(serializedGiftCartCouponCodes);
-                }
-                var rootElement = (XmlElement)xmlDoc.SelectSingleNode(@"//GiftCardCouponCodes");
-
-                XmlElement gcElement = null;
-                //find existing
-                var nodeList1 = xmlDoc.SelectNodes(@"//GiftCardCouponCodes/CouponCode");
-                foreach (XmlNode node1 in nodeList1)
-                {
-                    if (node1.Attributes != null && node1.Attributes["Code"] != null)
-                    {
-                        string _couponCode = node1.Attributes["Code"].InnerText.Trim();
-                        if (_couponCode.ToLower() == couponCode.ToLower())
-                        {
-                            gcElement = (XmlElement)node1;
-                            break;
-                        }
-                    }
-                }
-
-                //create new one if not found
-                if (gcElement == null)
-                {
-                    gcElement = xmlDoc.CreateElement("CouponCode");
-                    gcElement.SetAttribute("Code", couponCode);
-                    rootElement.AppendChild(gcElement);
-                }
-
-                result = xmlDoc.OuterXml;
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
-
-            //apply new value
-            this.GiftCardCouponCodes = result;
-        }
-
-        /// <summary>
-        /// Removes a coupon code
-        /// </summary>
-        /// <param name="couponCode">Coupon code to remove</param>
-        /// <returns>New coupon codes document</returns>
-        public void RemoveGiftCardCouponCode(string couponCode)
-        {
-            //get applied coupon codes
-            var existingCouponCodes = ParseAppliedGiftCardCouponCodes();
-
-            //clear them
-            this.GiftCardCouponCodes = string.Empty;
-
-            //save again except removed one
-            foreach (string existingCouponCode in existingCouponCodes)
-                if (!existingCouponCode.Equals(couponCode, StringComparison.InvariantCultureIgnoreCase))
-                    ApplyGiftCardCouponCode(existingCouponCode);
-        }
-        
         #endregion
     }
 }

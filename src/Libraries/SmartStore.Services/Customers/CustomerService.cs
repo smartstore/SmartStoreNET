@@ -486,7 +486,7 @@ namespace SmartStore.Services.Customers
             if (clearCouponCodes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
-                customer.GiftCardCouponCodes = "";
+				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.GiftCardCouponCodes, null);
             }
 
             //clear checkout attributes

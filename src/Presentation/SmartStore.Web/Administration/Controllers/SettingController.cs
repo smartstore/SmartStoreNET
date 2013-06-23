@@ -70,16 +70,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 
-        private readonly CurrencySettings _currencySettings;
-        private CustomerSettings _customerSettings;
-        private AddressSettings _addressSettings;
-        private readonly DateTimeSettings _dateTimeSettings;
-        private readonly SecuritySettings _securitySettings;
-        private readonly LocalizationSettings _localizationSettings;
-        private readonly CaptchaSettings _captchaSettings;
-        private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
-	    private readonly CommonSettings _commonSettings;
-
 		private StoreDependingSettingHelper _storeDependingSettings;	// codehint: sm-add
 
 		#endregion
@@ -96,14 +86,7 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
-			IWorkContext workContext, IGenericAttributeService genericAttributeService,
-            CurrencySettings currencySettings, 
-            CustomerSettings customerSettings, AddressSettings addressSettings,
-            DateTimeSettings dateTimeSettings,
-            SecuritySettings securitySettings,
-            LocalizationSettings localizationSettings, 
-            CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
-            CommonSettings commonSettings)
+			IWorkContext workContext, IGenericAttributeService genericAttributeService)
         {
             this._settingService = settingService;
             this._countryService = countryService;
@@ -126,16 +109,6 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
-
-            this._currencySettings = currencySettings;
-            this._customerSettings = customerSettings;
-            this._addressSettings = addressSettings;
-            this._dateTimeSettings = dateTimeSettings;
-            this._securitySettings = securitySettings;
-            this._localizationSettings = localizationSettings;
-            this._captchaSettings = captchaSettings;
-            this._externalAuthenticationSettings = externalAuthenticationSettings;
-            this._commonSettings = commonSettings;
         }
 
 		#endregion 
@@ -645,7 +618,8 @@ namespace SmartStore.Admin.Controllers
 				StoreDependingSettings.AddOverrideKey(rewardPointsSettings, "PointsForPurchases_OverrideForStore");
 			}
 
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			var currencySettings = _settingService.LoadSetting<CurrencySettings>(storeScope);
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 			
 			return View(model);
         }
@@ -702,7 +676,8 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(orderSettings, model, storeScope, _settingService);
 
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			var currencySettings = _settingService.LoadSetting<CurrencySettings>(storeScope);
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 
             //gift card activation/deactivation
             model.GiftCards_Activated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
@@ -916,12 +891,18 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
+			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
+			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
+			var externalAuthenticationSettings = _settingService.LoadSetting<ExternalAuthenticationSettings>(storeScope);
+
             //merge settings
             var model = new CustomerUserSettingsModel();
-            model.CustomerSettings = _customerSettings.ToModel();
-            model.AddressSettings = _addressSettings.ToModel();
+            model.CustomerSettings = customerSettings.ToModel();
+            model.AddressSettings = addressSettings.ToModel();
 
-            model.DateTimeSettings.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
+            model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
             model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
             foreach (TimeZoneInfo timeZone in _dateTimeHelper.GetSystemTimeZones())
             {
@@ -933,7 +914,7 @@ namespace SmartStore.Admin.Controllers
                     });
             }
 
-            model.ExternalAuthenticationSettings.AutoRegisterEnabled = _externalAuthenticationSettings.AutoRegisterEnabled;
+            model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
@@ -944,18 +925,24 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _customerSettings = model.CustomerSettings.ToEntity(_customerSettings);
-            _settingService.SaveSetting(_customerSettings);
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
+			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
+			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
+			var externalAuthenticationSettings = _settingService.LoadSetting<ExternalAuthenticationSettings>(storeScope);
 
-            _addressSettings = model.AddressSettings.ToEntity(_addressSettings);
-            _settingService.SaveSetting(_addressSettings);
+            customerSettings = model.CustomerSettings.ToEntity(customerSettings);
+            _settingService.SaveSetting(customerSettings);
 
-            _dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
-            _dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
-            _settingService.SaveSetting(_dateTimeSettings);
+            addressSettings = model.AddressSettings.ToEntity(addressSettings);
+            _settingService.SaveSetting(addressSettings);
 
-            _externalAuthenticationSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
-            _settingService.SaveSetting(_externalAuthenticationSettings);
+            dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
+            dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
+            _settingService.SaveSetting(dateTimeSettings);
+
+            externalAuthenticationSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
+            _settingService.SaveSetting(externalAuthenticationSettings);
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -1001,29 +988,31 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _settingService, false);
 
 			//security settings
-			model.SecuritySettings.EncryptionKey = _securitySettings.EncryptionKey;
-			if (_securitySettings.AdminAreaAllowedIpAddresses != null)
+			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
+			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
+			model.SecuritySettings.EncryptionKey = securitySettings.EncryptionKey;
+			if (securitySettings.AdminAreaAllowedIpAddresses != null)
 			{
-				for (int i = 0; i < _securitySettings.AdminAreaAllowedIpAddresses.Count; i++)
+				for (int i = 0; i < securitySettings.AdminAreaAllowedIpAddresses.Count; i++)
 				{
-					model.SecuritySettings.AdminAreaAllowedIpAddresses += _securitySettings.AdminAreaAllowedIpAddresses[i];
-					if (i != _securitySettings.AdminAreaAllowedIpAddresses.Count - 1)
+					model.SecuritySettings.AdminAreaAllowedIpAddresses += securitySettings.AdminAreaAllowedIpAddresses[i];
+					if (i != securitySettings.AdminAreaAllowedIpAddresses.Count - 1)
 						model.SecuritySettings.AdminAreaAllowedIpAddresses += ",";
 				}
 			}
-			model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions = _securitySettings.HideAdminMenuItemsBasedOnPermissions;
-			model.SecuritySettings.CaptchaEnabled = _captchaSettings.Enabled;
-			model.SecuritySettings.CaptchaShowOnLoginPage = _captchaSettings.ShowOnLoginPage;
-			model.SecuritySettings.CaptchaShowOnRegistrationPage = _captchaSettings.ShowOnRegistrationPage;
-			model.SecuritySettings.CaptchaShowOnContactUsPage = _captchaSettings.ShowOnContactUsPage;
-			model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage = _captchaSettings.ShowOnEmailWishlistToFriendPage;
-			model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage = _captchaSettings.ShowOnEmailProductToFriendPage;
-			model.SecuritySettings.CaptchaShowOnAskQuestionPage = _captchaSettings.ShowOnAskQuestionPage;
-			model.SecuritySettings.CaptchaShowOnBlogCommentPage = _captchaSettings.ShowOnBlogCommentPage;
-			model.SecuritySettings.CaptchaShowOnNewsCommentPage = _captchaSettings.ShowOnNewsCommentPage;
-			model.SecuritySettings.CaptchaShowOnProductReviewPage = _captchaSettings.ShowOnProductReviewPage;
-			model.SecuritySettings.ReCaptchaPublicKey = _captchaSettings.ReCaptchaPublicKey;
-			model.SecuritySettings.ReCaptchaPrivateKey = _captchaSettings.ReCaptchaPrivateKey;
+			model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions = securitySettings.HideAdminMenuItemsBasedOnPermissions;
+			model.SecuritySettings.CaptchaEnabled = captchaSettings.Enabled;
+			model.SecuritySettings.CaptchaShowOnLoginPage = captchaSettings.ShowOnLoginPage;
+			model.SecuritySettings.CaptchaShowOnRegistrationPage = captchaSettings.ShowOnRegistrationPage;
+			model.SecuritySettings.CaptchaShowOnContactUsPage = captchaSettings.ShowOnContactUsPage;
+			model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage = captchaSettings.ShowOnEmailWishlistToFriendPage;
+			model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage = captchaSettings.ShowOnEmailProductToFriendPage;
+			model.SecuritySettings.CaptchaShowOnAskQuestionPage = captchaSettings.ShowOnAskQuestionPage;
+			model.SecuritySettings.CaptchaShowOnBlogCommentPage = captchaSettings.ShowOnBlogCommentPage;
+			model.SecuritySettings.CaptchaShowOnNewsCommentPage = captchaSettings.ShowOnNewsCommentPage;
+			model.SecuritySettings.CaptchaShowOnProductReviewPage = captchaSettings.ShowOnProductReviewPage;
+			model.SecuritySettings.ReCaptchaPublicKey = captchaSettings.ReCaptchaPublicKey;
+			model.SecuritySettings.ReCaptchaPrivateKey = captchaSettings.ReCaptchaPrivateKey;
 
 			//PDF settings
 			var pdfSettings = _settingService.LoadSetting<PdfSettings>(storeScope);
@@ -1034,15 +1023,17 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.GetOverrideKeys(pdfSettings, model.PdfSettings, storeScope, _settingService, false);
 
 			//localization
-			model.LocalizationSettings.UseImagesForLanguageSelection = _localizationSettings.UseImagesForLanguageSelection;
-			model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled = _localizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
-			model.LocalizationSettings.LoadAllLocaleRecordsOnStartup = _localizationSettings.LoadAllLocaleRecordsOnStartup;
+			var localizationSettings = _settingService.LoadSetting<LocalizationSettings>(storeScope);
+			model.LocalizationSettings.UseImagesForLanguageSelection = localizationSettings.UseImagesForLanguageSelection;
+			model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled = localizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
+			model.LocalizationSettings.LoadAllLocaleRecordsOnStartup = localizationSettings.LoadAllLocaleRecordsOnStartup;
 
 			//full-text support
+			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);
 			model.FullTextSettings.Supported = _fulltextService.IsFullTextSupported();
-			model.FullTextSettings.Enabled = _commonSettings.UseFullTextSearch;
-			model.FullTextSettings.SearchMode = _commonSettings.FullTextMode;
-			model.FullTextSettings.SearchModeValues = _commonSettings.FullTextMode.ToSelectList();
+			model.FullTextSettings.Enabled = commonSettings.UseFullTextSearch;
+			model.FullTextSettings.SearchMode = commonSettings.FullTextMode;
+			model.FullTextSettings.SearchModeValues = commonSettings.FullTextMode.ToSelectList();
 
 			//codehint: sm-add begin
 			//company information
@@ -1161,36 +1152,38 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, _settingService);
 
 			//security settings
-			if (_securitySettings.AdminAreaAllowedIpAddresses == null)
-				_securitySettings.AdminAreaAllowedIpAddresses = new List<string>();
-			_securitySettings.AdminAreaAllowedIpAddresses.Clear();
+			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
+			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
+			if (securitySettings.AdminAreaAllowedIpAddresses == null)
+				securitySettings.AdminAreaAllowedIpAddresses = new List<string>();
+			securitySettings.AdminAreaAllowedIpAddresses.Clear();
 			if (model.SecuritySettings.AdminAreaAllowedIpAddresses.HasValue())
 			{
 				foreach (string s in model.SecuritySettings.AdminAreaAllowedIpAddresses.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
 				{
 					if (!String.IsNullOrWhiteSpace(s))
-						_securitySettings.AdminAreaAllowedIpAddresses.Add(s.Trim());
+						securitySettings.AdminAreaAllowedIpAddresses.Add(s.Trim());
 				}
 			}
-			_securitySettings.HideAdminMenuItemsBasedOnPermissions = model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions;
-			_settingService.SaveSetting(_securitySettings);
+			securitySettings.HideAdminMenuItemsBasedOnPermissions = model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions;
+			_settingService.SaveSetting(securitySettings);
 
-			_captchaSettings.Enabled = model.SecuritySettings.CaptchaEnabled;
-			_captchaSettings.ShowOnLoginPage = model.SecuritySettings.CaptchaShowOnLoginPage;
-			_captchaSettings.ShowOnRegistrationPage = model.SecuritySettings.CaptchaShowOnRegistrationPage;
-			_captchaSettings.ShowOnContactUsPage = model.SecuritySettings.CaptchaShowOnContactUsPage;
-			_captchaSettings.ShowOnEmailWishlistToFriendPage = model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage;
-			_captchaSettings.ShowOnEmailProductToFriendPage = model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage;
-			_captchaSettings.ShowOnAskQuestionPage = model.SecuritySettings.CaptchaShowOnAskQuestionPage;
-			_captchaSettings.ShowOnBlogCommentPage = model.SecuritySettings.CaptchaShowOnBlogCommentPage;
-			_captchaSettings.ShowOnNewsCommentPage = model.SecuritySettings.CaptchaShowOnNewsCommentPage;
-			_captchaSettings.ShowOnProductReviewPage = model.SecuritySettings.CaptchaShowOnProductReviewPage;
-			_captchaSettings.ReCaptchaPublicKey = model.SecuritySettings.ReCaptchaPublicKey;
-			_captchaSettings.ReCaptchaPrivateKey = model.SecuritySettings.ReCaptchaPrivateKey;
+			captchaSettings.Enabled = model.SecuritySettings.CaptchaEnabled;
+			captchaSettings.ShowOnLoginPage = model.SecuritySettings.CaptchaShowOnLoginPage;
+			captchaSettings.ShowOnRegistrationPage = model.SecuritySettings.CaptchaShowOnRegistrationPage;
+			captchaSettings.ShowOnContactUsPage = model.SecuritySettings.CaptchaShowOnContactUsPage;
+			captchaSettings.ShowOnEmailWishlistToFriendPage = model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage;
+			captchaSettings.ShowOnEmailProductToFriendPage = model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage;
+			captchaSettings.ShowOnAskQuestionPage = model.SecuritySettings.CaptchaShowOnAskQuestionPage;
+			captchaSettings.ShowOnBlogCommentPage = model.SecuritySettings.CaptchaShowOnBlogCommentPage;
+			captchaSettings.ShowOnNewsCommentPage = model.SecuritySettings.CaptchaShowOnNewsCommentPage;
+			captchaSettings.ShowOnProductReviewPage = model.SecuritySettings.CaptchaShowOnProductReviewPage;
+			captchaSettings.ReCaptchaPublicKey = model.SecuritySettings.ReCaptchaPublicKey;
+			captchaSettings.ReCaptchaPrivateKey = model.SecuritySettings.ReCaptchaPrivateKey;
 
-			_settingService.SaveSetting(_captchaSettings);
+			_settingService.SaveSetting(captchaSettings);
 
-			if (_captchaSettings.Enabled && (String.IsNullOrWhiteSpace(_captchaSettings.ReCaptchaPublicKey) || String.IsNullOrWhiteSpace(_captchaSettings.ReCaptchaPrivateKey)))
+			if (captchaSettings.Enabled && (String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPublicKey) || String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPrivateKey)))
 			{
 				ErrorNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
 			}
@@ -1204,21 +1197,23 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.UpdateSettings(pdfSettings, form, storeScope, _settingService);
 
 			//localization settings
-			_localizationSettings.UseImagesForLanguageSelection = model.LocalizationSettings.UseImagesForLanguageSelection;
-			if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+			var localizationSettings = _settingService.LoadSetting<LocalizationSettings>(storeScope);
+			localizationSettings.UseImagesForLanguageSelection = model.LocalizationSettings.UseImagesForLanguageSelection;
+			if (localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
 			{
-				_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled = model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
+				localizationSettings.SeoFriendlyUrlsForLanguagesEnabled = model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
 				//clear cached values of routes
 				System.Web.Routing.RouteTable.Routes.ClearSeoFriendlyUrlsCachedValueForRoutes();
 			}
-			_localizationSettings.LoadAllLocaleRecordsOnStartup = model.LocalizationSettings.LoadAllLocaleRecordsOnStartup;
+			localizationSettings.LoadAllLocaleRecordsOnStartup = model.LocalizationSettings.LoadAllLocaleRecordsOnStartup;
 
-			_settingService.SaveSetting(_localizationSettings);
+			_settingService.SaveSetting(localizationSettings);
 
 			//full-text
-			_commonSettings.FullTextMode = model.FullTextSettings.SearchMode;
+			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);
+			commonSettings.FullTextMode = model.FullTextSettings.SearchMode;
 
-			_settingService.SaveSetting(_commonSettings);
+			_settingService.SaveSetting(commonSettings);
 
 			//codehint: sm-add begin
 			//company information
@@ -1301,6 +1296,9 @@ namespace SmartStore.Admin.Controllers
             //set page timeout to 5 minutes
             this.Server.ScriptTimeout = 300;
 
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
+
             try
             {
                 if (model.SecuritySettings.EncryptionKey == null)
@@ -1312,7 +1310,7 @@ namespace SmartStore.Admin.Controllers
                 if (String.IsNullOrEmpty(newEncryptionPrivateKey) || newEncryptionPrivateKey.Length != 16)
                     throw new SmartException(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TooShort"));
 
-                string oldEncryptionPrivateKey = _securitySettings.EncryptionKey;
+                string oldEncryptionPrivateKey = securitySettings.EncryptionKey;
                 if (oldEncryptionPrivateKey == newEncryptionPrivateKey)
                     throw new SmartException(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TheSame"));
 
@@ -1385,8 +1383,8 @@ namespace SmartStore.Admin.Controllers
                     _customerService.UpdateCustomer(customer);
                 }
 
-                _securitySettings.EncryptionKey = newEncryptionPrivateKey;
-                _settingService.SaveSetting(_securitySettings);
+                securitySettings.EncryptionKey = newEncryptionPrivateKey;
+                _settingService.SaveSetting(securitySettings);
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
             }
             catch (Exception exc)
@@ -1402,17 +1400,20 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			var storeScope = GetActiveStoreScopeConfiguration();
+			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);
+
             try
             {
                 if (! _fulltextService.IsFullTextSupported())
                     throw new SmartException(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.NotSupported"));
 
-                if (_commonSettings.UseFullTextSearch)
+                if (commonSettings.UseFullTextSearch)
                 {
                     _fulltextService.DisableFullText();
 
-                    _commonSettings.UseFullTextSearch = false;
-                    _settingService.SaveSetting(_commonSettings);
+                    commonSettings.UseFullTextSearch = false;
+                    _settingService.SaveSetting(commonSettings);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
                 }
@@ -1420,8 +1421,8 @@ namespace SmartStore.Admin.Controllers
                 {
                     _fulltextService.EnableFullText();
 
-                    _commonSettings.UseFullTextSearch = true;
-                    _settingService.SaveSetting(_commonSettings);
+                    commonSettings.UseFullTextSearch = true;
+                    _settingService.SaveSetting(commonSettings);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
                 }

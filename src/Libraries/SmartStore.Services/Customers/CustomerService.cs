@@ -492,7 +492,7 @@ namespace SmartStore.Services.Customers
             //clear checkout attributes
             if (clearCheckoutAttributes)
             {
-                customer.CheckoutAttributes = "";
+				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.CheckoutAttributes, null);
             }
 
             //clear reward points flag

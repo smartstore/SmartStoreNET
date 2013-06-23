@@ -90,11 +90,6 @@ namespace SmartStore.Core.Domain.Customers
         public bool IsTaxExempt { get; set; }
 
         /// <summary>
-        /// Gets or sets the selected checkout attributes (serialized)
-        /// </summary>
-        public string CheckoutAttributes { get; set; }
-
-        /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
         public int AffiliateId { get; set; }

@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Events;
@@ -40,6 +41,7 @@ namespace SmartStore.Services.Orders
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         #endregion
 
@@ -64,6 +66,7 @@ namespace SmartStore.Services.Orders
         /// <param name="permissionService">Permission service</param>
         /// <param name="aclService">ACL service</param>
 		/// <param name="storeMappingService">Store mapping service</param>
+		/// <param name="genericAttributeService">Generic attribute service</param>
         public ShoppingCartService(IRepository<ShoppingCartItem> sciRepository,
 			IWorkContext workContext, IStoreContext storeContext, 
 			ICurrencyService currencyService,
@@ -77,7 +80,8 @@ namespace SmartStore.Services.Orders
             IEventPublisher eventPublisher,
             IPermissionService permissionService, 
             IAclService aclService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+			IGenericAttributeService genericAttributeService)
         {
             this._sciRepository = sciRepository;
             this._workContext = workContext;
@@ -95,6 +99,7 @@ namespace SmartStore.Services.Orders
             this._permissionService = permissionService;
             this._aclService = aclService;
 			this._storeMappingService = storeMappingService;
+			this._genericAttributeService = genericAttributeService;
         }
 
         #endregion
@@ -134,8 +139,10 @@ namespace SmartStore.Services.Orders
 					.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
 					.Where(x => x.StoreId == storeId)
 					.ToList();
-                customer.CheckoutAttributes = _checkoutAttributeParser.EnsureOnlyActiveAttributes(customer.CheckoutAttributes, cart);
-                _customerService.UpdateCustomer(customer);
+
+				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+				checkoutAttributesXml = _checkoutAttributeParser.EnsureOnlyActiveAttributes(checkoutAttributesXml, cart);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CheckoutAttributes, checkoutAttributesXml);
             }
 
             //event notification

@@ -14,6 +14,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Services.Shipping
 {
@@ -36,6 +37,7 @@ namespace SmartStore.Services.Shipping
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
+		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
         private readonly ShippingSettings _shippingSettings;
         private readonly IPluginFinder _pluginFinder;
@@ -54,6 +56,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="logger">Logger</param>
         /// <param name="productAttributeParser">Product attribute parser</param>
         /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
+		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="shippingSettings">Shipping settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
@@ -64,6 +67,7 @@ namespace SmartStore.Services.Shipping
             ILogger logger,
             IProductAttributeParser productAttributeParser,
             ICheckoutAttributeParser checkoutAttributeParser,
+			IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
             ShippingSettings shippingSettings,
             IPluginFinder pluginFinder,
@@ -75,6 +79,7 @@ namespace SmartStore.Services.Shipping
             this._logger = logger;
             this._productAttributeParser = productAttributeParser;
             this._checkoutAttributeParser = checkoutAttributeParser;
+			this._genericAttributeService = genericAttributeService;
             this._localizationService = localizationService;
             this._shippingSettings = shippingSettings;
             this._pluginFinder = pluginFinder;
@@ -288,12 +293,13 @@ namespace SmartStore.Services.Shipping
             //checkout attributes
             if (customer != null)
             {
-                if (!String.IsNullOrEmpty(customer.CheckoutAttributes))
-                {
-                    var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(customer.CheckoutAttributes);
-                    foreach (var caValue in caValues)
-                        totalWeight += caValue.WeightAdjustment;
-                }
+				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+				if (!String.IsNullOrEmpty(checkoutAttributesXml))
+				{
+					var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
+					foreach (var caValue in caValues)
+						totalWeight += caValue.WeightAdjustment;
+				}
             }
             return totalWeight;
         }

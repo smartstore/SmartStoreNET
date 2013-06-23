@@ -566,7 +566,9 @@ namespace SmartStore.Services.Orders
                         throw new SmartException("Cart is empty");
 
                     //validate the entire shopping cart
-                    var warnings = _shoppingCartService.GetShoppingCartWarnings(cart, customer.CheckoutAttributes, true);
+					var warnings = _shoppingCartService.GetShoppingCartWarnings(cart,
+						customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes),
+						true);
                     if (warnings.Count > 0)
                     {
                         var warningsSb = new StringBuilder();
@@ -636,13 +638,13 @@ namespace SmartStore.Services.Orders
                 string checkoutAttributeDescription, checkoutAttributesXml;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-                    checkoutAttributeDescription = _checkoutAttributeFormatter.FormatAttributes(customer.CheckoutAttributes, customer);
-                    checkoutAttributesXml = customer.CheckoutAttributes;
+					checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes);
+					checkoutAttributeDescription = _checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, customer);
                 }
                 else
                 {
+					checkoutAttributesXml = initialOrder.CheckoutAttributesXml;
                     checkoutAttributeDescription = initialOrder.CheckoutAttributeDescription;
-                    checkoutAttributesXml = initialOrder.CheckoutAttributesXml;
                 }
 
                 //applied discount (used to store discount usage history)

@@ -126,12 +126,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Methods
 
-		[NonAction]
-		private int GetActiveStoreScopeConfiguration()
-		{
-			return this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-		}
-
 		[ChildActionOnly]
 		public ActionResult StoreScopeConfiguration()
 		{
@@ -148,7 +142,7 @@ namespace SmartStore.Admin.Controllers
 					Name = s.Name
 				});
 			}
-			model.StoreId = GetActiveStoreScopeConfiguration();
+			model.StoreId = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 
 			return PartialView(model);
 		}
@@ -176,7 +170,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
 			var model = blogSettings.ToModel();
 
@@ -191,7 +185,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var blogSettings = _settingService.LoadSetting<BlogSettings>(storeScope);
 			blogSettings = model.ToEntity(blogSettings);
 
@@ -216,7 +210,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
 			var model = forumSettings.ToModel();
 
@@ -233,7 +227,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var forumSettings = _settingService.LoadSetting<ForumSettings>(storeScope);
 			forumSettings = model.ToEntity(forumSettings);
 
@@ -258,7 +252,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
 			var model = newsSettings.ToModel();
 
@@ -273,7 +267,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var newsSettings = _settingService.LoadSetting<NewsSettings>(storeScope);
 			newsSettings = model.ToEntity(newsSettings);
 
@@ -298,7 +292,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
 			var model = shippingSettings.ToModel();
 
@@ -356,7 +350,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var shippingSettings = _settingService.LoadSetting<ShippingSettings>(storeScope);
 			shippingSettings = model.ToEntity(shippingSettings);
 
@@ -409,7 +403,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             //load settings for a chosen store scope
-            var storeScope = GetActiveStoreScopeConfiguration();
+            var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
             var taxSettings = _settingService.LoadSetting<TaxSettings>(storeScope);
 			var model = taxSettings.ToModel();
 
@@ -496,7 +490,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var taxSettings = _settingService.LoadSetting<TaxSettings>(storeScope);
 			taxSettings = model.ToEntity(taxSettings);
 
@@ -553,7 +547,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
 			var model = catalogSettings.ToModel();
 
@@ -576,7 +570,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
 			catalogSettings = model.ToEntity(catalogSettings);
 
@@ -600,7 +594,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
 			var model = rewardPointsSettings.ToModel();
 
@@ -626,7 +620,7 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				//load settings for a chosen store scope
-				var storeScope = GetActiveStoreScopeConfiguration();
+				var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 				var rewardPointsSettings = _settingService.LoadSetting<RewardPointsSettings>(storeScope);
 				rewardPointsSettings = model.ToEntity(rewardPointsSettings);
 
@@ -664,7 +658,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var orderSettings = _settingService.LoadSetting<OrderSettings>(storeScope);
 			var model = orderSettings.ToModel();
 
@@ -709,7 +703,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
 				//load settings for a chosen store scope
-				var storeScope = GetActiveStoreScopeConfiguration();
+				var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 				var orderSettings = _settingService.LoadSetting<OrderSettings>(storeScope);
 				orderSettings = model.ToEntity(orderSettings);
 
@@ -770,7 +764,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var shoppingCartSettings = _settingService.LoadSetting<ShoppingCartSettings>(storeScope);
 			var model = shoppingCartSettings.ToModel();
 
@@ -786,7 +780,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var shoppingCartSettings = _settingService.LoadSetting<ShoppingCartSettings>(storeScope);
 			shoppingCartSettings = model.ToEntity(shoppingCartSettings);
 
@@ -811,7 +805,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var mediaSettings = _settingService.LoadSetting<MediaSettings>(storeScope);
 			var model = mediaSettings.ToModel();
 
@@ -847,7 +841,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var mediaSettings = _settingService.LoadSetting<MediaSettings>(storeScope);
 			mediaSettings = model.ToEntity(mediaSettings);
 
@@ -885,7 +879,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
 			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
@@ -919,7 +913,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
 			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
@@ -959,7 +953,7 @@ namespace SmartStore.Admin.Controllers
             this.Server.ScriptTimeout = 300;
 
 			var model = new GeneralCommonSettingsModel();
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 
             //store information
 			var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(storeScope);
@@ -1123,7 +1117,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 
 			//store information
 			var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(storeScope);
@@ -1290,7 +1284,7 @@ namespace SmartStore.Admin.Controllers
             //set page timeout to 5 minutes
             this.Server.ScriptTimeout = 300;
 
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
 
             try
@@ -1394,7 +1388,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			var storeScope = GetActiveStoreScopeConfiguration();
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);
 
             try

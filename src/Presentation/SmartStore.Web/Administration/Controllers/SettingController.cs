@@ -75,7 +75,6 @@ namespace SmartStore.Admin.Controllers
         private AddressSettings _addressSettings;
         private readonly DateTimeSettings _dateTimeSettings;
         private readonly SecuritySettings _securitySettings;
-        private readonly PdfSettings _pdfSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
@@ -101,7 +100,7 @@ namespace SmartStore.Admin.Controllers
             CurrencySettings currencySettings, 
             CustomerSettings customerSettings, AddressSettings addressSettings,
             DateTimeSettings dateTimeSettings,
-            SecuritySettings securitySettings, PdfSettings pdfSettings,
+            SecuritySettings securitySettings,
             LocalizationSettings localizationSettings, 
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
             CommonSettings commonSettings)
@@ -133,7 +132,6 @@ namespace SmartStore.Admin.Controllers
             this._addressSettings = addressSettings;
             this._dateTimeSettings = dateTimeSettings;
             this._securitySettings = securitySettings;
-            this._pdfSettings = pdfSettings;
             this._localizationSettings = localizationSettings;
             this._captchaSettings = captchaSettings;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
@@ -1028,9 +1026,12 @@ namespace SmartStore.Admin.Controllers
 			model.SecuritySettings.ReCaptchaPrivateKey = _captchaSettings.ReCaptchaPrivateKey;
 
 			//PDF settings
-			model.PdfSettings.Enabled = _pdfSettings.Enabled;
-			model.PdfSettings.LetterPageSizeEnabled = _pdfSettings.LetterPageSizeEnabled;
-			model.PdfSettings.LogoPictureId = _pdfSettings.LogoPictureId;
+			var pdfSettings = _settingService.LoadSetting<PdfSettings>(storeScope);
+			model.PdfSettings.Enabled = pdfSettings.Enabled;
+			model.PdfSettings.LetterPageSizeEnabled = pdfSettings.LetterPageSizeEnabled;
+			model.PdfSettings.LogoPictureId = pdfSettings.LogoPictureId;
+
+			StoreDependingSettings.GetOverrideKeys(pdfSettings, model.PdfSettings, storeScope, _settingService, false);
 
 			//localization
 			model.LocalizationSettings.UseImagesForLanguageSelection = _localizationSettings.UseImagesForLanguageSelection;
@@ -1040,6 +1041,7 @@ namespace SmartStore.Admin.Controllers
 			//full-text support
 			model.FullTextSettings.Supported = _fulltextService.IsFullTextSupported();
 			model.FullTextSettings.Enabled = _commonSettings.UseFullTextSearch;
+			model.FullTextSettings.SearchMode = _commonSettings.FullTextMode;
 			model.FullTextSettings.SearchModeValues = _commonSettings.FullTextMode.ToSelectList();
 
 			//codehint: sm-add begin
@@ -1194,11 +1196,12 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//PDF settings
-			_pdfSettings.Enabled = model.PdfSettings.Enabled;
-			_pdfSettings.LetterPageSizeEnabled = model.PdfSettings.LetterPageSizeEnabled;
-			_pdfSettings.LogoPictureId = model.PdfSettings.LogoPictureId;
+			var pdfSettings = _settingService.LoadSetting<PdfSettings>(storeScope);
+			pdfSettings.Enabled = model.PdfSettings.Enabled;
+			pdfSettings.LetterPageSizeEnabled = model.PdfSettings.LetterPageSizeEnabled;
+			pdfSettings.LogoPictureId = model.PdfSettings.LogoPictureId;
 
-			_settingService.SaveSetting(_pdfSettings);
+			StoreDependingSettings.UpdateSettings(pdfSettings, form, storeScope, _settingService);
 
 			//localization settings
 			_localizationSettings.UseImagesForLanguageSelection = model.LocalizationSettings.UseImagesForLanguageSelection;

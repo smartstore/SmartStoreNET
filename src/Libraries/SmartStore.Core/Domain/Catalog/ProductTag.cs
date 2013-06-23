@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -8,8 +7,6 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     public partial class ProductTag : BaseEntity, ILocalizedEntity
     {
-        private ICollection<Product> _products;
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -19,14 +16,5 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the tagged product count
         /// </summary>
         public int ProductCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the product variants
-        /// </summary>
-        public virtual ICollection<Product> Products
-        {
-            get { return _products ?? (_products = new List<Product>()); }
-            protected set { _products = value; }
-        }
     }
 }

@@ -5428,15 +5428,14 @@ namespace SmartStore.Services.Installation
                         Name = tag,
                         ProductCount = 1,
                     };
-                    productTag.Products.Add(product);
-                    _productTagRepository.Insert(productTag);
                 }
                 else
                 {
                     productTag.ProductCount++;
-                    productTag.Products.Add(product);
-                    _productTagRepository.Update(productTag);
                 }
+				product.ProductTags.Add(productTag);
+				_productRepository.Update(product);
+
                 IncreaseProgress();
             }
             catch (Exception ex)

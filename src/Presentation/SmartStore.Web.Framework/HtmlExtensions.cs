@@ -36,12 +36,6 @@ namespace SmartStore.Web.Framework
     
     public static class HtmlExtensions
     {
-        public static MvcHtmlString ResolveUrl(this HtmlHelper htmlHelper, string url)
-        {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
-            return MvcHtmlString.Create(urlHelper.Content(url));
-        }
-
         // codehint: sm-edit
         public static MvcHtmlString Hint(this HtmlHelper helper, string value)
         {

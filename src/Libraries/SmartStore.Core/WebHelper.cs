@@ -138,15 +138,15 @@ namespace SmartStore.Core
         {
             string result = string.Empty;
 
-			if (_httpContext == null || _httpContext.Request == null)
-				return result;
-
             try
             {
-                if (_httpContext.Request.ServerVariables[name] != null)
-                {
-                    result = _httpContext.Request.ServerVariables[name];
-                }
+				if (_httpContext != null && _httpContext.Request != null)
+				{
+					if (_httpContext.Request.ServerVariables[name] != null)
+					{
+						result = _httpContext.Request.ServerVariables[name];
+					}
+				}
             }
             catch
             {

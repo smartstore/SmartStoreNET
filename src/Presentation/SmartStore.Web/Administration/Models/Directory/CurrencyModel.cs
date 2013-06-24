@@ -54,9 +54,9 @@ namespace SmartStore.Admin.Models.Directory
         public IList<CurrencyLocalizedModel> Locales { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Catalog.Currencies.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.LimitedToStores")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Catalog.Currencies.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.AvailableStores")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }

@@ -44,9 +44,9 @@ namespace SmartStore.Admin.Models.Localization
         public int DisplayOrder { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Catalog.Languages.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LimitedToStores")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Catalog.Languages.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.AvailableStores")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }

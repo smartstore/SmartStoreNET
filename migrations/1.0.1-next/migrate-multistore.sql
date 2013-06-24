@@ -126,52 +126,52 @@ set @resources='
 	<T>Bitte Shops auswählen, für die der Artikel verfügbar ist.</T>
   </LocaleResource>
   
-  <LocaleResource Name="Admin.Catalog.Languages.Info">
+  <LocaleResource Name="Admin.Configuration.Languages.Info">
 	<Value>Info</Value>
 	<T>Info</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Languages.Stores">
+  <LocaleResource Name="Admin.Configuration.Languages.Stores">
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Languages.Fields.LimitedToStores">
+  <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
 	<T>Auf Shop begrenzt</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Languages.Fields.LimitedToStores.Hint">
+  <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the language is available only at certain stores.</Value>
 	<T>Legt fest, ob die Sprache nur für bestimmte Shops verfügbar ist.</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Languages.Fields.AvailableStores">
+  <LocaleResource Name="Admin.Configuration.Languages.Fields.AvailableStores">
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Languages.Fields.AvailableStores.Hint">
+  <LocaleResource Name="Admin.Configuration.Languages.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the language will be shown.</Value>
 	<T>Bitte Shops auswählen, für die die Sprache verfügbar ist.</T>
   </LocaleResource>
   
-  <LocaleResource Name="Admin.Catalog.Currencies.Info">
+  <LocaleResource Name="Admin.Configuration.Currencies.Info">
 	<Value>Info</Value>
 	<T>Info</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Currencies.Stores">
+  <LocaleResource Name="Admin.Configuration.Currencies.Stores">
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Currencies.Fields.LimitedToStores">
+  <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
 	<T>Auf Shop begrenzt</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Currencies.Fields.LimitedToStores.Hint">
+  <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the currency is available only at certain stores.</Value>
 	<T>Legt fest, ob die Währung nur für bestimmte Shops verfügbar ist.</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Currencies.Fields.AvailableStores">
+  <LocaleResource Name="Admin.Configuration.Currencies.Fields.AvailableStores">
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Currencies.Fields.AvailableStores.Hint">
+  <LocaleResource Name="Admin.Configuration.Currencies.Fields.AvailableStores.Hint">
 	<Value>Select stores for which the currency will be shown.</Value>
 	<T>Bitte Shops auswählen, für die die Währung verfügbar ist.</T>
   </LocaleResource>

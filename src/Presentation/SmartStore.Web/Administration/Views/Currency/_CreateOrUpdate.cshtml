@@ -7,8 +7,8 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("currency-edit").Items(x =>
 {
-    x.Add().Text(T("Admin.Catalog.Currencies.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Catalog.Currencies.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Configuration.Currencies.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Configuration.Currencies.Stores").Text).Content(TabStores());
 
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "currency-edit"));

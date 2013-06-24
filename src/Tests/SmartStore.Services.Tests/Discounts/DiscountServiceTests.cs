@@ -63,6 +63,8 @@ namespace SmartStore.Services.Tests.Discounts
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+
             var cacheManager = new NullCache();
             _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();

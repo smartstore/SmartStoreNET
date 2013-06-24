@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Blogs
 {
     /// <summary>
     /// Represents a blog post
     /// </summary>
-    public partial class BlogPost : BaseEntity, ISlugSupported
+	public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported
     {
         private ICollection<BlogComment> _blogComments;
 
@@ -77,6 +78,11 @@ namespace SmartStore.Core.Domain.Blogs
         /// </summary>
         public string MetaTitle { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
+ 
         /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>

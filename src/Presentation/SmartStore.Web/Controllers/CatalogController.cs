@@ -92,7 +92,6 @@ namespace SmartStore.Web.Controllers
         private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-        private readonly StoreInformationSettings _storeInformationSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly ICacheManager _cacheManager;
@@ -132,7 +131,7 @@ namespace SmartStore.Web.Controllers
             IPermissionService permissionService, IDownloadService downloadService,
             ICustomerActivityService customerActivityService,
             MediaSettings mediaSettings, CatalogSettings catalogSettings,
-            ShoppingCartSettings shoppingCartSettings, StoreInformationSettings storeInformationSettings,
+            ShoppingCartSettings shoppingCartSettings,
             LocalizationSettings localizationSettings, CustomerSettings customerSettings, 
             CaptchaSettings captchaSettings,
             ICacheManager cacheManager,
@@ -186,7 +185,6 @@ namespace SmartStore.Web.Controllers
             this._mediaSettings = mediaSettings;
             this._catalogSettings = catalogSettings;
             this._shoppingCartSettings = shoppingCartSettings;
-            this._storeInformationSettings = storeInformationSettings;
             this._localizationSettings = localizationSettings;
             this._customerSettings = customerSettings;
             this._captchaSettings = captchaSettings;

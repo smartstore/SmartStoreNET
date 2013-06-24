@@ -537,7 +537,26 @@ set @resources='
 	<T>Captcha wurde aktiviert, aber die zugehörigen Schlüssel fehlen.</T>
   </LocaleResource>
   
-  
+  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores.Hint">
+	<Value>Determines whether the blog post is available only at certain stores.</Value>
+	<T>Legt fest, ob der Blog-Beitrag nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.AvailableStores.Hint">
+	<Value>Select stores for which the blog post will be shown.</Value>
+	<T>Bitte Shops auswählen, für die der Blog-Beitrag angezeigt werden soll.</T>
+  </LocaleResource>
     
 </Language>
 '
@@ -1687,8 +1706,7 @@ GO
 --Store mapping to Setting
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Setting]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Setting]
-	ADD [StoreId] bit NULL
+	ALTER TABLE [Setting] ADD [StoreId] bit NULL
 END
 GO
 
@@ -1696,4 +1714,17 @@ UPDATE [Setting] SET [StoreId] = 0 WHERE [StoreId] IS NULL
 GO
 
 ALTER TABLE [Setting] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+--Store mapping for blog posts
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[BlogPost]') and NAME='LimitedToStores')
+BEGIN
+	ALTER TABLE [BlogPost] ADD [LimitedToStores] bit NULL
+END
+GO
+
+UPDATE [BlogPost] SET [LimitedToStores] = 0 WHERE [LimitedToStores] IS NULL
+GO
+
+ALTER TABLE [BlogPost] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO

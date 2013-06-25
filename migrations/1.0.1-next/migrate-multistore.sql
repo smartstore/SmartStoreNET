@@ -1303,6 +1303,7 @@ BEGIN
 	DROP TABLE #FilteredCategoryIds
 	DROP TABLE #FilteredSpecs
 	DROP TABLE #FilteredCustomerRoleIds
+	DROP TABLE #KeywordProducts
 
 	CREATE TABLE #PageIndex 
 	(

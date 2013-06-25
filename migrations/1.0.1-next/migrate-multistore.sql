@@ -1460,18 +1460,6 @@ GO
 ALTER TABLE [ShoppingCartItem] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
-IF NOT EXISTS (SELECT 1
-           FROM   sysobjects
-           WHERE  name = 'ShoppingCartItem_Store'
-           AND parent_obj = Object_id('ShoppingCartItem')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
-BEGIN
-	ALTER TABLE [dbo].[ShoppingCartItem] WITH CHECK ADD CONSTRAINT [ShoppingCartItem_Store] FOREIGN KEY([StoreId])
-	REFERENCES [dbo].[Store] ([Id])
-	ON DELETE CASCADE
-END
-GO
-
 --Store mapping to orders
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Order]') and NAME='StoreId')
 BEGIN
@@ -1557,18 +1545,6 @@ GO
 ALTER TABLE [BackInStockSubscription] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
-IF NOT EXISTS (SELECT 1
-           FROM   sysobjects
-           WHERE  name = 'BackInStockSubscription_Store'
-           AND parent_obj = Object_id('BackInStockSubscription')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
-BEGIN
-	ALTER TABLE [dbo].[BackInStockSubscription] WITH CHECK ADD CONSTRAINT [BackInStockSubscription_Store] FOREIGN KEY([StoreId])
-	REFERENCES [dbo].[Store] ([Id])
-	ON DELETE CASCADE
-END
-GO
-
 
 --Store mapping to Forums_PrivateMessage
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Forums_PrivateMessage]') and NAME='StoreId')
@@ -1583,18 +1559,6 @@ UPDATE [Forums_PrivateMessage] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId]
 GO
 
 ALTER TABLE [Forums_PrivateMessage] ALTER COLUMN [StoreId] int NOT NULL
-GO
-
-IF NOT EXISTS (SELECT 1
-           FROM   sysobjects
-           WHERE  name = 'Forums_PrivateMessage_Store'
-           AND parent_obj = Object_id('Forums_PrivateMessage')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
-BEGIN
-	ALTER TABLE [dbo].[Forums_PrivateMessage] WITH CHECK ADD CONSTRAINT [Forums_PrivateMessage_Store] FOREIGN KEY([StoreId])
-	REFERENCES [dbo].[Store] ([Id])
-	ON DELETE CASCADE
-END
 GO
 
 

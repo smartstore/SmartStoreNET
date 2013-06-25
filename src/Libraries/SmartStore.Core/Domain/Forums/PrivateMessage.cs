@@ -1,6 +1,5 @@
 ﻿using System;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Forums
 {
@@ -53,11 +52,6 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the date and time of instance creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-
-		/// <summary>
-		/// Gets or sets the store
-		/// </summary>
-		public Store Store { get; set; }
 
         /// <summary>
         /// Gets the customer who sent the message

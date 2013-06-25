@@ -39,18 +39,7 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.Customer.ShouldNotBeNull();
 
             fromDb.ProductVariant.ShouldNotBeNull();
-
-			fromDb.Store.ShouldNotBeNull();
         }
-
-		protected Store GetTestStore()
-		{
-			return new Store
-			{
-				Name = "Store 1",
-				DisplayOrder = 1,
-			};
-		}
 
         protected Customer GetTestCustomer()
         {

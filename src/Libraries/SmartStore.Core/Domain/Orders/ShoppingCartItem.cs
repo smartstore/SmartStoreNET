@@ -1,7 +1,6 @@
 using System;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Orders
 {
@@ -54,11 +53,6 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the date and time of instance update
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
-
-		/// <summary>
-		/// Gets or sets the store
-		/// </summary>
-		public virtual Store Store { get; set; }
 
         /// <summary>
         /// Gets the log type

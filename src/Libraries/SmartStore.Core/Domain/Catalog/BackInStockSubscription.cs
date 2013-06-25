@@ -1,6 +1,5 @@
 using System;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -28,11 +27,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the date and time of instance creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-
-		/// <summary>
-		/// Gets the store
-		/// </summary>
-		public Store Store { get; set; }
 
         /// <summary>
         /// Gets the product variant

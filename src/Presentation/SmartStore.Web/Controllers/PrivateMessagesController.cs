@@ -397,7 +397,7 @@ namespace SmartStore.Web.Controllers
 
                     var privateMessage = new PrivateMessage
                     {
-						Store = _storeContext.CurrentStore,
+						StoreId = _storeContext.CurrentStore.Id,
                         ToCustomerId = toCustomer.Id,
                         FromCustomerId = _workContext.CurrentCustomer.Id,
                         Subject = subject,

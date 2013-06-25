@@ -1448,7 +1448,7 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ShoppingCartItem]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [ShoppingCartItem] ADD [StoreId] bit NULL
+	ALTER TABLE [ShoppingCartItem] ADD [StoreId] int NULL
 END
 GO
 
@@ -1463,7 +1463,7 @@ GO
 --Store mapping to orders
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Order]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Order] ADD [StoreId] bit NULL
+	ALTER TABLE [Order] ADD [StoreId] int NULL
 END
 GO
 
@@ -1478,7 +1478,7 @@ GO
 --Store mapping to return requests
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ReturnRequest]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [ReturnRequest] ADD [StoreId] bit NULL
+	ALTER TABLE [ReturnRequest] ADD [StoreId] int NULL
 END
 GO
 
@@ -1533,7 +1533,7 @@ GO
 --Store mapping to BackInStockSubscription
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[BackInStockSubscription]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [BackInStockSubscription] ADD [StoreId] bit NULL
+	ALTER TABLE [BackInStockSubscription] ADD [StoreId] int NULL
 END
 GO
 
@@ -1549,7 +1549,7 @@ GO
 --Store mapping to Forums_PrivateMessage
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Forums_PrivateMessage]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Forums_PrivateMessage] ADD [StoreId] bit NULL
+	ALTER TABLE [Forums_PrivateMessage] ADD [StoreId] int NULL
 END
 GO
 
@@ -1565,7 +1565,7 @@ GO
 --GenericAttributes cuold be limited to some specific store name
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[GenericAttribute]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [GenericAttribute] ADD [StoreId] bit NULL
+	ALTER TABLE [GenericAttribute] ADD [StoreId] int NULL
 END
 GO
 
@@ -1670,7 +1670,7 @@ GO
 --Store mapping to Setting
 IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Setting]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Setting] ADD [StoreId] bit NULL
+	ALTER TABLE [Setting] ADD [StoreId] int NULL
 END
 GO
 

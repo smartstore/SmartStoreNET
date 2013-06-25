@@ -31,6 +31,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -81,11 +82,16 @@ namespace SmartStore.Services.Tests.Orders
         CurrencySettings _currencySettings;
 		IAffiliateService _affiliateService;
 
+		Store _store;
+
         [SetUp]
         public new void SetUp()
         {
             _workContext = null;
-			_storeContext = null;
+
+			_store = new Store() { Id = 1 };
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
             var pluginFinder = new PluginFinder();
             var cacheManager = new NullCache();
@@ -97,9 +103,9 @@ namespace SmartStore.Services.Tests.Orders
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
-            _priceCalcService = new PriceCalculationService(_workContext, _discountService,
-                _categoryService, _productAttributeParser, _shoppingCartSettings, _catalogSettings);
-
+			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
+				_discountService, _categoryService,
+				_productAttributeParser, _shoppingCartSettings, _catalogSettings);
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 

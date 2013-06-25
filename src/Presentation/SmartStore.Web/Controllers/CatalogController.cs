@@ -416,6 +416,7 @@ namespace SmartStore.Web.Controllers
                                                 tierPrices.AddRange(productVariant.TierPrices
                                                     .OrderBy(tp => tp.Quantity)
                                                     .ToList()
+													.FilterByStore(_storeContext.CurrentStore.Id)
                                                     .FilterForCustomer(_workContext.CurrentCustomer)
                                                     .RemoveDuplicatedQuantities());
                                             }
@@ -2487,6 +2488,7 @@ namespace SmartStore.Web.Controllers
             var model = variant.TierPrices
                 .OrderBy(x => x.Quantity)
                 .ToList()
+				.FilterByStore(_storeContext.CurrentStore.Id)
                 .FilterForCustomer(_workContext.CurrentCustomer)
                 .RemoveDuplicatedQuantities()
                 .Select(tierPrice =>

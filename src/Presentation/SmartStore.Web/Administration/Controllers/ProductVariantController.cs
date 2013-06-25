@@ -23,6 +23,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -32,7 +33,7 @@ namespace SmartStore.Admin.Controllers
         #region Fields
 
         private readonly IProductService _productService;
-        private readonly IProductTagService _productTagService;
+		private readonly IStoreService _storeService;
         private readonly IPictureService _pictureService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
@@ -65,7 +66,7 @@ namespace SmartStore.Admin.Controllers
         #region Constructors
 
         public ProductVariantController(IProductService productService,
-            IProductTagService productTagService, IPictureService pictureService,
+			IStoreService storeService, IPictureService pictureService,
             ILanguageService languageService, ILocalizedEntityService localizedEntityService,
             IDiscountService discountService, ICustomerService customerService,
             ILocalizationService localizationService, IProductAttributeService productAttributeService,
@@ -83,7 +84,7 @@ namespace SmartStore.Admin.Controllers
         {
             this._localizedEntityService = localizedEntityService;
             this._pictureService = pictureService;
-            this._productTagService = productTagService;
+			this._storeService = storeService;
             this._languageService = languageService;
             this._productService = productService;
             this._discountService = discountService;
@@ -596,14 +597,26 @@ namespace SmartStore.Admin.Controllers
             if (productVariant == null)
                 throw new ArgumentException("No product variant found with the specified id");
 
-            var tierPrices = productVariant.TierPrices;
-            var tierPricesModel = tierPrices
-                .OrderBy(x => x.Quantity).ThenBy(x => x.CustomerRoleId)
+			var tierPricesModel = productVariant.TierPrices
+				.OrderBy(x => x.StoreId)
+				.ThenBy(x => x.Quantity)
+				.ThenBy(x => x.CustomerRoleId)
                 .Select(x =>
                 {
+					var storeName = "";
+					if (x.StoreId > 0)
+					{
+						var store = _storeService.GetStoreById(x.StoreId);
+						storeName = store != null ? store.Name : "Deleted";
+					}
+					else
+					{
+						storeName = _localizationService.GetResource("Admin.Catalog.Products.Variants.TierPrices.Fields.Store.All");
+					}
                     return new ProductVariantModel.TierPriceModel()
                     {
                         Id = x.Id,
+						Store = storeName,
                         CustomerRole = x.CustomerRoleId.HasValue ? _customerService.GetCustomerRoleById(x.CustomerRoleId.Value).Name : _localizationService.GetResource("Admin.Catalog.Products.Variants.TierPrices.Fields.CustomerRole.AllRoles"),
                         ProductVariantId = x.ProductVariantId,
                         CustomerRoleId = x.CustomerRoleId.HasValue ? x.CustomerRoleId.Value : 0,
@@ -634,6 +647,8 @@ namespace SmartStore.Admin.Controllers
             var tierPrice = new TierPrice()
             {
                 ProductVariantId = model.ProductVariantId,
+				//use Store property (not Store propertyId) because appropriate property is stored in it
+				StoreId = Int32.Parse(model.Store),
                 // codehint: sm-edit
                 CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null, //use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
                 Quantity = model.Quantity,
@@ -658,6 +673,8 @@ namespace SmartStore.Admin.Controllers
             if (tierPrice == null)
                 throw new ArgumentException("No tier price found with the specified id");
 
+			//use Store property (not Store propertyId) because appropriate property is stored in it
+			tierPrice.StoreId = Int32.Parse(model.Store);
             //use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
             // codehint: sm-edit
             tierPrice.CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null;

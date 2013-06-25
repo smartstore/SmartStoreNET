@@ -557,6 +557,15 @@ set @resources='
 	<Value>Select stores for which the blog post will be shown.</Value>
 	<T>Bitte Shops auswählen, für die der Blog-Beitrag angezeigt werden soll.</T>
   </LocaleResource>
+  
+  <LocaleResource Name="Admin.Catalog.Products.Variants.TierPrices.Fields.Store">
+    <Value>Store</Value>
+    <T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Products.Variants.TierPrices.Fields.Store.All">
+    <Value>All stores</Value>
+    <T>Alle shops</T>
+  </LocaleResource>  
     
 </Language>
 '
@@ -1749,4 +1758,18 @@ IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_LimitedToStor
 BEGIN
 	CREATE NONCLUSTERED INDEX [IX_Product_LimitedToStores] ON [Product] ([LimitedToStores] ASC)
 END
+GO
+
+
+--new column 
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[TierPrice]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [TierPrice] ADD [StoreId] int NULL
+END
+GO
+
+UPDATE [TierPrice] SET [StoreId] = 0 WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [TierPrice] ALTER COLUMN [StoreId] int NOT NULL
 GO

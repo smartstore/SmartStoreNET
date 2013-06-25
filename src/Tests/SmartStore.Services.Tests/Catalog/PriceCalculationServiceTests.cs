@@ -10,6 +10,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -17,6 +18,7 @@ namespace SmartStore.Services.Tests.Catalog
     public class PriceCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
+		IStoreContext _storeContext;
         IDiscountService _discountService;
         ICategoryService _categoryService;
         IProductAttributeParser _productAttributeParser;
@@ -24,10 +26,16 @@ namespace SmartStore.Services.Tests.Catalog
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
 
+		Store _store;
+
         [SetUp]
         public new void SetUp()
         {
             _workContext = null;
+
+			_store = new Store() { Id = 1 };
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
             _discountService = MockRepository.GenerateMock<IDiscountService>();
 
@@ -38,7 +46,7 @@ namespace SmartStore.Services.Tests.Catalog
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
-            _priceCalcService = new PriceCalculationService(_workContext, _discountService,
+			_priceCalcService = new PriceCalculationService(_workContext, _storeContext, _discountService,
                 _categoryService, _productAttributeParser, _shoppingCartSettings, _catalogSettings);
         }
 

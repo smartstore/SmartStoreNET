@@ -9,6 +9,7 @@ using SmartStore.Plugin.Shipping.ByWeight.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -18,6 +19,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
     public class ShippingByWeightController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
+		private readonly IStoreService _storeService;
         private readonly ICountryService _countryService;
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
         private readonly IShippingByWeightService _shippingByWeightService;
@@ -29,12 +31,13 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
         private readonly MeasureSettings _measureSettings;
 
         public ShippingByWeightController(IShippingService shippingService,
-            ICountryService countryService, ShippingByWeightSettings shippingByWeightSettings,
+			IStoreService storeService, ICountryService countryService, ShippingByWeightSettings shippingByWeightSettings,
             IShippingByWeightService shippingByWeightService, ISettingService settingService,
             ICurrencyService currencyService, CurrencySettings currencySettings,
             IMeasureService measureService, MeasureSettings measureSettings)
         {
             this._shippingService = shippingService;
+			this._storeService = storeService;
             this._countryService = countryService;
             this._shippingByWeightSettings = shippingByWeightSettings;
             this._shippingByWeightService = shippingByWeightService;
@@ -66,7 +69,11 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
             var model = new ShippingByWeightListModel();
             foreach (var sm in shippingMethods)
                 model.AvailableShippingMethods.Add(new SelectListItem() { Text = sm.Name, Value = sm.Id.ToString() });
-            
+
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = "*", Value = "0" });
+			foreach (var store in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = store.Name, Value = store.Id.ToString() });
 
             model.AvailableCountries.Add(new SelectListItem() { Text = "*", Value = "0" });
             var countries = _countryService.GetAllCountries(true);
@@ -119,6 +126,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                     var m = new ShippingByWeightModel()
                     {
                         Id = x.Id,
+						StoreId = x.StoreId,
                         ShippingMethodId = x.ShippingMethodId,
                         CountryId = x.CountryId,
                         From = x.From,
@@ -127,8 +135,12 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
                     };
+					//shipping method
                     var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethodId != null) ? shippingMethodId.Name : "Unavailable";
+					//store
+					var store = _storeService.GetStoreById(x.StoreId);
+					m.StoreName = (store != null) ? store.Name : "*";
                     if (x.CountryId > 0)
                     {
                         var c = _countryService.GetCountryById(x.CountryId);
@@ -187,6 +199,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
 
             var sbw = new ShippingByWeightRecord()
             {
+				StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
                 From = model.AddFrom,

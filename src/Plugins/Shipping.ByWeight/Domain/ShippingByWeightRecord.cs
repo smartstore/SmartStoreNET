@@ -7,6 +7,11 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Domain
     /// </summary>
     public partial class ShippingByWeightRecord : BaseEntity
     {
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the country identifier
         /// </summary>

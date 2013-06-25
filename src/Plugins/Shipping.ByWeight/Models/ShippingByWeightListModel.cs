@@ -12,7 +12,11 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Models
             AvailableCountries = new List<SelectListItem>();
             AvailableShippingMethods = new List<SelectListItem>();
             Records = new List<ShippingByWeightModel>();
+			AvailableStores = new List<SelectListItem>();
         }
+
+		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
+		public int AddStoreId { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Country")]
         public int AddCountryId { get; set; }
@@ -44,6 +48,6 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Models
         public IList<SelectListItem> AvailableShippingMethods { get; set; }
 
         public IList<ShippingByWeightModel> Records { get; set; }
-        
+		public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

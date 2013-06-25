@@ -566,7 +566,16 @@ set @resources='
     <Value>All stores</Value>
     <T>Alle shops</T>
   </LocaleResource>  
-    
+
+  <LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store">
+    <Value>Store</Value>
+    <T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store.Hint">
+    <Value>If an asterisk is selected, then this shipping rate will apply to all stores.</Value>
+    <T>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</T>
+  </LocaleResource>
+  
 </Language>
 '
 
@@ -1772,4 +1781,20 @@ UPDATE [TierPrice] SET [StoreId] = 0 WHERE [StoreId] IS NULL
 GO
 
 ALTER TABLE [TierPrice] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+
+--shipping by weight plugin
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ShippingByWeight]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	--new [StoreId] column
+	EXEC ('IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id(''[ShippingByWeight]'') and NAME=''StoreId'')
+	BEGIN
+		ALTER TABLE [ShippingByWeight] ADD [StoreId] int NULL
+
+		exec(''UPDATE [ShippingByWeight] SET [StoreId] = 0'')
+		
+		EXEC (''ALTER TABLE [ShippingByWeight] ALTER COLUMN [StoreId] int NOT NULL'')
+	END')
+END
 GO

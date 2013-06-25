@@ -41,31 +41,42 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Services
         public virtual IList<ShippingByWeightRecord> GetAll()
         {
             var query = from sbw in _sbwRepository.Table
-                        orderby sbw.CountryId, sbw.ShippingMethodId, sbw.From
+						orderby sbw.StoreId, sbw.CountryId, sbw.ShippingMethodId, sbw.From
                         select sbw;
             var records = query.ToList();
             return records;
         }
 
-        public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int countryId, decimal weight)
+		public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight)
         {
             var query = from sbw in _sbwRepository.Table
                         where sbw.ShippingMethodId == shippingMethodId && weight >= sbw.From && weight <= sbw.To
-                        orderby sbw.CountryId, sbw.ShippingMethodId, sbw.From
+						orderby sbw.StoreId, sbw.CountryId, sbw.ShippingMethodId, sbw.From
                         select sbw;
 
             var existingRecords = query.ToList();
 
-            //filter by country
-            foreach (var sbw in existingRecords)
-                if (countryId == sbw.CountryId)
-                    return sbw;
+			//filter by store
+			var matchedByStore = new List<ShippingByWeightRecord>();
+			foreach (var sbw in existingRecords)
+				if (storeId == sbw.StoreId)
+					matchedByStore.Add(sbw);
+			if (matchedByStore.Count == 0)
+				foreach (var sbw in existingRecords)
+					if (sbw.StoreId == 0)
+						matchedByStore.Add(sbw);
 
-            foreach (var sbw in existingRecords)
-                if (sbw.CountryId == 0)
-                    return sbw;
+			//filter by country
+			var matchedByCountry = new List<ShippingByWeightRecord>();
+			foreach (var sbw in matchedByStore)
+				if (countryId == sbw.CountryId)
+					matchedByCountry.Add(sbw);
+			if (matchedByCountry.Count == 0)
+				foreach (var sbw in matchedByStore)
+					if (sbw.CountryId == 0)
+						matchedByCountry.Add(sbw);
 
-            return null;
+			return matchedByCountry.FirstOrDefault();
         }
 
         public virtual ShippingByWeightRecord GetById(int shippingByWeightRecordId)

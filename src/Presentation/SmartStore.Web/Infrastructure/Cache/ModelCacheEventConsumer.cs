@@ -17,7 +17,7 @@ using SmartStore.Services.Events;
 namespace SmartStore.Web.Infrastructure.Cache
 {
     /// <summary>
-    /// Model cache event consumer (used for caching presentation layer models)
+	/// Model cache event consumer (used for caching of presentation layer models)
     /// </summary>
     public partial class ModelCacheEventConsumer: 
         //languages
@@ -274,8 +274,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized product name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID
         /// </remarks>
-        public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "sm.pres.product.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "sm.pres.product.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string PRODUCT_DEFAULTPICTURE_PATTERN_KEY = "sm.pres.product.picture";
 
         /// <summary>
@@ -287,8 +288,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized category name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID/// 
         /// </remarks>
-        public const string CATEGORY_PICTURE_MODEL_KEY = "sm.pres.category.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string CATEGORY_PICTURE_MODEL_KEY = "sm.pres.category.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string CATEGORY_PICTURE_PATTERN_KEY = "sm.pres.category.picture";
 
         /// <summary>
@@ -300,8 +302,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized manufacturer name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID
         /// </remarks>
-        public const string MANUFACTURER_PICTURE_MODEL_KEY = "sm.pres.manufacturer.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string MANUFACTURER_PICTURE_MODEL_KEY = "sm.pres.manufacturer.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string MANUFACTURER_PICTURE_PATTERN_KEY = "sm.pres.manufacturer.picture";
 
         /// <summary>
@@ -314,9 +317,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {3} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {4} : language ID ("alt" and "title" can depend on localized product name)
         /// {5} : is connection SSL secured?
+		/// {6} : current store ID
 		/// codehint: sm-edit
         /// </remarks>
-        public const string CART_PICTURE_MODEL_KEY = "sm.pres.cart.picture-{0}-{1}-{2}-{3}-{4}-{5}";
+        public const string CART_PICTURE_MODEL_KEY = "sm.pres.cart.picture-{0}-{1}-{2}-{3}-{4}-{5}-{6}";
         public const string CART_PICTURE_PATTERN_KEY = "sm.pres.cart.picture";
 
         /// <summary>

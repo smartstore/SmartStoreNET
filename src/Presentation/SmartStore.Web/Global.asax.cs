@@ -12,7 +12,6 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
@@ -26,8 +25,6 @@ using StackExchange.Profiling.MVCHelpers;
 using SmartStore.Services.Events;
 using SmartStore.Core.Events;
 using System.Web;
-using System.Web.Http;
-using SmartStore.Web.Framework.WebApi.Routes;
 using dotless.Core.configuration;
 using SmartStore.Core.Domain.Themes;
 
@@ -179,6 +176,11 @@ namespace SmartStore.Web
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
+			//ignore static resources
+			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+			if (webHelper.IsStaticResource(this.Request))
+				return;
+
             if (DataSettingsHelper.DatabaseIsInstalled() && 
                 EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
@@ -193,6 +195,11 @@ namespace SmartStore.Web
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
+			//ignore static resources
+			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+			if (webHelper.IsStaticResource(this.Request))
+				return;
+
             if (DataSettingsHelper.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
                 //stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
@@ -233,6 +240,7 @@ namespace SmartStore.Web
             if (!DataSettingsHelper.DatabaseIsInstalled())
                 return;
 
+			//ignore static resources
             var webHelper = EngineContext.Current.Resolve<IWebHelper>();
             if (webHelper.IsStaticResource(this.Request))
                 return;

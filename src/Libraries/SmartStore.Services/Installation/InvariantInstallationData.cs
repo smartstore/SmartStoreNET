@@ -6020,7 +6020,6 @@ namespace SmartStore.Services.Installation
 			_productRepository.Table.Where(pt => pt.MetaTitle == "$25 Virtual Gift Card").FirstOrDefault().ProductTags.Add(productTagGift);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "$50 Virtual Gift Card").FirstOrDefault().ProductTags.Add(productTagGift);
 
-            productTagGift.ProductCount = 3;
             #endregion tag gift
 
             #region tag computer
@@ -6033,7 +6032,6 @@ namespace SmartStore.Services.Installation
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagComputer);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagComputer);
 
-            productTagComputer.ProductCount = 3;
             #endregion tag computer
 
             #region tag notebook
@@ -6044,7 +6042,6 @@ namespace SmartStore.Services.Installation
 
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagNotebook);
 
-            productTagNotebook.ProductCount = 1;
             #endregion productTagNotebook 
 
             #region tag compact
@@ -6055,7 +6052,6 @@ namespace SmartStore.Services.Installation
 
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagCompact);
 
-            productTagCompact.ProductCount = 1;
             #endregion productTagCompact 
 
             #region tag book
@@ -6072,7 +6068,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Fast Cars").FirstOrDefault().ProductTags.Add(productTagBook);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Motorcycle Adventures").FirstOrDefault().ProductTags.Add(productTagBook);
 
-            productTagBook.ProductCount = 7;
             #endregion tag book
 
             #region tag cooking
@@ -6084,7 +6079,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Überman: The novel").FirstOrDefault().ProductTags.Add(productTagCooking);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Best Grilling Recipes").FirstOrDefault().ProductTags.Add(productTagCooking);
 
-            productTagCooking.ProductCount = 2;
             #endregion tag cooking
 
             #region tag cars
@@ -6096,7 +6090,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "The Car Book").FirstOrDefault().ProductTags.Add(productTagCars);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Fast Cars").FirstOrDefault().ProductTags.Add(productTagCars);
 
-            productTagCars.ProductCount = 2;
             #endregion tag cars
 
             #region tag motorbikes
@@ -6108,7 +6101,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Fast Cars").FirstOrDefault().ProductTags.Add(productTagMotorbikes);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Motorcycle Adventures").FirstOrDefault().ProductTags.Add(productTagMotorbikes);
 
-            productTagMotorbikes.ProductCount = 2;
             #endregion tag motorbikes
 
             #region tag Intel
@@ -6121,7 +6113,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagIntel);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagIntel);
 
-            productTagIntel.ProductCount = 2;
             #endregion tag Intel
 
             #region tag Dell
@@ -6133,7 +6124,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagDell);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagDell);
 
-            productTagDell.ProductCount = 2;
             #endregion tag Dell
 
             #region tag iPhone
@@ -6144,7 +6134,6 @@ namespace SmartStore.Services.Installation
 
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Apple iPhone 5 32 GB").FirstOrDefault().ProductTags.Add(productTagIphone);
 
-            productTagIphone.ProductCount = 1;
             #endregion tag iPhone
 
             #region tag mp3
@@ -6156,7 +6145,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Antonio Vivaldi: spring").FirstOrDefault().ProductTags.Add(productTagMP3);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Ludwig van Beethoven: Für Elise").FirstOrDefault().ProductTags.Add(productTagMP3);
 
-            productTagMP3.ProductCount = 1;
             #endregion tag mp3
 
             #region tag download
@@ -6168,7 +6156,6 @@ namespace SmartStore.Services.Installation
             _productRepository.Table.Where(pt => pt.MetaTitle == "Antonio Vivaldi: spring").FirstOrDefault().ProductTags.Add(productTagDownload);
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Ludwig van Beethoven: Für Elise").FirstOrDefault().ProductTags.Add(productTagDownload);
 
-            productTagDownload.ProductCount = 2;
             #endregion tag download
 
             #region tag watches
@@ -6179,7 +6166,6 @@ namespace SmartStore.Services.Installation
 
 			_productRepository.Table.Where(pt => pt.MetaTitle == "Certina DS Podium Big Size").FirstOrDefault().ProductTags.Add(productTagWatches);
             
-            productTagDownload.ProductCount = 1;
             #endregion tag download
 
             var entities = new List<ProductTag>

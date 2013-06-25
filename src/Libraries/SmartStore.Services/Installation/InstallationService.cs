@@ -5420,18 +5420,13 @@ namespace SmartStore.Services.Installation
         {
             try
             {
-                var productTag = _productTagRepository.Table.Where(pt => pt.Name == tag).FirstOrDefault();
+				var productTag = _productTagRepository.Table.FirstOrDefault(pt => pt.Name == tag);
                 if (productTag == null)
                 {
                     productTag = new ProductTag()
                     {
-                        Name = tag,
-                        ProductCount = 1,
+                        Name = tag
                     };
-                }
-                else
-                {
-                    productTag.ProductCount++;
                 }
 				product.ProductTags.Add(productTag);
 				_productRepository.Update(product);

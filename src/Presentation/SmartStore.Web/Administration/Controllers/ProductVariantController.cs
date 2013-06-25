@@ -233,16 +233,6 @@ namespace SmartStore.Admin.Controllers
             model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes().Count;
         }
 
-        [NonAction]
-        protected void UpdateProductTagTotals(ProductVariant variant)
-        {
-            //we do not use variant.Product property because it's null when creating a new product variant
-            var product = _productService.GetProductById(variant.ProductId);
-            var productTags = product.ProductTags;
-            foreach (var productTag in productTags)
-                _productTagService.UpdateProductTagTotals(productTag);
-        }
-
         #endregion
 
         #region List / Create / Edit / Delete
@@ -302,10 +292,8 @@ namespace SmartStore.Admin.Controllers
                 _productService.UpdateHasDiscountsApplied(variant);
                 //update picture seo file name
                 UpdatePictureSeoNames(variant);
-                //update product tag totals
-                UpdateProductTagTotals(variant);
 
-                //activity log
+				//activity log
                 _customerActivityService.InsertActivity("AddNewProductVariant", _localizationService.GetResource("ActivityLog.AddNewProductVariant"), variant.Name);
 
                 SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Variants.Added"));
@@ -406,8 +394,6 @@ namespace SmartStore.Admin.Controllers
                 }
                 //update picture seo file name
                 UpdatePictureSeoNames(variant);
-                //update product tag totals
-                UpdateProductTagTotals(variant);
                 //back in stock notifications
                 if (variant.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
                     variant.BackorderMode == BackorderMode.NoBackorders &&
@@ -450,8 +436,6 @@ namespace SmartStore.Admin.Controllers
 
             var productId = variant.ProductId;
             _productService.DeleteProductVariant(variant);
-            //update product tag totals
-            UpdateProductTagTotals(variant);
 
             //activity log
             _customerActivityService.InsertActivity("DeleteProductVariant", _localizationService.GetResource("ActivityLog.DeleteProductVariant"), variant.Name);

@@ -1692,3 +1692,10 @@ GO
 
 ALTER TABLE [BlogPost] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
+
+--do not store product tag count
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductTag]') and NAME='ProductCount')
+BEGIN
+	ALTER TABLE [ProductTag] DROP COLUMN [ProductCount]
+END
+GO

@@ -47,7 +47,6 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IProductTagService _productTagService;
         private readonly ILanguageService _languageService;
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
@@ -81,7 +80,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
         /// <param name="productAttributeService">Product attribute service</param>
         /// <param name="productAttributeParser">Product attribute parser service</param>
-        /// <param name="productTagService">Product tag service</param>
         /// <param name="languageService">Language service</param>
         /// <param name="workflowMessageService">Workflow message service</param>
         /// <param name="dataProvider">Data provider</param>
@@ -105,7 +103,6 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-            IProductTagService productTagService,
             ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider, IDbContext dbContext,
@@ -128,7 +125,6 @@ namespace SmartStore.Services.Catalog
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
-            this._productTagService = productTagService;
             this._languageService = languageService;
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
@@ -1118,7 +1114,6 @@ namespace SmartStore.Services.Catalog
                         productVariant.StockQuantity = newStockQuantity;
                         productVariant.DisableBuyButton = newDisableBuyButton;
                         productVariant.DisableWishlistButton = newDisableWishlistButton;
-                        bool isPublishedChanged = productVariant.Published != newPublished;
                         productVariant.Published = newPublished;
                         UpdateProductVariant(productVariant);
 
@@ -1144,15 +1139,6 @@ namespace SmartStore.Services.Catalog
                                 product.Published = false;
                                 UpdateProduct(product);
                             }
-                        }
-
-                        //update product tag totals (if published flag has been changed)
-                        if (isPublishedChanged)
-                        {
-                            var product = productVariant.Product;
-                            var productTags = product.ProductTags;
-                            foreach (var productTag in productTags)
-                                _productTagService.UpdateProductTagTotals(productTag);
                         }
                     }
                     break;

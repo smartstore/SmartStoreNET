@@ -239,8 +239,7 @@ namespace SmartStore.Data.Tests.Catalog
                 (
                     new ProductTag
                     {
-                        Name = "Tag name 1",
-                        ProductCount = 1
+                        Name = "Tag name 1"
                     }
                 );
             var fromDb = SaveAndLoadEntity(product);

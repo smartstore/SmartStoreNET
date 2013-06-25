@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Core.Domain.Blogs;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -32,7 +31,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly AdminAreaSettings _adminAreaSettings;
 
         #endregion
 
@@ -42,8 +40,7 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper, ICustomerContentService customerContentService,
             ILocalizationService localizationService, IPermissionService permissionService,
             IUrlRecordService urlRecordService,
-			IStoreService storeService, IStoreMappingService storeMappingService,
-			AdminAreaSettings adminAreaSettings)
+			IStoreService storeService, IStoreMappingService storeMappingService)
         {
             this._blogService = blogService;
             this._languageService = languageService;
@@ -54,7 +51,6 @@ namespace SmartStore.Admin.Controllers
             this._urlRecordService = urlRecordService;
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
-            this._adminAreaSettings = adminAreaSettings;
 		}
 
 		#endregion 

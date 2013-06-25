@@ -6,7 +6,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Events;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Customers;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Localization

@@ -87,7 +87,8 @@
                 nextButton: true,
                 prevButton: true,
                 animateStartingFrameIn: true,
-                transitionThreshold: 500
+                transitionThreshold: 500,
+                bgSlide: '@(GetThemeVariable("SliderBgSlide", "on"))' // off | on | opposite
             };
 
             sequence = $("#slider").sequence(options).data("sequence");

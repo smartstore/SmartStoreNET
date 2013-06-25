@@ -111,7 +111,7 @@ namespace SmartStore.Admin.Controllers
                     Version = manifest.Version,
                     IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,
-                    PreviewImageUrl = manifest.PreviewImageUrl,
+                    PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
                     IsActive = manifest.MobileTheme ? _themeSettings.DefaultMobileTheme == manifest.ThemeName : _themeSettings.DefaultDesktopTheme == manifest.ThemeName
                 };
 

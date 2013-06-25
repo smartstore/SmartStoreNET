@@ -1,6 +1,6 @@
 SmartStore.NET
 Copyright 1999-2013 SmartStore AG
-http://www.smartstore.com
+http://www.smartstore.com | http://smartstore.codeplex.com
 
 
 SmartStore.NET is a derivation of the ASP.NET open source e-commerce solution 

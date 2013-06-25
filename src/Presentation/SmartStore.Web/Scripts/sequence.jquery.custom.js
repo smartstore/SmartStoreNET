@@ -39,23 +39,33 @@
                 nav.find(':nth-child(' + sequence.nextFrameID + ')').addClass("active");
             }
 
+            var s = sequence.settings.bgSlide || "on";
 
-            var bgincrement = 50;
-            var bgpositer = 0;
-            var parallaxBgContainer = (!_.isString(parallaxBgSelector) ? sequence.container : sequence.container.closest(parallaxBgSelector));
-            parallaxBgContainer.css('background-position', '0 50%');
-            sequence.beforeCurrentFrameAnimatesOut = function () {
-                sequence.direction === 1 ? --bgpositer : ++bgpositer
-                if (Modernizr.csstransitions) {
-                    parallaxBgContainer.css('background-position-x', bgpositer * bgincrement + '%');
-                }
-                else {
-                    // IE9 & others
-                    parallaxBgContainer.stop().animate(
-                        { 'background-position': '{0}={1}% +=0%'.format(sequence.direction === 1 ? "+" : "-", bgincrement) },
-                        { duration: sequence.settings.transitionThreshold, easing: "easeInOutQuad" });
-                }
-            };
+            if (s === 'on' || s === 'opposite') {
+                var bgincrement = 50;
+                var bgpositer = 0;
+                var parallaxBgContainer = (!_.isString(parallaxBgSelector) ? sequence.container : sequence.container.closest(parallaxBgSelector));
+
+                sequence.beforeCurrentFrameAnimatesOut = function () {
+                    sequence.direction === 1
+                        ? (s == 'opposite' ? --bgpositer : ++bgpositer)
+                        : (s == 'opposite' ? ++bgpositer : --bgpositer);
+                    if (Modernizr.csstransitions) {
+                        parallaxBgContainer.css('background-position-x', bgpositer * bgincrement + '%');
+                    }
+                    else {
+                        // IE9 & others
+                        parallaxBgContainer.stop().animate(
+                            {
+                                'background-position': '{0}={1}% +=0%'.format(sequence.direction === 1
+                                  ? (s == 'opposite' ? "-" : "+")
+                                  : (s == 'opposite' ? "+" : "-"),
+                                  bgincrement)
+                            },
+                            { duration: sequence.settings.transitionThreshold / 2, easing: "easeInOutQuad" });
+                    }
+                };
+            }
 
         }
 

@@ -114,6 +114,11 @@ set @resources='
 	<T>Raster</T>
   </LocaleResource>
   
+  <LocaleResource Name="ThemeVar.Alpha.SliderBgSlide">
+    <Value>Background slide behaviour</Value>
+	<T>Hintergrund slide Verhalten</T>
+  </LocaleResource>
+  
 </Language>
 '
 

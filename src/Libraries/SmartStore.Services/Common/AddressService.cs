@@ -216,6 +216,11 @@ namespace SmartStore.Services.Common
                 }
             }
 
+			if (_addressSettings.CityEnabled &&
+				_addressSettings.CityRequired &&
+				String.IsNullOrWhiteSpace(address.City))
+				return false;
+
             if (_addressSettings.PhoneEnabled &&
                 _addressSettings.PhoneRequired &&
                 String.IsNullOrWhiteSpace(address.PhoneNumber))

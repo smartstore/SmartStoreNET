@@ -7,6 +7,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Payments.CashOnDelivery.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Plugin.Payments.CashOnDelivery
@@ -17,9 +18,11 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
     public class CashOnDeliveryPaymentProcessor : BasePlugin, IPaymentMethod
     {
         #region Fields
+
         private readonly CashOnDeliveryPaymentSettings _cashOnDeliveryPaymentSettings;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 
         #endregion
 
@@ -27,11 +30,13 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
 
         public CashOnDeliveryPaymentProcessor(CashOnDeliveryPaymentSettings cashOnDeliveryPaymentSettings,
             ISettingService settingService,
+			IOrderTotalCalculationService orderTotalCalculationService,
             ILocalizationService localizationService)
         {
             this._cashOnDeliveryPaymentSettings = cashOnDeliveryPaymentSettings;
             this._settingService = settingService;
-            _localizationService = localizationService;
+			this._orderTotalCalculationService = orderTotalCalculationService;
+            this._localizationService = localizationService;
         }
 
         #endregion
@@ -66,7 +71,9 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
         /// <returns>Additional handling fee</returns>
         public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
-            return _cashOnDeliveryPaymentSettings.AdditionalFee;
+			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
+				_cashOnDeliveryPaymentSettings.AdditionalFee, _cashOnDeliveryPaymentSettings.AdditionalFeePercentage);
+			return result;
         }
 
         /// <summary>

@@ -12,5 +12,8 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Models
 
         [SmartResourceDisplayName("Plugins.Payment.CashOnDelivery.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payment.CashOnDelivery.AdditionalFeePercentage")]
+		public bool AdditionalFeePercentage { get; set; }
     }
 }

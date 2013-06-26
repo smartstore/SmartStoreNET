@@ -21,7 +21,13 @@
   <LocaleResource Name="AdditionalFee.Hint">
     <Value>Bestimmt die Gebühr die dem Kunden für die Nutzung dieser Zahlart berechnet wird.</Value>
   </LocaleResource>
-  <LocaleResource Name="PaymentInfoDescription">
+	<LocaleResource Name="AdditionalFeePercentage">
+		<Value>Zusätzliche Gebühren (prozentual)</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFeePercentage.Hint">
+		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentInfoDescription">
     <Value>
       <![CDATA[
         <p>Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.

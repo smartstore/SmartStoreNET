@@ -1,36 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Plugin.Payments.DirectDebit.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
 {
     public class PaymentDirectDebitController : PaymentControllerBase
     {
+		private readonly IWorkContext _workContext;
+		private readonly IStoreService _storeService;
+		private readonly IStoreContext _storeContext;
         private readonly ISettingService _settingService;
-        private readonly DirectDebitPaymentSettings _directDebitPaymentSettings;
         private readonly ILocalizationService _localizationService;
 
-        public PaymentDirectDebitController(ISettingService settingService, 
-            DirectDebitPaymentSettings directDebitPaymentSettings,
+		public PaymentDirectDebitController(IWorkContext workContext,
+			IStoreService storeService,
+			IStoreContext storeContext,
+			ISettingService settingService, 
             ILocalizationService localizationService)
         {
+			this._workContext = workContext;
+			this._storeService = storeService;
+			this._storeContext = storeContext;
             this._settingService = settingService;
-            this._directDebitPaymentSettings = directDebitPaymentSettings;
-            _localizationService = localizationService;
+            this._localizationService = localizationService;
         }
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var directDebitPaymentSettings = _settingService.LoadSetting<DirectDebitPaymentSettings>(storeScope);
+
             var model = new ConfigurationModel();
-            model.DescriptionText = _directDebitPaymentSettings.DescriptionText;
-            model.AdditionalFee = _directDebitPaymentSettings.AdditionalFee;
+            model.DescriptionText = directDebitPaymentSettings.DescriptionText;
+            model.AdditionalFee = directDebitPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = directDebitPaymentSettings.AdditionalFeePercentage;
+
+			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettings.GetOverrideKeys(directDebitPaymentSettings, model, storeScope, _settingService);
             
             return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
         }
@@ -38,15 +55,25 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
-            
+
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var directDebitPaymentSettings = _settingService.LoadSetting<DirectDebitPaymentSettings>(storeScope);
+
             //save settings
-            _directDebitPaymentSettings.DescriptionText = model.DescriptionText;
-            _directDebitPaymentSettings.AdditionalFee = model.AdditionalFee;
-            _settingService.SaveSetting(_directDebitPaymentSettings);
+            directDebitPaymentSettings.DescriptionText = model.DescriptionText;
+            directDebitPaymentSettings.AdditionalFee = model.AdditionalFee;
+			directDebitPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+
+			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettings.UpdateSettings(directDebitPaymentSettings, form, storeScope, _settingService);
+
+			//now clear settings cache
+			_settingService.ClearCache();
             
             return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
         }
@@ -54,16 +81,17 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-            var model = new PaymentInfoModel();
+			var directDebitPaymentSettings = _settingService.LoadSetting<DirectDebitPaymentSettings>(_storeContext.CurrentStore.Id);
 
-            string desc = _directDebitPaymentSettings.DescriptionText;
+            var model = new PaymentInfoModel();
+            string desc = directDebitPaymentSettings.DescriptionText;
 
             if( desc.StartsWith("@") )
             {
                 model.DescriptionText = _localizationService.GetResource(desc.Substring(1));
             } 
             else  {
-                model.DescriptionText = _directDebitPaymentSettings.DescriptionText;
+                model.DescriptionText = directDebitPaymentSettings.DescriptionText;
             }
 
             return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.PaymentInfo", model);

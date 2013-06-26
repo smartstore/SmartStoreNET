@@ -583,7 +583,16 @@ set @resources='
   <LocaleResource Name="Plugins.Payment.CashOnDelivery.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
     <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
-  </LocaleResource>  
+  </LocaleResource>
+  
+  <LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage">
+    <Value>Additional fee. Use percentage</Value>
+    <T>Zusätzliche Gebühren (prozentual)</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage.Hint">
+    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+  </LocaleResource>
   
 </Language>
 '

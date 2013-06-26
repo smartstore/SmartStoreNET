@@ -3,6 +3,7 @@
 }
 @model SmartStore.Plugin.Payments.DirectDebit.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 @using (Html.BeginForm())
 {
     <table class="adminContent">
@@ -11,7 +12,8 @@
                 @Html.SmartLabelFor(model => model.DescriptionText)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => Model.DescriptionText, new { style = "Width: 550px; Height: 350px;" })
+				@Html.SettingOverrideCheckbox(model => model.DescriptionText)
+                @Html.TextAreaFor(model => model.DescriptionText, new { style = "Width: 550px; Height: 350px;" })
                 @Html.ValidationMessageFor(model => model.DescriptionText)
             </td>
         </tr>
@@ -20,8 +22,17 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
         </tr>
         <tr>

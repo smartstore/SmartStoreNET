@@ -13,5 +13,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Models
         [SmartResourceDisplayName("Plugins.Payment.DirectDebit.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payment.DirectDebit.AdditionalFeePercentage")]
+		public bool AdditionalFeePercentage { get; set; }
     }
 }

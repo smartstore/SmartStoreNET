@@ -7,6 +7,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Payments.Invoice.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Plugin.Payments.Invoice
@@ -17,8 +18,10 @@ namespace SmartStore.Plugin.Payments.Invoice
     public class InvoicePaymentProcessor : BasePlugin, IPaymentMethod
     {
         #region Fields
+
         private readonly InvoicePaymentSettings _invoicePaymentSettings;
         private readonly ISettingService _settingService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ILocalizationService _localizationService;
 
         #endregion
@@ -27,11 +30,13 @@ namespace SmartStore.Plugin.Payments.Invoice
 
         public InvoicePaymentProcessor(InvoicePaymentSettings invoicePaymentSettings,
             ISettingService settingService,
+			IOrderTotalCalculationService orderTotalCalculationService,
             ILocalizationService localizationService)
         {
             this._invoicePaymentSettings = invoicePaymentSettings;
             this._settingService = settingService;
-            _localizationService = localizationService;
+			this._orderTotalCalculationService = orderTotalCalculationService;
+            this._localizationService = localizationService;
         }
 
         #endregion
@@ -66,7 +71,9 @@ namespace SmartStore.Plugin.Payments.Invoice
         /// <returns>Additional handling fee</returns>
         public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
-            return _invoicePaymentSettings.AdditionalFee;
+			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
+				_invoicePaymentSettings.AdditionalFee, _invoicePaymentSettings.AdditionalFeePercentage);
+			return result;
         }
 
         /// <summary>

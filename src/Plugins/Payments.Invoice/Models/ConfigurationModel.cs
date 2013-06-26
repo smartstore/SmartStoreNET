@@ -12,5 +12,8 @@ namespace SmartStore.Plugin.Payments.Invoice.Models
 
         [SmartResourceDisplayName("Plugins.Payment.Invoice.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payment.Invoice.AdditionalFeePercentage")]
+		public bool AdditionalFeePercentage { get; set; }
     }
 }

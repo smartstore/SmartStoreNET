@@ -51,7 +51,13 @@
                         ? (s == 'opposite' ? --bgpositer : ++bgpositer)
                         : (s == 'opposite' ? ++bgpositer : --bgpositer);
                     if (Modernizr.csstransitions) {
-                        parallaxBgContainer.css('background-position-x', bgpositer * bgincrement + '%');
+                        var el = parallaxBgContainer[0];
+                        if (el && el.style && el.style.backgroundPositionX) {
+                            parallaxBgContainer.css('background-position-x', bgpositer * bgincrement + '%');
+                        }
+                        else {
+                            parallaxBgContainer.css('background-position', '{0} {1}'.format(bgpositer * bgincrement + '%', '50%'));
+                        }
                     }
                     else {
                         // IE9 & others

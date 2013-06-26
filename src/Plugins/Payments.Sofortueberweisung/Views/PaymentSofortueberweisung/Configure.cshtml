@@ -8,6 +8,7 @@
 }
 @model ConfigurationModel
 
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 @using (Html.BeginForm()) {
 	<table class="adminContent">
     <tr>
@@ -32,7 +33,7 @@
             @Html.SmartLabelFor(model => model.ApiConfigKey)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.ApiConfigKey)
+            @Html.SettingEditorFor(model => model.ApiConfigKey)
             @Html.ValidationMessageFor(model => model.ApiConfigKey)
         </td>
     </tr>
@@ -41,7 +42,7 @@
             @Html.SmartLabelFor(model => model.AdditionalFee)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.AdditionalFee)
+            @Html.SettingEditorFor(model => model.AdditionalFee)
             @Html.ValidationMessageFor(model => model.AdditionalFee)
         </td>
     </tr>
@@ -50,7 +51,7 @@
             @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.AdditionalFeePercentage)
+            @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
             @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
         </td>
     </tr>
@@ -59,7 +60,7 @@
             @Html.SmartLabelFor(model => model.ValidateOrderTotal)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.ValidateOrderTotal)
+            @Html.SettingEditorFor(model => model.ValidateOrderTotal)
             @Html.ValidationMessageFor(model => model.ValidateOrderTotal)
         </td>
     </tr>
@@ -68,7 +69,7 @@
             @Html.SmartLabelFor(model => model.SaveWarnings)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.SaveWarnings)
+            @Html.SettingEditorFor(model => model.SaveWarnings)
             @Html.ValidationMessageFor(model => model.SaveWarnings)
         </td>
     </tr>
@@ -77,7 +78,7 @@
             @Html.SmartLabelFor(model => model.CustomerProtection)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.CustomerProtection)
+            @Html.SettingEditorFor(model => model.CustomerProtection)
             @Html.ValidationMessageFor(model => model.CustomerProtection)
         </td>
     </tr>
@@ -86,7 +87,7 @@
             @Html.SmartLabelFor(model => model.UseTestAccount)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.UseTestAccount)
+            @Html.SettingEditorFor(model => model.UseTestAccount)
             @Html.ValidationMessageFor(model => model.UseTestAccount)
         </td>
     </tr>
@@ -95,7 +96,7 @@
             @Html.SmartLabelFor(model => model.AccountHolder)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.AccountHolder)
+            @Html.SettingEditorFor(model => model.AccountHolder)
             @Html.ValidationMessageFor(model => model.AccountHolder)
         </td>
     </tr>
@@ -104,7 +105,7 @@
             @Html.SmartLabelFor(model => model.AccountNumber)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.AccountNumber)
+            @Html.SettingEditorFor(model => model.AccountNumber)
             @Html.ValidationMessageFor(model => model.AccountNumber)
         </td>
     </tr>
@@ -113,7 +114,7 @@
             @Html.SmartLabelFor(model => model.AccountBankCode)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.AccountBankCode)
+            @Html.SettingEditorFor(model => model.AccountBankCode)
             @Html.ValidationMessageFor(model => model.AccountBankCode)
         </td>
     </tr>
@@ -122,6 +123,7 @@
             @Html.SmartLabelFor(model => model.AccountCountry)
         </td>
         <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AccountCountry)
 			@Html.DropDownList("AccountCountry", new List<SelectListItem> {
 				new SelectListItem { Selected = true, Text = @T("Plugins.Payments.Sofortueberweisung.Germany"), Value = "DE" }
 			})

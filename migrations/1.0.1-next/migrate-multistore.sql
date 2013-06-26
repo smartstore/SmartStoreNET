@@ -585,7 +585,6 @@ set @resources='
     <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
   </LocaleResource>  
   
-  
 </Language>
 '
 

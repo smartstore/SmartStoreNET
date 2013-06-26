@@ -68,7 +68,6 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
             cashOnDeliveryPaymentSettings.DescriptionText = model.DescriptionText;
             cashOnDeliveryPaymentSettings.AdditionalFee = model.AdditionalFee;
 			cashOnDeliveryPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-            _settingService.SaveSetting(cashOnDeliveryPaymentSettings);
 
 			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
 			storeDependingSettings.UpdateSettings(cashOnDeliveryPaymentSettings, form, storeScope, _settingService);

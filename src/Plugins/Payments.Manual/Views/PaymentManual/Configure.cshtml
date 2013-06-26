@@ -3,15 +3,18 @@
 }
 @model SmartStore.Plugin.Payments.Manual.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 @using (Html.BeginForm())
 {
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TransactModeValues)
+                @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-                @Html.DropDownList("TransactModeId", Model.TransactModeValues)
+				@Html.SettingOverrideCheckbox(model => model.TransactMode)
+                @Html.DropDownList("TransactMode", Model.TransactModeValues)
             </td>
         </tr>
         <tr>
@@ -19,7 +22,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>
@@ -28,7 +31,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
                 @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
         </tr>

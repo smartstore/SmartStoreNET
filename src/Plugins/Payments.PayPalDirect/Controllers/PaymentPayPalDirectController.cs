@@ -15,36 +15,44 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 {
 	public class PaymentPayPalDirectController : PaymentControllerBase
 	{
 		private readonly PluginHelperBase _helper;
+		private readonly IWorkContext _workContext;
+		private readonly IStoreService _storeService;
 		private readonly ISettingService _settingService;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly ILogger _logger;
-		private readonly PayPalDirectPaymentSettings _paypalDirectPaymentSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
 
-		public PaymentPayPalDirectController(ISettingService settingService,
-			IPaymentService paymentService, IOrderService orderService,
+		public PaymentPayPalDirectController(IWorkContext workContext,
+			IStoreService storeService, 
+			ISettingService settingService,
+			IPaymentService paymentService,
+			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
-			ILogger logger, PayPalDirectPaymentSettings paypalDirectPaymentSettings,
-			PaymentSettings paymentSettings, ILocalizationService localizationService)
+			ILogger logger, 
+			PaymentSettings paymentSettings,
+			ILocalizationService localizationService)
 		{
+			this._workContext = workContext;
+			this._storeService = storeService;
 			this._settingService = settingService;
 			this._paymentService = paymentService;
 			this._orderService = orderService;
 			this._orderProcessingService = orderProcessingService;
 			this._logger = logger;
-			this._paypalDirectPaymentSettings = paypalDirectPaymentSettings;
 			this._paymentSettings = paymentSettings;
 			this._localizationService = localizationService;
 
@@ -61,19 +69,27 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure() {
+		public ActionResult Configure() 
+		{
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var paypalDirectPaymentSettings = _settingService.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+
 			var model = new ConfigurationModel();
-			model.UseSandbox = _paypalDirectPaymentSettings.UseSandbox;
-			model.TransactModeId = Convert.ToInt32(_paypalDirectPaymentSettings.TransactMode);
-			model.ApiAccountName = _paypalDirectPaymentSettings.ApiAccountName;
-			model.ApiAccountPassword = _paypalDirectPaymentSettings.ApiAccountPassword;
-			model.Signature = _paypalDirectPaymentSettings.Signature;
-			model.AdditionalFee = _paypalDirectPaymentSettings.AdditionalFee;
-			model.AdditionalFeePercentage = _paypalDirectPaymentSettings.AdditionalFeePercentage;
+			model.UseSandbox = paypalDirectPaymentSettings.UseSandbox;
+			model.TransactMode = Convert.ToInt32(paypalDirectPaymentSettings.TransactMode);
+			model.ApiAccountName = paypalDirectPaymentSettings.ApiAccountName;
+			model.ApiAccountPassword = paypalDirectPaymentSettings.ApiAccountPassword;
+			model.Signature = paypalDirectPaymentSettings.Signature;
+			model.AdditionalFee = paypalDirectPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = paypalDirectPaymentSettings.AdditionalFeePercentage;
 
 			// codehint: sm-edit
 			//model.TransactModeValues = _paypalDirectPaymentSettings.TransactMode.ToSelectList();
-			model.TransactModeValues = TransactModeValues(_paypalDirectPaymentSettings.TransactMode);
+			model.TransactModeValues = TransactModeValues(paypalDirectPaymentSettings.TransactMode);
+
+			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettings.GetOverrideKeys(paypalDirectPaymentSettings, model, storeScope, _settingService);
 
 			return View("SmartStore.Plugin.Payments.PayPalDirect.Views.PaymentPayPalDirect.Configure", model);
 		}
@@ -81,23 +97,33 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 		[HttpPost]
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure(ConfigurationModel model) {
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		{
 			if (!ModelState.IsValid)
 				return Configure();
 
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var paypalDirectPaymentSettings = _settingService.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+
 			//save settings
-			_paypalDirectPaymentSettings.UseSandbox = model.UseSandbox;
-			_paypalDirectPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
-			_paypalDirectPaymentSettings.ApiAccountName = model.ApiAccountName;
-			_paypalDirectPaymentSettings.ApiAccountPassword = model.ApiAccountPassword;
-			_paypalDirectPaymentSettings.Signature = model.Signature;
-			_paypalDirectPaymentSettings.AdditionalFee = model.AdditionalFee;
-			_paypalDirectPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-			_settingService.SaveSetting(_paypalDirectPaymentSettings);
+			paypalDirectPaymentSettings.UseSandbox = model.UseSandbox;
+			paypalDirectPaymentSettings.TransactMode = (TransactMode)model.TransactMode;
+			paypalDirectPaymentSettings.ApiAccountName = model.ApiAccountName;
+			paypalDirectPaymentSettings.ApiAccountPassword = model.ApiAccountPassword;
+			paypalDirectPaymentSettings.Signature = model.Signature;
+			paypalDirectPaymentSettings.AdditionalFee = model.AdditionalFee;
+			paypalDirectPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 
 			// codehint: sm-edit
 			//model.TransactModeValues = _paypalDirectPaymentSettings.TransactMode.ToSelectList();
-			model.TransactModeValues = TransactModeValues(_paypalDirectPaymentSettings.TransactMode);
+			model.TransactModeValues = TransactModeValues(paypalDirectPaymentSettings.TransactMode);
+
+			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettings.UpdateSettings(paypalDirectPaymentSettings, form, storeScope, _settingService);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
 			return View("SmartStore.Plugin.Payments.PayPalDirect.Views.PaymentPayPalDirect.Configure", model);
 		}

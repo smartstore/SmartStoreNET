@@ -21,7 +21,12 @@
   <LocaleResource Name="AdditionalFee.Hint">
     <Value>Determines the additional fee.</Value>
   </LocaleResource>
-
+	<LocaleResource Name="AdditionalFeePercentage">
+		<Value>Additional fee. Use percentage</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFeePercentage.Hint">
+		<Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+	</LocaleResource>
   <LocaleResource Name="PaymentInfoDescription">
     <Value>
       <![CDATA[

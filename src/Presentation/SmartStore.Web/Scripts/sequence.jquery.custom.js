@@ -42,7 +42,7 @@
             var s = sequence.settings.bgSlide || "on";
 
             if (s === 'on' || s === 'opposite') {
-                var bgincrement = 50;
+                var bgincrement = _.isNumber(sequence.settings.bgSlideIncrement) ? sequence.settings.bgSlideIncrement : 50;
                 var bgpositer = 0;
                 var parallaxBgContainer = (!_.isString(parallaxBgSelector) ? sequence.container : sequence.container.closest(parallaxBgSelector));
 

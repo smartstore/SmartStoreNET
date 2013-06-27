@@ -12,7 +12,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 		/// </summary>
 		public void Execute() {
 			var googleService = EngineContext.Current.Resolve<IGoogleService>();
-			googleService.CreateFeed();
+			googleService.CreateFeed(true);
 		}
     }
 }

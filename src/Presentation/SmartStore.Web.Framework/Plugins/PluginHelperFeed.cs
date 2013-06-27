@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Html;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.Mvc;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -29,8 +26,8 @@ namespace SmartStore.Web.Framework.Plugins
 		private Func<PromotionFeedSettings> _settingsFunc;
 
 		public PluginHelperFeed(string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) : 
-			base(systemName) {
-
+			base(systemName)
+		{
 			_namespace = rootNamespace;
 			_settingsFunc = settings;
 		}
@@ -234,15 +231,21 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return "";
 		}
-		public string ProductDetailUrl(Store store, Product product) {
+		public string ProductDetailUrl(Store store, Product product)
+		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
 		}
-		public GeneratedFeedFile FeedFileByStore(Store store, string storeLocation, string secondFileName = null)
+		public GeneratedFeedFile FeedFileByStore(Store store, string secondFileName = null)
 		{
 			if (store != null)
 			{
 				string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
-				string url = "{0}content/files/exportimport/{1}_".FormatWith(storeLocation ?? StoreLocation, store.Id);
+				string fname = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+
+				string url = "{0}content/files/exportimport/".FormatWith(store.Url.EnsureEndsWith("/"));
+
+				if (!(url.StartsWith("http://") || url.StartsWith("https://")))
+					url = "http://" + url;
 
 				if (!Directory.Exists(dir))
 					Directory.CreateDirectory(dir);
@@ -250,8 +253,8 @@ namespace SmartStore.Web.Framework.Plugins
 				var feedFile = new GeneratedFeedFile()
 				{
 					StoreName = store.Name,
-					FilePath = Path.Combine(dir, store.Id + "_" + BaseSettings.StaticFileName),
-					FileUrl = url + BaseSettings.StaticFileName
+					FilePath = Path.Combine(dir, fname),
+					FileUrl = url + fname
 				};
 
 				if (secondFileName.HasValue())
@@ -266,23 +269,21 @@ namespace SmartStore.Web.Framework.Plugins
 		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null)
 		{
 			var lst = new List<GeneratedFeedFile>();
-			var storeLocation = StoreLocation;
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store, storeLocation, secondFileName);
+				var feedFile = FeedFileByStore(store, secondFileName);
 
 				if (feedFile != null && File.Exists(feedFile.FilePath))
 					lst.Add(feedFile);
 			}
 			return lst;
 		}
-		public void StartCreatingFeeds(IStoreService storeService, Func<FileStream, Store, bool> createFeed)
+		public void StartCreatingFeeds(IStoreService storeService, bool forAllStores, Func<FileStream, Store, bool> createFeed)
 		{
-			var storeLocation = StoreLocation;
 			var stores = new List<Store>();
 
-			if (BaseSettings.StoreId != 0)
+			if (!forAllStores && BaseSettings.StoreId != 0)
 			{
 				var storeById = storeService.GetStoreById(BaseSettings.StoreId);
 				if (storeById != null)
@@ -296,7 +297,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store, storeLocation);
+				var feedFile = FeedFileByStore(store);
 				if (feedFile != null)
 				{
 					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
@@ -308,7 +309,8 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public string MainProductImageUrl(Store store, Product product, ProductVariant variant) {
+		public string MainProductImageUrl(Store store, Product product, ProductVariant variant)
+		{
 			string url;
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			var picture = pictureService.GetPictureById(variant.PictureId);

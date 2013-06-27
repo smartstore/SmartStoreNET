@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Web.Mvc;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Plugin.Feed.ElmarShopinfo.Models;
@@ -14,7 +12,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		PluginHelperFeed Helper { get; }
 
 		void CreateFeed(Store store, GeneratedFeedFile feedFile, Stream streamCsv, Stream streamXml);
-		void CreateFeed();
+		void CreateFeed(bool forAllStores);
 		void SetupModel(FeedElmarShopinfoModel model, ScheduleTask task = null);
 	}
 }

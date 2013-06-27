@@ -4,7 +4,6 @@ using System.Xml;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Plugins;
 using System;
 using SmartStore.Core.Domain.Catalog;
@@ -12,16 +11,15 @@ using SmartStore.Core.Domain.Directory;
 using System.Globalization;
 using SmartStore.Plugin.Feed.ElmarShopinfo.Models;
 using SmartStore.Core.Domain.Tasks;
-using SmartStore.Core.Infrastructure;
-using System.Web;
 using System.Collections.Generic;
 using SmartStore.Core.Data;
 using SmartStore.Services.Payments;
 using System.Web.Mvc;
-using SmartStore.Core.Fakes;
-using System.Web.Routing;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Configuration;
+using SmartStore.Core.Domain;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 {
@@ -35,6 +33,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
 		private readonly IPaymentService _paymentService;
 		private readonly IStoreService _storeService;
+		private readonly ISettingService _settingService;
+		private readonly IPictureService _pictureService;
 
 		public ElmarShopinfoCoreService(
 			ElmarShopinfoSettings settings,
@@ -43,8 +43,10 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			ICategoryService categoryService,
 			IRepository<ProductCategory> productCategoryRepository,
 			IPaymentService paymentService, 
-			IStoreService storeService) {
-
+			IStoreService storeService,
+			ISettingService settingService,
+			IPictureService pictureService)
+		{
 			Settings = settings;
 			_productService = productService;
 			_manufacturerService = manufacturerService;
@@ -52,8 +54,11 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			_productCategoryRepository = productCategoryRepository;
 			_paymentService = paymentService;
 			_storeService = storeService;
+			_settingService = settingService;
+			_pictureService = pictureService;
 
-			_helper = new PluginHelperFeed("PromotionFeed.ElmarShopinfo", "SmartStore.Plugin.Feed.ElmarShopinfo", () => {
+			_helper = new PluginHelperFeed("PromotionFeed.ElmarShopinfo", "SmartStore.Plugin.Feed.ElmarShopinfo", () =>
+			{
 				return Settings as PromotionFeedSettings;
 			});
 		}
@@ -165,19 +170,22 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		}
 		private string CreateXml(Stream stream, Store store, GeneratedFeedFile feedFile, int productCount, IPagedList<Category> categories, bool hasGiftCards, Currency currency)
 		{
-			var xmlSettings = new XmlWriterSettings {
+			var xmlSettings = new XmlWriterSettings
+			{
 				Encoding = Encoding.GetEncoding("ISO-8859-1"),
 				Indent = true
 			};
 
-			using (var writer = XmlWriter.Create(stream, xmlSettings)) {
+			using (var writer = XmlWriter.Create(stream, xmlSettings))
+			{
 				writer.WriteStartDocument();
 				writer.WriteStartElement("osp", "Shop", "http://elektronischer-markt.de/schema");
 
 				writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
 				writer.WriteAttributeString("xsi", "schemaLocation", null, "http://elektronischer-markt.de/schema http://kuhlins.de/elmar/schema/shop.xsd");
 
-				writer.WriteNode("Common", () => {
+				writer.WriteNode("Common", () => 
+				{
 					writer.WriteElementString("Version", "1.1");
 					writer.WriteElementString("Language", Helper.Language.UniqueSeoCode.ToLower());
 					writer.WriteElementString("Currency", currency.CurrencyCode);
@@ -186,31 +194,41 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				writer.WriteCData("Name", store.Name);
 				writer.WriteCData("Url", store.Url);
 
-				writer.WriteNode("Requests", () => {
-					writer.WriteNode("OfflineRequest", () => {
-						writer.WriteNode("UpdateMethods", () => {
-							writer.WriteNode("DirectDownload", () => {
+				writer.WriteNode("Requests", () => 
+				{
+					writer.WriteNode("OfflineRequest", () => 
+					{
+						writer.WriteNode("UpdateMethods", () => 
+						{
+							writer.WriteNode("DirectDownload", () => 
+							{
 								writer.WriteAttributeString("day", Settings.UpdateDay);
 								writer.WriteAttributeString("from", Settings.UpdateHourFrom);
 								writer.WriteAttributeString("to", Settings.UpdateHourTo);
 							});
 						});
 
-						writer.WriteNode("Format", () => {
-							writer.WriteNode("Tabular", () => {
-								writer.WriteNode("CSV", () => {
+						writer.WriteNode("Format", () => 
+						{
+							writer.WriteNode("Tabular", () => 
+							{
+								writer.WriteNode("CSV", () => 
+								{
 									writer.WriteCData("Url", feedFile.FileUrl);
-									writer.WriteNode("Header", () => {
+									writer.WriteNode("Header", () => 
+									{
 										writer.WriteAttributeString("columns", (_captions.Count(c => c == ';') + 1).ToString());
 										writer.WriteCData(_captions);
 									});
-									writer.WriteNode("SpecialCharacters", () => {
+									writer.WriteNode("SpecialCharacters", () =>
+									{
 										writer.WriteAttributeString("delimiter", ";");
 										writer.WriteAttributeString("escaped", "\\");
 										writer.WriteAttributeString("quoted", "'");
 									});
 								});
-								writer.WriteNode("Mappings", () => {
+								writer.WriteNode("Mappings", () => 
+								{
 									WriteMapping(writer, 1, "Produktnummmer", "privateid");
 									WriteMapping(writer, 2, "Hersteller", "brand");
 									WriteMapping(writer, 3, "Verfuegbarkeit", "deliverable");
@@ -233,9 +251,13 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					});
 				});
 
-				writer.WriteCData("Logo", Helper.StoreLogoUrl);
+				var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(store.Id);
+				var logoUrl = _pictureService.GetPictureUrl(storeInformationSettings.LogoPictureId);
 
-				writer.WriteNode("Address", () => {
+				writer.WriteCData("Logo", logoUrl);
+
+				writer.WriteNode("Address", () => 
+				{
 					writer.WriteAttributeString("sale", Settings.BranchOffice ? "yes" : "no");
 					writer.WriteCData("Company", Settings.AddressName);
 					writer.WriteCData("Street", Settings.AddressStreet);
@@ -243,21 +265,28 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					writer.WriteCData("City", Settings.AddressCity);
 				});
 
-				writer.WriteNode("Contact", () => {
+				writer.WriteNode("Contact", () =>
+				{
 					writer.WriteCData("PublicMailAddress", Settings.PublicMail);
 					writer.WriteCData("PrivateMailAddress", Settings.PrivateMail);
-					if (Settings.OrderPhone.HasValue()) {
-						writer.WriteNode("OrderPhone", () => {
+					if (Settings.OrderPhone.HasValue()) 
+					{
+						writer.WriteNode("OrderPhone", () =>
+						{
 							writer.WriteCData("Number", Settings.OrderPhone);
 						});
 					}
-					if (Settings.OrderFax.HasValue()) {
-						writer.WriteNode("OrderFax", () => {
+					if (Settings.OrderFax.HasValue()) 
+					{
+						writer.WriteNode("OrderFax", () =>
+						{
 							writer.WriteCData("Number", Settings.OrderFax);
 						});
 					}
-					if (Settings.Hotline.HasValue()) {
-						writer.WriteNode("Hotline", () => {
+					if (Settings.Hotline.HasValue()) 
+					{
+						writer.WriteNode("Hotline", () => 
+						{
 							writer.WriteCData("Number", Settings.Hotline);
 							if (Settings.ExportHotlineCost)
 								writer.WriteElementString("CostPerMinute", Helper.DecimalUsFormat(Settings.HotlineCostPerMinute));
@@ -265,11 +294,14 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					}
 				});
 
-				writer.WriteNode("Categories", () => {
+				writer.WriteNode("Categories", () =>
+				{
 					writer.WriteElementString("TotalProductCount", productCount.ToString());
 
-					foreach (var item in categories.Where(c => c.PictureId > 0)) {
-						writer.WriteNode("Item", () => {
+					foreach (var item in categories.Where(c => c.PictureId > 0))
+					{
+						writer.WriteNode("Item", () =>
+						{
 							writer.WriteCData("Name", item.Name);
 							writer.WriteElementString("ProductCount", item.PictureId.ToString());
 							writer.WriteCData("Mapping", Settings.CategoryMapping);
@@ -277,23 +309,28 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					}
 				});
 
-				writer.WriteNode("Payment", () => {
+				writer.WriteNode("Payment", () =>
+				{
 					WritePayment(writer);
 				});
 
-				writer.WriteNode("ForwardExpenses", () => {
+				writer.WriteNode("ForwardExpenses", () =>
+				{
 					writer.WriteElementString("FlatRate", Helper.DecimalUsFormat(Settings.ShippingCost));
 				});
 
 				if (hasGiftCards) {
-					writer.WriteNode("Features", () => {
-						writer.WriteNode("GiftService", () => {
+					writer.WriteNode("Features", () =>
+					{
+						writer.WriteNode("GiftService", () =>
+						{
 							writer.WriteAttributeString("surcharge", "no");
 						});
 					});
 				}
 
-				writer.WriteNode("Technology", () => {
+				writer.WriteNode("Technology", () =>
+				{
 					writer.WriteElementString("SSL", null);
 					writer.WriteElementString("Search", null);
 				});
@@ -306,7 +343,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			return null;
 		}
 
-		public virtual void CreateFeed(Store store, GeneratedFeedFile feedFile, Stream streamCsv, Stream streamXml) {
+		public virtual void CreateFeed(Store store, GeneratedFeedFile feedFile, Stream streamCsv, Stream streamXml)
+		{
 			string breakingError = null;
 			int productCount = 0;
 			bool hasGiftCards = false;
@@ -324,7 +362,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 			var products = _productService.SearchProducts(ctx);
 
-			foreach (var item in categories) {
+			foreach (var item in categories)
+			{
 				item.PictureId = 0;		// we misuse that as counter
 			}
 
@@ -336,7 +375,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				}).ToList();
 
 
-			using (var writer = new StreamWriter(streamCsv, Encoding.Default)) {
+			using (var writer = new StreamWriter(streamCsv, Encoding.Default))
+			{
 				sb.Append(_captions);
 				writer.WriteLine(sb.ToString());
 
@@ -344,21 +384,26 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					var manufacturer = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
 					var variants = _productService.GetProductVariantsByProductId(product.Id, false);
 
-					foreach (var variant in variants.Where(v => v.Published)) {
-						try {
+					foreach (var variant in variants.Where(v => v.Published))
+					{
+						try
+						{
 							breakingError = WriteItem(writer, store, product, variant, manufacturer, currency, sb);
 							++productCount;
 
 							if (variant.IsGiftCard)
 								hasGiftCards = true;
 
-							foreach (var mapping in categoryMapping.Where(m => m.ProductID == product.Id)) {
-								if ((category = categories.FirstOrDefault(c => c.Id == mapping.CategoryID)) != null) {
+							foreach (var mapping in categoryMapping.Where(m => m.ProductID == product.Id))
+							{
+								if ((category = categories.FirstOrDefault(c => c.Id == mapping.CategoryID)) != null)
+								{
 									++category.PictureId;	// we misuse that as counter
 								}
 							}
 						}
-						catch (Exception exc) {
+						catch (Exception exc)
+						{
 							exc.Dump();
 						}
 
@@ -375,12 +420,11 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed()
+		public virtual void CreateFeed(bool forAllStores)
 		{
-			var storeLocation = Helper.StoreLocation;
 			var stores = new List<Store>();
 
-			if (Settings.StoreId != 0)
+			if (!forAllStores && Settings.StoreId != 0)
 			{
 				var storeById = _storeService.GetStoreById(Settings.StoreId);
 				if (storeById != null)
@@ -394,7 +438,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 			foreach (var store in stores)
 			{
-				var feedFile = Helper.FeedFileByStore(store, storeLocation, Settings.StaticFileNameXml);
+				var feedFile = Helper.FeedFileByStore(store, Settings.StaticFileNameXml);
 				if (feedFile != null)
 				{
 					using (var streamCsv = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))

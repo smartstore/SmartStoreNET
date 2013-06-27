@@ -362,19 +362,22 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return model;
 		}
-		public virtual void CreateFeed(Stream stream, Store store) {
+		public virtual void CreateFeed(Stream stream, Store store)
+		{
 			string breakingError = null;
-			var xmlSettings = new XmlWriterSettings {
+			var xmlSettings = new XmlWriterSettings
+			{
 				Encoding = Encoding.UTF8
 			};
 
-			using (var writer = XmlWriter.Create(stream, xmlSettings)) {
+			using (var writer = XmlWriter.Create(stream, xmlSettings))
+			{
 				writer.WriteStartDocument();
 				writer.WriteStartElement("rss");
 				writer.WriteAttributeString("version", "2.0");
 				writer.WriteAttributeString("xmlns", "g", null, _googleNamespace);
 				writer.WriteStartElement("channel");
-				writer.WriteElementString("title", string.Format("{0} - Feed for Google Merchant Center", Helper.StoreName));
+				writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(store.Name));
 				writer.WriteElementString("link", "http://base.google.com/base/");
 				writer.WriteElementString("description", "Information about products");
 
@@ -388,17 +391,21 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 				var products = _productService.SearchProducts(ctx);
 
-				foreach (var product in products) {
+				foreach (var product in products)
+				{
 					var manufacturer = _manufacturerService.GetProductManufacturersByProductId((product.Id)).FirstOrDefault();
 					var variants = _productService.GetProductVariantsByProductId(product.Id, false);
 
-					foreach (var variant in variants.Where(v => v.Published)) {
+					foreach (var variant in variants.Where(v => v.Published))
+					{
 						writer.WriteStartElement("item");
 
-						try {
+						try
+						{
 							breakingError = WriteItem(writer, store, product, variant, manufacturer, currency);
 						}
-						catch (Exception exc) {
+						catch (Exception exc)
+						{
 							exc.Dump();
 						}
 
@@ -419,14 +426,16 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed() {
-			Helper.StartCreatingFeeds(_storeService, (stream, store) =>
+		public virtual void CreateFeed(bool forAllStores)
+		{
+			Helper.StartCreatingFeeds(_storeService, forAllStores, (stream, store) =>
 			{
 				CreateFeed(stream, store);
 				return true;
 			});
 		}
-		public virtual void SetupModel(FeedFroogleModel model, ScheduleTask task = null) {
+		public virtual void SetupModel(FeedFroogleModel model, ScheduleTask task = null)
+		{
 			var stores = _storeService.GetAllStores().ToList();
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
@@ -437,7 +446,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
 			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
 
-			if (task != null) {
+			if (task != null)
+			{
 				model.GenerateStaticFileEachMinutes = task.Seconds / 60;
 				model.TaskEnabled = task.Enabled;
 			}

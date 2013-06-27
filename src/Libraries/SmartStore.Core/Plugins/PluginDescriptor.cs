@@ -17,6 +17,7 @@ namespace SmartStore.Core.Plugins
         public PluginDescriptor()
         {
             this.SupportedVersions = new List<string>();
+			this.LimitedToStores = new List<int>();
         }
 
         public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
@@ -142,6 +143,11 @@ namespace SmartStore.Core.Plugins
         /// Gets or sets the display order
         /// </summary>
         public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of store identifiers in which this plugin is available. If empty, then this plugin is available in all stores
+		/// </summary>
+		public IList<int> LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether plugin is installed

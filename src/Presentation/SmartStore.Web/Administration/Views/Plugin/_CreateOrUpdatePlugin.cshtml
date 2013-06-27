@@ -1,7 +1,10 @@
 ﻿@model PluginModel
 @using Telerik.Web.Mvc.UI;
+@using SmartStore.Web.Framework.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.SystemName)
+
 @if (ViewBag.RefreshPage == true)
 {
     <script type="text/javascript">
@@ -10,56 +13,122 @@
         window.close();
     </script>
 }
-@(Html.LocalizedEditor<PluginModel, PluginLocalizedModel>("plugin-localized",
-@<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Locales[item].FriendlyName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => Model.Locales[item].FriendlyName)
-            @Html.ValidationMessageFor(model => model.Locales[item].FriendlyName)
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-        </td>
-    </tr>
-</table>
-,
-@<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FriendlyName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.FriendlyName)
-            @Html.ValidationMessageFor(model => model.FriendlyName)
-        </td>
-    </tr>
-</table>
-))
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayOrder)
-            @Html.ValidationMessageFor(model => model.DisplayOrder)
-        </td>
-    </tr>
-    @if (Model.CanChangeEnabled)
-    {
+
+@Html.SmartStore().TabStrip().Name("plugin-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+{
+	x.Add().Text(T("Admin.Configuration.Plugins.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Configuration.Plugins.Stores").Text).Content(TabStores());
+
+    //generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "plugin-edit"));
+})
+
+@helper TabInfo()
+{
+	@(Html.LocalizedEditor<PluginModel, PluginLocalizedModel>("plugin-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].FriendlyName)
+				@Html.ValidationMessageFor(model => model.Locales[item].FriendlyName)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.FriendlyName)
+				@Html.ValidationMessageFor(model => model.FriendlyName)
+			</td>
+		</tr>
+	</table>
+	))
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+		@if (Model.CanChangeEnabled)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IsEnabled)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.IsEnabled)
+					@Html.ValidationMessageFor(model => model.IsEnabled)
+				</td>
+			</tr>
+		}
+	</table>
+}
+
+@helper TabStores()
+{
+    <script type="text/javascript">
+    	$(document).ready(function () {
+
+    		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
+        
+        	toggleStoreMapping();
+        });
+
+
+        function toggleStoreMapping() {
+        	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
+        		$('#pnl-available-stores').show();
+        	}
+        	else {
+        		$('#pnl-available-stores').hide();
+        	}
+        }
+
+    </script>
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IsEnabled)
+                @Html.SmartLabelFor(model => model.LimitedToStores):
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.IsEnabled)
-                @Html.ValidationMessageFor(model => model.IsEnabled)
+                @Html.EditorFor(model => model.LimitedToStores)
+                @Html.ValidationMessageFor(model => model.LimitedToStores)
             </td>
         </tr>
-    }
-</table>
+        <tr id="pnl-available-stores">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AvailableStores):
+            </td>
+            <td class="adminData">
+                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
+                {
+                    foreach (var store in Model.AvailableStores)
+                    {
+                    <div>
+                        <input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />@store.Name
+                    </div>
+                    }
+                }
+                else
+                {
+					<div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
+                }</td>
+        </tr>
+    </table>
+}

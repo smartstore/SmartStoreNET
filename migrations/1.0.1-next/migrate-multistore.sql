@@ -630,6 +630,31 @@ set @resources='
     <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores">
+    <Value>Limited to stores</Value>
+    <T>Auf Shop begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores.Hint">
+    <Value>Determines whether the plugin is available only at certain stores.</Value>
+    <T>Legt fest, ob das Plugin nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Fields.AvailableStores">
+    <Value>Stores</Value>
+    <T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Fields.AvailableStores.Hint">
+    <Value>Select stores for which the plugin will be used.</Value>
+    <T>Bitte Shops auswählen, für die das Plugin genutzt werden soll.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Stores">
+    <Value>Stores</Value>
+    <T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Info">
+    <Value>Plugin Info</Value>
+    <T>Plugin Info</T>
+  </LocaleResource>
+ 
 </Language>
 '
 

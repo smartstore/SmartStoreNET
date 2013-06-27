@@ -96,10 +96,11 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Load active shipping rate computation methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping rate computation methods</returns>
-        public virtual IList<IShippingRateComputationMethod> LoadActiveShippingRateComputationMethods()
+		public virtual IList<IShippingRateComputationMethod> LoadActiveShippingRateComputationMethods(int storeId = 0)
         {
-            return LoadAllShippingRateComputationMethods()
+            return LoadAllShippingRateComputationMethods(storeId)
                    .Where(provider => _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(provider.PluginDescriptor.SystemName, StringComparer.InvariantCultureIgnoreCase))
                    .ToList();
         }
@@ -121,10 +122,11 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Load all shipping rate computation methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping rate computation methods</returns>
-        public virtual IList<IShippingRateComputationMethod> LoadAllShippingRateComputationMethods()
+		public virtual IList<IShippingRateComputationMethod> LoadAllShippingRateComputationMethods(int storeId = 0)
         {
-            return _pluginFinder.GetPlugins<IShippingRateComputationMethod>().ToList();
+            return _pluginFinder.GetPlugins<IShippingRateComputationMethod>(storeId: storeId).ToList();
         }
 
         #endregion
@@ -333,9 +335,10 @@ namespace SmartStore.Services.Shipping
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
         public virtual GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart,
-            Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "")
+			Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -344,7 +347,7 @@ namespace SmartStore.Services.Shipping
             
             //create a package
             var getShippingOptionRequest = CreateShippingOptionRequest(cart, shippingAddress);
-            var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods()
+            var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods(storeId)
                 .Where(srcm => 
                     String.IsNullOrWhiteSpace(allowedShippingRateComputationMethodSystemName) || 
                     allowedShippingRateComputationMethodSystemName.Equals(srcm.PluginDescriptor.SystemName, StringComparison.InvariantCultureIgnoreCase))

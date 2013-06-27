@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
+using SmartStore.Core;
 
 namespace SmartStore.Plugin.SMS.Clickatell
 {
@@ -11,13 +12,17 @@ namespace SmartStore.Plugin.SMS.Clickatell
         private readonly ClickatellSettings _clickatellSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IOrderService _orderService;
+		private readonly IStoreContext _storeContext;
 
         public OrderPlacedEventConsumer(ClickatellSettings clickatellSettings,
-            IPluginFinder pluginFinder, IOrderService orderService)
+            IPluginFinder pluginFinder,
+			IOrderService orderService,
+			IStoreContext storeContext)
         {
             this._clickatellSettings = clickatellSettings;
             this._pluginFinder = pluginFinder;
             this._orderService = orderService;
+			this._storeContext = storeContext;
         }
 
         /// <summary>
@@ -34,6 +39,9 @@ namespace SmartStore.Plugin.SMS.Clickatell
             var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("Mobile.SMS.Clickatell");
             if (pluginDescriptor == null)
                 return;
+
+			if (!_pluginFinder.AuthenticateStore(pluginDescriptor, _storeContext.CurrentStore.Id))
+				return;
 
             var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;
             if (plugin == null)

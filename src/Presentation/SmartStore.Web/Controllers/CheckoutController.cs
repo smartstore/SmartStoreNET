@@ -50,6 +50,7 @@ namespace SmartStore.Web.Controllers
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IShippingService _shippingService;
         private readonly IPaymentService _paymentService;
+		private readonly IPluginFinder _pluginFinder;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ILogger _logger;
         private readonly IOrderService _orderService;
@@ -75,8 +76,9 @@ namespace SmartStore.Web.Controllers
             IPriceFormatter priceFormatter, IOrderProcessingService orderProcessingService,
             ICustomerService customerService,  IGenericAttributeService genericAttributeService,
             ICountryService countryService,
-            IStateProvinceService stateProvinceService, IShippingService shippingService, 
-            IPaymentService paymentService, IOrderTotalCalculationService orderTotalCalculationService,
+            IStateProvinceService stateProvinceService, IShippingService shippingService,
+			IPaymentService paymentService, IPluginFinder pluginFinder,
+			IOrderTotalCalculationService orderTotalCalculationService,
             ILogger logger, IOrderService orderService, IWebHelper webHelper,
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
@@ -97,6 +99,7 @@ namespace SmartStore.Web.Controllers
             this._stateProvinceService = stateProvinceService;
             this._shippingService = shippingService;
             this._paymentService = paymentService;
+			this._pluginFinder = pluginFinder;
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._logger = logger;
             this._orderService = orderService;
@@ -184,7 +187,9 @@ namespace SmartStore.Web.Controllers
         {
             var model = new CheckoutShippingMethodModel();
 
-            var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress);
+			var getShippingOptionResponse = _shippingService
+				  .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
+				  "", _storeContext.CurrentStore.Id);
             if (getShippingOptionResponse.Success)
             {
                 //performance optimization. cache returned shipping options.
@@ -268,7 +273,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var boundPaymentMethods = _paymentService
-                .LoadActivePaymentMethods(_workContext.CurrentCustomer.Id)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
                 .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
@@ -656,7 +661,7 @@ namespace SmartStore.Web.Controllers
             {
                 //not found? let's load them using shipping service
                 shippingOptions = _shippingService
-                    .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName)
+					.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
                     .ShippingOptions
                     .ToList();
             }
@@ -763,7 +768,9 @@ namespace SmartStore.Web.Controllers
                 return PaymentMethod();
 
             var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-            if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+			if (paymentMethodInst == null ||
+				!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+				!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
                 return PaymentMethod();
 
             //save
@@ -1143,7 +1150,9 @@ namespace SmartStore.Web.Controllers
 								selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
 							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
-							if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+							if (paymentMethodInst == null ||
+								!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+								!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
                                 throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1333,7 +1342,7 @@ namespace SmartStore.Web.Controllers
                 {
                     //not found? let's load them using shipping service
                     shippingOptions = _shippingService
-                        .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName)
+						.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
                         .ShippingOptions
                         .ToList();
                 }
@@ -1371,7 +1380,9 @@ namespace SmartStore.Web.Controllers
 							SystemCustomerAttributeNames.SelectedPaymentMethod, selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
 						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
-                        if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+						if (paymentMethodInst == null ||
+							!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+							!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
                             throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1482,7 +1493,9 @@ namespace SmartStore.Web.Controllers
                 }
 
                 var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-                if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+				if (paymentMethodInst == null ||
+					!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+					!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
                     throw new Exception("Selected payment method can't be parsed");
 
                 //save

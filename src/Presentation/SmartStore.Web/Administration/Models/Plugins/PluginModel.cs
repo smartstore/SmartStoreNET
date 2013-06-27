@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Plugins;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -57,6 +58,13 @@ namespace SmartStore.Admin.Models.Plugins
         public bool IsEnabled { get; set; }
 
         public IList<PluginLocalizedModel> Locales { get; set; }
+
+		//Store mapping
+		[SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
     }
     public class PluginLocalizedModel : ILocalizedModelLocal
     {

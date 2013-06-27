@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Plugins;
 using SmartStore.Plugin.ExternalAuth.Facebook.Core;
 using SmartStore.Plugin.ExternalAuth.Facebook.Models;
 using SmartStore.Services.Authentication.External;
@@ -18,18 +19,24 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
         private readonly IOAuthProviderFacebookAuthorizer _oAuthProviderFacebookAuthorizer;
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
+		private readonly IStoreContext _storeContext;
+		private readonly IPluginFinder _pluginFinder;
 
         public ExternalAuthFacebookController(ISettingService settingService,
             FacebookExternalAuthSettings facebookExternalAuthSettings,
             IOAuthProviderFacebookAuthorizer oAuthProviderFacebookAuthorizer,
             IOpenAuthenticationService openAuthenticationService,
-            ExternalAuthenticationSettings externalAuthenticationSettings)
+            ExternalAuthenticationSettings externalAuthenticationSettings,
+			IStoreContext storeContext,
+			IPluginFinder pluginFinder)
         {
             this._settingService = settingService;
             this._facebookExternalAuthSettings = facebookExternalAuthSettings;
             this._oAuthProviderFacebookAuthorizer = oAuthProviderFacebookAuthorizer;
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
+			this._storeContext = storeContext;
+			this._pluginFinder = pluginFinder;
         }
         
         [AdminAuthorize]
@@ -70,7 +77,9 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
         {
             var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.Facebook");
             if (processor == null ||
-                !processor.IsMethodActive(_externalAuthenticationSettings) || !processor.PluginDescriptor.Installed)
+                !processor.IsMethodActive(_externalAuthenticationSettings) ||
+				!processor.PluginDescriptor.Installed ||
+				!_pluginFinder.AuthenticateStore(processor.PluginDescriptor, _storeContext.CurrentStore.Id))
                 throw new SmartException("Facebook module cannot be loaded");
 
             var viewModel = new LoginModel();

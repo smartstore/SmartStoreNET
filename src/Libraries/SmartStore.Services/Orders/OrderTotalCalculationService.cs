@@ -534,7 +534,7 @@ namespace SmartStore.Services.Orders
                 if (customer != null)
                     shippingAddress = customer.ShippingAddress;
 
-                var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods();
+				var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods(_storeContext.CurrentStore.Id);
                 if (shippingRateComputationMethods == null || shippingRateComputationMethods.Count == 0)
                     throw new SmartException("Shipping rate computation method could not be loaded");
 

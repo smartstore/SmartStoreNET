@@ -67,7 +67,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 
             try
 			{
-				_googleService.CreateFeed(false);
+				_googleService.CreateFeed();
 
 				model.GenerateFeedResult = _googleService.Helper.Resource("SuccessResult");
             }

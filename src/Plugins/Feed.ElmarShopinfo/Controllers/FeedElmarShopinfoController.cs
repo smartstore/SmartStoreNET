@@ -63,7 +63,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Controllers
 
             try 
 			{
-				_elmarService.CreateFeed(false);
+				_elmarService.CreateFeed();
 
 				model.GenerateFeedResult = _elmarService.Helper.Resource("SuccessResult");
             }

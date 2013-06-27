@@ -279,11 +279,11 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return lst;
 		}
-		public void StartCreatingFeeds(IStoreService storeService, bool forAllStores, Func<FileStream, Store, bool> createFeed)
+		public void StartCreatingFeeds(IStoreService storeService, Func<FileStream, Store, bool> createFeed)
 		{
 			var stores = new List<Store>();
 
-			if (!forAllStores && BaseSettings.StoreId != 0)
+			if (BaseSettings.StoreId != 0)
 			{
 				var storeById = storeService.GetStoreById(BaseSettings.StoreId);
 				if (storeById != null)

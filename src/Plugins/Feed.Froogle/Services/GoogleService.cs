@@ -426,9 +426,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed(bool forAllStores)
+		public virtual void CreateFeed()
 		{
-			Helper.StartCreatingFeeds(_storeService, forAllStores, (stream, store) =>
+			Helper.StartCreatingFeeds(_storeService, (stream, store) =>
 			{
 				CreateFeed(stream, store);
 				return true;

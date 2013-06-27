@@ -420,11 +420,11 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed(bool forAllStores)
+		public virtual void CreateFeed()
 		{
 			var stores = new List<Store>();
 
-			if (!forAllStores && Settings.StoreId != 0)
+			if (Settings.StoreId != 0)
 			{
 				var storeById = _storeService.GetStoreById(Settings.StoreId);
 				if (storeById != null)

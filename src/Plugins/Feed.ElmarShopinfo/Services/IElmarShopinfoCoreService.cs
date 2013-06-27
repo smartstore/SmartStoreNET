@@ -12,7 +12,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 		PluginHelperFeed Helper { get; }
 
 		void CreateFeed(Store store, GeneratedFeedFile feedFile, Stream streamCsv, Stream streamXml);
-		void CreateFeed(bool forAllStores);
+		void CreateFeed();
 		void SetupModel(FeedElmarShopinfoModel model, ScheduleTask task = null);
 	}
 }

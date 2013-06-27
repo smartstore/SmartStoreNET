@@ -12,7 +12,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo
         public void Execute()
         {
 			var elmarShopinfoService = EngineContext.Current.Resolve<IElmarShopinfoCoreService>();
-			elmarShopinfoService.CreateFeed(true);
+			elmarShopinfoService.CreateFeed();
         }
     }
 }

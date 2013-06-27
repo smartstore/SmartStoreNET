@@ -128,6 +128,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : current manufacturer id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
         public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "sm.pres.manufacturer.navigation";
@@ -136,10 +137,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for CategoryNavigationModel caching
         /// </summary>
         /// <remarks>
-		/// {0} : parent category id
-		/// {1} : show hidden?
-		/// {2} : comma separated list of customer roles
-		/// {3} : current store id
+		/// {0} : language id
+		/// {1} : comma separated list of customer roles
+		/// {2} : current store id
         /// </remarks>
         public const string CATEGORY_NAVIGATION_MODEL_KEY = "sm.pres.category.navigation-{0}-{1}-{2}";
         public const string CATEGORY_NAVIGATION_PATTERN_KEY = "sm.pres.category.navigation";
@@ -151,6 +151,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : parent category id
         /// {1} : show hidden?
         /// {2} : comma separated list of customer roles
+		/// {3} : current store id
         /// </remarks>
         public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}-{3}";
         public const string CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY = "sm.pres.category.childidentifiers";
@@ -162,6 +163,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : product id
         /// {1} : language id
         /// {2} : comma separated list of customer roles
+		/// {3} : current store id
         /// </remarks>
         public const string PRODUCT_BREADCRUMB_MODEL_KEY = "sm.pres.product.breadcrumb-{0}-{1}-{2}-{3}";
         public const string PRODUCT_BREADCRUMB_PATTERN_KEY = "sm.pres.product.breadcrumb";
@@ -288,7 +290,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized category name)
         /// {4} : is connection SSL secured?
-		/// {5} : current store ID/// 
+		/// {5} : current store ID
         /// </remarks>
         public const string CATEGORY_PICTURE_MODEL_KEY = "sm.pres.category.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string CATEGORY_PICTURE_PATTERN_KEY = "sm.pres.category.picture";
@@ -373,8 +375,8 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : country ID
-        /// {0} : addEmptyStateIfRequired value
-        /// {0} : language ID
+        /// {1} : addEmptyStateIfRequired value
+        /// {2} : language ID
         /// </remarks>
         public const string STATEPROVINCES_BY_COUNTRY_MODEL_KEY = "sm.pres.stateprovinces.bycountry-{0}-{1}-{2}";
         public const string STATEPROVINCES_PATTERN_KEY = "sm.pres.stateprovinces.";

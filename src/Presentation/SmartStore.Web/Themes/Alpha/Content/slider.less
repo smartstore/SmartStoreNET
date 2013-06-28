@@ -6,37 +6,13 @@
 /*
 Theme created for use with Sequence.js (http://www.sequencejs.com/)
 
-Theme:   Sliding Horizontal Parallax (Responsive)
-Version:   0.2.2 Beta
-Theme Author:   Ian Lunn @IanLunn
-Author URL:   http://www.ianlunn.co.uk/
-Theme URL:   http://www.sequencejs.com/themes/sliding-horizontal-parallax/
-
-This is a FREE theme and is dual licensed under the following: 
-http://www.opensource.org/licenses/mit-license.php | http://www.gnu.org/licenses/gpl.html
-
 Sequence.js and its dependencies are (c) Ian Lunn Design 2012 unless otherwise stated.
 Aside from these comments, you may modify and distribute this file as you please. Have fun!
  */
- 
-/*
-@sliderHeight:				300px;
 
-@sliderUseRadialBg:			true;
-@sliderBackgroundColor:		#2786ce;
-//@sliderBackgroundColor:	lighten(#618904, 15%); 
 
-@sliderTitleColor:			@white;
-@sliderTitleShadowColor:	mix(contrast(@sliderTitleColor), @sliderBackgroundColor);
-@sliderTitleFontFamily:		'Segoe UI Light', 'Segoe UI', Arial, sans-serif; //@pageTitleFontFamily;
-@sliderTitleFontWeight:		100; //@pageTitleFontWeight;
-
-@sliderInfoColor:			@white;
-@sliderInfoShadowColor:		mix(contrast(@sliderInfoColor), @sliderBackgroundColor);
-@sliderInfoFontFamily:		inherit;
-@sliderInfoFontWeight:		inherit;
-*/
-
+// Variables & mixins
+// --------------------------------------------------
 
 @sliderHeight:				300px;
 
@@ -55,30 +31,59 @@ Aside from these comments, you may modify and distribute this file as you please
 
 @navOutlineColor:			contrast(@sliderBackgroundColor);
 
+
+.radial-bg()  when ( @sliderUseRadialBg = true) {
+	@color: darken(@sliderBackgroundColor, 40%);
+	@expr: e(%("50% 50%, ellipse closest-corner, transparent, transparent 0%, %d 60%, %d 100%", fade(@color, 20%), fade(@color, 50%) ));
+	background-image: -webkit-radial-gradient(@expr);
+	background-image:    -moz-radial-gradient(@expr);
+	background-image:     -ms-radial-gradient(@expr);
+	background-image:      -o-radial-gradient(@expr);
+	background-image:		  radial-gradient(@expr);
+}
+
+.slider-text-shadow(@shadowColor) when (@shadowColor = #fff) {
+	text-shadow: 0 -1px 1px rgba(255,255,255, .75);
+}
+
+.slider-text-shadow(@shadowColor) when (@shadowColor = #000) {
+	text-shadow: 1px 1px 0 rgba(0,0,0, .4);
+}
+
+
+
+// Container & General
+// --------------------------------------------------
+
 .slider {
+	position: relative;
+    width: 100%;
+	max-width: 1280px;
+	height: @sliderHeight;
+	margin: 0;
 	background-color: @sliderBackgroundColor;
 	background-repeat: repeat;
 	background-position: 0 50%;
 	display: block;
-	height: @sliderHeight;
-	margin: 0;
-	position: relative;
-	max-width: 1280px;
 	overflow: hidden;
 	.box-shadow(inset 0px 10px 8px -10px rgba(0,0,0, .5), inset 0px -10px 8px -10px rgba(0,0,0, .4));
 
-	.transition(background-position 1s ease-out);
+	.transition(background-position 1.5s ease-out);
 	
-	/*backface-visibility prevents graphical glitches when frames are animating*/
-	x-webkit-backface-visibility: hidden;	//caused problems in safari so it's gone
-	   -moz-backface-visibility: hidden;
-	    -ms-backface-visibility: hidden;
-	     -o-backface-visibility: hidden;
-	        backface-visibility: hidden;
+	// backface-visibility prevents graphical glitches when frames are animating
+	-moz-backface-visibility: hidden;
+	 -ms-backface-visibility: hidden;
+	  -o-backface-visibility: hidden;
+	     backface-visibility: hidden;
+}
+
+#sequence-preloader {
+	background: #d9d9d9;
 }
 
 
-/* ARROWS */
+// Navigation arrows
+// --------------------------------------------------
 
 .slider .arrows {
 	-moz-user-select: none;
@@ -102,45 +107,69 @@ Aside from these comments, you may modify and distribute this file as you please
 	cursor: pointer;
 	z-index: 2000;
 	.opacity(0);
-	.transition(opacity 0.1s linear);
+	.transition(opacity 0.15s linear);
+
+    &.sequence-prev {
+        left: 15px;
+	    &:before { content: "\2039"; }
+    }
+
+    &.sequence-next {
+        right: 15px;
+	    &:before { content: "\203a"; }
+    }
+
 }
 
 .slider:hover .arrows span {
-	.opacity(50);
-	.transition-duration(0.1s);
+    .opacity(50);
 }
+
 .slider .arrows span:hover {
 	.opacity(100);
 }
 
-.slider .arrows .prev {
-	left: 15px;
-	&:before { content: "\2039"; }
+
+// Pause button
+// --------------------------------------------------
+
+.sequence-pause {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    font-family: FontAwesome;
+    color: @navOutlineColor;
+    cursor: pointer;
+    z-index: 101;
+    .transition(opacity 0.15s linear);
+    .opacity(0);
+
+    &:before {
+        content: "\f04c";
+    }
+
+    &.paused:before {
+        content: "\f04b";
+    }
+
+    .slider:hover &:hover {
+        .opacity(100);
+    }
+
+    &.paused,
+    .slider:hover & {
+        .opacity(50);
+    }
 }
-.slider .arrows .next {
-	right: 15px;
-	&:before { content: "\203a"; }
-}
-
-.slider .pause {
-	bottom: 0;
-	cursor: pointer;
-	position: absolute;
-	z-index: 1000;
-}
-
-.slider .paused {
-	opacity: 0.3;
-}
-
-#sequence-preloader {
-	background: #d9d9d9;
-}
 
 
-/* NAV aka DOTS */
+// Navigation aka dots
+// --------------------------------------------------
 
-.slider .nav {
+.sequence-pagination {
 	width: 100%;
 	margin: 0;
 	padding: 0;
@@ -153,7 +182,8 @@ Aside from these comments, you may modify and distribute this file as you please
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.slider .nav span {
+
+.sequence-pagination span {
 	display: inline-block;
 	position: relative;
 	width: 8px;
@@ -163,24 +193,19 @@ Aside from these comments, you may modify and distribute this file as you please
 	margin: 3px 5px;
 	cursor: pointer;
 }
-.slider .nav span.active,
-.slider .nav span:hover {
+
+.sequence-pagination span.current,
+.sequence-pagination span:hover {
 	background-color: @navOutlineColor;
 }
 
+// Canvas & Frames general
+// --------------------------------------------------
 
-/* FRAMES CONTAINER */
-.radial-bg()  when ( @sliderUseRadialBg = true) {
-	@color: darken(@sliderBackgroundColor, 40%);
-	@expr: e(%("50% 50%, ellipse closest-corner, transparent, transparent 0%, %d 60%, %d 100%", fade(@color, 20%), fade(@color, 50%) ));
-	background-image: -webkit-radial-gradient(@expr);
-	background-image:    -moz-radial-gradient(@expr);
-	background-image:     -ms-radial-gradient(@expr);
-	background-image:      -o-radial-gradient(@expr);
-	background-image:		  radial-gradient(@expr);
-}
-
-.slider > ul {
+.sequence-canvas {
+    position: relative;
+    width:100%;
+    height: 100%;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
@@ -189,145 +214,138 @@ Aside from these comments, you may modify and distribute this file as you please
 	.radial-bg();
 }
 
-.slider > ul > li {
+.sequence-canvas > li {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+    z-index: 1;
 }
 
-.slider > ul > li > * {
+.sequence-canvas > li > * {
 	position: relative;
 }
 
-.slider .next,
-.slider .prev {
-	position: absolute;
-	.opacity(60);
-	.transition-duration(1s);
-}
 
-.slider .next:hover,
-.slider .prev:hover {
-	.opacity(100);
-	.transition-duration(1s);
-}
+// Slide typo, colors & general styling
+// --------------------------------------------------
 
-.slider {
-	.title,
-	.info,
-	.buttons {
-		
-		left: 100%;
-		width: 40%;
-		.opacity(0);
-
-		&.animate-in {
-			left: 50%;
-			top: auto;
-			.opacity(100);
-		}
-
-		&.animate-out {
-			left: 25%;
-			.opacity(0);
-		}
-
-	}
-}
-
-.slider-text-shadow(@shadowColor) when (@shadowColor = #fff) {
-	text-shadow: 0 -1px 1px rgba(255,255,255, .75);
-}
-
-.slider-text-shadow(@shadowColor) when (@shadowColor = #000) {
-	text-shadow: 1px 1px 0 rgba(0,0,0, .4);
-}
-
-.slider .title {
-	margin-top: 10px;
+.sequence-canvas .title {
 	font-family: @sliderTitleFontFamily;
 	font-weight: @sliderTitleFontWeight;
 	color: @sliderTitleColor;
 	.slider-text-shadow(@sliderTitleShadowColor);
-	//text-shadow: 1px 1px 1px @sliderTitleShadowColor;
 }
 
-.slider .title.animate-in {
-	.transition-duration(.65s);
-}
-
-.slider .title.animate-out {
-	.transition-duration(.65s);
-}
-
-.slider .info {
-	margin-top: 10px;
+.sequence-canvas .info {
 	font-family: @sliderInfoFontFamily;
 	font-weight: @sliderInfoFontWeight;
 	color: @sliderInfoColor;
 	.slider-text-shadow(@sliderInfoShadowColor);
-	//text-shadow: 1px 1px 1px @sliderInfoShadowColor;
 }
 
-.slider .info ul {
-	list-style-type: square;
+.sequence-canvas .picture {
+    position: absolute;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+
+    img {
+	    position: relative;
+	    max-width: 100%;
+	    max-height: 100%;
+    }
 }
 
-.slider .info.animate-in {
-	.transition-duration(.5s);
+
+// Slide animations
+// --------------------------------------------------
+
+.sequence-canvas {
+    .title, .info, .buttons {
+        left: 100%;
+        width: 40%;
+        .opacity(0);
+    }
+
+    .title {
+        margin-top: 10px;
+    }
+
+    .info {
+        margin-top: 10px;
+
+        ul { list-style-type: square; }
+    }
+
+    .buttons {
+	    margin-top: 20px;
+	    bottom: auto;
+    }
+
+    .picture {
+	    left: 20%;
+	    width: 45%;
+	    height: 100%;
+	    top: 0;
+	    .opacity(0);
+	    .transform(scale(2, 2));
+    }
 }
 
-.slider .info.animate-out {
-	.transition-duration(.5s);
+.sequence-canvas .animate-in {
+    .title, .info, .buttons {
+		left: 50%;
+		top: auto;
+		.opacity(100);
+    }
+
+    .title {
+        .transition-duration(1s);
+    }
+
+    .info {
+        .transition-duration(.75s);
+    }
+
+    .buttons {
+	    bottom: auto;
+	    .transition-duration(.5s);
+    }
+
+    .picture {
+	    left: 0;
+	    .opacity(100);
+	    .transition-duration(1s);
+	    .transform(none);
+    }
 }
 
-.slider .buttons {
-	margin-top: 20px;
-	bottom: auto;
+.sequence-canvas .animate-out {
+    .title, .info, .buttons {
+		left: 25%;
+		.opacity(0);
+    }
+
+    .title {
+        .transition-duration(1s);
+    }
+
+    .info {
+        .transition-duration(.75s);
+    }
+
+    .buttons {
+	    bottom: auto;
+	    .transition-duration(.5s);
+    }
+
+    .picture {
+	    left: -10%;
+	    .opacity(0);
+	    .transition-duration(1s);
+	    .transform(scale(.5, .5));
+    }
 }
 
-.slider .buttons.animate-in {
-	bottom: auto;
-	.transition-duration(.35s);
-}
-
-.slider .buttons.animate-out {
-	bottom: auto;
-	.transition-duration(.35s);
-}
-
-.slider .picture {
-	position: absolute;
-	display: inline-block;
-	text-align: center;
-	vertical-align: middle;
-	left: 20%;
-	width: 45%;
-	height: 100%;
-	top: 0;
-	.opacity(0);
-	.transform(scale(2, 2));
-}
-
-.slider .picture img {
-	position: relative;
-	max-width: 100%;
-	max-height: 100%;
-	
-}
-
-.slider .picture.animate-in {
-	left: 0;
-	.opacity(100);
-	.transition-duration(.6s);
-	.transform(none);
-}
-
-.slider .picture.animate-out {
-	left: -10%;
-	.opacity(0);
-	.transition-duration(.5s);
-	.transform(scale(.5, .5));
-}
 
 

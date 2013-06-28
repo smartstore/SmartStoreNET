@@ -661,6 +661,8 @@
     <Content Include="Scripts\jquery.backgroundpos.js" />
     <Content Include="Scripts\jquery.elevatezoom.js" />
     <Content Include="Scripts\jquery.menu-aim.js" />
+    <Content Include="Scripts\jquery.sequence.js" />
+    <Content Include="Scripts\jquery.sequence.custom.js" />
     <Content Include="Scripts\smartstore.tabselector.js" />
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
@@ -1890,7 +1892,6 @@
     <Content Include="Scripts\jquery.globalize\globalize.js" />
     <Content Include="Scripts\jquery.pnotify.js" />
     <Content Include="Scripts\jquery.pnotify.min.js" />
-    <Content Include="Scripts\sequence.jquery.custom.js" />
     <Content Include="Scripts\public.product-detail.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
@@ -1901,7 +1902,6 @@
     <Content Include="Scripts\load-image.js" />
     <Content Include="Scripts\public.shopbar.js" />
     <Content Include="Scripts\select2.min.js" />
-    <Content Include="Scripts\sequence.jquery.js" />
     <Content Include="Scripts\smartstore.eventbroker.js" />
     <Content Include="Scripts\smartstore.scrollbutton.js" />
     <Content Include="Scripts\smartstore.selectwrapper.js" />

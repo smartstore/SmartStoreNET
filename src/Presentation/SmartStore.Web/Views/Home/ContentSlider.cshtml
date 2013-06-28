@@ -30,15 +30,20 @@
 
     <div id="slider" class="slider" style="height: @(Model.ContentSliderHeight); @(GetSliderBgExpression())">
         <nav class="arrows">
-            <span class="prev"></span>
-            <span class="next"></span>
+            <span class="sequence-prev"></span>
+            <span class="sequence-next"></span>
         </nav>
-        <ul>
+
+        @if (Model.AutoPlay) {
+            <div class="sequence-pause"></div>
+        }
+
+        <ul class="sequence-canvas">
             @foreach (ContentSliderSlideSettings slide in Model.Slides) 
             { 
                 if(slide.Published)
                 {
-                    <li id="a6x" class="frame4">
+                    <li class="slide">
                         @if (!String.IsNullOrEmpty(@slide.Title))
                         {
 			                <h2 class="title">@Html.Raw(@slide.Title)</h2>
@@ -84,11 +89,16 @@
             var options = {
                 autoPlay: @(Model.AutoPlay ? "true" : "false"),
                 autoPlayDelay: @(Model.AutoPlayDelay),
+                pagination: true,
+                showPaginationOnInit: true,
                 nextButton: true,
                 prevButton: true,
-                animateStartingFrameIn: true,
+                pauseButton: true,
+                pauseOnHover: false,
+                animateStartingFrameIn: false,
                 transitionThreshold: 500,
-                bgSlide: '@(GetThemeVariable("SliderBgSlide", "on"))' // off | on | opposite
+                bgSlide: '@(GetThemeVariable("SliderBgSlide", "on"))', // off | on | opposite
+                bgSlideIncrement: 50
             };
 
             sequence = $("#slider").sequence(options).data("sequence");

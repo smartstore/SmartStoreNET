@@ -8,8 +8,7 @@
 
         applyTheme: function (sequence /* instance */, parallaxBgSelector) {
 
-            var nav = $('<nav class="nav" />');
-            var dots = nav.children();
+            var nav = $('<nav class="sequence-pagination" />');
 
             sequence.afterLoaded = function () {
                 if (sequence.numberOfFrames > 1) {
@@ -17,26 +16,7 @@
                         nav.append('<span />');
                     }
                     nav.prependTo(sequence.container);
-
-                    dots = nav.children();
-
-                    dots.eq(0).addClass("active");
-                    nav.find(':nth-child(' + sequence.settings.startingFrameID + ')').addClass("active");
-
-                    // nav event handler
-                    nav.on("click", "span:not(.active)", function () {
-                        if (!sequence.active) {
-                            $(this).removeClass("active").addClass("active");
-                            sequence.nextFrameID = $(this).index() + 1;
-                            sequence.goTo(sequence.nextFrameID);
-                        }
-                    });
                 }
-            }
-
-            sequence.beforeNextFrameAnimatesIn = function () {
-                nav.find(':not(:nth-child(' + sequence.nextFrameID + '))').removeClass("active");
-                nav.find(':nth-child(' + sequence.nextFrameID + ')').addClass("active");
             }
 
             var s = sequence.settings.bgSlide || "on";

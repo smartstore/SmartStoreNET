@@ -148,8 +148,8 @@ namespace SmartStore.Web.Infrastructure
             // content slider
             bundles.Add(new ScriptBundle("~/bundles/slider").Include(
                 "~/Scripts/jquery.backgroundpos.js",
-                "~/Scripts/sequence.jquery.js",
-                "~/Scripts/sequence.jquery.custom.js"));
+                "~/Scripts/jquery.sequence.js",
+                "~/Scripts/jquery.sequence.custom.js"));
 
             // image gallery
             bundles.Add(new ScriptBundle("~/bundles/image-gallery").Include(

@@ -24,6 +24,7 @@ namespace SmartStore.Data.Tests.Catalog
                 PageSizeOptions = "4, 2, 8, 12",
                 PriceRanges = "1-3;",
                 Published = true,
+				LimitedToStores = true, 
                 Deleted = false,
                 DisplayOrder = 5,
                 CreatedOnUtc = new DateTime(2010, 01, 01),

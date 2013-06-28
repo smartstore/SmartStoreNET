@@ -79,7 +79,7 @@ namespace SmartStore.Services.Tests.Helpers
                             {
                                 new GenericAttribute()
                                     {
-                                        StoreId = _store.Id,
+                                        StoreId = 0,
                                         EntityId = customer.Id,
                                         Key = SystemCustomerAttributeNames.TimeZoneId,
                                         KeyGroup = "Customer",

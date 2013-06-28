@@ -26,7 +26,6 @@ namespace SmartStore.Services.Stores
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICacheManager _cacheManager;
-		private readonly ILocalizationService _localizationService;
 
 		#endregion
 
@@ -40,13 +39,11 @@ namespace SmartStore.Services.Stores
 		/// <param name="eventPublisher">Event published</param>
 		public StoreService(ICacheManager cacheManager,
 			IRepository<Store> storeRepository,
-			IEventPublisher eventPublisher,
-			ILocalizationService localizationService)
+			IEventPublisher eventPublisher)
 		{
 			this._cacheManager = cacheManager;
 			this._storeRepository = storeRepository;
 			this._eventPublisher = eventPublisher;
-			this._localizationService = localizationService;
 		}
 
 		#endregion
@@ -64,7 +61,7 @@ namespace SmartStore.Services.Stores
 
 			var allStores = GetAllStores();
 			if (allStores.Count == 1)
-				throw new Exception(_localizationService.GetResource("Admin.Configuration.Stores.CannotDeleteOnlyStore"));
+				throw new Exception("You cannot delete the only configured store.");
 
 			_storeRepository.Delete(store);
 

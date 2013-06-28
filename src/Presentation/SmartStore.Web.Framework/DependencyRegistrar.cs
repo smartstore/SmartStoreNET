@@ -173,7 +173,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerHttpRequest();
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
 			builder.RegisterType<ProductTagService>().As<IProductTagService>()
-				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("nop_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
 				.InstancePerHttpRequest();
 
             builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerHttpRequest();

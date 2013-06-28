@@ -79,11 +79,6 @@ set @resources='
 	<T>Bitte Shops auswählen, für die der Hersteller verfügbar ist.</T>
   </LocaleResource>
   
-  <LocaleResource Name="Admin.Configuration.Stores.CannotDeleteOnlyStore">
-	<Value>You cannot delete the only configured store.</Value>
-	<T>Der einzigste konfigurierte Shop kann nicht gelöscht werden.</T>
-  </LocaleResource>
-
   <LocaleResource Name="Admin.Catalog.Categories.Stores">
 	<Value>Stores</Value>
 	<T>Shops</T>

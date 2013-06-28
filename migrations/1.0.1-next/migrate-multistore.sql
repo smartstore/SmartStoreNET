@@ -1502,7 +1502,8 @@ BEGIN
 	ALTER TABLE dbo.[Customer]
 	DROP CONSTRAINT Customer_Language
 	
-	EXEC ('UPDATE [Customer] SET  = 0 WHERE [LanguageId] IS NULL')
+	EXEC ('UPDATE [Customer] SET [LanguageId] = 0 WHERE [LanguageId] IS NULL')
+	
 	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [LanguageId] int NOT NULL')
 END
 GO

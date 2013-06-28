@@ -52,5 +52,18 @@ namespace SmartStore.Web.Framework
 				return _cachedStore;
 			}
 		}
+
+		/// <summary>
+		/// IsSingleStoreMode ? 0 : CurrentStore.Id
+		/// </summary>
+		/// <remarks>codehint: sm-add</remarks>
+		public int CurrentStoreIdIfMultiStoreMode
+		{
+			get
+			{
+				return _storeService.IsSingleStoreMode() ? 0 : CurrentStore.Id;
+			}
+		}
+
 	}
 }

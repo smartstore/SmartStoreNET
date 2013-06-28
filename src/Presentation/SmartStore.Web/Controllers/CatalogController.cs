@@ -629,7 +629,7 @@ namespace SmartStore.Web.Controllers
 
                                 var ctx = new ProductSearchContext();
                                 ctx.CategoryIds = categoryIds;
-								ctx.StoreId = _storeContext.CurrentStore.Id;
+								ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
                                 node.Value.NumberOfProducts = _productService.CountProducts(ctx);
                             }
                         }
@@ -1575,7 +1575,7 @@ namespace SmartStore.Web.Controllers
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
-				ctx.StoreId = _storeContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1620,7 +1620,7 @@ namespace SmartStore.Web.Controllers
 				ctx2.PageIndex = command.PageNumber - 1;
 				ctx2.PageSize = command.PageSize;
 				ctx2.LoadFilterableSpecificationAttributeOptionIds = true;
-				ctx2.StoreId = _storeContext.CurrentStore.Id;
+				ctx2.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
 				var products = _productService.SearchProducts(ctx2);
 
@@ -1766,7 +1766,7 @@ namespace SmartStore.Web.Controllers
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
-				ctx.StoreId = _storeContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1786,7 +1786,7 @@ namespace SmartStore.Web.Controllers
             ctx2.OrderBy = (ProductSortingEnum)command.OrderBy;
             ctx2.PageIndex = command.PageNumber - 1;
             ctx2.PageSize = command.PageSize;
-			ctx2.StoreId = _storeContext.CurrentStore.Id;
+			ctx2.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
             var products = _productService.SearchProducts(ctx2);
 
@@ -2654,7 +2654,7 @@ namespace SmartStore.Web.Controllers
                 //ctx.PageIndex = command.PageNumber - 1;
                 //codehint: sm-edit end
                 ctx.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				ctx.StoreId = _storeContext.CurrentStore.Id;
+				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
                 var products = _productService.SearchProducts(ctx);
 
@@ -2686,7 +2686,7 @@ namespace SmartStore.Web.Controllers
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.CreatedOn;
             ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
-			ctx.StoreId = _storeContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -3036,7 +3036,7 @@ namespace SmartStore.Web.Controllers
             ctx.OrderBy = (ProductSortingEnum)command.OrderBy;
             ctx.PageIndex = command.PageNumber - 1;
             ctx.PageSize = command.PageSize;
-			ctx.StoreId = _storeContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -3712,7 +3712,7 @@ namespace SmartStore.Web.Controllers
                     ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position; // codehint: sm-edit
                     ctx.PageIndex = command.PageNumber - 1;
                     ctx.PageSize = command.PageSize;
-					ctx.StoreId = _storeContext.CurrentStore.Id;
+					ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
                     products = _productService.SearchProducts(ctx);
 
@@ -3752,7 +3752,7 @@ namespace SmartStore.Web.Controllers
             ctx.Keywords = term;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = productNumber;
-			ctx.StoreId = _storeContext.CurrentStore.Id;
+			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 
             var products = _productService.SearchProducts(ctx);
 

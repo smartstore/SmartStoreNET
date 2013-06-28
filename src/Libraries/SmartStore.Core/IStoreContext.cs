@@ -16,5 +16,11 @@ namespace SmartStore.Core
 		/// Gets or sets the current store
 		/// </summary>
 		Store CurrentStore { get; }
+
+		/// <summary>
+		/// IsSingleStoreMode ? 0 : CurrentStore.Id
+		/// </summary>
+		/// <remarks>codehint: sm-add</remarks>
+		int CurrentStoreIdIfMultiStoreMode { get; }
 	}
 }

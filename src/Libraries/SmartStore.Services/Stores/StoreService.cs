@@ -166,6 +166,15 @@ namespace SmartStore.Services.Stores
 			_eventPublisher.EntityUpdated(store);
 		}
 
+		/// <summary>
+		/// True if there's only one store. Otherwise False.
+		/// </summary>
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual bool IsSingleStoreMode()
+		{
+			return GetAllStores().Count <= 1;
+		}
+
 		#endregion
 	}
 }

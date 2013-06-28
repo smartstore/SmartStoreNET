@@ -128,9 +128,6 @@ BEGIN
 				--5 - using CONTAINS and OR with <prefix_term>
 				--10 - using CONTAINS and AND with <prefix_term>
 
-				--remove wrong chars (' ")
-				SET @Keywords = REPLACE(@Keywords, '''', '')
-				SET @Keywords = REPLACE(@Keywords, '"', '')
 				--clean multiple spaces
 				WHILE CHARINDEX('  ', @Keywords) > 0 
 					SET @Keywords = REPLACE(@Keywords, '  ', ' ')
@@ -532,7 +529,7 @@ BEGIN
 			WHERE
 				[fcr].CustomerRoleId IN (
 					SELECT [acl].CustomerRoleId
-					FROM [AclRecord] acl
+					FROM [AclRecord] acl with (NOLOCK)
 					WHERE [acl].EntityId = p.Id AND [acl].EntityName = ''Product''
 				)
 			))'
@@ -543,7 +540,7 @@ BEGIN
 	BEGIN
 		SET @sql = @sql + '
 		AND (p.LimitedToStores = 0 OR EXISTS (
-			SELECT 1 FROM [StoreMapping] sm
+			SELECT 1 FROM [StoreMapping] sm with (NOLOCK)
 			WHERE [sm].EntityId = p.Id AND [sm].EntityName = ''Product'' and [sm].StoreId=' + CAST(@StoreId AS nvarchar(max)) + '
 			))'
 	END
@@ -557,7 +554,7 @@ BEGIN
 			WHERE
 				[fs].SpecificationAttributeOptionId NOT IN (
 					SELECT psam.SpecificationAttributeOptionId
-					FROM Product_SpecificationAttribute_Mapping psam
+					FROM Product_SpecificationAttribute_Mapping psam with (NOLOCK)
 					WHERE psam.AllowFiltering = 1 AND psam.ProductId = p.Id
 				)
 			)'
@@ -628,7 +625,7 @@ BEGIN
 		)
 		INSERT INTO #FilterableSpecs ([SpecificationAttributeOptionId])
 		SELECT DISTINCT [psam].SpecificationAttributeOptionId
-		FROM [Product_SpecificationAttribute_Mapping] [psam]
+		FROM [Product_SpecificationAttribute_Mapping] [psam] with (NOLOCK)
 		WHERE [psam].[AllowFiltering] = 1
 		AND [psam].[ProductId] IN (SELECT [pi].ProductId FROM #PageIndex [pi])
 
@@ -644,7 +641,7 @@ BEGIN
 		p.*
 	FROM
 		#PageIndex [pi]
-		INNER JOIN Product p on p.Id = [pi].[ProductId]
+		INNER JOIN Product p with (NOLOCK) on p.Id = [pi].[ProductId]
 	WHERE
 		[pi].IndexId > @PageLowerBound AND 
 		[pi].IndexId < @PageUpperBound

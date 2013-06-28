@@ -173,7 +173,8 @@ namespace SmartStore.Services.Catalog
         }
 
 		/// <remarks>codehint: sm-add</remarks>
-		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured) {
+		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0)
+		{
 			var allowedRoleIds = AllowedRoleIds;
 
 			var query =
@@ -183,7 +184,18 @@ namespace SmartStore.Services.Catalog
 				where p.Published && !p.Deleted && (!p.SubjectToAcl || (acl.EntityName == "Product" && allowedRoleIds.Contains(acl.CustomerRoleId)))
 				select p;
 
-			if (categoryIds != null && categoryIds.Count > 0) {
+			if (storeId > 0)
+			{
+				query = 
+					from p in query
+					join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
+					from sm in p_sm.DefaultIfEmpty()
+					where !p.LimitedToStores || (sm.EntityName == "Product" && storeId == sm.StoreId)
+					select p;
+			}
+
+			if (categoryIds != null && categoryIds.Count > 0)
+			{
 				query =
 					from p in query
 					from pc in p.ProductCategories.Where(pc => categoryIds.Contains(pc.CategoryId))

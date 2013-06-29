@@ -20,7 +20,7 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowedTokens):
+                @Html.SmartLabelFor(model => model.AllowedTokens)
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.AllowedTokens)
@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Name):
+                @Html.SmartLabelFor(model => model.Name)
             </td>
             <td class="adminData">
                 @Model.Name
@@ -37,7 +37,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IsActive):
+                @Html.SmartLabelFor(model => model.IsActive)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.IsActive)
@@ -155,7 +155,7 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores):
+                @Html.SmartLabelFor(model => model.LimitedToStores)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.LimitedToStores)
@@ -164,7 +164,7 @@
         </tr>
         <tr id="pnl-available-stores">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores):
+                @Html.SmartLabelFor(model => model.AvailableStores)
             </td>
             <td class="adminData">
                 @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)

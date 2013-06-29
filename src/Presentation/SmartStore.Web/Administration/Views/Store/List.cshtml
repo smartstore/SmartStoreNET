@@ -20,11 +20,18 @@
                     .Columns(columns =>
                     {
 						columns.Bound(x => x.Name)
-							.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>");
-                        columns.Bound(x => x.DisplayOrder)
-                            .Centered()
-                            .Width(100);
+							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+						columns.Bound(x => x.Url);
+						columns.Bound(x => x.Hosts);
+						columns.Bound(x => x.SslEnabled)
+							.Template(item => @Html.SymbolForBool(item.SslEnabled))
+							.ClientTemplate(@Html.SymbolForBool("SslEnabled"))
+							.Width(100)
+							.Centered();
+						columns.Bound(x => x.DisplayOrder)
+							.Width(100)
+							.Centered();
                         columns.Bound(x => x.Id)
                             .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")

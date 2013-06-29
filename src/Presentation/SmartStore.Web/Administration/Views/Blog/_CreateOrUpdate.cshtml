@@ -147,7 +147,7 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores):
+                @Html.SmartLabelFor(model => model.LimitedToStores)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.LimitedToStores)
@@ -156,7 +156,7 @@
         </tr>
         <tr id="pnl-available-stores">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores):
+                @Html.SmartLabelFor(model => model.AvailableStores)
             </td>
             <td class="adminData">
                 @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)

@@ -19,7 +19,7 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LanguageId):
+                @Html.SmartLabelFor(model => model.LanguageId)
             </td>
             <td class="adminData">
                 @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
@@ -27,7 +27,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Title):
+                @Html.SmartLabelFor(model => model.Title)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.Title)
@@ -36,7 +36,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Short):
+                @Html.SmartLabelFor(model => model.Short)
             </td>
             <td class="adminData">
                 @Html.TextAreaFor(model => model.Short, new { style = "Width: 500px; Height: 150px;" })
@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Full):
+                @Html.SmartLabelFor(model => model.Full)
             </td>
             <td class="adminData">
                 @Html.EditorFor(x => x.Full, "RichEditor")
@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowComments):
+                @Html.SmartLabelFor(model => model.AllowComments)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.AllowComments)
@@ -63,7 +63,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate):
+                @Html.SmartLabelFor(model => model.StartDate)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.StartDate)
@@ -72,7 +72,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate):
+                @Html.SmartLabelFor(model => model.EndDate)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.EndDate)
@@ -81,7 +81,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published):
+                @Html.SmartLabelFor(model => model.Published)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.Published)
@@ -117,7 +117,7 @@
 		</tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeName):
+                @Html.SmartLabelFor(model => model.SeName)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.SeName)
@@ -150,7 +150,7 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores):
+                @Html.SmartLabelFor(model => model.LimitedToStores)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.LimitedToStores)
@@ -159,7 +159,7 @@
         </tr>
         <tr id="pnl-available-stores">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores):
+                @Html.SmartLabelFor(model => model.AvailableStores)
             </td>
             <td class="adminData">
                 @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)

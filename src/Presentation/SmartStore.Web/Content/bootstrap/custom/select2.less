@@ -30,7 +30,7 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-container .select2-choice {
-    .gradientBar(@btnBackground, @btnBackgroundHighlight);
+    #gradient > .glossy(darken(@btnBackground, 1%), darken(@btnBackground, 3.5%), darken(@btnBackground, 5%), darken(@btnBackground, 10%));
     *background-color: @btnBackgroundHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
     border: 1px solid @btnBorder;
     border-bottom-color: darken(@btnBorder, 6%);
@@ -38,7 +38,7 @@ Source: https://github.com/ivaynberg/select2
     color: @color;
     .btn-text-shadow(contrast(@color));
     
-    .border-radius(@baseBorderRadius);
+    .border-radius(@inputBorderRadius);
     .background-clip(padding-box);
 
     display: block;
@@ -59,7 +59,7 @@ Source: https://github.com/ivaynberg/select2
 .select2-container.select2-drop-above .select2-choice
 {
 	border-bottom-color: #aaa;
-	.border-radius(0 0 @baseBorderRadius @baseBorderRadius);
+	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);
 	#gradient > .vertical(#fff, #eee);
 }
 
@@ -98,7 +98,7 @@ Source: https://github.com/ivaynberg/select2
     width:100%;
     margin-top:-1px;
     .box-shadow(0 4px 5px rgba(0, 0, 0, .15));
-    .border-radius(0 0 @baseBorderRadius @baseBorderRadius);
+    .border-radius(0 0 @inputBorderRadius @inputBorderRadius);
 	.smaller();
 }
 
@@ -107,21 +107,21 @@ Source: https://github.com/ivaynberg/select2
 	border-top: 1px solid #aaa;
 	border-bottom: 0;
 	.box-shadow(0 -4px 5px rgba(0, 0, 0, .15));
-	.border-radius(@baseBorderRadius @baseBorderRadius 0px 0px);
+	.border-radius(@inputBorderRadius @inputBorderRadius 0px 0px);
 }
 
 .select2-container .select2-choice div {
-    .border-radius(0 @baseBorderRadius @baseBorderRadius 0);
+    .border-radius(0 @inputBorderRadius @inputBorderRadius 0);
     .background-clip(padding-box);
 
     // gradientBar will set the background to a pleasing blend of these, to support IE<=9
     @ddChevron: darken(@btnBackground, 3%);
     @ddChevronHighlight: darken(@btnBackgroundHighlight, 3%);
-    .gradientBar(@ddChevron, @ddChevronHighlight);
-    *background-color: @ddChevronHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    //.gradientBar(@ddChevron, @ddChevronHighlight);
+    //*background-color: @ddChevronHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
 
-    border-left: 1px solid @btnBorder;
-    border-left: 1px solid rgba(255,255,255, .25);
+    //border-left: 1px solid @btnBorder;
+    //border-left: 1px solid rgba(0,0,0, .2);
     position: absolute;
     right: 0;
     top: 0;
@@ -203,7 +203,7 @@ Source: https://github.com/ivaynberg/select2
 .select2-dropdown-open .select2-choice {
     border: 1px solid #aaa;
     border-bottom-color: transparent;
-    .border-radius(@baseBorderRadius @baseBorderRadius 0 0);
+    .border-radius(@inputBorderRadius @inputBorderRadius 0 0);
     .box-shadow(0 1px 0 #fff inset);
     #gradient > .vertical(#eee, #fff);
     color: @grayDark !important;

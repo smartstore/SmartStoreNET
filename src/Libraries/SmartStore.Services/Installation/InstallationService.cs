@@ -314,19 +314,14 @@ namespace SmartStore.Services.Installation
 
 		private void InstallStores()
 		{
-			var stores = new List<Store>()
-            {
-                new Store()
-                {
-                    Name = "Your store name",
-					Url = "http://www.yourStore.com/",
-					SslEnabled = false,
-					Hosts = "yourstore.com,www.yourstore.com",
-                    DisplayOrder = 1,
-                },
-            };
-
-			stores.ForEach(x => _storeRepository.Insert(x));
+			try
+			{
+				_storeRepository.InsertRange(_installData.DefaultStores());				
+			}
+			catch (Exception ex)
+			{
+				throw new InstallationException("InstallStores", ex);
+			}
 		}
 
         private void InstallMeasureDimensions()

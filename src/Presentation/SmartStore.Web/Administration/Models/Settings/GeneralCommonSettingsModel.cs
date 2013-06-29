@@ -51,11 +51,6 @@ namespace SmartStore.Admin.Models.Settings
                 // codehint: sm-delete
             }
             
-            //codehint: sm-add
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreLogo")]
-            [UIHint("Picture")]
-            public int LogoPictureId { get; set; }
-
             // codehint: sm-delete
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosed")]

@@ -29,6 +29,7 @@ using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
@@ -4212,10 +4213,28 @@ namespace SmartStore.Services.Installation
             return entities;
         }
 
+		public IList<Store> DefaultStores()
+		{
+			var imgCompanyLogo = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", "", true, false);
+
+			var stores = new List<Store>()
+            {
+                new Store()
+                {
+                    Name = "Your store name",
+					Url = "http://www.yourStore.com/",
+					SslEnabled = false,
+					Hosts = "yourstore.com,www.yourstore.com",
+					LogoPictureId = imgCompanyLogo.Id,
+                    DisplayOrder = 1,
+                },
+            };
+			return stores;
+		}
+
         public IList<ISettings> Settings()
         {
             var imgContentSliderBg = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "clouds.png"), "image/png", "", true, false);
-            var imgCompanyLogo = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", "", true, false);
 
             var entities = new List<ISettings>
             {
@@ -4397,7 +4416,6 @@ namespace SmartStore.Services.Installation
                 },
                 new StoreInformationSettings()
                 {
-                    LogoPictureId = imgCompanyLogo.Id,
                     StoreClosed = false,
                     StoreClosedAllowForAdmins = true,
                     

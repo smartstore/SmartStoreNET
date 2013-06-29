@@ -957,7 +957,6 @@ namespace SmartStore.Admin.Controllers
 
             //store information
 			var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(storeScope);
-			model.StoreInformationSettings.LogoPictureId = storeInformationSettings.LogoPictureId;
 			model.StoreInformationSettings.StoreClosed = storeInformationSettings.StoreClosed;
 			model.StoreInformationSettings.StoreClosedAllowForAdmins = storeInformationSettings.StoreClosedAllowForAdmins;
 
@@ -1121,7 +1120,6 @@ namespace SmartStore.Admin.Controllers
 
 			//store information
 			var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(storeScope);
-			storeInformationSettings.LogoPictureId = model.StoreInformationSettings.LogoPictureId;
 			storeInformationSettings.StoreClosed = model.StoreInformationSettings.StoreClosed;
 			storeInformationSettings.StoreClosedAllowForAdmins = model.StoreInformationSettings.StoreClosedAllowForAdmins;
 

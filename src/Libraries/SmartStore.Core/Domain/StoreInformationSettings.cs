@@ -3,13 +3,7 @@
 namespace SmartStore.Core.Domain
 {
     public class StoreInformationSettings : ISettings
-    {
-
-        /// <summary>
-        /// Gets or sets a store name
-        /// </summary>
-        public int LogoPictureId { get; set; }
-        
+    {        
         /// <summary>
         /// Gets or sets a value indicating whether store is closed
         /// </summary>
@@ -26,6 +20,5 @@ namespace SmartStore.Core.Domain
         /// Gets or sets a value indicating whether mini profiler should be displayed in public store (used for debugging)
         /// </summary>
         public bool DisplayMiniProfilerInPublicStore { get; set; }
-
     }
 }

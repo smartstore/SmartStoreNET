@@ -33,6 +33,14 @@ set @resources='
 	<Value>Please provide a name.</Value>
 	<T>Bitte einen Namen angeben.</T>
   </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Stores.Fields.StoreLogo">
+	<Value>Store logo</Value>
+	<T>Shop Logo</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Stores.Fields.StoreLogo.Hint">
+	<Value>Upload your store logo</Value>
+	<T>Ein Shop Logo hochladen</T>
+  </LocaleResource>  
   <LocaleResource Name="Admin.Configuration.Stores.Fields.DisplayOrder">
 	<Value>Display order</Value>
 	<T>Reihenfolge</T>
@@ -214,7 +222,7 @@ set @resources='
 	<T>HTTP_HOST wird in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
   </LocaleResource>
 
- <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreName">
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreName">
 	<Value></Value>
 	<T></T>
   </LocaleResource>
@@ -230,6 +238,14 @@ set @resources='
 	<Value></Value>
 	<T></T>
   </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreLogo">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreLogo.Hint">
+	<Value></Value>
+	<T></T>
+  </LocaleResource>  
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url">
 	<Value>Store URL</Value>
 	<T>Shop URL</T>
@@ -735,6 +751,7 @@ BEGIN
 		[SslEnabled] bit NOT NULL,
 		[SecureUrl] nvarchar(400) NULL,
 		[Hosts] nvarchar(1000) NULL,
+		[LogoPictureId] int NOT NULL,
 		[DisplayOrder] int NOT NULL,
 	PRIMARY KEY CLUSTERED 
 	(
@@ -749,17 +766,27 @@ BEGIN
 		SET @DEFAULT_STORE_NAME = N'Your store name' 
 
 	DECLARE @DEFAULT_STORE_URL nvarchar(400)
-	SELECT @DEFAULT_STORE_URL= [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.storeurl'
+	SELECT @DEFAULT_STORE_URL = [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.storeurl'
 	
 	if (@DEFAULT_STORE_URL is null)
 		SET @DEFAULT_STORE_URL = N'http://www.yourstore.com/'
+		
+	DECLARE @DEFAULT_STORE_LOGOSETTING nvarchar(400)
+	SELECT @DEFAULT_STORE_LOGOSETTING = [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.logopictureid'
+	
+	if (@DEFAULT_STORE_LOGOSETTING is null)
+		SET @DEFAULT_STORE_LOGOSETTING = 0
+		
+	DECLARE @DEFAULT_STORE_LOGOPICTUREID int
+	SET @DEFAULT_STORE_LOGOPICTUREID = CAST(@DEFAULT_STORE_LOGOSETTING AS INT)
 
 	--create the first store
-	INSERT INTO [Store] ([Name], [Url], [SslEnabled], [Hosts], [DisplayOrder])
-	VALUES (@DEFAULT_STORE_NAME, @DEFAULT_STORE_URL, 0, N'yourstore.com,www.yourstore.com', 1)
+	INSERT INTO [Store] ([Name], [Url], [SslEnabled], [Hosts], [LogoPictureId], [DisplayOrder])
+	VALUES (@DEFAULT_STORE_NAME, @DEFAULT_STORE_URL, 0, N'yourstore.com,www.yourstore.com', CAST(@DEFAULT_STORE_LOGOPICTUREID AS INT), 1)
 
 	DELETE FROM [Setting] WHERE [name] = N'storeinformationsettings.storename' 
-	DELETE FROM [Setting] WHERE [name] = N'storeinformationsettings.storeurl' 
+	DELETE FROM [Setting] WHERE [name] = N'storeinformationsettings.storeurl'
+	DELETE FROM [Setting] WHERE [name] = N'storeinformationsettings.logopictureid'
 END
 GO
 

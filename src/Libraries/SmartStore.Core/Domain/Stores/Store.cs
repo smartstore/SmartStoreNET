@@ -32,6 +32,11 @@ namespace SmartStore.Core.Domain.Stores
 		public string Hosts { get; set; }
 
 		/// <summary>
+		/// Gets or sets the logo picture id
+		/// </summary>
+		public int LogoPictureId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the display order
 		/// </summary>
 		public int DisplayOrder { get; set; }

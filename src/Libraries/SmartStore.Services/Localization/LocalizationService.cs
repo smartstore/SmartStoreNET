@@ -311,7 +311,9 @@ namespace SmartStore.Services.Localization
                                 where l.ResourceName == resourceKey && l.LanguageId == languageId
                                 select l;
                     var res = query.FirstOrDefault();
-                    return new Tuple<int, string>(res.Id, res.ResourceValue);
+					if (res != null)	// codehint: sm-edit (null case)
+						return new Tuple<int, string>(res.Id, res.ResourceValue);
+					return null;
                 });
             }
             catch { }

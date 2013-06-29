@@ -111,15 +111,6 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreInformationSettings.LogoPictureId)
-            </td>
-            <td class="adminData" id="store-logo-picture">
-                @Html.SettingEditorFor(model => model.StoreInformationSettings.LogoPictureId, "#store-logo-picture")
-                @Html.ValidationMessageFor(model => model.StoreInformationSettings.LogoPictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
             <td class="adminData">

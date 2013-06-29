@@ -479,7 +479,7 @@ namespace SmartStore.Web.Framework
 		{
 			var data = helper.ViewData["StoreDependingSettingData"] as StoreDependingSettingData;
 
-			if (data.ActiveStoreScopeConfiguration > 0)
+			if (data != null && data.ActiveStoreScopeConfiguration > 0)
 			{
 				var settingKey = ExpressionHelper.GetExpressionText(expression);
 

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Stores;
 using SmartStore.Web.Framework;
@@ -27,6 +28,10 @@ namespace SmartStore.Admin.Models.Stores
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.Hosts")]
 		[AllowHtml]
 		public string Hosts { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.StoreLogo")]
+		[UIHint("Picture")]
+		public int LogoPictureId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.DisplayOrder")]
 		public int DisplayOrder { get; set; }

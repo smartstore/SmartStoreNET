@@ -22,6 +22,15 @@
 </script>
 
 <table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.LogoPictureId)
+        </td>
+        <td class="adminData" id="store-logo-picture">
+            @Html.EditorFor(model => model.LogoPictureId, "#store-logo-picture")
+            @Html.ValidationMessageFor(model => model.LogoPictureId)
+        </td>
+    </tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.Name)
@@ -42,7 +51,7 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SslEnabled):
+			@Html.SmartLabelFor(model => model.SslEnabled)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(model => model.SslEnabled)
@@ -51,7 +60,7 @@
 	</tr>
 	<tr id="pnlSecureUrl">
 		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SecureUrl):
+			@Html.SmartLabelFor(model => model.SecureUrl)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(model => model.SecureUrl)

@@ -8,7 +8,6 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -26,7 +25,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Discounts;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
@@ -44,7 +42,6 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Models.ShoppingCart;
 using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
 
@@ -79,7 +76,6 @@ namespace SmartStore.Web.Controllers
         private readonly CustomerSettings _customerSettings;
         private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
-        private readonly StoreInformationSettings _storeInformationSettings;
         private readonly ThemeSettings _themeSettings;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly CommonSettings _commonSettings;
@@ -112,7 +108,7 @@ namespace SmartStore.Web.Controllers
             ICacheManager cacheManager,
             ICustomerActivityService customerActivityService, CustomerSettings customerSettings, 
             TaxSettings taxSettings, CatalogSettings catalogSettings,
-            StoreInformationSettings storeInformationSettings, EmailAccountSettings emailAccountSettings,
+            EmailAccountSettings emailAccountSettings,
             CommonSettings commonSettings, BlogSettings blogSettings, ForumSettings forumSettings,
             LocalizationSettings localizationSettings, CaptchaSettings captchaSettings,
             IOrderTotalCalculationService orderTotalCalculationService, IPriceFormatter priceFormatter,
@@ -143,7 +139,6 @@ namespace SmartStore.Web.Controllers
             this._customerSettings = customerSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
-            this._storeInformationSettings = storeInformationSettings;
             this._emailAccountSettings = emailAccountSettings;
             this._commonSettings = commonSettings;
             this._blogSettings = blogSettings;
@@ -321,7 +316,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult Header()
         {
             var model = _cacheManager.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY, () => {
-                int logoPictureId = _storeInformationSettings.LogoPictureId;
+				int logoPictureId = _storeContext.CurrentStore.LogoPictureId;
 
                 Picture picture = null;
                 if (logoPictureId > 0)

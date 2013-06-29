@@ -251,10 +251,11 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 					});
 				});
 
-				var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(store.Id);
-				var logoUrl = _pictureService.GetPictureUrl(storeInformationSettings.LogoPictureId);
-
-				writer.WriteCData("Logo", logoUrl);
+				if (store.LogoPictureId != 0)
+				{
+					var logoUrl = _pictureService.GetPictureUrl(store.LogoPictureId);
+					writer.WriteCData("Logo", logoUrl);
+				}
 
 				writer.WriteNode("Address", () => 
 				{

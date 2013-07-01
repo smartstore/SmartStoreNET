@@ -9,7 +9,7 @@
 // Clearfix
 // --------
 // For clearing floats like a boss h5bp.com/q
-.clearfix {
+.clearfix() { // codehint: sm-edit (added parens, otherwise this class gets cluttered all over css)
   *zoom: 1;
   &:before,
   &:after {
@@ -103,7 +103,7 @@
 // CSS image replacement
 // -------------------------
 // Source: https://github.com/h5bp/html5-boilerplate/commit/aa0396eae757
-.hide-text {
+.hide-text() { // codehint: sm-edit (added parens, otherwise this class gets cluttered all over css)
   font: 0/0 a;
   color: transparent;
   text-shadow: none;
@@ -151,7 +151,7 @@
 // --------------------------------------------------
 
 // Block level inputs
-.input-block-level {
+.input-block-level() { // codehint: sm-edit (added parens, otherwise this class gets cluttered all over css)
   display: block;
   width: 100%;
   min-height: @inputHeight; // Make inputs at least the height of their button counterpart (base line-height + padding + border)

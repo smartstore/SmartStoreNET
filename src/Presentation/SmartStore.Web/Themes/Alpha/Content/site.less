@@ -373,7 +373,7 @@ nav ul, nav li {
 	border: 1px solid #bbb;
 	*border-right-width: 2px;
 	*border-bottom-width: 2px;
-	.border-radius(6px);
+	.border-radius(@borderRadiusLarge);
 	.box-shadow(0 5px 10px rgba(0,0,0,.2));
 	-webkit-background-clip: padding-box;
 	   -moz-background-clip: padding;
@@ -830,21 +830,23 @@ form.form-search {
 .data-list-grid .data-list-row,
 .data-list .data-list-item { margin-bottom: 12px; }
 
-.item-box{
-	background: @var_BoxBackground;
-	border: 1px solid #ddd;
-	position: relative;
-	.small();
-  	.box-shadow(0 1px 3px rgba(0,0,0,.055));
-	.transition(~'box-shadow .12s linear, border-color .12s linear');
-	&:hover {
-		/*
-		border: 1px solid @orange; //#94B84C;
-		.box-shadow(0px 0px 8px fade(@orange, 60%));
-		*/
-		border: 1px solid @var_ItemBoxBoxShadowColor;
-		.box-shadow(0px 0px 8px fade(@var_ItemBoxBoxShadowColor, 60%));
-	}
+.item-box {
+    background: @var_BoxBackground;
+    border: 1px solid #ddd;
+    position: relative;
+    .small();
+    .box-shadow(0 1px 3px rgba(0,0,0,.055));
+    .transition(~'box-shadow .12s linear, border-color .12s linear');
+
+    &.no-border {
+        border-color: transparent;
+        .box-shadow(0 1px 3px rgba(0,0,0,.0));
+    }
+
+    &:hover {
+        border: 1px solid @var_ItemBoxBoxShadowColor;
+        .box-shadow(0px 0px 8px fade(@var_ItemBoxBoxShadowColor, 60%));
+    }
 }
 .item-box.product-compact {
 	.small();

@@ -259,8 +259,9 @@ namespace SmartStore.Web.Framework.Plugins
 
 				if (secondFileName.HasValue())
 				{
-					feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, store.Id + "_" + secondFileName));
-					feedFile.CustomProperties.Add("SecondFileUrl", url + secondFileName);
+					string fname2 = store.Id + "_" + secondFileName;
+					feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, fname2));
+					feedFile.CustomProperties.Add("SecondFileUrl", url + fname2);
 				}
 				return feedFile;
 			}

@@ -13,12 +13,12 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="number">Number of products to load</param>
         /// <returns>"recently viewed products" list</returns>
-        IList<Product> GetRecentlyViewedProducts(int number);
+		IList<Product> GetRecentlyViewedProducts(int number);
 
         /// <summary>
         /// Adds a product to a recently viewed products list
         /// </summary>
         /// <param name="productId">Product identifier</param>
-        void AddProductToRecentlyViewedList(int productId);
+		void AddProductToRecentlyViewedList(int productId);
     }
 }

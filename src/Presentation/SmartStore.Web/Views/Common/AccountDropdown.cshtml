@@ -26,9 +26,10 @@
         @if (Model.DisplayAdminLink)
         {
             <li>
-                <a href="@Url.Content("~/admin")" target="_blank">
+                <a href="@Url.Content("~/admin")" target="_admin">
                     <i class="icon-cog"></i> 
-                    @T("Account.Administration")</a>
+                    @T("Account.Administration")
+                </a>
             </li>
         }
         

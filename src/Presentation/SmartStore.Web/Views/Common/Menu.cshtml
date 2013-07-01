@@ -48,13 +48,15 @@
     @Html.Widget("header_menu_after")
 </ul>
 
-@if (Model.BlogEnabled || Model.ForumEnabled) {
+@if (Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayAdminLink)
+{
     <ul class="pull-left special">
         @if (Model.BlogEnabled)
         {
             <li>
                 <a class="special-blog" href="@Url.RouteUrl("Blog")">
-                    <i class="icon-edit"></i>@T("Blog")
+                    <i class="icon-edit"></i>
+                    @T("Blog")
                 </a>
             </li>
         }
@@ -62,7 +64,17 @@
         {
             <li>
                 <a class="special-forum" href="@Url.RouteUrl("Boards")">
-                    <i class="icon-group"></i>@T("Forum.Forums")
+                    <i class="icon-group"></i>
+                    @T("Forum.Forums")
+                </a>
+            </li>
+        }
+        @if (Model.DisplayAdminLink)
+        {
+            <li>
+                <a href="@Url.Content("~/admin")" target="_admin">
+                    <i class="icon-cog"></i> 
+                    @T("Account.Administration")
                 </a>
             </li>
         }

@@ -635,6 +635,8 @@ namespace SmartStore.Web.Controllers
                 UnreadPrivateMessages = GetUnreadPrivateMessages(),
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
                 IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
+                IsAuthenticated = customer.IsRegistered(),
+                DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
             };
 
             return PartialView(model);

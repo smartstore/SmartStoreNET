@@ -22,7 +22,8 @@
 						columns.Bound(x => x.Name)
 							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.Url);
+						columns.Bound(x => x.Url)
+							.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
 						columns.Bound(x => x.Hosts);
 						columns.Bound(x => x.SslEnabled)
 							.Template(item => @Html.SymbolForBool(item.SslEnabled))

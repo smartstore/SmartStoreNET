@@ -15,6 +15,9 @@ namespace SmartStore.Services.Common
         /// <param name="address">Address</param>
         void DeleteAddress(Address address);
 
+		/// <remarks>codehint: sm-add</remarks>
+		void DeleteAddress(int id);
+
         /// <summary>
         /// Gets total number of addresses by country identifier
         /// </summary>

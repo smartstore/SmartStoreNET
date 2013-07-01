@@ -477,7 +477,7 @@ namespace SmartStore.Web.Framework
 		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
 		{
-			var data = helper.ViewData["StoreDependingSettingData"] as StoreDependingSettingData;
+			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
 
 			if (data != null && data.ActiveStoreScopeConfiguration > 0)
 			{

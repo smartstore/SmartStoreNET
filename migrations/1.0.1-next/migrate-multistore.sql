@@ -211,7 +211,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts.Hint">
 	<Value>The comma separated list of possible HTTP_POST values (for example, "yourstore.com,www.yourstore.com"). This property is required only when you have a multi-store solution to determine the current store.</Value>
-	<T>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "yourstore.com,www.yourstore.com"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
+	<T>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
   </LocaleResource>
   <LocaleResource Name="Admin.System.SystemInfo.HTTPHOST">
 	<Value>HTTP_HOST</Value>
@@ -539,8 +539,8 @@ set @resources='
 	<T>Alle aus/abwählen</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll.Hint">
-	<Value>(check boxes if you want to set a custom value for this shop)</Value>
-	<T>(Kontrollkästchen, falls Sie für diesen Shop separate Werte festlegen möchten)</T>
+	<Value>Check boxes if you want to set a custom value for this shop</Value>
+	<T>Kontrollkästchen, falls Sie für diesen Shop separate Werte festlegen möchten</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys">

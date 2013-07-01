@@ -113,7 +113,7 @@ namespace SmartStore.Services.Configuration
 			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new();
 
 		/// <remarks>codehint: sm-add</remarks>
-		void DeleteSetting<T>(T settings, string key, int storeId = 0);
+		void DeleteSetting(string key, int storeId = 0);
 
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.

@@ -16,21 +16,24 @@ namespace SmartStore.Web.Framework.Settings
 			_viewData = viewData;
 		}
 
+		public static string ViewDataKey { get { return "StoreDependingSettingData"; } }
 		public StoreDependingSettingData Data
 		{
 			get
 			{
-				return _viewData["StoreDependingSettingData"] as StoreDependingSettingData;
+				return _viewData[ViewDataKey] as StoreDependingSettingData;
 			}
 		}
 
 		private bool? IsOverrideChecked(string settingKey, FormCollection form)
 		{
-			var rawOverride = form.AllKeys.FirstOrDefault(k => k.IsCaseInsensitiveEqual(settingKey + "_OverrideForStore"));
+			var rawOverrideKey = form.AllKeys.FirstOrDefault(k => k.IsCaseInsensitiveEqual(settingKey + "_OverrideForStore"));
 
-			if (rawOverride.HasValue())
-				return rawOverride.ToLower().Contains("true");
-
+			if (rawOverrideKey.HasValue())
+			{
+				var checkboxValue = form[rawOverrideKey].EmptyNull().ToLower();
+				return checkboxValue.Contains("true");
+			}
 			return null;
 		}
 		public bool? IsOverrideChecked(object settings, string name, FormCollection form)
@@ -42,6 +45,14 @@ namespace SmartStore.Web.Framework.Settings
 		{
 			var key = settings.GetType().Name + "." + name;
 			Data.OverrideSettingKeys.Add(key);
+		}
+		public void CreateViewDataObject(int activeStoreScopeConfiguration, string rootSettingClass = null)
+		{
+			_viewData[ViewDataKey] = new StoreDependingSettingData()
+			{
+				ActiveStoreScopeConfiguration = activeStoreScopeConfiguration,
+				RootSettingClass = rootSettingClass
+			};
 		}
 
 		public void GetOverrideKeys(object settings, object model, int storeId, ISettingService settingService, bool isRootModel = true)
@@ -76,7 +87,7 @@ namespace SmartStore.Web.Framework.Settings
 				data.ActiveStoreScopeConfiguration = storeId;
 				data.RootSettingClass = settingName;
 
-				_viewData["StoreDependingSettingData"] = data;
+				_viewData[ViewDataKey] = data;
 			}
 		}
 		public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService)
@@ -97,7 +108,7 @@ namespace SmartStore.Web.Framework.Settings
 					if (doOverride.Value || storeId == 0)
 						settingService.SetSetting(key, value == null ? "" : value, storeId, false);
 					else if (storeId > 0)
-						settingService.DeleteSetting(settings, key, storeId);
+						settingService.DeleteSetting(key, storeId);
 				}
 			}
 		}

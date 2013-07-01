@@ -101,8 +101,8 @@
         });
 
 		// check overridden store settings
-        $('input.multi-store-override-option').each(function (k, v) {
-        	checkOverriddenStoreValue(v);
+        $('input.multi-store-override-option').each(function (index, elem) {
+        	checkOverriddenStoreValue(elem);
         });
 
         // sticky section-header

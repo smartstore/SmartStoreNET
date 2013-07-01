@@ -62,6 +62,14 @@ namespace SmartStore.Services.Common
             _eventPublisher.EntityDeleted(address);
         }
 
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual void DeleteAddress(int id)
+		{
+			var address = GetAddressById(id);
+			if (address != null)
+				DeleteAddress(address);
+		}
+
         /// <summary>
         /// Gets total number of addresses by country identifier
         /// </summary>

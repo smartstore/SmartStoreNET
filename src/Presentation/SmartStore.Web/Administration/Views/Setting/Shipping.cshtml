@@ -83,13 +83,15 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle" colspan="2">
+            <td class="adminTitle">
                 @Html.LabelFor(model => model.ShippingOriginAddress, new { style="font-weight: bold" })
             </td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
+			</td>
         </tr>
         <tr>
             <td id="pnlShippingOriginAddress" colspan="2">
-				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
                 @Html.EditorFor(model => model.ShippingOriginAddress, "Address")
             </td>
         </tr>        

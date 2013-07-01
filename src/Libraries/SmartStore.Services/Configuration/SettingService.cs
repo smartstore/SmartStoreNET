@@ -522,22 +522,24 @@ namespace SmartStore.Services.Configuration
 			}
 
 			string key = typeof(T).Name + "." + propInfo.Name;
-			key = key.Trim().ToLowerInvariant();
 
-			DeleteSetting(settings, key, storeId);
+			DeleteSetting(key, storeId);
 		}
 
 		/// <remarks>codehint: sm-add</remarks>
-		public virtual void DeleteSetting<T>(T settings, string key, int storeId = 0)
+		public virtual void DeleteSetting(string key, int storeId = 0)
 		{
-			var allSettings = GetAllSettingsCached();
-			var settingForCaching = allSettings.ContainsKey(key) ?
-				allSettings[key].FirstOrDefault(x => x.StoreId == storeId) : null;
-			if (settingForCaching != null)
+			if (key.HasValue())
 			{
-				//update
-				var setting = GetSettingById(settingForCaching.Id);
-				DeleteSetting(setting);
+				key = key.Trim().ToLowerInvariant();
+
+				var setting = (
+					from s in _settingRepository.Table
+					where s.StoreId == storeId && s.Name == key
+					select s).FirstOrDefault();
+
+				if (setting != null)
+					DeleteSetting(setting);
 			}
 		}
 
@@ -548,15 +550,18 @@ namespace SmartStore.Services.Configuration
 		/// <returns>Number of deleted settings</returns>
 		public virtual int DeleteSettings(string rootKey) {
 			int result = 0;
-			if (rootKey.HasValue()) {
-				try {
+			if (rootKey.HasValue())
+			{
+				try
+				{
 					string sqlDelete = "Delete From Setting Where Name Like '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
 					result = EngineContext.Current.Resolve<IDbContext>().ExecuteSqlCommand(sqlDelete);
 
                     // cache
                     _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
 				}
-				catch (Exception exc) {
+				catch (Exception exc)
+				{
 					exc.Dump();
 				}
 			}

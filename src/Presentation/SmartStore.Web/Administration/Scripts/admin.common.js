@@ -29,22 +29,39 @@ function OpenWindow(query, w, h, scroll) {
 }
 
 function checkAllOverriddenStoreValue(obj) {
-	$('input.multi-store-override-option').each(function (k, v) {
-		$(v).attr('checked', obj.checked);
-		checkOverridenStoreValue(v);
+	$('input.multi-store-override-option').each(function (index, elem) {
+		$(elem).attr('checked', obj.checked);
+		checkOverriddenStoreValue(elem);
 	});
 }
 function checkOverriddenStoreValue(obj) {
 	var parentSelector = $(obj).attr('data-parent-selector').toString(),
 		parent = (parentSelector.length > 0 ? $(parentSelector) : $(obj).parent()),
-		inputs = parent.find(':input').not('.multi-store-override-option');
+		enable = $(obj).is(':checked');
 
-	if ($(obj).is(':checked')) {
-		inputs.removeAttr('disabled');
-	}
-	else {
-		inputs.attr('disabled', true);
-	}
+	parent.find(':input').each(function (index, elem) {
+		var clss = $(elem).attr('class');
+
+		if ($(elem).is('select')) {
+			$(elem).select2(enable ? 'enable' : 'disable');
+		}
+		else if (clss != null && clss != 'multi-store-override-option') {
+			var tData = $(elem).data('tTextBox');
+
+			if (tData != null) {
+				if (enable)
+					tData.enable();
+				else
+					tData.disable();
+			}
+			else {
+				if (enable)
+					$(elem).removeAttr('disabled');
+				else
+					$(elem).attr('disabled', true);
+			}
+		}
+	});
 }
 
 // codehint: sm-add

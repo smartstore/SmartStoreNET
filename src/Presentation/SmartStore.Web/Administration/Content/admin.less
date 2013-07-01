@@ -521,19 +521,18 @@ a:hover {
 	.options { right: 15px }
 }
 
-/* STORE SCOPE CONFIGURATION */
-.multi-store-scope {
-    background-color: #dfdfdf;
-    padding: 5px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+/* multi-store */
+*.multi-store-scope {
+    label.checkbox {
+        margin: 4px 0 1px 3px;
+
+        .hint {
+            .smaller();
+        }
+    }
 }
-.multi-store-scope .selector { }
-.multi-store-scope .check-all {
-    margin-top: 10px;
-}
-.multi-store-scope .title{
-    font-weight:700;
+.multi-store-override-option {
+    margin-right: 4px !important;
 }
 
 /* TABLES */

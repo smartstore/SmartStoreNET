@@ -196,13 +196,15 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle" colspan="2">
+            <td class="adminTitle">
                 @Html.LabelFor(model => model.DefaultTaxAddress, new { style="font-weight: bold" })
             </td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.DefaultTaxAddress, "#pnlDefaultTaxAddress")
+			</td>
         </tr>
         <tr>
             <td colspan="2" id="pnlDefaultTaxAddress">
-				@Html.SettingOverrideCheckbox(model => Model.DefaultTaxAddress, "#pnlDefaultTaxAddress")
                 @Html.EditorFor(x => x.DefaultTaxAddress, "Address")
             </td>
         </tr>

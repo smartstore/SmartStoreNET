@@ -299,6 +299,9 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.GetOverrideKeys(shippingSettings, model, storeScope, _settingService);
 
 			//shipping origin
+			if (storeScope > 0 && _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope))
+				StoreDependingSettings.AddOverrideKey(shippingSettings, "ShippingOriginAddress");
+
 			var originAddress = shippingSettings.ShippingOriginAddressId > 0
 									 ? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
 									 : null;
@@ -306,9 +309,6 @@ namespace SmartStore.Admin.Controllers
 				model.ShippingOriginAddress = originAddress.ToModel();
 			else
 				model.ShippingOriginAddress = new AddressModel();
-
-			if (storeScope > 0 && _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope))
-				StoreDependingSettings.Data.OverrideSettingKeys.Add("ShippingOriginAddress");
 
 			// codehint: sm-delete
             // model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
@@ -361,13 +361,10 @@ namespace SmartStore.Admin.Controllers
 			if (shippingOriginAddressOverride || storeScope == 0)
 			{
 				//update address
-				var addressId = _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) ?
-					shippingSettings.ShippingOriginAddressId : 0;
-				var originAddress = _addressService.GetAddressById(addressId) ??
-					new Core.Domain.Common.Address()
-					{
-						CreatedOnUtc = DateTime.UtcNow,
-					};
+				var addressId = _settingService.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) ? shippingSettings.ShippingOriginAddressId : 0;
+				
+				var originAddress = _addressService.GetAddressById(addressId) ?? new Core.Domain.Common.Address() { CreatedOnUtc = DateTime.UtcNow };
+
 				//update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
 				model.ShippingOriginAddress.Id = addressId;
 				originAddress = model.ShippingOriginAddress.ToEntity(originAddress);
@@ -381,6 +378,8 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
+				_addressService.DeleteAddress(shippingSettings.ShippingOriginAddressId);	// codehint: sm-add
+				
 				_settingService.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
 			}
 
@@ -505,13 +504,10 @@ namespace SmartStore.Admin.Controllers
 			if (defaultTaxAddressOverride || storeScope == 0)
 			{
 				//update address
-				var addressId = _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) ?
-					taxSettings.DefaultTaxAddressId : 0;
-				var originAddress = _addressService.GetAddressById(addressId) ??
-					new Core.Domain.Common.Address()
-					{
-						CreatedOnUtc = DateTime.UtcNow,
-					};
+				var addressId = _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) ? taxSettings.DefaultTaxAddressId : 0;
+
+				var originAddress = _addressService.GetAddressById(addressId) ?? new Core.Domain.Common.Address() { CreatedOnUtc = DateTime.UtcNow };
+
 				//update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
 				model.DefaultTaxAddress.Id = addressId;
 				originAddress = model.DefaultTaxAddress.ToEntity(originAddress);
@@ -525,6 +521,8 @@ namespace SmartStore.Admin.Controllers
 			}
 			else if (storeScope > 0)
 			{
+				_addressService.DeleteAddress(taxSettings.DefaultTaxAddressId);		// codehint: sm-add
+
 				_settingService.DeleteSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope);
 			}
 
@@ -713,16 +711,24 @@ namespace SmartStore.Admin.Controllers
 				orderSettings.ReturnRequestActions.Clear();
 				foreach (var returnAction in model.ReturnRequestActionsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
 					orderSettings.ReturnRequestActions.Add(returnAction);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, storeScope, false);
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);		// codehint: sm-edit
 				
 				//parse return request reasons
 				orderSettings.ReturnRequestReasons.Clear();
 				foreach (var returnReason in model.ReturnRequestReasonsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
 					orderSettings.ReturnRequestReasons.Add(returnReason);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, storeScope, false);
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);		// codehint: sm-edit
 
-				_settingService.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
-				_settingService.SaveSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId, 0, false);
+				// codehint: sm-edit
+				if (model.GiftCards_Activated_OrderStatusId.HasValue)
+					_settingService.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
+				else
+					_settingService.DeleteSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId);
+
+				if (model.GiftCards_Deactivated_OrderStatusId.HasValue)
+					_settingService.SaveSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId, 0, false);
+				else
+					_settingService.DeleteSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId);
 
 				//now clear settings cache
 				_settingService.ClearCache();
@@ -954,6 +960,8 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new GeneralCommonSettingsModel();
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+
+			StoreDependingSettings.CreateViewDataObject(storeScope);
 
             //store information
 			var storeInformationSettings = _settingService.LoadSetting<StoreInformationSettings>(storeScope);

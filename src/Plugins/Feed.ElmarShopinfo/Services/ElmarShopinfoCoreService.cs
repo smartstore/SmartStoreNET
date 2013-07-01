@@ -461,6 +461,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				new	SelectListItem { Text = Helper.Resource("Common.Unspecified"), Value = "" }
 			};
 
+			model.AvailableStores = new List<SelectListItem>();
 			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
 			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
 

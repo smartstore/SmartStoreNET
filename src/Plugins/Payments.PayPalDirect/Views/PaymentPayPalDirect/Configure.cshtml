@@ -4,7 +4,6 @@
 @model ConfigurationModel
 @using SmartStore.Plugin.Payments.PayPalDirect.Models;
 @using SmartStore.Web.Framework;
-@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 @using (Html.BeginForm())
 {
     <table class="adminContent">
@@ -28,7 +27,6 @@
             @Html.SmartLabelFor(model => model.TransactMode)
         </td>
         <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.TransactMode)
             @Html.DropDownList("TransactMode", Model.TransactModeValues)
         </td>
     </tr>
@@ -37,7 +35,7 @@
             @Html.SmartLabelFor(model => model.UseSandbox)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.UseSandbox)
+            @Html.EditorFor(model => model.UseSandbox)
             @Html.ValidationMessageFor(model => model.UseSandbox)
         </td>
     </tr>
@@ -46,7 +44,7 @@
             @Html.SmartLabelFor(model => model.ApiAccountName)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.ApiAccountName)
+            @Html.EditorFor(model => model.ApiAccountName)
             @Html.ValidationMessageFor(model => model.ApiAccountName)
         </td>
     </tr>
@@ -55,7 +53,7 @@
             @Html.SmartLabelFor(model => model.ApiAccountPassword)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.ApiAccountPassword)
+            @Html.EditorFor(model => model.ApiAccountPassword)
             @Html.ValidationMessageFor(model => model.ApiAccountPassword)
         </td>
     </tr>
@@ -64,7 +62,7 @@
             @Html.SmartLabelFor(model => model.Signature)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.Signature)
+            @Html.EditorFor(model => model.Signature)
             @Html.ValidationMessageFor(model => model.Signature)
         </td>
     </tr>
@@ -73,7 +71,7 @@
             @Html.SmartLabelFor(model => model.AdditionalFee)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AdditionalFee)
+            @Html.EditorFor(model => model.AdditionalFee)
             @Html.ValidationMessageFor(model => model.AdditionalFee)
         </td>
     </tr>
@@ -82,7 +80,7 @@
             @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+            @Html.EditorFor(model => model.AdditionalFeePercentage)
             @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
         </td>
     </tr>

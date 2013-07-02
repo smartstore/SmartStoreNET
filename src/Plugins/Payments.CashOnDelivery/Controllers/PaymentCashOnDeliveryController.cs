@@ -1,53 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Plugin.Payments.CashOnDelivery.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
 {
     public class PaymentCashOnDeliveryController : PaymentControllerBase
     {
-		private readonly IWorkContext _workContext;
-		private readonly IStoreService _storeService;
-        private readonly ISettingService _settingService;
-		private readonly IStoreContext _storeContext;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly CashOnDeliveryPaymentSettings _cashOnDeliveryPaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-		public PaymentCashOnDeliveryController(IWorkContext workContext,
-			IStoreService storeService, 
-			ISettingService settingService,
-			IStoreContext storeContext,
-            ILocalizationService localizationService)
-        {
-			this._workContext = workContext;
-			this._storeService = storeService;
-            this._settingService = settingService;
-			this._storeContext = storeContext;
-            this._localizationService = localizationService;
-        }
+		public PaymentCashOnDeliveryController(ISettingService settingService,
+			CashOnDeliveryPaymentSettings cashOnDeliveryPaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._cashOnDeliveryPaymentSettings = cashOnDeliveryPaymentSettings;
+			_localizationService = localizationService;
+		}
+
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var cashOnDeliveryPaymentSettings = _settingService.LoadSetting<CashOnDeliveryPaymentSettings>(storeScope);
-
-            var model = new ConfigurationModel();
-            model.DescriptionText = cashOnDeliveryPaymentSettings.DescriptionText;
-            model.AdditionalFee = cashOnDeliveryPaymentSettings.AdditionalFee;
-			model.AdditionalFeePercentage = cashOnDeliveryPaymentSettings.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.GetOverrideKeys(cashOnDeliveryPaymentSettings, model, storeScope, _settingService);
+			var model = new ConfigurationModel();
+			model.DescriptionText = _cashOnDeliveryPaymentSettings.DescriptionText;
+			model.AdditionalFee = _cashOnDeliveryPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _cashOnDeliveryPaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.Configure", model);
         }
@@ -55,25 +39,17 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
+		[ValidateInput(false)]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var cashOnDeliveryPaymentSettings = _settingService.LoadSetting<CashOnDeliveryPaymentSettings>(storeScope);
-            
-            //save settings
-            cashOnDeliveryPaymentSettings.DescriptionText = model.DescriptionText;
-            cashOnDeliveryPaymentSettings.AdditionalFee = model.AdditionalFee;
-			cashOnDeliveryPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.UpdateSettings(cashOnDeliveryPaymentSettings, form, storeScope, _settingService);
-
-			//now clear settings cache
-			_settingService.ClearCache();
+			//save settings
+			_cashOnDeliveryPaymentSettings.DescriptionText = model.DescriptionText;
+			_cashOnDeliveryPaymentSettings.AdditionalFee = model.AdditionalFee;
+			_cashOnDeliveryPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_cashOnDeliveryPaymentSettings);
             
             return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.Configure", model);
         }
@@ -81,10 +57,8 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-			var cashOnDeliveryPaymentSettings = _settingService.LoadSetting<CashOnDeliveryPaymentSettings>(_storeContext.CurrentStore.Id);
-
             var model = new PaymentInfoModel();
-            string desc = cashOnDeliveryPaymentSettings.DescriptionText;
+            string desc = _cashOnDeliveryPaymentSettings.DescriptionText;
 
             if (desc.StartsWith("@"))
             {
@@ -92,7 +66,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
             } 
             else  
             {
-                model.DescriptionText = cashOnDeliveryPaymentSettings.DescriptionText;
+                model.DescriptionText = _cashOnDeliveryPaymentSettings.DescriptionText;
             }
 
             return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.PaymentInfo", model);

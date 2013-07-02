@@ -1,52 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Plugin.Payments.PayInStore.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.PayInStore.Controllers
 {
     public class PaymentPayInStoreController : PaymentControllerBase
     {
-		private readonly IWorkContext _workContext;
-		private readonly IStoreService _storeService;
-		private readonly IStoreContext _storeContext;
-        private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly PayInStorePaymentSettings _payInStorePaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-		public PaymentPayInStoreController(IWorkContext workContext,
-			IStoreService storeService,
-			IStoreContext storeContext, 
-			ISettingService settingService, 
-            ILocalizationService localizationService)
-        {
-			this._workContext = workContext;
-			this._storeService = storeService;
-			this._storeContext = storeContext;
-            this._settingService = settingService;
-            this._localizationService = localizationService;
-        }
+		public PaymentPayInStoreController(ISettingService settingService,
+			PayInStorePaymentSettings payInStorePaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._payInStorePaymentSettings = payInStorePaymentSettings;
+			this._localizationService = localizationService;
+		}
+
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var payInStorePaymentSettings = _settingService.LoadSetting<PayInStorePaymentSettings>(storeScope);
-
-            var model = new ConfigurationModel();
-            model.DescriptionText = payInStorePaymentSettings.DescriptionText;
-            model.AdditionalFee = payInStorePaymentSettings.AdditionalFee;
-			model.AdditionalFeePercentage = payInStorePaymentSettings.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.GetOverrideKeys(payInStorePaymentSettings, model, storeScope, _settingService);
+			var model = new ConfigurationModel();
+			model.DescriptionText = _payInStorePaymentSettings.DescriptionText;
+			model.AdditionalFee = _payInStorePaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _payInStorePaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
         }
@@ -54,25 +39,17 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
+		[ValidateInput(false)]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var payInStorePaymentSettings = _settingService.LoadSetting<PayInStorePaymentSettings>(storeScope);
-
-            //save settings
-            payInStorePaymentSettings.DescriptionText = model.DescriptionText;
-            payInStorePaymentSettings.AdditionalFee = model.AdditionalFee;
-			payInStorePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.UpdateSettings(payInStorePaymentSettings, form, storeScope, _settingService);
-
-			//now clear settings cache
-			_settingService.ClearCache();
+			//save settings
+			_payInStorePaymentSettings.DescriptionText = model.DescriptionText;
+			_payInStorePaymentSettings.AdditionalFee = model.AdditionalFee;
+			_payInStorePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_payInStorePaymentSettings);
             
             return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
         }
@@ -80,11 +57,9 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-			var payInStorePaymentSettings = _settingService.LoadSetting<PayInStorePaymentSettings>(_storeContext.CurrentStore.Id);
-
             var model = new PaymentInfoModel();
 
-            string desc = payInStorePaymentSettings.DescriptionText;
+            string desc = _payInStorePaymentSettings.DescriptionText;
 
             if (desc.StartsWith("@"))
             {
@@ -92,7 +67,7 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
             }
             else
             {
-                model.DescriptionText = payInStorePaymentSettings.DescriptionText;
+                model.DescriptionText = _payInStorePaymentSettings.DescriptionText;
             }
 
             return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.PaymentInfo", model);

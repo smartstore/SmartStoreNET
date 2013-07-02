@@ -1,33 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Plugin.Payments.Sofortueberweisung.Models;
 using SmartStore.Plugin.Payments.Sofortueberweisung.Core;
-using SmartStore.Services.Stores;
-using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 {
 	public class PaymentSofortueberweisungController : PaymentControllerBase
 	{
 		private readonly ISofortueberweisungApi _api;
-		private readonly IWorkContext _workContext;
-		private readonly IStoreService _storeService;
 		private readonly ISettingService _settingService;
+		private readonly SofortueberweisungPaymentSettings _paymentSettingsSu;
 
 		public PaymentSofortueberweisungController(
 			ISofortueberweisungApi api,
-			IWorkContext workContext,
-			IStoreService storeService,
-			ISettingService settingService)
+			ISettingService settingService,
+			SofortueberweisungPaymentSettings paymentSettingsSu)
 		{
-			_workContext = workContext;
-			_storeService = storeService;
 			_api = api;
 			_settingService = settingService;
+			_paymentSettingsSu = paymentSettingsSu;
 		}
 
 		[NonAction]
@@ -46,15 +40,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 		[ChildActionOnly]
 		public ActionResult Configure() 
 		{
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var sofortueberweisungPaymentSettings = _settingService.LoadSetting<SofortueberweisungPaymentSettings>(storeScope);
-
 			ConfigurationModel model = new ConfigurationModel();
-			model.Copy(sofortueberweisungPaymentSettings, true);
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.GetOverrideKeys(sofortueberweisungPaymentSettings, model, storeScope, _settingService);
+			model.Copy(_paymentSettingsSu, true);
 
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.Configure", model);
 		}
@@ -62,21 +49,16 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 		[HttpPost]
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure(ConfigurationModel model, FormCollection form) {
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		{
 			if (!ModelState.IsValid)
 				return Configure();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var sofortueberweisungPaymentSettings = _settingService.LoadSetting<SofortueberweisungPaymentSettings>(storeScope);
+			if (!ModelState.IsValid)
+				return Configure();
 
-			model.Copy(sofortueberweisungPaymentSettings, false);
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.UpdateSettings(sofortueberweisungPaymentSettings, form, storeScope, _settingService);
-
-			//now clear settings cache
-			_settingService.ClearCache();
+			model.Copy(_paymentSettingsSu, false);
+			_settingService.SaveSetting(_paymentSettingsSu);
 
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.Configure", model);
 		}

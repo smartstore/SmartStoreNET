@@ -1,53 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Plugin.Payments.Prepayment.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Payments.Prepayment.Controllers
 {
     public class PaymentPrepaymentController : PaymentControllerBase
     {
-		private readonly IWorkContext _workContext;
-		private readonly IStoreService _storeService;
-		private readonly IStoreContext _storeContext;
-        private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly PrepaymentPaymentSettings _prepaymentPaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-		public PaymentPrepaymentController(IWorkContext workContext,
-			IStoreService storeService,
-			IStoreContext storeContext, 
-			ISettingService settingService, 
-            ILocalizationService localizationService)
-        {
-			this._workContext = workContext;
-			this._storeService = storeService;
-			this._storeContext = storeContext;
-            this._settingService = settingService;
-            this._localizationService = localizationService;
-        }
+		public PaymentPrepaymentController(ISettingService settingService,
+			PrepaymentPaymentSettings prepaymentPaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._prepaymentPaymentSettings = prepaymentPaymentSettings;
+			this._localizationService = localizationService;
+		}
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var prepaymentPaymentSettings = _settingService.LoadSetting<PrepaymentPaymentSettings>(storeScope);
-
-            var model = new ConfigurationModel();
-            model.DescriptionText = prepaymentPaymentSettings.DescriptionText;
-            model.AdditionalFee = prepaymentPaymentSettings.AdditionalFee;
-			model.AdditionalFeePercentage = prepaymentPaymentSettings.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.GetOverrideKeys(prepaymentPaymentSettings, model, storeScope, _settingService);
+			var model = new ConfigurationModel();
+			model.DescriptionText = _prepaymentPaymentSettings.DescriptionText;
+			model.AdditionalFee = _prepaymentPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _prepaymentPaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.Configure", model);
         }
@@ -55,25 +38,17 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
+		[ValidateInput(false)]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var prepaymentPaymentSettings = _settingService.LoadSetting<PrepaymentPaymentSettings>(storeScope);
-
-            //save settings
-            prepaymentPaymentSettings.DescriptionText = model.DescriptionText;
-            prepaymentPaymentSettings.AdditionalFee = model.AdditionalFee;
-			prepaymentPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-
-			var storeDependingSettings = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettings.UpdateSettings(prepaymentPaymentSettings, form, storeScope, _settingService);
-
-			//now clear settings cache
-			_settingService.ClearCache();
+			//save settings
+			_prepaymentPaymentSettings.DescriptionText = model.DescriptionText;
+			_prepaymentPaymentSettings.AdditionalFee = model.AdditionalFee;
+			_prepaymentPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_prepaymentPaymentSettings);
             
             return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.Configure", model);
         }
@@ -81,18 +56,16 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-			var prepaymentPaymentSettings = _settingService.LoadSetting<PrepaymentPaymentSettings>(_storeContext.CurrentStore.Id);
-
             var model = new PaymentInfoModel();
 
-            string desc = prepaymentPaymentSettings.DescriptionText;
+			string desc = _prepaymentPaymentSettings.DescriptionText;
 
             if( desc.StartsWith("@") )
             {
                 model.DescriptionText = _localizationService.GetResource(desc.Substring(1));
             } 
             else  {
-                model.DescriptionText = prepaymentPaymentSettings.DescriptionText;
+				model.DescriptionText = _prepaymentPaymentSettings.DescriptionText;
             }
 
             return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.PaymentInfo", model);

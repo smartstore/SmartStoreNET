@@ -496,7 +496,8 @@ namespace SmartStore.Web.Framework
 					{ "data-parent-selector", parentSelector.EmptyNull() },
 				});
 
-				return checkbox;
+				// inputs are not floating, so line-break prevents different distances between them
+				return MvcHtmlString.Create(checkbox + "\r\n");
 			}
 			return MvcHtmlString.Empty;
 		}

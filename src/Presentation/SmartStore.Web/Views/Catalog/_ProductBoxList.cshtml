@@ -38,6 +38,15 @@
         <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
             <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
         </a>
+        @if (Model.ColorAttributes.Any())
+        {
+            <div class="colors">
+                @foreach (var clr in Model.ColorAttributes)
+                {
+                    <span style="background-color: @clr.Color" title="@clr.FriendlyName"></span>
+                }
+            </div>
+        }
     </figure>
     @if (Model.ShowReviews) {
     <div class="reviews" style="width:@leftContentWidth">
@@ -47,7 +56,7 @@
     </div>
     }
 </div>
-<div class="" style="margin-left:@leftContentWidth">
+<div style="margin-left:@leftContentWidth">
     <div class="data">
         <h3 class="name">
             <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.Name">@Model.Name</a>

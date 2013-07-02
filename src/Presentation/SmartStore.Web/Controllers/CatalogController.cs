@@ -273,7 +273,8 @@ namespace SmartStore.Web.Controllers
         protected IEnumerable<ProductOverviewModel> PrepareProductOverviewModels(IEnumerable<Product> products,
             bool preparePriceModel = true, bool preparePictureModel = true,
             int? productThumbPictureSize = null, bool prepareSpecificationAttributes = false,
-            bool forceRedirectionAfterAddingToCart = false)
+            bool forceRedirectionAfterAddingToCart = false,
+            bool prepareColorAttributes = false)
         {
             if (products == null)
                 throw new ArgumentNullException("products");
@@ -529,6 +530,30 @@ namespace SmartStore.Web.Controllers
                 {
                     //specs for comparing
                     model.SpecificationAttributeModels = PrepareProductSpecificationModel(product);
+                }
+
+                // available colors (codehint: sm-add)
+                if (prepareColorAttributes)
+                {   
+                    // get the FIRST color type attribute
+                    var colorAttr = _productAttributeService.GetProductVariantAttributesByProductVariantId(productVariant.Id)
+                        .FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
+
+                    if (colorAttr != null)
+                    {
+                        var colorValues = from a in colorAttr.ProductVariantAttributeValues
+                                        where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+                                        select new ProductOverviewModel.ColorAttributeModel { 
+                                            Color = a.ColorSquaresRgb,
+                                            Alias = a.Alias,
+                                            FriendlyName = a.GetLocalized(l => l.Name)
+                                        };
+
+                        if (colorValues.Any())
+                        {
+                            model.ColorAttributes.AddRange(colorValues);
+                        }
+                    }
                 }
 
                 models.Add(model);
@@ -1602,7 +1627,7 @@ namespace SmartStore.Web.Controllers
                 var filterQuery = _filterService.ProductFilter(context);
                 var products = new PagedList<Product>(filterQuery, 0, command.PageSize);
 
-                model.Products = PrepareProductOverviewModels(products).ToList();
+                model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
                 model.PagingFilteringContext.LoadPagedList(products);
             }
             else
@@ -1631,7 +1656,7 @@ namespace SmartStore.Web.Controllers
 
                 var products = _productService.SearchProducts(ctx2);
 
-                model.Products = PrepareProductOverviewModels(products).ToList();
+                model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
                 model.PagingFilteringContext.LoadPagedList(products);
                 //model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete

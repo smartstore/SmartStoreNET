@@ -153,12 +153,6 @@ nav ul, nav li {
 
 /* SHOPBAR 
 ------------------------------ */
-/*
-@shopBarBackgroundColor: #fff;
-@shopBarBorderColor: #abc2d1;
-@shopBarTextColor: #696969;
-@shopBarIconColor: #d2d2d2;
-*/
 @shopBarBackgroundColor: @var_ShopBarBackgroundColor;
 @shopBarBorderColor: @var_ShopBarBorderColor;
 @shopBarTextColor: @var_ShopBarTextColor;
@@ -182,7 +176,6 @@ nav ul, nav li {
     border-bottom: 1px solid @shopBarBorderColor;
     .box-shadow(0 0px 8px @shopBarBorderColor);
     
-    //@bg: top, #fff, #fff 40%, #ededed 100%;
     @bg: top, @shopBarBackgroundColor, @shopBarBackgroundColor 40%, darken(@shopBarBackgroundColor, 7%) 100%;
     background-color: @shopBarBackgroundColor;
     background-image: -webkit-linear-gradient(@bg);
@@ -208,7 +201,6 @@ nav ul, nav li {
         text-decoration: none;
         line-height: 14px;
         color: @shopBarTextColor;
-        //xtext-shadow: 0 1px 0 contrast(@shopBarTextColor);
 		.sb-textshadow();
         .transition(color 0.15s linear);
         &:hover { 
@@ -354,7 +346,7 @@ nav ul, nav li {
 	visibility: visible;
 }
 
-/* übernommen aus bootstrap */
+/* taken aus bootstrap */
 .shopbar-flyout {
 	position: absolute;
 	visibility: hidden;
@@ -379,7 +371,6 @@ nav ul, nav li {
 	   -moz-background-clip: padding;
 	        background-clip: padding-box;
   	
-  	//.transition(height 0.25s ease-in);
   	height: 50px;
   	min-height: 50px;
 	background-image: none;
@@ -812,17 +803,6 @@ form.form-search {
 	border-top-color: @warningText;
 }
 
-
-/* FOOTER */
-/*.footer{clear:both;height:30px;padding:5px 3px;}
-.footer a{text-decoration:none;color:#FFF;}
-.footer-disclaimer{float:right;font-size:11px;}
-.footer-poweredby{float:left;font-size:11px;}
-.footer-store-theme{float:right;margin:0 100px 0 10px;font-size:11px;}
-.store-theme-list{background:#e3e3e3;border:solid 1px #3a3a3a;}
-.change-device{clear:both;text-align:right;}
-*/
-
 /* DATA LISTS */
 .data-list .thumbnail .caption { padding: 4px }
 .data-list { }
@@ -860,6 +840,7 @@ form.form-search {
 	color: inherit;  
 	overflow: hidden;
 	margin-bottom: 0.3em;
+    margin-top: 0;
 	a {
 		font-weight: bold;
 		text-decoration: none;
@@ -867,12 +848,56 @@ form.form-search {
 		&:hover { color: darken(@textColor, 12%) }
 	}
 }
-.item-box figure.picture {
-	padding: 4px; 
-	text-align: center;
-	margin: 0;
-	min-height: 100px;
+.item-box.details .name {
+    margin-top: 10px;
 }
+.item-box figure.picture {
+    position: relative;
+    z-index: 0;
+    padding: 4px;
+    text-align: center;
+    margin: 0;
+    min-height: 100px;
+
+    a { 
+        display: inline-block; 
+        position: relative;
+        z-index: 0; }
+}
+
+.item-box figure.picture .colors {
+    position: absolute; 
+    left: 4%; 
+    right: 4%; 
+    bottom: 3px; 
+    z-index: 1;
+    .opacity(0);
+    .transition(opacity .15s linear);
+    -webkit-transform: translateZ(0);
+    text-align: center; 
+    line-height: 6px; 
+    font-size: 0; 
+    overflow: hidden; 
+}
+.item-box.details figure.picture .colors {
+    position: relative;
+    .opacity(50);
+    top: 12px;
+    bottom: auto;
+    text-align: left;
+}
+.item-box:hover figure.picture .colors {
+    .opacity(100);
+}
+.item-box figure.picture .colors > span {
+    display: inline-block; 
+    width: 6px; 
+    height: 6px; 
+    margin-right: 3px;
+    border: 1px solid rgba(0,0,0,.3);
+    *border-color: #aaa;
+}
+
 .item-box .data {
 	padding: 8px;
 }
@@ -938,10 +963,8 @@ form.form-search {
 .item-box.details {
 	margin-bottom: 20px;
 }
-.item-box.details .name {
-	a {
-		font-size: 15px;
-	}
+.item-box.details .name a {
+    font-size: 15px;
 }
 .item-box.details .data {
 	padding: 0 8px 0 0;
@@ -990,7 +1013,9 @@ form.form-search {
 .item-box .quicklinks {
 	padding: 5px 8px;
 	overflow: hidden;
+    .smaller();
 	position: absolute;
+    z-index: 1;
 	left: 0;
 	top: 0;
 	right: 1px;
@@ -1015,6 +1040,7 @@ form.form-search {
 .item-box.details .quicklinks {
 	padding: 30px 0 0 0;
 	position: relative;
+    z-index: 1;
 	background: #fff;
 	border: 0;
 	.opacity(100);
@@ -1029,6 +1055,14 @@ form.form-search {
 		}
 	}
 }
+
+@media (max-width: 1200px) {
+    .item-box:not(.details) .quicklinks a > i {
+        // container is too small to display labels with icons
+        display: none;
+    }
+}
+
 .item-box .reviews {
 	text-align: center;
 }

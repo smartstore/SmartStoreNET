@@ -16,6 +16,7 @@ namespace SmartStore.Web.Models.Catalog
             //codehint: sm-add begin
             Manufacturers = new List<ManufacturerOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
+            ColorAttributes = new List<ColorAttributeModel>();
             //codehint: sm-add end
         }
 
@@ -58,6 +59,8 @@ namespace SmartStore.Web.Models.Catalog
         public PictureModel DefaultPictureModel { get; set; }
         //specification attributes
         public IList<ProductSpecificationModel> SpecificationAttributeModels { get; set; }
+        // color Attributes
+        public IList<ColorAttributeModel> ColorAttributes { get; set; }
 
 		#region Nested Classes
 
@@ -75,6 +78,13 @@ namespace SmartStore.Web.Models.Catalog
             public bool AvailableForPreOrder { get; set; }
 
             public bool ForceRedirectionAfterAddingToCart { get; set; }
+        }
+
+        public partial class ColorAttributeModel : ModelBase
+        {
+            public string Color { get; set; }
+            public string Alias { get; set; }
+            public string FriendlyName { get; set; }
         }
 
 		#endregion

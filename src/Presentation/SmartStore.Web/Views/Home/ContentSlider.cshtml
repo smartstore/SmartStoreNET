@@ -29,12 +29,17 @@
 {
 
     <div id="slider" class="slider" style="height: @(Model.ContentSliderHeight); @(GetSliderBgExpression())">
-        <nav class="arrows">
-            <span class="sequence-prev"></span>
-            <span class="sequence-next"></span>
-        </nav>
+        
+        @if (Model.Slides.Count > 1)
+        {
+            <nav class="arrows">
+                <span class="sequence-prev"></span>
+                <span class="sequence-next"></span>
+            </nav>
+        }
 
-        @if (Model.AutoPlay) {
+        @if (Model.AutoPlay && Model.Slides.Count > 1)
+        {
             <div class="sequence-pause"></div>
         }
 

@@ -18,14 +18,16 @@
 }
 
 @{
-    if (Model.IsActive) 
+    var isActive = Model.IsActive && Model.Slides.Count > 0;
+
+    if (isActive) 
     {
         Html.AddCssFileParts(Url.ThemeAwareContent("Content/slider.less"));
         Html.AddScriptParts("~/bundles/slider");
     }
 }
 
-@if(Model.IsActive) 
+@if (isActive) 
 {
 
     <div id="slider" class="slider" style="height: @(Model.ContentSliderHeight); @(GetSliderBgExpression())">

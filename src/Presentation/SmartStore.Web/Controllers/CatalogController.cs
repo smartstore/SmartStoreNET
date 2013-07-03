@@ -1607,7 +1607,7 @@ namespace SmartStore.Web.Controllers
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
-                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts).ToList();
+                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
             }
 
             //products
@@ -1794,7 +1794,7 @@ namespace SmartStore.Web.Controllers
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
-                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts).ToList();
+                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
             }
 
             //products
@@ -1810,7 +1810,7 @@ namespace SmartStore.Web.Controllers
 
             var products = _productService.SearchProducts(ctx2);
 
-            model.Products = PrepareProductOverviewModels(products).ToList();
+            model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
             model.PagingFilteringContext.LoadPagedList(products);
             //model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete
@@ -2763,9 +2763,7 @@ namespace SmartStore.Web.Controllers
                 //Products = PrepareProductOverviewModels(products, 
                 //    !_catalogSettings.UseSmallProductBoxOnHomePage, true, productThumbPictureSize)
                 //    .ToList()
-                Products = PrepareProductOverviewModels(products,
-                    true, true, productThumbPictureSize)
-                    .ToList()
+                Products = PrepareProductOverviewModels(products, true, true, productThumbPictureSize, prepareColorAttributes: true).ToList()
             };
 
             return PartialView(model);
@@ -3066,7 +3064,7 @@ namespace SmartStore.Web.Controllers
 
             var products = _productService.SearchProducts(ctx);
 
-            model.Products = PrepareProductOverviewModels(products).ToList();
+            model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
             model.PagingFilteringContext.LoadPagedList(products);
             //model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete
@@ -3738,7 +3736,7 @@ namespace SmartStore.Web.Controllers
 
                     products = _productService.SearchProducts(ctx);
 
-                    model.Products = PrepareProductOverviewModels(products).ToList();
+                    model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
                     model.NoResults = !model.Products.Any();
                 }

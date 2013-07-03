@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.Settings
 			}
 		}
 
-		private bool? IsOverrideChecked(string settingKey, FormCollection form)
+		private bool IsOverrideChecked(string settingKey, FormCollection form)
 		{
 			var rawOverrideKey = form.AllKeys.FirstOrDefault(k => k.IsCaseInsensitiveEqual(settingKey + "_OverrideForStore"));
 
@@ -34,9 +34,9 @@ namespace SmartStore.Web.Framework.Settings
 				var checkboxValue = form[rawOverrideKey].EmptyNull().ToLower();
 				return checkboxValue.Contains("true");
 			}
-			return null;
+			return false;
 		}
-		public bool? IsOverrideChecked(object settings, string name, FormCollection form)
+		public bool IsOverrideChecked(object settings, string name, FormCollection form)
 		{
 			var key = settings.GetType().Name + "." + name;
 			return IsOverrideChecked(key, form);
@@ -99,16 +99,15 @@ namespace SmartStore.Web.Framework.Settings
 			{
 				var name = prop.Name;
 				var key = settingName + "." + name;
-				bool? doOverride = IsOverrideChecked(key, form);
 
-				if (doOverride.HasValue)	// false cases: setting is not store dependend, pseudo-override that controlls multiple settings
+				if (storeId == 0 || IsOverrideChecked(key, form))
 				{
 					dynamic value = settings.TryGetPropertyValue(name);
-
-					if (doOverride.Value || storeId == 0)
-						settingService.SetSetting(key, value == null ? "" : value, storeId, false);
-					else if (storeId > 0)
-						settingService.DeleteSetting(key, storeId);
+					settingService.SetSetting(key, value == null ? "" : value, storeId, false);
+				}
+				else if (storeId > 0)
+				{
+					settingService.DeleteSetting(key, storeId);
 				}
 			}
 		}

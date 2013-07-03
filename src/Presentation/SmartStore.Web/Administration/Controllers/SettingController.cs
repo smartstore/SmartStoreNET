@@ -356,7 +356,7 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, _settingService);
 
-			bool shippingOriginAddressOverride = StoreDependingSettings.IsOverrideChecked(shippingSettings, "ShippingOriginAddress", form) ?? false;
+			bool shippingOriginAddressOverride = StoreDependingSettings.IsOverrideChecked(shippingSettings, "ShippingOriginAddress", form);
 
 			if (shippingOriginAddressOverride || storeScope == 0)
 			{
@@ -495,7 +495,7 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, _settingService);
 
-			bool defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form) ?? false;
+			bool defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form);
 
 			//codehint: sm-add
 			taxSettings.AllowCustomersToSelectTaxDisplayType = false;
@@ -624,7 +624,7 @@ namespace SmartStore.Admin.Controllers
 
 				StoreDependingSettings.UpdateSettings(rewardPointsSettings, form, storeScope, _settingService);
 
-				bool pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form) ?? false;
+				bool pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form);
 
 				_settingService.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Amount, pointsForPurchases, storeScope);
 				_settingService.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Points, pointsForPurchases, storeScope);

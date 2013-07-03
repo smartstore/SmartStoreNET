@@ -114,7 +114,7 @@ namespace SmartStore.Admin.Controllers
 		#endregion 
 
 		/// <remarks>codehint: sm-add</remarks>
-		StoreDependingSettingHelper StoreDependingSettings
+		private StoreDependingSettingHelper StoreDependingSettings
 		{
 			get
 			{

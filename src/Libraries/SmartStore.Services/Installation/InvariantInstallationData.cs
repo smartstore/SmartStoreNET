@@ -4217,7 +4217,7 @@ namespace SmartStore.Services.Installation
 		{
 			var imgCompanyLogo = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", "", true, false);
 
-			var stores = new List<Store>()
+			var entities = new List<Store>()
             {
                 new Store()
                 {
@@ -4229,7 +4229,9 @@ namespace SmartStore.Services.Installation
                     DisplayOrder = 1,
                 },
             };
-			return stores;
+
+			this.Alter(entities);
+			return entities;
 		}
 
         public IList<ISettings> Settings()
@@ -8842,6 +8844,10 @@ namespace SmartStore.Services.Installation
         protected virtual void Alter(IList<Topic> entities)
         {
         }
+
+		protected virtual void Alter(IList<Store> entities)
+		{
+		}
 
         protected virtual void Alter(IList<ISettings> settings)
         {

@@ -64,7 +64,8 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
             {
                 model.DescriptionText = _localizationService.GetResource(desc.Substring(1));
             } 
-            else  {
+            else  
+			{
 				model.DescriptionText = _prepaymentPaymentSettings.DescriptionText;
             }
 

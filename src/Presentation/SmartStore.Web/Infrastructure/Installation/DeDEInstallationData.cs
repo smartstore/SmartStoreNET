@@ -33,6 +33,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -3746,6 +3747,19 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.Name = "7 Werktage";
                 });
         }
+
+		protected override void Alter(IList<Store> entities)
+		{
+			base.Alter(entities);
+
+			entities.WithKey(x => x.DisplayOrder)
+				.Alter(1, x =>
+				{
+					x.Name = "Mein Shop-Name";
+					x.Url = "http://www.mein-shop.de/";
+					x.Hosts = "mein-shop.de,www.mein-shop.de";
+				});
+		}
 
         protected override void Alter(IList<ProductTag> entities)
         {

@@ -3,10 +3,6 @@
 @using SmartStore.Core.Domain.Orders;
 @using System.Globalization;
 @using System.Text.RegularExpressions;
-@{
-    string pattern = "(?<val>(\\d+[\\s\\,\\.]?)+)";
-    string replacement = String.Format("<span class=\"price-val-for-dyn-upd-{0}\">${{val}}</span> ", Model.ProductVariantPrice.ProductVariantId);  
-}
 
     @if (Model.AddToCart.CustomerEntersPrice)
     {
@@ -51,14 +47,7 @@
                             <span class="product-price-without-discount" itemprop="price">
                             @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.Price))
                             {
-                                if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices && String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
-                                {
-                                    @Html.Raw(Regex.Replace(Model.ProductVariantPrice.Price, pattern, replacement))
-                                }
-                                else
-                                {
-                                    @Html.Raw(Model.ProductVariantPrice.Price)
-                                }
+                                @Html.Raw(Model.ProductVariantPrice.Price)
                             }
                             </span>
                         </span>
@@ -69,14 +58,7 @@
                         <span class="product-price-with-discount" itemprop="price">
                         @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
                         {
-                            if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices)
-                            {
-                                @Html.Raw(Regex.Replace(Model.ProductVariantPrice.PriceWithDiscount, pattern, replacement))
-                            }
-                            else
-                            {
-                                @Html.Raw(Model.ProductVariantPrice.PriceWithDiscount)
-                            }
+                            @Html.Raw(Model.ProductVariantPrice.PriceWithDiscount)
                         }
                         </span>
                     </div>

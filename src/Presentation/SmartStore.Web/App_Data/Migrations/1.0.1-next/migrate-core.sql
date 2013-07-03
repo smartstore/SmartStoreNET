@@ -118,6 +118,15 @@ set @resources='
     <Value>Background slide behaviour</Value>
 	<T>Hintergrund slide Verhalten</T>
   </LocaleResource>
+
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists">
+    <Value>Show color squares in product lists</Value>
+	<T>Zeige Farbvarianten in Produktlisten</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists.Hint">
+    <Value>Specifies whether the colors of the first color type attribute should be displayed in product lists</Value>
+	<T>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</T>
+  </LocaleResource>
   
 </Language>
 '
@@ -236,6 +245,14 @@ address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, 
 </tbody>
 </table>
 </center>')
+END
+GO
+
+-- CatalogSettings.ShowColorSquaresInLists
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.ShowColorSquaresInLists')
+BEGIN
+	INSERT [Setting] ([Name], [Value])
+	VALUES (N'CatalogSettings.ShowColorSquaresInLists', N'True')
 END
 GO
 

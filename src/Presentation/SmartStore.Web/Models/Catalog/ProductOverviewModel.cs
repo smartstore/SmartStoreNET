@@ -85,6 +85,25 @@ namespace SmartStore.Web.Models.Catalog
             public string Color { get; set; }
             public string Alias { get; set; }
             public string FriendlyName { get; set; }
+
+            public override int GetHashCode()
+            {
+                return this.Color.GetHashCode();
+            }
+
+            public override bool Equals(object obj)
+            {
+                var equals = base.Equals(obj);
+                if (!equals)
+                {
+                    var o2 = obj as ColorAttributeModel;
+                    if (o2 != null)
+                    {
+                        equals = this.Color.IsCaseInsensitiveEqual(o2.Color);
+                    }
+                }
+                return equals;
+            }
         }
 
 		#endregion

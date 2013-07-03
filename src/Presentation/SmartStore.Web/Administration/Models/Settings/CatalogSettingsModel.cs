@@ -149,6 +149,9 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber")]
 		public int DisplayAllImagesNumber { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists")]
+        public bool ShowColorSquaresInLists { get; set; }
         //codehint: sm-add end
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts")]

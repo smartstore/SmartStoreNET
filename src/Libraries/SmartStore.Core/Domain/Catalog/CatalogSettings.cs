@@ -246,6 +246,8 @@ namespace SmartStore.Core.Domain.Catalog
 		
 		public int DisplayAllImagesNumber { get; set; }
 
+        public bool ShowColorSquaresInLists { get; set; }
+
         //codehint: sm-add end
 
         /// <summary>

@@ -533,7 +533,7 @@ namespace SmartStore.Web.Controllers
                 }
 
                 // available colors (codehint: sm-add)
-                if (prepareColorAttributes)
+                if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
                 {   
                     // get the FIRST color type attribute
                     var colorAttr = _productAttributeService.GetProductVariantAttributesByProductVariantId(productVariant.Id)
@@ -541,7 +541,7 @@ namespace SmartStore.Web.Controllers
 
                     if (colorAttr != null)
                     {
-                        var colorValues = from a in colorAttr.ProductVariantAttributeValues
+                        var colorValues = from a in colorAttr.ProductVariantAttributeValues.Take(50)
                                         where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
                                         select new ProductOverviewModel.ColorAttributeModel { 
                                             Color = a.ColorSquaresRgb,
@@ -551,7 +551,7 @@ namespace SmartStore.Web.Controllers
 
                         if (colorValues.Any())
                         {
-                            model.ColorAttributes.AddRange(colorValues);
+                            model.ColorAttributes.AddRange(colorValues.Distinct());
                         }
                     }
                 }

@@ -22,7 +22,7 @@
 
     @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
     {
-        <div class="price-details line well">
+        <div class="price-details line well" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 
             @if(!Model.ProductVariantPrice.CallForPrice) 
             {
@@ -48,7 +48,7 @@
                             <text>class="product-price current text-success"</text>
                         }
                         >
-                            <span class="product-price-without-discount">
+                            <span class="product-price-without-discount" itemprop="price">
                             @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.Price))
                             {
                                 if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices && String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
@@ -66,7 +66,7 @@
         
                 
                     <div class="product-price with-discount current pull-left">
-                        <span class="product-price-with-discount">
+                        <span class="product-price-with-discount" itemprop="price">
                         @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
                         {
                             if (Model.ProductVariantPrice.DynamicPriceUpdate && !Model.ProductVariantPrice.HidePrices)

@@ -4340,7 +4340,8 @@ namespace SmartStore.Services.Installation
                     MaximumBackInStockSubscriptions = 200,
                     FileUploadMaximumSizeBytes = 1024 * 200, //200KB
                     ManufacturersBlockItemsToDisplay = 5,
-					DisplayAllImagesNumber = 6	// codehint: sm-add
+					DisplayAllImagesNumber = 6,	// codehint: sm-add
+                    ShowColorSquaresInLists = true
                 },
                 new LocalizationSettings()
                 {

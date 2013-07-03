@@ -560,9 +560,7 @@
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\bootstrap.min.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font-awesome.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font\fontawesome-webfont.svg" />
-    <Content Include="Content\fonts\Fontastic.svg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\fonts\Fontastic.svg" />
     <Content Include="Content\bootstrap\font\bootstrap.less" />
     <Content Include="Content\bootstrap\font\core.less" />
     <Content Include="Content\bootstrap\font\extras.less" />
@@ -641,15 +639,9 @@
     <Content Include="51Degrees.mobi.config" />
     <Content Include="Content\bootstrap\font\FontAwesome.otf" />
     <Content Include="App_Data\Pdf\OpenSans-Regular.ttf" />
-    <Content Include="Content\install\install.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\install\variables.custom.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\install\variables.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\install\install.less" />
+    <Content Include="Content\install\variables.custom.less" />
+    <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
     <Content Include="Media\default-avatar.jpg" />
@@ -711,9 +703,7 @@
     <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.global.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.js" />
     <Content Include="Content\bootstrap\custom\navbar.less" />
-    <Content Include="Content\bootstrap\font\fontawesome-webfont.svg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\bootstrap\font\fontawesome-webfont.svg" />
     <Content Include="Content\bootstrap\images\btn-mask.png" />
     <Content Include="Content\bootstrap\images\checkmark.png" />
     <Content Include="Content\bootstrap\images\glyphicons-halflings2.png" />
@@ -1385,25 +1375,15 @@
     <None Include="Content\fonts\raw\fonts\Fontastic.eot" />
     <None Include="Content\fonts\raw\fonts\Fontastic.ttf" />
     <None Include="Content\fonts\raw\fonts\Fontastic.woff" />
-    <Content Include="Content\fonts\Fontastic.eot">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\fonts\fontastic.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\fonts\Fontastic.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\fonts\Fontastic.woff">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\fonts\Fontastic.eot" />
+    <Content Include="Content\fonts\fontastic.less" />
+    <Content Include="Content\fonts\Fontastic.ttf" />
+    <Content Include="Content\fonts\Fontastic.woff" />
     <None Include="Content\fonts\raw\IcoMoon Session.json" />
     <None Include="Properties\PublishProfiles\fghrtzht.pubxml" />
     <Content Include="Content\jquery.pnotify.default.css" />
     <Content Include="Content\jquery.pnotify.default.icons.css" />
-    <Content Include="Content\bootstrap\custom\scrollbutton.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\bootstrap\custom\scrollbutton.less" />
     <Content Include="Content\smartstore.smartgallery.css" />
     <Content Include="Scripts\jquery-ui\i18n\jquery-ui-i18n.min.js" />
     <Content Include="Scripts\jquery-ui\i18n\jquery.ui.datepicker-af.min.js" />
@@ -2513,15 +2493,9 @@
     <Content Include="Content\bootstrap\custom\mixins.less" />
     <Content Include="Content\bootstrap\dropdowns.less" />
     <Content Include="Content\bootstrap\font\font-awesome.less" />
-    <Content Include="Content\bootstrap\font\fontawesome-webfont.eot">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\bootstrap\font\fontawesome-webfont.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\bootstrap\font\fontawesome-webfont.woff">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\bootstrap\font\fontawesome-webfont.eot" />
+    <Content Include="Content\bootstrap\font\fontawesome-webfont.ttf" />
+    <Content Include="Content\bootstrap\font\fontawesome-webfont.woff" />
     <Content Include="Content\bootstrap\forms.less" />
     <Content Include="Content\bootstrap\grid.less" />
     <Content Include="Content\bootstrap\hero-unit.less" />
@@ -2745,9 +2719,9 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
-    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+    xcopy /s /y "$(SolutionDir)..\lib\sqlce\x86\*.*" "$(TargetDir)x86"
+if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)..\lib\sqlce\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

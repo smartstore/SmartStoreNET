@@ -93,7 +93,6 @@
 
 		<ItemGroup>
 			<PluginFiles Include="$(WebPluginsFolder)\**\*" />
-			<AdminCompileOutput Include="$(StageFolder)\Administration\bin\*.dll" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
@@ -123,6 +122,9 @@
 		   OutDir=$(StageFolder)\Administration\bin\;Configuration=$(Configuration)" />
 
 		<!-- move SmartStore.Admin/bin/ to the root bin/ -->
+        <CreateItem Include="$(StageFolder)\Administration\bin\*.dll">
+            <Output TaskParameter="Include" ItemName="AdminCompileOutput" />
+        </CreateItem>
 		<Copy SourceFiles="@(AdminCompileOutput)" DestinationFolder="$(StageFolder)\bin\" />
 
 		<!-- delete the bin in SmartStore.Admin -->

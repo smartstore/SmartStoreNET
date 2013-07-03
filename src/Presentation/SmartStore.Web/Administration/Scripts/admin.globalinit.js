@@ -102,7 +102,7 @@
 
 		// check overridden store settings
         $('input.multi-store-override-option').each(function (index, elem) {
-        	checkOverriddenStoreValue(elem);
+        	Admin.checkOverriddenStoreValue(elem);
         });
 
         // sticky section-header

@@ -492,7 +492,7 @@ namespace SmartStore.Web.Framework
 				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
 				{
 					{ "class", "multi-store-override-option" },
-					{ "onclick", "checkOverriddenStoreValue(this)" },
+					{ "onclick", "Admin.checkOverriddenStoreValue(this)" },
 					{ "data-parent-selector", parentSelector.EmptyNull() },
 				});
 

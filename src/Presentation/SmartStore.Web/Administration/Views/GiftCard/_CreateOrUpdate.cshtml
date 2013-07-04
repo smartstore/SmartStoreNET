@@ -12,7 +12,7 @@
     }
     	
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "giftcard-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "giftcard-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     { <script type="text/javascript">

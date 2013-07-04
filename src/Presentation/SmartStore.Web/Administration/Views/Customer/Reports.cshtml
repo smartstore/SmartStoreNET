@@ -19,7 +19,7 @@
     x.Add().Text(T("Admin.Customers.Reports.RegisteredCustomers").Text).Content(TabRegisteredCustomers());
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "customer-reports"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "customer-reports", this.Html, this.Model));
 })
 @helper TabBestByOrderTotal()
     {

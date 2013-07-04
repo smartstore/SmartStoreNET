@@ -11,7 +11,7 @@
 	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
 
 	//generate an event
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "category-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "category-edit", this.Html, this.Model));
 })
 @helper TabInfo() {
         

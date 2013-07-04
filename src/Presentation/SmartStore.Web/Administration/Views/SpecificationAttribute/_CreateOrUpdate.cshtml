@@ -10,7 +10,7 @@
     x.Add().Text(T("Admin.Catalog.Attributes.SpecificationAttributes.Options").Text).Content(TabOptions());
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "specificationattribute-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "specificationattribute-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     { 

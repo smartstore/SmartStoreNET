@@ -26,7 +26,7 @@
         x.Add().Text(T("Admin.Configuration.Settings.Order.ReturnRequestSettings").Text).Content(TabReturnRequestSettings());
         
         //generate an event
-        EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "ordersettings-edit"));
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "ordersettings-edit", this.Html, this.Model));
     })
 }
 @helper TabOrderSettings()

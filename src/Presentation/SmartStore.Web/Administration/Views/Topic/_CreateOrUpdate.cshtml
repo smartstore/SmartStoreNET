@@ -25,7 +25,7 @@
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "topic-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "topic-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     { 

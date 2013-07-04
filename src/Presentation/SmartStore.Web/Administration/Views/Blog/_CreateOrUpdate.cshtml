@@ -9,7 +9,7 @@
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo().ToHtmlString());
 
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "category-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "category-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()

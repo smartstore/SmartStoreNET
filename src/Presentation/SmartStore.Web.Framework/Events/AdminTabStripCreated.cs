@@ -1,4 +1,5 @@
-﻿//using Telerik.Web.Mvc.UI;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Events
@@ -8,13 +9,17 @@ namespace SmartStore.Web.Framework.Events
     /// </summary>
     public class AdminTabStripCreated
     {
-        public AdminTabStripCreated(TabFactory itemFactory, string tabStripName)
+        public AdminTabStripCreated(TabFactory itemFactory, string tabStripName, HtmlHelper html, object model = null)
         {
-            this.ItemFactory = itemFactory;
             this.TabStripName = tabStripName;
+            this.Html = html;
+            this.Model = model;
+            this.ItemFactory = itemFactory;
         }
-
-        public TabFactory ItemFactory { get; private set; }
+ 
         public string TabStripName { get; private set; }
+        public HtmlHelper Html { get; private set; }
+        public object Model { get; private set; }
+        public TabFactory ItemFactory { get; private set; }
     }
 }

@@ -11,7 +11,7 @@
     x.Add().Text(T("Admin.Catalog.Manufacturers.Products").Text).Content(TabProducts());
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "manufacturer-edit"));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "manufacturer-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     { 

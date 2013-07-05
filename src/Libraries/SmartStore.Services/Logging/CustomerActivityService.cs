@@ -207,8 +207,8 @@ namespace SmartStore.Services.Logging
             comment = CommonHelper.EnsureMaximumLength(comment, 4000);
 
             var activity = new ActivityLog();
-            activity.ActivityLogType = activityType;
-            activity.Customer = customer;
+            activity.ActivityLogTypeId = activityType.Id;
+            activity.CustomerId = customer.Id;
             activity.Comment = comment;
             activity.CreatedOnUtc = DateTime.UtcNow;
 

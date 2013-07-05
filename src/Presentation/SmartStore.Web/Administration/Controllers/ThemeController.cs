@@ -18,6 +18,7 @@ using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Mvc;
 using System.IO;
 using System.Text;
+using SmartStore.Services.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -33,6 +34,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ILocalizationService _localizationService;
+        private readonly IEventPublisher _eventPublisher;
 
 	    #endregion
 
@@ -42,7 +44,8 @@ namespace SmartStore.Admin.Controllers
             ISettingService settingService, ThemeSettings themeSettings, IThemeRegistry themeRegistry,
             IThemeVariablesService themeVarService,
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IEventPublisher eventPublisher)
 		{
             this._settingService = settingService;
             this._themeSettings = themeSettings;
@@ -51,6 +54,7 @@ namespace SmartStore.Admin.Controllers
             this._themeRegistry = themeRegistry;
             this._customerActivityService = customerActivityService;
             this._localizationService = localizationService;
+            this._eventPublisher = eventPublisher;
 		}
 
 		#endregion 
@@ -135,10 +139,27 @@ namespace SmartStore.Admin.Controllers
                                     || model.CssMinifyEnabled != _themeSettings.CssMinifyEnabled
                                     || model.MobileDevicesSupported != _themeSettings.MobileDevicesSupported;
 
+            bool mobileThemeSwitched = false;
+            bool themeSwitched = _themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);
+            if (!themeSwitched)
+            {
+                themeSwitched = _themeSettings.DefaultMobileTheme.IsCaseInsensitiveEqual(model.DefaultMobileTheme);
+                mobileThemeSwitched = themeSwitched;
+            }
+
+            if (themeSwitched)
+            {
+                _eventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
+                    IsMobile = mobileThemeSwitched,
+                    OldTheme = mobileThemeSwitched ? _themeSettings.DefaultMobileTheme : _themeSettings.DefaultDesktopTheme,
+                    NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme
+                });
+            }
+
             _themeSettings = model.ToEntity(_themeSettings);
             _settingService.SaveSetting(_themeSettings);
-
-            //activity log
+            
+            // activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
@@ -234,7 +255,11 @@ namespace SmartStore.Admin.Controllers
                     }
 
                     // activity log
-                    _customerActivityService.InsertActivity("ImportThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), importedCount, theme);
+                    try
+                    {
+                        _customerActivityService.InsertActivity("ImportThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), importedCount, theme);
+                    }
+                    catch { }
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
                 }
@@ -276,7 +301,11 @@ namespace SmartStore.Admin.Controllers
                     string fileName = "themevars-{0}{1}-{2}.xml".FormatCurrent(theme, profileName.HasValue() ? "-" + profileName.ToValidFileName() : "", DateTime.Now.ToString("yyyyMMdd"));
 
                     // activity log
-                    _customerActivityService.InsertActivity("ExportThemeVars", _localizationService.GetResource("ActivityLog.ExportThemeVars"), theme);
+                    try
+                    {
+                        _customerActivityService.InsertActivity("ExportThemeVars", _localizationService.GetResource("ActivityLog.ExportThemeVars"), theme);
+                    }
+                    catch { }
 
                     return new XmlDownloadResult(xml, fileName);
                 }

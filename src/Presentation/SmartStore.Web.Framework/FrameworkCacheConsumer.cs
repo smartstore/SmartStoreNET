@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 using SmartStore.Services.Events;
 
 // codehint: sm-add (whole file)
@@ -79,6 +80,7 @@ namespace SmartStore.Web.Framework
         {
             _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
         }
+
     }
 
 }

@@ -431,6 +431,7 @@
     <Compile Include="Themes\IThemeRegistry.cs" />
     <Compile Include="Themes\ThemeManifest.cs" />
     <Compile Include="Themes\ThemeManifestMaterializer.cs" />
+    <Compile Include="Themes\ThemeSwitchedMessage.cs" />
     <Compile Include="Themes\ThemeVariableInfo.cs" />
     <Compile Include="Themes\ThemeVariableType.cs" />
     <Compile Include="Utilities\ActionDisposable.cs" />

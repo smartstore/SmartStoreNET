@@ -196,16 +196,28 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         /// <summary>
         /// Gets the manifest of the current active theme
         /// </summary>
-        public ThemeManifest ThemeManifest
+        protected ThemeManifest ThemeManifest
         {
             get
             {
                 if (_themeManifest == null)
                 {
                     EnsureThemeContextInitialized();
-                    _themeManifest = _themeRegistry.GetThemeManifest(_themeContext.WorkingDesktopTheme);
+                    _themeManifest = _themeRegistry.GetThemeManifest(this.ThemeName);
                 }
                 return _themeManifest;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current theme name. Override this in configuration views.
+        /// </summary>
+        protected virtual string ThemeName
+        {
+            get
+            {
+                EnsureThemeContextInitialized();
+                return _themeContext.WorkingDesktopTheme;
             }
         }
 

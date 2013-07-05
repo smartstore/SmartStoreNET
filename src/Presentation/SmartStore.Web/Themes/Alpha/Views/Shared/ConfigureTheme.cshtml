@@ -12,6 +12,16 @@
     var values = this.ThemeVariables as IDictionary<string, object>;
 }
 
+@functions {
+    protected override string ThemeName
+    {
+        get
+        {
+            return "Alpha";
+        }
+    }
+}
+
 
 @(Html.SmartStore().TabStrip().Name("theme-alpha-edit").HtmlAttributes(new { @class="theme-edit" }).Items(x =>
 {

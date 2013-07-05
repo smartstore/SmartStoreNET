@@ -50,27 +50,39 @@ namespace SmartStore.Web.Framework.Themes
             get
             {
                 if (_desktopThemeIsCached)
+                {
                     return _cachedDesktopThemeName;
-                
+                }
+
+                bool isCustomerSpecific = false;
                 string theme = "";
                 if (_themeSettings.AllowCustomerToSelectTheme)
                 {
                     if (_workContext.CurrentCustomer != null)
+                    {
                         theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName);
+                        isCustomerSpecific = theme.HasValue();
+                    }
                 }
 
-                //default store theme
+                // default store theme
                 if (string.IsNullOrEmpty(theme))
+                {
                     theme = _themeSettings.DefaultDesktopTheme;
+                }
 
-                //ensure that theme exists
+                // ensure that theme exists
                 if (!_themeRegistry.ThemeManifestExists(theme))
-                    theme = _themeRegistry.GetThemeManifests()
-                        .Where(x => !x.MobileTheme)
-                        .FirstOrDefault()
-                        .ThemeName;
+                {
+                    theme = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme).FirstOrDefault().ThemeName;
+                    if (isCustomerSpecific)
+                    {
+                        // the customer chosen theme does not exists (anymore). Invalidate it!
+                        _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty);
+                    }
+                }
                 
-                //cache theme
+                // cache theme
                 this._cachedDesktopThemeName = theme;
                 this._desktopThemeIsCached = true;
                 return theme;

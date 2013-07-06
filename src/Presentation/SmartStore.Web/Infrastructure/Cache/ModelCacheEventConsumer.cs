@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
@@ -400,7 +401,14 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string AVAILABLE_CURRENCIES_MODEL_KEY = "sm.pres.currencies.all-{0}-{1}";
         public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "sm.pres.currencies.";
 
-        public const string SHOPHEADER_MODEL_KEY = "sm.pres.shopheader";
+		/// <summary>
+		/// Key for store header data
+		/// </summary>
+		/// <remarks>
+		/// {0} : current store ID
+		/// </remarks>
+        public const string SHOPHEADER_MODEL_KEY = "sm.pres.shopheader-{0}";
+		public const string SHOPHEADER_MODEL_PATTERN_KEY = "sm.pres.shopheader";
 
         private readonly ICacheManager _cacheManager;
         
@@ -475,7 +483,6 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY); //depends on CatalogSettings.NumberOfBestsellersOnHomepage
             _cacheManager.RemoveByPattern(BLOG_PATTERN_KEY); //depends on BlogSettings.NumberOfTags
             _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY); //depends on NewsSettings.MainPageNewsCount
-            _cacheManager.Remove(SHOPHEADER_MODEL_KEY); // depends on logo settings
         }
         
         //manufacturers
@@ -842,5 +849,16 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY);
         }
+
+		//stores
+		public void HandleEvent(EntityUpdated<Store> eventMessage)
+		{
+			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
+		}
+		public void HandleEvent(EntityDeleted<Store> eventMessage)
+		{
+			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
+		}
+
     }
 }

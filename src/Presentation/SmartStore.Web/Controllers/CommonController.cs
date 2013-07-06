@@ -315,7 +315,8 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Header()
         {
-            var model = _cacheManager.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY, () => {
+			var model = _cacheManager.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_storeContext.CurrentStore.Id), () =>
+			{
 				int logoPictureId = _storeContext.CurrentStore.LogoPictureId;
 
                 Picture picture = null;

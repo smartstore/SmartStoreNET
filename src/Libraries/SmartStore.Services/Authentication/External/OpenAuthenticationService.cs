@@ -6,6 +6,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Authentication.External
@@ -16,16 +17,19 @@ namespace SmartStore.Services.Authentication.External
         private readonly IPluginFinder _pluginFinder;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly IRepository<ExternalAuthenticationRecord> _externalAuthenticationRecordRepository;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         public OpenAuthenticationService(IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
             IPluginFinder pluginFinder,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-            ICustomerService customerService)
+            ICustomerService customerService,
+			ISettingService settingService)
         {
             this._externalAuthenticationRecordRepository = externalAuthenticationRecordRepository;
             this._pluginFinder = pluginFinder;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._customerService = customerService;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         /// <summary>
@@ -62,7 +66,8 @@ namespace SmartStore.Services.Authentication.External
 		public virtual IList<IExternalAuthenticationMethod> LoadAllExternalAuthenticationMethods(int storeId = 0)
         {
             return _pluginFinder
-				.GetPlugins<IExternalAuthenticationMethod>(storeId: storeId)
+				.GetPlugins<IExternalAuthenticationMethod>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
 				.ToList();
         }
 

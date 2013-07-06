@@ -4,7 +4,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Events;
@@ -16,6 +15,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Shipping
 {
@@ -32,6 +32,7 @@ namespace SmartStore.Services.Tests.Shipping
 		IGenericAttributeService _genericAttributeService;
         IShippingService _shippingService;
         ShoppingCartSettings _shoppingCartSettings;
+		ISettingService _settingService;
 
         [SetUp]
         public new void SetUp()
@@ -54,6 +55,7 @@ namespace SmartStore.Services.Tests.Shipping
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _shippingService = new ShippingService(cacheManager, 
@@ -64,7 +66,8 @@ namespace SmartStore.Services.Tests.Shipping
 				_genericAttributeService,
                 _localizationService,
                 _shippingSettings, pluginFinder, _eventPublisher,
-                _shoppingCartSettings);
+                _shoppingCartSettings,
+				_settingService);
         }
 
         [Test]

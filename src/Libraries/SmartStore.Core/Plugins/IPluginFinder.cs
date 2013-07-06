@@ -9,38 +9,27 @@ namespace SmartStore.Core.Plugins
     public interface IPluginFinder
     {
 		/// <summary>
-		/// Check whether the plugin is available in a certain store
-		/// </summary>
-		/// <param name="pluginDescriptor">Plugin descriptor to check</param>
-		/// <param name="storeId">Store identifier to check</param>
-		/// <returns>true - available; false - no</returns>
-		bool AuthenticateStore(PluginDescriptor pluginDescriptor, int storeId);
-
-		/// <summary>
 		/// Gets plugins
 		/// </summary>
 		/// <typeparam name="T">The type of plugins to get.</typeparam>
 		/// <param name="installedOnly">A value indicating whether to load only installed plugins</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
 		/// <returns>Plugins</returns>
-		IEnumerable<T> GetPlugins<T>(bool installedOnly = true, int storeId = 0) where T : class, IPlugin;
+		IEnumerable<T> GetPlugins<T>(bool installedOnly = true) where T : class, IPlugin;
 
 		/// <summary>
 		/// Get plugin descriptors
 		/// </summary>
 		/// <param name="installedOnly">A value indicating whether to load only installed plugins</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
 		/// <returns>Plugin descriptors</returns>
-		IEnumerable<PluginDescriptor> GetPluginDescriptors(bool installedOnly = true, int storeId = 0);
+		IEnumerable<PluginDescriptor> GetPluginDescriptors(bool installedOnly = true);
 
 		/// <summary>
 		/// Get plugin descriptors
 		/// </summary>
 		/// <typeparam name="T">The type of plugin to get.</typeparam>
 		/// <param name="installedOnly">A value indicating whether to load only installed plugins</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
 		/// <returns>Plugin descriptors</returns>
-		IEnumerable<PluginDescriptor> GetPluginDescriptors<T>(bool installedOnly = true, int storeId = 0) where T : class, IPlugin;
+		IEnumerable<PluginDescriptor> GetPluginDescriptors<T>(bool installedOnly = true) where T : class, IPlugin;
 
         // codehint: sm-add
         PluginDescriptor GetPluginDescriptorByAssembly(Assembly assembly, bool installedOnly = true);

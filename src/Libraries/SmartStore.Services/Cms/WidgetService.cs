@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Cms
 {
@@ -16,6 +17,7 @@ namespace SmartStore.Services.Cms
 
         private readonly IPluginFinder _pluginFinder;
         private readonly WidgetSettings _widgetSettings;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         #endregion
         
@@ -26,10 +28,12 @@ namespace SmartStore.Services.Cms
         /// </summary>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="widgetSettings">Widget settings</param>
-        public WidgetService(IPluginFinder pluginFinder, WidgetSettings widgetSettings)
+		/// <param name="pluginService">Plugin service</param>
+		public WidgetService(IPluginFinder pluginFinder, WidgetSettings widgetSettings, ISettingService settingService)
         {
             this._pluginFinder = pluginFinder;
             this._widgetSettings = widgetSettings;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         #endregion
@@ -85,7 +89,10 @@ namespace SmartStore.Services.Cms
         /// <returns>Widgets</returns>
 		public virtual IList<IWidgetPlugin> LoadAllWidgets(int storeId = 0)
         {
-			return _pluginFinder.GetPlugins<IWidgetPlugin>(storeId: storeId).ToList();
+			return _pluginFinder
+				.GetPlugins<IWidgetPlugin>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+				.ToList();
         }
 
         #endregion

@@ -5,7 +5,6 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
@@ -15,6 +14,7 @@ using Rhino.Mocks;
 using SmartStore.Core;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Discounts
 {
@@ -28,6 +28,7 @@ namespace SmartStore.Services.Tests.Discounts
 		IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
 		IStoreContext _storeContext;
+		ISettingService _settingService;
         
         [SetUp]
         public new void SetUp()
@@ -64,6 +65,7 @@ namespace SmartStore.Services.Tests.Discounts
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             var cacheManager = new NullCache();
             _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
@@ -71,7 +73,8 @@ namespace SmartStore.Services.Tests.Discounts
             var pluginFinder = new PluginFinder();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _discountService = new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, pluginFinder, _eventPublisher);
+				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, pluginFinder, _eventPublisher,
+				_settingService);
         }
 
         [Test]

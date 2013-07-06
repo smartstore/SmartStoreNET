@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Payments;
 using SmartStore.Tests;
 using NUnit.Framework;
+using Rhino.Mocks;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Payments
 {
@@ -15,6 +16,7 @@ namespace SmartStore.Services.Tests.Payments
         PaymentSettings _paymentSettings;
         ShoppingCartSettings _shoppingCartSettings;
         IPaymentService _paymentService;
+		ISettingService _settingService;
         
         [SetUp]
         public new void SetUp()
@@ -26,8 +28,9 @@ namespace SmartStore.Services.Tests.Payments
             var pluginFinder = new PluginFinder();
 
             _shoppingCartSettings = new ShoppingCartSettings();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
-            _paymentService = new PaymentService(_paymentSettings, pluginFinder, _shoppingCartSettings);
+            _paymentService = new PaymentService(_paymentSettings, pluginFinder, _shoppingCartSettings, _settingService);
         }
 
         [Test]

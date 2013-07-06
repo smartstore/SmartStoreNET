@@ -17,7 +17,6 @@ namespace SmartStore.Core.Plugins
         public PluginDescriptor()
         {
             this.SupportedVersions = new List<string>();
-			this.LimitedToStores = new List<int>();
         }
 
         public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
@@ -144,11 +143,6 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public int DisplayOrder { get; set; }
 
-		/// <summary>
-		/// Gets or sets the list of store identifiers in which this plugin is available. If empty, then this plugin is available in all stores
-		/// </summary>
-		public IList<int> LimitedToStores { get; set; }
-
         /// <summary>
         /// Gets or sets the value indicating whether plugin is installed
         /// </summary>
@@ -220,6 +214,12 @@ namespace SmartStore.Core.Plugins
             else
                 return FriendlyName.CompareTo(other.FriendlyName);
         }
+
+		/// <remarks>codehint: sm-add</remarks>
+		public string GetSettingKey(string name)
+		{
+			return "PluginSetting.{0}.{1}".FormatWith(SystemName, name);
+		}
 
         public override string ToString()
         {

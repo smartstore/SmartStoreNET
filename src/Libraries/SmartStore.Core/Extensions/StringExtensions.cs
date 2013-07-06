@@ -923,6 +923,21 @@ namespace SmartStore
             return result;
         }
 
+		[DebuggerStepThrough]
+		public static int[] ToIntArray(this string s)
+		{
+			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v));
+		}
+
+		[DebuggerStepThrough]
+		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
+		{
+			var arr = s.ToIntArray();
+			if (arr == null || arr.Count() <= 0)
+				return defaultValue;
+			return arr.Contains(value);
+		}
+
 		// codehint: sm-add (end)
 		#endregion
 

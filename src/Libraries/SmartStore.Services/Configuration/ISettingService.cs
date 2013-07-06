@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Configuration;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Configuration
 {

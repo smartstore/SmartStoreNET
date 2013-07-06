@@ -7,7 +7,6 @@ using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Integration.Mvc;
-using Autofac.Integration.WebApi;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
@@ -55,13 +54,10 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Editor;
 using SmartStore.Services.Filter;
 using SmartStore.Web.Framework.WebApi.Routes;
-using System.Web.Http.Controllers;
-using System.Web.Http;
 using SmartStore.Core.Data.Hooks;
 using dotless.Core.Parameters;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Framework

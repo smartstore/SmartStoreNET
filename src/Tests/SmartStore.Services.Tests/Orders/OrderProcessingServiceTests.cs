@@ -32,6 +32,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -81,6 +82,7 @@ namespace SmartStore.Services.Tests.Orders
         IEventPublisher _eventPublisher;
         CurrencySettings _currencySettings;
 		IAffiliateService _affiliateService;
+		ISettingService _settingService;
 
 		Store _store;
 
@@ -110,6 +112,7 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -125,7 +128,8 @@ namespace SmartStore.Services.Tests.Orders
 				_genericAttributeService,
                 _localizationService,
                 _shippingSettings, pluginFinder, 
-                _eventPublisher, _shoppingCartSettings);
+                _eventPublisher, _shoppingCartSettings,
+				_settingService);
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
 

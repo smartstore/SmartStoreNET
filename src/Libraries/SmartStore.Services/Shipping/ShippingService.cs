@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -15,6 +14,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Shipping
 {
@@ -43,6 +43,7 @@ namespace SmartStore.Services.Shipping
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         #endregion
 
@@ -62,6 +63,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
+		/// <param name="settingService">Setting service</param>
         public ShippingService(ICacheManager cacheManager, 
             IRepository<ShippingMethod> shippingMethodRepository,
             ILogger logger,
@@ -72,7 +74,8 @@ namespace SmartStore.Services.Shipping
             ShippingSettings shippingSettings,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+			ISettingService settingService)
         {
             this._cacheManager = cacheManager;
             this._shippingMethodRepository = shippingMethodRepository;
@@ -85,7 +88,8 @@ namespace SmartStore.Services.Shipping
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._shoppingCartSettings = shoppingCartSettings;
-        }
+			this._settingService = settingService;	// codehint: sm-add
+		}
 
         #endregion
         
@@ -126,7 +130,10 @@ namespace SmartStore.Services.Shipping
         /// <returns>Shipping rate computation methods</returns>
 		public virtual IList<IShippingRateComputationMethod> LoadAllShippingRateComputationMethods(int storeId = 0)
         {
-            return _pluginFinder.GetPlugins<IShippingRateComputationMethod>(storeId: storeId).ToList();
+            return _pluginFinder
+				.GetPlugins<IShippingRateComputationMethod>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+				.ToList();
         }
 
         #endregion

@@ -10,6 +10,7 @@ using SmartStore.Services.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Discounts
 {
@@ -34,6 +35,7 @@ namespace SmartStore.Services.Discounts
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         #endregion
 
@@ -50,6 +52,7 @@ namespace SmartStore.Services.Discounts
 		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
+		/// <param name="settingService">Setting service</param>
         public DiscountService(ICacheManager cacheManager,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
@@ -57,7 +60,8 @@ namespace SmartStore.Services.Discounts
 			IStoreContext storeContext,
 			IGenericAttributeService genericAttributeService,
             IPluginFinder pluginFinder,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			ISettingService settingService)
         {
             this._cacheManager = cacheManager;
             this._discountRepository = discountRepository;
@@ -67,6 +71,7 @@ namespace SmartStore.Services.Discounts
 			this._genericAttributeService = genericAttributeService;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         #endregion
@@ -355,7 +360,8 @@ namespace SmartStore.Services.Discounts
                 var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName);
                 if (requirementRule == null)
                     continue;
-				if (!_pluginFinder.AuthenticateStore(requirementRule.PluginDescriptor, _storeContext.CurrentStore.Id))
+				if (!(_storeContext.CurrentStore.Id == 0 || 
+					_settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
 					continue;
 
                 var request = new CheckDiscountRequirementRequest()

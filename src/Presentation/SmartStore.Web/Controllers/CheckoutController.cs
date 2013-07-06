@@ -7,7 +7,6 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -28,6 +27,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Web.Controllers
 {
@@ -50,14 +50,13 @@ namespace SmartStore.Web.Controllers
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IShippingService _shippingService;
         private readonly IPaymentService _paymentService;
-		private readonly IPluginFinder _pluginFinder;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ILogger _logger;
         private readonly IOrderService _orderService;
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
-        
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         private readonly OrderSettings _orderSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -77,13 +76,14 @@ namespace SmartStore.Web.Controllers
             ICustomerService customerService,  IGenericAttributeService genericAttributeService,
             ICountryService countryService,
             IStateProvinceService stateProvinceService, IShippingService shippingService,
-			IPaymentService paymentService, IPluginFinder pluginFinder,
+			IPaymentService paymentService, 
 			IOrderTotalCalculationService orderTotalCalculationService,
             ILogger logger, IOrderService orderService, IWebHelper webHelper,
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
             PaymentSettings paymentSettings, AddressSettings addressSettings,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+			ISettingService settingService)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -99,13 +99,13 @@ namespace SmartStore.Web.Controllers
             this._stateProvinceService = stateProvinceService;
             this._shippingService = shippingService;
             this._paymentService = paymentService;
-			this._pluginFinder = pluginFinder;
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._logger = logger;
             this._orderService = orderService;
             this._webHelper = webHelper;
             this._httpContext = httpContext;
             this._mobileDeviceHelper = mobileDeviceHelper;
+			this._settingService = settingService;	// codehint: sm-add
 
             this._orderSettings = orderSettings;
             this._rewardPointsSettings = rewardPointsSettings;
@@ -770,7 +770,8 @@ namespace SmartStore.Web.Controllers
             var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
 			if (paymentMethodInst == null ||
 				!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-				!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
+				!(_storeContext.CurrentStore.Id == 0 ||
+				_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                 return PaymentMethod();
 
             //save
@@ -1152,7 +1153,8 @@ namespace SmartStore.Web.Controllers
 							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
 							if (paymentMethodInst == null ||
 								!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-								!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
+								!(_storeContext.CurrentStore.Id == 0 ||
+								_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                                 throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1382,7 +1384,8 @@ namespace SmartStore.Web.Controllers
 						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
 						if (paymentMethodInst == null ||
 							!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-							!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
+							!(_storeContext.CurrentStore.Id == 0 ||
+							_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                             throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1495,7 +1498,8 @@ namespace SmartStore.Web.Controllers
                 var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
 				if (paymentMethodInst == null ||
 					!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-					!_pluginFinder.AuthenticateStore(paymentMethodInst.PluginDescriptor, _storeContext.CurrentStore.Id))
+					!(_storeContext.CurrentStore.Id == 0 ||
+					_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                     throw new Exception("Selected payment method can't be parsed");
 
                 //save

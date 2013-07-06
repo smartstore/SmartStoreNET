@@ -1,7 +1,6 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Plugins;
 using SmartStore.Plugin.ExternalAuth.Facebook.Core;
 using SmartStore.Plugin.ExternalAuth.Facebook.Models;
 using SmartStore.Services.Authentication.External;
@@ -20,15 +19,13 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 		private readonly IStoreContext _storeContext;
-		private readonly IPluginFinder _pluginFinder;
 
         public ExternalAuthFacebookController(ISettingService settingService,
             FacebookExternalAuthSettings facebookExternalAuthSettings,
             IOAuthProviderFacebookAuthorizer oAuthProviderFacebookAuthorizer,
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-			IStoreContext storeContext,
-			IPluginFinder pluginFinder)
+			IStoreContext storeContext)
         {
             this._settingService = settingService;
             this._facebookExternalAuthSettings = facebookExternalAuthSettings;
@@ -36,7 +33,6 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
 			this._storeContext = storeContext;
-			this._pluginFinder = pluginFinder;
         }
         
         [AdminAuthorize]
@@ -79,7 +75,8 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             if (processor == null ||
                 !processor.IsMethodActive(_externalAuthenticationSettings) ||
 				!processor.PluginDescriptor.Installed ||
-				!_pluginFinder.AuthenticateStore(processor.PluginDescriptor, _storeContext.CurrentStore.Id))
+				!(_storeContext.CurrentStore.Id == 0 || 
+				_settingService.GetSettingByKey<string>(processor.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                 throw new SmartException("Facebook module cannot be loaded");
 
             var viewModel = new LoginModel();

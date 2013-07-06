@@ -21,6 +21,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Plugin.Misc.WebServices
 {
@@ -42,6 +43,7 @@ namespace SmartStore.Plugin.Misc.WebServices
         private readonly IWorkContext _workContext;
         private readonly IPluginFinder _pluginFinder;
 		private readonly IStoreContext _storeContext;
+		private readonly ISettingService _settingService;	// codehint: sm-add
         
         #endregion 
 
@@ -62,6 +64,7 @@ namespace SmartStore.Plugin.Misc.WebServices
             _workContext = EngineContext.Current.Resolve<IWorkContext>();
             _pluginFinder = EngineContext.Current.Resolve<IPluginFinder>();
 			_storeContext = EngineContext.Current.Resolve<IStoreContext>();
+			_settingService = EngineContext.Current.Resolve<ISettingService>();
         }
 
         #endregion 
@@ -74,7 +77,8 @@ namespace SmartStore.Plugin.Misc.WebServices
             var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("Misc.WebServices");
             if (pluginDescriptor == null)
                 throw new ApplicationException("Web services plugin cannot be loaded");
-			if (!_pluginFinder.AuthenticateStore(pluginDescriptor, _storeContext.CurrentStore.Id))
+			if (!(_storeContext.CurrentStore.Id == 0 ||
+				_settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
 				throw new ApplicationException("Web services plugin is not available in this store");
 
             if (!_customerRegistrationService.ValidateCustomer(usernameOrEmail, userPassword))

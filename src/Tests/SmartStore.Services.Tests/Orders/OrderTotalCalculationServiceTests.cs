@@ -9,7 +9,6 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -25,6 +24,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -54,6 +54,7 @@ namespace SmartStore.Services.Tests.Orders
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
         IEventPublisher _eventPublisher;
+		ISettingService _settingService;
 		Store _store;
 
         [SetUp]
@@ -72,6 +73,7 @@ namespace SmartStore.Services.Tests.Orders
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
@@ -99,7 +101,8 @@ namespace SmartStore.Services.Tests.Orders
 				_genericAttributeService,
                 _localizationService,
                 _shippingSettings, pluginFinder,
-                _eventPublisher, _shoppingCartSettings);
+                _eventPublisher, _shoppingCartSettings,
+				_settingService);
 
 
             _paymentService = MockRepository.GenerateMock<IPaymentService>();

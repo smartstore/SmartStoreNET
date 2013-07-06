@@ -162,20 +162,6 @@ namespace SmartStore.Core.Plugins
 					case "ResourceRootKey":
 						descriptor.ResourceRootKey = value;		// codehint: sm-add
 						break;
-					case "LimitedToStores":
-						{
-							//parse list of store IDs
-							foreach (var str1 in value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-													  .Select(x => x.Trim()))
-							{
-								int storeId = 0;
-								if (int.TryParse(str1, out storeId))
-								{
-									descriptor.LimitedToStores.Add(storeId);
-								}
-							}
-						}
-						break;
                 }
             }
 
@@ -242,17 +228,6 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));
 			keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));
-			if (plugin.LimitedToStores.Count > 0)
-			{
-				var storeList = "";
-				for (int i = 0; i < plugin.LimitedToStores.Count; i++)
-				{
-					storeList += plugin.LimitedToStores[i];
-					if (i != plugin.LimitedToStores.Count - 1)
-						storeList += ",";
-				}
-				keyValues.Add(new KeyValuePair<string, string>("LimitedToStores", storeList));
-			}
 
             var sb = new StringBuilder();
             for (int i = 0; i < keyValues.Count; i++)

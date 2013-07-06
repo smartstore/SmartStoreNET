@@ -12,6 +12,7 @@ using SmartStore.Services.Events;
 using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Configuration
 {
@@ -575,7 +576,7 @@ namespace SmartStore.Services.Configuration
         {
             _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
         }
-        
+
 		#endregion
     }
 }

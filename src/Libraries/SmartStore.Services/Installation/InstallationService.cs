@@ -316,11 +316,39 @@ namespace SmartStore.Services.Installation
 		{
 			try
 			{
-				_storeRepository.InsertRange(_installData.DefaultStores());				
+				_storeRepository.Insert(InvariantInstallationData.DefaultStore);
 			}
 			catch (Exception ex)
 			{
 				throw new InstallationException("InstallStores", ex);
+			}
+		}
+		private void UpdateStores()
+		{
+			var oldAutoDetect = _dbContext.AutoDetectChangesEnabled;
+
+			try
+			{
+				_dbContext.AutoDetectChangesEnabled = true;
+
+				var entities = _storeRepository.Table.OrderBy(x => x.DisplayOrder).ToList();
+
+				_installData.DefaultStores(entities);
+
+				foreach (var entity in entities)
+					_storeRepository.Update(entity);
+			}
+			catch (Exception ex)
+			{
+				throw new InstallationException("UpdateStores", ex);
+			}
+
+			try
+			{
+				_dbContext.AutoDetectChangesEnabled = oldAutoDetect;
+			}
+			catch (Exception)
+			{
 			}
 		}
 
@@ -655,6 +683,16 @@ namespace SmartStore.Services.Installation
         {
             try
             {
+				var method = typeof(ISettingService).GetMethods().FirstOrDefault(x =>
+				{
+					if (x.Name == "SaveSetting")
+					{
+						var parameters = x.GetParameters();
+						return parameters[0].ParameterType.Name == "T" && parameters[1].ParameterType.Equals(typeof(int));
+					}
+					return false;
+				});
+
                 var settings = _installData.Settings();
                 foreach (var setting in settings)
                 {
@@ -664,23 +702,10 @@ namespace SmartStore.Services.Installation
 					var settingService = EngineContext.Current.Resolve(settingServiceType);
 					if (settingService != null)
 					{
-						// call "SaveSettings" with reflection, as we have no strong typing
-						// and thus no intellisense.
-						var method = settingService.GetType().GetMethod("SaveSetting");
 						var genericMethod = method.MakeGenericMethod(settingType);
 
-						genericMethod.Invoke(settingService, new object[] { setting });
-					}
-					
-					//Type configProviderGenericType = typeof(IConfigurationProvider<>).MakeGenericType(settingType);
-
-					//var configProvider = EngineContext.Current.Resolve(configProviderGenericType);
-					//if (configProvider != null)
-					//{
-					//	// call "SaveSettings" with reflection, as we have no strong typing
-					//	// and thus no intellisense.
-					//	configProvider.GetType().GetMethod("SaveSettings").Invoke(configProvider, new object[] { setting });
-					//}
+						genericMethod.Invoke(settingService, new object[] { setting, 0 });
+					}					
                 }
 
                 IncreaseProgress();
@@ -5450,6 +5475,11 @@ namespace SmartStore.Services.Installation
 
         #region Methods
 
+		public virtual void InstallEarlyRequiredData()
+		{
+			InstallStores();
+		}
+
         public virtual void InstallData(InstallDataContext context /* codehint: sm-edit */)
         {
             Guard.ArgumentNotNull(context.Language, "Language");
@@ -5466,8 +5496,8 @@ namespace SmartStore.Services.Installation
             // special mandatory (non-visible) settings
             _settingService.SetSetting<bool>("Media.Images.StoreInDB", _installContext.StoreMediaInDB);
 
+			UpdateStores();
             InstallLanguages(context.Language);
-			InstallStores();
             InstallMeasureDimensions();
             InstallMeasureWeights();
             InstallTaxCategories();

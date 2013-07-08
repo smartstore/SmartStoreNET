@@ -482,6 +482,9 @@ namespace SmartStore.Web.Controllers
                     //now resolve installation service
                     var installationService = EngineContext.Current.Resolve<IInstallationService>();
 
+					// infrastructure is current store dependend, means default store needs to be imported first
+					installationService.InstallEarlyRequiredData();
+
                     // codehint: sm-add
                     // resolve installdata instance from primary language
                     var lazyLang = _locService.GetAppLanguage(model.PrimaryLanguage);

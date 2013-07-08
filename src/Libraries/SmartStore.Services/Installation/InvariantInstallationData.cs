@@ -4213,22 +4213,27 @@ namespace SmartStore.Services.Installation
             return entities;
         }
 
-		public IList<Store> DefaultStores()
+		public static Store DefaultStore
+		{
+			get
+			{
+				return new Store()
+				{
+					Name = "Your store name",
+					Url = "http://www.yourStore.com/",
+					Hosts = "yourstore.com,www.yourstore.com",
+					SslEnabled = false,
+					DisplayOrder = 1
+				};
+			}
+		}
+
+		public IList<Store> DefaultStores(IList<Store> entities)
 		{
 			var imgCompanyLogo = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", "", true, false);
 
-			var entities = new List<Store>()
-            {
-                new Store()
-                {
-                    Name = "Your store name",
-					Url = "http://www.yourStore.com/",
-					SslEnabled = false,
-					Hosts = "yourstore.com,www.yourstore.com",
-					LogoPictureId = imgCompanyLogo.Id,
-                    DisplayOrder = 1,
-                },
-            };
+			if (imgCompanyLogo != null)
+				entities.First(x => x.DisplayOrder == 1).LogoPictureId = imgCompanyLogo.Id;
 
 			this.Alter(entities);
 			return entities;

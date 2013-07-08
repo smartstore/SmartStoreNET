@@ -121,7 +121,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityDeleted<StateProvince>>,
         //customer roles
         IConsumer<EntityUpdated<CustomerRole>>,
-        IConsumer<EntityDeleted<CustomerRole>>
+        IConsumer<EntityDeleted<CustomerRole>>,
+		//stores
+        IConsumer<EntityUpdated<Store>>,
+        IConsumer<EntityDeleted<Store>>
     {
         /// <summary>
         /// Key for ManufacturerNavigationModel caching

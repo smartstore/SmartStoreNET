@@ -69,7 +69,9 @@
             }
         }
     </script>
-    <table class="adminContent" style="border: 1px solid black; padding: 15px;">
+	
+	<div>
+		<table class="adminContent">
         <tr>
             <td class="adminTitle" colspan="2">
                 <b>@T("Plugins.Shipping.ByWeight.AddRecord.Hint")</b>
@@ -77,7 +79,7 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddStoreId):
+				@Html.SmartLabelFor(model => model.AddStoreId)
 			</td>
 			<td class="adminData">
 				@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
@@ -155,11 +157,13 @@
                 </button>
             </td>
         </tr>
-    </table>
-    <br />
-    <hr />
-    <br />
-    <table class="adminContent" style="border: 1px solid black; padding: 15px;">
+		</table>
+	</div>
+
+	<hr />
+
+	<div>
+		<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
@@ -186,5 +190,6 @@
                 </button>
             </td>
         </tr>
-    </table>
+		</table>
+	</div>
 }

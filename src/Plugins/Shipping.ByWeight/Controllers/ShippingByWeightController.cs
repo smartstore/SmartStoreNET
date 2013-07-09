@@ -90,6 +90,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                     var m = new ShippingByWeightModel()
                     {
                         Id = x.Id,
+						StoreId = x.StoreId,
                         ShippingMethodId = x.ShippingMethodId,
                         CountryId = x.CountryId,
                         From = x.From,
@@ -98,8 +99,12 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
                     };
+					//shipping method
                     var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethodId != null) ? shippingMethodId.Name : "Unavailable";
+					//store
+					var store = _storeService.GetStoreById(x.StoreId);
+					m.StoreName = (store != null) ? store.Name : "*";
                     if (x.CountryId > 0)
                     {
                         var c = _countryService.GetCountryById(x.CountryId);
@@ -202,6 +207,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
 				StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
+				StateProvinceId = 0,
                 From = model.AddFrom,
                 To = model.AddTo,
                 UsePercentage = model.AddUsePercentage,

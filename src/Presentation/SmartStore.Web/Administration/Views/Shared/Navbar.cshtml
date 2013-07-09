@@ -1,9 +1,11 @@
 ﻿@using SmartStore.Services.Customers;
+@using SmartStore.Services.Stores;
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
     var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;
     var userName = usernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+	var stores = EngineContext.Current.Resolve<IStoreService>().GetAllStores();
 }
 
 <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
@@ -47,12 +49,18 @@
                     <i class="icon-cogs"></i>
                 </button>
                 <ul class="dropdown-menu">
-                    <li>
-                        <a href="@Url.Action("Index", "Home", new { area = "" })">
-                            <i class="icon-globe"></i>
-                            @T("Admin.Header.PublicStore")
-                        </a>
-                    </li>
+					@foreach (var store in stores)
+					{
+						<li>
+							<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
+								<i class="icon-globe"></i>&nbsp;@store.Name.Truncate(50)
+							</a>
+						</li>
+					}
+					@if (stores.Count > 1)
+					{
+						<li class="divider"></li>
+					}
                     <li>
                         <a href="@Url.Action("ClearCache", "Common")">
                             <i class="icon-remove"></i>

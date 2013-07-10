@@ -2,7 +2,8 @@
 @using SmartStore.Web.Models.Catalog;
 <div>
     <a class="ajax-cart-link"
-        href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.ProductId })"
+        href="#"
+        data-href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.ProductId })"
         data-type="compare"
         data-action="add">
         <i class="icon-retweet"></i>

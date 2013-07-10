@@ -48,7 +48,8 @@
                     </div>
                     <div class="action pull-left">
                          <a class="btn btn-mini ajax-cart-link" title='@T("ShoppingCart.AddToCart")' 
-                             href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
+                             href="#"
+                             data-href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
                              data-name="@item.ProductName"
                              data-type="cart"
                              data-action="addfromwishlist">
@@ -59,7 +60,8 @@
                         @item.UnitPrice
                     </div>
                     <a class="remove ajax-cart-link" 
-                        href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })' 
+                        href="#"
+                        data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })' 
                         data-name="@item.ProductName"
                         data-type="wishlist"
                         data-action="remove" 

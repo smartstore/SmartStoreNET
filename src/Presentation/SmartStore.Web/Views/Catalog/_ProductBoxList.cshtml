@@ -175,7 +175,8 @@
                 <div class="pull-left quicklinks">
                     @if (!Model.ProductPrice.DisableWishListButton)
                     {
-                        <a href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                        <a data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            href="#"
                             class="ajax-cart-link"
                             data-form-selector="#product-details-form"
                             data-type="wishlist"
@@ -201,7 +202,8 @@
                  
                 @if (!Model.ProductPrice.DisableBuyButton)
                 {
-                    <a href='@addtocartlink'
+                    <a data-href='@addtocartlink'
+                        href="#"
                         class="btn btn-warning ajax-cart-link"
                         data-type="cart"
                         data-action="add">

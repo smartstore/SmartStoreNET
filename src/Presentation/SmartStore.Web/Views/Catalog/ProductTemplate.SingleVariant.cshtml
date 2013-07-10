@@ -241,7 +241,8 @@
                         @if (!defaultProductVariant.AddToCart.DisableWishlistButton)
                         {
                         <div>
-                            <a href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = defaultProductVariant.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            <a data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = defaultProductVariant.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                                href="#"
                                 class="ajax-cart-link" 
                                 data-form-selector="#product-details-form"
                                 data-type="wishlist"

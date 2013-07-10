@@ -30,7 +30,8 @@ local.properties
 ###########
 
 *-sym.*
-*-symdir
+*-symdir/
+[Ee]xternal[Ff]iles/
 /src/Plugins/*-sym
 /src/Presentation/SmartStore.Web/Themes/*-sym
 

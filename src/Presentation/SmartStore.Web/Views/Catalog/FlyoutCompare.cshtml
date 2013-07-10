@@ -30,7 +30,8 @@
                         @item.ProductPrice.Price
                     </div>
                     <a class="remove ajax-cart-link" 
-                        href='@Url.RouteUrl("RemoveProductFromCompareList", new { productId = item.Id })' 
+                        href="#"
+                        data-href='@Url.RouteUrl("RemoveProductFromCompareList", new { productId = item.Id })' 
                         data-type="compare"
                         data-action="remove" 
                         title='@T("Common.Remove")'>

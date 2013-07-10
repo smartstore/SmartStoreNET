@@ -21,9 +21,28 @@ namespace SmartStore.Services.Common
         {
             var storeUrl = _storeInformationSettings.StoreUrl.TrimEnd('\\').EnsureEndsWith("/");
             string url = storeUrl + "keepalive/index";
-            using (var wc = new WebClient())
+
+            try
             {
-                wc.DownloadString(url); 
+                using (var wc = new WebClient())
+                {
+                    wc.Headers.Add("SmartStore.NET");
+                    wc.DownloadString(url);
+                }
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        // the page was not found (as it can be expected with some webservers)
+                        return;
+                    }
+                }
+                // throw any other exception - this should not occur
+                throw;
             }
         }
     }

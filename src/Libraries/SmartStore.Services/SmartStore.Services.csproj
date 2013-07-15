@@ -195,7 +195,6 @@
     <Compile Include="Common\IPdfService.cs" />
     <Compile Include="Common\PdfService.cs" />
     <Compile Include="Common\IAddressService.cs" />
-    <Compile Include="Configuration\ConfigurationProvider.cs" />
     <Compile Include="Customers\ICustomerRegistrationService.cs" />
     <Compile Include="Customers\CustomerRegistrationService.cs" />
     <Compile Include="Customers\ICustomerReportService.cs" />
@@ -378,6 +377,10 @@
     <Compile Include="Shipping\Tracking\ShipmentStatusEvent.cs" />
     <Compile Include="Shipping\Tracking\GeneralShipmentTracker.cs" />
     <Compile Include="Shipping\Tracking\IShipmentTracker.cs" />
+    <Compile Include="Stores\IStoreMappingService.cs" />
+    <Compile Include="Stores\IStoreService.cs" />
+    <Compile Include="Stores\StoreMappingService.cs" />
+    <Compile Include="Stores\StoreService.cs" />
     <Compile Include="Tasks\ScheduleTaskService.cs" />
     <Compile Include="Tasks\IScheduleTaskService.cs" />
     <Compile Include="Tasks\ITask.cs" />

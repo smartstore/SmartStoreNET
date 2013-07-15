@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.News;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -11,12 +13,24 @@ namespace SmartStore.Admin.Models.News
     [Validator(typeof(NewsItemValidator))]
     public class NewsItemModel : EntityModelBase
     {
+		public NewsItemModel()
+		{
+			this.AvailableStores = new List<StoreModel>();
+		}
+
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         [AllowHtml]
         public string LanguageName { get; set; }
+
+		//Store mapping
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]

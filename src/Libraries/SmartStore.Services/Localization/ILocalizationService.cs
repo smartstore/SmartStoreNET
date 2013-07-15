@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
@@ -100,6 +101,9 @@ namespace SmartStore.Services.Localization
         /// <param name="returnEmptyIfNotFound">A value indicating whether to empty string will be returned if a resource is not found and default value is set to empty string</param>
         /// <returns>A string representing the requested resource string.</returns>
         string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false);
+
+		/// <remarks>codehint: sm-add</remarks>
+		SelectListItem GetResourceToSelectListItem(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false);
 
         /// <summary>
         /// Export language resources to xml

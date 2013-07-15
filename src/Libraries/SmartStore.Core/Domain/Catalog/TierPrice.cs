@@ -11,6 +11,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the product variant identifier
         /// </summary>
         public int ProductVariantId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the store identifier (0 - all stores)
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the customer role identifier
         /// </summary>

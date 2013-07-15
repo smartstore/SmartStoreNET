@@ -38,12 +38,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
         public string GenerateFeedResult { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.StaticFileUrl")]
+		public List<GeneratedFeedFile> GeneratedFiles { get; set; }
+
         [SmartResourceDisplayName("Plugins.Feed.Froogle.TaskEnabled")]
         public bool TaskEnabled { get; set; }
         [SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
         public int GenerateStaticFileEachMinutes { get; set; }
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.StaticFileUrl")]
-        public string StaticFileUrl { get; set; }
 
 		// codehint: sm-add (begin)
 		public PluginHelperFeed Helper { get; set; }
@@ -103,6 +104,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
 		public string SearchProductName { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Store")]
+		public int StoreId { get; set; }
+		public List<SelectListItem> AvailableStores { get; set; }
+
 		public string GridEditUrl {
 			get {
 				if (_gridEditUrl == null) {
@@ -139,6 +144,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				Pattern = settings.Pattern;
 				OnlineOnly = settings.OnlineOnly;
 				DescriptionToPlainText = settings.DescriptionToPlainText;
+				StoreId = settings.StoreId;
 			}
 			else {
 				settings.AppendDescriptionText1 = AppendDescriptionText1;
@@ -164,6 +170,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.Pattern = Pattern;
 				settings.OnlineOnly = OnlineOnly;
 				settings.DescriptionToPlainText = DescriptionToPlainText;
+				settings.StoreId = StoreId;
 			}
 		}
 		// codehint: sm-add (end)
@@ -202,4 +209,5 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		public string AgeGroupLocalize { get; set; }
 		// codehint: sm-add (end)
 	}	// class
+
 }

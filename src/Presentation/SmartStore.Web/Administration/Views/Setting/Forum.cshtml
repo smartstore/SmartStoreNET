@@ -15,6 +15,7 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
+	@Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
     <table class="adminContent">
         <tr>
@@ -22,7 +23,7 @@
                 @Html.SmartLabelFor(model => model.ForumsEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ForumsEnabled)
+                @Html.SettingEditorFor(model => model.ForumsEnabled)
                 @Html.ValidationMessageFor(model => model.ForumsEnabled)
             </td>
         </tr>
@@ -31,7 +32,7 @@
                 @Html.SmartLabelFor(model => model.RelativeDateTimeFormattingEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.RelativeDateTimeFormattingEnabled)
+                @Html.SettingEditorFor(model => model.RelativeDateTimeFormattingEnabled)
                 @Html.ValidationMessageFor(model => model.RelativeDateTimeFormattingEnabled)
             </td>
         </tr>
@@ -40,7 +41,7 @@
                 @Html.SmartLabelFor(model => model.ShowCustomersPostCount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ShowCustomersPostCount)
+                @Html.SettingEditorFor(model => model.ShowCustomersPostCount)
                 @Html.ValidationMessageFor(model => model.ShowCustomersPostCount)
             </td>
         </tr>
@@ -49,7 +50,7 @@
                 @Html.SmartLabelFor(model => model.AllowGuestsToCreatePosts)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowGuestsToCreatePosts)
+                @Html.SettingEditorFor(model => model.AllowGuestsToCreatePosts)
                 @Html.ValidationMessageFor(model => model.AllowGuestsToCreatePosts)
             </td>
         </tr>
@@ -58,7 +59,7 @@
                 @Html.SmartLabelFor(model => model.AllowGuestsToCreateTopics)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowGuestsToCreateTopics)
+                @Html.SettingEditorFor(model => model.AllowGuestsToCreateTopics)
                 @Html.ValidationMessageFor(model => model.AllowGuestsToCreateTopics)
             </td>
         </tr>
@@ -67,7 +68,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToEditPosts)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowCustomersToEditPosts)
+                @Html.SettingEditorFor(model => model.AllowCustomersToEditPosts)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToEditPosts)
             </td>
         </tr>
@@ -76,7 +77,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToDeletePosts)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowCustomersToDeletePosts)
+                @Html.SettingEditorFor(model => model.AllowCustomersToDeletePosts)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToDeletePosts)
             </td>
         </tr>
@@ -85,7 +86,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToManageSubscriptions)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowCustomersToManageSubscriptions)
+                @Html.SettingEditorFor(model => model.AllowCustomersToManageSubscriptions)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToManageSubscriptions)
             </td>
         </tr>
@@ -94,7 +95,7 @@
                 @Html.SmartLabelFor(model => model.TopicsPageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.TopicsPageSize)
+                @Html.SettingEditorFor(model => model.TopicsPageSize)
                 @Html.ValidationMessageFor(model => model.TopicsPageSize)
             </td>
         </tr>
@@ -103,7 +104,7 @@
                 @Html.SmartLabelFor(model => model.PostsPageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.PostsPageSize)
+                @Html.SettingEditorFor(model => model.PostsPageSize)
                 @Html.ValidationMessageFor(model => model.PostsPageSize)
             </td>
         </tr>
@@ -112,7 +113,7 @@
                 @Html.SmartLabelFor(model => model.SearchResultsPageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SearchResultsPageSize)
+                @Html.SettingEditorFor(model => model.SearchResultsPageSize)
                 @Html.ValidationMessageFor(model => model.SearchResultsPageSize)
             </td>
         </tr>
@@ -121,6 +122,7 @@
                 @Html.SmartLabelFor(model => model.ForumEditor)
             </td>
             <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.ForumEditor)
                 @Html.DropDownListForEnum(model => model.ForumEditor)
                 @Html.ValidationMessageFor(model => model.ForumEditor)
             </td>
@@ -130,7 +132,7 @@
                 @Html.SmartLabelFor(model => model.SignaturesEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SignaturesEnabled)
+                @Html.SettingEditorFor(model => model.SignaturesEnabled)
                 @Html.ValidationMessageFor(model => model.SignaturesEnabled)
             </td>
         </tr>
@@ -144,6 +146,7 @@
                 @Html.SmartLabelFor(model => model.AllowPrivateMessages)
             </td>
             <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.AllowPrivateMessages)
                 @Html.EditorFor(model => model.AllowPrivateMessages)
                 @Html.ValidationMessageFor(model => model.AllowPrivateMessages)
             </td>
@@ -153,7 +156,7 @@
                 @Html.SmartLabelFor(model => model.ShowAlertForPM)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ShowAlertForPM)
+                @Html.SettingEditorFor(model => model.ShowAlertForPM)
                 @Html.ValidationMessageFor(model => model.ShowAlertForPM)
             </td>
         </tr>
@@ -162,7 +165,7 @@
                 @Html.SmartLabelFor(model => model.NotifyAboutPrivateMessages)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.NotifyAboutPrivateMessages)
+                @Html.SettingEditorFor(model => model.NotifyAboutPrivateMessages)
                 @Html.ValidationMessageFor(model => model.NotifyAboutPrivateMessages)
             </td>
         </tr>
@@ -176,7 +179,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedsEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ForumFeedsEnabled)
+                @Html.SettingEditorFor(model => model.ForumFeedsEnabled)
                 @Html.ValidationMessageFor(model => model.ForumFeedsEnabled)
             </td>
         </tr>
@@ -185,7 +188,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedCount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ForumFeedCount)
+                @Html.SettingEditorFor(model => model.ForumFeedCount)
                 @Html.ValidationMessageFor(model => model.ForumFeedCount)
             </td>
         </tr>
@@ -194,7 +197,7 @@
                 @Html.SmartLabelFor(model => model.ActiveDiscussionsFeedEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ActiveDiscussionsFeedEnabled)
+                @Html.SettingEditorFor(model => model.ActiveDiscussionsFeedEnabled)
                 @Html.ValidationMessageFor(model => model.ActiveDiscussionsFeedEnabled)
             </td>
         </tr>
@@ -203,7 +206,7 @@
                 @Html.SmartLabelFor(model => model.ActiveDiscussionsFeedCount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ActiveDiscussionsFeedCount)
+                @Html.SettingEditorFor(model => model.ActiveDiscussionsFeedCount)
                 @Html.ValidationMessageFor(model => model.ActiveDiscussionsFeedCount)
             </td>
         </tr>

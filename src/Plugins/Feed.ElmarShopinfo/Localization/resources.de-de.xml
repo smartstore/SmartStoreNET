@@ -6,9 +6,6 @@ Mehr Informationen finden Sie unter <a href="http://elektronischer-markt.de/nav?
 </p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClickHere">
-		<Value>Hier klicken</Value>
-	</LocaleResource>
 	<LocaleResource Name="GeneratingNow">
 		<Value>Feed wird erstellt...</Value>
 	</LocaleResource>
@@ -58,7 +55,7 @@ Mehr Informationen finden Sie unter <a href="http://elektronischer-markt.de/nav?
 		<Value>Die Größe (in Pixel) für das Produktbild.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt. {0} um ihn zu öffnen.</Value>
+		<Value>Feed wurde erfolgreich erstellt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Feed automatisch erstellen</Value>
@@ -80,12 +77,6 @@ Mehr Informationen finden Sie unter <a href="http://elektronischer-markt.de/nav?
 	</LocaleResource>
 	<LocaleResource Name="StaticFileUrl.Hint">
 		<Value>Die URL der erzeugten Produktdatei.</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileXmlUrl">
-		<Value>URL der Shop-Datei (statisch)</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileXmlUrl.Hint">
-		<Value>Die URL der erzeugten Shop-Datei.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Availability">
 		<Value>Verfügbarkeit</Value>
@@ -249,5 +240,11 @@ Mehr Informationen finden Sie unter <a href="http://elektronischer-markt.de/nav?
 	</LocaleResource>
 	<LocaleResource Name="UpdateHourTo.Hint">
 		<Value>Obere Grenze des Zeitfensters. Wird kein Zeitfenster angegeben, kann die Aktualisierung zu einer beliebigen Zeit stattfinden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
 	</LocaleResource>
 </Language>

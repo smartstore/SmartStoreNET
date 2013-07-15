@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Events;
 
 namespace SmartStore.Services.News
@@ -21,6 +22,7 @@ namespace SmartStore.Services.News
         #region Fields
 
         private readonly IRepository<NewsItem> _newsItemRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 
@@ -28,9 +30,13 @@ namespace SmartStore.Services.News
 
         #region Ctor
 
-        public NewsService(IRepository<NewsItem> newsItemRepository, ICacheManager cacheManager, IEventPublisher eventPublisher)
+        public NewsService(IRepository<NewsItem> newsItemRepository,
+			IRepository<StoreMapping> storeMappingRepository, 
+			ICacheManager cacheManager,
+			IEventPublisher eventPublisher)
         {
             _newsItemRepository = newsItemRepository;
+			_storeMappingRepository = storeMappingRepository;
             _cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
         }
@@ -78,11 +84,12 @@ namespace SmartStore.Services.News
         /// Gets all news
         /// </summary>
         /// <param name="languageId">Language identifier; 0 if you want to get all records</param>
+		/// <param name="storeId">Store identifier; 0 if you want to get all records</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>News items</returns>
-        public virtual IPagedList<NewsItem> GetAllNews(int languageId,
+		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId,
             int pageIndex, int pageSize, bool showHidden = false)
         {
             var query = _newsItemRepository.Table;
@@ -95,7 +102,24 @@ namespace SmartStore.Services.News
                 query = query.Where(n => !n.StartDateUtc.HasValue || n.StartDateUtc <= utcNow);
                 query = query.Where(n => !n.EndDateUtc.HasValue || n.EndDateUtc >= utcNow);
             }
-            query = query.OrderByDescending(b => b.CreatedOnUtc);
+			query = query.OrderByDescending(n => n.CreatedOnUtc);
+
+			//Store mapping
+			if (storeId > 0)
+			{
+				query = from n in query
+						join sm in _storeMappingRepository.Table on n.Id equals sm.EntityId into n_sm
+						from sm in n_sm.DefaultIfEmpty()
+						where !n.LimitedToStores || (sm.EntityName == "NewsItem" && storeId == sm.StoreId)
+						select n;
+
+				//only distinct items (group by ID)
+				query = from n in query
+						group n by n.Id	into nGroup
+						orderby nGroup.Key
+						select nGroup.FirstOrDefault();
+				query = query.OrderByDescending(n => n.CreatedOnUtc);
+			}
 
             var news = new PagedList<NewsItem>(query, pageIndex, pageSize);
             return news;

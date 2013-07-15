@@ -98,5 +98,10 @@ namespace SmartStore.Services.Catalog
         /// A value indicating whether to show hidden records
         /// </summary>
         public bool ShowHidden { get; set; }
+
+		/// <summary>
+		/// Store identifier; 0 to load all records
+		/// </summary>
+		public int StoreId { get; set; }
     }
 }

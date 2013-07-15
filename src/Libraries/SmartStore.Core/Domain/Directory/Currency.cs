@@ -1,12 +1,13 @@
 using System;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
     /// Represents a currency
     /// </summary>
-    public partial class Currency : BaseEntity, ILocalizedEntity
+	public partial class Currency : BaseEntity, ILocalizedEntity, IStoreMappingSupported
     {
         /// <summary>
         /// Gets or sets the name
@@ -32,6 +33,11 @@ namespace SmartStore.Core.Domain.Directory
         /// Gets or sets the custom formatting
         /// </summary>
         public string CustomFormatting { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published

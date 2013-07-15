@@ -11,6 +11,31 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public static class TierPriceExtensions
     {
+		/// <summary>
+		/// Filter tier prices by a store
+		/// </summary>
+		/// <param name="source">Tier prices</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Filtered tier prices</returns>
+		public static IList<TierPrice> FilterByStore(this IList<TierPrice> source,
+			int storeId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			var result = new List<TierPrice>();
+			foreach (var tierPrice in source)
+			{
+				//check store requirement
+				if (tierPrice.StoreId > 0 && tierPrice.StoreId != storeId)
+					continue;
+
+				result.Add(tierPrice);
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Filter tier prices for a customer
         /// </summary>

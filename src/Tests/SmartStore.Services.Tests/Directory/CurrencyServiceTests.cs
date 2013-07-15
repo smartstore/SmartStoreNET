@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
@@ -19,7 +20,7 @@ namespace SmartStore.Services.Tests.Directory
     public class CurrencyServiceTests : ServiceTest
     {
         IRepository<Currency> _currencyRepository;
-        ICustomerService _customerService;
+		IRepository<StoreMapping> _storeMappingRepo;
         CurrencySettings _currencySettings;
         IEventPublisher _eventPublisher;
         ICurrencyService _currencyService;
@@ -74,9 +75,9 @@ namespace SmartStore.Services.Tests.Directory
             _currencyRepository.Expect(x => x.GetById(currencyEUR.Id)).Return(currencyEUR);
             _currencyRepository.Expect(x => x.GetById(currencyRUR.Id)).Return(currencyRUR);
 
+			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+
             var cacheManager = new NullCache();
-            
-            _customerService = MockRepository.GenerateMock<ICustomerService>();
 
             _currencySettings = new CurrencySettings();
             _currencySettings.PrimaryStoreCurrencyId = currencyUSD.Id;
@@ -87,7 +88,7 @@ namespace SmartStore.Services.Tests.Directory
             
             var pluginFinder = new PluginFinder();
             _currencyService = new CurrencyService(cacheManager,
-                _currencyRepository, _customerService,
+				_currencyRepository, _storeMappingRepo, 
                 _currencySettings, pluginFinder, _eventPublisher);
         }
         

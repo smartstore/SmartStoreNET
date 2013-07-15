@@ -12,5 +12,8 @@ namespace SmartStore.Plugin.Payments.Prepayment.Models
 
         [SmartResourceDisplayName("Plugins.Payment.Prepayment.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payment.Prepayment.AdditionalFeePercentage")]
+		public bool AdditionalFeePercentage { get; set; }
     }
 }

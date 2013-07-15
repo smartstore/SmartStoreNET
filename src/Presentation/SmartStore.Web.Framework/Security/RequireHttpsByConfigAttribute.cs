@@ -47,11 +47,14 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (!currentConnectionSecured)
                         {
-                            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-                            if (webHelper.SecurityMode > HttpSecurityMode.Unsecured)
+							var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+							var currentStore = storeContext.CurrentStore;
+
+							if (currentStore != null && currentStore.GetSecurityMode() > HttpSecurityMode.Unsecured)
                             {
                                 // redirect to HTTPS version of page
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
+								var webHelper = EngineContext.Current.Resolve<IWebHelper>();
                                 string url = webHelper.GetThisPageUrl(true, true);
                                 filterContext.Result = new RedirectResult(url);
                             }

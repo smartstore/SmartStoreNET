@@ -227,6 +227,7 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("Author", plugin.Author));
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));
+			keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));
 
             var sb = new StringBuilder();
             for (int i = 0; i < keyValues.Count; i++)

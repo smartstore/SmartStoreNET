@@ -9,8 +9,7 @@ namespace SmartStore.Data.Mapping.Catalog
         {
             this.ToTable("ProductVariant_ProductAttribute_Mapping");
             this.HasKey(pva => pva.Id);
-            this.Property(pva => pva.TextPrompt);
-            this.Ignore(pva => pva.AttributeControlType);
+	        this.Ignore(pva => pva.AttributeControlType);
 
             this.HasRequired(pva => pva.ProductVariant)
                 .WithMany(pv => pv.ProductVariantAttributes)

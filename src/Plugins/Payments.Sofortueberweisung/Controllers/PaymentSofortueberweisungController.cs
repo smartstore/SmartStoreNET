@@ -1,25 +1,10 @@
-﻿using System;
-using System.Web;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Logging;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Plugin.Payments.Sofortueberweisung.Models;
-using SmartStore.Plugin.Payments.Sofortueberweisung;
-using System.Reflection;
-using System.IO;
-using System.Web.Security;
 using SmartStore.Plugin.Payments.Sofortueberweisung.Core;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 {
@@ -32,8 +17,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 		public PaymentSofortueberweisungController(
 			ISofortueberweisungApi api,
 			ISettingService settingService,
-			SofortueberweisungPaymentSettings paymentSettingsSu) {
-
+			SofortueberweisungPaymentSettings paymentSettingsSu)
+		{
 			_api = api;
 			_settingService = settingService;
 			_paymentSettingsSu = paymentSettingsSu;
@@ -53,17 +38,22 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure() {
+		public ActionResult Configure() 
+		{
 			ConfigurationModel model = new ConfigurationModel();
 			model.Copy(_paymentSettingsSu, true);
-			
+
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.Configure", model);
 		}
 
 		[HttpPost]
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure(ConfigurationModel model) {
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return Configure();
+
 			if (!ModelState.IsValid)
 				return Configure();
 

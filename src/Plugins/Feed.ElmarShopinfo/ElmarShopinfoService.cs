@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.ElmarShopinfo.Services;
 using SmartStore.Services.Common;
@@ -45,12 +46,12 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo
         {
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			string domain = HttpContext.Current.Request.Url.Authority.Prettify().ToLower();
+			var rnd = CommonHelper.GenerateRandomDigitCode(10);
 
 			var settings = new ElmarShopinfoSettings() {
                 ProductPictureSize = 300,
-				StaticFileName = "elmar_shopinfo_{0}.csv".FormatWith(domain),
-				StaticFileNameXml = "elmar_shopinfo_{0}.xml".FormatWith(domain),
+				StaticFileName = "elmar_shopinfo_{0}.csv".FormatWith(rnd),
+				StaticFileNameXml = "elmar_shopinfo_{0}.xml".FormatWith(rnd),
 				CurrencyId = _elmarService.Helper.CurrencyID,
 				CategoryMapping = (_elmarService.Helper.IsLanguageGerman ? "Sonstiges" : "Other"),
 				ExportSpecialPrice = true,

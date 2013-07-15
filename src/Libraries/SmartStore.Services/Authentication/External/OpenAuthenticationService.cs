@@ -6,6 +6,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Authentication.External
@@ -16,25 +17,29 @@ namespace SmartStore.Services.Authentication.External
         private readonly IPluginFinder _pluginFinder;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly IRepository<ExternalAuthenticationRecord> _externalAuthenticationRecordRepository;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         public OpenAuthenticationService(IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
             IPluginFinder pluginFinder,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-            ICustomerService customerService)
+            ICustomerService customerService,
+			ISettingService settingService)
         {
             this._externalAuthenticationRecordRepository = externalAuthenticationRecordRepository;
             this._pluginFinder = pluginFinder;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._customerService = customerService;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         /// <summary>
         /// Load active external authentication methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment methods</returns>
-        public virtual IList<IExternalAuthenticationMethod> LoadActiveExternalAuthenticationMethods()
+		public virtual IList<IExternalAuthenticationMethod> LoadActiveExternalAuthenticationMethods(int storeId = 0)
         {
-            return LoadAllExternalAuthenticationMethods()
+			return LoadAllExternalAuthenticationMethods(storeId)
                    .Where(provider => _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Contains(provider.PluginDescriptor.SystemName, StringComparer.InvariantCultureIgnoreCase))
                    .ToList();
         }
@@ -56,10 +61,14 @@ namespace SmartStore.Services.Authentication.External
         /// <summary>
         /// Load all external authentication methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>External authentication methods</returns>
-        public virtual IList<IExternalAuthenticationMethod> LoadAllExternalAuthenticationMethods()
+		public virtual IList<IExternalAuthenticationMethod> LoadAllExternalAuthenticationMethods(int storeId = 0)
         {
-            return _pluginFinder.GetPlugins<IExternalAuthenticationMethod>().ToList();
+            return _pluginFinder
+				.GetPlugins<IExternalAuthenticationMethod>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+				.ToList();
         }
 
 

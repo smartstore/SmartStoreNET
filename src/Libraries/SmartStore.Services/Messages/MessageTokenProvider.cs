@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
@@ -45,6 +46,7 @@ namespace SmartStore.Services.Messages
         private readonly ICurrencyService _currencyService;
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
@@ -73,7 +75,8 @@ namespace SmartStore.Services.Messages
             ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
             IEmailAccountService emailAccountService,
             IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
-            IWorkContext workContext, IDownloadService downloadService,
+            IWorkContext workContext, IStoreContext storeContext,
+			IDownloadService downloadService,
             IOrderService orderService, IPaymentService paymentService,
             IProductAttributeParser productAttributeParser,
             StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
@@ -90,6 +93,7 @@ namespace SmartStore.Services.Messages
             this._currencyService = currencyService;
             this._webHelper = webHelper;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._downloadService = downloadService;
             this._orderService = orderService;
             this._paymentService = paymentService;
@@ -507,7 +511,11 @@ namespace SmartStore.Services.Messages
             var sb = new StringBuilder();
             sb.AppendLine("<table border=\"0\" style=\"width:100%;\" class=\"legal-infos\">");
 
-            var topic = _topicService.GetTopicBySystemName(systemName);
+			//load by store
+			var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
+			if (topic == null)
+				//not found. let's find topic assigned to all stores
+				topic = _topicService.GetTopicBySystemName(systemName, 0);
 
             sb.AppendLine("<tr><td style=\"color:#aaa\">");
             sb.AppendLine(topic.Title);
@@ -571,9 +579,9 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
             
-            if (!String.IsNullOrEmpty(_storeSettings.StoreUrl)) 
+            if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
             {
-                sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _storeSettings.StoreUrl));
+				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _storeContext.CurrentStore.Url));
             }
             if (!String.IsNullOrEmpty(_contactDataSettings.CompanyEmailAddress)) 
             {
@@ -634,10 +642,10 @@ namespace SmartStore.Services.Messages
 
         #region Methods
 
-        public virtual void AddStoreTokens(IList<Token> tokens)
+		public virtual void AddStoreTokens(IList<Token> tokens, Store store)
         {
-            tokens.Add(new Token("Store.Name", _storeSettings.StoreName));
-            tokens.Add(new Token("Store.URL", _storeSettings.StoreUrl, true));
+			tokens.Add(new Token("Store.Name", store.Name));
+			tokens.Add(new Token("Store.URL", store.Url, true));
             var defaultEmailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
             if (defaultEmailAccount == null)
                 defaultEmailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
@@ -821,14 +829,18 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Customer.Email", customer.Email));
             tokens.Add(new Token("Customer.Username", customer.Username));
             tokens.Add(new Token("Customer.FullName", customer.GetFullName()));
-            tokens.Add(new Token("Customer.VatNumber", customer.VatNumber));
-            tokens.Add(new Token("Customer.VatNumberStatus", customer.VatNumberStatus.ToString()));
+			tokens.Add(new Token("Customer.VatNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber)));
+			tokens.Add(new Token("Customer.VatNumberStatus", ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).ToString()));
 
 
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            string passwordRecoveryUrl = string.Format("{0}passwordrecovery/confirm?token={1}&email={2}", _webHelper.GetStoreLocation(false), customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), customer.Email);
-            string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(false), customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), customer.Email);
+			string passwordRecoveryUrl = string.Format("{0}passwordrecovery/confirm?token={1}&email={2}", _webHelper.GetStoreLocation(false), 
+				customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), HttpUtility.UrlEncode(customer.Email));
+
+			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(false), 
+				customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), HttpUtility.UrlEncode(customer.Email));
+
             var wishlistUrl = string.Format("{0}wishlist/{1}", _webHelper.GetStoreLocation(false), customer.CustomerGuid);
             tokens.Add(new Token("Customer.PasswordRecoveryURL", passwordRecoveryUrl, true));
             tokens.Add(new Token("Customer.AccountActivationURL", accountActivationUrl, true));

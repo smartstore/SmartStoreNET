@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -15,6 +16,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -52,6 +54,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly PdfSettings _pdfSettings;
         private readonly AdminAreaSettings _adminAreaSettings;
 
@@ -71,6 +75,7 @@ namespace SmartStore.Admin.Controllers
             IExportManager exportManager, IImportManager importManager,
             ICustomerActivityService customerActivityService,
             IPermissionService permissionService, IAclService aclService,
+			IStoreService storeService, IStoreMappingService storeMappingService,
             PdfSettings pdfSettings, AdminAreaSettings adminAreaSettings)
         {
             this._productService = productService;
@@ -94,6 +99,8 @@ namespace SmartStore.Admin.Controllers
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
             this._aclService = aclService;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
             this._pdfSettings = pdfSettings;
             this._adminAreaSettings = adminAreaSettings;
         }
@@ -144,14 +151,6 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var pp in product.ProductPictures)
                 _pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
-        }
-
-        [NonAction]
-        protected void UpdateProductTagTotals(Product product)
-        {
-            var productTags = product.ProductTags;
-            foreach (var productTag in productTags)
-                _productTagService.UpdateProductTagTotals(productTag);
         }
 
         [NonAction]
@@ -268,6 +267,52 @@ namespace SmartStore.Admin.Controllers
                 }
             }
         }
+
+		[NonAction]
+		private void PrepareStoresMappingModel(ProductModel model, Product product, bool excludeProperties)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+			if (!excludeProperties)
+			{
+				if (product != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
+			}
+		}
+
+		[NonAction]
+		protected void SaveStoreMappings(Product product, ProductModel model)
+		{
+			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
+			var allStores = _storeService.GetAllStores();
+			foreach (var store in allStores)
+			{
+				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
+				{
+					//new role
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+						_storeMappingService.InsertStoreMapping(product, store.Id);
+				}
+				else
+				{
+					//removed role
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
+				}
+			}
+		}
 
         [NonAction]
         private void PrepareVariantsModel(ProductModel model, Product product)
@@ -435,7 +480,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentNullException("product");
 
             //product tags
-            var existingProductTags = product.ProductTags.OrderByDescending(pt => pt.ProductCount).ToList();
+			var existingProductTags = product.ProductTags.ToList();
             var productTagsToRemove = new List<ProductTag>();
             foreach (var existingProductTag in existingProductTags)
             {
@@ -456,9 +501,7 @@ namespace SmartStore.Admin.Controllers
             foreach (var productTag in productTagsToRemove)
             {
                 product.ProductTags.Remove(productTag);
-                //ensure product is saved before updating totals
                 _productService.UpdateProduct(product);
-                _productTagService.UpdateProductTagTotals(productTag);
             }
             foreach (string productTagName in productTags)
             {
@@ -469,8 +512,7 @@ namespace SmartStore.Admin.Controllers
                     //add new product tag
                     productTag = new ProductTag()
                     {
-                        Name = productTagName,
-                        ProductCount = 0
+                        Name = productTagName
                     };
                     _productTagService.InsertProductTag(productTag);
                 }
@@ -481,11 +523,8 @@ namespace SmartStore.Admin.Controllers
                 if (!product.ProductTagExists(productTag.Id))
                 {
                     product.ProductTags.Add(productTag);
-                    //ensure product is saved before updating totals
-                    _productService.UpdateProduct(product);
+                   _productService.UpdateProduct(product);
                 }
-                //update product tag totals 
-                _productTagService.UpdateProductTagTotals(productTag);
             }
         }
         #endregion
@@ -539,6 +578,11 @@ namespace SmartStore.Admin.Controllers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
 
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
             return View(model);
         }
 
@@ -556,6 +600,7 @@ namespace SmartStore.Admin.Controllers
                 ctx.CategoryIds.Add(model.SearchCategoryId);
 
             ctx.ManufacturerId = model.SearchManufacturerId;
+			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
@@ -606,6 +651,7 @@ namespace SmartStore.Admin.Controllers
             PrepareCategoryMapping(model);
             PrepareManufacturerMapping(model);
             PrepareAclModel(model, null, false);
+			PrepareStoresMappingModel(model, null, false);
             //default values
             model.Published = true;
             model.AllowCustomerReviews = true;
@@ -640,6 +686,8 @@ namespace SmartStore.Admin.Controllers
                 UpdateLocales(product, model);
                 //ACL (customer roles)
                 SaveProductAcl(product, model);
+				//Stores
+				SaveStoreMappings(product, model);
 
                 //default product variant
                 var variant = model.FirstProductVariantModel.ToEntity();
@@ -670,6 +718,7 @@ namespace SmartStore.Admin.Controllers
             PrepareCategoryMapping(model);
             PrepareManufacturerMapping(model);
             PrepareAclModel(model, null, true);
+			PrepareStoresMappingModel(model, null, true);
             //first product variant
             FirstVariant_PrepareProductVariantModel(model.FirstProductVariantModel, null, false);
             return View(model);
@@ -709,6 +758,7 @@ namespace SmartStore.Admin.Controllers
             PrepareCategoryMapping(model);
             PrepareManufacturerMapping(model);
             PrepareAclModel(model, product, false);
+			PrepareStoresMappingModel(model, product, false);
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
@@ -740,6 +790,8 @@ namespace SmartStore.Admin.Controllers
                 SaveProductTags(product, ParseProductTags(model.ProductTags));
                 //ACL (customer roles)
                 SaveProductAcl(product, model);
+				//Stores
+				SaveStoreMappings(product, model);
                 //picture seo names
                 UpdatePictureSeoNames(product);
 
@@ -761,6 +813,7 @@ namespace SmartStore.Admin.Controllers
             PrepareCategoryMapping(model);
             PrepareManufacturerMapping(model);
             PrepareAclModel(model, product, true);
+			PrepareStoresMappingModel(model, product, true);
             return View(model);
         }
 
@@ -773,8 +826,6 @@ namespace SmartStore.Admin.Controllers
 
             var product = _productService.GetProductById(id);
             _productService.DeleteProduct(product);
-            //update product tag totals
-            UpdateProductTagTotals(product);
 
             //activity log
             _customerActivityService.InsertActivity("DeleteProduct", _localizationService.GetResource("ActivityLog.DeleteProduct"), product.Name);
@@ -801,8 +852,6 @@ namespace SmartStore.Admin.Controllers
                 {
                     var product = products[i];
                     _productService.DeleteProduct(product);
-                    //update product tag totals
-                    UpdateProductTagTotals(product);
                 }
             }
 
@@ -1560,14 +1609,16 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var tags = _productTagService.GetAllProductTags(true)
+			var tags = _productTagService.GetAllProductTags()
+				//order by product count
+				.OrderByDescending(x => _productTagService.GetProductCount(x.Id, 0))
                 .Select(x =>
                 {
                     return new ProductTagModel()
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        ProductCount = x.ProductCount
+						ProductCount = _productTagService.GetProductCount(x.Id, 0)
                     };
                 })
                 .ForCommand(command);
@@ -1612,7 +1663,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Id = productTag.Id,
                 Name = productTag.Name,
-                ProductCount = productTag.ProductCount
+				ProductCount = _productTagService.GetProductCount(productTag.Id, 0)
             };
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>

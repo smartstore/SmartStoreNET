@@ -9,6 +9,8 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Discounts
 {
@@ -29,8 +31,11 @@ namespace SmartStore.Services.Discounts
         private readonly IRepository<DiscountRequirement> _discountRequirementRepository;
         private readonly IRepository<DiscountUsageHistory> _discountUsageHistoryRepository;
         private readonly ICacheManager _cacheManager;
+		private readonly IStoreContext _storeContext;
+		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         #endregion
 
@@ -43,21 +48,30 @@ namespace SmartStore.Services.Discounts
         /// <param name="discountRepository">Discount repository</param>
         /// <param name="discountRequirementRepository">Discount requirement repository</param>
         /// <param name="discountUsageHistoryRepository">Discount usage history repository</param>
+		/// <param name="storeContext">Store context</param>
+		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
+		/// <param name="settingService">Setting service</param>
         public DiscountService(ICacheManager cacheManager,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
+			IStoreContext storeContext,
+			IGenericAttributeService genericAttributeService,
             IPluginFinder pluginFinder,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			ISettingService settingService)
         {
             this._cacheManager = cacheManager;
             this._discountRepository = discountRepository;
             this._discountRequirementRepository = discountRequirementRepository;
             this._discountUsageHistoryRepository = discountUsageHistoryRepository;
+			this._storeContext = storeContext;
+			this._genericAttributeService = genericAttributeService;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         #endregion
@@ -295,7 +309,7 @@ namespace SmartStore.Services.Discounts
 
             var couponCodeToValidate = "";
             if (customer != null)
-                couponCodeToValidate = customer.DiscountCouponCode;
+				couponCodeToValidate = customer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode, _genericAttributeService);
 
             return IsDiscountValid(discount, customer, couponCodeToValidate);
         }
@@ -346,10 +360,15 @@ namespace SmartStore.Services.Discounts
                 var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName);
                 if (requirementRule == null)
                     continue;
+				if (!(_storeContext.CurrentStore.Id == 0 || 
+					_settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+					continue;
+
                 var request = new CheckDiscountRequirementRequest()
                 {
                     DiscountRequirement = req,
-                    Customer = customer
+                    Customer = customer,
+					Store = _storeContext.CurrentStore
                 };
                 if (!requirementRule.CheckRequirement(request))
                     return false;

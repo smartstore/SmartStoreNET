@@ -9,8 +9,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Models
 		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
-		public int TransactModeId { get; set; }
 		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.TransactMode")]
+		public int TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.ApiAccountName")]

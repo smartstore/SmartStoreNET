@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Plugin.Payments.DirectDebit.Models;
 using SmartStore.Services.Configuration;
@@ -11,26 +10,28 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
 {
     public class PaymentDirectDebitController : PaymentControllerBase
     {
-        private readonly ISettingService _settingService;
-        private readonly DirectDebitPaymentSettings _directDebitPaymentSettings;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly DirectDebitPaymentSettings _directDebitPaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-        public PaymentDirectDebitController(ISettingService settingService, 
-            DirectDebitPaymentSettings directDebitPaymentSettings,
-            ILocalizationService localizationService)
-        {
-            this._settingService = settingService;
-            this._directDebitPaymentSettings = directDebitPaymentSettings;
-            _localizationService = localizationService;
-        }
+		public PaymentDirectDebitController(ISettingService settingService,
+			DirectDebitPaymentSettings directDebitPaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._directDebitPaymentSettings = directDebitPaymentSettings;
+			this._localizationService = localizationService;
+		}
+
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-            var model = new ConfigurationModel();
-            model.DescriptionText = _directDebitPaymentSettings.DescriptionText;
-            model.AdditionalFee = _directDebitPaymentSettings.AdditionalFee;
+			var model = new ConfigurationModel();
+			model.DescriptionText = _directDebitPaymentSettings.DescriptionText;
+			model.AdditionalFee = _directDebitPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _directDebitPaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
         }
@@ -38,15 +39,17 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+		[ValidateInput(false)]
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
-            
-            //save settings
-            _directDebitPaymentSettings.DescriptionText = model.DescriptionText;
-            _directDebitPaymentSettings.AdditionalFee = model.AdditionalFee;
-            _settingService.SaveSetting(_directDebitPaymentSettings);
+
+			//save settings
+			_directDebitPaymentSettings.DescriptionText = model.DescriptionText;
+			_directDebitPaymentSettings.AdditionalFee = model.AdditionalFee;
+			_directDebitPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_directDebitPaymentSettings);
             
             return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
         }
@@ -54,8 +57,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-            var model = new PaymentInfoModel();
-
+			var model = new PaymentInfoModel();
             string desc = _directDebitPaymentSettings.DescriptionText;
 
             if( desc.StartsWith("@") )

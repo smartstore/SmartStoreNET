@@ -262,6 +262,9 @@ namespace SmartStore.Admin.Models.Customers
             [SmartResourceDisplayName("Admin.Customers.Customers.Orders.OrderTotal")]
             public string OrderTotal { get; set; }
 
+			[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
+			public string StoreName { get; set; }
+
             [SmartResourceDisplayName("Admin.Customers.Customers.Orders.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }

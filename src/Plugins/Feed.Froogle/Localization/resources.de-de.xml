@@ -18,9 +18,6 @@
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Standard-Google-Kategorie fehlt</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClickHere">
-		<Value>Hier klicken</Value>
-	</LocaleResource>
 	<LocaleResource Name="GeneratingNow">
 		<Value>Feed wird erstellt...</Value>
 	</LocaleResource>
@@ -70,7 +67,7 @@
 		<Value>Größe</Value>
 	</LocaleResource>
 	<LocaleResource Name="SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt. {0} um ihn zu öffnen.</Value>
+		<Value>Feed wurde erfolgreich erstellt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Feed automatisch erstellen</Value>
@@ -254,5 +251,11 @@
 	</LocaleResource>
 	<LocaleResource Name="SearchProductName.Hint">
 		<Value>Produkte nach Stichwörtern suchen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
 	</LocaleResource>
 </Language>

@@ -11,7 +11,7 @@ using FluentValidation.Attributes;
 namespace SmartStore.Admin.Models.Settings
 {
     [Validator(typeof(GeneralCommonSettingsValidator))]
-    public partial class GeneralCommonSettingsModel : ModelBase
+	public partial class GeneralCommonSettingsModel : ModelBase
     {
         public GeneralCommonSettingsModel()
         {
@@ -28,6 +28,7 @@ namespace SmartStore.Admin.Models.Settings
             SocialSettings = new SocialSettingsModel();
             //codehint: sm-add end
         }
+
         public StoreInformationSettingsModel StoreInformationSettings { get; set; }
         public SeoSettingsModel SeoSettings { get; set; }
         public SecuritySettingsModel SecuritySettings { get; set; }
@@ -43,39 +44,25 @@ namespace SmartStore.Admin.Models.Settings
 
         #region Nested classes
 
-        public partial class StoreInformationSettingsModel
+		public partial class StoreInformationSettingsModel
         {
             public StoreInformationSettingsModel()
             {
                 // codehint: sm-delete
             }
             
-            //codehint: sm-add
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreLogo")]
-            [UIHint("Picture")]
-            public int LogoPictureId { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreName")]
-            [AllowHtml]
-            public string StoreName { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreUrl")]
-            [AllowHtml]
-            public string StoreUrl { get; set; }
-
             // codehint: sm-delete
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosed")]
-            public bool StoreClosed { get; set; }
+			public bool StoreClosed { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosedAllowForAdmins")]
             public bool StoreClosedAllowForAdmins { get; set; }
             
             // codehint: sm-delete
-
         }
 
-        public partial class SeoSettingsModel
+		public partial class SeoSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator")]
             [AllowHtml]
@@ -104,7 +91,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool CanonicalUrlsEnabled { get; set; }
         }
 
-        public partial class SecuritySettingsModel
+		public partial class SecuritySettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.EncryptionKey")]
             [AllowHtml]
@@ -157,23 +144,9 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
             [AllowHtml]
             public string ReCaptchaPrivateKey { get; set; }
-
-
-
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseSSL")]
-            public bool UseSsl { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SharedSSLUrl")]
-            [AllowHtml]
-            public string SharedSslUrl { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.NonSharedSSLUrl")]
-            [AllowHtml]
-            public string NonSharedSslUrl { get; set; }
         }
 
-        public partial class PdfSettingsModel
+		public partial class PdfSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PdfEnabled")]
             public bool Enabled { get; set; }
@@ -186,7 +159,7 @@ namespace SmartStore.Admin.Models.Settings
             public int LogoPictureId { get; set; }
         }
 
-        public partial class LocalizationSettingsModel
+		public partial class LocalizationSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseImagesForLanguageSelection")]
             public bool UseImagesForLanguageSelection { get; set; }
@@ -198,7 +171,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool LoadAllLocaleRecordsOnStartup { get; set; }
         }
 
-        public partial class FullTextSettingsModel
+		public partial class FullTextSettingsModel
         {
             public bool Supported { get; set; }
 
@@ -210,7 +183,7 @@ namespace SmartStore.Admin.Models.Settings
         }
 
         //codehint: sm-add begin
-        public partial class CompanyInformationSettingsModel
+		public partial class CompanyInformationSettingsModel
         {
 
             public CompanyInformationSettingsModel()
@@ -277,7 +250,7 @@ namespace SmartStore.Admin.Models.Settings
             public string TaxNumber { get; set; }
         }
 
-        public partial class ContactDataSettingsModel
+		public partial class ContactDataSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings.CompanyTelephoneNumber")]
             public string CompanyTelephoneNumber { get; set; }
@@ -304,7 +277,7 @@ namespace SmartStore.Admin.Models.Settings
             public string ContactEmailAddress { get; set; }
         }
 
-        public partial class BankConnectionSettingsModel
+		public partial class BankConnectionSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.BankConnectionSettings.Bankname")]
             public string Bankname { get; set; }
@@ -325,7 +298,7 @@ namespace SmartStore.Admin.Models.Settings
             public string Bic { get; set; }
         }
 
-        public partial class SocialSettingsModel
+		public partial class SocialSettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.ShowSocialLinksInFooter")]
             public bool ShowSocialLinksInFooter { get; set; }

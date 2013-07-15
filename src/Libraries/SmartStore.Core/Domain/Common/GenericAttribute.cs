@@ -24,5 +24,10 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the value
         /// </summary>
         public string Value { get; set; }
+
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
     }
 }

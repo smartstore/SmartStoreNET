@@ -132,7 +132,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var payments = _orderService.SearchRecurringPayments(0, 0, null, true);
+            var payments = _orderService.SearchRecurringPayments(0, 0, 0, null, true);
             var gridModel = new GridModel<RecurringPaymentModel>
             {
                 Data = payments.PagedForCommand(command).Select(x =>

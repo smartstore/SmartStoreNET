@@ -16,6 +16,7 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
+	@Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
 
     
@@ -37,7 +38,7 @@
                 @Html.SmartLabelFor(model => model.IsReOrderAllowed)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.IsReOrderAllowed)
+                @Html.SettingEditorFor(model => model.IsReOrderAllowed)
                 @Html.ValidationMessageFor(model => model.IsReOrderAllowed)
             </td>
         </tr>
@@ -46,7 +47,7 @@
                 @Html.SmartLabelFor(model => model.MinOrderSubtotalAmount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinOrderSubtotalAmount)
+                @Html.SettingEditorFor(model => model.MinOrderSubtotalAmount)
                 @Html.ValidationMessageFor(model => model.MinOrderSubtotalAmount) @Model.PrimaryStoreCurrencyCode
             </td>
         </tr>
@@ -55,7 +56,7 @@
                 @Html.SmartLabelFor(model => model.MinOrderTotalAmount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinOrderTotalAmount)
+                @Html.SettingEditorFor(model => model.MinOrderTotalAmount)
                 @Html.ValidationMessageFor(model => model.MinOrderTotalAmount) @Model.PrimaryStoreCurrencyCode
             </td>
         </tr>
@@ -64,7 +65,7 @@
                 @Html.SmartLabelFor(model => model.AnonymousCheckoutAllowed)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AnonymousCheckoutAllowed)
+                @Html.SettingEditorFor(model => model.AnonymousCheckoutAllowed)
                 @Html.ValidationMessageFor(model => model.AnonymousCheckoutAllowed)
             </td>
         </tr>
@@ -73,7 +74,7 @@
                 @Html.SmartLabelFor(model => model.TermsOfServiceEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.TermsOfServiceEnabled)
+                @Html.SettingEditorFor(model => model.TermsOfServiceEnabled)
                 @Html.ValidationMessageFor(model => model.TermsOfServiceEnabled)
             </td>
         </tr>
@@ -82,7 +83,7 @@
                 @Html.SmartLabelFor(model => model.OnePageCheckoutEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.OnePageCheckoutEnabled)
+                @Html.SettingEditorFor(model => model.OnePageCheckoutEnabled)
                 @Html.ValidationMessageFor(model => model.OnePageCheckoutEnabled)
             </td>
         </tr>
@@ -124,7 +125,6 @@
             <td class="adminTitle" colspan="2">
                 @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription1")
                 <br />
-                <br />
                 @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription2")
             </td>
         </tr>
@@ -133,7 +133,7 @@
                 @Html.SmartLabelFor(model => model.ReturnRequestsEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ReturnRequestsEnabled)
+                @Html.SettingEditorFor(model => model.ReturnRequestsEnabled)
                 @Html.ValidationMessageFor(model => model.ReturnRequestsEnabled)
             </td>
         </tr>
@@ -142,7 +142,7 @@
                 @Html.SmartLabelFor(model => model.NumberOfDaysReturnRequestAvailable)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.NumberOfDaysReturnRequestAvailable)
+                @Html.SettingEditorFor(model => model.NumberOfDaysReturnRequestAvailable)
                 @Html.ValidationMessageFor(model => model.NumberOfDaysReturnRequestAvailable)
             </td>
         </tr>

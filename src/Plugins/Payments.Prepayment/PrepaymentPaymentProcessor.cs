@@ -7,6 +7,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Payments.Prepayment.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Plugin.Payments.Prepayment
@@ -17,9 +18,11 @@ namespace SmartStore.Plugin.Payments.Prepayment
     public class PrepaymentPaymentProcessor : BasePlugin, IPaymentMethod
     {
         #region Fields
+
         private readonly PrepaymentPaymentSettings _prepaymentPaymentSettings;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 
         #endregion
 
@@ -27,11 +30,13 @@ namespace SmartStore.Plugin.Payments.Prepayment
 
         public PrepaymentPaymentProcessor(PrepaymentPaymentSettings prepaymentPaymentSettings,
             ISettingService settingService,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+			IOrderTotalCalculationService orderTotalCalculationService)
         {
             this._prepaymentPaymentSettings = prepaymentPaymentSettings;
             this._settingService = settingService;
-            _localizationService = localizationService;
+            this._localizationService = localizationService;
+			this._orderTotalCalculationService = orderTotalCalculationService;
         }
 
         #endregion
@@ -66,7 +71,8 @@ namespace SmartStore.Plugin.Payments.Prepayment
         /// <returns>Additional handling fee</returns>
         public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
-            return _prepaymentPaymentSettings.AdditionalFee;
+			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, _prepaymentPaymentSettings.AdditionalFee, _prepaymentPaymentSettings.AdditionalFeePercentage);
+			return result;
         }
 
         /// <summary>

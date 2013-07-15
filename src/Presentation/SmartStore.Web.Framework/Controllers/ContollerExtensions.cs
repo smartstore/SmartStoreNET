@@ -1,9 +1,11 @@
 ﻿﻿using System.IO;
 using System.Web.Mvc;
-using System.ComponentModel;
-using System;
 using SmartStore.Web.Framework.UI;
 using System.Collections.Generic;
+using SmartStore.Services.Stores;
+using SmartStore.Services.Common;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -66,19 +68,22 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="type">Notification type</param>
 		/// <param name="message">Message</param>
 		/// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-		public static void AddNotificationMessage(this ControllerBase controller, NotifyType type, string message, bool persistForTheNextRequest) {
+		public static void AddNotificationMessage(this ControllerBase controller, NotifyType type, string message, bool persistForTheNextRequest)
+		{
 			if (message.IsNullOrEmpty())
 				return;
 
 			List<string> lst = null;
 			string dataKey = string.Format("sm.notifications.{0}", type);
 
-			if (persistForTheNextRequest) {
+			if (persistForTheNextRequest)
+			{
 				if (controller.TempData[dataKey] == null)
 					controller.TempData[dataKey] = new List<string>();
 				lst = (List<string>)controller.TempData[dataKey];
 			}
-			else {
+			else
+			{
 				if (controller.ViewData[dataKey] == null)
 					controller.ViewData[dataKey] = new List<string>();
 				lst = (List<string>)controller.ViewData[dataKey];
@@ -86,6 +91,24 @@ namespace SmartStore.Web.Framework.Controllers
 
 			if (lst != null && !lst.Exists(m => m == message))
 				lst.Add(message);
+		}
+
+		/// <summary>
+		/// Get active store scope (for multi-store configuration mode)
+		/// </summary>
+		/// <param name="controller">Controller</param>
+		/// <param name="storeService">Store service</param>
+		/// <param name="workContext">Work context</param>
+		/// <returns>Store ID; 0 if we are in a shared mode</returns>
+		public static int GetActiveStoreScopeConfiguration(this Controller controller, IStoreService storeService, IWorkContext workContext)
+		{
+			//ensure that we have 2 (or more) stores
+			if (storeService.GetAllStores().Count < 2)
+				return 0;
+
+			var storeId = workContext.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration);
+			var store = storeService.GetStoreById(storeId);
+			return store != null ? store.Id : 0;
 		}
     }
 }

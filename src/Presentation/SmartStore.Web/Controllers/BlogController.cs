@@ -20,6 +20,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -36,6 +37,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly IBlogService _blogService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IPictureService _pictureService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerContentService _customerContentService;
@@ -44,12 +46,12 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
+		private readonly IStoreMappingService _storeMappingService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
-        private readonly StoreInformationSettings _storeInformationSettings;
         private readonly CaptchaSettings _captchaSettings;
 
         #endregion
@@ -57,16 +59,26 @@ namespace SmartStore.Web.Controllers
         #region Constructors
 
         public BlogController(IBlogService blogService,
-            IWorkContext workContext, IPictureService pictureService, ILocalizationService localizationService,
-            ICustomerContentService customerContentService, IDateTimeHelper dateTimeHelper,
-            IWorkflowMessageService workflowMessageService, IWebHelper webHelper,
-            ICacheManager cacheManager, ICustomerActivityService customerActivityService,
-            MediaSettings mediaSettings, BlogSettings blogSettings,
-            LocalizationSettings localizationSettings, CustomerSettings customerSettings,
-            StoreInformationSettings storeInformationSettings, CaptchaSettings captchaSettings)
+            IWorkContext workContext, 
+			IStoreContext storeContext,
+			IPictureService pictureService,
+			ILocalizationService localizationService,
+            ICustomerContentService customerContentService,
+			IDateTimeHelper dateTimeHelper,
+            IWorkflowMessageService workflowMessageService,
+			IWebHelper webHelper,
+            ICacheManager cacheManager,
+			ICustomerActivityService customerActivityService,
+			IStoreMappingService storeMappingService,
+            MediaSettings mediaSettings,
+			BlogSettings blogSettings,
+            LocalizationSettings localizationSettings,
+			CustomerSettings customerSettings,
+            CaptchaSettings captchaSettings)
         {
             this._blogService = blogService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._pictureService = pictureService;
             this._localizationService = localizationService;
             this._customerContentService = customerContentService;
@@ -75,12 +87,12 @@ namespace SmartStore.Web.Controllers
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
+			this._storeMappingService = storeMappingService;
 
             this._mediaSettings = mediaSettings;
             this._blogSettings = blogSettings;
             this._localizationSettings = localizationSettings;
             this._customerSettings = customerSettings;
-            this._storeInformationSettings = storeInformationSettings;
             this._captchaSettings = captchaSettings;
         }
 
@@ -161,12 +173,14 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (String.IsNullOrEmpty(command.Tag))
             {
-                blogPosts = _blogService.GetAllBlogPosts(_workContext.WorkingLanguage.Id,
+				blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
+					_workContext.WorkingLanguage.Id,
                     dateFrom, dateTo, command.PageNumber - 1, command.PageSize);
             }
             else
             {
-                blogPosts = _blogService.GetAllBlogPostsByTag(_workContext.WorkingLanguage.Id,
+				blogPosts = _blogService.GetAllBlogPostsByTag(_storeContext.CurrentStore.Id,
+					_workContext.WorkingLanguage.Id,
                     command.Tag, command.PageNumber - 1, command.PageSize);
             }
             model.PagingFilteringContext.LoadPagedList(blogPosts);
@@ -215,7 +229,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ListRss(int languageId)
         {
             var feed = new SyndicationFeed(
-                                    string.Format("{0}: Blog", _storeInformationSettings.StoreName),
+									string.Format("{0}: Blog", _storeContext.CurrentStore.Name),
                                     "Blog",
                                     new Uri(_webHelper.GetStoreLocation(false)),
                                     "BlogRSS",
@@ -225,7 +239,7 @@ namespace SmartStore.Web.Controllers
                 return new RssActionResult() { Feed = feed };
 
             var items = new List<SyndicationItem>();
-            var blogPosts = _blogService.GetAllBlogPosts(languageId,
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId,
                 null, null, 0, int.MaxValue);
             foreach (var blogPost in blogPosts)
             {
@@ -246,6 +260,10 @@ namespace SmartStore.Web.Controllers
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
                 return RedirectToRoute("HomePage");
+
+			//Store mapping
+			if (!_storeMappingService.Authorize(blogPost))
+				return RedirectToRoute("HomePage");
 
             var model = new BlogPostModel();
             PrepareBlogPostModel(model, blogPost, true);
@@ -335,13 +353,13 @@ namespace SmartStore.Web.Controllers
             if (!_blogSettings.Enabled)
                 return Content("");
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_TAGS_MODEL_KEY, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_TAGS_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new BlogPostTagListModel();
 
                 //get tags
-                var tags = _blogService.GetAllBlogPostTags(_workContext.WorkingLanguage.Id)
+				var tags = _blogService.GetAllBlogPostTags(_storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id)
                     .OrderByDescending(x => x.BlogPostCount)
                     .Take(_blogSettings.NumberOfTags)
                     .ToList();
@@ -367,12 +385,13 @@ namespace SmartStore.Web.Controllers
             if (!_blogSettings.Enabled)
                 return Content("");
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_MONTHS_MODEL_KEY, _workContext.WorkingLanguage.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_MONTHS_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new List<BlogPostYearModel>();
 
-                var blogPosts = _blogService.GetAllBlogPosts(_workContext.WorkingLanguage.Id, null, null, 0, int.MaxValue);
+				var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
+					_workContext.WorkingLanguage.Id, null, null, 0, int.MaxValue);
                 if (blogPosts.Count > 0)
                 {
                     var months = new SortedDictionary<DateTime, int>();
@@ -429,9 +448,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: Blog\" />",
-                Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, "http"), _storeInformationSettings.StoreName);
+				Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _storeContext.CurrentStore.Name);
 
-            return Content(link);
+			return Content(link);
         }
         #endregion
     }

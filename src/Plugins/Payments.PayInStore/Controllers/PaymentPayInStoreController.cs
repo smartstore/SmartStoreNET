@@ -10,26 +10,28 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
 {
     public class PaymentPayInStoreController : PaymentControllerBase
     {
-        private readonly ISettingService _settingService;
-        private readonly PayInStorePaymentSettings _payInStorePaymentSettings;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly PayInStorePaymentSettings _payInStorePaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-        public PaymentPayInStoreController(ISettingService settingService, 
-            PayInStorePaymentSettings payInStorePaymentSettings, 
-            ILocalizationService localizationService)
-        {
-            this._settingService = settingService;
-            this._payInStorePaymentSettings = payInStorePaymentSettings;
-            _localizationService = localizationService;
-        }
+		public PaymentPayInStoreController(ISettingService settingService,
+			PayInStorePaymentSettings payInStorePaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._payInStorePaymentSettings = payInStorePaymentSettings;
+			this._localizationService = localizationService;
+		}
+
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-            var model = new ConfigurationModel();
-            model.DescriptionText = _payInStorePaymentSettings.DescriptionText;
-            model.AdditionalFee = _payInStorePaymentSettings.AdditionalFee;
+			var model = new ConfigurationModel();
+			model.DescriptionText = _payInStorePaymentSettings.DescriptionText;
+			model.AdditionalFee = _payInStorePaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _payInStorePaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
         }
@@ -37,15 +39,17 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+		[ValidateInput(false)]
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
-            
-            //save settings
-            _payInStorePaymentSettings.DescriptionText = model.DescriptionText;
-            _payInStorePaymentSettings.AdditionalFee = model.AdditionalFee;
-            _settingService.SaveSetting(_payInStorePaymentSettings);
+
+			//save settings
+			_payInStorePaymentSettings.DescriptionText = model.DescriptionText;
+			_payInStorePaymentSettings.AdditionalFee = model.AdditionalFee;
+			_payInStorePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_payInStorePaymentSettings);
             
             return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
         }

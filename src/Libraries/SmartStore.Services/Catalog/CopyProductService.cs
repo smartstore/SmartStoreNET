@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
@@ -26,6 +27,7 @@ namespace SmartStore.Services.Catalog
         private readonly IDownloadService _downloadService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IUrlRecordService _urlRecordService;
+		private readonly IStoreMappingService _storeMappingService;
 
         #endregion
 
@@ -36,7 +38,8 @@ namespace SmartStore.Services.Catalog
             ILocalizedEntityService localizedEntityService, IPictureService pictureService,
             ICategoryService categoryService, IManufacturerService manufacturerService,
             ISpecificationAttributeService specificationAttributeService, IDownloadService downloadService,
-            IProductAttributeParser productAttributeParser, IUrlRecordService urlRecordService)
+            IProductAttributeParser productAttributeParser, IUrlRecordService urlRecordService,
+			IStoreMappingService storeMappingService)
         {
             this._productService = productService;
             this._productAttributeService = productAttributeService;
@@ -49,6 +52,7 @@ namespace SmartStore.Services.Catalog
             this._downloadService = downloadService;
             this._productAttributeParser = productAttributeParser;
 			this._urlRecordService = urlRecordService;
+			this._storeMappingService = storeMappingService;
         }
 
         #endregion
@@ -86,6 +90,7 @@ namespace SmartStore.Services.Catalog
                     MetaDescription = product.MetaDescription,
                     MetaTitle = product.MetaTitle,
                     AllowCustomerReviews = product.AllowCustomerReviews,
+					LimitedToStores = product.LimitedToStores,
                     Published = isPublished,
                     Deleted = product.Deleted,
                     CreatedOnUtc = DateTime.UtcNow,
@@ -214,6 +219,13 @@ namespace SmartStore.Services.Catalog
                     };
                     _specificationAttributeService.InsertProductSpecificationAttribute(psaCopy);
                 }
+
+				//store mapping
+				var selectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
+				foreach (var id in selectedStoreIds)
+				{
+					_storeMappingService.InsertStoreMapping(productCopy, id);
+				}
 
                 // product variants
                 var productVariants = product.ProductVariants;
@@ -482,6 +494,7 @@ namespace SmartStore.Services.Catalog
                             new TierPrice()
                             {
                                 ProductVariantId = productVariantCopy.Id,
+								StoreId = tierPrice.StoreId,
                                 CustomerRoleId = tierPrice.CustomerRoleId,
                                 Quantity = tierPrice.Quantity,
                                 Price = tierPrice.Price

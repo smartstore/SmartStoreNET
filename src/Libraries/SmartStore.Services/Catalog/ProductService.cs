@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
@@ -40,18 +41,19 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly IRepository<AclRecord> _aclRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IProductTagService _productTagService;
         private readonly ILanguageService _languageService;
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
         private readonly ICacheManager _cacheManager;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
         private readonly IEventPublisher _eventPublisher;
@@ -73,16 +75,17 @@ namespace SmartStore.Services.Catalog
         /// <param name="tierPriceRepository">Tier price repository</param>
         /// <param name="localizedPropertyRepository">Localized property repository</param>
         /// <param name="aclRepository">ACL record repository</param>
+		/// <param name="storeMappingRepository">Store mapping repository</param>
         /// <param name="productPictureRepository">Product picture repository</param>
         /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
         /// <param name="productAttributeService">Product attribute service</param>
         /// <param name="productAttributeParser">Product attribute parser service</param>
-        /// <param name="productTagService">Product tag service</param>
         /// <param name="languageService">Language service</param>
         /// <param name="workflowMessageService">Workflow message service</param>
         /// <param name="dataProvider">Data provider</param>
         /// <param name="dbContext">Database Context</param>
         /// <param name="workContext">Work context</param>
+		/// <param name="storeContext">Store context</param>
         /// <param name="localizationSettings">Localization settings</param>
         /// <param name="commonSettings">Common settings</param>
         /// <param name="eventPublisher">Event published</param>
@@ -95,15 +98,16 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductPicture> productPictureRepository,
             IRepository<LocalizedProperty> localizedPropertyRepository,
             IRepository<AclRecord> aclRepository,
+			IRepository<StoreMapping> storeMappingRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-            IProductTagService productTagService,
             ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider, IDbContext dbContext,
             IWorkContext workContext,
+			IStoreContext storeContext,
             LocalizationSettings localizationSettings, CommonSettings commonSettings,
             IEventPublisher eventPublisher)
         {
@@ -116,16 +120,17 @@ namespace SmartStore.Services.Catalog
             this._productPictureRepository = productPictureRepository;
             this._localizedPropertyRepository = localizedPropertyRepository;
             this._aclRepository = aclRepository;
+			this._storeMappingRepository = storeMappingRepository;
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
-            this._productTagService = productTagService;
             this._languageService = languageService;
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
             this._eventPublisher = eventPublisher;
@@ -167,24 +172,9 @@ namespace SmartStore.Services.Catalog
                 DeleteProductVariant(productVariant);
         }
 
-        /// <summary>
-        /// Gets all products
-        /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product collection</returns>
-        public virtual IList<Product> GetAllProducts(bool showHidden = false)
-        {
-            var query = from p in _productRepository.Table
-                        orderby p.Name
-                        where (showHidden || p.Published) &&
-                        !p.Deleted
-                        select p;
-            var products = query.ToList();
-            return products;
-        }
-
 		/// <remarks>codehint: sm-add</remarks>
-		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured) {
+		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0)
+		{
 			var allowedRoleIds = AllowedRoleIds;
 
 			var query =
@@ -194,7 +184,18 @@ namespace SmartStore.Services.Catalog
 				where p.Published && !p.Deleted && (!p.SubjectToAcl || (acl.EntityName == "Product" && allowedRoleIds.Contains(acl.CustomerRoleId)))
 				select p;
 
-			if (categoryIds != null && categoryIds.Count > 0) {
+			if (storeId > 0)
+			{
+				query = 
+					from p in query
+					join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
+					from sm in p_sm.DefaultIfEmpty()
+					where !p.LimitedToStores || (sm.EntityName == "Product" && storeId == sm.StoreId)
+					select p;
+			}
+
+			if (categoryIds != null && categoryIds.Count > 0)
+			{
 				query =
 					from p in query
 					from pc in p.ProductCategories.Where(pc => categoryIds.Contains(pc.CategoryId))
@@ -325,6 +326,8 @@ namespace SmartStore.Services.Catalog
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
+
+			//search by keyword
             bool searchLocalizedValue = false;
             if (ctx.LanguageId > 0)
             {
@@ -335,10 +338,14 @@ namespace SmartStore.Services.Catalog
                 else
                 {
                     //ensure that we have at least two published languages
-                    var totalPublishedLanguages = _languageService.GetLanguagesCount(false);
+					var totalPublishedLanguages = _languageService.GetAllLanguages(storeId: ctx.StoreId).Count;
                     searchLocalizedValue = totalPublishedLanguages >= 2;
                 }
             }
+
+			//validate "categoryIds" parameter
+			if (ctx.CategoryIds != null && ctx.CategoryIds.Contains(0))
+				ctx.CategoryIds.Remove(0);
 
             //Access control list. Allowed customer roles
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
@@ -406,6 +413,11 @@ namespace SmartStore.Services.Catalog
                 pManufacturerId.Value = ctx.ManufacturerId;
                 pManufacturerId.DbType = DbType.Int32;
 
+				var pStoreId = _dataProvider.GetParameter();
+				pStoreId.ParameterName = "StoreId";
+				pStoreId.Value = ctx.StoreId;
+				pStoreId.DbType = DbType.Int32;
+
                 var pProductTagId = _dataProvider.GetParameter();
                 pProductTagId.ParameterName = "ProductTagId";
                 pProductTagId.Value = ctx.ProductTagId;
@@ -466,6 +478,11 @@ namespace SmartStore.Services.Catalog
                 pOrderBy.Value = (int)ctx.OrderBy;
                 pOrderBy.DbType = DbType.Int32;
 
+				var pAllowedCustomerRoleIds = _dataProvider.GetParameter();
+				pAllowedCustomerRoleIds.ParameterName = "AllowedCustomerRoleIds";
+				pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
+				pAllowedCustomerRoleIds.DbType = DbType.String;
+
                 var pPageIndex = _dataProvider.GetParameter();
                 pPageIndex.ParameterName = "PageIndex";
                 pPageIndex.Value = ctx.PageIndex;
@@ -475,11 +492,6 @@ namespace SmartStore.Services.Catalog
                 pPageSize.ParameterName = "PageSize";
                 pPageSize.Value = ctx.PageSize;
                 pPageSize.DbType = DbType.Int32;
-
-                var pAllowedCustomerRoleIds = _dataProvider.GetParameter();
-                pAllowedCustomerRoleIds.ParameterName = "AllowedCustomerRoleIds";
-                pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
-                pAllowedCustomerRoleIds.DbType = DbType.String;
 
                 var pShowHidden = _dataProvider.GetParameter();
                 pShowHidden.ParameterName = "ShowHidden";
@@ -507,6 +519,7 @@ namespace SmartStore.Services.Catalog
                     "ProductLoadAllPaged",
                     pCategoryIds,
                     pManufacturerId,
+					pStoreId,
                     pProductTagId,
                     pFeaturedProducts,
                     pPriceMin,
@@ -519,9 +532,9 @@ namespace SmartStore.Services.Catalog
                     pFilteredSpecs,
                     pLanguageId,
                     pOrderBy,
+					pAllowedCustomerRoleIds,
                     pPageIndex,
                     pPageSize,
-                    pAllowedCustomerRoleIds,
                     pShowHidden,
                     pLoadFilterableSpecificationAttributeOptionIds,
                     pFilterableSpecificationAttributeOptionIds,
@@ -554,10 +567,9 @@ namespace SmartStore.Services.Catalog
                 // if we use standard Distinct() method, then all fields will be compared (low performance)
                 // it'll not work in SQL Server Compact when searching products by a keyword)
                 query = from p in query
-                        group p by p.Id
-                            into pGroup
-                            orderby pGroup.Key
-                            select pGroup.FirstOrDefault();
+                        group p by p.Id into pGroup
+						orderby pGroup.Key
+						select pGroup.FirstOrDefault();
 
                 //sort products
                 if (ctx.OrderBy == ProductSortingEnum.Position && ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
@@ -682,15 +694,25 @@ namespace SmartStore.Services.Catalog
                         select p;
             }
 
-            // ACL
             if (!ctx.ShowHidden)
             {
+				// ACL
                 query = from p in query
                         join acl in _aclRepository.Table on p.Id equals acl.EntityId into p_acl
                         from acl in p_acl.DefaultIfEmpty()
                         where !p.SubjectToAcl || (acl.EntityName == "Product" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
                         select p;
             }
+
+			if (ctx.StoreId > 0)
+			{
+				//Store mapping
+				query = from p in query
+						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
+						from sm in p_sm.DefaultIfEmpty()
+						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.StoreId == sm.StoreId)
+						select p;
+			}
 
             // product variants
             // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
@@ -1104,7 +1126,6 @@ namespace SmartStore.Services.Catalog
                         productVariant.StockQuantity = newStockQuantity;
                         productVariant.DisableBuyButton = newDisableBuyButton;
                         productVariant.DisableWishlistButton = newDisableWishlistButton;
-                        bool isPublishedChanged = productVariant.Published != newPublished;
                         productVariant.Published = newPublished;
                         UpdateProductVariant(productVariant);
 
@@ -1130,15 +1151,6 @@ namespace SmartStore.Services.Catalog
                                 product.Published = false;
                                 UpdateProduct(product);
                             }
-                        }
-
-                        //update product tag totals (if published flag has been changed)
-                        if (isPublishedChanged)
-                        {
-                            var product = productVariant.Product;
-                            var productTags = product.ProductTags;
-                            foreach (var productTag in productTags)
-                                _productTagService.UpdateProductTagTotals(productTag);
                         }
                     }
                     break;

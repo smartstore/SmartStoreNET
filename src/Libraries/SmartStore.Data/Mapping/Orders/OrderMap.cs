@@ -23,12 +23,6 @@ namespace SmartStore.Data.Mapping.Orders
             this.Property(o => o.OrderTotal).HasPrecision(18, 4);
             this.Property(o => o.RefundedAmount).HasPrecision(18, 4);
 
-            this.Property(o => o.TaxRates);
-            this.Property(o => o.AuthorizationTransactionCode);
-            this.Property(o => o.AuthorizationTransactionResult);
-            this.Property(o => o.CaptureTransactionResult);
-            this.Property(o => o.PurchaseOrderNumber);
-
             this.Ignore(o => o.OrderStatus);
             this.Ignore(o => o.PaymentStatus);
             this.Ignore(o => o.ShippingStatus);
@@ -38,11 +32,6 @@ namespace SmartStore.Data.Mapping.Orders
             this.HasRequired(o => o.Customer)
                 .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.CustomerId);
-
-            this.HasOptional(o => o.Affiliate)
-                .WithMany()
-                .HasForeignKey(o => o.AffiliateId);
-
 
             //this.HasRequired(o => o.BillingAddress).WithOptional().Map(x => x.MapKey("BillingAddressId")).WillCascadeOnDelete(false);
             //this.HasOptional(o => o.ShippingAddress).WithOptionalDependent().Map(x => x.MapKey("ShippingAddressId")).WillCascadeOnDelete(false);

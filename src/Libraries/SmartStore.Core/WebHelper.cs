@@ -16,44 +16,7 @@ namespace SmartStore.Core
     /// Represents a common helper
     /// </summary>
     public partial class WebHelper : IWebHelper
-    {
-        private readonly static HttpSecurityMode s_securityMode = HttpSecurityMode.Unsecured;
-        private readonly static string s_secureUrl = null;
-        private readonly static string s_nonSecureUrl = null;
-
-        static WebHelper()
-        {
-            var setting = ConfigurationManager.AppSettings["UseSSL"];
-            bool useSsl = setting.HasValue() && setting.ToBool();
-
-            if (useSsl)
-            {
-                string secureUrl = ConfigurationManager.AppSettings["SharedSSLUrl"].EmptyNull();
-                string nonSecureUrl = ConfigurationManager.AppSettings["NonSharedSSLUrl"].EmptyNull();
-
-                if (secureUrl.HasValue() && nonSecureUrl.HasValue() && !nonSecureUrl.StartsWith("https"))
-                {
-                    s_securityMode = HttpSecurityMode.SharedSsl;
-                    s_secureUrl = secureUrl.EnsureEndsWith("/");
-                    s_nonSecureUrl = nonSecureUrl.EnsureEndsWith("/");
-
-                    if (!s_secureUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                    {
-                        s_secureUrl = "https://" + s_secureUrl;
-                    }
-
-                    if (!s_nonSecureUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
-                    {
-                        s_nonSecureUrl = "http://" + s_nonSecureUrl;
-                    }
-                }
-                else
-                {
-                    s_securityMode = HttpSecurityMode.Ssl;
-                }
-            }
-        }
-        
+    {        
         private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
 
@@ -139,7 +102,10 @@ namespace SmartStore.Core
             }
             else
             {
-                url = _httpContext.Request.Url.GetLeftPart(UriPartial.Path);
+				if (_httpContext.Request.Url != null)
+				{
+					url = _httpContext.Request.Url.GetLeftPart(UriPartial.Path);
+				}
             }
 
             return url.ToLowerInvariant();
@@ -162,14 +128,6 @@ namespace SmartStore.Core
 
             return _isCurrentConnectionSecured.Value;
         }
-
-        public virtual HttpSecurityMode SecurityMode
-        {
-            get 
-            {
-                return s_securityMode;
-            }
-        }
         
         /// <summary>
         /// Gets server variable by name
@@ -178,19 +136,23 @@ namespace SmartStore.Core
         /// <returns>Server variable</returns>
         public virtual string ServerVariables(string name)
         {
-            string tmpS = string.Empty;
+            string result = string.Empty;
+
             try
             {
-                if (_httpContext.Request.ServerVariables[name] != null)
-                {
-                    tmpS = _httpContext.Request.ServerVariables[name];
-                }
+				if (_httpContext != null && _httpContext.Request != null)
+				{
+					if (_httpContext.Request.ServerVariables[name] != null)
+					{
+						result = _httpContext.Request.ServerVariables[name];
+					}
+				}
             }
             catch
             {
-                tmpS = string.Empty;
+                result = string.Empty;
             }
-            return tmpS;
+            return result;
         }
 
         private string GetHostPart(string url)
@@ -200,11 +162,6 @@ namespace SmartStore.Core
             return host;
         }
 
-        private bool ExpectsDirtySslMove(bool useSsl)
-        {
-            bool result = (useSsl != IsCurrentConnectionSecured()) && s_securityMode == HttpSecurityMode.SharedSsl;
-            return result;
-        }
 
         /// <summary>
         /// Gets store host location
@@ -218,8 +175,9 @@ namespace SmartStore.Core
         private string GetStoreHost(bool useSsl, out bool appPathPossiblyAppended)
         {
             appPathPossiblyAppended = false;
-            var result = string.Empty;
+            var result = "";
             var httpHost = ServerVariables("HTTP_HOST");
+
             if (httpHost.HasValue())
             {
                 result = "http://" + httpHost.EnsureEndsWith("/");
@@ -236,28 +194,38 @@ namespace SmartStore.Core
             }
             else
             {
+				//let's resolve IWorkContext  here.
+				//Do not inject it via contructor because it'll cause circular references
+				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+				var currentStore = storeContext.CurrentStore;
+				if (currentStore == null)
+					throw new Exception("Current store cannot be loaded");
+
+				var securityMode = currentStore.GetSecurityMode(useSsl);
 
                 if (httpHost.IsEmpty())
                 {
-                    // let's resolve StoreInformationSettings  here.
-                    // Do not inject it via contructor because it'll cause circular references
-                    var storeSettings = EngineContext.Current.Resolve<StoreInformationSettings>();
+					//HTTP_HOST variable is not available.
+					//It's possible only when HttpContext is not available (for example, running in a schedule task)
+					result = currentStore.Url.EnsureEndsWith("/");
 
-                    // HTTP_HOST variable is not available.
-                    // This scenario is possible only when HttpContext is not available (for example, running in a schedule task).
-                    // In this case use URL of a store entity configured in admin area
-                    result = storeSettings.StoreUrl.EnsureEndsWith("/");
-                    appPathPossiblyAppended = true;
+					appPathPossiblyAppended = true;
                 }
 
                 if (useSsl)
                 {
-                    if (s_securityMode == HttpSecurityMode.SharedSsl)
+					if (securityMode == HttpSecurityMode.SharedSsl)
                     {
                         // Secure URL for shared ssl specified. 
                         // So a store owner doesn't want it to be resolved automatically.
                         // In this case let's use the specified secure URL
-                        result = s_secureUrl;
+						result = currentStore.SecureUrl.EmptyNull();
+
+						if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+						{
+							result = "https://" + result;
+						}
+
                         appPathPossiblyAppended = true;
                     }
                     else
@@ -269,100 +237,19 @@ namespace SmartStore.Core
                 }
                 else // no ssl
                 {
-                    if (s_securityMode == HttpSecurityMode.SharedSsl)
+                    if (securityMode == HttpSecurityMode.SharedSsl)
                     {
                         // SSL is enabled in this store and shared ssl URL is specified.
                         // So a store owner doesn't want it to be resolved automatically.
                         // In this case let's use the specified non-secure URL
 
-                        /* we need to set a store URL here (IoC.Resolve<ISettingManager>().StoreUrl property)
-                         * but we cannot reference SmartStore.Services.dll assembly.
-                         * So we are using one more app config settings - <add key="NonSharedSSLUrl" value="http://www.yourStore.com" />
-                         */
-                        result = s_nonSecureUrl;
+                        result = currentStore.Url;
                         appPathPossiblyAppended = true;
                     }
                 }
             }
 
-            if (!result.EndsWith("/"))
-            {
-                result += "/";
-            }
-
-            return result.ToLowerInvariant();
-
-            //var result = "";
-            //var httpHost = ServerVariables("HTTP_HOST");
-            
-            //if (httpHost.HasValue())
-            //{
-            //    result = "http://" + httpHost;
-            //}
-            //else
-            //{
-            //    //HTTP_HOST variable is not available.
-            //    //It's possible only when HttpContext is not available (for example, running in a schedule task)
-            //    //so let's resolve StoreInformationSettings here.
-            //    //Do not inject it via contructor because it'll break the installation (settings are not available at that moment)
-            //    var storeSettings = EngineContext.Current.Resolve<StoreInformationSettings>();
-            //    result = storeSettings.StoreUrl;
-            //}
-
-            //if (!result.EndsWith("/"))
-            //{
-            //    result += "/";
-            //}
-
-            //if (useSsl)
-            //{
-            //    //shared SSL certificate URL
-            //    string sharedSslUrl = ConfigurationManager.AppSettings["SharedSSLUrl"].EmptyNull();
-
-            //    if (sharedSslUrl.HasValue())
-            //    {
-            //        // shared SSL
-            //        result = sharedSslUrl;
-            //    }
-            //    else
-            //    {
-            //        // standard SSL
-            //        result = result.Replace("http:/", "https:/");
-            //    }
-            //}
-            //else
-            //{
-            //    if (SslEnabled())
-            //    {
-            //        // SSL is enabled
-
-            //        // get shared SSL certificate URL
-            //        string sharedSslUrl = ConfigurationManager.AppSettings["SharedSSLUrl"].EmptyNull();
-            //        if (sharedSslUrl.HasValue())
-            //        {
-            //            //shared SSL
-
-            //            /* we need to set a store URL here (IoC.Resolve<ISettingManager>().StoreUrl property)
-            //             * but we cannot reference SmartStore.Services.dll assembly.
-            //             * So we are using one more app config settings - <add key="NonSharedSSLUrl" value="http://www.yourStore.com" />
-            //             */
-            //            string nonSharedSslUrl = ConfigurationManager.AppSettings["NonSharedSSLUrl"].EmptyNull();
-            //            if (nonSharedSslUrl.IsEmpty())
-            //            {
-            //                throw new Exception("NonSharedSSLUrl app config setting cannot be empty");
-            //            }
-
-            //            result = nonSharedSslUrl;
-            //        }
-            //    }
-            //}
-
-            //if (!result.EndsWith("/"))
-            //{
-            //    result += "/";
-            //}
-
-            //return result.ToLowerInvariant();
+            return result.EnsureEndsWith("/").ToLowerInvariant();
         }
         
         /// <summary>

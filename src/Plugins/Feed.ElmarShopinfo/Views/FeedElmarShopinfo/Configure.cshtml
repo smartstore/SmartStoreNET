@@ -11,7 +11,8 @@
 	Html.AddCssFileParts(Url.Content("~/Plugins/PromotionFeed.ElmarShopinfo/Content/smartstore.feed.elmarshopinfo.css"));
 }
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm())
+{
 	
 <table>
 <tr>
@@ -25,7 +26,8 @@
 </table>
 	
 <table class="adminContent">
-@if (Model.GenerateFeedResult.HasValue()) {
+@if (Model.GenerateFeedResult.HasValue())
+{
 <tr>
 	<td class="adminTitle">&nbsp;</td>
 	<td class="adminData">
@@ -33,23 +35,24 @@
 	</td>
 </tr>
 }
-@if (Model.StaticFileUrl.HasValue()) {
+@if (Model.GeneratedFiles.Count > 0)
+{
 <tr>
     <td class="adminTitle">
-        @Html.SmartLabelFor(m => m.StaticFileUrl)
+        @Html.SmartLabelFor(m => m.GeneratedFiles)
     </td>
     <td class="adminData">
-        <a href="@Model.StaticFileUrl" target="_blank">@Model.StaticFileUrl</a>
-    </td>
-</tr>
-}
-@if (Model.StaticFileXmlUrl.HasValue()) {
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(m => m.StaticFileXmlUrl)
-    </td>
-    <td class="adminData">
-        <a href="@Model.StaticFileXmlUrl" target="_blank">@Model.StaticFileXmlUrl</a>
+        @for (int i = 0; i <= Model.GeneratedFiles.Count - 1; i++)
+		{
+			var generatedFile = Model.GeneratedFiles[i];			
+			<p>
+				@(generatedFile.StoreName):
+				<br />
+				<a href="@generatedFile.FileUrl" target="_blank">@generatedFile.FileUrl</a>
+				<br />
+				<a href="@generatedFile.CustomProperties["SecondFileUrl"]" target="_blank">@generatedFile.CustomProperties["SecondFileUrl"]</a>
+			</p>
+		}
     </td>
 </tr>
 }
@@ -57,7 +60,7 @@
     <td class="adminTitle">&nbsp;</td>
     <td class="adminData">
 		<button type="submit" name="generate" value="generate" class="btn" onclick="$.throbber.show('@T("Plugins.Feed.ElmarShopinfo.GeneratingNow")');">
-			<i class="icon-@(Model.StaticFileUrl.HasValue() ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.ElmarShopinfo.Generate")
+			<i class="icon-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.ElmarShopinfo.Generate")
 		</button>
 		<button type="submit" name="save" value="save" class="btn btn-primary">
 			<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
@@ -82,15 +85,26 @@
 	}
 </script>
 	
-@Html.SmartStore().TabStrip().Name("elmar-configure").Items(x => {
+@Html.SmartStore().TabStrip().Name("elmar-configure").Items(x =>
+{
 	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.General").Text).Content(@TabGeneral()).Selected(true);
 	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Automation").Text).Content(@TabAutomation());
 	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Address").Text).Content(@TabAddress());
 	x.Add().Text(T("Plugins.Feed.ElmarShopinfo.Contact").Text).Content(@TabContact());
 })
 
-@helper TabGeneral() {
+@helper TabGeneral()
+{
     <table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.StoreId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores)
+			@Html.ValidationMessageFor(model => model.StoreId)
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(m => m.BuildDescription)
@@ -221,7 +235,8 @@
 	</table>
 }
 		
-@helper TabAutomation() {
+@helper TabAutomation()
+{
 	<table class="adminContent">
 	<tr>
         <td class="adminTitle">
@@ -282,7 +297,8 @@
 	</table>
 }
 
-@helper TabAddress() {
+@helper TabAddress()
+{
 	<table class="adminContent">
 	<tr>
         <td class="adminTitle">
@@ -332,7 +348,8 @@
 	</table>
 }
 
-@helper TabContact() {
+@helper TabContact()
+{
 	<table class="adminContent">
 	<tr>
         <td class="adminTitle">

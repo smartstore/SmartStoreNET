@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Shipping.ByWeight.Data;
@@ -16,6 +17,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         #region Fields
 
         private readonly IShippingService _shippingService;
+		private readonly IStoreContext _storeContext;
         private readonly IShippingByWeightService _shippingByWeightService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
@@ -26,6 +28,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
 
         #region Ctor
         public ByWeightShippingComputationMethod(IShippingService shippingService,
+			IStoreContext storeContext,
             IShippingByWeightService shippingByWeightService,
             IPriceCalculationService priceCalculationService, 
             ShippingByWeightSettings shippingByWeightSettings,
@@ -33,6 +36,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             ILocalizationService localizationService)
         {
             this._shippingService = shippingService;
+			this._storeContext = storeContext;
             this._shippingByWeightService = shippingByWeightService;
             this._priceCalculationService = priceCalculationService;
             this._shippingByWeightSettings = shippingByWeightSettings;
@@ -42,12 +46,12 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         #endregion
 
         #region Utilities
-        
-        private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int countryId)
+
+		private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId)
         {
             decimal? shippingTotal = null;
 
-            var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, countryId, weight);
+			var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, storeId, countryId, weight);
             if (shippingByWeightRecord == null)
             {
                 if (_shippingByWeightSettings.LimitMethodsToCreated)
@@ -99,7 +103,8 @@ namespace SmartStore.Plugin.Shipping.ByWeight
                 response.AddError("Shipping address is not set");
                 return response;
             }
-            
+
+			var storeId = _storeContext.CurrentStore.Id;
             int countryId = getShippingOptionRequest.ShippingAddress.CountryId.HasValue ? getShippingOptionRequest.ShippingAddress.CountryId.Value : 0;
             
             decimal subTotal = decimal.Zero;
@@ -114,7 +119,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
             foreach (var shippingMethod in shippingMethods)
             {
-                decimal? rate = GetRate(subTotal, weight, shippingMethod.Id, countryId);
+                decimal? rate = GetRate(subTotal, weight, shippingMethod.Id, storeId, countryId);
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();

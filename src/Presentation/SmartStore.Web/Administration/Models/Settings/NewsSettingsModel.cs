@@ -2,10 +2,10 @@
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class NewsSettingsModel
+	public class NewsSettingsModel
     {
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.Enabled")]
-        public bool Enabled { get; set; }
+		public bool Enabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.AllowNotRegisteredUsersToLeaveComments")]
         public bool AllowNotRegisteredUsersToLeaveComments { get; set; }

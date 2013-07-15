@@ -14,44 +14,46 @@ namespace SmartStore.Plugin.Payments.Manual.Controllers
 {
     public class PaymentManualController : PaymentControllerBase
     {
-        private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
-        private readonly ManualPaymentSettings _manualPaymentSettings;
+		private readonly ISettingService _settingService;
+		private readonly ILocalizationService _localizationService;
+		private readonly ManualPaymentSettings _manualPaymentSettings;
 
-        public PaymentManualController(ISettingService settingService, 
-            ILocalizationService localizationService, ManualPaymentSettings manualPaymentSettings)
-        {
-            this._settingService = settingService;
-            this._localizationService = localizationService;
-            this._manualPaymentSettings = manualPaymentSettings;
-        }
+		public PaymentManualController(ISettingService settingService,
+			ILocalizationService localizationService, ManualPaymentSettings manualPaymentSettings)
+		{
+			this._settingService = settingService;
+			this._localizationService = localizationService;
+			this._manualPaymentSettings = manualPaymentSettings;
+		}
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
             var model = new ConfigurationModel();
-            model.TransactModeId = Convert.ToInt32(_manualPaymentSettings.TransactMode);
+            model.TransactMode = Convert.ToInt32(_manualPaymentSettings.TransactMode);
             model.AdditionalFee = _manualPaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _manualPaymentSettings.AdditionalFeePercentage;
             model.TransactModeValues = _manualPaymentSettings.TransactMode.ToSelectList();
-            
+
             return View("SmartStore.Plugin.Payments.Manual.Views.PaymentManual.Configure", model);
         }
 
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
-            
-            //save settings
-            _manualPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
-            _manualPaymentSettings.AdditionalFee = model.AdditionalFee;
-            _settingService.SaveSetting(_manualPaymentSettings);
-            
-            model.TransactModeValues = _manualPaymentSettings.TransactMode.ToSelectList();
+
+			//save settings
+			_manualPaymentSettings.TransactMode = (TransactMode)model.TransactMode;
+			_manualPaymentSettings.AdditionalFee = model.AdditionalFee;
+			_manualPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_manualPaymentSettings);
+
+			model.TransactModeValues = _manualPaymentSettings.TransactMode.ToSelectList();
 
             return View("SmartStore.Plugin.Payments.Manual.Views.PaymentManual.Configure", model);
         }

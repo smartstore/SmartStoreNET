@@ -2,7 +2,7 @@
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class ShoppingCartSettingsModel
+	public class ShoppingCartSettingsModel
     {
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DisplayCartAfterAddingProduct")]
         public bool DisplayCartAfterAddingProduct { get; set; }

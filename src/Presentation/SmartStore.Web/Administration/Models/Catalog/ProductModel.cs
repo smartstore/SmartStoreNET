@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Customers;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -89,6 +90,13 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AclCustomerRoles")]
         public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
+
+		//Store mapping
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
         //existing product variants
         public IList<ProductVariantModel> ProductVariantModels { get; set; }

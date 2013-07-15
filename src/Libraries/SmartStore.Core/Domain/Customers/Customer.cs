@@ -1,17 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Xml;
-using SmartStore.Core.Domain.Affiliates;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Core.Domain.Customers
 {
@@ -32,6 +25,9 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ForumTopic> _forumTopics;
         private ICollection<ForumPost> _forumPosts;
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
         public Customer()
         {
             this.CustomerGuid = Guid.NewGuid();
@@ -44,42 +40,48 @@ namespace SmartStore.Core.Domain.Customers
         [DataMember]
         public Guid CustomerGuid { get; set; }
 
+		/// <summary>
+		/// Gets or sets the username
+		/// </summary>
         [DataMember]
         public string Username { get; set; }
+
+		/// <summary>
+		/// Gets or sets the email
+		/// </summary>
         [DataMember]
         public string Email { get; set; }
+
+		/// <summary>
+		/// Gets or sets the password
+		/// </summary>
         [DataMember]
         public string Password { get; set; }
 
+		/// <summary>
+		/// Gets or sets the password format
+		/// </summary>
         public int PasswordFormatId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the password format
+		/// </summary>
         public PasswordFormat PasswordFormat
         {
             get { return (PasswordFormat)PasswordFormatId; }
             set { this.PasswordFormatId = (int)value; }
         }
 
+		/// <summary>
+		/// Gets or sets the password salt
+		/// </summary>
         public string PasswordSalt { get; set; }
+
         /// <summary>
         /// Gets or sets the admin comment
         /// </summary>
         [DataMember]
         public string AdminComment { get; set; }
-
-        /// <summary>
-        /// Gets or sets the language identifier
-        /// </summary>
-        public int? LanguageId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the currency identifier
-        /// </summary>
-        public int? CurrencyId { get; set; }
-
-        /// codehint: sm-edit
-        /// <summary>
-        /// Gets or sets the tax display type identifier
-        /// </summary>
-        public int? TaxDisplayTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the customer is tax exempt
@@ -88,50 +90,9 @@ namespace SmartStore.Core.Domain.Customers
         public bool IsTaxExempt { get; set; }
 
         /// <summary>
-        /// Gets or sets a VAT number (including counry code)
-        /// </summary>
-        [DataMember]
-        public string VatNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the VAT number status identifier
-        /// </summary>
-        public int VatNumberStatusId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the last payment method system name (selected one)
-        /// </summary>
-        public string SelectedPaymentMethodSystemName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the selected checkout attributes (serialized)
-        /// </summary>
-        public string CheckoutAttributes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the applied discount coupon code
-        /// </summary>
-        public string DiscountCouponCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the applied gift card coupon codes (serialized)
-        /// </summary>
-        public string GiftCardCouponCodes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to use reward points during checkout
-        /// </summary>
-        public bool UseRewardPointsDuringCheckout { get; set; }
-
-        /// <summary>
-        /// Gets or sets the time zone identifier
-        /// </summary>
-        public string TimeZoneId { get; set; }
-
-        /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
-        public int? AffiliateId { get; set; }
+        public int AffiliateId { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether the customer is active
@@ -173,56 +134,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public DateTime LastActivityDateUtc { get; set; }
         
-        #region Custom properties
-
-        /// <summary>
-        /// Gets the tax display type
-        /// </summary>
-        public TaxDisplayType? TaxDisplayType
-        {
-            get
-            {
-                return (TaxDisplayType)this.TaxDisplayTypeId;
-            }
-            set
-            {
-                this.TaxDisplayTypeId = (int)value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the VAT number status
-        /// </summary>
-        public VatNumberStatus VatNumberStatus
-        {
-            get
-            {
-                return (VatNumberStatus)this.VatNumberStatusId;
-            }
-            set
-            {
-                this.VatNumberStatusId = (int)value;
-            }
-        }
-        
-        #endregion
-
         #region Navigation properties
-
-        /// <summary>
-        /// Gets or sets the affiliate
-        /// </summary>
-        public virtual Affiliate Affiliate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the language
-        /// </summary>
-        public virtual Language Language { get; set; }
-
-        /// <summary>
-        /// Gets or sets the currency
-        /// </summary>
-        public virtual Currency Currency { get; set; }
 
         /// <summary>
         /// Gets or sets customer generated content
@@ -373,124 +285,6 @@ namespace SmartStore.Core.Domain.Customers
             return result;
         }
 
-        #endregion
-
-        #region Gift cards
-
-        /// <summary>
-        /// Gets coupon codes
-        /// </summary>
-        /// <returns>Coupon codes</returns>
-        public string[] ParseAppliedGiftCardCouponCodes()
-        {
-            string serializedGiftCartCouponCodes = this.GiftCardCouponCodes;
-
-            var couponCodes = new List<string>();
-            if (String.IsNullOrEmpty(serializedGiftCartCouponCodes))
-                return couponCodes.ToArray();
-
-            try
-            {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(serializedGiftCartCouponCodes);
-
-                var nodeList1 = xmlDoc.SelectNodes(@"//GiftCardCouponCodes/CouponCode");
-                foreach (XmlNode node1 in nodeList1)
-                {
-                    if (node1.Attributes != null && node1.Attributes["Code"] != null)
-                    {
-                        string code = node1.Attributes["Code"].InnerText.Trim();
-                        couponCodes.Add(code);
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
-            return couponCodes.ToArray();
-        }
-
-        /// <summary>
-        /// Adds a coupon code
-        /// </summary>
-        /// <param name="couponCode">Coupon code</param>
-        /// <returns>New coupon codes document</returns>
-        public void ApplyGiftCardCouponCode(string couponCode)
-        {
-            string result = string.Empty;
-            try
-            {
-                var serializedGiftCartCouponCodes = this.GiftCardCouponCodes;
-
-                couponCode = couponCode.Trim().ToLower();
-
-                var xmlDoc = new XmlDocument();
-                if (String.IsNullOrEmpty(serializedGiftCartCouponCodes))
-                {
-                    var element1 = xmlDoc.CreateElement("GiftCardCouponCodes");
-                    xmlDoc.AppendChild(element1);
-                }
-                else
-                {
-                    xmlDoc.LoadXml(serializedGiftCartCouponCodes);
-                }
-                var rootElement = (XmlElement)xmlDoc.SelectSingleNode(@"//GiftCardCouponCodes");
-
-                XmlElement gcElement = null;
-                //find existing
-                var nodeList1 = xmlDoc.SelectNodes(@"//GiftCardCouponCodes/CouponCode");
-                foreach (XmlNode node1 in nodeList1)
-                {
-                    if (node1.Attributes != null && node1.Attributes["Code"] != null)
-                    {
-                        string _couponCode = node1.Attributes["Code"].InnerText.Trim();
-                        if (_couponCode.ToLower() == couponCode.ToLower())
-                        {
-                            gcElement = (XmlElement)node1;
-                            break;
-                        }
-                    }
-                }
-
-                //create new one if not found
-                if (gcElement == null)
-                {
-                    gcElement = xmlDoc.CreateElement("CouponCode");
-                    gcElement.SetAttribute("Code", couponCode);
-                    rootElement.AppendChild(gcElement);
-                }
-
-                result = xmlDoc.OuterXml;
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
-
-            //apply new value
-            this.GiftCardCouponCodes = result;
-        }
-
-        /// <summary>
-        /// Removes a coupon code
-        /// </summary>
-        /// <param name="couponCode">Coupon code to remove</param>
-        /// <returns>New coupon codes document</returns>
-        public void RemoveGiftCardCouponCode(string couponCode)
-        {
-            //get applied coupon codes
-            var existingCouponCodes = ParseAppliedGiftCardCouponCodes();
-
-            //clear them
-            this.GiftCardCouponCodes = string.Empty;
-
-            //save again except removed one
-            foreach (string existingCouponCode in existingCouponCodes)
-                if (!existingCouponCode.Equals(couponCode, StringComparison.InvariantCultureIgnoreCase))
-                    ApplyGiftCardCouponCode(existingCouponCode);
-        }
-        
         #endregion
     }
 }

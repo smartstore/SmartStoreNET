@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -14,7 +15,15 @@ namespace SmartStore.Admin.Models.Topics
         public TopicModel()
         {
             Locales = new List<TopicLocalizedModel>();
+			AvailableStores = new List<StoreModel>();
         }
+
+        //Store mapping
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -14,6 +13,8 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Shipping
 {
@@ -36,11 +37,13 @@ namespace SmartStore.Services.Shipping
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
+		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
         private readonly ShippingSettings _shippingSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         #endregion
 
@@ -54,33 +57,39 @@ namespace SmartStore.Services.Shipping
         /// <param name="logger">Logger</param>
         /// <param name="productAttributeParser">Product attribute parser</param>
         /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
+		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="shippingSettings">Shipping settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
+		/// <param name="settingService">Setting service</param>
         public ShippingService(ICacheManager cacheManager, 
             IRepository<ShippingMethod> shippingMethodRepository,
             ILogger logger,
             IProductAttributeParser productAttributeParser,
             ICheckoutAttributeParser checkoutAttributeParser,
+			IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
             ShippingSettings shippingSettings,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+			ISettingService settingService)
         {
             this._cacheManager = cacheManager;
             this._shippingMethodRepository = shippingMethodRepository;
             this._logger = logger;
             this._productAttributeParser = productAttributeParser;
             this._checkoutAttributeParser = checkoutAttributeParser;
+			this._genericAttributeService = genericAttributeService;
             this._localizationService = localizationService;
             this._shippingSettings = shippingSettings;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._shoppingCartSettings = shoppingCartSettings;
-        }
+			this._settingService = settingService;	// codehint: sm-add
+		}
 
         #endregion
         
@@ -91,10 +100,11 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Load active shipping rate computation methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping rate computation methods</returns>
-        public virtual IList<IShippingRateComputationMethod> LoadActiveShippingRateComputationMethods()
+		public virtual IList<IShippingRateComputationMethod> LoadActiveShippingRateComputationMethods(int storeId = 0)
         {
-            return LoadAllShippingRateComputationMethods()
+            return LoadAllShippingRateComputationMethods(storeId)
                    .Where(provider => _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(provider.PluginDescriptor.SystemName, StringComparer.InvariantCultureIgnoreCase))
                    .ToList();
         }
@@ -116,10 +126,14 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Load all shipping rate computation methods
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping rate computation methods</returns>
-        public virtual IList<IShippingRateComputationMethod> LoadAllShippingRateComputationMethods()
+		public virtual IList<IShippingRateComputationMethod> LoadAllShippingRateComputationMethods(int storeId = 0)
         {
-            return _pluginFinder.GetPlugins<IShippingRateComputationMethod>().ToList();
+            return _pluginFinder
+				.GetPlugins<IShippingRateComputationMethod>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+				.ToList();
         }
 
         #endregion
@@ -288,12 +302,13 @@ namespace SmartStore.Services.Shipping
             //checkout attributes
             if (customer != null)
             {
-                if (!String.IsNullOrEmpty(customer.CheckoutAttributes))
-                {
-                    var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(customer.CheckoutAttributes);
-                    foreach (var caValue in caValues)
-                        totalWeight += caValue.WeightAdjustment;
-                }
+				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+				if (!String.IsNullOrEmpty(checkoutAttributesXml))
+				{
+					var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
+					foreach (var caValue in caValues)
+						totalWeight += caValue.WeightAdjustment;
+				}
             }
             return totalWeight;
         }
@@ -327,9 +342,10 @@ namespace SmartStore.Services.Shipping
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
         public virtual GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart,
-            Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "")
+			Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -338,7 +354,7 @@ namespace SmartStore.Services.Shipping
             
             //create a package
             var getShippingOptionRequest = CreateShippingOptionRequest(cart, shippingAddress);
-            var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods()
+            var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods(storeId)
                 .Where(srcm => 
                     String.IsNullOrWhiteSpace(allowedShippingRateComputationMethodSystemName) || 
                     allowedShippingRateComputationMethodSystemName.Equals(srcm.PluginDescriptor.SystemName, StringComparison.InvariantCultureIgnoreCase))

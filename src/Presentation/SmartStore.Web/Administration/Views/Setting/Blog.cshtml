@@ -15,14 +15,16 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-@Html.ValidationSummary(false)
+	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Enabled)
+                @Html.SettingEditorFor(model => model.Enabled)
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -31,7 +33,7 @@
                 @Html.SmartLabelFor(model => model.PostsPageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.PostsPageSize)
+                @Html.SettingEditorFor(model => model.PostsPageSize)
                 @Html.ValidationMessageFor(model => model.PostsPageSize)
             </td>
         </tr>
@@ -40,7 +42,7 @@
                 @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+                @Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
                 @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
             </td>
         </tr>
@@ -49,7 +51,7 @@
                 @Html.SmartLabelFor(model => model.NotifyAboutNewBlogComments)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.NotifyAboutNewBlogComments)
+                @Html.SettingEditorFor(model => model.NotifyAboutNewBlogComments)
                 @Html.ValidationMessageFor(model => model.NotifyAboutNewBlogComments)
             </td>
         </tr>
@@ -58,7 +60,7 @@
                 @Html.SmartLabelFor(model => model.NumberOfTags)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.NumberOfTags)
+                @Html.SettingEditorFor(model => model.NumberOfTags)
                 @Html.ValidationMessageFor(model => model.NumberOfTags)
             </td>
         </tr>
@@ -67,7 +69,7 @@
                 @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ShowHeaderRssUrl)
+                @Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
                 @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
             </td>
         </tr>

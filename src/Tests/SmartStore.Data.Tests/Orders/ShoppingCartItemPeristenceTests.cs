@@ -2,7 +2,7 @@
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Tests;
 using NUnit.Framework;
 
@@ -39,7 +39,6 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.Customer.ShouldNotBeNull();
 
             fromDb.ProductVariant.ShouldNotBeNull();
-
         }
 
         protected Customer GetTestCustomer()
@@ -48,11 +47,7 @@ namespace SmartStore.Data.Tests.Orders
             {
                 CustomerGuid = Guid.NewGuid(),
                 AdminComment = "some comment here",
-                TaxDisplayType = TaxDisplayType.IncludingTax,
                 IsTaxExempt = true,
-                VatNumber = "123456",
-                VatNumberStatus = VatNumberStatus.Valid,
-                DiscountCouponCode = "coupon1",
                 Active = true,
                 Deleted = false,
                 CreatedOnUtc = new DateTime(2010, 01, 01),

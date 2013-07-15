@@ -12,8 +12,8 @@ namespace SmartStore.Plugin.Payments.Manual.Models
         [SmartResourceDisplayName("Plugins.Payments.Manual.Fields.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
 
-        public int TransactModeId { get; set; }
-        [SmartResourceDisplayName("Plugins.Payments.Manual.Fields.TransactMode")]
+		[SmartResourceDisplayName("Plugins.Payments.Manual.Fields.TransactMode")]
+        public int TransactMode { get; set; }
         public SelectList TransactModeValues { get; set; }
     }
 }

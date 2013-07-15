@@ -16,6 +16,7 @@ namespace SmartStore.Services.Catalog
     public partial class PriceCalculationService : IPriceCalculationService
     {
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IDiscountService _discountService;
         private readonly ICategoryService _categoryService;
         private readonly IProductAttributeParser _productAttributeParser;
@@ -23,11 +24,15 @@ namespace SmartStore.Services.Catalog
         private readonly CatalogSettings _catalogSettings;
 
         public PriceCalculationService(IWorkContext workContext,
-            IDiscountService discountService, ICategoryService categoryService,
-            IProductAttributeParser productAttributeParser, ShoppingCartSettings shoppingCartSettings, 
+			IStoreContext storeContext,
+            IDiscountService discountService,
+			ICategoryService categoryService,
+            IProductAttributeParser productAttributeParser,
+			ShoppingCartSettings shoppingCartSettings, 
             CatalogSettings catalogSettings)
         {
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._discountService = discountService;
             this._categoryService = categoryService;
             this._productAttributeParser = productAttributeParser;
@@ -126,6 +131,7 @@ namespace SmartStore.Services.Catalog
             var tierPrices = productVariant.TierPrices
                 .OrderBy(tp => tp.Quantity)
                 .ToList()
+				.FilterByStore(_storeContext.CurrentStore.Id)
                 .FilterForCustomer(customer)
                 .RemoveDuplicatedQuantities();
 

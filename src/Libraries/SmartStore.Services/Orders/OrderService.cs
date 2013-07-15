@@ -139,6 +139,8 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Search orders
         /// </summary>
+		/// <param name="storeId">Store identifier; 0 to load all orders</param>
+		/// <param name="customerId">Customer identifier; 0 to load all orders</param>
         /// <param name="startTime">Order start time; null to load all orders</param>
         /// <param name="endTime">Order end time; null to load all orders</param>
         /// <param name="os">Order status; null to load all orders</param>
@@ -149,9 +151,10 @@ namespace SmartStore.Services.Orders
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Order collection</returns>
-        public virtual IPagedList<Order> SearchOrders(DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, string billingEmail, 
-            string orderGuid, int pageIndex, int pageSize)
+		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId,
+			DateTime? startTime, DateTime? endTime,
+            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+			string billingEmail, string orderGuid, int pageIndex, int pageSize)
         {
             int? orderStatusId = null;
             if (os.HasValue)
@@ -166,6 +169,10 @@ namespace SmartStore.Services.Orders
                 shippingStatusId = (int)ss.Value;
 
             var query = _orderRepository.Table;
+			if (storeId > 0)
+				query = query.Where(o => o.StoreId == storeId);
+			if (customerId > 0)
+				query = query.Where(o => o.CustomerId == customerId);
             if (startTime.HasValue)
                 query = query.Where(o => startTime.Value <= o.CreatedOnUtc);
             if (endTime.HasValue)
@@ -181,13 +188,19 @@ namespace SmartStore.Services.Orders
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
 
-            var orders = query.ToList();
-            
-            //filter by GUID. Filter in BLL because EF doesn't support casting of GUID to string
-            if (!String.IsNullOrEmpty(orderGuid))
-                orders = orders.FindAll(o => o.OrderGuid.ToString().ToLowerInvariant().Contains(orderGuid.ToLowerInvariant()));
 
-            return new PagedList<Order>(orders, pageIndex, pageSize);
+			if (!String.IsNullOrEmpty(orderGuid))
+			{
+				//filter by GUID. Filter in BLL because EF doesn't support casting of GUID to string
+				var orders = query.ToList();
+				orders = orders.FindAll(o => o.OrderGuid.ToString().ToLowerInvariant().Contains(orderGuid.ToLowerInvariant()));
+				return new PagedList<Order>(orders, pageIndex, pageSize);
+			}
+			else
+			{
+				//database layer paging
+				return new PagedList<Order>(query, pageIndex, pageSize);
+			}  
         }
 
         /// <summary>
@@ -201,7 +214,7 @@ namespace SmartStore.Services.Orders
         {
             var query = _orderRepository.Table;
             query = query.Where(o => !o.Deleted);
-            query = query.Where(o => o.AffiliateId.HasValue && o.AffiliateId == affiliateId);
+            query = query.Where(o => o.AffiliateId == affiliateId);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
 
             var orders = new PagedList<Order>(query, pageIndex, pageSize);
@@ -214,23 +227,7 @@ namespace SmartStore.Services.Orders
         /// <returns>Order collection</returns>
         public virtual IList<Order> LoadAllOrders()
         {
-            return SearchOrders(null, null, null, null, null, null, null, 0, int.MaxValue);
-        }
-
-        /// <summary>
-        /// Gets all orders by customer identifier
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>Order collection</returns>
-        public virtual IList<Order> GetOrdersByCustomerId(int customerId)
-        {
-            
-            var query = from o in _orderRepository.Table
-                        orderby o.CreatedOnUtc descending
-                        where !o.Deleted && o.CustomerId == customerId
-                        select o;
-            var orders = query.ToList();
-            return orders;
+            return SearchOrders(0, 0, null, null, null, null, null, null, null, 0, int.MaxValue);
         }
 
         /// <summary>
@@ -475,13 +472,15 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Search recurring payments
         /// </summary>
+		/// <param name="storeId">The store identifier; 0 to load all records</param>
         /// <param name="customerId">The customer identifier; 0 to load all records</param>
         /// <param name="initialOrderId">The initial order identifier; 0 to load all records</param>
         /// <param name="initialOrderStatus">Initial order status identifier; null to load all records</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Recurring payment collection</returns>
-        public virtual IList<RecurringPayment> SearchRecurringPayments(int customerId,
-            int initialOrderId, OrderStatus? initialOrderStatus, bool showHidden = false)
+		public virtual IList<RecurringPayment> SearchRecurringPayments(int storeId, 
+			int customerId, int initialOrderId, OrderStatus? initialOrderStatus,
+			bool showHidden = false)
         {
             int? initialOrderStatusId = null;
             if (initialOrderStatus.HasValue)
@@ -495,6 +494,7 @@ namespace SmartStore.Services.Orders
                          (showHidden || !c.Deleted) &&
                          (showHidden || rp.IsActive) &&
                          (customerId == 0 || rp.InitialOrder.CustomerId == customerId) &&
+						 (storeId == 0 || rp.InitialOrder.StoreId == storeId) &&
                          (initialOrderId == 0 || rp.InitialOrder.Id == initialOrderId) &&
                          (!initialOrderStatusId.HasValue || initialOrderStatusId.Value == 0 || rp.InitialOrder.OrderStatusId == initialOrderStatusId.Value)
                          select rp.Id;
@@ -543,14 +543,17 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Search return requests
         /// </summary>
+		/// <param name="storeId">Store identifier; 0 to load all entries</param>
         /// <param name="customerId">Customer identifier; null to load all entries</param>
         /// <param name="orderProductVariantId">Order product variant identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
         /// <returns>Return requests</returns>
-        public virtual IList<ReturnRequest> SearchReturnRequests(int customerId,
+		public virtual IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
             int orderProductVariantId, ReturnRequestStatus? rs)
         {
             var query = _returnRequestRepository.Table;
+			if (storeId > 0)
+				query = query.Where(rr => storeId == rr.StoreId);
             if (customerId > 0)
                 query = query.Where(rr => customerId == rr.CustomerId);
             if (rs.HasValue)

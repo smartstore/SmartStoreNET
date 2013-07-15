@@ -62,6 +62,14 @@ namespace SmartStore.Services.Common
             _eventPublisher.EntityDeleted(address);
         }
 
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual void DeleteAddress(int id)
+		{
+			var address = GetAddressById(id);
+			if (address != null)
+				DeleteAddress(address);
+		}
+
         /// <summary>
         /// Gets total number of addresses by country identifier
         /// </summary>
@@ -215,6 +223,11 @@ namespace SmartStore.Services.Common
                     }
                 }
             }
+
+			if (_addressSettings.CityEnabled &&
+				_addressSettings.CityRequired &&
+				String.IsNullOrWhiteSpace(address.City))
+				return false;
 
             if (_addressSettings.PhoneEnabled &&
                 _addressSettings.PhoneRequired &&

@@ -18,8 +18,9 @@ namespace SmartStore.Services.Localization
         /// Gets all languages
         /// </summary>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Language collection</returns>
-        IList<Language> GetAllLanguages(bool showHidden = false);
+		IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0);
 
         /// <summary>
         /// Gets languages count

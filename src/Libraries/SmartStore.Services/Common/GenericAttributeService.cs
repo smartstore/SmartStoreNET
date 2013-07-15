@@ -124,7 +124,7 @@ namespace SmartStore.Services.Common
         /// <param name="entityId">Entity identifier</param>
         /// <param name="keyGroup">Key group</param>
         /// <returns>Get attributes</returns>
-        public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
+		public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
         {
             string key = string.Format(GENERICATTRIBUTE_KEY, entityId, keyGroup);
             return _cacheManager.Get(key, () =>
@@ -145,14 +145,17 @@ namespace SmartStore.Services.Common
         /// <param name="entity">Entity</param>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
-        public virtual void SaveAttribute<TPropType>(BaseEntity entity, string key, TPropType value)
+		/// <param name="storeId">Store identifier; pass 0 if this attribute will be available for all stores</param>
+		public virtual void SaveAttribute<TPropType>(BaseEntity entity, string key, TPropType value, int storeId = 0)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
             string keyGroup = entity.GetUnproxiedEntityType().Name;
 
-            var props = GetAttributesForEntity(entity.Id, keyGroup);
+			var props = GetAttributesForEntity(entity.Id, keyGroup)
+				 .Where(x => x.StoreId == storeId)
+				 .ToList();
             var prop = props.FirstOrDefault(ga =>
                 ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
 
@@ -182,7 +185,8 @@ namespace SmartStore.Services.Common
                         EntityId = entity.Id,
                         Key = key,
                         KeyGroup = keyGroup,
-                        Value = valueStr
+                        Value = valueStr,
+						StoreId = storeId
                     };
                     InsertAttribute(prop);
                 }

@@ -1,9 +1,8 @@
 ﻿using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Seo;
 using SmartStore.Tests;
 using NUnit.Framework;
 
-namespace SmartStore.Data.Tests.Seo
+namespace SmartStore.Data.Tests.Security
 {
     [TestFixture]
     public class AclRecordPersistenceTests : PersistenceTest

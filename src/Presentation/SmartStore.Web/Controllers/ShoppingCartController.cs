@@ -52,6 +52,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly IProductService _productService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IPictureService _pictureService;
         private readonly ILocalizationService _localizationService;
@@ -80,6 +81,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
@@ -94,7 +96,8 @@ namespace SmartStore.Web.Controllers
 
         #region Constructors
 
-        public ShoppingCartController(IProductService productService, IWorkContext workContext,
+        public ShoppingCartController(IProductService productService,
+			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
             IProductAttributeService productAttributeService, IProductAttributeFormatter productAttributeFormatter,
@@ -112,6 +115,7 @@ namespace SmartStore.Web.Controllers
             IPermissionService permissionService, 
             IDownloadService downloadService, ICacheManager cacheManager,
             IWebHelper webHelper, ICustomerActivityService customerActivityService,
+			IGenericAttributeService genericAttributeService,
             MediaSettings mediaSettings, ShoppingCartSettings shoppingCartSettings,
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
@@ -119,6 +123,7 @@ namespace SmartStore.Web.Controllers
         {
             this._productService = productService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._shoppingCartService = shoppingCartService;
             this._pictureService = pictureService;
             this._localizationService = localizationService;
@@ -147,6 +152,7 @@ namespace SmartStore.Web.Controllers
             this._cacheManager = cacheManager;
             this._webHelper = webHelper;
             this._customerActivityService = customerActivityService;
+			this._genericAttributeService = genericAttributeService;
             
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -172,7 +178,7 @@ namespace SmartStore.Web.Controllers
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(productVariant.Id, attributesXml);
 
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, productVariant.Id, combination == null ? 0 : combination.Id,
-				pictureSize, true, _workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured());
+				pictureSize, true, _workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore.Id);
 
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
@@ -239,7 +245,10 @@ namespace SmartStore.Web.Controllers
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
             model.ShowSku = _catalogSettings.ShowProductSku;
             //codehint: sm-edit
-            model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(_checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer)));
+			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
+				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
+			));
             //model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer);
             //model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
             bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
@@ -251,8 +260,9 @@ namespace SmartStore.Web.Controllers
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
             //gift card and gift card boxes
-            model.DiscountBox.Display= _shoppingCartSettings.ShowDiscountBox;
-            var discount = _discountService.GetDiscountByCouponCode(_workContext.CurrentCustomer.DiscountCouponCode);
+            model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
+			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
+			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
             if (discount != null &&
                 discount.RequiresCouponCode &&
                 _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
@@ -260,7 +270,7 @@ namespace SmartStore.Web.Controllers
             model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 
             //cart warnings
-            var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, _workContext.CurrentCustomer.CheckoutAttributes, validateCheckoutAttributes);
+			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
             foreach (var warning in cartWarnings)
                 model.Warnings.Add(warning);
 
@@ -315,7 +325,7 @@ namespace SmartStore.Web.Controllers
 
 
                 //set already selected attributes
-                string selectedCheckoutAttributes = _workContext.CurrentCustomer.CheckoutAttributes;
+				string selectedCheckoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
@@ -499,6 +509,7 @@ namespace SmartStore.Web.Controllers
                     _workContext.CurrentCustomer,
                     sci.ShoppingCartType,
                     sci.ProductVariant,
+					sci.StoreId,
                     sci.AttributesXml,
                     sci.CustomerEnteredPrice,
                     sci.Quantity,
@@ -514,7 +525,7 @@ namespace SmartStore.Web.Controllers
             #region Button payment methods
 
             var boundPaymentMethods = _paymentService
-                .LoadActivePaymentMethods(_workContext.CurrentCustomer.Id)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
                 .Where(pm => pm.PaymentMethodType == PaymentMethodType.Button)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
@@ -555,12 +566,14 @@ namespace SmartStore.Web.Controllers
                         model.OrderReviewData.ShippingAddress.PrepareModel(shippingAddress, false, _addressSettings);
                     
                     //selected shipping method
-                    var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption);
+					var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
                     if (shippingOption != null)
                         model.OrderReviewData.ShippingMethod = shippingOption.Name;
                 }
                 //payment info
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
+				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
                 model.OrderReviewData.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id) : "";
             }
             #endregion
@@ -682,6 +695,7 @@ namespace SmartStore.Web.Controllers
                 var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
                             sci.ShoppingCartType,
                             sci.ProductVariant,
+							sci.StoreId,
                             sci.AttributesXml,
                             sci.CustomerEnteredPrice,
                             sci.Quantity, false);
@@ -708,7 +722,10 @@ namespace SmartStore.Web.Controllers
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
             };
 
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             model.TotalProducts = cart.GetTotalProducts();
             model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber); // codehint: sm-add
             if (cart.Count > 0)
@@ -908,8 +925,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //save checkout attributes
-            _workContext.CurrentCustomer.CheckoutAttributes = selectedAttributes;
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
 
         #endregion
@@ -970,19 +986,19 @@ namespace SmartStore.Web.Controllers
 
             //get standard warnings without attribute validations
             //first, try to find existing shopping cart item
-            var cart = _workContext
-                .CurrentCustomer
-                .ShoppingCartItems
-                .Where(sci => sci.ShoppingCartType == shoppingCartType)
-                .ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				 .Where(sci => sci.ShoppingCartType == shoppingCartType)
+				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				 .ToList();
             var shoppingCartItem = _shoppingCartService
                 .FindShoppingCartItemInTheCart(cart, shoppingCartType, defaultProductVariant);
             //if we already have the same product variant in the cart, then use the total quantity to validate
             var quantityToValidate = shoppingCartItem != null ?
                 shoppingCartItem.Quantity + qtyToAdd : qtyToAdd;
             var addToCartWarnings = _shoppingCartService
-                .GetShoppingCartItemWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart,
-                defaultProductVariant, string.Empty, decimal.Zero, quantityToValidate, false, true, false, false, false);
+                .GetShoppingCartItemWarnings(_workContext.CurrentCustomer, shoppingCartType,
+                defaultProductVariant, _storeContext.CurrentStore.Id, string.Empty, 
+				decimal.Zero, quantityToValidate, false, true, false, false, false);
             if (addToCartWarnings.Count > 0)
             {
                 //cannot be added to the cart
@@ -996,7 +1012,7 @@ namespace SmartStore.Web.Controllers
 
             //now let's try adding product to the cart (now including product attribute validation, etc)
             addToCartWarnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                defaultProductVariant, ShoppingCartType.ShoppingCart,
+				defaultProductVariant, shoppingCartType, _storeContext.CurrentStore.Id,
                 string.Empty, decimal.Zero, qtyToAdd, true);
             if (addToCartWarnings.Count > 0)
             {
@@ -1235,7 +1251,8 @@ namespace SmartStore.Web.Controllers
             //save item
             var cartType = (ShoppingCartType)shoppingCartTypeId;
             addToCartWarnings.AddRange(_shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                productVariant, cartType, attributes, customerEnteredPriceConverted, quantity, true));
+				productVariant, cartType, _storeContext.CurrentStore.Id, 
+				attributes, customerEnteredPriceConverted, quantity, true));
 
             #region Return result
 
@@ -1436,7 +1453,10 @@ namespace SmartStore.Web.Controllers
 
             //using (profiler.Step("MYCART"))
             //{
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
                 return View(model);
@@ -1446,7 +1466,10 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				 .ToList();
             var model = new ShoppingCartModel();
             PrepareShoppingCartModel(model, cart, 
                 isEditable: false, 
@@ -1464,7 +1487,10 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
 
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				 .ToList();
 
             var allIdsToRemove = form["removefromcart"] != null ? form["removefromcart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
 
@@ -1493,7 +1519,10 @@ namespace SmartStore.Web.Controllers
             }
 
             //updated cart
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				 .ToList();
             var model = new ShoppingCartModel();
             PrepareShoppingCartModel(model, cart);
             //update current warnings
@@ -1503,7 +1532,7 @@ namespace SmartStore.Web.Controllers
                 var sciId = kvp.Key;
                 var warnings = kvp.Value;
                 //find model
-                var sciModel = model.Items.Where(x => x.Id == sciId).FirstOrDefault();
+                var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
                 if (sciModel != null)
                     foreach (var w in warnings)
                         if (!sciModel.Warnings.Contains(w))
@@ -1528,8 +1557,10 @@ namespace SmartStore.Web.Controllers
                     sciId = Convert.ToInt32(formValue.Substring("updatecartitem-".Length));
             //get shopping cart item
             var cart = _workContext.CurrentCustomer.ShoppingCartItems
-                .Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
-            var sci = cart.Where(x => x.Id == sciId).FirstOrDefault();
+				.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
+			var sci = cart.FirstOrDefault(x => x.Id == sciId);
             if (sci == null)
             {
                 return RedirectToRoute("ShoppingCart");
@@ -1551,12 +1582,15 @@ namespace SmartStore.Web.Controllers
 
 
             //updated cart
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new ShoppingCartModel();
             PrepareShoppingCartModel(model, cart);
             //update current warnings
             //find model
-            var sciModel = model.Items.Where(x => x.Id == sciId).FirstOrDefault();
+			var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
             if (sciModel != null)
                 foreach (var w in warnings)
                     if (!sciModel.Warnings.Contains(w))
@@ -1580,8 +1614,10 @@ namespace SmartStore.Web.Controllers
                     sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
             //get shopping cart item
             var cart = _workContext.CurrentCustomer.ShoppingCartItems
-                .Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
-            var sci = cart.Where(x => x.Id == sciId).FirstOrDefault();
+				.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
+			var sci = cart.FirstOrDefault(x => x.Id == sciId);
             if (sci == null)
             {
                 return RedirectToRoute("ShoppingCart");
@@ -1592,7 +1628,10 @@ namespace SmartStore.Web.Controllers
 
 
             //updated cart
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new ShoppingCartModel();
             PrepareShoppingCartModel(model, cart);
             return View(model);
@@ -1632,7 +1671,7 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("continueshopping")]
         public ActionResult ContinueShopping()
         {
-            string returnUrl = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastContinueShoppingPage);
+			string returnUrl = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastContinueShoppingPage, _storeContext.CurrentStore.Id);
             if (!String.IsNullOrEmpty(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -1648,13 +1687,17 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("startcheckout")]
         public ActionResult StartCheckout(FormCollection form)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
 
             //validate attributes
-            var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, _workContext.CurrentCustomer.CheckoutAttributes, true);
+			string checkoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+			var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
             if (checkoutAttributeWarnings.Count > 0)
             {
                 //something wrong, redisplay the page with warnings
@@ -1686,7 +1729,10 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("applydiscountcouponcode")]
         public ActionResult ApplyDiscountCoupon(string discountcouponcode, FormCollection form)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
@@ -1700,8 +1746,8 @@ namespace SmartStore.Web.Controllers
                     _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
                 if (isDiscountValid)
                 {
-                    _workContext.CurrentCustomer.DiscountCouponCode = discountcouponcode;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+						 SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
                     model.DiscountBox.Message = _localizationService.GetResource("ShoppingCart.DiscountCouponCode.Applied");
                 }
                 else
@@ -1721,7 +1767,10 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("applygiftcardcouponcode")]
         public ActionResult ApplyGiftCard(string giftcardcouponcode, FormCollection form)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
@@ -1757,7 +1806,10 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, FormCollection form)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
@@ -1778,7 +1830,8 @@ namespace SmartStore.Web.Controllers
                     StateProvince = shippingModel.StateProvinceId.HasValue ? _stateProvinceService.GetStateProvinceById(shippingModel.StateProvinceId.Value) : null,
                     ZipPostalCode = shippingModel.ZipPostalCode,
                 };
-                GetShippingOptionResponse getShippingOptionResponse = _shippingService.GetShippingOptions(cart, address);
+				GetShippingOptionResponse getShippingOptionResponse = _shippingService
+					 .GetShippingOptions(cart, address, "", _storeContext.CurrentStore.Id);
                 if (!getShippingOptionResponse.Success)
                 {
                     foreach (var error in getShippingOptionResponse.Errors)
@@ -1820,15 +1873,15 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new OrderTotalsModel();
             model.IsEditable = isEditable;
 
             if (cart.Count > 0)
-            {
-                //payment method (if already selected)
-                string paymentMethodSystemName = _workContext.CurrentCustomer != null ? _workContext.CurrentCustomer.SelectedPaymentMethodSystemName : null;
-                
+            {              
                 //subtotal
                 decimal subtotalBase = decimal.Zero;
                 decimal orderSubTotalDiscountAmountBase = decimal.Zero;
@@ -1863,13 +1916,15 @@ namespace SmartStore.Web.Controllers
                         model.Shipping = _priceFormatter.FormatShippingPrice(shoppingCartShipping, true);
 
                         //selected shipping method
-                        var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption);
+						var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
                         if (shippingOption != null)
                             model.SelectedShippingMethod = shippingOption.Name;
                     }
                 }
 
                 //payment method fee
+				string paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
                 decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
                 decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 if (paymentMethodAdditionalFeeWithTaxBase > decimal.Zero)
@@ -1981,11 +2036,14 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("removesubtotaldiscount", "removeordertotaldiscount", "removediscountcouponcode")]
         public ActionResult RemoveDiscountCoupon()
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new ShoppingCartModel();
 
-            _workContext.CurrentCustomer.DiscountCouponCode = "";
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+				 SystemCustomerAttributeNames.DiscountCouponCode, null);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
@@ -1996,7 +2054,10 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("removegiftcard")]
         public ActionResult RemoveGiftardCode(int giftCardId)
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new ShoppingCartModel();
 
             var gc = _giftCardService.GetGiftCardById(giftCardId);
@@ -2031,8 +2092,9 @@ namespace SmartStore.Web.Controllers
                 return Json(null); // TODO
 
             decimal subtotal = 0;
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(
-                sci => sci.ShoppingCartType == (isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart)).ToList();
+            var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == (isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart) && sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count > 0)
             {
                 //subtotal
@@ -2069,7 +2131,10 @@ namespace SmartStore.Web.Controllers
                 : _workContext.CurrentCustomer;
             if (customer == null)
                 return RedirectToRoute("HomePage");
-            var cart = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var cart = customer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new WishlistModel();
             PrepareWishlistModel(model, cart, !customerGuid.HasValue);
             return View(model);
@@ -2084,7 +2149,10 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
                 return RedirectToRoute("HomePage");
 
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             var allIdsToRemove = form["removefromcart"] != null ? form["removefromcart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
 
@@ -2113,7 +2181,10 @@ namespace SmartStore.Web.Controllers
             }
 
             //updated wishlist
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new WishlistModel();
             PrepareWishlistModel(model, cart);
             //update current warnings
@@ -2123,7 +2194,7 @@ namespace SmartStore.Web.Controllers
                 var sciId = kvp.Key;
                 var warnings = kvp.Value;
                 //find model
-                var sciModel = model.Items.Where(x => x.Id == sciId).FirstOrDefault();
+				var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
                 if (sciModel != null)
                     foreach (var w in warnings)
                         if (!sciModel.Warnings.Contains(w))
@@ -2148,8 +2219,10 @@ namespace SmartStore.Web.Controllers
                     sciId = Convert.ToInt32(formValue.Substring("updatecartitem-".Length));
             //get shopping cart item
             var cart = _workContext.CurrentCustomer.ShoppingCartItems
-                .Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
-            var sci = cart.Where(x => x.Id == sciId).FirstOrDefault();
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
+			var sci = cart.FirstOrDefault(x => x.Id == sciId);
             if (sci == null)
             {
                 return RedirectToRoute("Wishlist");
@@ -2171,12 +2244,15 @@ namespace SmartStore.Web.Controllers
 
 
             //updated wishlist
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new WishlistModel();
             PrepareWishlistModel(model, cart);
             //update current warnings
             //find model
-            var sciModel = model.Items.Where(x => x.Id == sciId).FirstOrDefault();
+			var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
             if (sciModel != null)
                 foreach (var w in warnings)
                     if (!sciModel.Warnings.Contains(w))
@@ -2200,8 +2276,10 @@ namespace SmartStore.Web.Controllers
                     sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
             //get wishlist cart item
             var cart = _workContext.CurrentCustomer.ShoppingCartItems
-                .Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
-            var sci = cart.Where(x => x.Id == sciId).FirstOrDefault();
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
+			var sci = cart.FirstOrDefault(x => x.Id == sciId);
             if (sci == null)
             {
                 return RedirectToRoute("Wishlist");
@@ -2212,7 +2290,10 @@ namespace SmartStore.Web.Controllers
 
 
             //updated wishlist
-            cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var model = new WishlistModel();
             PrepareWishlistModel(model, cart);
             return View(model);
@@ -2235,7 +2316,10 @@ namespace SmartStore.Web.Controllers
             if (pageCustomer == null)
                 return RedirectToRoute("HomePage");
 
-            var pageCart = pageCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var pageCart = pageCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             var allWarnings = new List<string>();
             var numberOfAddedItems = 0;
@@ -2246,6 +2330,7 @@ namespace SmartStore.Web.Controllers
                 {
                     var warnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
                         sci.ProductVariant, ShoppingCartType.ShoppingCart,
+						_storeContext.CurrentStore.Id,
                         sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
                     if (warnings.Count == 0)
                         numberOfAddedItems++;
@@ -2268,7 +2353,10 @@ namespace SmartStore.Web.Controllers
             else
             {
                 //no items added. redisplay the wishlist page
-                var cart = pageCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+				var cart = pageCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 var model = new WishlistModel();
                 PrepareWishlistModel(model, cart, !customerGuid.HasValue);
                 return View(model);
@@ -2299,16 +2387,20 @@ namespace SmartStore.Web.Controllers
             if (pageCustomer == null)
                 return RedirectToRoute("HomePage");
 
-            var pageCart = pageCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var pageCart = pageCustomer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
-            var sci = pageCart.Where(x => x.Id == sciId).FirstOrDefault();
+			var sci = pageCart.FirstOrDefault(x => x.Id == sciId);
             if (sci == null)
             {
                 return RedirectToRoute("Wishlist");
             }
             var warnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                                           sci.ProductVariant, ShoppingCartType.ShoppingCart,
-                                           sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
+                sci.ProductVariant, ShoppingCartType.ShoppingCart,
+				_storeContext.CurrentStore.Id,
+                sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
             if (_shoppingCartSettings.MoveItemsFromWishlistToCart && //settings enabled
                         !customerGuid.HasValue && //own wishlist
                         warnings.Count == 0) //no warnings ( already in the cart)
@@ -2325,7 +2417,10 @@ namespace SmartStore.Web.Controllers
             else
             {
                 //no items added. redisplay the wishlist page
-                var cart = pageCustomer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+				var cart = pageCustomer.ShoppingCartItems
+					.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist)
+					.Where(x => x.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 var model = new WishlistModel();
                 PrepareWishlistModel(model, cart, !customerGuid.HasValue);
                 return View(model);
@@ -2348,7 +2443,9 @@ namespace SmartStore.Web.Controllers
             }
 
             var customer = _workContext.CurrentCustomer;
-            var wishlist = customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var wishlist = customer.ShoppingCartItems
+				.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist && x.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             var sci = wishlist.Where(x => x.Id == cartItemId).FirstOrDefault();
             if (sci == null)
             {
@@ -2360,7 +2457,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var warnings = _shoppingCartService.AddToCart(customer,
-                                           sci.ProductVariant, ShoppingCartType.ShoppingCart,
+                                           sci.ProductVariant, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id,
                                            sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
             if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0) //no warnings ( already in the cart)
             {
@@ -2391,7 +2488,10 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");
 
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
 
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
@@ -2412,7 +2512,10 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");
 
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
 
@@ -2454,7 +2557,10 @@ namespace SmartStore.Web.Controllers
         {
             Customer customer = _workContext.CurrentCustomer;
 
-            var cart = customer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).OrderByDescending(x => x.Id).ToList();
+            var cart = customer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist && sci.StoreId == _storeContext.CurrentStore.Id)
+				.OrderByDescending(x => x.Id)
+				.ToList();
             var model = new WishlistModel();
             PrepareWishlistModel(model, cart, true);
             

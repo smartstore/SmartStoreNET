@@ -100,6 +100,11 @@
             }, 300);
         });
 
+		// check overridden store settings
+        $('input.multi-store-override-option').each(function (index, elem) {
+        	Admin.checkOverriddenStoreValue(elem);
+        });
+
         // sticky section-header
         var navbar = $("#navbar");
         var navbarHeight = navbar.outerHeight() || 0;

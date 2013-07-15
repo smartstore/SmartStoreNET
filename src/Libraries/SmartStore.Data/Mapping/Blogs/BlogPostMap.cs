@@ -13,7 +13,6 @@ namespace SmartStore.Data.Mapping.Blogs
             this.Property(bp => bp.Body).IsRequired();
             this.Property(bp => bp.MetaKeywords).HasMaxLength(400);
             this.Property(bp => bp.MetaTitle).HasMaxLength(400);
-            this.Property(bp => bp.Tags);
 
             this.HasRequired(bp => bp.Language)
                 .WithMany()

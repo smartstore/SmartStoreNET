@@ -33,7 +33,6 @@ namespace SmartStore.Services.ExportImport
         private readonly IProductService _productService;
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
-        private readonly StoreInformationSettings _storeInformationSettings;
 
         #endregion
 
@@ -43,15 +42,13 @@ namespace SmartStore.Services.ExportImport
             IManufacturerService manufacturerService,
             IProductService productService,
             IPictureService pictureService,
-            INewsLetterSubscriptionService newsLetterSubscriptionService,
-            StoreInformationSettings storeInformationSettings)
+            INewsLetterSubscriptionService newsLetterSubscriptionService)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
             this._productService = productService;
             this._pictureService = pictureService;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._storeInformationSettings = storeInformationSettings;
         }
 
         #endregion
@@ -337,6 +334,7 @@ namespace SmartStore.Services.ExportImport
                         foreach (var tierPrice in tierPrices)
                         {
                             xmlWriter.WriteElementString("TierPriceId", null, tierPrice.Id.ToString());
+							xmlWriter.WriteElementString("StoreId", null, tierPrice.StoreId.ToString());
                             xmlWriter.WriteElementString("CustomerRoleId", null, tierPrice.CustomerRoleId.HasValue ? tierPrice.CustomerRoleId.ToString() : "0");
                             xmlWriter.WriteElementString("Quantity", null, tierPrice.Quantity.ToString());
                             xmlWriter.WriteElementString("Price", null, tierPrice.Price.ToString());
@@ -872,16 +870,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} products", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Products";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} products", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} products", storeName);
+				//xlPackage.Workbook.Properties.Category = "Products";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} products", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();
@@ -1175,7 +1175,7 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = order.CustomerCurrencyCode;
                     col++;
 
-                    worksheet.Cells[row, col].Value = order.AffiliateId.HasValue ? order.AffiliateId.Value : 0;
+					worksheet.Cells[row, col].Value = order.AffiliateId;
                     col++;
 
                     worksheet.Cells[row, col].Value = order.OrderStatusId;
@@ -1294,16 +1294,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} orders", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Orders";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} orders", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} orders", storeName);
+				//xlPackage.Workbook.Properties.Category = "Orders";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} orders", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();
@@ -1402,28 +1404,10 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = customer.PasswordSalt;
                     col++;
 
-                    worksheet.Cells[row, col].Value = customer.LanguageId.HasValue ? customer.LanguageId.Value : 0;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.CurrencyId.HasValue ? customer.CurrencyId.Value : 0;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.TaxDisplayTypeId;
-                    col++;
-
                     worksheet.Cells[row, col].Value = customer.IsTaxExempt;
                     col++;
 
-                    worksheet.Cells[row, col].Value = customer.VatNumber;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.VatNumberStatusId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.TimeZoneId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = customer.AffiliateId.HasValue ? customer.AffiliateId.Value : 0;
+					worksheet.Cells[row, col].Value = customer.AffiliateId;
                     col++;
 
                     worksheet.Cells[row, col].Value = customer.Active;
@@ -1455,6 +1439,9 @@ namespace SmartStore.Services.ExportImport
                     var stateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                     var phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                     var fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
+					var vatNumber = customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumber);
+					var vatNumberStatusId = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumberStatusId);
+					var timeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
 
                     var avatarPictureId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
                     var forumPostCount = customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount);
@@ -1496,8 +1483,17 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = fax;
                     col++;
 
+					worksheet.Cells[row, col].Value = vatNumber;
+					col++;
+
+					worksheet.Cells[row, col].Value = vatNumberStatusId;
+					col++;
+
                     worksheet.Cells[row, col].Value = avatarPictureId;
                     col++;
+
+					worksheet.Cells[row, col].Value = timeZoneId;
+					col++;
 
                     worksheet.Cells[row, col].Value = forumPostCount;
                     col++;
@@ -1518,16 +1514,18 @@ namespace SmartStore.Services.ExportImport
                 // we had better add some document properties to the spreadsheet 
 
                 // set some core property values
-                xlPackage.Workbook.Properties.Title = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Author = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.Subject = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Keywords = string.Format("{0} customers", _storeInformationSettings.StoreName);
-                xlPackage.Workbook.Properties.Category = "Customers";
-                xlPackage.Workbook.Properties.Comments = string.Format("{0} customers", _storeInformationSettings.StoreName);
+				//var storeName = _storeInformationSettings.StoreName;
+				//var storeUrl = _storeInformationSettings.StoreUrl;
+				//xlPackage.Workbook.Properties.Title = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Author = storeName;
+				//xlPackage.Workbook.Properties.Subject = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Keywords = string.Format("{0} customers", storeName);
+				//xlPackage.Workbook.Properties.Category = "Customers";
+				//xlPackage.Workbook.Properties.Comments = string.Format("{0} customers", storeName);
 
-                // set some extended property values
-                xlPackage.Workbook.Properties.Company = _storeInformationSettings.StoreName;
-                xlPackage.Workbook.Properties.HyperlinkBase = new Uri(_storeInformationSettings.StoreUrl);
+				// set some extended property values
+				//xlPackage.Workbook.Properties.Company = storeName;
+				//xlPackage.Workbook.Properties.HyperlinkBase = new Uri(storeUrl);
 
                 // save the new spreadsheet
                 xlPackage.Save();
@@ -1558,14 +1556,8 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("Password", null, customer.Password);
                 xmlWriter.WriteElementString("PasswordFormatId", null, customer.PasswordFormatId.ToString());
                 xmlWriter.WriteElementString("PasswordSalt", null, customer.PasswordSalt);
-                xmlWriter.WriteElementString("LanguageId", null, customer.LanguageId.HasValue ? customer.LanguageId.ToString() : "0");
-                xmlWriter.WriteElementString("CurrencyId", null, customer.CurrencyId.HasValue ? customer.CurrencyId.ToString() : "0");
-                xmlWriter.WriteElementString("TaxDisplayTypeId", null, customer.TaxDisplayTypeId.ToString());
                 xmlWriter.WriteElementString("IsTaxExempt", null, customer.IsTaxExempt.ToString());
-                xmlWriter.WriteElementString("VatNumber", null, customer.VatNumber);
-                xmlWriter.WriteElementString("VatNumberStatusId", null, customer.VatNumberStatusId.ToString());
-                xmlWriter.WriteElementString("TimeZoneId", null, customer.TimeZoneId);
-                xmlWriter.WriteElementString("AffiliateId", null, customer.AffiliateId.HasValue ? customer.AffiliateId.ToString() : "0");
+				xmlWriter.WriteElementString("AffiliateId", null, customer.AffiliateId.ToString());
                 xmlWriter.WriteElementString("Active", null, customer.Active.ToString());
 
 
@@ -1588,6 +1580,9 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("StateProvinceId", null, customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId).ToString());
                 xmlWriter.WriteElementString("Phone", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone));
                 xmlWriter.WriteElementString("Fax", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax));
+				xmlWriter.WriteElementString("VatNumber", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber));
+				xmlWriter.WriteElementString("VatNumberStatusId", null, customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId).ToString());
+				xmlWriter.WriteElementString("TimeZoneId", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId));
 
                 var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
                 bool subscribedToNewsletters = newsletter != null && newsletter.Active;

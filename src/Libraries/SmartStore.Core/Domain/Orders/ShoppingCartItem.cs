@@ -9,6 +9,11 @@ namespace SmartStore.Core.Domain.Orders
     /// </summary>
     public partial class ShoppingCartItem : BaseEntity
     {
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public virtual int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the shopping cart type identifier
         /// </summary>

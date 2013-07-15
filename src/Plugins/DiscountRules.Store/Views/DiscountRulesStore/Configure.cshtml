@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.Plugin.DiscountRules.Store.Models.RequirementModel
+@using SmartStore.Web.Framework;
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#savestorerequirement@(Model.RequirementId)').click(function () {
+            	var storeId = $("#@Html.FieldIdFor(model => model.StoreId)").val();
+            	var discountId = @Model.DiscountId;
+            	var requirementId = @Model.RequirementId;
+            	$.ajax({
+                    cache:false,
+                    type: "POST",
+                    url: "@(Url.Action("Configure", "DiscountRulesStore"))",
+            		data: { "discountId": discountId, "discountRequirementId": requirementId, "storeId": storeId },
+            		success: function (data) {
+						$('#pnl-save-requirement-result@(Model.RequirementId)').fadeIn("slow").delay(1000).fadeOut("slow");
+                        //notify parent if it's a new requirement
+                        @if (Model.RequirementId == 0)
+                        {
+                        <text>$("#discountRequirementContainer").trigger('smnewdiscountruleadded', [data.NewRequirementId]);</text>
+                        }
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        alert('@T("Admin.Promotions.Discounts.Requirements.FailedToSave")')
+                    }  
+                });
+            });
+        });
+    </script>
+    
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StoreId)
+            </td>
+            <td class="adminData">
+                <div>
+					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores) 
+					<button type="button" name="savestorerequirement@(Model.RequirementId)" id="savestorerequirement@(Model.RequirementId)" class="btn" value="@T("Admin.Common.Save")"></button>
+                </div>
+                <div id="pnl-save-requirement-result@(Model.RequirementId)" style="display:none;">@T("Admin.Promotions.Discounts.Requirements.Saved")</div>
+            </td>
+        </tr>
+    </table>

@@ -9,6 +9,11 @@ namespace SmartStore.Services.Payments
     [Serializable]
     public partial class ProcessPaymentRequest
     {
+		/// <summary>
+		/// Gets or sets a store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets a customer
         /// </summary>

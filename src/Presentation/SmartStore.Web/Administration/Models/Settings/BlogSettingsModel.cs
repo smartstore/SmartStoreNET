@@ -3,7 +3,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class BlogSettingsModel : ModelBase
+	public class BlogSettingsModel : ModelBase
     {
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.Enabled")]
         public bool Enabled { get; set; }

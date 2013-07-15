@@ -5,6 +5,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Events;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Orders
 {

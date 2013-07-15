@@ -6,17 +6,19 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 {
     public partial class HadSpentAmountDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
+		private readonly ILocalizationService _localizationService;
+		private readonly IOrderService _orderService;
 
-        private readonly ILocalizationService _localizationService;
-
-        public HadSpentAmountDiscountRequirementRule(ILocalizationService localizationService)
+		public HadSpentAmountDiscountRequirementRule(ILocalizationService localizationService, IOrderService orderService)
         {
             _localizationService = localizationService;
+			_orderService = orderService;
         }
 
         /// <summary>
@@ -38,7 +40,8 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
             if (request.Customer == null || request.Customer.IsGuest())
                 return false;
 
-            var orders = request.Customer.Orders.Where(o => !o.Deleted && o.OrderStatus == OrderStatus.Complete);
+			var orders = _orderService.SearchOrders(request.Store.Id, request.Customer.Id,
+				null, null, OrderStatus.Complete, null, null, null, null, 0, int.MaxValue);
             decimal spentAmount = orders.Sum(o => o.OrderTotal);
             return spentAmount > request.DiscountRequirement.SpentAmount;
         }

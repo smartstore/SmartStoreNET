@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -17,6 +15,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
@@ -42,6 +41,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IDiscountService _discountService;
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly IExportManager _exportManager;
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
@@ -58,7 +59,7 @@ namespace SmartStore.Admin.Controllers
             IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
             ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IDiscountService discountService, IPermissionService permissionService,
-            IAclService aclService,
+			IAclService aclService, IStoreService storeService, IStoreMappingService storeMappingService,
             IExportManager exportManager, IWorkContext workContext,
             ICustomerActivityService customerActivityService, AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings)
@@ -76,6 +77,8 @@ namespace SmartStore.Admin.Controllers
             this._discountService = discountService;
             this._permissionService = permissionService;
             this._aclService = aclService;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
             this._exportManager = exportManager;
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
@@ -209,6 +212,52 @@ namespace SmartStore.Admin.Controllers
                 }
             }
         }
+
+		[NonAction]
+		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+			if (!excludeProperties)
+			{
+				if (category != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
+			}
+		}
+
+		[NonAction]
+		protected void SaveStoreMappings(Category category, CategoryModel model)
+		{
+			var existingStoreMappings = _storeMappingService.GetStoreMappings(category);
+			var allStores = _storeService.GetAllStores();
+			foreach (var store in allStores)
+			{
+				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
+				{
+					//new role
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+						_storeMappingService.InsertStoreMapping(category, store.Id);
+				}
+				else
+				{
+					//removed role
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
+				}
+			}
+		}
 
         #endregion
 
@@ -395,6 +444,8 @@ namespace SmartStore.Admin.Controllers
             PrepareDiscountModel(model, null, true);
             //ACL
             PrepareAclModel(model, null, false);
+			//Stores
+			PrepareStoresMappingModel(model, null, false);
             //default values
             model.PageSize = 12; // codehint: sm-edit > 4;
             model.Published = true;
@@ -436,6 +487,8 @@ namespace SmartStore.Admin.Controllers
                 UpdatePictureSeoNames(category);
                 //ACL (customer roles)
                 SaveCategoryAcl(category, model);
+				//Stores
+				SaveStoreMappings(category, model);
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
@@ -463,6 +516,8 @@ namespace SmartStore.Admin.Controllers
             PrepareDiscountModel(model, null, true);
             //ACL
             PrepareAclModel(model, null, true);
+			//Stores
+			PrepareStoresMappingModel(model, null, true);
             return View(model);
         }
 
@@ -505,6 +560,8 @@ namespace SmartStore.Admin.Controllers
             PrepareDiscountModel(model, category, false);
             //ACL
             PrepareAclModel(model, category, false);
+			//Stores
+			PrepareStoresMappingModel(model, category, false);
 
             return View(model);
         }
@@ -562,6 +619,8 @@ namespace SmartStore.Admin.Controllers
                 UpdatePictureSeoNames(category);
                 //ACL
                 SaveCategoryAcl(category, model);
+				//Stores
+				SaveStoreMappings(category, model);
 
                 //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
@@ -590,6 +649,9 @@ namespace SmartStore.Admin.Controllers
             PrepareDiscountModel(model, category, true);
             //ACL
             PrepareAclModel(model, category, true);
+			//Stores
+			PrepareStoresMappingModel(model, category, true);
+
             return View(model);
         }
 

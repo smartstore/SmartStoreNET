@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
@@ -17,7 +18,7 @@ using SmartStore.Services.Events;
 namespace SmartStore.Web.Infrastructure.Cache
 {
     /// <summary>
-    /// Model cache event consumer (used for caching presentation layer models)
+	/// Model cache event consumer (used for caching of presentation layer models)
     /// </summary>
     public partial class ModelCacheEventConsumer: 
         //languages
@@ -120,7 +121,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityDeleted<StateProvince>>,
         //customer roles
         IConsumer<EntityUpdated<CustomerRole>>,
-        IConsumer<EntityDeleted<CustomerRole>>
+        IConsumer<EntityDeleted<CustomerRole>>,
+		//stores
+        IConsumer<EntityUpdated<Store>>,
+        IConsumer<EntityDeleted<Store>>
     {
         /// <summary>
         /// Key for ManufacturerNavigationModel caching
@@ -128,20 +132,20 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : current manufacturer id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
-        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}";
+        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "sm.pres.manufacturer.navigation";
 
         /// <summary>
         /// Key for CategoryNavigationModel caching
         /// </summary>
         /// <remarks>
-        /// {0} : current category id
-        /// {1} : current product id
-        /// {2} : language id
-        /// {3} : comma separated list of customer roles
+		/// {0} : language id
+		/// {1} : comma separated list of customer roles
+		/// {2} : current store id
         /// </remarks>
-        public const string CATEGORY_NAVIGATION_MODEL_KEY = "sm.pres.category.navigation-{0}-{1}";
+        public const string CATEGORY_NAVIGATION_MODEL_KEY = "sm.pres.category.navigation-{0}-{1}-{2}";
         public const string CATEGORY_NAVIGATION_PATTERN_KEY = "sm.pres.category.navigation";
 
         /// <summary>
@@ -151,8 +155,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : parent category id
         /// {1} : show hidden?
         /// {2} : comma separated list of customer roles
+		/// {3} : current store id
         /// </remarks>
-        public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}";
+        public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}-{3}";
         public const string CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY = "sm.pres.category.childidentifiers";
 
         /// <summary>
@@ -162,8 +167,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : product id
         /// {1} : language id
         /// {2} : comma separated list of customer roles
+		/// {3} : current store id
         /// </remarks>
-        public const string PRODUCT_BREADCRUMB_MODEL_KEY = "sm.pres.product.breadcrumb-{0}-{1}-{2}";
+        public const string PRODUCT_BREADCRUMB_MODEL_KEY = "sm.pres.product.breadcrumb-{0}-{1}-{2}-{3}";
         public const string PRODUCT_BREADCRUMB_PATTERN_KEY = "sm.pres.product.breadcrumb";
 
         /// <summary>
@@ -172,8 +178,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : product id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
-        public const string PRODUCTTAG_BY_PRODUCT_MODEL_KEY = "sm.pres.producttag.byproduct-{0}-{1}";
+        public const string PRODUCTTAG_BY_PRODUCT_MODEL_KEY = "sm.pres.producttag.byproduct-{0}-{1}-{2}";
         public const string PRODUCTTAG_BY_PRODUCT_PATTERN_KEY = "sm.pres.producttag.byproduct";
 
         /// <summary>
@@ -181,8 +188,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language id
+		/// {1} : current store ID
         /// </remarks>
-        public const string PRODUCTTAG_POPULAR_MODEL_KEY = "sm.pres.producttag.popular-{0}";
+        public const string PRODUCTTAG_POPULAR_MODEL_KEY = "sm.pres.producttag.popular-{0}-{1}";
         public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "sm.pres.producttag.popular";
 
         /// <summary>
@@ -191,8 +199,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : product id
         /// {1} : language id
+		/// {2} : current store ID
         /// </remarks>
-        public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}";
+        public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}-{2}";
         public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "sm.pres.product.manufacturers";
 
         /// <summary>
@@ -211,8 +220,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <remarks>
         /// {0} : topic id
         /// {1} : language id
+		/// {2} : store id
         /// </remarks>
-        public const string TOPIC_MODEL_KEY = "sm.pres.topic.details-{0}-{1}";
+        public const string TOPIC_MODEL_KEY = "sm.pres.topic.details-{0}-{1}-{2}";
         public const string TOPIC_PATTERN_KEY = "sm.pres.topic.details";
 
         /// <summary>
@@ -245,7 +255,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <summary>
         /// Key for bestsellers identifiers displayed on the home page
         /// </summary>
-        public const string HOMEPAGE_BESTSELLERS_IDS_KEY = "sm.pres.bestsellers.homepage";
+		/// <remarks>
+		/// {0} : current store id
+		/// </remarks>
+        public const string HOMEPAGE_BESTSELLERS_IDS_KEY = "sm.pres.bestsellers.homepage-{0}";
         public const string HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY = "sm.pres.bestsellers.homepage";
 
         /// <summary>
@@ -253,8 +266,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : current product id
+		/// {1} : current store id
         /// </remarks>
-        public const string PRODUCTS_ALSO_PURCHASED_IDS_KEY = "sm.pres.alsopuchased-{0}";
+        public const string PRODUCTS_ALSO_PURCHASED_IDS_KEY = "sm.pres.alsopuchased-{0}-{1}";
         public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "sm.pres.alsopuchased";
 
         /// <summary>
@@ -266,8 +280,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized product name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID
         /// </remarks>
-        public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "sm.pres.product.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "sm.pres.product.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string PRODUCT_DEFAULTPICTURE_PATTERN_KEY = "sm.pres.product.picture";
 
         /// <summary>
@@ -279,8 +294,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized category name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID
         /// </remarks>
-        public const string CATEGORY_PICTURE_MODEL_KEY = "sm.pres.category.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string CATEGORY_PICTURE_MODEL_KEY = "sm.pres.category.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string CATEGORY_PICTURE_PATTERN_KEY = "sm.pres.category.picture";
 
         /// <summary>
@@ -292,8 +308,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {3} : language ID ("alt" and "title" can depend on localized manufacturer name)
         /// {4} : is connection SSL secured?
+		/// {5} : current store ID
         /// </remarks>
-        public const string MANUFACTURER_PICTURE_MODEL_KEY = "sm.pres.manufacturer.picture-{0}-{1}-{2}-{3}-{4}";
+        public const string MANUFACTURER_PICTURE_MODEL_KEY = "sm.pres.manufacturer.picture-{0}-{1}-{2}-{3}-{4}-{5}";
         public const string MANUFACTURER_PICTURE_PATTERN_KEY = "sm.pres.manufacturer.picture";
 
         /// <summary>
@@ -306,9 +323,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {3} : value indicating whether a default picture is displayed in case if no real picture exists
         /// {4} : language ID ("alt" and "title" can depend on localized product name)
         /// {5} : is connection SSL secured?
+		/// {6} : current store ID
 		/// codehint: sm-edit
         /// </remarks>
-        public const string CART_PICTURE_MODEL_KEY = "sm.pres.cart.picture-{0}-{1}-{2}-{3}-{4}-{5}";
+        public const string CART_PICTURE_MODEL_KEY = "sm.pres.cart.picture-{0}-{1}-{2}-{3}-{4}-{5}-{6}";
         public const string CART_PICTURE_PATTERN_KEY = "sm.pres.cart.picture";
 
         /// <summary>
@@ -333,15 +351,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : store ID
         /// </remarks>
-        public const string BLOG_TAGS_MODEL_KEY = "sm.pres.blog.tags-{0}";
+        public const string BLOG_TAGS_MODEL_KEY = "sm.pres.blog.tags-{0}-{1}";
         /// <summary>
         /// Key for blog archive (years, months) block model
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : current store ID
         /// </remarks>
-        public const string BLOG_MONTHS_MODEL_KEY = "sm.pres.blog.months-{0}";
+        public const string BLOG_MONTHS_MODEL_KEY = "sm.pres.blog.months-{0}-{1}";
         public const string BLOG_PATTERN_KEY = "sm.pres.blog.";
 
         /// <summary>
@@ -349,8 +369,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : store ID
         /// </remarks>
-        public const string HOMEPAGE_NEWSMODEL_KEY = "sm.pres.news.homepage-{0}";
+        public const string HOMEPAGE_NEWSMODEL_KEY = "sm.pres.news.homepage-{0}-{1}";
         public const string NEWS_PATTERN_KEY = "sm.pres.news.";
         
         /// <summary>
@@ -358,8 +379,8 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : country ID
-        /// {0} : addEmptyStateIfRequired value
-        /// {0} : language ID
+        /// {1} : addEmptyStateIfRequired value
+        /// {2} : language ID
         /// </remarks>
         public const string STATEPROVINCES_BY_COUNTRY_MODEL_KEY = "sm.pres.stateprovinces.bycountry-{0}-{1}-{2}";
         public const string STATEPROVINCES_PATTERN_KEY = "sm.pres.stateprovinces.";
@@ -367,7 +388,10 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// <summary>
         /// Key for available languages
         /// </summary>
-        public const string AVAILABLE_LANGUAGES_MODEL_KEY = "sm.pres.languages.all";
+		/// <remarks>
+		/// {0} : current store ID
+		/// </remarks>
+        public const string AVAILABLE_LANGUAGES_MODEL_KEY = "sm.pres.languages.all-{0}";
         public const string AVAILABLE_LANGUAGES_PATTERN_KEY = "sm.pres.languages.";
 
         /// <summary>
@@ -375,11 +399,19 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : current store ID
         /// </remarks>
-        public const string AVAILABLE_CURRENCIES_MODEL_KEY = "sm.pres.currencies.all-{0}";
+        public const string AVAILABLE_CURRENCIES_MODEL_KEY = "sm.pres.currencies.all-{0}-{1}";
         public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "sm.pres.currencies.";
 
-        public const string SHOPHEADER_MODEL_KEY = "sm.pres.shopheader";
+		/// <summary>
+		/// Key for store header data
+		/// </summary>
+		/// <remarks>
+		/// {0} : current store ID
+		/// </remarks>
+        public const string SHOPHEADER_MODEL_KEY = "sm.pres.shopheader-{0}";
+		public const string SHOPHEADER_MODEL_PATTERN_KEY = "sm.pres.shopheader";
 
         private readonly ICacheManager _cacheManager;
         
@@ -454,7 +486,6 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY); //depends on CatalogSettings.NumberOfBestsellersOnHomepage
             _cacheManager.RemoveByPattern(BLOG_PATTERN_KEY); //depends on BlogSettings.NumberOfTags
             _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY); //depends on NewsSettings.MainPageNewsCount
-            _cacheManager.Remove(SHOPHEADER_MODEL_KEY); // depends on logo settings
         }
         
         //manufacturers
@@ -573,17 +604,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         public void HandleEvent(EntityInserted<ProductTag> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_MODEL_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
         }
         public void HandleEvent(EntityUpdated<ProductTag> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_MODEL_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<ProductTag> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_MODEL_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
         }
         
         //specification attributes
@@ -821,5 +852,16 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY);
         }
+
+		//stores
+		public void HandleEvent(EntityUpdated<Store> eventMessage)
+		{
+			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
+		}
+		public void HandleEvent(EntityDeleted<Store> eventMessage)
+		{
+			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
+		}
+
     }
 }

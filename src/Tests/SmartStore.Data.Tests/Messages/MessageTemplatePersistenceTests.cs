@@ -17,7 +17,8 @@ namespace SmartStore.Data.Tests.Messages
                 Subject = "Subj",
                 Body = "Some text",
                 IsActive = true,
-                EmailAccountId = 1
+                EmailAccountId = 1,
+				LimitedToStores = true
             };
 
 
@@ -28,6 +29,7 @@ namespace SmartStore.Data.Tests.Messages
             fromDb.Subject.ShouldEqual("Subj");
             fromDb.Body.ShouldEqual("Some text");
             fromDb.IsActive.ShouldBeTrue();
+			fromDb.LimitedToStores.ShouldBeTrue();
 
             fromDb.EmailAccountId.ShouldEqual(1);
         }

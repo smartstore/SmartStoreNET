@@ -12,6 +12,7 @@ using System.Linq.Dynamic;
 using SmartStore.Core.Data;
 using System.Globalization;
 using System.Data.Objects.SqlClient;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Filter
 {
@@ -22,12 +23,15 @@ namespace SmartStore.Services.Filter
 
 		private readonly IProductService _productService;
 		private readonly ICategoryService _categoryService;
+		private readonly IStoreContext _storeContext;
 		private IQueryable<Product> _products;
 		private bool? _includeFeatured;
 
-		public FilterService(IProductService productService, ICategoryService categoryService) {
+		public FilterService(IProductService productService, ICategoryService categoryService, IStoreContext storeContext)
+		{
 			_productService = productService;
 			_categoryService = categoryService;
+			_storeContext = storeContext;
 		}
 
 		public static int MaxDisplayCriteria { get { return 4; } }
@@ -133,9 +137,10 @@ namespace SmartStore.Services.Filter
 				}
 			}
 		}
-		private IQueryable<Product> AllProducts(List<int> categoryIds) {
+		private IQueryable<Product> AllProducts(List<int> categoryIds)
+		{
 			if (_products == null)
-				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured);
+				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured, _storeContext.CurrentStoreIdIfMultiStoreMode);
 			return _products;
 		}
 
@@ -374,17 +379,20 @@ namespace SmartStore.Services.Filter
 			return ToWhereClause(context);
 		}
 
-		public virtual IQueryable<Product> ProductFilter(FilterProductContext context) {
+		public virtual IQueryable<Product> ProductFilter(FilterProductContext context)
+		{
 			var nowUtc = DateTime.UtcNow;
 			var sql = new FilterSql();
 			var query = AllProducts(context.CategoryIds);
 
 			// product variant (default filter entity)
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "ProductVariant" || c.Entity == ShortcutPrice))) {
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "ProductVariant" || c.Entity == ShortcutPrice)))
+			{
 				var variantRepository = EngineContext.Current.Resolve<IRepository<ProductVariant>>();
 
 				var pvq = variantRepository.Table
-					.Where(pv => pv.Published && !pv.Deleted && (!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value < nowUtc) && (!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value > nowUtc))
+					.Where(pv => pv.Published && !pv.Deleted && (!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value < nowUtc) && 
+						(!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value > nowUtc))
 					.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 
 				query =
@@ -394,7 +402,8 @@ namespace SmartStore.Services.Filter
 			}
 
 			// manufacturer
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer")) {
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
+			{
 				bool includeFeatured = IncludeFeatured;
 				
 				var pmq = (
@@ -407,7 +416,8 @@ namespace SmartStore.Services.Filter
 			}
 
 			// specification attribute
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "SpecificationAttributeOption" || c.Entity == ShortcutSpecAttribute))) {
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "SpecificationAttributeOption" || c.Entity == ShortcutSpecAttribute)))
+			{
 				//var saq = (
 				//	from p in query
 				//	from sa in p.ProductSpecificationAttributes
@@ -436,7 +446,8 @@ namespace SmartStore.Services.Filter
 
 			// sort
 			ProductSortingEnum order = (ProductSortingEnum)(context.OrderBy ?? 0);
-			switch (order) {
+			switch (order)
+			{
 				case ProductSortingEnum.NameDesc:
 					query = query.OrderByDescending(p => p.Name);
 					break;

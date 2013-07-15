@@ -7,9 +7,11 @@ using SmartStore.Admin.Models.Localization;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
@@ -24,6 +26,8 @@ namespace SmartStore.Admin.Controllers
 
         private readonly ILanguageService _languageService;
         private readonly ILocalizationService _localizationService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
@@ -34,12 +38,16 @@ namespace SmartStore.Admin.Controllers
 
         public LanguageController(ILanguageService languageService,
             ILocalizationService localizationService,
+			IStoreService storeService,
+			IStoreMappingService storeMappingService,
             IPermissionService permissionService,
             IWebHelper webHelper,
             AdminAreaSettings adminAreaSettings)
         {
             this._localizationService = localizationService;
             this._languageService = languageService;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
             this._permissionService = permissionService;
             this._webHelper = webHelper;
             this._adminAreaSettings = adminAreaSettings;
@@ -60,6 +68,53 @@ namespace SmartStore.Admin.Controllers
                 .Select(System.IO.Path.GetFileName)
                 .ToList();
         }
+
+		[NonAction]
+		private void PrepareStoresMappingModel(LanguageModel model, Language language, bool excludeProperties)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+			if (!excludeProperties)
+			{
+				if (language != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(language);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
+			}
+		}
+
+		[NonAction]
+		protected void SaveStoreMappings(Language language, LanguageModel model)
+		{
+			var existingStoreMappings = _storeMappingService.GetStoreMappings(language);
+			var allStores = _storeService.GetAllStores();
+			foreach (var store in allStores)
+			{
+				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
+				{
+					//new role
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+						_storeMappingService.InsertStoreMapping(language, store.Id);
+				}
+				else
+				{
+					//removed role
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
+				}
+			}
+		}
+
         #endregion
 
         #region Languages
@@ -109,6 +164,8 @@ namespace SmartStore.Admin.Controllers
             var model = new LanguageModel();
             //flags
             PrepareFlagsModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, null, false);
             //default values
             //model.Published = true;
             return View(model);
@@ -125,12 +182,17 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
+				//Stores
+				SaveStoreMappings(language, model);
+
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
             }
 
             //flags
             PrepareFlagsModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, null, true);
 
             //If we got this far, something failed, redisplay form
             return View(model);
@@ -153,6 +215,8 @@ namespace SmartStore.Admin.Controllers
 
             //flags
             PrepareFlagsModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, language, false);
 
             return View(model);
         }
@@ -183,6 +247,9 @@ namespace SmartStore.Admin.Controllers
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
+				//Stores
+				SaveStoreMappings(language, model);
+
                 //notification
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
@@ -191,6 +258,8 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //flags
             PrepareFlagsModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, language, true);
 
             return View(model);
         }

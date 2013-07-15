@@ -23,6 +23,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly IOrderService _orderService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly ICurrencyService _currencyService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IOrderProcessingService _orderProcessingService;
@@ -37,8 +38,8 @@ namespace SmartStore.Web.Controllers
 
 		#region Constructors
 
-        public ReturnRequestController(IOrderService orderService, 
-            IWorkContext workContext,
+        public ReturnRequestController(IOrderService orderService,
+			IWorkContext workContext, IStoreContext storeContext,
             ICurrencyService currencyService, IPriceFormatter priceFormatter,
             IOrderProcessingService orderProcessingService,
             ILocalizationService localizationService,
@@ -49,6 +50,7 @@ namespace SmartStore.Web.Controllers
         {
             this._orderService = orderService;
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._currencyService = currencyService;
             this._priceFormatter = priceFormatter;
             this._orderProcessingService = orderProcessingService;
@@ -182,6 +184,7 @@ namespace SmartStore.Web.Controllers
                 {
                     var rr = new ReturnRequest()
                     {
+						StoreId = _storeContext.CurrentStore.Id,
                         OrderProductVariantId = opv.Id,
                         Quantity = quantity,
                         CustomerId = _workContext.CurrentCustomer.Id,

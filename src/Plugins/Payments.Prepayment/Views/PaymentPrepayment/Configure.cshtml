@@ -11,7 +11,7 @@
                 @Html.SmartLabelFor(model => model.DescriptionText)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => Model.DescriptionText, new { style = "Width: 550px; Height: 350px;" })
+                @Html.TextAreaFor(model => model.DescriptionText, new { style = "Width: 550px; Height: 350px;" })
                 @Html.ValidationMessageFor(model => model.DescriptionText)
             </td>
         </tr>
@@ -22,6 +22,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
         </tr>
         <tr>

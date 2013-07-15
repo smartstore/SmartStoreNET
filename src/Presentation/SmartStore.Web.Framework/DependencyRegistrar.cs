@@ -7,7 +7,6 @@ using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Integration.Mvc;
-using Autofac.Integration.WebApi;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
@@ -55,13 +54,11 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Editor;
 using SmartStore.Services.Filter;
 using SmartStore.Web.Framework.WebApi.Routes;
-using System.Web.Http.Controllers;
-using System.Web.Http;
 using SmartStore.Core.Data.Hooks;
 using dotless.Core.Parameters;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
-using SmartStore.Core.Domain.Messages;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Framework
 {
@@ -150,6 +147,8 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<WebWorkContext>().As<IWorkContext>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
+			//store context
+			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerHttpRequest();
 
             //services
             builder.RegisterType<BackInStockSubscriptionService>().As<IBackInStockSubscriptionService>().InstancePerHttpRequest();
@@ -164,33 +163,32 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ProductAttributeService>().As<IProductAttributeService>().InstancePerHttpRequest().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies); // codehint: sm-edit (Autowiring)
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerHttpRequest();
             builder.RegisterType<CopyProductService>().As<ICopyProductService>().InstancePerHttpRequest();
-            builder.RegisterType<ProductTagService>().As<IProductTagService>().InstancePerHttpRequest();
             builder.RegisterType<SpecificationAttributeService>().As<ISpecificationAttributeService>().InstancePerHttpRequest();
             builder.RegisterType<ProductTemplateService>().As<IProductTemplateService>().InstancePerHttpRequest();
             builder.RegisterType<CategoryTemplateService>().As<ICategoryTemplateService>().InstancePerHttpRequest();
             builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerHttpRequest();
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
+			builder.RegisterType<ProductTagService>().As<IProductTagService>()
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.InstancePerHttpRequest();
 
             builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerHttpRequest();
             builder.RegisterType<AddressService>().As<IAddressService>().InstancePerHttpRequest();
             builder.RegisterType<GenericAttributeService>().As<IGenericAttributeService>().InstancePerHttpRequest();
             builder.RegisterType<FulltextService>().As<IFulltextService>().InstancePerHttpRequest();
             builder.RegisterType<MaintenanceService>().As<IMaintenanceService>().InstancePerHttpRequest();
- 
-
-            builder.RegisterGeneric(typeof(ConfigurationProvider<>)).As(typeof(IConfigurationProvider<>));
-            builder.RegisterSource(new SettingsSource());
-            
+             
             builder.RegisterType<CustomerContentService>().As<ICustomerContentService>().InstancePerHttpRequest();
             builder.RegisterType<CustomerService>().As<ICustomerService>().InstancePerHttpRequest();
             builder.RegisterType<CustomerRegistrationService>().As<ICustomerRegistrationService>().InstancePerHttpRequest();
             builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settngs between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<PermissionService>().As<IPermissionService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settings between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<AclService>().As<IAclService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
@@ -205,19 +203,26 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerHttpRequest();
             builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerHttpRequest();
 
+			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerHttpRequest();
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
+			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>()
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.InstancePerHttpRequest();
+
             builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerHttpRequest();
 
 
-            //pass MemoryCacheManager to SettingService as cacheManager (cache settngs between requests)
+			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<SettingService>().As<ISettingService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
-            //pass MemoryCacheManager to LocalizationService as cacheManager (cache locales between requests)
+			builder.RegisterSource(new SettingsSource());
+			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizationService>().As<ILocalizationService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
 
-            //pass MemoryCacheManager to LocalizedEntityService as cacheManager (cache locales between requests)
+			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
                 .InstancePerHttpRequest();
@@ -366,7 +371,17 @@ namespace SmartStore.Web.Framework
         static IComponentRegistration BuildRegistration<TSettings>() where TSettings : ISettings, new()
         {
             return RegistrationBuilder
-                .ForDelegate((c, p) => c.Resolve<IConfigurationProvider<TSettings>>().Settings)
+				.ForDelegate((c, p) =>
+				{
+					var currentStoreId = c.Resolve<IStoreContext>().CurrentStore.Id;
+					//uncomment the code below if you want load settings per store only when you have two stores installed.
+					//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
+					//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
+
+					//although it's better to connect to your database and execute the following SQL:
+					//DELETE FROM [Setting] WHERE [StoreId] > 0
+					return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+				})
                 .InstancePerHttpRequest()
                 .CreateRegistration();
         }

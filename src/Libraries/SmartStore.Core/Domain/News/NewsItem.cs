@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.News
 {
     /// <summary>
     /// Represents a news item
     /// </summary>
-    public partial class NewsItem : BaseEntity, ISlugSupported
+	public partial class NewsItem : BaseEntity, ISlugSupported, IStoreMappingSupported
     {
         private ICollection<NewsComment> _newsComments;
 
@@ -66,6 +67,11 @@ namespace SmartStore.Core.Domain.News
         /// </remarks>
         /// </summary>
         public int NotApprovedCommentCount { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of entity creation

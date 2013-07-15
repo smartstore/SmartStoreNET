@@ -5,7 +5,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class MediaSettingsModel : ModelBase
+	public class MediaSettingsModel : ModelBase
     {
         public MediaSettingsModel()
         {
@@ -17,20 +17,28 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
         public int AvatarPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSize")]
         public int ProductThumbPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductDetailsPictureSize")]
         public int ProductDetailsPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage")]
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductVariantPictureSize")]
         public int ProductVariantPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
         public int CategoryThumbPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ManufacturerThumbPictureSize")]
         public int ManufacturerThumbPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbPictureSize")]
         public int CartThumbPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MiniCartThumbPictureSize")]
         public int MiniCartThumbPictureSize { get; set; }
         

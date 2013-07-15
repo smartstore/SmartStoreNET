@@ -8,13 +8,14 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Settings
 {
     [Validator(typeof(OrderSettingsValidator))]
-    public class OrderSettingsModel : ModelBase
+	public class OrderSettingsModel : ModelBase
     {
         public OrderSettingsModel()
         {
             GiftCards_Activated_OrderStatuses = new List<SelectListItem>();
             GiftCards_Deactivated_OrderStatuses = new List<SelectListItem>();
         }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
         public bool IsReOrderAllowed { get; set; }
 

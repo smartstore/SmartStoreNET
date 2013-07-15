@@ -16,5 +16,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.AllSettings.Fields.Value")]
         [AllowHtml]
         public string Value { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.AllSettings.Fields.StoreName")]
+		public string Store { get; set; }
+		public int StoreId { get; set; }
     }
 }

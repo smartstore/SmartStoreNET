@@ -1,4 +1,4 @@
-﻿@model Telerik.Web.Mvc.GridModel<NewsItemModel>
+﻿@model NewsItemListModel
 @using Telerik.Web.Mvc.UI
 
 @{
@@ -16,24 +16,43 @@
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
+<table width="100%">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchStoreId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownList("SearchStoreId", Model.AvailableStores)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+			<button type="button" id="search-newsitem" class="btn">
+				<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
+			</button>
+        </td>
+    </tr>
+</table>
+<p>
+</p>
 <table class="adminContent">
     <tr>
         <td>
             @(Html.Telerik().Grid<NewsItemModel>()
                     .Name("newsitem-grid")
-                    .BindTo(Model.Data)
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Title)
+							.Width(350)
                             .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Title#></a>");
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
                         columns.Bound(x => x.LanguageName);
                         columns.Bound(x => x.Comments)
                             .Centered()
                             .Template(
                             @<div>
-                                    @Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
-                                </div>
+								@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
+                            </div>
                             )
                             .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
                         columns.Bound(x => x.StartDate)
@@ -54,9 +73,32 @@
                             .HeaderTemplate(T("Admin.Common.Edit").Text)
                             .Filterable(false);
                     })
-                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
+					.ClientEvents(events => events.OnDataBinding("onDataBinding"))
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //search button
+        $('#search-newsitem').click(function () {
+            //search
+            var grid = $('#newsitem-grid').data('tGrid');
+            //no paging support in this grid
+            grid.currentPage = 1; //new search. Set page size to 1
+            grid.ajaxRequest();
+            return false;
+        });
+    });
+
+    function onDataBinding(e) {
+        var searchModel = {
+            SearchStoreId: $('#SearchStoreId').val()
+        };
+        e.data = searchModel;
+    }
+</script>

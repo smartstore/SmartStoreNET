@@ -4,7 +4,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class ForumSettingsModel
+	public class ForumSettingsModel
     {
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumsEnabled")]
         public bool ForumsEnabled { get; set; }

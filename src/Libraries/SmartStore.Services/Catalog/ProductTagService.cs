@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Events;
 
 namespace SmartStore.Services.Catalog
@@ -12,9 +16,30 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductTagService : IProductTagService
     {
+		#region Constants
+
+		/// <summary>
+		/// Key for caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : store ID
+		/// </remarks>
+		private const string PRODUCTTAG_COUNT_KEY = "sm.producttag.count-{0}";
+
+		/// <summary>
+		/// Key pattern to clear cache
+		/// </summary>
+		private const string PRODUCTTAG_PATTERN_KEY = "sm.producttag.";
+
+		#endregion
+
         #region Fields
 
         private readonly IRepository<ProductTag> _productTagRepository;
+		private readonly IDataProvider _dataProvider;
+		private readonly IDbContext _dbContext;
+		private readonly CommonSettings _commonSettings;
+		private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
@@ -25,15 +50,105 @@ namespace SmartStore.Services.Catalog
         /// Ctor
         /// </summary>
         /// <param name="productTagRepository">Product tag repository</param>
+		/// <param name="dataProvider">Data provider</param>
+		/// <param name="dbContext">Database Context</param>
+		/// <param name="commonSettings">Common settings</param>
+		/// <param name="cacheManager">Cache manager</param>
         /// <param name="eventPublisher">Event published</param>
         public ProductTagService(IRepository<ProductTag> productTagRepository,
+			IDataProvider dataProvider,
+			IDbContext dbContext,
+			CommonSettings commonSettings,
+			ICacheManager cacheManager,
             IEventPublisher eventPublisher)
         {
             _productTagRepository = productTagRepository;
+			_dataProvider = dataProvider;
+			_dbContext = dbContext;
+			_commonSettings = commonSettings;
+			_cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
         }
 
         #endregion
+
+		#region Nested classes
+
+		private class ProductTagWithCount
+		{
+			public int ProductTagId { get; set; }
+			public int ProductCount { get; set; }
+		}
+
+		#endregion
+
+		#region Utilities
+
+		/// <summary>
+		/// Get product count for each of existing product tag
+		/// </summary>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Dictionary of "product tag ID : product count"</returns>
+		private Dictionary<int, int> GetProductCount(int storeId)
+		{
+			string key = string.Format(PRODUCTTAG_COUNT_KEY, storeId);
+			return _cacheManager.Get(key, () =>
+			{
+
+				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+				{
+					//stored procedures are enabled and supported by the database. 
+					//It's much faster than the LINQ implementation below 
+
+					#region Use stored procedure
+
+					//prepare parameters
+					var pStoreId = _dataProvider.GetParameter();
+					pStoreId.ParameterName = "StoreId";
+					pStoreId.Value = storeId;
+					pStoreId.DbType = DbType.Int32;
+
+
+					//invoke stored procedure
+					var result = _dbContext.SqlQuery<ProductTagWithCount>(
+						"Exec ProductTagCountLoadAll @StoreId",
+						pStoreId);
+
+					var dictionary = new Dictionary<int, int>();
+					foreach (var item in result)
+						dictionary.Add(item.ProductTagId, item.ProductCount);
+					return dictionary;
+
+					#endregion
+				}
+				else
+				{
+					//stored procedures aren't supported. Use LINQ
+					#region Search products
+					var query = from pt in _productTagRepository.Table
+								select new
+								{
+									Id = pt.Id,
+									ProductCount = pt.Products
+										//published and not deleted product/variants
+										.Count(p => !p.Deleted &&
+											p.Published &&
+											p.ProductVariants.Any(pv => !pv.Deleted && pv.Published))
+									//UNDOEN filter by store identifier if specified ( > 0 )
+								};
+
+					var dictionary = new Dictionary<int, int>();
+					foreach (var item in query)
+						dictionary.Add(item.Id, item.ProductCount);
+					return dictionary;
+
+					#endregion
+
+				}
+			});
+		}
+
+		#endregion
 
         #region Methods
 
@@ -48,6 +163,9 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Delete(productTag);
 
+			//cache
+			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+
             //event notification
             _eventPublisher.EntityDeleted(productTag);
         }
@@ -55,14 +173,10 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets all product tags
         /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product tags</returns>
-        public virtual IList<ProductTag> GetAllProductTags(bool showHidden = false)
+		public virtual IList<ProductTag> GetAllProductTags()
         {
             var query = _productTagRepository.Table;
-            if (!showHidden)
-                query = query.Where(pt => pt.ProductCount > 0);
-                query = query.OrderByDescending(pt => pt.ProductCount);
             var productTags = query.ToList();
             return productTags;
         }
@@ -119,6 +233,9 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Insert(productTag);
 
+			//cache
+			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+
             //event notification
             _eventPublisher.EntityInserted(productTag);
         }
@@ -134,28 +251,27 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Update(productTag);
 
+			//cache
+			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+
             //event notification
             _eventPublisher.EntityUpdated(productTag);
         }
 
-        /// <summary>
-        /// Updates the product tag
-        /// </summary>
-        /// <param name="productTag">Product tag</param>
-        public virtual void UpdateProductTagTotals(ProductTag productTag)
-        {
-            if (productTag == null)
-                throw new ArgumentNullException("productTag");
-
-            int newTotal = productTag.Products
-                .Where(p => !p.Deleted && p.Published && p.ProductVariants.Where(pv => !pv.Deleted && pv.Published).Count() > 0)
-                .Count();
-
-            //we do not delete product tags with 0 product count
-            productTag.ProductCount = newTotal;
-            UpdateProductTag(productTag);
-            
-        }
+		/// <summary>
+		/// Get number of products
+		/// </summary>
+		/// <param name="productTagId">Product tag identifier</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Number of products</returns>
+		public virtual int GetProductCount(int productTagId, int storeId)
+		{
+			var dictionary = GetProductCount(storeId);
+			if (dictionary.ContainsKey(productTagId))
+				return dictionary[productTagId];
+			else
+				return 0;
+		}
         
         #endregion
     }

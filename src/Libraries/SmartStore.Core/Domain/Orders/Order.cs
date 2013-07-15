@@ -73,6 +73,11 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public Guid OrderGuid { get; set; }
 
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>
@@ -238,7 +243,7 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
-        public int? AffiliateId { get; set; }
+        public int AffiliateId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer IP address
@@ -393,11 +398,6 @@ namespace SmartStore.Core.Domain.Orders
         #endregion
 
         #region Navigation properties
-
-        /// <summary>
-        /// Gets or sets the affiliate
-        /// </summary>
-        public virtual Affiliate Affiliate { get; set; }
 
         /// <summary>
         /// Gets or sets the customer

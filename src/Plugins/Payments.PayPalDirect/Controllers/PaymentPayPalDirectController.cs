@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Plugin.Payments.PayPalDirect.Models;
@@ -15,7 +14,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 
@@ -61,10 +59,11 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure() {
+		public ActionResult Configure() 
+		{
 			var model = new ConfigurationModel();
 			model.UseSandbox = _paypalDirectPaymentSettings.UseSandbox;
-			model.TransactModeId = Convert.ToInt32(_paypalDirectPaymentSettings.TransactMode);
+			model.TransactMode = Convert.ToInt32(_paypalDirectPaymentSettings.TransactMode);
 			model.ApiAccountName = _paypalDirectPaymentSettings.ApiAccountName;
 			model.ApiAccountPassword = _paypalDirectPaymentSettings.ApiAccountPassword;
 			model.Signature = _paypalDirectPaymentSettings.Signature;
@@ -81,13 +80,14 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 		[HttpPost]
 		[AdminAuthorize]
 		[ChildActionOnly]
-		public ActionResult Configure(ConfigurationModel model) {
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		{
 			if (!ModelState.IsValid)
 				return Configure();
 
 			//save settings
 			_paypalDirectPaymentSettings.UseSandbox = model.UseSandbox;
-			_paypalDirectPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
+			_paypalDirectPaymentSettings.TransactMode = (TransactMode)model.TransactMode;
 			_paypalDirectPaymentSettings.ApiAccountName = model.ApiAccountName;
 			_paypalDirectPaymentSettings.ApiAccountPassword = model.ApiAccountPassword;
 			_paypalDirectPaymentSettings.Signature = model.Signature;
@@ -264,7 +264,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect.Controllers
 
 							var initialOrder = _orderService.GetOrderByGuid(orderNumberGuid);
 							if (initialOrder != null) {
-								var recurringPayments = _orderService.SearchRecurringPayments(0, initialOrder.Id, null);
+								var recurringPayments = _orderService.SearchRecurringPayments(0, 0, initialOrder.Id, null);
 								foreach (var rp in recurringPayments) {
 									switch (newPaymentStatus) {
 										case PaymentStatus.Authorized:

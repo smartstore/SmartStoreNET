@@ -10,21 +10,18 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Configuration;
 using System.IO;
-using SmartStore.Collections;
-using SmartStore.Services.Discounts;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -39,21 +36,28 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly ILanguageService _languageService;
 	    private readonly ISettingService _settingService;
+		private readonly IStoreService _storeService;
         private readonly PaymentSettings _paymentSettings;
         private readonly ShippingSettings _shippingSettings;
         private readonly TaxSettings _taxSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly WidgetSettings _widgetSettings;
+
 	    #endregion
 
 		#region Constructors
 
         public PluginController(IPluginFinder pluginFinder,
-            ILocalizationService localizationService, IWebHelper webHelper,
-            IPermissionService permissionService, ILanguageService languageService,
+            ILocalizationService localizationService,
+			IWebHelper webHelper,
+            IPermissionService permissionService,
+			ILanguageService languageService,
             ISettingService settingService,
-            PaymentSettings paymentSettings,ShippingSettings shippingSettings,
-            TaxSettings taxSettings, ExternalAuthenticationSettings externalAuthenticationSettings, 
+			IStoreService storeService,
+            PaymentSettings paymentSettings,
+			ShippingSettings shippingSettings,
+            TaxSettings taxSettings, 
+			ExternalAuthenticationSettings externalAuthenticationSettings, 
             WidgetSettings widgetSettings)
 		{
             this._pluginFinder = pluginFinder;
@@ -62,6 +66,7 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
             this._languageService = languageService;
             this._settingService = settingService;
+			this._storeService = storeService;
             this._paymentSettings = paymentSettings;
             this._shippingSettings = shippingSettings;
             this._taxSettings = taxSettings;
@@ -87,6 +92,13 @@ namespace SmartStore.Admin.Controllers
             {
                 locale.FriendlyName = pluginDescriptor.GetLocalizedFriendlyName(_localizationService, languageId, false);
             });
+			//stores
+			pluginModel.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+			pluginModel.SelectedStoreIds = _settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
+			pluginModel.LimitedToStores = pluginModel.SelectedStoreIds.Count() > 0;
 
             // codehint: sm-add
             if (System.IO.File.Exists(Path.Combine(pluginDescriptor.PhysicalPath, "icon.png")))
@@ -341,10 +353,17 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                //we allow editing of 'friendly name' and 'display order'
+				//we allow editing of 'friendly name', 'display order', store mappings
                 pluginDescriptor.FriendlyName = model.FriendlyName;
                 pluginDescriptor.DisplayOrder = model.DisplayOrder;
                 PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
+
+				string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
+				if (model.LimitedToStores && model.SelectedStoreIds != null && model.SelectedStoreIds.Count() > 0)
+					_settingService.SetSetting<string>(settingKey, string.Join(",", model.SelectedStoreIds));
+				else
+					_settingService.DeleteSetting(settingKey);
+
                 //reset plugin cache
                 _pluginFinder.ReloadPlugins();
                 //locales

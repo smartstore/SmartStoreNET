@@ -12,8 +12,8 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -31,6 +31,8 @@ using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -38,6 +40,7 @@ namespace SmartStore.Services.Tests.Orders
     public class OrderProcessingServiceTests : ServiceTest
     {
         IWorkContext _workContext;
+		IStoreContext _storeContext;
         ITaxService _taxService;
         IShippingService _shippingService;
         IShipmentService _shipmentService;
@@ -78,11 +81,19 @@ namespace SmartStore.Services.Tests.Orders
         IOrderProcessingService _orderProcessingService;
         IEventPublisher _eventPublisher;
         CurrencySettings _currencySettings;
+		IAffiliateService _affiliateService;
+		ISettingService _settingService;
+
+		Store _store;
 
         [SetUp]
         public new void SetUp()
         {
             _workContext = null;
+
+			_store = new Store() { Id = 1 };
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
             var pluginFinder = new PluginFinder();
             var cacheManager = new NullCache();
@@ -94,13 +105,14 @@ namespace SmartStore.Services.Tests.Orders
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
-            _priceCalcService = new PriceCalculationService(_workContext, _discountService,
-                _categoryService, _productAttributeParser, _shoppingCartSettings, _catalogSettings);
-
+			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
+				_discountService, _categoryService,
+				_productAttributeParser, _shoppingCartSettings, _catalogSettings);
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
+			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -113,9 +125,11 @@ namespace SmartStore.Services.Tests.Orders
                 _logger,
                 _productAttributeParser,
                 _checkoutAttributeParser,
+				_genericAttributeService,
                 _localizationService,
                 _shippingSettings, pluginFinder, 
-                _eventPublisher, _shoppingCartSettings);
+                _eventPublisher, _shoppingCartSettings,
+				_settingService);
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
 
@@ -135,7 +149,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _rewardPointsSettings = new RewardPointsSettings();
 
-            _orderTotalCalcService = new OrderTotalCalculationService(_workContext,
+            _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _paymentService,
                 _checkoutAttributeParser, _discountService, _giftCardService,
                 _genericAttributeService, 
@@ -154,6 +168,7 @@ namespace SmartStore.Services.Tests.Orders
             _workflowMessageService = MockRepository.GenerateMock<IWorkflowMessageService>();
             _customerActivityService = MockRepository.GenerateMock<ICustomerActivityService>();
             _currencyService = MockRepository.GenerateMock<ICurrencyService>();
+			_affiliateService = MockRepository.GenerateMock<IAffiliateService>();
 
             _paymentSettings = new PaymentSettings()
             {
@@ -179,8 +194,8 @@ namespace SmartStore.Services.Tests.Orders
                 _giftCardService, _shoppingCartService, _checkoutAttributeFormatter,
                 _shippingService, _shipmentService, _taxService,
                 _customerService, _discountService,
-                _encryptionService, _workContext, _workflowMessageService,
-                _customerActivityService, _currencyService,
+                _encryptionService, _workContext, _storeContext, _workflowMessageService,
+                _customerActivityService, _currencyService, _affiliateService,
                 _eventPublisher, _paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
                 _currencySettings);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Plugin.Payments.Invoice.Models;
 using SmartStore.Services.Configuration;
@@ -11,26 +10,27 @@ namespace SmartStore.Plugin.Payments.Invoice.Controllers
 {
     public class PaymentInvoiceController : PaymentControllerBase
     {
-        private readonly ISettingService _settingService;
-        private readonly InvoicePaymentSettings _invoicePaymentSettings;
-        private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
+		private readonly InvoicePaymentSettings _invoicePaymentSettings;
+		private readonly ILocalizationService _localizationService;
 
-        public PaymentInvoiceController(ISettingService settingService, 
-            InvoicePaymentSettings invoicePaymentSettings,
-            ILocalizationService localizationService)
-        {
-            this._settingService = settingService;
-            this._invoicePaymentSettings = invoicePaymentSettings;
-            _localizationService = localizationService;
-        }
+		public PaymentInvoiceController(ISettingService settingService,
+			InvoicePaymentSettings invoicePaymentSettings,
+			ILocalizationService localizationService)
+		{
+			this._settingService = settingService;
+			this._invoicePaymentSettings = invoicePaymentSettings;
+			_localizationService = localizationService;
+		}
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-            var model = new ConfigurationModel();
-            model.DescriptionText = _invoicePaymentSettings.DescriptionText;
-            model.AdditionalFee = _invoicePaymentSettings.AdditionalFee;
+			var model = new ConfigurationModel();
+			model.DescriptionText = _invoicePaymentSettings.DescriptionText;
+			model.AdditionalFee = _invoicePaymentSettings.AdditionalFee;
+			model.AdditionalFeePercentage = _invoicePaymentSettings.AdditionalFeePercentage;
             
             return View("SmartStore.Plugin.Payments.Invoice.Views.PaymentInvoice.Configure", model);
         }
@@ -38,16 +38,18 @@ namespace SmartStore.Plugin.Payments.Invoice.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+		[ValidateInput(false)]
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
-            
-            //save settings
-            _invoicePaymentSettings.DescriptionText = model.DescriptionText;
-            _invoicePaymentSettings.AdditionalFee = model.AdditionalFee;
-            _settingService.SaveSetting(_invoicePaymentSettings);
-            
+
+			//save settings
+			_invoicePaymentSettings.DescriptionText = model.DescriptionText;
+			_invoicePaymentSettings.AdditionalFee = model.AdditionalFee;
+			_invoicePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+			_settingService.SaveSetting(_invoicePaymentSettings);
+
             return View("SmartStore.Plugin.Payments.Invoice.Views.PaymentInvoice.Configure", model);
         }
 

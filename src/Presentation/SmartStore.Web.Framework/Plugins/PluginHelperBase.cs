@@ -7,14 +7,12 @@ using System.Text;
 using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -27,9 +25,6 @@ namespace SmartStore.Web.Framework.Plugins
 		private int? _currencyID;
 		private string _currencyCode;
 		private Currency _euroCurrency;
-		private string _storeLocation;
-		private string _storeName;
-		private string _storeLogoUrl;
 		private Dictionary<string, string> _key2ResString = new Dictionary<string, string>();
 
 		public PluginHelperBase(string systemName) {
@@ -95,32 +90,6 @@ namespace SmartStore.Web.Framework.Plugins
 					_euroCurrency = EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode("EUR");
 				}
 				return _euroCurrency;
-			}
-		}
-		public string StoreLocation {
-			get {
-				if (_storeLocation == null) {
-					_storeLocation = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
-				}
-				return _storeLocation;
-			}
-		}
-		public string StoreName {
-			get {
-				if (_storeName == null) {
-					_storeName = EngineContext.Current.Resolve<StoreInformationSettings>().StoreName;
-				}
-				return _storeName;
-			}
-		}
-		public string StoreLogoUrl {
-			get {
-				if (_storeLogoUrl == null) {
-					var engine = EngineContext.Current;
-					int pictureID = engine.Resolve<StoreInformationSettings>().LogoPictureId;
-					_storeLogoUrl = engine.Resolve<IPictureService>().GetPictureUrl(pictureID);
-				}
-				return _storeLogoUrl;
 			}
 		}
 

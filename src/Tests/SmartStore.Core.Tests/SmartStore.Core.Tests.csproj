@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="ComponentModel\ExpandoTests.cs" />
     <Compile Include="Domain\Shipping\ShippingOptionListTypeConverterTests.cs" />
+    <Compile Include="Domain\Stores\StoreExtensionsTests.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacTests.cs" />
     <Compile Include="CommonHelperTests.cs" />
     <Compile Include="WebHelperTests.cs" />

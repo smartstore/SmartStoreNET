@@ -67,6 +67,7 @@ CREATE PROCEDURE [ProductLoadAllPaged]
 (
 	@CategoryIds		nvarchar(MAX) = null,	--a list of category IDs (comma-separated list). e.g. 1,2,3
 	@ManufacturerId		int = 0,
+	@StoreId			int = 0,
 	@ProductTagId		int = 0,
 	@FeaturedProducts	bit = null,	--0 featured only , 1 not featured only, null - load all products
 	@PriceMin			decimal(18, 4) = null,
@@ -112,6 +113,10 @@ BEGIN
 		
 		IF @UseFullTextSearch = 1
 		BEGIN
+			--remove wrong chars (' ")
+			SET @Keywords = REPLACE(@Keywords, '''', '')
+			SET @Keywords = REPLACE(@Keywords, '"', '')
+
 			--full-text search
 			IF @FullTextMode = 0 
 			BEGIN
@@ -123,9 +128,6 @@ BEGIN
 				--5 - using CONTAINS and OR with <prefix_term>
 				--10 - using CONTAINS and AND with <prefix_term>
 
-				--remove wrong chars (' ")
-				SET @Keywords = REPLACE(@Keywords, '''', '')
-				SET @Keywords = REPLACE(@Keywords, '"', '')
 				--clean multiple spaces
 				WHILE CHARINDEX('  ', @Keywords) > 0 
 					SET @Keywords = REPLACE(@Keywords, '  ', ' ')
@@ -527,9 +529,19 @@ BEGIN
 			WHERE
 				[fcr].CustomerRoleId IN (
 					SELECT [acl].CustomerRoleId
-					FROM [AclRecord] acl
+					FROM [AclRecord] acl with (NOLOCK)
 					WHERE [acl].EntityId = p.Id AND [acl].EntityName = ''Product''
 				)
+			))'
+	END
+
+	--filter by store
+	IF @StoreId > 0
+	BEGIN
+		SET @sql = @sql + '
+		AND (p.LimitedToStores = 0 OR EXISTS (
+			SELECT 1 FROM [StoreMapping] sm with (NOLOCK)
+			WHERE [sm].EntityId = p.Id AND [sm].EntityName = ''Product'' and [sm].StoreId=' + CAST(@StoreId AS nvarchar(max)) + '
 			))'
 	END
 	
@@ -542,7 +554,7 @@ BEGIN
 			WHERE
 				[fs].SpecificationAttributeOptionId NOT IN (
 					SELECT psam.SpecificationAttributeOptionId
-					FROM Product_SpecificationAttribute_Mapping psam
+					FROM Product_SpecificationAttribute_Mapping psam with (NOLOCK)
 					WHERE psam.AllowFiltering = 1 AND psam.ProductId = p.Id
 				)
 			)'
@@ -586,6 +598,7 @@ BEGIN
 	DROP TABLE #FilteredCategoryIds
 	DROP TABLE #FilteredSpecs
 	DROP TABLE #FilteredCustomerRoleIds
+	DROP TABLE #KeywordProducts
 
 	CREATE TABLE #PageIndex 
 	(
@@ -612,7 +625,7 @@ BEGIN
 		)
 		INSERT INTO #FilterableSpecs ([SpecificationAttributeOptionId])
 		SELECT DISTINCT [psam].SpecificationAttributeOptionId
-		FROM [Product_SpecificationAttribute_Mapping] [psam]
+		FROM [Product_SpecificationAttribute_Mapping] [psam] with (NOLOCK)
 		WHERE [psam].[AllowFiltering] = 1
 		AND [psam].[ProductId] IN (SELECT [pi].ProductId FROM #PageIndex [pi])
 
@@ -628,7 +641,7 @@ BEGIN
 		p.*
 	FROM
 		#PageIndex [pi]
-		INNER JOIN Product p on p.Id = [pi].[ProductId]
+		INNER JOIN Product p with (NOLOCK) on p.Id = [pi].[ProductId]
 	WHERE
 		[pi].IndexId > @PageLowerBound AND 
 		[pi].IndexId < @PageUpperBound
@@ -639,6 +652,30 @@ BEGIN
 END
 GO
 
+
+CREATE PROCEDURE [dbo].[ProductTagCountLoadAll]
+(
+	@StoreId int
+)
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT pt.Id as [ProductTagId], COUNT(p.Id) as [ProductCount]
+	FROM ProductTag pt with (NOLOCK)
+	LEFT JOIN Product_ProductTag_Mapping pptm with (NOLOCK) ON pt.[Id] = pptm.[ProductTag_Id]
+	LEFT JOIN Product p with (NOLOCK) ON pptm.[Product_Id] = p.[Id]
+	WHERE
+		p.[Deleted] = 0
+		AND p.Published = 1
+		AND (@StoreId = 0 or (p.LimitedToStores = 0 OR EXISTS (
+			SELECT 1 FROM [StoreMapping] sm
+			WHERE [sm].EntityId = p.Id AND [sm].EntityName = 'Product' and [sm].StoreId=@StoreId
+			)))
+	GROUP BY pt.Id
+	ORDER BY pt.Id
+END
+GO
 
 
 CREATE PROCEDURE [FullText_IsSupported]

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Payments
 {
@@ -18,6 +18,8 @@ namespace SmartStore.Services.Payments
         private readonly PaymentSettings _paymentSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly ShoppingCartSettings _shoppingCartSettings;
+		private readonly ISettingService _settingService;	// codehint: sm-add
+
         #endregion
 
         #region Ctor
@@ -28,12 +30,15 @@ namespace SmartStore.Services.Payments
         /// <param name="paymentSettings">Payment settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
+		/// <param name="pluginService">Plugin service</param>
         public PaymentService(PaymentSettings paymentSettings, IPluginFinder pluginFinder,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+			ISettingService settingService)
         {
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
             this._shoppingCartSettings = shoppingCartSettings;
+			this._settingService = settingService;	// codehint: sm-add
         }
 
         #endregion
@@ -44,10 +49,11 @@ namespace SmartStore.Services.Payments
         /// Load active payment methods
         /// </summary>
         /// <param name="filterByCustomerId">Filter payment methods by customer; null to load all records</param>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment methods</returns>
-        public virtual IList<IPaymentMethod> LoadActivePaymentMethods(int? filterByCustomerId = null)
+		public virtual IList<IPaymentMethod> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0)
         {
-            return LoadAllPaymentMethods()
+            return LoadAllPaymentMethods(storeId)
                    .Where(provider => _paymentSettings.ActivePaymentMethodSystemNames.Contains(provider.PluginDescriptor.SystemName, StringComparer.InvariantCultureIgnoreCase))
                    .ToList();
         }
@@ -69,10 +75,14 @@ namespace SmartStore.Services.Payments
         /// <summary>
         /// Load all payment providers
         /// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment providers</returns>
-        public virtual IList<IPaymentMethod> LoadAllPaymentMethods()
+		public virtual IList<IPaymentMethod> LoadAllPaymentMethods(int storeId = 0)
         {
-            return _pluginFinder.GetPlugins<IPaymentMethod>().ToList();
+			return _pluginFinder
+				.GetPlugins<IPaymentMethod>()
+				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+				.ToList();
         }
 
 

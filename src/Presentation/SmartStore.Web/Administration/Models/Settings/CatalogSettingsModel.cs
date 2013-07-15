@@ -4,7 +4,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public class CatalogSettingsModel
+	public class CatalogSettingsModel
     {
         public CatalogSettingsModel()
         {

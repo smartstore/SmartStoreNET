@@ -27,13 +27,11 @@
 
         $("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
         $("#@Html.FieldIdFor(model => model.SecuritySettings.CaptchaEnabled)").click(toggleReCaptcha);
-        $("#@Html.FieldIdFor(model => model.SecuritySettings.UseSsl)").click(toggleSSL);
         $("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").click(toggleSocialLinks);
 
         toggleSocialLinks();
         toggleStoreClosed();
-        toggleReCaptcha(); 
-        toggleSSL();
+        toggleReCaptcha();
     });
 
     function toggleSocialLinks() {
@@ -89,19 +87,8 @@
             $('#ssReCaptchaPrivateKeypnl').hide();
         }
     }
-
-    function toggleSSL() {
-        if ($('#@Html.FieldIdFor(model => model.SecuritySettings.UseSsl)').is(':checked')) {
-            $('#ssSharedSslUrlpnl').show();
-            $('#ssNonSharedSslUrlpnl').show();
-        }
-        else {
-            $('#ssSharedSslUrlpnl').hide();
-            $('#ssNonSharedSslUrlpnl').hide();
-        }
-    }
 </script>
-    
+    @Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
     
     @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Fade(true).Items(x =>
@@ -124,37 +111,10 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreInformationSettings.LogoPictureId)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StoreInformationSettings.LogoPictureId)
-                @Html.ValidationMessageFor(model => model.StoreInformationSettings.LogoPictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StoreInformationSettings.StoreName)
-                @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreUrl)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StoreInformationSettings.StoreUrl)
-                @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreUrl)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.StoreInformationSettings.StoreClosed)
+                @Html.SettingEditorFor(model => model.StoreInformationSettings.StoreClosed)
                 @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
         </tr>
@@ -163,7 +123,7 @@
                 @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreClosedAllowForAdmins)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.StoreInformationSettings.StoreClosedAllowForAdmins)
+                @Html.SettingEditorFor(model => model.StoreInformationSettings.StoreClosedAllowForAdmins)
                 @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreClosedAllowForAdmins)
             </td>
         </tr>
@@ -178,7 +138,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeparator)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.PageTitleSeparator)
+                @Html.SettingEditorFor(model => model.SeoSettings.PageTitleSeparator)
                 @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeparator)
             </td>
         </tr>
@@ -187,6 +147,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
             <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.PageTitleSeoAdjustment)
                 @Html.DropDownListForEnum(model => model.SeoSettings.PageTitleSeoAdjustment)
                 @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
@@ -196,7 +157,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.DefaultTitle)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.DefaultTitle)
+                @Html.SettingEditorFor(model => model.SeoSettings.DefaultTitle)
                 @Html.ValidationMessageFor(model => model.SeoSettings.DefaultTitle)
             </td>
         </tr>
@@ -205,7 +166,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.DefaultMetaKeywords)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.DefaultMetaKeywords)
+                @Html.SettingEditorFor(model => model.SeoSettings.DefaultMetaKeywords)
                 @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaKeywords)
             </td>
         </tr>
@@ -214,7 +175,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.DefaultMetaDescription)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.DefaultMetaDescription)
+                @Html.SettingEditorFor(model => model.SeoSettings.DefaultMetaDescription)
                 @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaDescription)
             </td>
         </tr>
@@ -223,7 +184,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.ConvertNonWesternChars)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.ConvertNonWesternChars)
+                @Html.SettingEditorFor(model => model.SeoSettings.ConvertNonWesternChars)
                 @Html.ValidationMessageFor(model => model.SeoSettings.ConvertNonWesternChars)
             </td>
         </tr>
@@ -232,7 +193,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.CanonicalUrlsEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SeoSettings.CanonicalUrlsEnabled)
+                @Html.SettingEditorFor(model => model.SeoSettings.CanonicalUrlsEnabled)
                 @Html.ValidationMessageFor(model => model.SeoSettings.CanonicalUrlsEnabled)
             </td>
         </tr>
@@ -384,44 +345,6 @@
                 @Html.ValidationMessageFor(model => model.SecuritySettings.ReCaptchaPrivateKey)
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <hr />
-                <b>SSL settings</b>
-                <br />
-                <br />
-                <div class="alert alert-info">
-                    SSL settings can be also changed in web.config file.
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.UseSsl)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.UseSsl)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.UseSsl)
-            </td>
-        </tr>
-        <tr id="ssSharedSslUrlpnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.SharedSslUrl)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.SharedSslUrl)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.SharedSslUrl)
-            </td>
-        </tr>
-        <tr id="ssNonSharedSslUrlpnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.NonSharedSslUrl)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.NonSharedSslUrl)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.NonSharedSslUrl)
-            </td>
-        </tr>
     </table>
 }
 @helper TabPdfSettings()
@@ -432,7 +355,7 @@
                 @Html.SmartLabelFor(model => model.PdfSettings.Enabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.PdfSettings.Enabled)
+                @Html.SettingEditorFor(model => model.PdfSettings.Enabled)
                 @Html.ValidationMessageFor(model => model.PdfSettings.Enabled)
             </td>
         </tr>
@@ -441,7 +364,7 @@
                 @Html.SmartLabelFor(model => model.PdfSettings.LetterPageSizeEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.PdfSettings.LetterPageSizeEnabled)
+                @Html.SettingEditorFor(model => model.PdfSettings.LetterPageSizeEnabled)
                 @Html.ValidationMessageFor(model => model.PdfSettings.LetterPageSizeEnabled)
             </td>
         </tr>        
@@ -449,8 +372,8 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PdfSettings.LogoPictureId)
             </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.PdfSettings.LogoPictureId)
+            <td class="adminData" id="pdf-logo-picture">
+                @Html.SettingEditorFor(model => model.PdfSettings.LogoPictureId, "#pdf-logo-picture")
                 @Html.ValidationMessageFor(model => model.PdfSettings.LogoPictureId)
             </td>
         </tr>
@@ -498,7 +421,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CompanyName)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.CompanyName)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.CompanyName)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyName)
             </td>
         </tr>
@@ -512,7 +435,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Salutation)
             </td>
             <td class="adminData">
-                @*@Html.EditorFor(model => model.CompanyInformationSettings.Salutation)*@
+                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.Salutation)
                 @Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Salutation)
             </td>
@@ -522,7 +445,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Title)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Title)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Title)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Title)
             </td>
         </tr>
@@ -531,7 +454,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Firstname)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Firstname)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Firstname)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Firstname)
             </td>
         </tr>
@@ -540,7 +463,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Lastname)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Lastname)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Lastname)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Lastname)
             </td>
         </tr>
@@ -549,7 +472,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
             <td class="adminData">
-                @*@Html.EditorFor(model => model.CompanyInformationSettings.CompanyManagementDescription)*@
+                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CompanyManagementDescription)
                 @Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
@@ -559,7 +482,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CompanyManagement)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.CompanyManagement)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.CompanyManagement)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyManagement)
             </td>
         </tr>
@@ -568,7 +491,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Street)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Street)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Street)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Street)
             </td>
         </tr>
@@ -578,7 +501,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Street2)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Street2)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Street2)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Street2)
             </td>
         </tr>
@@ -587,7 +510,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.ZipCode)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.ZipCode)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.ZipCode)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.ZipCode)
             </td>
         </tr>
@@ -596,7 +519,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.City)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.City)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.City)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.City)
             </td>
         </tr>
@@ -606,6 +529,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CountryId)
             </td>
             <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CountryId)
                 @Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries, new { style = "min-width:289px" } )
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CountryId)
             </td>
@@ -615,7 +539,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Region )
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.Region)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.Region)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Region)
             </td>
         </tr>
@@ -629,7 +553,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.VatId)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.VatId)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.VatId)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.VatId)
             </td>
         </tr>
@@ -638,7 +562,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CommercialRegister)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.CommercialRegister)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.CommercialRegister)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CommercialRegister)
             </td>
         </tr>
@@ -647,7 +571,7 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.TaxNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.CompanyInformationSettings.TaxNumber)
+                @Html.SettingEditorFor(model => model.CompanyInformationSettings.TaxNumber)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.TaxNumber)
             </td>
         </tr>
@@ -665,7 +589,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.CompanyTelephoneNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.CompanyTelephoneNumber)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.CompanyTelephoneNumber)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.CompanyTelephoneNumber)
             </td>
         </tr>
@@ -675,7 +599,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.HotlineTelephoneNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.HotlineTelephoneNumber)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.HotlineTelephoneNumber)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.HotlineTelephoneNumber)
             </td>
         </tr>
@@ -684,7 +608,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.MobileTelephoneNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.MobileTelephoneNumber)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.MobileTelephoneNumber)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.MobileTelephoneNumber)
             </td>
         </tr>
@@ -693,7 +617,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.CompanyFaxNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.CompanyFaxNumber)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.CompanyFaxNumber)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.CompanyFaxNumber)
             </td>
         </tr>
@@ -707,7 +631,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.CompanyEmailAddress)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.CompanyEmailAddress)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.CompanyEmailAddress)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.CompanyEmailAddress)
             </td>
         </tr>
@@ -716,7 +640,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.WebmasterEmailAddress)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.WebmasterEmailAddress)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.WebmasterEmailAddress)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.WebmasterEmailAddress)
             </td>
         </tr>
@@ -725,7 +649,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.SupportEmailAddress)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.SupportEmailAddress)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.SupportEmailAddress)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.SupportEmailAddress)
             </td>
         </tr>
@@ -734,7 +658,7 @@
                 @Html.SmartLabelFor(model => model.ContactDataSettings.ContactEmailAddress)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ContactDataSettings.ContactEmailAddress)
+                @Html.SettingEditorFor(model => model.ContactDataSettings.ContactEmailAddress)
                 @Html.ValidationMessageFor(model => model.ContactDataSettings.ContactEmailAddress)
             </td>
         </tr>
@@ -748,7 +672,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.Bankname)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.Bankname)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.Bankname)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.Bankname)
             </td>
         </tr>
@@ -757,7 +681,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.Bankcode)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.Bankcode)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.Bankcode)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.Bankcode)
             </td>
         </tr>
@@ -766,7 +690,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.AccountNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.AccountNumber)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.AccountNumber)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.AccountNumber)
             </td>
         </tr>
@@ -775,7 +699,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.AccountHolder)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.AccountHolder)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.AccountHolder)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.AccountHolder)
             </td>
         </tr>
@@ -784,7 +708,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.Iban)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.Iban)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.Iban)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.Iban)
             </td>
         </tr>
@@ -793,7 +717,7 @@
                 @Html.SmartLabelFor(model => model.BankConnectionSettings.Bic)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BankConnectionSettings.Bic)
+                @Html.SettingEditorFor(model => model.BankConnectionSettings.Bic)
                 @Html.ValidationMessageFor(model => model.BankConnectionSettings.Bic)
             </td>
         </tr>
@@ -808,7 +732,7 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SocialSettings.ShowSocialLinksInFooter)
+                @Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter)
                 @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
         </tr>
@@ -817,7 +741,7 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SocialSettings.FacebookLink)
+                @Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
                 @Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
             </td>
         </tr>
@@ -826,7 +750,7 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SocialSettings.GooglePlusLink)
+                @Html.SettingEditorFor(model => model.SocialSettings.GooglePlusLink)
                 @Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
             </td>
         </tr>
@@ -835,7 +759,7 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SocialSettings.TwitterLink)
+                @Html.SettingEditorFor(model => model.SocialSettings.TwitterLink)
                 @Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
             </td>
         </tr>
@@ -844,7 +768,7 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SocialSettings.PinterestLink)
+                @Html.SettingEditorFor(model => model.SocialSettings.PinterestLink)
                 @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
             </td>
         </tr>

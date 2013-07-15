@@ -7,7 +7,6 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -28,6 +27,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Web.Controllers
 {
@@ -37,6 +37,7 @@ namespace SmartStore.Web.Controllers
 		#region Fields
 
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ILocalizationService _localizationService;
         private readonly ITaxService _taxService;
@@ -55,7 +56,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
-        
+		private readonly ISettingService _settingService;	// codehint: sm-add
 
         private readonly OrderSettings _orderSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -68,21 +69,24 @@ namespace SmartStore.Web.Controllers
 
 		#region Constructors
 
-        public CheckoutController(IWorkContext workContext,
+		public CheckoutController(IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, ILocalizationService localizationService, 
             ITaxService taxService, ICurrencyService currencyService, 
             IPriceFormatter priceFormatter, IOrderProcessingService orderProcessingService,
             ICustomerService customerService,  IGenericAttributeService genericAttributeService,
             ICountryService countryService,
-            IStateProvinceService stateProvinceService, IShippingService shippingService, 
-            IPaymentService paymentService, IOrderTotalCalculationService orderTotalCalculationService,
+            IStateProvinceService stateProvinceService, IShippingService shippingService,
+			IPaymentService paymentService, 
+			IOrderTotalCalculationService orderTotalCalculationService,
             ILogger logger, IOrderService orderService, IWebHelper webHelper,
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
             PaymentSettings paymentSettings, AddressSettings addressSettings,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+			ISettingService settingService)
         {
             this._workContext = workContext;
+			this._storeContext = storeContext;
             this._shoppingCartService = shoppingCartService;
             this._localizationService = localizationService;
             this._taxService = taxService;
@@ -101,6 +105,7 @@ namespace SmartStore.Web.Controllers
             this._webHelper = webHelper;
             this._httpContext = httpContext;
             this._mobileDeviceHelper = mobileDeviceHelper;
+			this._settingService = settingService;	// codehint: sm-add
 
             this._orderSettings = orderSettings;
             this._rewardPointsSettings = rewardPointsSettings;
@@ -182,12 +187,17 @@ namespace SmartStore.Web.Controllers
         {
             var model = new CheckoutShippingMethodModel();
 
-            var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress);
+			var getShippingOptionResponse = _shippingService
+				  .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
+				  "", _storeContext.CurrentStore.Id);
             if (getShippingOptionResponse.Success)
             {
                 //performance optimization. cache returned shipping options.
                 //we'll use them later (after a customer has selected an option).
-                _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions);
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.OfferedShippingOptions,
+					getShippingOptionResponse.ShippingOptions,
+					_storeContext.CurrentStore.Id);
             
                 foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
                 {
@@ -218,12 +228,13 @@ namespace SmartStore.Web.Controllers
                 }
 
                 //find a selected (previously) shipping method
-                var lastShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.LastShippingOption);
-                if (lastShippingOption != null)
+				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
+				if (selectedShippingOption != null)
                 {
                     var shippingOptionToSelect = model.ShippingMethods.ToList()
-                        .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(lastShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                        !String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && so.ShippingRateComputationMethodSystemName.Equals(lastShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
+						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && 
+						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
                     if (shippingOptionToSelect != null)
                         shippingOptionToSelect.Selected = true;
                 }
@@ -262,7 +273,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var boundPaymentMethods = _paymentService
-                .LoadActivePaymentMethods(_workContext.CurrentCustomer.Id)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
                 .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
@@ -293,15 +304,18 @@ namespace SmartStore.Web.Controllers
             }
             
             //find a selected (previously) payment method
-            if (!String.IsNullOrEmpty(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName))
+			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				 SystemCustomerAttributeNames.SelectedPaymentMethod,
+				 _genericAttributeService, _storeContext.CurrentStore.Id);
+			if (!String.IsNullOrEmpty(selectedPaymentMethodSystemName))
             {
                 var paymentMethodToSelect = model.PaymentMethods.ToList()
-                    .Find(pm => pm.PaymentMethodSystemName.Equals(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+					.Find(pm => pm.PaymentMethodSystemName.Equals(selectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
                 if (paymentMethodToSelect != null)
                     paymentMethodToSelect.Selected = true;
             }
             //if no option has been selected, let's do it for the first one
-            if (model.PaymentMethods.Where(so => so.Selected).FirstOrDefault() == null)
+			if (model.PaymentMethods.FirstOrDefault(so => so.Selected) == null)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
                 if (paymentMethodToSelect != null)
@@ -365,12 +379,13 @@ namespace SmartStore.Web.Controllers
             if (_orderSettings.MinimumOrderPlacementInterval == 0)
                 return true;
 
-            var lastOrderPlaced = _orderService.GetOrdersByCustomerId(_workContext.CurrentCustomer.Id)
+			var lastOrder = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
+				 null, null, null, null, null, null, null, 0, 1)
                 .FirstOrDefault();
-            if (lastOrderPlaced == null)
+			if (lastOrder == null)
                 return true;
-            
-            var interval = DateTime.UtcNow - lastOrderPlaced.CreatedOnUtc;
+
+			var interval = DateTime.UtcNow - lastOrder.CreatedOnUtc;
             return interval.TotalSeconds > _orderSettings.MinimumOrderPlacementInterval;
         }
 
@@ -380,7 +395,10 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -388,10 +406,11 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             //reset checkout data
-            _customerService.ResetCheckoutData(_workContext.CurrentCustomer);
+            _customerService.ResetCheckoutData(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id);
 
             //validation (cart)
-            var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, _workContext.CurrentCustomer.CheckoutAttributes, true);
+			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+			var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
             if (scWarnings.Count > 0)
                 return RedirectToRoute("ShoppingCart");
             //validation (each shopping cart item)
@@ -400,6 +419,7 @@ namespace SmartStore.Web.Controllers
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
                     sci.ShoppingCartType,
                     sci.ProductVariant,
+					sci.StoreId,
                     sci.AttributesXml,
                     sci.CustomerEnteredPrice,
                     sci.Quantity,
@@ -418,7 +438,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult BillingAddress()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -448,7 +471,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult NewBillingAddress(CheckoutBillingAddressModel model)
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -483,7 +509,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult ShippingAddress()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -520,7 +549,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult NewShippingAddress(CheckoutShippingAddressModel model)
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -563,7 +595,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult ShippingMethod()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -575,7 +610,7 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-                _genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null);
+				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
             
@@ -590,7 +625,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult SelectShippingMethod(string shippingoption)
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -602,7 +640,8 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-                _genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null);
+				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
 
@@ -617,12 +656,12 @@ namespace SmartStore.Web.Controllers
             
             //find it
             //performance optimization. try cache first
-            var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions);
+			var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions, _storeContext.CurrentStore.Id);
             if (shippingOptions == null || shippingOptions.Count == 0)
             {
                 //not found? let's load them using shipping service
                 shippingOptions = _shippingService
-                    .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName)
+					.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
                     .ShippingOptions
                     .ToList();
             }
@@ -639,7 +678,7 @@ namespace SmartStore.Web.Controllers
                 return ShippingMethod();
 
             //save
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, shippingOption);
+			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
             
             return RedirectToRoute("CheckoutPaymentMethod");
         }
@@ -648,7 +687,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult PaymentMethod()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -663,8 +705,8 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
             if (!isPaymentWorkflowRequired)
             {
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentInfo");
             }
 
@@ -676,9 +718,12 @@ namespace SmartStore.Web.Controllers
             {
                 //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                 //so customer doesn't have to choose a payment method
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutPaymentInfo");
+
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.SelectedPaymentMethod,
+					paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName,
+					_storeContext.CurrentStore.Id);
+				return RedirectToRoute("CheckoutPaymentInfo");
             }
 
             return View(paymentMethodModel);
@@ -689,7 +734,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -700,29 +748,36 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             //reward points
-            _workContext.CurrentCustomer.UseRewardPointsDuringCheckout = model.UseRewardPoints;
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+			if (_rewardPointsSettings.Enabled)
+			{
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
+					_storeContext.CurrentStore.Id);
+			}
 
             //Check whether payment workflow is required
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
             if (!isPaymentWorkflowRequired)
             {
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutPaymentInfo");
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					  SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
+				return RedirectToRoute("CheckoutPaymentInfo");
             }
             //payment method 
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
             var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-            if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+			if (paymentMethodInst == null ||
+				!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+				!(_storeContext.CurrentStore.Id == 0 ||
+				_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                 return PaymentMethod();
 
             //save
-            _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentmethod;
-            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+				 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
+            
             return RedirectToRoute("CheckoutPaymentInfo");
         }
 
@@ -730,7 +785,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult PaymentInfo()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -746,8 +804,12 @@ namespace SmartStore.Web.Controllers
             {
                 return RedirectToRoute("CheckoutConfirm");
             }
-            
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+
+			//load payment method
+			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				SystemCustomerAttributeNames.SelectedPaymentMethod,
+				_genericAttributeService, _storeContext.CurrentStore.Id);
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
@@ -761,7 +823,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult EnterPaymentInfo(FormCollection form)
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -778,7 +843,11 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("CheckoutConfirm");
             }
 
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
+			//load payment method
+			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+				SystemCustomerAttributeNames.SelectedPaymentMethod,
+				_genericAttributeService, _storeContext.CurrentStore.Id);
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
@@ -806,7 +875,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult Confirm()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -825,7 +897,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult ConfirmOrder()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -855,8 +930,11 @@ namespace SmartStore.Web.Controllers
                     throw new Exception(_localizationService.GetResource("Checkout.MinOrderPlacementInterval"));
 
                 //place order
+				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-                processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.SelectedPaymentMethodSystemName;
+				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod,
+					 _genericAttributeService, _storeContext.CurrentStore.Id);
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {
@@ -905,14 +983,15 @@ namespace SmartStore.Web.Controllers
             //model
             var model = new CheckoutCompletedModel();
 
-            var orders = _orderService.GetOrdersByCustomerId(_workContext.CurrentCustomer.Id);
-            if (orders.Count == 0)
-                return RedirectToRoute("HomePage");
-            else
-            {
-                var lastOrder = orders[0];
-                model.OrderId = lastOrder.Id;
-            }
+			var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
+				null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+
+			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+			{
+				return RedirectToRoute("HomePage");
+			}
+
+			model.OrderId = order.Id;
 
             return View(model);
         }
@@ -930,7 +1009,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult OnePageCheckout()
         {
             //validation
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+			var cart = _workContext.CurrentCustomer.ShoppingCartItems
+				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+				.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+				.ToList();
             if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
@@ -960,7 +1042,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1044,7 +1129,7 @@ namespace SmartStore.Web.Controllers
                 else
                 {
                     //shipping is not required
-                    _genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, null);
+					_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
 
 
                     //Check whether payment workflow is required
@@ -1060,11 +1145,16 @@ namespace SmartStore.Web.Controllers
                         {
                             //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                             //so customer doesn't have to choose a payment method
-                            _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                            _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+							var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
+							_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+								SystemCustomerAttributeNames.SelectedPaymentMethod,
+								selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
-                            var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
-                            if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+							if (paymentMethodInst == null ||
+								!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+								!(_storeContext.CurrentStore.Id == 0 ||
+								_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                                 throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1096,8 +1186,8 @@ namespace SmartStore.Web.Controllers
                     else
                     {
                         //payment is not required
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                        _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+							 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
 
                         var confirmOrderModel = PrepareConfirmOrderModel(cart);
                         return Json(new
@@ -1125,7 +1215,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1218,7 +1311,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1243,12 +1339,12 @@ namespace SmartStore.Web.Controllers
                 
                 //find it
                 //performance optimization. try cache first
-                var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions);
+				var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions, _storeContext.CurrentStore.Id);
                 if (shippingOptions == null || shippingOptions.Count == 0)
                 {
                     //not found? let's load them using shipping service
                     shippingOptions = _shippingService
-                        .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName)
+						.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
                         .ShippingOptions
                         .ToList();
                 }
@@ -1265,7 +1361,7 @@ namespace SmartStore.Web.Controllers
                     throw new Exception("Selected shipping method can't be loaded");
 
                 //save
-                _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.LastShippingOption, shippingOption);
+				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
 
 
                 //Check whether payment workflow is required
@@ -1281,11 +1377,15 @@ namespace SmartStore.Web.Controllers
                     {
                         //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
                         //so customer doesn't have to choose a payment method
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-                        _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+						var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
+						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+							SystemCustomerAttributeNames.SelectedPaymentMethod, selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
-                        var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(_workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
-                        if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+						if (paymentMethodInst == null ||
+							!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+							!(_storeContext.CurrentStore.Id == 0 ||
+							_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                             throw new Exception("Selected payment method can't be parsed");
 
 
@@ -1317,8 +1417,8 @@ namespace SmartStore.Web.Controllers
                 else
                 {
                     //payment is not required
-                    _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+						SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
 
                     var confirmOrderModel = PrepareConfirmOrderModel(cart);
                     return Json(new
@@ -1345,7 +1445,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1365,16 +1468,20 @@ namespace SmartStore.Web.Controllers
                 TryUpdateModel(model);
 
                 //reward points
-                _workContext.CurrentCustomer.UseRewardPointsDuringCheckout = model.UseRewardPoints;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+				if (_rewardPointsSettings.Enabled)
+				{
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+						SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
+						_storeContext.CurrentStore.Id);
+				}
 
                 //Check whether payment workflow is required
                 bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
                 if (!isPaymentWorkflowRequired)
                 {
                     //payment is not required
-                    _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = "";
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+						 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
 
                     var confirmOrderModel = PrepareConfirmOrderModel(cart);
                     return Json(new
@@ -1389,13 +1496,15 @@ namespace SmartStore.Web.Controllers
                 }
 
                 var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-                if (paymentMethodInst == null || !paymentMethodInst.IsPaymentMethodActive(_paymentSettings))
+				if (paymentMethodInst == null ||
+					!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
+					!(_storeContext.CurrentStore.Id == 0 ||
+					_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
                     throw new Exception("Selected payment method can't be parsed");
 
                 //save
-                _workContext.CurrentCustomer.SelectedPaymentMethodSystemName = paymentmethod;
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);                
 
                 var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst);
                 return Json(new
@@ -1421,9 +1530,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart =
-                    _workContext.CurrentCustomer.ShoppingCartItems.Where(
-                        sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1433,9 +1543,11 @@ namespace SmartStore.Web.Controllers
                 if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                     throw new Exception("Anonymous checkout is not allowed");
 
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(
-                        _workContext.CurrentCustomer.SelectedPaymentMethodSystemName);
-                if (paymentMethod == null)
+				var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					SystemCustomerAttributeNames.SelectedPaymentMethod,
+					_genericAttributeService, _storeContext.CurrentStore.Id);
+				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
+				if (paymentMethod == null)
                     throw new Exception("Payment method is not selected");
 
                 var paymentControllerType = paymentMethod.GetControllerType();
@@ -1487,7 +1599,10 @@ namespace SmartStore.Web.Controllers
             try
             {
                 //validation
-                var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+				var cart = _workContext.CurrentCustomer.ShoppingCartItems
+					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
+					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
+					.ToList();
                 if (cart.Count == 0)
                     throw new Exception("Your cart is empty");
 
@@ -1514,8 +1629,11 @@ namespace SmartStore.Web.Controllers
                         processPaymentRequest = new ProcessPaymentRequest();
                 }
 
+				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-                processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.SelectedPaymentMethodSystemName;
+				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
+					 SystemCustomerAttributeNames.SelectedPaymentMethod,
+					 _genericAttributeService, _storeContext.CurrentStore.Id);
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {
@@ -1589,12 +1707,13 @@ namespace SmartStore.Web.Controllers
                     return new HttpUnauthorizedResult();
 
                 //get the order
-                var orders = _orderService.GetOrdersByCustomerId(_workContext.CurrentCustomer.Id);
-                if (orders.Count == 0)
+				var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
+					null, null, null, null, null, null, null, 0, 1)
+					.FirstOrDefault();
+				if (order == null)
                     return RedirectToRoute("HomePage");
 
-                
-                var order = orders[0];
+
                 var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
                 if (paymentMethod == null)
                     return RedirectToRoute("HomePage");

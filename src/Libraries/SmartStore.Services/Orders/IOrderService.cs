@@ -44,6 +44,8 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Search orders
         /// </summary>
+		/// <param name="storeId">Store identifier; null to load all orders</param>
+		/// <param name="customerId">Customer identifier; null to load all orders</param>
         /// <param name="startTime">Order start time; null to load all orders</param>
         /// <param name="endTime">Order end time; null to load all orders</param>
         /// <param name="os">Order status; null to load all orders</param>
@@ -54,9 +56,10 @@ namespace SmartStore.Services.Orders
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Order collection</returns>
-        IPagedList<Order> SearchOrders(DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, string billingEmail,
-            string orderGuid, int pageIndex, int pageSize);
+		IPagedList<Order> SearchOrders(int storeId, int customerId,
+			DateTime? startTime, DateTime? endTime,
+            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+			string billingEmail, string orderGuid, int pageIndex, int pageSize);
 
         /// <summary>
         /// Gets all orders by affiliate identifier
@@ -72,13 +75,6 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <returns>Order collection</returns>
         IList<Order> LoadAllOrders();
-
-        /// <summary>
-        /// Gets all orders by customer identifier
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>Order collection</returns>
-        IList<Order> GetOrdersByCustomerId(int customerId);
 
         /// <summary>
         /// Gets all orders by affiliate identifier
@@ -187,12 +183,13 @@ namespace SmartStore.Services.Orders
         /// Search recurring payments
         /// </summary>
         /// <param name="customerId">The customer identifier; 0 to load all records</param>
+		/// <param name="storeId">The store identifier; 0 to load all records</param>
         /// <param name="initialOrderId">The initial order identifier; 0 to load all records</param>
         /// <param name="initialOrderStatus">Initial order status identifier; null to load all records</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Recurring payment collection</returns>
-        IList<RecurringPayment> SearchRecurringPayments(int customerId,
-           int initialOrderId, OrderStatus? initialOrderStatus, bool showHidden = false);
+		IList<RecurringPayment> SearchRecurringPayments(int storeId, 
+			int customerId, int initialOrderId, OrderStatus? initialOrderStatus, bool showHidden = false);
 
         #endregion
 
@@ -214,11 +211,12 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Search return requests
         /// </summary>
+		/// <param name="storeId">Store identifier; 0 to load all entries</param>
         /// <param name="customerId">Customer identifier; null to load all entries</param>
         /// <param name="orderProductVariantId">Order product variant identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
         /// <returns>Return requests</returns>
-        IList<ReturnRequest> SearchReturnRequests(int customerId,
+		IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
             int orderProductVariantId, ReturnRequestStatus? rs);
         
         #endregion

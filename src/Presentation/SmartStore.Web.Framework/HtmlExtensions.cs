@@ -18,7 +18,9 @@ using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc.UI;
 using SmartStore.Utilities;
 using System.Web;
-using System.Threading; // codehint: sm-add
+using System.Threading;
+using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework.Settings; // codehint: sm-add
 
 namespace SmartStore.Web.Framework
 {
@@ -34,12 +36,6 @@ namespace SmartStore.Web.Framework
     
     public static class HtmlExtensions
     {
-        public static MvcHtmlString ResolveUrl(this HtmlHelper htmlHelper, string url)
-        {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
-            return MvcHtmlString.Create(urlHelper.Content(url));
-        }
-
         // codehint: sm-edit
         public static MvcHtmlString Hint(this HtmlHelper helper, string value)
         {
@@ -475,6 +471,45 @@ namespace SmartStore.Web.Framework
 
 			sb.Append("</table>");
 			return MvcHtmlString.Create(sb.ToString());
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		{
+			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
+
+			if (data != null && data.ActiveStoreScopeConfiguration > 0)
+			{
+				var settingKey = ExpressionHelper.GetExpressionText(expression);
+
+				if (!settingKey.Contains("."))
+					settingKey = data.RootSettingClass + "." + settingKey;
+
+				var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
+				var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
+
+				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
+				{
+					{ "class", "multi-store-override-option" },
+					{ "onclick", "Admin.checkOverriddenStoreValue(this)" },
+					{ "data-parent-selector", parentSelector.EmptyNull() },
+				});
+
+				// inputs are not floating, so line-break prevents different distances between them
+				return MvcHtmlString.Create(checkbox + "\r\n");
+			}
+			return MvcHtmlString.Empty;
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		{
+			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
+			var editor = helper.EditorFor(expression);
+
+			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}
 
     }

@@ -14,6 +14,7 @@
                     .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
                     .Columns(columns =>
                     {
+						columns.Bound(x => x.StoreName).ReadOnly();
                         columns.Bound(x => x.CountryName).Width(200).ReadOnly();
                         columns.Bound(x => x.ShippingMethodName).Width(200).ReadOnly();
                         columns.Bound(x => x.From).Width(100);
@@ -68,12 +69,23 @@
             }
         }
     </script>
-    <table class="adminContent" style="border: 1px solid black; padding: 15px;">
+	
+	<div>
+		<table class="adminContent">
         <tr>
             <td class="adminTitle" colspan="2">
                 <b>@T("Plugins.Shipping.ByWeight.AddRecord.Hint")</b>
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
+				@Html.ValidationMessageFor(model => model.AddStoreId)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddCountryId)
@@ -145,11 +157,13 @@
                 </button>
             </td>
         </tr>
-    </table>
-    <br />
-    <hr />
-    <br />
-    <table class="adminContent" style="border: 1px solid black; padding: 15px;">
+		</table>
+	</div>
+
+	<hr />
+
+	<div>
+		<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
@@ -176,5 +190,6 @@
                 </button>
             </td>
         </tr>
-    </table>
+		</table>
+	</div>
 }

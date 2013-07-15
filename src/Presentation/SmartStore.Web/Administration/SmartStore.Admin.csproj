@@ -138,57 +138,58 @@
     <Compile Include="AdminAreaRegistration.cs" />
     <Compile Include="Controllers\ActivityLogController.cs" />
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Controllers\AffiliateController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\CampaignController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CheckoutAttributeController.cs" />
-    <Compile Include="Controllers\AffiliateController.cs" />
-    <Compile Include="Controllers\CampaignController.cs" />
-    <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
-    <Compile Include="Controllers\ImageBrowserController.cs" />
-    <Compile Include="Controllers\ExternalAuthenticationController.cs" />
-    <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\ContentSliderController.cs" />
-    <Compile Include="Controllers\ThemeController.cs" />
-    <Compile Include="Controllers\NetAdvImageController.cs" />
-    <Compile Include="Controllers\ScheduleTaskController.cs" />
-    <Compile Include="Controllers\WidgetController.cs" />
-    <Compile Include="Controllers\OnlineCustomerController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
-    <Compile Include="Controllers\PollController.cs" />
-    <Compile Include="Controllers\ShoppingCartController.cs" />
-    <Compile Include="Controllers\ManufacturerController.cs" />
-    <Compile Include="Controllers\SettingController.cs" />
-    <Compile Include="Controllers\TopicController.cs" />
-    <Compile Include="Controllers\NewsController.cs" />
-    <Compile Include="Controllers\OrderController.cs" />
-    <Compile Include="Controllers\MessageTemplateController.cs" />
-    <Compile Include="Controllers\ProductReviewController.cs" />
-    <Compile Include="Controllers\ReturnRequestController.cs" />
-    <Compile Include="Controllers\RecurringPaymentController.cs" />
-    <Compile Include="Controllers\GiftCardController.cs" />
-    <Compile Include="Controllers\DiscountController.cs" />
-    <Compile Include="Controllers\DownloadController.cs" />
-    <Compile Include="Controllers\SpecificationAttributeController.cs" />
-    <Compile Include="Controllers\ProductAttributeController.cs" />
-    <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Controllers\CountryController.cs" />
+    <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\CustomerRoleController.cs" />
-    <Compile Include="Controllers\PaymentController.cs" />
-    <Compile Include="Controllers\ForumController.cs" />
-    <Compile Include="Controllers\NewsLetterSubscriptionController.cs" />
-    <Compile Include="Controllers\CountryController.cs" />
-    <Compile Include="Controllers\ShippingController.cs" />
-    <Compile Include="Controllers\TaxController.cs" />
-    <Compile Include="Controllers\MeasureController.cs" />
-    <Compile Include="Controllers\CurrencyController.cs" />
+    <Compile Include="Controllers\DeliveryTimeController.cs" />
+    <Compile Include="Controllers\DiscountController.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\EmailAccountController.cs" />
+    <Compile Include="Controllers\ExternalAuthenticationController.cs" />
+    <Compile Include="Controllers\ForumController.cs" />
+    <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImageBrowserController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\ManufacturerController.cs" />
+    <Compile Include="Controllers\MeasureController.cs" />
+    <Compile Include="Controllers\MessageTemplateController.cs" />
+    <Compile Include="Controllers\NetAdvImageController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controllers\NewsLetterSubscriptionController.cs" />
+    <Compile Include="Controllers\OnlineCustomerController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\PollController.cs" />
+    <Compile Include="Controllers\ProductAttributeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ProductReviewController.cs" />
     <Compile Include="Controllers\ProductVariantController.cs" />
     <Compile Include="Controllers\QueuedEmailController.cs" />
+    <Compile Include="Controllers\RecurringPaymentController.cs" />
+    <Compile Include="Controllers\ReturnRequestController.cs" />
+    <Compile Include="Controllers\ScheduleTaskController.cs" />
+    <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
+    <Compile Include="Controllers\ShippingController.cs" />
+    <Compile Include="Controllers\ShoppingCartController.cs" />
+    <Compile Include="Controllers\SpecificationAttributeController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\TaxController.cs" />
+    <Compile Include="Controllers\ThemeController.cs" />
+    <Compile Include="Controllers\TopicController.cs" />
+    <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Infrastructure\AdminBundleProvider.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
@@ -210,6 +211,8 @@
     <Compile Include="Models\Common\SystemInfoModel.cs" />
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
+    <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Plugins\PluginListModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
@@ -256,12 +259,15 @@
     <Compile Include="Models\Settings\ShoppingCartSettingsModel.cs" />
     <Compile Include="Models\Settings\OrderSettingsModel.cs" />
     <Compile Include="Models\Settings\RewardPointsSettingsModel.cs" />
+    <Compile Include="Models\Settings\StoreScopeConfigurationModel.cs" />
+    <Compile Include="Models\Stores\StoreModel.cs" />
     <Compile Include="Models\Themes\ThemeListModel.cs" />
     <Compile Include="Models\ShoppingCart\ShoppingCartItemModel.cs" />
     <Compile Include="Models\ShoppingCart\ShoppingCartModel.cs" />
     <Compile Include="Models\Tasks\ScheduleTaskModel.cs" />
     <Compile Include="Models\Themes\ConfigureThemeModel.cs" />
     <Compile Include="Models\Themes\ThemeManifestModel.cs" />
+    <Compile Include="Models\Topics\TopicListModel.cs" />
     <Compile Include="Models\Topics\TopicModel.cs" />
     <Compile Include="Models\Shipping\ShippingMethodRestrictionModel.cs" />
     <Compile Include="Models\News\NewsCommentModel.cs" />
@@ -330,6 +336,7 @@
     <Compile Include="Validators\Settings\OrderSettingsValidator.cs" />
     <Compile Include="Validators\Settings\SettingValidator.cs" />
     <Compile Include="Validators\Settings\RewardPointsSettingsValidator.cs" />
+    <Compile Include="Validators\Stores\StoreValidator.cs" />
     <Compile Include="Validators\Tasks\ScheduleTaskValidator.cs" />
     <Compile Include="Validators\Topics\TopicValidator.cs" />
     <Compile Include="Validators\News\NewsItemValidator.cs" />
@@ -1130,6 +1137,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\ConditionalComments.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Store\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Store\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Store\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Store\_CreateOrUpdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\EditorTemplates\Store.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Setting\StoreScopeConfiguration.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceStore.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

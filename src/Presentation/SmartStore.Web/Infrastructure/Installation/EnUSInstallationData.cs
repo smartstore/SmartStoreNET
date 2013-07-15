@@ -48,7 +48,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter<StoreInformationSettings>(x =>
                 {
-                    x.StoreName = "Ihr Shop Name";
                     // [...]
                 })
                 .Alter<ContentSliderSettings>(x =>

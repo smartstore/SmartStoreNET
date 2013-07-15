@@ -25,6 +25,15 @@
             </td>
         </tr>
         <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+            </td>
+        </tr>
+        <tr>
             <td>&nbsp;</td>
             <td style="padding-top:10px">
                 <button type="submit" name="save" class="btn btn-primary" value="save">

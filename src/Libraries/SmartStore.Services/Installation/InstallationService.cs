@@ -41,6 +41,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Seo;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Core.Caching;
 using SmartStore.Utilities.Threading;
@@ -59,6 +60,7 @@ namespace SmartStore.Services.Installation
         private float _totalSteps;
         private float _currentStep;
 
+		private readonly IRepository<Store> _storeRepository;
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
         private readonly IRepository<TaxCategory> _taxCategoryRepository;
@@ -103,6 +105,7 @@ namespace SmartStore.Services.Installation
         public InstallationService(
             IDbContext context, // codehint: sm-add
             ISettingService settingService, // codehint: sm-add
+			IRepository<Store> storeRepository,
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
             IRepository<TaxCategory> taxCategoryRepository,
@@ -142,6 +145,7 @@ namespace SmartStore.Services.Installation
         {
             this._dbContext = context; // codehint: sm-add
             this._settingService = settingService; // codehint: sm-add
+			this._storeRepository = storeRepository;
             this._measureDimensionRepository = measureDimensionRepository;
             this._measureWeightRepository = measureWeightRepository;
             this._taxCategoryRepository = taxCategoryRepository;
@@ -307,6 +311,46 @@ namespace SmartStore.Services.Installation
             }
 
         }
+
+		private void InstallStores()
+		{
+			try
+			{
+				_storeRepository.Insert(InvariantInstallationData.DefaultStore);
+			}
+			catch (Exception ex)
+			{
+				throw new InstallationException("InstallStores", ex);
+			}
+		}
+		private void UpdateStores()
+		{
+			var oldAutoDetect = _dbContext.AutoDetectChangesEnabled;
+
+			try
+			{
+				_dbContext.AutoDetectChangesEnabled = true;
+
+				var entities = _storeRepository.Table.OrderBy(x => x.DisplayOrder).ToList();
+
+				_installData.DefaultStores(entities);
+
+				foreach (var entity in entities)
+					_storeRepository.Update(entity);
+			}
+			catch (Exception ex)
+			{
+				throw new InstallationException("UpdateStores", ex);
+			}
+
+			try
+			{
+				_dbContext.AutoDetectChangesEnabled = oldAutoDetect;
+			}
+			catch (Exception)
+			{
+			}
+		}
 
         private void InstallMeasureDimensions()
         {
@@ -639,19 +683,29 @@ namespace SmartStore.Services.Installation
         {
             try
             {
+				var method = typeof(ISettingService).GetMethods().FirstOrDefault(x =>
+				{
+					if (x.Name == "SaveSetting")
+					{
+						var parameters = x.GetParameters();
+						return parameters[0].ParameterType.Name == "T" && parameters[1].ParameterType.Equals(typeof(int));
+					}
+					return false;
+				});
+
                 var settings = _installData.Settings();
                 foreach (var setting in settings)
                 {
                     Type settingType = setting.GetType();
-                    Type configProviderGenericType = typeof(IConfigurationProvider<>).MakeGenericType(settingType);
+					Type settingServiceType = typeof(ISettingService);
 
-                    var configProvider = EngineContext.Current.Resolve(configProviderGenericType);
-                    if (configProvider != null)
-                    {
-                        // call "SaveSettings" with reflection, as we have no strong typing
-                        // and thus no intellisense.
-                        configProvider.GetType().GetMethod("SaveSettings").Invoke(configProvider, new object[] { setting });
-                    }
+					var settingService = EngineContext.Current.Resolve(settingServiceType);
+					if (settingService != null)
+					{
+						var genericMethod = method.MakeGenericMethod(settingType);
+
+						genericMethod.Invoke(settingService, new object[] { setting, 0 });
+					}					
                 }
 
                 IncreaseProgress();
@@ -5386,23 +5440,17 @@ namespace SmartStore.Services.Installation
         {
             try
             {
-                var productTag = _productTagRepository.Table.Where(pt => pt.Name == tag).FirstOrDefault();
+				var productTag = _productTagRepository.Table.FirstOrDefault(pt => pt.Name == tag);
                 if (productTag == null)
                 {
                     productTag = new ProductTag()
                     {
-                        Name = tag,
-                        ProductCount = 1,
+                        Name = tag
                     };
-                    productTag.Products.Add(product);
-                    _productTagRepository.Insert(productTag);
                 }
-                else
-                {
-                    productTag.ProductCount++;
-                    productTag.Products.Add(product);
-                    _productTagRepository.Update(productTag);
-                }
+				product.ProductTags.Add(productTag);
+				_productRepository.Update(product);
+
                 IncreaseProgress();
             }
             catch (Exception ex)
@@ -5427,6 +5475,11 @@ namespace SmartStore.Services.Installation
 
         #region Methods
 
+		public virtual void InstallEarlyRequiredData()
+		{
+			InstallStores();
+		}
+
         public virtual void InstallData(InstallDataContext context /* codehint: sm-edit */)
         {
             Guard.ArgumentNotNull(context.Language, "Language");
@@ -5443,6 +5496,7 @@ namespace SmartStore.Services.Installation
             // special mandatory (non-visible) settings
             _settingService.SetSetting<bool>("Media.Images.StoreInDB", _installContext.StoreMediaInDB);
 
+			UpdateStores();
             InstallLanguages(context.Language);
             InstallMeasureDimensions();
             InstallMeasureWeights();

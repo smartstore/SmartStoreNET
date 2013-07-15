@@ -65,12 +65,14 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			if (!ModelState.IsValid)
 				return Configure();
 
-            try {
+            try
+			{
 				_googleService.CreateFeed();
 
-				model.GenerateFeedResult = _googleService.Helper.GeneratedFeedResult;
+				model.GenerateFeedResult = _googleService.Helper.Resource("SuccessResult");
             }
-            catch (Exception exc) {
+            catch (Exception exc)
+			{
 				//model.GenerateFeedResult = exc.Message;	// codehint: sm-edit
 				ErrorNotification(exc.Message, true);
                 _logger.Error(exc.Message, exc);

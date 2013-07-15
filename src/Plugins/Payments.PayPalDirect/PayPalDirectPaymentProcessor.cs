@@ -37,14 +37,11 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		private readonly PluginHelperBase _helper;
 		private readonly PayPalDirectPaymentSettings _paypalDirectPaymentSettings;
 		private readonly ISettingService _settingService;
-		private readonly ITaxService _taxService;
-		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ICurrencyService _currencyService;
 		private readonly ICustomerService _customerService;
 		private readonly CurrencySettings _currencySettings;
 		private readonly IWebHelper _webHelper;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-		private readonly StoreInformationSettings _storeInformationSettings;
 		private readonly ILocalizationService _localizationService;	// codehint: sm-add
 		#endregion
 
@@ -52,22 +49,18 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 		public PayPalDirectPaymentProcessor(PayPalDirectPaymentSettings paypalDirectPaymentSettings,
 			ISettingService settingService,
-			ITaxService taxService, IPriceCalculationService priceCalculationService,
 			ICurrencyService currencyService, ICustomerService customerService,
 			CurrencySettings currencySettings, IWebHelper webHelper,
-			IOrderTotalCalculationService orderTotalCalculationService, StoreInformationSettings storeInformationSettings,
+			IOrderTotalCalculationService orderTotalCalculationService, 
 			ILocalizationService localizationService)
 		{
 			this._paypalDirectPaymentSettings = paypalDirectPaymentSettings;
 			this._settingService = settingService;
-			this._taxService = taxService;
-			this._priceCalculationService = priceCalculationService;
 			this._currencyService = currencyService;
 			this._customerService = customerService;
 			this._currencySettings = currencySettings;
 			this._webHelper = webHelper;
 			this._orderTotalCalculationService = orderTotalCalculationService;
-			this._storeInformationSettings = storeInformationSettings;
 			this._localizationService = localizationService;
 
 			_helper = new PluginHelperBase("Payments.PayPalDirect");	// codehint: sm-add
@@ -184,49 +177,6 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			details.PaymentDetails.OrderTotal.currencyID = payPalCurrency;
 			details.PaymentDetails.Custom = processPaymentRequest.OrderGuid.ToString();
 			details.PaymentDetails.ButtonSource = "smartstoreNETCart";
-			//pass product names and totals to PayPal
-			//if (_paypalDirectPaymentSettings.PassProductNamesAndTotals)
-			//{
-			//    //individual items
-			//    var cart = processPaymentRequest.Customer.ShoppingCartItems
-			//        .Where(x=>x.ShoppingCartType == ShoppingCartType.ShoppingCart)
-			//        .ToList();
-			//    var cartItems = new PaymentDetailsItemType[cart.Count];
-			//    for (int i = 0; i < cart.Count; i++)
-			//    {
-			//        var sc = cart[i];
-			//        decimal taxRate = decimal.Zero;
-			//        var customer = processPaymentRequest.Customer;
-			//        decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
-			//        decimal scSubTotal = _priceCalculationService.GetSubTotal(sc, true);
-			//        decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.ProductVariant, scUnitPrice, true, customer, out taxRate);
-			//        decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.ProductVariant, scUnitPrice, false, customer, out taxRate);
-			//        //decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.ProductVariant, scSubTotal, true, customer, out taxRate);
-			//        //decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.ProductVariant, scSubTotal, false, customer, out taxRate);
-			//        cartItems[i] = new PaymentDetailsItemType()
-			//        {
-			//            Name = sc.ProductVariant.FullProductName,
-			//            Number = sc.ProductVariant.Id.ToString(),
-			//            Quantity = sc.Quantity.ToString(),
-			//            Amount = new BasicAmountType()
-			//            {
-			//                currencyID = payPalCurrency,
-			//                Value = scUnitPriceExclTax.ToString("N", new CultureInfo("en-us")),
-			//            },
-			//            Tax = new BasicAmountType()
-			//            {
-			//                currencyID = payPalCurrency,
-			//                Value = (scUnitPriceInclTax - scUnitPriceExclTax).ToString("N", new CultureInfo("en-us")),
-			//            },
-			//        };
-			//    };
-			//    details.PaymentDetails.PaymentDetailsItem = cartItems;
-			//    //other totals (undone)
-			//    details.PaymentDetails.ItemTotal = null;
-			//    details.PaymentDetails.ShippingTotal = null;
-			//    details.PaymentDetails.TaxTotal = null;
-			//    details.PaymentDetails.HandlingTotal = null;
-			//}
 			//shipping
 			if (customer.ShippingAddress != null) {
 				if (customer.ShippingAddress.StateProvince != null && customer.ShippingAddress.Country != null) {
@@ -545,7 +495,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 			//schedule
 			details.ScheduleDetails = new ScheduleDetailsType();
-			details.ScheduleDetails.Description = string.Format("{0} - {1}", _storeInformationSettings.StoreName, _helper.Resource("RecurringPayment"));		// codehint: sm-edit
+			details.ScheduleDetails.Description = _helper.Resource("RecurringPayment");		// codehint: sm-edit
 			details.ScheduleDetails.PaymentPeriod = new BillingPeriodDetailsType();
 			details.ScheduleDetails.PaymentPeriod.Amount = new BasicAmountType();
 			details.ScheduleDetails.PaymentPeriod.Amount.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));

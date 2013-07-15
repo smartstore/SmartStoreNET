@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -13,6 +14,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
@@ -28,6 +30,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IManufacturerService _manufacturerService;
         private readonly IManufacturerTemplateService _manufacturerTemplateService;
         private readonly IProductService _productService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IPictureService _pictureService;
         private readonly ILanguageService _languageService;
@@ -46,6 +50,7 @@ namespace SmartStore.Admin.Controllers
 
         public ManufacturerController(ICategoryService categoryService, IManufacturerService manufacturerService,
             IManufacturerTemplateService manufacturerTemplateService, IProductService productService,
+			IStoreService storeService,	IStoreMappingService storeMappingService,
             IUrlRecordService urlRecordService, IPictureService pictureService,
             ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IExportManager exportManager, IWorkContext workContext,
@@ -56,6 +61,8 @@ namespace SmartStore.Admin.Controllers
             this._manufacturerTemplateService = manufacturerTemplateService;
             this._manufacturerService = manufacturerService;
             this._productService = productService;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
             this._urlRecordService = urlRecordService;
             this._pictureService = pictureService;
             this._languageService = languageService;
@@ -135,6 +142,52 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[NonAction]
+		private void PrepareStoresMappingModel(ManufacturerModel model, Manufacturer manufacturer, bool excludeProperties)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+			if (!excludeProperties)
+			{
+				if (manufacturer != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
+			}
+		}
+
+		[NonAction]
+		protected void SaveStoreMappings(Manufacturer manufacturer, ManufacturerModel model)
+		{
+			var existingStoreMappings = _storeMappingService.GetStoreMappings(manufacturer);
+			var allStores = _storeService.GetAllStores();
+			foreach (var store in allStores)
+			{
+				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
+				{
+					//new role
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+						_storeMappingService.InsertStoreMapping(manufacturer, store.Id);
+				}
+				else
+				{
+					//removed role
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
+				}
+			}
+		}
+
         #endregion
         
         #region List
@@ -213,6 +266,8 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales);
             //templates
             PrepareTemplatesModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, null, false);
             //default values
             model.PageSize = 12; // codehint: sm-edit > 4;
             model.Published = true;
@@ -242,6 +297,8 @@ namespace SmartStore.Admin.Controllers
                 UpdateLocales(manufacturer, model);
                 //update picture seo file name
                 UpdatePictureSeoNames(manufacturer);
+				//Stores
+				SaveStoreMappings(manufacturer, model);
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
@@ -253,6 +310,9 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, null, true);
+
             return View(model);
         }
 
@@ -279,6 +339,8 @@ namespace SmartStore.Admin.Controllers
             });
             //templates
             PrepareTemplatesModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, manufacturer, false);
 
             return View(model);
         }
@@ -314,6 +376,8 @@ namespace SmartStore.Admin.Controllers
                 }
                 //update picture seo file name
                 UpdatePictureSeoNames(manufacturer);
+				//Stores
+				SaveStoreMappings(manufacturer, model);
 
                 //activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
@@ -326,6 +390,8 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
+			//Stores
+			PrepareStoresMappingModel(model, manufacturer, true);
 
             return View(model);
         }
@@ -449,9 +515,7 @@ namespace SmartStore.Admin.Controllers
 
             // codehint: sm-edit
             var ctx = new ProductSearchContext();
-
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.FilteredSpecs = new List<int>();
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = _adminAreaSettings.GridPageSize;
             ctx.ShowHidden = true;

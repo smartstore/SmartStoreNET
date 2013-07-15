@@ -7,6 +7,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Payments.DirectDebit.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Plugin.Payments.DirectDebit
@@ -17,8 +18,10 @@ namespace SmartStore.Plugin.Payments.DirectDebit
     public class DirectDebitPaymentProcessor : BasePlugin, IPaymentMethod
     {
         #region Fields
+
         private readonly DirectDebitPaymentSettings _directDebitPaymentSettings;
         private readonly ISettingService _settingService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ILocalizationService _localizationService;
 
         #endregion
@@ -27,11 +30,13 @@ namespace SmartStore.Plugin.Payments.DirectDebit
 
         public DirectDebitPaymentProcessor(DirectDebitPaymentSettings directDebitPaymentSettings,
             ISettingService settingService,
+			IOrderTotalCalculationService orderTotalCalculationService,
             ILocalizationService localizationService)
         {
             this._directDebitPaymentSettings = directDebitPaymentSettings;
             this._settingService = settingService;
-            _localizationService = localizationService;
+			this._orderTotalCalculationService = orderTotalCalculationService;
+            this._localizationService = localizationService;
         }
 
         #endregion
@@ -67,7 +72,9 @@ namespace SmartStore.Plugin.Payments.DirectDebit
         /// <returns>Additional handling fee</returns>
         public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
-            return _directDebitPaymentSettings.AdditionalFee;
+			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
+				_directDebitPaymentSettings.AdditionalFee, _directDebitPaymentSettings.AdditionalFeePercentage);
+			return result;
         }
 
         /// <summary>

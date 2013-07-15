@@ -1,0 +1,53 @@
+﻿@model StoreScopeConfigurationModel
+@using SmartStore.Core
+@{
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+
+    var stores = Model.Stores.Select(store => new SelectListItem
+    {
+        Text = store.Name,
+        Value = webHelper.ModifyQueryString(Url.Action("ChangeStoreScopeConfiguration", new { storeid = store.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null),
+        Selected = store.Id.Equals(Model.StoreId)
+    })
+    .ToList();
+	
+    stores.Insert(0, new SelectListItem()
+    {
+        Text = T("Admin.Configuration.Settings.StoreScope.AllStores").Text,
+        Value = webHelper.ModifyQueryString(Url.Action("ChangeStoreScopeConfiguration", new { storeid = 0 }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null),
+        Selected = 0.Equals(Model.StoreId)
+    });
+}
+<div class="multi-store-scope well well-small">
+    <table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+			<div class="ctl-label">
+				@T("Admin.Configuration.Settings.StoreScope")
+			</div>
+        </td>
+        <td class="adminData">
+			@Html.DropDownList("store-scope-configuration", stores, new { onchange = "setLocation(this.value);" })
+        </td>
+    </tr>
+    @if (Model.StoreId > 0)
+	{
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+			<label class="checkbox">
+				<input type="checkbox" onclick="Admin.checkAllOverriddenStoreValue(this)">
+				<span>@T("Admin.Configuration.Settings.StoreScope.CheckAll")</span> 
+				<span class="hint">(@(T("Admin.Configuration.Settings.StoreScope.CheckAll.Hint")))</span>
+			</label>
+		</td>
+	</tr>
+	}
+	</table>
+</div>
+
+<script>
+	$(function () {
+		$('#store-scope-configuration').selectWrapper();
+	});
+</script>

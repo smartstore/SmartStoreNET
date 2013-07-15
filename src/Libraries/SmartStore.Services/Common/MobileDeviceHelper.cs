@@ -15,6 +15,7 @@ namespace SmartStore.Services.Common
 
         private readonly ThemeSettings _themeSettings;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly HttpContextBase _httpConttext;
 
         #endregion
@@ -26,10 +27,13 @@ namespace SmartStore.Services.Common
         /// </summary>
         /// <param name="storeInformationSettings">Store information settings</param>
         /// <param name="workContext">Work context</param>
-        public MobileDeviceHelper(ThemeSettings themeSettings, StoreInformationSettings storeInformationSettings, IWorkContext workContext, HttpContextBase httpContext)
+		/// <param name="storeContext">Store context</param>
+        public MobileDeviceHelper(ThemeSettings themeSettings, StoreInformationSettings storeInformationSettings, IWorkContext workContext,
+			IStoreContext storeContext, HttpContextBase httpContext)
         {
+			this._themeSettings = themeSettings;
             this._workContext = workContext;
-            this._themeSettings = themeSettings;
+			this._storeContext = storeContext;
             this._httpConttext = httpContext;
         }
 
@@ -74,7 +78,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         public virtual bool CustomerDontUseMobileVersion()
         {
-            return _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.DontUseMobileVersion);
+			return _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.DontUseMobileVersion, _storeContext.CurrentStore.Id);
         }
 
         #endregion

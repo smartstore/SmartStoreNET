@@ -5,6 +5,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Events;
 
 namespace SmartStore.Services.Catalog
@@ -16,8 +17,8 @@ namespace SmartStore.Services.Catalog
     {
         #region Constants
         private const string MANUFACTURERS_BY_ID_KEY = "SmartStore.manufacturer.id-{0}";
-        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}";
-        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}";
+        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
+        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}-{2}";
         private const string PRODUCTMANUFACTURERS_BY_ID_KEY = "SmartStore.productmanufacturer.id-{0}";
         private const string MANUFACTURERS_PATTERN_KEY = "SmartStore.manufacturer.";
         private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "SmartStore.productmanufacturer.";
@@ -28,6 +29,9 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<Manufacturer> _manufacturerRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
         #endregion
@@ -41,17 +45,26 @@ namespace SmartStore.Services.Catalog
         /// <param name="manufacturerRepository">Category repository</param>
         /// <param name="productManufacturerRepository">ProductCategory repository</param>
         /// <param name="productRepository">Product repository</param>
+		/// <param name="storeMappingRepository">Store mapping repository</param>
+		/// <param name="workContext">Work context</param>
+		/// <param name="storeContext">Store context</param>
         /// <param name="eventPublisher">Event published</param>
         public ManufacturerService(ICacheManager cacheManager,
             IRepository<Manufacturer> manufacturerRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<Product> productRepository,
+			IRepository<StoreMapping> storeMappingRepository,
+			IWorkContext workContext,
+			IStoreContext storeContext,
             IEventPublisher eventPublisher)
         {
             _cacheManager = cacheManager;
             _manufacturerRepository = manufacturerRepository;
             _productManufacturerRepository = productManufacturerRepository;
             _productRepository = productRepository;
+			_storeMappingRepository = storeMappingRepository;
+			_workContext = workContext;
+			_storeContext = storeContext;
             _eventPublisher = eventPublisher;
         }
         #endregion
@@ -96,6 +109,27 @@ namespace SmartStore.Services.Catalog
                 query = query.Where(m => m.Name.Contains(manufacturerName));
             query = query.Where(m => !m.Deleted);
             query = query.OrderBy(m => m.DisplayOrder);
+
+			//Store mapping
+			if (!showHidden)
+			{
+				//Store mapping
+				var currentStoreId = _storeContext.CurrentStore.Id;
+
+				query = from m in query
+						join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+						from sm in m_sm.DefaultIfEmpty()
+						where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+						select m;
+
+				//only distinct manufacturers (group by ID)
+				query = from m in query
+						group m by m.Id	into mGroup
+						orderby mGroup.Key
+						select mGroup.FirstOrDefault();
+
+				query = query.OrderBy(m => m.DisplayOrder);
+			}
 
             var manufacturers = query.ToList();
             return manufacturers;
@@ -205,7 +239,7 @@ namespace SmartStore.Services.Catalog
             if (manufacturerId == 0)
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);
 
-            string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
                 var query = from pm in _productManufacturerRepository.Table
@@ -215,6 +249,28 @@ namespace SmartStore.Services.Catalog
                                   (showHidden || p.Published)
                             orderby pm.DisplayOrder
                             select pm;
+
+				if (!showHidden)
+				{
+					//Store mapping
+					var currentStoreId = _storeContext.CurrentStore.Id;
+
+					query = from pm in query
+							join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+							join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+							from sm in m_sm.DefaultIfEmpty()
+							where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+							select pm;
+
+					//only distinct manufacturers (group by ID)
+					query = from pm in query
+							group pm by pm.Id into pmGroup
+							orderby pmGroup.Key
+							select pmGroup.FirstOrDefault();
+
+					query = query.OrderBy(pm => pm.DisplayOrder);
+				}
+
                 var productManufacturers = new PagedList<ProductManufacturer>(query, pageIndex, pageSize);
                 return productManufacturers;
             });
@@ -231,20 +287,42 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return new List<ProductManufacturer>();
 
-            string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId);
+			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
-                                              {
-                                                  var query = from pm in _productManufacturerRepository.Table
-                                                              join m in _manufacturerRepository.Table on
-                                                                  pm.ManufacturerId equals m.Id
-                                                              where pm.ProductId == productId &&
-                                                                    !m.Deleted &&
-                                                                    (showHidden || m.Published)
-                                                              orderby pm.DisplayOrder
-                                                              select pm;
-                                                  var productManufacturers = query.ToList();
-                                                  return productManufacturers;
-                                              });
+				{
+					var query = from pm in _productManufacturerRepository.Table
+								join m in _manufacturerRepository.Table on
+									pm.ManufacturerId equals m.Id
+								where pm.ProductId == productId &&
+									!m.Deleted &&
+									(showHidden || m.Published)
+								orderby pm.DisplayOrder
+								select pm;
+
+					if (!showHidden)
+					{
+						//Store mapping
+						var currentStoreId = _storeContext.CurrentStore.Id;
+
+						query = from pm in query
+								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+								join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+								from sm in m_sm.DefaultIfEmpty()
+								where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+								select pm;
+
+						//only distinct manufacturers (group by ID)
+						query = from pm in query
+								group pm by pm.Id into mGroup
+								orderby mGroup.Key
+								select mGroup.FirstOrDefault();
+
+						query = query.OrderBy(pm => pm.DisplayOrder);
+					}
+
+					var productManufacturers = query.ToList();
+					return productManufacturers;
+				});
         }
         
         /// <summary>

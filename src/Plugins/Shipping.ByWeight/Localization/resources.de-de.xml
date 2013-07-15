@@ -62,4 +62,10 @@
   <LocaleResource Name="AddRecord.Hint">
     <Value>Fügt einen neuen Datensatz zu.</Value>
   </LocaleResource>
+  <LocaleResource Name="Fields.Store">
+    <Value>Shop</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.Store.Hint">
+    <Value>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</Value>
+  </LocaleResource>
 </Language>

@@ -61,12 +61,14 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Controllers
 			if (!ModelState.IsValid)
 				return Configure();
 
-            try {
+            try 
+			{
 				_elmarService.CreateFeed();
 
-				model.GenerateFeedResult = _elmarService.Helper.GeneratedFeedResult;
+				model.GenerateFeedResult = _elmarService.Helper.Resource("SuccessResult");
             }
-            catch (Exception exc) {
+            catch (Exception exc)
+			{
 				ErrorNotification(exc.Message, true);
                 _logger.Error(exc.Message, exc);
             }

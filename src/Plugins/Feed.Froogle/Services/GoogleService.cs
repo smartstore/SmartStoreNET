@@ -16,6 +16,10 @@ using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Stores;
+using System.Web.Mvc;
+using System.Collections.Generic;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -28,16 +32,19 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
         private readonly IRepository<GoogleProductRecord> _gpRepository;
 		private readonly IProductService _productService;
 		private readonly IManufacturerService _manufacturerService;
+		private readonly IStoreService _storeService;
 
 		public GoogleService(
 			IRepository<GoogleProductRecord> gpRepository,
 			IProductService productService,
 			IManufacturerService manufacturerService,
+			IStoreService storeService,
 			FroogleSettings settings)
         {
             this._gpRepository = gpRepository;
 			this._productService = productService;
 			this._manufacturerService = manufacturerService;
+			this._storeService = storeService;
 			this.Settings = settings;
 
 			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () => {
@@ -178,8 +185,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return "";
 		}
-		private string WriteItem(XmlWriter writer, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency) {
-			var mainImageUrl = Helper.MainImageUrl(product, variant);
+		private string WriteItem(XmlWriter writer, Store store, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency) {
+			var mainImageUrl = Helper.MainProductImageUrl(store, product, variant);
 			var googleProduct = GetByProductVariantId(variant.Id);
 			var category = ProductCategory(variant, googleProduct);
 
@@ -192,8 +199,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteCData(variant.FullProductName.Truncate(70, ""));
 			writer.WriteEndElement();
 
-			var description = Helper.BuildProductDescription(product, variant, manu, d => {
-				if (variant.Description.IsNullOrEmpty() && product.FullDescription.IsNullOrEmpty() && product.ShortDescription.IsNullOrEmpty()) {
+			var description = Helper.BuildProductDescription(product, variant, manu, d =>
+			{
+				if (variant.Description.IsNullOrEmpty() && product.FullDescription.IsNullOrEmpty() && product.ShortDescription.IsNullOrEmpty())
+				{
 					Random rnd = new Random();
 
 					switch (rnd.Next(1, 5)) {
@@ -216,16 +225,18 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteFullEndElement(); 
 
 			string productType = Helper.CategoryBreadCrumbJoined(product);
-			if (productType.HasValue()) {
+			if (productType.HasValue())
+			{
 				writer.WriteStartElement("g", "product_type", _googleNamespace);
 				writer.WriteCData(productType);
 				writer.WriteFullEndElement();
 			}
 
-			writer.WriteElementString("link", Helper.ProductDetailLink(product));
+			writer.WriteElementString("link", Helper.ProductDetailUrl(store, product));
 			writer.WriteElementString("g", "image_link", _googleNamespace, mainImageUrl);
 
-			foreach (string additionalImageUrl in Helper.AdditionalImages(product, mainImageUrl)) {
+			foreach (string additionalImageUrl in Helper.AdditionalProductImages(store, product, mainImageUrl))
+			{
 				writer.WriteElementString("g", "additional_image_link", _googleNamespace, additionalImageUrl);
 			}
 
@@ -236,7 +247,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
 
 			string specialPriceDate;
-			if (SpecialPrice(variant, out specialPriceDate)) {
+			if (SpecialPrice(variant, out specialPriceDate))
+			{
 				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(variant.SpecialPrice.Value) + " " + currency.CurrencyCode);
 				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
 			}
@@ -351,36 +363,50 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return model;
 		}
-		public virtual void CreateFeed(Stream stream) {
+		public virtual void CreateFeed(Stream stream, Store store)
+		{
 			string breakingError = null;
-			var xmlSettings = new XmlWriterSettings {
+			var xmlSettings = new XmlWriterSettings
+			{
 				Encoding = Encoding.UTF8
 			};
 
-			using (var writer = XmlWriter.Create(stream, xmlSettings)) {
+			using (var writer = XmlWriter.Create(stream, xmlSettings))
+			{
 				writer.WriteStartDocument();
 				writer.WriteStartElement("rss");
 				writer.WriteAttributeString("version", "2.0");
 				writer.WriteAttributeString("xmlns", "g", null, _googleNamespace);
 				writer.WriteStartElement("channel");
-				writer.WriteElementString("title", string.Format("{0} - Feed for Google Merchant Center", Helper.StoreName));
+				writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(store.Name));
 				writer.WriteElementString("link", "http://base.google.com/base/");
 				writer.WriteElementString("description", "Information about products");
 
 				var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-				var products = _productService.GetAllProducts(false);
+				var ctx = new ProductSearchContext()
+				{
+					OrderBy = ProductSortingEnum.CreatedOn,
+					PageSize = int.MaxValue,
+					StoreId = store.Id
+				};
 
-				foreach (var product in products) {
+				var products = _productService.SearchProducts(ctx);
+
+				foreach (var product in products)
+				{
 					var manufacturer = _manufacturerService.GetProductManufacturersByProductId((product.Id)).FirstOrDefault();
 					var variants = _productService.GetProductVariantsByProductId(product.Id, false);
 
-					foreach (var variant in variants.Where(v => v.Published)) {
+					foreach (var variant in variants.Where(v => v.Published))
+					{
 						writer.WriteStartElement("item");
 
-						try {
-							breakingError = WriteItem(writer, product, variant, manufacturer, currency);
+						try
+						{
+							breakingError = WriteItem(writer, store, product, variant, manufacturer, currency);
 						}
-						catch (Exception exc) {
+						catch (Exception exc)
+						{
 							exc.Dump();
 						}
 
@@ -401,18 +427,29 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (breakingError.HasValue())
 				throw new SmartException(breakingError);
 		}
-		public virtual void CreateFeed() {
-			using (var stream = new FileStream(Helper.FeedFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)) {
-				CreateFeed(stream);
-			}
+		public virtual void CreateFeed()
+		{
+			Helper.StartCreatingFeeds(_storeService, (stream, store) =>
+			{
+				CreateFeed(stream, store);
+				return true;
+			});
 		}
-		public virtual void SetupModel(FeedFroogleModel model, ScheduleTask task = null) {
+		public virtual void SetupModel(FeedFroogleModel model, ScheduleTask task = null)
+		{
+			var stores = _storeService.GetAllStores().ToList();
+
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();
-			model.StaticFileUrl = Helper.FeedFileUrl;
+			model.GeneratedFiles = Helper.FeedFiles(stores);
 			model.Helper = Helper;
 
-			if (task != null) {
+			model.AvailableStores = new List<SelectListItem>();
+			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
+
+			if (task != null)
+			{
 				model.GenerateStaticFileEachMinutes = task.Seconds / 60;
 				model.TaskEnabled = task.Enabled;
 			}

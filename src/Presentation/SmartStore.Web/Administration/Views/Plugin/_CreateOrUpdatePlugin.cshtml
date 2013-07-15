@@ -20,7 +20,7 @@
 	x.Add().Text(T("Admin.Configuration.Plugins.Stores").Text).Content(TabStores());
 
     //generate an event
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "plugin-edit"));
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "plugin-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()

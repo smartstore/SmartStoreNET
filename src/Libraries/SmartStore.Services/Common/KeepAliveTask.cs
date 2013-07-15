@@ -20,7 +20,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         public void Execute()
         {
-            var storeUrl = _storeInformationSettings.StoreUrl.TrimEnd('\\').EnsureEndsWith("/");
+			var storeUrl = _storeContext.CurrentStore.Url.TrimEnd('\\').EnsureEndsWith("/");
             string url = storeUrl + "keepalive/index";
 
             try

@@ -1647,7 +1647,7 @@ namespace SmartStore.Web.Controllers
                     context.CategoryIds.AddRange(GetChildCategoryIds(category.Id));
 
                 var filterQuery = _filterService.ProductFilter(context);
-                var products = new PagedList<Product>(filterQuery, 0, command.PageSize);
+                var products = new PagedList<Product>(filterQuery, command.PageIndex, command.PageSize);
 
                 model.Products = PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
                 model.PagingFilteringContext.LoadPagedList(products);

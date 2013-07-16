@@ -35,70 +35,15 @@ namespace SmartStore.Web.Controllers
     {
 		private readonly IFilterService _filterService;
 
-		public FilterController(IFilterService filterService) {
+		public FilterController(IFilterService filterService)
+		{
 			_filterService = filterService;
 		}
 
-		//public ActionResult Tester() {
-		//	var products = EngineContext.Current.Resolve<IRepository<Product>>();
-		//	var variants = EngineContext.Current.Resolve<IRepository<ProductVariant>>();
-
-		//	FilterSql context = new FilterSql {
-		//		Criteria = new List<FilterCriteria>()
-		//	};
-
-		//	//context.Criteria.Add(new FilterCriteria { Name = "Name", Operator = FilterOperator.StartsWith, Value = "HP " });
-		//	//context.Criteria.Add(new FilterCriteria { Name = "Price", Entity = "ProductVariant", Type = "Decimal", Operator = FilterOperator.GreaterEqual, Value = "2000" });
-		//	//context.Criteria.Add(new FilterCriteria { Name = "Price", Entity = FilterService.ShortcutPrice, Operator = FilterOperator.GreaterEqual, Value = "2000" });
-		//	//context.Criteria.Add(new FilterCriteria { Name = "Name", Entity = "Manufacturer", Value = "Asus" });
-		//	//context.Criteria.Add(new FilterCriteria { Name = "SpecificationAttributeOptionId", Entity = "SpecificationAttributeOption", Type = "Int32", Value = "2" });	// too long
-		//	context.Criteria.Add(new FilterCriteria { Name = "AnyAttributeName", Entity = FilterService.ShortcutSpecAttribute, Value = "2" });	// metadata required
-			
-
-		//	//string ser = filterService.Serialize(context.Criteria);
-		//	//List<FilterCriteria> des = filterService.Deserialize(ser);
-		//	//return Content("{0} ".FormatWith(des.Count) + ser);
-
-		//	_filterService.ToWhereClause(context);
-		//	context.WhereClause.ToString().Dump();
-
-		//	// --- simple product query
-		//	//var query = products.Table.Where(context.WhereClause.ToString(), context.Values.ToArray());
-
-		//	// --- product variant query
-		//	//var pvq = variants.Table.Where(context.WhereClause.ToString(), context.Values.ToArray());
-
-		//	//var query =
-		//	//	from p in products.Table
-		//	//	join pv in pvq on p.Id equals pv.ProductId
-		//	//	select p;
-
-		//	// --- manufacturer query
-		//	//var pmq = (
-		//	//	from p in products.Table
-		//	//	from pm in p.ProductManufacturers
-		//	//	select pm).Where(context.WhereClause.ToString(), context.Values.ToArray());
-
-		//	//var query = pmq.Select(pm => pm.Product);
-
-		//	// --- spec attribute query
-		//	var saq = (
-		//		from p in products.Table
-		//		from sa in p.ProductSpecificationAttributes
-		//		select sa).Where(a => a.AllowFiltering).Where(context.WhereClause.ToString(), context.Values.ToArray());
-
-		//	var query = saq.Select(sa => sa.Product);
-
-		//	var lst = query.ToList();
-
-		//	foreach (var itm in lst)
-		//		"{0} {1}".FormatWith(itm.Id, itm.Name).Dump();
-
-		//	return Content("{0} {1}".FormatWith(lst.Count(), context.WhereClause.ToString()));
-		//}
-
-		public ActionResult Products(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode) {
-			var context = new FilterProductContext {
+		public ActionResult Products(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
+		{
+			var context = new FilterProductContext()
+			{
 				Filter = filter,
 				ParentCategoryID = categoryID,
 				CategoryIds = new List<int> { categoryID },
@@ -113,12 +58,15 @@ namespace SmartStore.Web.Controllers
 
 			return PartialView(new ProductFilterModel { Context = context });
 		}
+
 		[HttpPost]
-		public ActionResult Products(string active, string inactive, int categoryID, int? pagesize, int? orderby, string viewmode) {
+		public ActionResult Products(string active, string inactive, int categoryID, int? pagesize, int? orderby, string viewmode)
+		{
 			// TODO: needed later for ajax based filtering... see example below
 			//System.Threading.Thread.Sleep(3000);
 
-			var context = new FilterProductContext {
+			var context = new FilterProductContext()
+			{
 				ParentCategoryID = categoryID,
 				CategoryIds = new List<int> { categoryID },
 				Criteria = _filterService.Deserialize(active),
@@ -146,13 +94,15 @@ namespace SmartStore.Web.Controllers
 			return null;
 		}
 
-		public ActionResult ProductsMultiSelect(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode, string filterMultiSelect) {
-			var context = new FilterProductContext {
+		public ActionResult ProductsMultiSelect(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode, string filterMultiSelect)
+		{
+			var context = new FilterProductContext()
+			{
 				Filter = filter,
 				ParentCategoryID = categoryID,
 				CategoryIds = new List<int> { categoryID },
 				Path = path,
-				PageSize = pagesize ?? 4,
+				PageSize = pagesize ?? 12,
 				ViewMode = viewmode,
 				OrderBy = orderby,
 				Criteria = _filterService.Deserialize(filter)

@@ -16,7 +16,8 @@ namespace SmartStore.Services.Filter
 		public List<object> Values { get; set; }
 		public StringBuilder WhereClause { get; set; }
 
-		public override string ToString() {
+		public override string ToString()
+		{
 			if (WhereClause != null && Values != null)
 				return "{0}, {1}".FormatWith(WhereClause.ToString(), string.Join(", ", Values.ToArray()));
 			return "";

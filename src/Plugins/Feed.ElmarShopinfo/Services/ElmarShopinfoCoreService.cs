@@ -25,7 +25,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 {
 	public partial class ElmarShopinfoCoreService : IElmarShopinfoCoreService
 	{
-		private const string _captions = "'Produktnummmer';'Hersteller';'Verfuegbarkeit';'Versandkosten';'EAN';'ISBN';'LangText';'Produktname';'Bild-URL';'Preis';'Beschreibung';'Sonderangebot';'Warengruppe';'Einheit';'Produkt-URL';'Garantie'";
+		private const string _captions = "'Produktnummmer';'Hersteller';'Verfuegbarkeit';'Versandkosten';'EAN';'ISBN';'LangText';'Produktname';'Bild-URL';'Preis';'Beschreibung';" + 
+			"'Sonderangebot';'Warengruppe';'Einheit';'Produkt-URL';'Garantie';'Grundpreis (Produktabhängig)'";
 		private readonly PluginHelperFeed _helper;
 		private readonly IProductService _productService;
 		private readonly IManufacturerService _manufacturerService;
@@ -134,7 +135,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				});
 			}
 		}
-		private string WriteItem(StreamWriter writer, Store store, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency, StringBuilder sb) {
+		private string WriteItem(StreamWriter writer, Store store, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency, StringBuilder sb)
+		{
 			sb.Clear();
 
 			string shippingTime = (variant.DeliveryTime == null ? Settings.ShippingTime : variant.DeliveryTime.Name);
@@ -146,7 +148,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 			string specialPrice = (Settings.ExportSpecialPrice ? Helper.SpecialPrice(variant, true) : "");
 			string price = (specialPrice.HasValue() ? specialPrice : Helper.DecimalUsFormat(Helper.ConvertFromStoreCurrency(variant.Price, currency)));
 
-			sb.AppendFormat("'{0}';'{1}';'{2}';'{3}';'{4}';'{5}';'{6}';'{7}';'{8}';'{9}';'{10}';'{11}';'{12}';'{13}';'{14}';'{15}'",
+			sb.AppendFormat("'{0}';'{1}';'{2}';'{3}';'{4}';'{5}';'{6}';'{7}';'{8}';'{9}';'{10}';'{11}';'{12}';'{13}';'{14}';'{15}';'{16}'",
 				Helper.ReplaceCsvChars(variant.Sku),
 				Helper.ReplaceCsvChars(brand),
 				Helper.ReplaceCsvChars(Availability(variant)),
@@ -162,7 +164,8 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				Helper.ReplaceCsvChars(Helper.CategoryName(product)),
 				Helper.ReplaceCsvChars(measureUnit),
 				Helper.ReplaceCsvChars(Helper.ProductDetailUrl(store, product)),
-				Helper.ReplaceCsvChars(Settings.Warranty)
+				Helper.ReplaceCsvChars(Settings.Warranty),
+				Helper.ReplaceCsvChars(Helper.BasePrice(variant))
 			);
 
 			writer.WriteLine(sb.ToString());

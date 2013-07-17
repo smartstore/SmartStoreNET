@@ -1,6 +1,6 @@
 ﻿FriendlyName: Elmar Shopinfo
 SystemName: PromotionFeed.ElmarShopinfo
-Version: 1.01
+Version: 1.02
 SupportedVersions: 1.0
 Author: SmartStore AG
 DisplayOrder: 1

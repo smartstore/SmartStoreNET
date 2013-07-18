@@ -235,12 +235,17 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
 		}
-		public GeneratedFeedFile FeedFileByStore(Store store, string secondFileName = null)
+		
+		public GeneratedFeedFile FeedFileByStore(Store store, string secondFileName = null, string extension = null)
 		{
 			if (store != null)
 			{
+				string ext = extension ?? BaseSettings.ExportFormat;
 				string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
 				string fname = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+
+				if (ext.HasValue())
+					fname = Path.GetFileNameWithoutExtension(fname) + (ext.StartsWith(".") ? "" : ".") + ext;
 
 				string url = "{0}content/files/exportimport/".FormatWith(store.Url.EnsureEndsWith("/"));
 
@@ -267,13 +272,13 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return null;
 		}
-		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null)
+		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
 		{
 			var lst = new List<GeneratedFeedFile>();
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store, secondFileName);
+				var feedFile = FeedFileByStore(store, secondFileName, extension);
 
 				if (feedFile != null && File.Exists(feedFile.FilePath))
 					lst.Add(feedFile);
@@ -298,7 +303,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store);
+				var feedFile = FeedFileByStore(store, null);
 				if (feedFile != null)
 				{
 					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
@@ -393,6 +398,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public string Brand { get; set; }
 		public bool UseOwnProductNo { get; set; }
 		public int StoreId { get; set; }
+		public string ExportFormat { get; set; }
 	}	// class
 
 

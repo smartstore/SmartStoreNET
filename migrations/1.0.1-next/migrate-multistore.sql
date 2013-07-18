@@ -1897,3 +1897,13 @@ BEGIN
 	END')
 END
 GO
+
+-- StoreMapping Store foreign key
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE 
+	name = 'StoreMapping_Store' AND parent_object_id = Object_id('StoreMapping') AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	ALTER TABLE [dbo].[StoreMapping] WITH CHECK ADD CONSTRAINT [StoreMapping_Store]
+	FOREIGN KEY([StoreId]) REFERENCES [dbo].[Store] ([Id])
+	ON DELETE CASCADE
+END
+GO

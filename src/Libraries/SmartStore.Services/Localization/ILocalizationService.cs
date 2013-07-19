@@ -134,6 +134,7 @@ namespace SmartStore.Services.Localization
 		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
-		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null);
+		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
+		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true);
     }
 }

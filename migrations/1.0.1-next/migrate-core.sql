@@ -128,6 +128,27 @@ set @resources='
 	<T>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateSuccess">
+    <Value>The language resources has been successfully updated.</Value>
+	<T>Die Sprachressourcen wurden erfogreich aktualisiert.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateFailure">
+    <Value>Failed to update language resources.</Value>
+	<T>Das Aktualisieren der Sprachressourcen ist fehlgeschlagen.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.Update">
+    <Value>Update resources</Value>
+	<T>Ressourcen aktualisieren</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateConfirm">
+    <Value>Do you like to update the language resources for this plugin?</Value>
+	<T>Möchten Sie die Sprachressourcen für dieses Plugin aktualisieren?</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateProgress">
+    <Value>Refreshing language resources...</Value>
+	<T>Aktualisiere Sprachressourcen...</T>
+  </LocaleResource>
+  
 </Language>
 '
 

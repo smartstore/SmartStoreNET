@@ -96,7 +96,6 @@ namespace SmartStore.Core.Plugins
                     }
 
                     //load description files
-                    var descriptors = GetDescriptionFilesAndDescriptors(pluginFolder);
                     foreach (var dfd in GetDescriptionFilesAndDescriptors(pluginFolder))
                     {
                         var descriptionFile = dfd.Key;

@@ -411,7 +411,6 @@
     <Compile Include="Logging\LoggingExtensions.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
-    <Compile Include="Configuration\ISettingService.cs" />
     <Compile Include="Localization\LanguageService.cs" />
     <Compile Include="Localization\LocalizationService.cs" />
     <Compile Include="Logging\DefaultLogger.cs" />

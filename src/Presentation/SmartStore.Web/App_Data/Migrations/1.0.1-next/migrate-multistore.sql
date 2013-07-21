@@ -5,10 +5,6 @@ declare @resources xml
 --a resource will be deleted if its value is empty   
 set @resources='
 <Language>
-  <LocaleResource Name="Admin.Configuration.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.AddNew">
 	<Value>Add a new store</Value>
 	<T>Neuen Shop hinzufügen</T>
@@ -66,132 +62,7 @@ set @resources='
 	<Value>No stores defined.</Value>
 	<T>Keine Shops vorhanden.</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Manufacturers.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the manufacturer is available only at certain stores.</Value>
-	<T>Legt fest, ob der Hersteller nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the manufacturer will be shown.</Value>
-	<T>Bitte Shops auswählen, für die der Hersteller verfügbar ist.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Catalog.Categories.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the category is available only at certain stores.</Value>
-	<T>Legt fest, ob die Warengruppe nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Categories.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Categories.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the category will be shown.</Value>
-	<T>Bitte Shops auswählen, für die die Warengruppe verfügbar ist.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Catalog.Products.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the product is available only at certain stores.</Value>
-	<T>Legt fest, ob der Artikel nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the product will be shown.</Value>
-	<T>Bitte Shops auswählen, für die der Artikel verfügbar ist.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Configuration.Languages.Info">
-	<Value>Info</Value>
-	<T>Info</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Languages.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the language is available only at certain stores.</Value>
-	<T>Legt fest, ob die Sprache nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Languages.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Languages.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the language will be shown.</Value>
-	<T>Bitte Shops auswählen, für die die Sprache verfügbar ist.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Configuration.Currencies.Info">
-	<Value>Info</Value>
-	<T>Info</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Currencies.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the currency is available only at certain stores.</Value>
-	<T>Legt fest, ob die Währung nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Currencies.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Currencies.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the currency will be shown.</Value>
-	<T>Bitte Shops auswählen, für die die Währung verfügbar ist.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.CurrentCarts.Store">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Orders.List.Store">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Orders.List.Store.Hint">
-	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
-  </LocaleResource>
+    
   <LocaleResource Name="Admin.Orders.Fields.Store">
 	<Value>Store</Value>
 	<T>Shop</T>
@@ -204,6 +75,10 @@ set @resources='
 	<Value>Store</Value>
 	<T>Shop</T>
   </LocaleResource>
+  <LocaleResource Name="Admin.Customers.Customers.Orders.Store.Hint">
+	<Value>Name of the store.</Value>
+	<T>Name des Shops.</T>
+  </LocaleResource>  
   
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts">
 	<Value>HOST values</Value>
@@ -258,41 +133,7 @@ set @resources='
 	<Value>Please provide a store URL.</Value>
 	<T>Bitte eine Shop-URL angeben.</T>
   </LocaleResource>
-
-  <LocaleResource Name="Admin.Catalog.Products.List.SearchStore">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.List.SearchStore.Hint">
-	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
-  </LocaleResource>
   
-  
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Info">
-	<Value>Info</Value>
-	<T>Info</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the message template is available only at certain stores.</Value>
-	<T>Legt fest, ob die Vorlage nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the message template will be active.</Value>
-	<T>Bitte Shops auswählen, für die die Vorlage verfügbar ist.</T>
-  </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Deleted">
 	<Value>The message template has been deleted successfully.</Value>
 	<T>Die Nachrichtenvorlage wurde erfolgreich gelöscht.</T>
@@ -301,76 +142,7 @@ set @resources='
 	<Value>Copy template</Value>
 	<T>Vorlage kopieren</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.MessageTemplates.List.SearchStore.Hint">
-	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
-  </LocaleResource>
   
-  <LocaleResource Name="Admin.ContentManagement.Topics.Stores">
-	<Value>Stores</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the topic is available only at certain stores.</Value>
-	<T>Legt fest, ob die Seite nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the topic will be shown.</Value>
-	<T>Bitte Shops auswählen, für die die Seite angezeigt werden soll.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.List.SearchStore">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Topics.List.SearchStore.Hint">
-	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Info">
-	<Value>Info</Value>
-	<T>Info</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the news is available only at certain stores.</Value>
-	<T>Legt fest, ob die News nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the news will be shown.</Value>
-	<T>Bitte Shops auswählen, für die die News angezeigt werden soll.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.List.SearchStore">
-	<Value>Store</Value>
-	<T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.News.NewsItems.List.SearchStore.Hint">
-	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
-  </LocaleResource>
-
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SslEnabled">
 	<Value>SSL enabled</Value>
 	<T>SSL aktivieren</T>
@@ -517,22 +289,18 @@ set @resources='
 	<Value>No setting could be loaded with the specified ID.</Value>
 	<T>Eine Einstellung mit dieser ID wurde nicht gefunden.</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores">
-	<Value>All stores</Value>
-	<T>Alle Shops</T>
-  </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName">
 	<Value>Store</Value>
 	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName.Hint">
+	<Value>Name of the store</Value>
+	<T>Name des shops</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope">
 	<Value>Multi-store configuration for</Value>
 	<T>Multi-Shop Konfiguration für</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Settings.StoreScope.AllStores">
-	<Value>All stores</Value>
-	<T>Alle shops</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll">
 	<Value>Check/uncheck all</Value>
@@ -547,36 +315,6 @@ set @resources='
 	<Value>Captcha is enabled but the appropriate keys are not entered.</Value>
 	<T>Captcha wurde aktiviert, aber die zugehörigen Schlüssel fehlen.</T>
   </LocaleResource>
-  
-  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Stores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores">
-	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores.Hint">
-	<Value>Determines whether the blog post is available only at certain stores.</Value>
-	<T>Legt fest, ob der Blog-Beitrag nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.AvailableStores">
-	<Value>Stores</Value>
-	<T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.AvailableStores.Hint">
-	<Value>Select stores for which the blog post will be shown.</Value>
-	<T>Bitte Shops auswählen, für die der Blog-Beitrag angezeigt werden soll.</T>
-  </LocaleResource>
-  
-  <LocaleResource Name="Admin.Catalog.Products.Variants.TierPrices.Fields.Store">
-    <Value>Store</Value>
-    <T>Shop</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Catalog.Products.Variants.TierPrices.Fields.Store.All">
-    <Value>All stores</Value>
-    <T>Alle shops</T>
-  </LocaleResource>  
 
   <LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store">
     <Value>Store</Value>
@@ -641,26 +379,6 @@ set @resources='
     <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
   </LocaleResource>
   
-  <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores">
-    <Value>Limited to stores</Value>
-    <T>Auf Shops begrenzt</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores.Hint">
-    <Value>Determines whether the plugin is available only at certain stores.</Value>
-    <T>Legt fest, ob das Plugin nur für bestimmte Shops verfügbar ist.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Plugins.Fields.AvailableStores">
-    <Value>Stores</Value>
-    <T>Shops</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Plugins.Fields.AvailableStores.Hint">
-    <Value>Select stores for which the plugin will be used.</Value>
-    <T>Bitte Shops auswählen, für die das Plugin genutzt werden soll.</T>
-  </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.Plugins.Stores">
-    <Value>Stores</Value>
-    <T>Shops</T>
-  </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Info">
     <Value>Plugin Info</Value>
     <T>Plugin Info</T>

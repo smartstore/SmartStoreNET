@@ -34,7 +34,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.List.ShippingStatus")]
         public int ShippingStatusId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.List.Store")]
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int StoreId { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.List.OrderGuid")]

@@ -161,21 +161,38 @@ set @resources='
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores">
+  <LocaleResource Name="Admin.Common.Info">
+	<Value>Info</Value>
+	<T>Info</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.StoresAll">
+	<Value>All stores</Value>
+	<T>Alle Shops</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.Common.Store.SearchFor">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Store.SearchFor.Hint">
+	<Value>Search by a specific store.</Value>
+	<T>Nach bestimmten Shop suchen.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Store.LimitedTo">
 	<Value>Limited to stores</Value>
 	<T>Auf Shops begrenzt</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores.Hint">
-	<Value>Determines whether the slide is available only at certain stores.</Value>
-	<T>Legt fest, ob der Slide nur für bestimmte Shops verfügbar ist.</T>
+  <LocaleResource Name="Admin.Common.Store.LimitedTo.Hint">
+	<Value>Determines whether the item is available only at certain stores.</Value>
+	<T>Legt fest, ob der Eintrag nur für bestimmte Shops verfügbar ist.</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores">
+  <LocaleResource Name="Admin.Common.Store.AvailableFor">
 	<Value>Stores</Value>
 	<T>Shops</T>
   </LocaleResource>
-  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores.Hint">
-	<Value>Select stores for which the slide will be shown.</Value>
-	<T>Bitte Shops auswählen, für die der Slide angezeigt werden soll.</T>
+  <LocaleResource Name="Admin.Common.Store.AvailableFor.Hint">
+	<Value>Select stores for which the item will be shown.</Value>
+	<T>Bitte Shops auswählen, für die der Eintrag angezeigt werden soll.</T>
   </LocaleResource>
   
 </Language>

@@ -300,7 +300,7 @@ namespace SmartStore.Admin.Models.Catalog
             public string CustomerRole { get; set; }
 
 			public int StoreId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.TierPrices.Fields.Store")]
+			[SmartResourceDisplayName("Admin.Common.Store")]
 			[UIHint("TierPriceStore")]
 			public string Store { get; set; }
 

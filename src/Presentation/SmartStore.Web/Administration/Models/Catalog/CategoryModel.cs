@@ -101,9 +101,9 @@ namespace SmartStore.Admin.Models.Catalog
         public int[] SelectedCustomerRoleIds { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

@@ -7,8 +7,8 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("language-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
 {
-    x.Add().Text(T("Admin.Configuration.Languages.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Configuration.Languages.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "language-edit", this.Html, this.Model));

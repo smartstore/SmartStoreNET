@@ -72,10 +72,10 @@ namespace SmartStore.Admin.Models.ContentSlider
         public bool Published { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

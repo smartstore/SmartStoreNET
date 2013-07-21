@@ -50,7 +50,7 @@ namespace SmartStore.Admin.Controllers
 			stores.Insert(0, new Store 
 			{
 				Id = 0,
-				Name = _localizationService.GetResource("Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores")
+				Name = _localizationService.GetResource("Admin.Common.StoresAll")
 			});
 
 			var list = 

@@ -46,7 +46,7 @@
            .Content(TabSpecificationAttributes());
     x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
            .Content(TabAcl());
-	x.Add().Text(T("Admin.Catalog.Products.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "product-edit", this.Html, this.Model));

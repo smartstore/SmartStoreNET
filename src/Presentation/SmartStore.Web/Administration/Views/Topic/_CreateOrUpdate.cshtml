@@ -23,7 +23,7 @@
 {
     x.Add().Text(T("Admin.ContentManagement.Topics.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
-	x.Add().Text(T("Admin.ContentManagement.Topics.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "topic-edit", this.Html, this.Model));

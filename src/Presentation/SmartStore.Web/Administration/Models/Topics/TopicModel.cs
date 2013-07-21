@@ -19,9 +19,9 @@ namespace SmartStore.Admin.Models.Topics
         }
 
         //Store mapping
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

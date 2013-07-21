@@ -9,8 +9,8 @@
 
 @Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
 {
-    x.Add().Text(T("Admin.ContentManagement.MessageTemplates.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.ContentManagement.MessageTemplates.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "template-edit", this.Html, this.Model));

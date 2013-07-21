@@ -1,5 +1,6 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
+
 @if (Model.IsPasswordProtected)
 {
     <script type="text/javascript">    
@@ -50,24 +51,19 @@
             </div>
         }
     </div>
+}
+
+@if (ViewBag.BodyOnly)
+{
+    <div class="topic-html-content-body" id="ph-topic-body-@Model.Id">
+        @Html.Raw(Model.Body)
+    </div>
+}
+else {
     <div class="block topic-html-content" id="ph-topic-@Model.Id">
         @if (!string.IsNullOrEmpty(Model.Title))
         {
             <div class="block-title" id="ph-title-@Model.Id">
-                @Model.Title
-            </div>
-        }
-        <div class="block-body topic-html-content-body">
-            @Html.Raw(Model.Body)
-        </div>
-    </div>
-}
-else
-{
-    <div class="block topic-html-content">
-        @if (!string.IsNullOrEmpty(Model.Title))
-        {
-            <div class="block-title">
                 @Model.Title
             </div>
         }

@@ -128,6 +128,56 @@ set @resources='
 	<T>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateSuccess">
+    <Value>The language resources has been successfully updated.</Value>
+	<T>Die Sprachressourcen wurden erfogreich aktualisiert.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateFailure">
+    <Value>Failed to update language resources.</Value>
+	<T>Das Aktualisieren der Sprachressourcen ist fehlgeschlagen.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.Update">
+    <Value>Update resources</Value>
+	<T>Ressourcen aktualisieren</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateConfirm">
+    <Value>Do you like to update the language resources for this plugin?</Value>
+	<T>Möchten Sie die Sprachressourcen für dieses Plugin aktualisieren?</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateProgress">
+    <Value>Refreshing language resources...</Value>
+	<T>Aktualisiere Sprachressourcen...</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="Admin.Common.General">
+	<Value>General</Value>
+	<T>Allgemein</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shops begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores.Hint">
+	<Value>Determines whether the slide is available only at certain stores.</Value>
+	<T>Legt fest, ob der Slide nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores.Hint">
+	<Value>Select stores for which the slide will be shown.</Value>
+	<T>Bitte Shops auswählen, für die der Slide angezeigt werden soll.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

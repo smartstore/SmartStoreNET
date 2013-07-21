@@ -92,7 +92,7 @@ namespace SmartStore.Web.Controllers
 
         [ChildActionOnly]
         //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
-        public ActionResult TopicBlock(string systemName)
+        public ActionResult TopicBlock(string systemName, bool bodyOnly = false)
         {
 			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
@@ -100,6 +100,7 @@ namespace SmartStore.Web.Controllers
             if (cacheModel == null)
                 return Content("");
 
+            ViewBag.BodyOnly = bodyOnly;
             return PartialView(cacheModel);
         }
 

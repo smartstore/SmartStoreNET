@@ -32,14 +32,19 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ContentSlider()
         {
-            //var model = this._contentSliderSettings;
             var workContext = EngineContext.Current.Resolve<IWorkContext>();
+			var storeContext = EngineContext.Current.Resolve<IStoreContext>();
             var pictureService = EngineContext.Current.Resolve<IPictureService>();
             var model = EngineContext.Current.Resolve<ContentSliderSettings>();
 
             model.BackgroundPictureUrl = pictureService.GetPictureUrl(model.BackgroundPictureId, 0, false);
 
-            var slides = model.Slides.Where(s => s.LanguageCulture == workContext.WorkingLanguage.LanguageCulture).OrderBy(s => s.DisplayOrder);
+            var slides = model.Slides
+				.Where(s => 
+					s.LanguageCulture == workContext.WorkingLanguage.LanguageCulture && 
+					(!s.LimitedToStores || (s.SelectedStoreIds != null && s.SelectedStoreIds.Contains(storeContext.CurrentStore.Id)))
+				)
+				.OrderBy(s => s.DisplayOrder);
             
             foreach (ContentSliderSlideSettings slide in slides)
             {

@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using Telerik.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.ContentSlider;
+using SmartStore.Admin.Models.Stores;
 
 namespace SmartStore.Admin.Models.ContentSlider
 {
@@ -70,6 +71,14 @@ namespace SmartStore.Admin.Models.ContentSlider
         [SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.Published")]
         public bool Published { get; set; }
 
+		//Store mapping
+		[SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.LimitedToStores")]
+		public bool LimitedToStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.AvailableStores")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.Button1")]
         public ContentSliderButtonModel Button1 { get; set; }
 
@@ -78,7 +87,6 @@ namespace SmartStore.Admin.Models.ContentSlider
 
         [SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.Button3")]
         public ContentSliderButtonModel Button3 { get; set; }
-
     }
 
     [Validator(typeof(ContentSliderButtonValidator))]

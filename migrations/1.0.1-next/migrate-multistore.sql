@@ -72,7 +72,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Manufacturers.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the manufacturer is available only at certain stores.</Value>
@@ -93,7 +93,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the category is available only at certain stores.</Value>
@@ -114,7 +114,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Products.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Products.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the product is available only at certain stores.</Value>
@@ -139,7 +139,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Languages.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the language is available only at certain stores.</Value>
@@ -164,7 +164,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Currencies.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the currency is available only at certain stores.</Value>
@@ -279,7 +279,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the message template is available only at certain stores.</Value>
@@ -316,7 +316,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the topic is available only at certain stores.</Value>
@@ -348,7 +348,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the news is available only at certain stores.</Value>
@@ -554,7 +554,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores">
 	<Value>Limited to stores</Value>
-	<T>Auf Shop begrenzt</T>
+	<T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores.Hint">
 	<Value>Determines whether the blog post is available only at certain stores.</Value>
@@ -643,7 +643,7 @@ set @resources='
   
   <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores">
     <Value>Limited to stores</Value>
-    <T>Auf Shop begrenzt</T>
+    <T>Auf Shops begrenzt</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Fields.LimitedToStores.Hint">
     <Value>Determines whether the plugin is available only at certain stores.</Value>

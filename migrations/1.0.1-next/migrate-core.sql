@@ -149,6 +149,35 @@ set @resources='
 	<T>Aktualisiere Sprachressourcen...</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Common.General">
+	<Value>General</Value>
+	<T>Allgemein</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Store">
+	<Value>Store</Value>
+	<T>Shop</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.Stores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores">
+	<Value>Limited to stores</Value>
+	<T>Auf Shops begrenzt</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.LimitedToStores.Hint">
+	<Value>Determines whether the slide is available only at certain stores.</Value>
+	<T>Legt fest, ob der Slide nur für bestimmte Shops verfügbar ist.</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores">
+	<Value>Stores</Value>
+	<T>Shops</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AvailableStores.Hint">
+	<Value>Select stores for which the slide will be shown.</Value>
+	<T>Bitte Shops auswählen, für die der Slide angezeigt werden soll.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

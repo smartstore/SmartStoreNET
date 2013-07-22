@@ -1243,7 +1243,6 @@ BEGIN
 	DROP CONSTRAINT Customer_Language
 	
 	EXEC ('UPDATE [Customer] SET [LanguageId] = 0 WHERE [LanguageId] IS NULL')
-	
 	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [LanguageId] int NOT NULL')
 END
 GO
@@ -1255,13 +1254,10 @@ IF EXISTS (SELECT 1
            AND Objectproperty(id,N'IsForeignKey') = 1)
 BEGIN
 	ALTER TABLE dbo.[Customer] DROP CONSTRAINT Affiliate_AffiliatedCustomers
+	
+	EXEC ('UPDATE [Customer] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL')
+	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [AffiliateId] int NOT NULL')
 END
-GO
-
-UPDATE [Customer] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL
-GO
-
-ALTER TABLE [Customer] ALTER COLUMN [AffiliateId] int NOT NULL
 GO
 
 IF EXISTS (SELECT 1
@@ -1271,13 +1267,10 @@ IF EXISTS (SELECT 1
            AND Objectproperty(id,N'IsForeignKey') = 1)
 BEGIN
 	ALTER TABLE dbo.[Order] DROP CONSTRAINT Affiliate_AffiliatedOrders
+	
+	EXEC ('UPDATE [Order] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL')
+	EXEC ('ALTER TABLE [Order] ALTER COLUMN [AffiliateId] int NOT NULL')
 END
-GO
-
-UPDATE [Order] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL
-GO
-
-ALTER TABLE [Order] ALTER COLUMN [AffiliateId] int NOT NULL
 GO
 
 --Store mapping to shopping cart items

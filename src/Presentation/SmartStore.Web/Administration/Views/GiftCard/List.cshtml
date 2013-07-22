@@ -57,7 +57,7 @@
                             columns.Bound(x => x.RemainingAmountStr);
                             columns.Bound(x => x.GiftCardCouponCode)
                             .Template(x => Html.ActionLink(x.GiftCardCouponCode, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#=GiftCardCouponCode #></a>");
+                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= GiftCardCouponCode #></a>");
                             columns.Bound(x => x.IsGiftCardActivated)
                                 .Template(item => @Html.SymbolForBool(item.IsGiftCardActivated))
                                 .ClientTemplate(@Html.SymbolForBool("IsGiftCardActivated"))

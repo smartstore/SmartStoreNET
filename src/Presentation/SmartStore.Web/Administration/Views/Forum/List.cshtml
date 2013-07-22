@@ -24,7 +24,7 @@
                 {
                     columns.Bound(x => x.Name)
                         .Template(x => Html.ActionLink(x.Name, "EditForumGroup", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>'><#Name#></a>");
+                            .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\"><#= Name #></a>");
 
                     columns.Bound(x => x.DisplayOrder).Width(150).Centered();
                     columns.Bound(x => x.CreatedOn).Width(200).Centered();
@@ -43,7 +43,7 @@
                             {
                                 columns.Bound(x => x.Name)
                                     .Template(x => Html.ActionLink(x.Name, "EditForum", new { id = x.Id }))
-                                    .ClientTemplate("<a href=\"EditForum/<#= Id #>'><#Name#></a>");
+                                    .ClientTemplate("<a href=\"EditForum/<#= Id #>\"><#= Name #></a>");
 
                                 columns.Bound(x => x.DisplayOrder).Width(150).Centered();
                                 columns.Bound(x => x.CreatedOn).Width(200).Centered();

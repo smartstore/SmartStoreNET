@@ -22,7 +22,7 @@
                         columns.Bound(x => x.Name)
                             .Width(200)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#Name#></a>");
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
                         columns.Bound(x => x.UsePercentage)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.UsePercentage))

@@ -23,7 +23,7 @@
                         columns.Bound(x => x.Name)
                             .Width(400)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>'><#= Name #></a>");
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
                         columns.Bound(x => x.CreatedOn)
                             .Width(100);
                         columns.Bound(x => x.Id)

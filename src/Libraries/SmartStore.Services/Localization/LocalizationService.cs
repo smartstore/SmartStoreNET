@@ -161,8 +161,7 @@ namespace SmartStore.Services.Localization
         /// <param name="languageId">Language identifier</param>
         /// <param name="logIfNotFound">A value indicating whether to log error if locale string resource is not found</param>
         /// <returns>Locale string resource</returns>
-        public virtual LocaleStringResource GetLocaleStringResourceByName(string resourceName, int languageId,
-            bool logIfNotFound = true)
+        public virtual LocaleStringResource GetLocaleStringResourceByName(string resourceName, int languageId, bool logIfNotFound = true)
         {
             var query = from lsr in _lsrRepository.Table
                         orderby lsr.ResourceName

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Plugin.Widgets.TrustedShopsSeal.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
@@ -11,37 +14,47 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
     
     public class TrustedShopsSealController : Controller
     {
-        private readonly TrustedShopsSealSettings _trustedShopsSealSettings;
+		private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
+		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
 
-        public TrustedShopsSealController(TrustedShopsSealSettings trustedShopsSealSettings, 
+		public TrustedShopsSealController(IWorkContext workContext,
+			IStoreContext storeContext, IStoreService storeService,
             ISettingService settingService,
             ILocalizationService localizationService)
         {
-            _trustedShopsSealSettings = trustedShopsSealSettings;
+			_workContext = workContext;
+			_storeContext = storeContext;
+			_storeService = storeService;
             _settingService = settingService;
             _localizationService = localizationService;
         }
         
-        
-
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-            var model = new ConfigurationModel();
-            model.TrustedShopsId = _trustedShopsSealSettings.TrustedShopsId;
-            model.IsTestMode = _trustedShopsSealSettings.IsTestMode;
-            model.ShopName = _trustedShopsSealSettings.ShopName;
-            model.ShopText = _trustedShopsSealSettings.ShopText;
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var trustedShopsSealSettings = _settingService.LoadSetting<TrustedShopsSealSettings>(storeScope);
 
-            model.ZoneId = _trustedShopsSealSettings.WidgetZone;
+            var model = new ConfigurationModel();
+            model.TrustedShopsId = trustedShopsSealSettings.TrustedShopsId;
+            model.IsTestMode = trustedShopsSealSettings.IsTestMode;
+            model.ShopName = trustedShopsSealSettings.ShopName;
+            model.ShopText = trustedShopsSealSettings.ShopText;
+            model.WidgetZone = trustedShopsSealSettings.WidgetZone;
+
             model.AvailableZones.Add(new SelectListItem() { Text = "Before left side column", Value = "left_side_column_before" });
             model.AvailableZones.Add(new SelectListItem() { Text = "After left side column", Value = "left_side_column_after" });
             model.AvailableZones.Add(new SelectListItem() { Text = "Before right side column", Value = "right_side_column_before" });
             model.AvailableZones.Add(new SelectListItem() { Text = "After right side column", Value = "right_side_column_after" });
             model.AvailableZones.Add(new SelectListItem() { Text = "Homepage bottom", Value = "home_page_bottom" });
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(trustedShopsSealSettings, model, storeScope, _settingService);
             
             return View("SmartStore.Plugin.Widgets.TrustedShopsSeal.Views.TrustedShopsSeal.Configure", model);
         }
@@ -49,10 +62,15 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
                 return Configure();
+
+			//load settings for a chosen store scope
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var trustedShopsSealSettings = _settingService.LoadSetting<TrustedShopsSealSettings>(storeScope);
 
             var tsProtectionServiceSandbox = new TrustedShopsSeal.com.trustedshops.qa.TSProtectionService();
             var tsProtectionServiceLive = new TrustedShopsSeal.com.trustedshops.www.TSProtectionService();
@@ -68,13 +86,14 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
                     this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
 
                     //save settings
-                    _trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
-                    _trustedShopsSealSettings.IsTestMode = model.IsTestMode;
-                    _trustedShopsSealSettings.WidgetZone = model.ZoneId;
-                    _trustedShopsSealSettings.ShopName = model.ShopName;
-                    _trustedShopsSealSettings.ShopText = model.ShopText;
+                    trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
+                    trustedShopsSealSettings.IsTestMode = model.IsTestMode;
+                    trustedShopsSealSettings.WidgetZone = model.WidgetZone;
+                    trustedShopsSealSettings.ShopName = model.ShopName;
+                    trustedShopsSealSettings.ShopText = model.ShopText;
 
-                    _settingService.SaveSetting(_trustedShopsSealSettings);
+					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+					_settingService.ClearCache();
                 }
                 else
                 {
@@ -86,7 +105,6 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
             }
             else
             {
-                
                 var certStatus = new TrustedShopsSeal.com.trustedshops.www.CertificateStatus();
                 certStatus = tsProtectionServiceLive.checkCertificate(model.TrustedShopsId);
 
@@ -96,13 +114,14 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
                     this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
 
                     //save settings
-                    _trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
-                    _trustedShopsSealSettings.IsTestMode = model.IsTestMode;
-                    _trustedShopsSealSettings.WidgetZone = model.ZoneId;
-                    _trustedShopsSealSettings.ShopName = model.ShopName;
-                    _trustedShopsSealSettings.ShopText = model.ShopText;
+                    trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
+                    trustedShopsSealSettings.IsTestMode = model.IsTestMode;
+                    trustedShopsSealSettings.WidgetZone = model.WidgetZone;
+                    trustedShopsSealSettings.ShopName = model.ShopName;
+                    trustedShopsSealSettings.ShopText = model.ShopText;
 
-                    _settingService.SaveSetting(_trustedShopsSealSettings);
+					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+					_settingService.ClearCache();
                 }
                 else
                 {
@@ -120,11 +139,13 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
         [ChildActionOnly]
         public ActionResult PublicInfo(string widgetZone)
         {
+			var trustedShopsSealSettings = _settingService.LoadSetting<TrustedShopsSealSettings>(_storeContext.CurrentStore.Id);
+
             var model = new PublicInfoModel();
-            model.TrustedShopsId = _trustedShopsSealSettings.TrustedShopsId;
-            model.IsTestMode = _trustedShopsSealSettings.IsTestMode;
-            model.ShopName = _trustedShopsSealSettings.ShopName;
-            model.ShopText = _trustedShopsSealSettings.ShopText;
+            model.TrustedShopsId = trustedShopsSealSettings.TrustedShopsId;
+            model.IsTestMode = trustedShopsSealSettings.IsTestMode;
+            model.ShopName = trustedShopsSealSettings.ShopName;
+            model.ShopText = trustedShopsSealSettings.ShopText;
 
             return View("SmartStore.Plugin.Widgets.TrustedShopsSeal.Views.TrustedShopsSeal.PublicInfo", model);
         }

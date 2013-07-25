@@ -231,8 +231,9 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             {
                 if (_themeVars == null)
                 {
+					var storeContext = EngineContext.Current.Resolve<IStoreContext>();
                     var repo = new ThemeVarsRepository();
-                    _themeVars = repo.GetRawVariables(this.ThemeManifest.ThemeName);
+                    _themeVars = repo.GetRawVariables(this.ThemeManifest.ThemeName, storeContext.CurrentStore.Id);
                 }
 
                 return _themeVars;

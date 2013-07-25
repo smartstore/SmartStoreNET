@@ -127,7 +127,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url.Hint">
 	<Value>The URL of your store e.g. http://www.yourstore.com/</Value>
-	<T>Die URL zu Ihrem Shop, z.B. http://www.yourstore.com/</T>
+	<T>Die URL zu Ihrem Shop, z.B. http://www.mein-shop.de/</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url.Required">
 	<Value>Please provide a store URL.</Value>
@@ -157,7 +157,7 @@ set @resources='
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SecureUrl.Hint">
 	<Value>The secure URL of your store e.g. https://www.yourstore.com/ or http://sharedssl.yourstore.com/. Leave it empty if you want secure URL to be detected automatically.</Value>
-	<T>Die gesicherte URL des Shops, z.B. https://www.meinshop.de/ or http://sharedssl.meinshop.de/. Die gesicherte URL wird automatisch erkannt, wenn dieses Feld leer ist.</T>
+	<T>Die gesicherte URL des Shops, z.B. https://www.mein-shop.de/ or http://sharedssl.mein-shop.de/. Die gesicherte URL wird automatisch erkannt, wenn dieses Feld leer ist.</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.UseSSL">
 	<Value></Value>
@@ -1617,4 +1617,25 @@ BEGIN
 	FOREIGN KEY([StoreId]) REFERENCES [dbo].[Store] ([Id])
 	ON DELETE CASCADE
 END
+GO
+
+--Store mapping to theme variables
+IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ThemeVariable]') and NAME='StoreId')
+BEGIN
+	ALTER TABLE [ThemeVariable] ADD [StoreId] int NULL
+END
+GO
+
+DECLARE @DEFAULT_STORE_ID int
+SELECT TOP 1 @DEFAULT_STORE_ID = [Id] FROM [Store] ORDER BY [DisplayOrder]
+UPDATE [ThemeVariable] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] IS NULL
+GO
+
+ALTER TABLE [ThemeVariable] ALTER COLUMN [StoreId] int NOT NULL
+GO
+
+--StoreId of theme settings must have valid store identifier
+DECLARE @DEFAULT_STORE_ID int
+SELECT TOP 1 @DEFAULT_STORE_ID = [Id] FROM [Store] ORDER BY [DisplayOrder]
+UPDATE [Setting] SET [StoreId] = @DEFAULT_STORE_ID WHERE [StoreId] = 0 And [Name] Like 'themesettings.%'
 GO

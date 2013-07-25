@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Themes;
@@ -21,14 +22,16 @@ namespace SmartStore.Web.Framework.Themes
             this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_static");
         }
 
-        public ExpandoObject GetRawVariables(string themeName)
+        public ExpandoObject GetRawVariables(string themeName, int storeId)
         {
-            var cacheKey = String.Format(FrameworkCacheConsumer.THEMEVARS_RAW_KEY, themeName);
+			Guard.ArgumentNotZero(storeId, "storeId");
 
-            return _cacheManager.Get(cacheKey, () =>
-            {
+            //var cacheKey = String.Format(FrameworkCacheConsumer.THEMEVARS_RAW_KEY, themeName, storeId);
+
+            //return _cacheManager.Get(cacheKey, () =>
+            //{
                 var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
-                var result = themeVarService.GetThemeVariables(themeName);
+				var result = themeVarService.GetThemeVariables(themeName, storeId);
 
                 if (result == null)
                 {
@@ -36,18 +39,20 @@ namespace SmartStore.Web.Framework.Themes
                 }
 
                 return result;
-            });
+            //});
         }
 
-        public IDictionary<string, string> GetLessCssVariables(string themeName)
+        public IDictionary<string, string> GetLessCssVariables(string themeName, int storeId)
         {
-            var cacheKey = String.Format(FrameworkCacheConsumer.THEMEVARS_LESSCSS_KEY, themeName);
+			Guard.ArgumentNotZero(storeId, "storeId");
+
+			var cacheKey = String.Format(FrameworkCacheConsumer.THEMEVARS_LESSCSS_KEY, themeName, storeId);
 
             return _cacheManager.Get(cacheKey, () =>
             {
                 var result = new Dictionary<string, string>();
 
-                var rawVars = this.GetRawVariables(themeName);
+				var rawVars = this.GetRawVariables(themeName, storeId);
 
                 foreach (var v in rawVars)
                 {

@@ -45,6 +45,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Core.Caching;
 using SmartStore.Utilities.Threading;
+using SmartStore.Core.Domain.Themes;
 
 namespace SmartStore.Services.Installation
 {
@@ -59,6 +60,7 @@ namespace SmartStore.Services.Installation
         private InvariantInstallationData _installData;
         private float _totalSteps;
         private float _currentStep;
+		private int _defaultStoreId;
 
 		private readonly IRepository<Store> _storeRepository;
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
@@ -316,7 +318,9 @@ namespace SmartStore.Services.Installation
 		{
 			try
 			{
-				_storeRepository.Insert(InvariantInstallationData.DefaultStore);
+				var store = InvariantInstallationData.DefaultStore;
+				_storeRepository.Insert(store);
+				_defaultStoreId = store.Id;
 			}
 			catch (Exception ex)
 			{
@@ -703,9 +707,10 @@ namespace SmartStore.Services.Installation
 					if (settingService != null)
 					{
 						var genericMethod = method.MakeGenericMethod(settingType);
+						int storeId = (settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0);
 
-						genericMethod.Invoke(settingService, new object[] { setting, 0 });
-					}					
+						genericMethod.Invoke(settingService, new object[] { setting, storeId });
+					}
                 }
 
                 IncreaseProgress();

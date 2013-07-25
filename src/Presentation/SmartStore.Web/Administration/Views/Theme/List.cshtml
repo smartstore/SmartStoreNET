@@ -4,8 +4,8 @@
 @using SmartStore.Admin.Models.Themes;
 
 @{
-    //page title
-    ViewBag.Title = T("Admin.Configuration.Themes").Text;
+	//page title
+	ViewBag.Title = T("Admin.Configuration.Themes").Text;
 }
 @using (Html.BeginForm())
 {
@@ -21,26 +21,38 @@
             </button>
         </div>
     </div>
+	
+	<div class="multi-store-scope well well-small">
+		<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("StoreId", Model.AvailableStores, new { onchange = "location.href = '" + @Url.Action("List") + "?storeId=' + this.value;" })
+			</td>
+		</tr>
+		</table>
+	</div>
     
     @Html.SmartStore().TabStrip().Name("themes-tab").Items(x =>
-    {
-        x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
-        x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
-    })
- 
+	{
+		x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
+		x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
+	})
 }
 
 @helper ThemesTab()
 {
-    if (Model.DesktopThemes.Count > 0) 
-    {
+	if (Model.DesktopThemes.Count > 0)
+	{
         @ThemeList(Model.DesktopThemes, T("Admin.Configuration.Themes.AvailableDesktopThemes"), false)
-    }
-    
-    if (Model.MobileThemes.Count > 0) 
-    {
+	}
+
+	if (Model.MobileThemes.Count > 0)
+	{
         @ThemeList(Model.MobileThemes, T("Admin.Configuration.Themes.AvailableMobileThemes"), true)
-    }
+	}
     
     <script>
         $(function () {
@@ -68,14 +80,14 @@
     </script>
 }
 
-@helper ThemeList(IList<ThemeManifestModel> themes, string caption, bool mobile) 
+@helper ThemeList(IList<ThemeManifestModel> themes, string caption, bool mobile)
 {
     <fieldset class="">
         <legend>@caption</legend>
 
         <div id="theme-list">
             @foreach (var theme in themes)
-            {
+			{
                 <div class="clearfix theme-line @(theme.IsActive ? " active" : "")">
                     <div class="preview-image pull-left">
                         <img src="@Url.Content(theme.PreviewImageUrl)" class="img-polaroid" />
@@ -91,23 +103,23 @@
                             <a href="#" class="btn set-as-defaulttheme @(!theme.IsActive ? "btn-primary" : "")" data-mobile="@theme.IsMobileTheme" data-name="@theme.Name" @Html.Attr("disabled", "disabled", theme.IsActive)>
                                 @T("Admin.Common.Activate")
                             </a>
-                            @if (theme.IsConfigurable) 
-                            {
-                                <a href='@Url.Action("Configure", "Theme", new { theme = theme.Name })' class="btn">
+                            @if (theme.IsConfigurable)
+							{
+                                <a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn">
                                     <i class="icon-cog"></i>
                                     @T("Admin.Common.Configure")
                                 </a>
-                            }
+							}
                         </div>
                     </div>
                 </div>
-            }
+			}
         </div>
 
     </fieldset>
 }
 
-@helper ThemeSettingsTab() 
+@helper ThemeSettingsTab()
 {
     
     @Html.HiddenFor(x => x.DefaultDesktopTheme)

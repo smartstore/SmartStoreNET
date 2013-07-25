@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Themes
@@ -14,5 +14,9 @@ namespace SmartStore.Admin.Models.Themes
         public string ConfigurationActionName { get; set; }
         public string ConfigurationControllerName { get; set; }
         public RouteValueDictionary ConfigurationRouteValues { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store")]
+		public int StoreId { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

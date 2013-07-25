@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Dynamic;
 using SmartStore.Core.Domain.Themes;
@@ -9,16 +8,14 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Themes;
 using SmartStore.Core.Caching;
 using SmartStore.Services.Events;
-using System.IO;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace SmartStore.Services.Themes
 {
 
     public class ThemeVariablesService : IThemeVariablesService
     {
-        private const string THEMEVARS_BY_THEME_KEY = "SmartStore.themevars.theme-{0}";
+        private const string THEMEVARS_BY_THEME_KEY = "SmartStore.themevars.theme-{0}-{1}";
         private const string THEMEVARS_PATTERN_KEY = "SmartStore.themevars.";
         
         private readonly IRepository<ThemeVariable> _rsVariables;
@@ -36,7 +33,7 @@ namespace SmartStore.Services.Themes
             this._eventPublisher = eventPublisher;
         }
 
-        public virtual ExpandoObject GetThemeVariables(string themeName)
+		public virtual ExpandoObject GetThemeVariables(string themeName, int storeId)
         {
             if (themeName.IsEmpty())
                 return null;
@@ -44,7 +41,7 @@ namespace SmartStore.Services.Themes
             if (!_themeRegistry.ThemeManifestExists(themeName))
                 return null;
 
-            string key = string.Format(THEMEVARS_BY_THEME_KEY, themeName);
+            string key = string.Format(THEMEVARS_BY_THEME_KEY, themeName, storeId);
             return _cacheManager.Get(key, () =>
             {
                 var result = new ExpandoObject();
@@ -58,7 +55,7 @@ namespace SmartStore.Services.Themes
 
                 // ...then merge with persisted runtime records
                 var query = from v in _rsVariables.Table
-                            where v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
+							where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
                             select v;
                 query.Each(v => {
                     if (v.Value.HasValue() && dict.ContainsKey(v.Name))
@@ -71,12 +68,12 @@ namespace SmartStore.Services.Themes
             });
         }
 
-        public virtual void DeleteThemeVariables(string themeName)
+        public virtual void DeleteThemeVariables(string themeName, int storeId)
         {
             Guard.ArgumentNotEmpty(themeName, "themeName");
 
             var query = from v in _rsVariables.Table
-                        where v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
+						where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
                         select v;
 
             if (query.Any())
@@ -90,7 +87,7 @@ namespace SmartStore.Services.Themes
                     _eventPublisher.EntityDeleted(v);
                 });
 
-                _cacheManager.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName));
+                _cacheManager.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
 
                 _rsVariables.Context.SaveChanges();
 
@@ -98,7 +95,7 @@ namespace SmartStore.Services.Themes
             }
         }
 
-        public virtual int SaveThemeVariables(string themeName, IDictionary<string, object> variables)
+		public virtual int SaveThemeVariables(string themeName, int storeId, IDictionary<string, object> variables)
         {
             Guard.ArgumentNotEmpty(themeName, "themeName");
             Guard.Against<ArgumentException>(!_themeRegistry.ThemeManifestExists(themeName), "The theme '{0}' does not exist in the registry.".FormatInvariant(themeName));
@@ -114,7 +111,7 @@ namespace SmartStore.Services.Themes
             _rsVariables.AutoCommitEnabled = false;
 
             var unsavedVars = new List<string>();
-            var savedThemeVars = _rsVariables.Table.Where(v => v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)).ToList();
+			var savedThemeVars = _rsVariables.Table.Where(v => v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)).ToList();
             bool touched = false;
 
             foreach (var v in variables.Where(x => x.Value != null))
@@ -162,7 +159,8 @@ namespace SmartStore.Services.Themes
                         {
                             Theme = themeName,
                             Name = v.Key,
-                            Value = value
+                            Value = value,
+							StoreId = storeId
                         };
                         _rsVariables.Insert(savedThemeVar);
                         _eventPublisher.EntityInserted(savedThemeVar);
@@ -182,7 +180,7 @@ namespace SmartStore.Services.Themes
             return count;
         }
 
-        public int ImportVariables(string themeName, string configurationXml)
+		public int ImportVariables(string themeName, int storeId, string configurationXml)
         {
             Guard.ArgumentNotEmpty(themeName, "themeName");
             Guard.ArgumentNotEmpty(configurationXml, "configurationXml");
@@ -212,14 +210,14 @@ namespace SmartStore.Services.Themes
                 dict.Add(name, value);
             }
 
-            return this.SaveThemeVariables(themeName, dict);
+            return this.SaveThemeVariables(themeName, storeId, dict);
         }
 
-        public string ExportVariables(string themeName)
+        public string ExportVariables(string themeName, int storeId)
         {
             Guard.ArgumentNotEmpty(themeName, "themeName");
 
-            var vars = this.GetThemeVariables(themeName) as IDictionary<string, object>;
+            var vars = this.GetThemeVariables(themeName, storeId) as IDictionary<string, object>;
 
             if (vars == null || !vars.Any())
                 return null;

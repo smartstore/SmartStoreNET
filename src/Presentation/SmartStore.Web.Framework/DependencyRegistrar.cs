@@ -330,7 +330,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<SubscriptionService>().As<ISubscriptionService>().SingleInstance();
 
             // register theming services (codehint: sm-add)
-            builder.RegisterType<DbParameterSource>().As<IParameterSource>();
+			builder.RegisterType<DbParameterSource>().As<IParameterSource>().InstancePerHttpRequest();
             builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerHttpRequest();
 
             // register UI component renderers (codehint: sm-add)

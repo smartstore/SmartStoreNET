@@ -68,6 +68,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
+		[ValidateInput(false)]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
 			//load settings for a chosen store scope

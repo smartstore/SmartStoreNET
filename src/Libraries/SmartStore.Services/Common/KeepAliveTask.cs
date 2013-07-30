@@ -27,7 +27,7 @@ namespace SmartStore.Services.Common
             {
                 using (var wc = new WebClient())
                 {
-                    wc.Headers.Add("SmartStore.NET");
+                    //wc.Headers.Add("SmartStore.NET"); // makes problems
                     wc.DownloadString(url);
                 }
             }

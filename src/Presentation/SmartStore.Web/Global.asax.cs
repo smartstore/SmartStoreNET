@@ -176,7 +176,13 @@ namespace SmartStore.Web
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-			//ignore static resources
+            // must be at head, because the BizUrlMapper must also handle static html files
+            EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppBeginRequestEvent
+            {
+                Context = HttpContext.Current
+            });
+            
+            //ignore static resources
 			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
 			if (webHelper.IsStaticResource(this.Request))
 				return;
@@ -186,11 +192,6 @@ namespace SmartStore.Web
             {
                 MiniProfiler.Start();
             }
-
-			// codehint: sm-add
-			EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppBeginRequestEvent {
-				Context = HttpContext.Current
-			});
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)

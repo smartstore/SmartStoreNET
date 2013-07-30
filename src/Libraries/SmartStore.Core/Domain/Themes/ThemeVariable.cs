@@ -26,6 +26,11 @@ namespace SmartStore.Core.Domain.Themes
         /// </summary>
         public string Value { get; set; }
 
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         public override bool Equals(BaseEntity other)
         {
             var equals = base.Equals(other);

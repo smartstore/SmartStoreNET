@@ -7,7 +7,7 @@
 {
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
-	x.Add().Text(T("Admin.ContentManagement.News.NewsItems.Stores").Text).Content(TabStores());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "category-edit", this.Html, this.Model));

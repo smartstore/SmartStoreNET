@@ -64,9 +64,9 @@ namespace SmartStore.Admin.Models.Blogs
         public DateTime CreatedOn { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }

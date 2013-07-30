@@ -611,7 +611,7 @@ namespace SmartStore.Admin.Controllers
 					}
 					else
 					{
-						storeName = _localizationService.GetResource("Admin.Catalog.Products.Variants.TierPrices.Fields.Store.All");
+						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
 					}
                     return new ProductVariantModel.TierPriceModel()
                     {

@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Models
         }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Widgets.ChooseZone")]
-        public string ZoneId { get; set; }
+        public string WidgetZone { get; set; }
         public IList<SelectListItem> AvailableZones { get; set; }
 
         [SmartResourceDisplayName("Plugins.Widgets.TrustedShopsSeal.TrustedShopsId")]

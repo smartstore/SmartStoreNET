@@ -494,6 +494,29 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+		/// <remarks>codehint: sm-add</remarks>
+		public ActionResult UpdateStringResources(string systemName)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
+				.Where(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
+				.FirstOrDefault();
+
+			if (pluginDescriptor == null)
+			{
+				ErrorNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateFailure"));
+			}
+			else
+			{
+				_localizationService.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
+
+				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));				
+			}
+			return RedirectToAction("List");
+		}
+
         #endregion
     }
 }

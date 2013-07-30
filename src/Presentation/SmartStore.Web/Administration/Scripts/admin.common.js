@@ -45,13 +45,13 @@ var Admin = {
 			parent = (parentSelector.length > 0 ? $(parentSelector) : $(obj).parent()),
 			enable = $(obj).is(':checked');
 
-		parent.find(':input').each(function (index, elem) {
-			var clss = $(elem).attr('class');
+		parent.find(':input:not([type=hidden])').each(function (index, elem) {
+			var clss = $(elem).attr('class') || '';
 
 			if ($(elem).is('select')) {
 				$(elem).select2(enable ? 'enable' : 'disable');
 			}
-			else if (clss != null && clss != 'multi-store-override-option') {
+			else if (clss != 'multi-store-override-option') {
 				var tData = $(elem).data('tTextBox');
 
 				if (tData != null) {

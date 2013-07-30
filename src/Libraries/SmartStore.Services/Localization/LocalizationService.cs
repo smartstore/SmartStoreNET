@@ -392,8 +392,8 @@ namespace SmartStore.Services.Localization
             string rootKey = null, 
             bool sourceIsPlugin = false, 
             DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
-            bool updateTouchedResources = false) {
-            
+            bool updateTouchedResources = false)
+		{            
             var autoCommit = _lsrRepository.AutoCommitEnabled;
             var validateOnSave = _lsrRepository.Context.ValidateOnSaveEnabled;
             var autoDetectChanges = _lsrRepository.Context.AutoDetectChangesEnabled;
@@ -493,20 +493,22 @@ namespace SmartStore.Services.Localization
 		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
-		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null) {
+		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
+		{
 			string pluginDir = pluginDescriptor.OriginalAssemblyFile.Directory.FullName;
 			string localizationDir = Path.Combine(pluginDir, "Localization");
 
 			if (!System.IO.Directory.Exists(localizationDir))
 				return;
 
-			if (forceToList == null)
+			if (forceToList == null && updateTouchedResources)
 				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
 
 			var languages = _languageService.GetAllLanguages(true);
 			var doc = new XmlDocument();
             
-			foreach (var filePath in System.IO.Directory.EnumerateFiles(localizationDir, "*.xml")) {
+			foreach (var filePath in System.IO.Directory.EnumerateFiles(localizationDir, "*.xml"))
+			{
 				Match match = Regex.Match(Path.GetFileName(filePath), Regex.Escape("resources.") + "(.*?)" + Regex.Escape(".xml"));
 				string languageCode = match.Groups[1].Value;
 
@@ -516,17 +518,22 @@ namespace SmartStore.Services.Localization
                     language = _languageService.GetLanguageById(language.Id);
                 }
 
-				if (languageCode.HasValue() && language != null) {
+				if (languageCode.HasValue() && language != null)
+				{
 					doc.Load(filePath);
 
-					if (forceToList == null) {
-						ImportResourcesFromXml(language, doc, pluginDescriptor.ResourceRootKey, true);
+					if (forceToList == null)
+					{
+						ImportResourcesFromXml(language, doc, pluginDescriptor.ResourceRootKey, true, updateTouchedResources: updateTouchedResources);
 					}
-					else {
+					else
+					{
 						var nodes = doc.SelectNodes(@"//Language/LocaleResource");
-						foreach (XmlNode node in nodes) {
+						foreach (XmlNode node in nodes)
+						{
 							var valueNode = node.SelectSingleNode("Value");
-							var res = new LocaleStringResource {
+							var res = new LocaleStringResource()
+							{
 								ResourceName = node.Attributes["Name"].InnerText.Trim(),
 								ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
 								LanguageId = language.Id,

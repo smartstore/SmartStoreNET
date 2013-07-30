@@ -5,6 +5,7 @@ using System.Text;
 using System.Web; // codehint: sm-add
 using System.Web.Mvc; // codehint: sm-add
 using System.Web.Optimization; // codehint: sm-add
+using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Web.Framework.UI
@@ -20,8 +21,10 @@ namespace SmartStore.Web.Framework.UI
         private readonly Dictionary<ResourceLocation, List<string>> _cssParts;
         private readonly List<string> _canonicalUrlParts;
         private readonly List<string> _bodyCssClasses; // codehint: sm-add (MC)
+		private readonly IStoreContext _storeContext;	// codehint: sm-add
 
-        public PageTitleBuilder(SeoSettings seoSettings, HttpContextBase httpContext /* codehint: sm-add */)
+        public PageTitleBuilder(SeoSettings seoSettings, HttpContextBase httpContext,
+			IStoreContext storeContext)
         {
             this._httpContext = httpContext; // codehint: sm-add
             this._seoSettings = seoSettings;
@@ -32,6 +35,7 @@ namespace SmartStore.Web.Framework.UI
             this._cssParts = new Dictionary<ResourceLocation, List<string>>();
             this._canonicalUrlParts = new List<string>();
             this._bodyCssClasses = new List<string>(); // codehint: sm-add (MC)
+			this._storeContext = storeContext;	// codehint: sm-add
         }
 
         // codehint: sm-add (MC) > helper func; changes all following public funcs to remove code redundancy
@@ -49,6 +53,13 @@ namespace SmartStore.Web.Framework.UI
                 {
                     list.AddRange(partsToAdd.Where(x => !string.IsNullOrEmpty(x)));
                 }
+
+				// themes are store dependent: append store-id so that browser cache holds one less file for each store (and not one for all stores).
+				for (int i = 0; i < list.Count; ++i)
+				{
+					if (list[i].EndsWith(".less", StringComparison.OrdinalIgnoreCase))
+						list[i] = "{0}?storeId={1}".FormatWith(list[i], _storeContext.CurrentStore.Id);
+				}
             }
         }
 

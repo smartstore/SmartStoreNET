@@ -119,6 +119,7 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Configuration\ISettingService.cs" />
     <Compile Include="Configuration\JsonPersistAttribute.cs" />
     <Compile Include="Data\EntityState.cs" />
     <Compile Include="Data\Hooks\HookedEntityEntry.cs" />

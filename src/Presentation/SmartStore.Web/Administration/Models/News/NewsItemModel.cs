@@ -26,9 +26,9 @@ namespace SmartStore.Admin.Models.News
         public string LanguageName { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

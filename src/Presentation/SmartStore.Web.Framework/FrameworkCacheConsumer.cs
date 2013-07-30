@@ -28,9 +28,10 @@ namespace SmartStore.Web.Framework
         /// </summary>
         /// <remarks>
         /// {0} : current theme name
+		/// {1} : store identifier
         /// </remarks>
-        public const string THEMEVARS_RAW_KEY = "sm.pres.themevars-raw-{0}";
-        public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}";
+        public const string THEMEVARS_RAW_KEY = "sm.pres.themevars-raw-{0}-{1}";
+        public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}-{1}";
         public const string THEMEVARS_PATTERN_KEY = "sm.pres.themevars";
 
 		/// <summary>
@@ -54,22 +55,22 @@ namespace SmartStore.Web.Framework
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
         {
             // remove cached vars for modified theme
-            _cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme));
-            _cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme));
+            _cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
+			_cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
         }
 
         public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
         {
             // remove cached vars for modified theme
-            _cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme));
-            _cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme));
+			_cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
+			_cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
         }
 
         public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
         {
             // remove cached vars for modified theme
-            _cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme));
-            _cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme));
+			_cacheManager.Remove(THEMEVARS_RAW_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
+			_cacheManager.Remove(THEMEVARS_LESSCSS_KEY.FormatInvariant(eventMessage.Entity.Theme, eventMessage.Entity.StoreId));
         }
 
 

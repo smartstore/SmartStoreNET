@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.ContentSlider;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
-using SmartStore.Core.Configuration;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -30,6 +25,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly IPictureService _pictureService;
         private readonly ContentSliderSettings _contentSliderSettings;
+		private readonly IStoreService _storeService;
+
         #endregion
 
         #region Constructors
@@ -40,7 +37,8 @@ namespace SmartStore.Admin.Controllers
             ILocalizedEntityService localizedEntityService, 
             ILanguageService languageService,
             IPictureService pictureService,
-            ContentSliderSettings contentSliderSettings)
+            ContentSliderSettings contentSliderSettings,
+			IStoreService storeService)
         {
             this._settingService = settingService;
             this._localizationService = localizationService;
@@ -49,6 +47,7 @@ namespace SmartStore.Admin.Controllers
             this._languageService = languageService;
             this._pictureService = pictureService;
             this._contentSliderSettings = contentSliderSettings;
+			this._storeService = storeService;
         }
         
         #endregion
@@ -99,6 +98,11 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = new ContentSliderSlideModel();
+			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
+
+			var lastSlide = _contentSliderSettings.Slides.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
+			if (lastSlide != null)
+				model.DisplayOrder = lastSlide.DisplayOrder + 1;
             
             return View(model);
         }
@@ -132,13 +136,15 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-            var slide = _contentSliderSettings.Slides[index].ToModel();
-            slide.Id = index;
+            var model = _contentSliderSettings.Slides[index].ToModel();
 
-            if (slide == null)
-                return RedirectToAction("Index");
+			if (model == null)
+				return RedirectToAction("Index");
 
-            return View(slide);
+            model.Id = index;
+			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
+
+            return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]

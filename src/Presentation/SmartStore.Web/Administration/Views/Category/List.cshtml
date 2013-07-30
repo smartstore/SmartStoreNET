@@ -43,7 +43,7 @@
                         columns.Bound(x => x.Breadcrumb).Title(T("Admin.Catalog.Categories.Fields.Name").Text)
 
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))

@@ -18,6 +18,7 @@ namespace SmartStore.Admin.Models.Themes
             this.AvailableCssMinifyValues = new List<SelectListItem>();
             this.DesktopThemes = new List<ThemeManifestModel>();
             this.MobileThemes = new List<ThemeManifestModel>();
+			this.AvailableStores = new List<SelectListItem>();
         }
 
         public IList<SelectListItem> AvailableBundleOptimizationValues { get; set; }
@@ -47,5 +48,8 @@ namespace SmartStore.Admin.Models.Themes
         [SmartResourceDisplayName("Admin.Configuration.Themes.Option.MobileDevicesSupported")]
         public bool MobileDevicesSupported { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.Store")]
+		public int StoreId { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

@@ -82,10 +82,10 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

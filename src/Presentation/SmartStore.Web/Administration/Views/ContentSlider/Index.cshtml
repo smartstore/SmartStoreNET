@@ -100,7 +100,7 @@
 </div>
 
 <div class="pull-right" style="margin-bottom:10px">
-    <a href="@Url.Action("CreateSlide")" class="btn btn-danger">
+    <a href="@Url.Action("CreateSlide")" class="btn btn-primary">
         <i class="icon-plus"></i>
         @T("Admin.Common.AddNew")
     </a>
@@ -110,7 +110,7 @@
     <tr>
         <td>
             @{int rowIndex = 0;}
-            @(Html.Telerik().Grid<ContentSliderSlideModel>(Model.Slides)
+            @(Html.Telerik().Grid<ContentSliderSlideModel>(Model.Slides.OrderBy(s => s.LanguageName).ThenBy(s => s.DisplayOrder))
                     .Name("content-slider-slides-grid")
                     .Columns(columns =>
                     {
@@ -120,6 +120,8 @@
                             .Centered();
                         columns.Bound(x => x.LanguageName)
                             .Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Centered();						
                         columns.Bound(x => x.Published)
                             .Centered();
                     })     
@@ -129,7 +131,7 @@
 </table>
 
 <div class="pull-right" style="margin-top:10px">
-    <a href="@Url.Action("CreateSlide")" class="btn btn-danger">
+    <a href="@Url.Action("CreateSlide")" class="btn btn-primary">
         <i class="icon-plus"></i>
         @T("Admin.Common.AddNew")
     </a>

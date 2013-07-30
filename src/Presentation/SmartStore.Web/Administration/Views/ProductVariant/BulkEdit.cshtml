@@ -72,7 +72,7 @@
         {
             columns.Bound(pv => pv.Name).ReadOnly().Width(300)
                 .Template(pv => Html.ActionLink(pv.Name, "Edit", new { id = pv.Id }))
-                .ClientTemplate("<a href='Edit/<#= Id #>'><#=Name #></a>");
+                .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
             columns.Bound(pv => pv.Sku).Width(100);
             columns.Bound(pv => pv.Price).Width(100);
             columns.Bound(pv => pv.OldPrice).Width(100);

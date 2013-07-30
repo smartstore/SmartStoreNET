@@ -13,7 +13,7 @@
 	
     stores.Insert(0, new SelectListItem()
     {
-        Text = T("Admin.Configuration.Settings.StoreScope.AllStores").Text,
+		Text = T("Admin.Common.StoresAll").Text,
         Value = webHelper.ModifyQueryString(Url.Action("ChangeStoreScopeConfiguration", new { storeid = 0 }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null),
         Selected = 0.Equals(Model.StoreId)
     });

@@ -19,6 +19,7 @@ using SmartStore.Web.Framework.Mvc;
 using System.IO;
 using System.Text;
 using SmartStore.Services.Events;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -27,7 +28,6 @@ namespace SmartStore.Admin.Controllers
 	{
 		#region Fields
 
-        private ThemeSettings _themeSettings;
         private readonly ISettingService _settingService;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
@@ -35,26 +35,31 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ILocalizationService _localizationService;
         private readonly IEventPublisher _eventPublisher;
+		private readonly IStoreService _storeService;
+		private readonly IStoreContext _storeContext;
 
 	    #endregion
 
 		#region Constructors
 
         public ThemeController(
-            ISettingService settingService, ThemeSettings themeSettings, IThemeRegistry themeRegistry,
+            ISettingService settingService, IThemeRegistry themeRegistry,
             IThemeVariablesService themeVarService,
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             ILocalizationService localizationService,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			IStoreService storeService,
+			IStoreContext storeContext)
 		{
             this._settingService = settingService;
-            this._themeSettings = themeSettings;
             this._themeVarService = themeVarService;
             this._permissionService = permissionService;
             this._themeRegistry = themeRegistry;
             this._customerActivityService = customerActivityService;
             this._localizationService = localizationService;
             this._eventPublisher = eventPublisher;
+			this._storeService = storeService;
+			this._storeContext = storeContext;
 		}
 
 		#endregion 
@@ -66,12 +71,14 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult List()
+        public ActionResult List(int? storeId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
-            var model = _themeSettings.ToModel();
+			int selectedStoreId = storeId ?? _storeContext.CurrentStore.Id;
+			var themeSettings = _settingService.LoadSetting<ThemeSettings>(selectedStoreId);
+            var model = themeSettings.ToModel();
 
             var commonListItems = new List<SelectListItem> 
             {
@@ -90,21 +97,24 @@ namespace SmartStore.Admin.Controllers
             model.AvailableCssMinifyValues.FirstOrDefault(x => int.Parse(x.Value) == model.CssMinifyEnabled).Selected = true;
 
             // add theme configs
-            model.DesktopThemes.AddRange(GetThemes(false));
-            model.MobileThemes.AddRange(GetThemes(true));
+            model.DesktopThemes.AddRange(GetThemes(false, themeSettings));
+            model.MobileThemes.AddRange(GetThemes(true, themeSettings));
+
+			model.StoreId = selectedStoreId;
+			model.AvailableStores = _storeService.GetAllStoresAsListItems();
 
             return View(model);
         }
 
-        private IList<ThemeManifestModel> GetThemes(bool mobile)
+        private IList<ThemeManifestModel> GetThemes(bool mobile, ThemeSettings themeSettings)
         {
             var themes = from m in _themeRegistry.GetThemeManifests()
                                 where m.MobileTheme == mobile
-                                select PrepareThemeManifestModel(m);
+                                select PrepareThemeManifestModel(m, themeSettings);
             return themes.OrderByDescending(x => x.IsActive).ThenBy(x => x.Name).ToList();
         }
 
-        protected virtual ThemeManifestModel PrepareThemeManifestModel(ThemeManifest manifest)
+		protected virtual ThemeManifestModel PrepareThemeManifestModel(ThemeManifest manifest, ThemeSettings themeSettings)
         {
             var model = new ThemeManifestModel
                 {
@@ -116,7 +126,7 @@ namespace SmartStore.Admin.Controllers
                     IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,
                     PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
-                    IsActive = manifest.MobileTheme ? _themeSettings.DefaultMobileTheme == manifest.ThemeName : _themeSettings.DefaultDesktopTheme == manifest.ThemeName
+                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName
                 };
 
             if (System.IO.File.Exists(System.IO.Path.Combine(manifest.Path, "Views\\Shared\\ConfigureTheme.cshtml")))
@@ -134,16 +144,18 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
-            bool showRestartNote = model.BundleOptimizationEnabled != _themeSettings.BundleOptimizationEnabled
-                                    || model.CssCacheEnabled != _themeSettings.CssCacheEnabled
-                                    || model.CssMinifyEnabled != _themeSettings.CssMinifyEnabled
-                                    || model.MobileDevicesSupported != _themeSettings.MobileDevicesSupported;
+			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
+
+            bool showRestartNote = model.BundleOptimizationEnabled != themeSettings.BundleOptimizationEnabled
+                                    || model.CssCacheEnabled != themeSettings.CssCacheEnabled
+                                    || model.CssMinifyEnabled != themeSettings.CssMinifyEnabled
+                                    || model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
 
             bool mobileThemeSwitched = false;
-            bool themeSwitched = _themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);
+            bool themeSwitched = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);
             if (!themeSwitched)
             {
-                themeSwitched = _themeSettings.DefaultMobileTheme.IsCaseInsensitiveEqual(model.DefaultMobileTheme);
+                themeSwitched = themeSettings.DefaultMobileTheme.IsCaseInsensitiveEqual(model.DefaultMobileTheme);
                 mobileThemeSwitched = themeSwitched;
             }
 
@@ -151,13 +163,13 @@ namespace SmartStore.Admin.Controllers
             {
                 _eventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
                     IsMobile = mobileThemeSwitched,
-                    OldTheme = mobileThemeSwitched ? _themeSettings.DefaultMobileTheme : _themeSettings.DefaultDesktopTheme,
+                    OldTheme = mobileThemeSwitched ? themeSettings.DefaultMobileTheme : themeSettings.DefaultDesktopTheme,
                     NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme
                 });
             }
 
-            _themeSettings = model.ToEntity(_themeSettings);
-            _settingService.SaveSetting(_themeSettings);
+            themeSettings = model.ToEntity(themeSettings);
+			_settingService.SaveSetting(themeSettings, model.StoreId);
             
             // activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -169,77 +181,83 @@ namespace SmartStore.Admin.Controllers
                 InfoNotification(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
             }
 
-            return RedirectToAction("List");
+			return RedirectToAction("List", new { storeId = model.StoreId });
         }
 
-        public ActionResult Configure(string theme, string selectedTab)
+        public ActionResult Configure(string theme, int storeId, string selectedTab)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-                return RedirectToAction("List");
+				return RedirectToAction("List", new { storeId = storeId });
             }
 
             var model = new ConfigureThemeModel
             {
-                ThemeName = theme
+                ThemeName = theme,
+				StoreId = storeId,
+				AvailableStores = _storeService.GetAllStoresAsListItems()
             };
 
+			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme, selectedTab = selectedTab });
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Configure(string theme, Dictionary<string, object> values, bool continueEditing, string selectedTab)
+		public ActionResult Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing, string selectedTab)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-                return RedirectToAction("List");
+				return RedirectToAction("List", new { storeId = storeId });
             }
 
             // save now
-            _themeVarService.SaveThemeVariables(theme, values);
+            _themeVarService.SaveThemeVariables(theme, storeId, values);
 
             // activity log
             _customerActivityService.InsertActivity("EditThemeVars", _localizationService.GetResource("ActivityLog.EditThemeVars"), theme);
 
             SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
-            return continueEditing ? RedirectToAction("Configure", new { theme = theme, selectedTab = selectedTab }) : RedirectToAction("List");
+
+			return continueEditing ?
+				RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab }) :
+				RedirectToAction("List", new { storeId = storeId });
         }
 
-        public ActionResult Reset(string theme, string selectedTab)
+        public ActionResult Reset(string theme, int storeId, string selectedTab)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-                return RedirectToAction("List");
+				return RedirectToAction("List", new { storeId = storeId });
             }
 
-            _themeVarService.DeleteThemeVariables(theme);
+            _themeVarService.DeleteThemeVariables(theme, storeId);
 
             // activity log
             _customerActivityService.InsertActivity("ResetThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), theme);
 
             SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
-            return RedirectToAction("Configure", new { theme = theme, selectedTab = selectedTab });
+            return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
         }
 
         [HttpPost]
-        public ActionResult ImportVariables(string theme, FormCollection form)
+        public ActionResult ImportVariables(string theme, int storeId, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-                return RedirectToAction("List");
+				return RedirectToAction("List", new { storeId = storeId });
             }
 
             try
@@ -251,7 +269,7 @@ namespace SmartStore.Admin.Controllers
                     using (var sr = new StreamReader(file.InputStream, Encoding.UTF8))
                     {
                         string content = sr.ReadToEnd();
-                        importedCount = _themeVarService.ImportVariables(theme, content);
+                        importedCount = _themeVarService.ImportVariables(theme, storeId, content);
                     }
 
                     // activity log
@@ -273,23 +291,23 @@ namespace SmartStore.Admin.Controllers
                 ErrorNotification(ex);
             }
 
-            return RedirectToAction("Configure", new { theme = theme });
+            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
 
         [HttpPost]
-        public ActionResult ExportVariables(string theme, FormCollection form)
+        public ActionResult ExportVariables(string theme, int storeId, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-                return RedirectToAction("List");
+				return RedirectToAction("List", new { storeId = storeId });
             }
 
             try
             {
-                var xml = _themeVarService.ExportVariables(theme);
+                var xml = _themeVarService.ExportVariables(theme, storeId);
 
                 if (xml.IsEmpty())
                 {
@@ -315,7 +333,7 @@ namespace SmartStore.Admin.Controllers
                 ErrorNotification(ex);
             }
             
-            return RedirectToAction("Configure", new { theme = theme });
+            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
 
         #endregion

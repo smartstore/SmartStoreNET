@@ -47,9 +47,9 @@ namespace SmartStore.Admin.Models.Messages
         public int EmailAccountId { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.LimitedToStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AvailableStores")]
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 

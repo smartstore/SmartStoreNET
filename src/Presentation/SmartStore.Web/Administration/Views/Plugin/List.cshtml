@@ -103,17 +103,30 @@
                         }
 
                         <div class="plugin-actions">
-                            <i class="icon-edit"></i>
-                            <a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
-                                @T("Admin.Common.Edit")
-                            </a>
+							<div class="plugin-action-link">
+								<i class="icon-edit"></i>
+								<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
+									@T("Admin.Common.Edit")
+								</a>
+							</div>
                             @if (plugin.ConfigurationUrl.HasValue())
                             {
+							<div class="plugin-action-link">
                                 <i class="icon-cog"></i>
-                                <a href="@plugin.ConfigurationUrl" class='plugin-configure'>
+                                <a class="plugin-configure" href="@plugin.ConfigurationUrl">
                                     @T("Admin.Configuration.Plugins.Fields.Configure")
                                 </a>
+							</div>
                             }
+                            @if (plugin.Installed)
+                            {
+							<div class="plugin-action-link">
+                                <i class="icon-refresh"></i>
+                                <a class="plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
+                                    @T("Admin.Configuration.Plugins.Resources.Update")
+                                </a>								
+							</div>
+							}
                         </div>
 
                     </td>
@@ -146,20 +159,23 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#plugins-tab').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
+        	$('#plugins-tab').on('click', 'a.plugin-install, a.plugin-uninstall, a.plugin-update-resources', function (e) {
                 var el = $(this);
 
-                var confirmText = "",
-                    progressText = "",
-                    isInstall = el.hasClass("plugin-install");
+                var confirmText = "?",
+                    progressText = "?";
 
-                if (isInstall) {
+                if (el.hasClass("plugin-install")) {
                     confirmText = '@T("Admin.Configuration.Plugins.Fields.Install.Confirm").Text';
                     progressText = '@T("Admin.Configuration.Plugins.Fields.Install.Progress")';
                 }
-                else {
+                else if (el.hasClass("plugin-uninstall")) {
                     confirmText = '@T("Admin.Configuration.Plugins.Fields.Uninstall.Confirm").Text';
                     progressText = '@T("Admin.Configuration.Plugins.Fields.Uninstall.Progress")';
+                }
+                else if (el.hasClass("plugin-update-resources")) {
+                	confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text';
+                	progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
                 }
 
                 if (!confirm(_.str.unescapeHTML(confirmText).format(el.parent().data('plugin-name')))) {

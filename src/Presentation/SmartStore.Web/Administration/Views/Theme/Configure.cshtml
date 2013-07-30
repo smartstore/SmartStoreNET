@@ -7,10 +7,23 @@
 
 @using (Html.BeginForm())
 {
+	<div class="multi-store-scope well well-small">
+		<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("StoreId", Model.AvailableStores, new { onchange = "location.href = '" + ViewData["ConfigureThemeUrl"] + "&storeId=' + this.value;" })
+			</td>
+		</tr>
+		</table>
+	</div>
+
     <div class="section-header">
         <div class="title">
             <i class="icon icon-cog"></i>
-            @ViewBag.Title @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
+            @ViewBag.Title @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List", new { storeId = Model.StoreId })
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
@@ -28,14 +41,14 @@
                 <i class="icon-download-alt"></i>
                 @T("Common.Export")
             </a>
-            <a href='@Url.Action("Reset", new { theme = Model.ThemeName })' id="reset-vars" class="btn btn-danger">
+            <a href='@Url.Action("Reset", new { theme = Model.ThemeName, storeId = Model.StoreId })' id="reset-vars" class="btn btn-danger">
                 <i class="icon-trash"></i>
                 @T("Admin.Common.Reset")
             </a>
         </div>
     </div>
 
-    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, area = (string)null, selectedTab = ViewData["SelectedTab"] })
+    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null, selectedTab = ViewData["SelectedTab"] })
 }
 
 @*import variables window*@
@@ -44,7 +57,7 @@
     .Title(T("Admin.Configuration.Themes.ImportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ImportVariables", "Theme", new { theme = Model.ThemeName }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <div class="alert alert-info">
                 @T("Admin.Configuration.Themes.ImportVars.Note")
@@ -70,7 +83,7 @@
     .Title(T("Admin.Configuration.Themes.ExportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ExportVariables", "Theme", new { theme = Model.ThemeName }, FormMethod.Post))
+        @using (Html.BeginForm("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post))
         {
             <div class="alert alert-info">
                 @T("Admin.Configuration.Themes.ExportVars.Note")

@@ -35,14 +35,14 @@ namespace SmartStore.Web.Controllers
         #region Methods
 
         [ChildActionOnly]
-        public ActionResult ConfigureTheme(string theme, string selectedTab)
+        public ActionResult ConfigureTheme(string theme, int StoreId, string selectedTab)
         {
             if (theme.HasValue())
             {
                 this.ControllerContext.RouteData.DataTokens["ThemeOverride"] = theme;
             }
 
-            var model = _themeVarService.GetThemeVariables(theme);
+            var model = _themeVarService.GetThemeVariables(theme, StoreId);
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);

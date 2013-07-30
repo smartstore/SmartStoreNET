@@ -49,6 +49,9 @@ namespace SmartStore.Core.Domain.Cms
 
         public bool Published { get; set; }
 
+		public bool LimitedToStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
+
         public ContentSliderButtonSettings Button1 { get; set; }
 
         public ContentSliderButtonSettings Button2 { get; set; }

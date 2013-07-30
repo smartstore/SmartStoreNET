@@ -26,7 +26,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
         public int SearchManufacturerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.List.GoDirectlyToSku")]

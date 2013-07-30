@@ -12,7 +12,7 @@ namespace SmartStore.Admin.Models.Topics
 			AvailableStores = new List<SelectListItem>();
 		}
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.List.SearchStore")]
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 		public IList<SelectListItem> AvailableStores { get; set; }
 	}

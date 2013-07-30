@@ -1,10 +1,7 @@
 ﻿using System.Linq;
-using System.Web;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 
@@ -61,9 +58,10 @@ namespace SmartStore.Web.Framework.Themes
                 string theme = "";
                 if (_themeSettings.AllowCustomerToSelectTheme)
                 {
-                    if (_workContext.CurrentCustomer != null)
-                   {					theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);                        isCustomerSpecific = theme.HasValue();
-                    }
+					if (_workContext.CurrentCustomer != null)
+					{
+						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);										isCustomerSpecific = theme.HasValue();
+					}
                 }
 
                 // default store theme
@@ -79,7 +77,7 @@ namespace SmartStore.Web.Framework.Themes
                     if (isCustomerSpecific)
                     {
                         // the customer chosen theme does not exists (anymore). Invalidate it!
-                        _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty);
+                        _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty, _storeContext.CurrentStore.Id);
                     }
                 }
                 

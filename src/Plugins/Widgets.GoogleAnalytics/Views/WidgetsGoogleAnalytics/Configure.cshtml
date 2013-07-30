@@ -3,14 +3,15 @@
 }
 @model SmartStore.Plugin.Widgets.GoogleAnalytics.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
-@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
-@using (Html.BeginForm())
-{
 
-    <div class="alert alert-info">
-        @Html.Raw(@T("Plugins.Widgets.GoogleAnalytics.AdminInstruction"))
-    </div>
-    
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.Widgets.GoogleAnalytics.AdminInstruction"))
+</div>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@using (Html.BeginForm())
+{    
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -35,7 +36,7 @@
             @Html.SmartLabelFor(model => model.TrackingScript)
         </td>
         <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.TrackingScript);
+			@Html.SettingOverrideCheckbox(model => model.TrackingScript)
             @Html.TextAreaFor(model => model.TrackingScript, new { style = "Width: 600px; Height: 200px;" })
             @Html.ValidationMessageFor(model => model.TrackingScript)
         </td>
@@ -64,7 +65,7 @@
         <td>&nbsp;</td>
         <td style="padding:10px 0">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                @T("Admin.Common.Save")
+                <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>
         </td>
     </tr>

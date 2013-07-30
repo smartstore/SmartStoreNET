@@ -1,6 +1,5 @@
 using System.Web;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
 
@@ -25,10 +24,9 @@ namespace SmartStore.Services.Common
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="storeInformationSettings">Store information settings</param>
         /// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
-        public MobileDeviceHelper(ThemeSettings themeSettings, StoreInformationSettings storeInformationSettings, IWorkContext workContext,
+        public MobileDeviceHelper(ThemeSettings themeSettings, IWorkContext workContext,
 			IStoreContext storeContext, HttpContextBase httpContext)
         {
 			this._themeSettings = themeSettings;

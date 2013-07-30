@@ -1452,7 +1452,7 @@ namespace SmartStore.Admin.Controllers
 					string storeName = "";
 					if (x.StoreId == 0)
 					{
-						storeName = _localizationService.GetResource("Admin.Configuration.Settings.AllSettings.Fields.StoreName.AllStores");
+						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
 					}
 					else
 					{

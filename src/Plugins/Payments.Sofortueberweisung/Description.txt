@@ -1,6 +1,6 @@
-﻿FriendlyName: Sofortüberweisung
+﻿FriendlyName: SOFORT Überweisung
 SystemName: Payments.Sofortueberweisung
-Version: 1.01
+Version: 1.02
 SupportedVersions: 1.0
 Author: SmartStore AG
 DisplayOrder: 1

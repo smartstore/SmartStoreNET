@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using SmartStore.Plugin.Payments.Sofortueberweisung.Models;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Plugins;
 
@@ -18,5 +19,6 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 		bool PaymentInitiate(PostProcessPaymentRequest payment, out string transactionID, out string paymentUrl);
 		bool PaymentDetails(string transactionID);
 		bool PaymentDetails(HttpRequestBase request);
+		void SetupConfigurationModel(ConfigurationModel model);
 	}
 }

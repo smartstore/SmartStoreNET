@@ -1,12 +1,12 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-	<!--<LocaleResource Name="Plugins.FriendlyName.Payments.Sofortueberweisung" AppendRootKey="false">
-		<Value>Credit transfer</Value>
-	</LocaleResource>-->
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Sofortueberweisung" AppendRootKey="false">
+		<Value>SOFORT Überweisung</Value>
+	</LocaleResource>
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Steps to configure Sofortüberweisung:</p>
+			<![CDATA[<p>Steps to configure SOFORT Überweisung:</p>
 <ol>
-<li>Log in to your <a href="https://www.sofort-ueberweisung.de/info" target="_blank">Sofortüberweisung account</a> or register.</li>
+<li>Log in to your <a href="https://www.sofort.com/payment/" target="_blank">SOFORT Überweisung</a> account or register.</li>
 <li>Click on <b>New project</b> and then on <b>Create SOFORT Gateway project</b>.</li>
 <li>Enter required data, activate the payment method <b>SOFORT Banking</b> and leave success, abort and timeout link and HTTP notification empty.</li>
 <li>Save and copy the API configuration key from <b>General settings</b> in the field below.</li>
@@ -16,7 +16,7 @@
 	</LocaleResource>
 	<LocaleResource Name="PaymentNote">
 		<Value>
-			<![CDATA[Sofortüberweisung:
+			<![CDATA[SOFORT Überweisung:
 Reason: {0}
 Transaction ID: {1}
 Status (reason): {2} ({3})
@@ -33,34 +33,34 @@ Banking details:
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="RedirectionTip">
-		<Value>After confirmation of the order, you will be redirected straight to Sofortüberweisung. Please provide your data for online banking.</Value>
+		<Value>After confirmation of the order, you will be redirected straight to SOFORT Überweisung. Please provide your data for online banking.</Value>
 	</LocaleResource>
 	<LocaleResource Name="InvalidCredentials">
-		<Value>Incomplete credentials for the web API of Sofortüberweisung. Please enter the required data in the configuration area.</Value>
+		<Value>Incomplete credentials for the web API of SOFORT Überweisung. Please enter the required data in the configuration area.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order">
 		<Value>Order</Value>
 	</LocaleResource>
 	<LocaleResource Name="SuReportsError">
-		<Value>Sofortüberweisung reports an error: </Value>
+		<Value>SOFORT Überweisung reports an error: </Value>
 	</LocaleResource>
 	<LocaleResource Name="SuReportsWarning">
-		<Value>Sofortüberweisung reports a warning: </Value>
+		<Value>SOFORT Überweisung reports a warning: </Value>
 	</LocaleResource>
 	<LocaleResource Name="SendFailed">
-		<Value>Failed to send XML request to API of Sofortüberweisung.</Value>
+		<Value>Failed to send XML request to API of SOFORT Überweisung.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ModuleFailed">
-		<Value>Sofortüberweisung module cannot be loaded or is deactivated.</Value>
+		<Value>SOFORT Überweisung module cannot be loaded or is deactivated.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ParseTotalFailed">
-		<Value>The order total sent by Sofortüberweisung ({0}) cannot be detected.</Value>
+		<Value>The order total sent by SOFORT Überweisung ({0}) cannot be detected.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderTotalUnequal">
-		<Value>Order total sent by Sofortüberweisung ({0}) doesn't equal order total of shop ({1}).</Value>
+		<Value>Order total sent by SOFORT Überweisung ({0}) doesn't equal order total of shop ({1}).</Value>
 	</LocaleResource>
 	<LocaleResource Name="ReadNotificationFailed">
-		<Value>Notification sent by Sofortüberweisung cannot be read.</Value>
+		<Value>Notification sent by SOFORT Überweisung cannot be read.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Germany">
 		<Value>Germany</Value>
@@ -69,7 +69,7 @@ Banking details:
 		<Value>Configuration key</Value>
 	</LocaleResource>
 	<LocaleResource Name="ApiConfigKey.Hint">
-		<Value>Your Sofortüberweisung configuration key. It has the following format: Customer-ID:Project-ID:API-Key</Value>
+		<Value>Your SOFORT Überweisung configuration key. It has the following format: Customer-ID:Project-ID:API-Key</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalFee">
 		<Value>Additional fee</Value>
@@ -87,31 +87,31 @@ Banking details:
 		<Value>Receive notifications</Value>
 	</LocaleResource>
 	<LocaleResource Name="EnableNotifications.Hint">
-		<Value>Check if you like to receive notifications from Sofortüberweisung about changes of the payment status.</Value>
+		<Value>Check if you like to receive notifications from SOFORT Überweisung about changes of the payment status.</Value>
 	</LocaleResource>
 	<LocaleResource Name="CustomerProtection">
 		<Value>Customer protection</Value>
 	</LocaleResource>
 	<LocaleResource Name="CustomerProtection.Hint">
-		<Value>Check if you like to activate the customer protection of Sofortüberweisung.</Value>
+		<Value>Check if you want to grant your customers to use the customer protection of SOFORT Überweisung. Note that you must activate that in your project settings and that a SOFORT bank account is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ValidateOrderTotal">
 		<Value>Validate order total</Value>
 	</LocaleResource>
 	<LocaleResource Name="ValidateOrderTotal.Hint">
-		<Value>Check if the order totals sent by Sofortüberweisung should be validated.</Value>
+		<Value>Check if the order totals sent by SOFORT Überweisung should be validated.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SaveWarnings">
 		<Value>Log notes/warnings</Value>
 	</LocaleResource>
 	<LocaleResource Name="SaveWarnings.Hint">
-		<Value>Check if notes or warnings sent by Sofortüberweisung should be logged.</Value>
+		<Value>Check if notes or warnings sent by SOFORT Überweisung should be logged.</Value>
 	</LocaleResource>
 	<LocaleResource Name="UseTestAccount">
 		<Value>Use test account</Value>
 	</LocaleResource>
 	<LocaleResource Name="UseTestAccount.Hint">
-		<Value>Check if you want to simulate a payment. Enter the data of a valid test account of Sofortüberweisung below.</Value>
+		<Value>Check if you want to simulate a payment. Enter the data of a valid test account of SOFORT Überweisung below.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccountHolder">
 		<Value>Holder</Value>
@@ -136,5 +136,41 @@ Banking details:
 	</LocaleResource>
 	<LocaleResource Name="AccountCountry.Hint">
 		<Value>Country</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShowFurtherInfo">
+		<Value>Link with furthrer infos</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShowFurtherInfo.Hint">
+		<Value>Controls if there is a link on the checkout page to further information.</Value>
+	</LocaleResource>
+	<LocaleResource Name="FurtherInfoUrl">
+		<Value>Further info URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="FurtherInfoUrl.Hint">
+		<Value>URL to further information on SOFORT Überweisung. Optionally used on checkout page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="FurtherInfos">
+		<Value>Further informations...</Value>
+	</LocaleResource>
+	<LocaleResource Name="CustomerProtectionInfoUrl">
+		<Value>Customer protection URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="CustomerProtectionInfoUrl.Hint">
+		<Value>URL to further information on the customer protection of SOFORT Überweisung. Optionally used on checkout page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CustomerProtectionInfo">
+		<Value>Information on the customer protection of SOFORT Überweisung</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentReason1">
+		<Value>Payment reason 1</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentReason1.Hint">
+		<Value>The first payment reason. The reason will be cut if it is longer than 27 chars.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentReason2">
+		<Value>Payment reason 2</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentReason2.Hint">
+		<Value>The second payment reason. The reason will be cut if it is longer than 27 chars.</Value>
 	</LocaleResource>
 </Language>

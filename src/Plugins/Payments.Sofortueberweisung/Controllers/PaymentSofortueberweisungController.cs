@@ -25,13 +25,15 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 		}
 
 		[NonAction]
-		public override IList<string> ValidatePaymentForm(FormCollection form) {
+		public override IList<string> ValidatePaymentForm(FormCollection form)
+		{
 			List<string> warnings = new List<string>();
 			return warnings;
 		}
 
 		[NonAction]
-		public override ProcessPaymentRequest GetPaymentInfo(FormCollection form) {
+		public override ProcessPaymentRequest GetPaymentInfo(FormCollection form)
+		{
 			var processPaymentRequest = new ProcessPaymentRequest();
 			return processPaymentRequest;
 		}
@@ -40,8 +42,10 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 		[ChildActionOnly]
 		public ActionResult Configure() 
 		{
-			ConfigurationModel model = new ConfigurationModel();
+			var model = new ConfigurationModel();
 			model.Copy(_paymentSettingsSu, true);
+
+			_api.SetupConfigurationModel(model);
 
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.Configure", model);
 		}
@@ -60,22 +64,35 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Controllers
 			model.Copy(_paymentSettingsSu, false);
 			_settingService.SaveSetting(_paymentSettingsSu);
 
+			_api.SetupConfigurationModel(model);
+
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.Configure", model);
 		}
 
 		[ChildActionOnly]
-		public ActionResult PaymentInfo() {
+		public ActionResult PaymentInfo()
+		{
+			if (_paymentSettingsSu.ShowFurtherInfo)
+				ViewData["FurtherInfoUrl"] = _paymentSettingsSu.FurtherInfoUrl;
+
+			if (_paymentSettingsSu.CustomerProtection)
+				ViewData["CustomerProtectionInfoUrl"] = _paymentSettingsSu.CustomerProtectionInfoUrl;
+
 			return View("SmartStore.Plugin.Payments.Sofortueberweisung.Views.PaymentSofortueberweisung.PaymentInfo");
 		}
 
-		public ActionResult Success() {
+		public ActionResult Success()
+		{
 			// doesn't serve any content here
 			return RedirectToRoute("CheckoutCompleted");
 		}
-		public ActionResult Abort() {
-			return RedirectToAction("Index", "Home");
+		public ActionResult Abort()
+		{
+			// note: the order is always accepted despite of what user is doing on the payment site
+			return RedirectToRoute("CheckoutCompleted");
 		}
-		public ActionResult Notification() {
+		public ActionResult Notification()
+		{
 			_api.PaymentDetails(Request);
 
 			return Content("");

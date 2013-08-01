@@ -13,6 +13,9 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Logging;
 using System.Web;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Plugin.Payments.Sofortueberweisung.Models;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 {
@@ -43,8 +46,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
-			ILogger logger) {
-
+			ILogger logger)
+		{
 			_webHelper = webHelper;
 			_paymentSettings = paymentSettings;
 			_paymentSettingsSu = paymentSettingsSu;
@@ -70,9 +73,12 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			}
 		}
 		public PluginHelperBase Helper { get { return _helper; } }
-		public SofortueberweisungPaymentProcessor Processor {
-			get {
-				if (!_processorLoaded) {
+		public SofortueberweisungPaymentProcessor Processor
+		{
+			get
+			{
+				if (!_processorLoaded)
+				{
 					_processorLoaded = true;
 					var obj = _paymentService.LoadPaymentMethodBySystemName(Helper.SystemName) as SofortueberweisungPaymentProcessor;
 					_processor = (obj != null && obj.IsPaymentMethodActive(_paymentSettings) && obj.PluginDescriptor.Installed ? obj : null);
@@ -168,13 +174,15 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			}
 			return result;
 		}
-		private PaymentStatus GetPaymentStatus(string status, string statusReason) {
+		private PaymentStatus GetPaymentStatus(string status, string statusReason)
+		{
 			if (status == null)
 				status = "";
 			if (statusReason == null)
 				statusReason = "";
 
-			switch (status.ToLowerInvariant()) {
+			switch (status.ToLowerInvariant())
+			{
 				case "loss":
 					return PaymentStatus.Voided;
 				case "received":
@@ -193,27 +201,64 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			_logger.Error(Helper.Resource("ParseTotalFailed").FormatWith(total ?? "-"));
 			return false;
 		}
+		private string GetPaymentReason(PostProcessPaymentRequest payment, bool first)
+		{
+			string setting = (first ? _paymentSettingsSu.PaymentReason1 : _paymentSettingsSu.PaymentReason2);
 
-		public bool PaymentProcess(ProcessPaymentResult result) {
-			if (!ValidCredentials) {
+			if (setting.IsNullOrEmpty())
+				setting = (first ? DefaultPaymentReason1 : DefaultPaymentReason2);
+
+			switch (setting)
+			{
+				case "Order [StoreName]":
+					return "{0} {1}".FormatWith(Helper.Resource("Order"), _storeContext.CurrentStore.Name);
+				case "[OrderID], [OrderDate]":
+					return "{0}, {1}".FormatWith(payment.Order.Id, payment.Order.CreatedOnUtc.ToShortDateString());
+				case "[OrderID], [StoreID]":
+					return "{0}, {1}".FormatWith(payment.Order.Id, _storeContext.CurrentStore.Id);
+				case "[OrderID], [StoreName]":
+					return "{0}, {1}".FormatWith(payment.Order.Id, _storeContext.CurrentStore.Name);
+				case "[OrderID]":
+					return payment.Order.Id.ToString();
+				case "[OrderDate]":
+					return payment.Order.CreatedOnUtc.ToShortDateString();
+				case "[StoreID]":
+					return _storeContext.CurrentStore.Id.ToString();
+				case "[StoreName]":
+					return _storeContext.CurrentStore.Name;
+				default:
+					return setting;
+			}
+		}
+
+		public static string DefaultPaymentReason1 { get { return "Order [StoreName]"; } }
+		public static string DefaultPaymentReason2 { get { return "[OrderID], [OrderDate]"; } }
+		public static string FurtherInfoUrl { get { return "https://documents.sofort.com/sue/kundeninformationen/"; } }
+		public static string CustomerProtectionInfoUrl { get { return "https://www.sofort-bank.com/ger-DE/general/kaeuferschutz/informationen-fuer-kaeufer/"; } }
+
+		public bool PaymentProcess(ProcessPaymentResult result)
+		{
+			if (!ValidCredentials)
+			{
 				result.AddError(Helper.Resource("InvalidCredentials"));
 				return false;
 			}
 			return true;
 		}
-		public bool PaymentInitiate(PostProcessPaymentRequest payment, out string transactionID, out string paymentUrl) {
+		public bool PaymentInitiate(PostProcessPaymentRequest payment, out string transactionID, out string paymentUrl)
+		{
 			transactionID = paymentUrl = "";
 
 			XmlDocument docOut;
 			var allowedChars = new char[] { '+', ',', '-', '.' };
 			string orderTotal = Math.Round(payment.Order.OrderTotal, 2).ToString("0.00", CultureInfo.InvariantCulture);
-			string reason1 = "{0} {1}".FormatWith(Helper.Resource("Order"), _storeContext.CurrentStore.Name);
-			string reason2 = "{0}, {1}".FormatWith(payment.Order.Id, payment.Order.CreatedOnUtc.ToShortDateString());
+			string reason1 = GetPaymentReason(payment, true);
+			string reason2 = GetPaymentReason(payment, false);
 			string userData = "{0}|{1}".FormatWith(payment.Order.Id, payment.Order.OrderGuid.ToString());
 			string pluginUrl = "{0}Plugins/PaymentSofortueberweisung/{{0}}".FormatWith(_webHelper.GetStoreLocation(false));
-			//string pluginUrlParam = "{0}?data={1}".FormatWith(pluginUrl, HttpUtility.UrlEncode(userData));
 
-			XmlDocument docIn = Helper.CreateXmlDocument(xw => {
+			var docIn = Helper.CreateXmlDocument(xw =>
+			{
 				xw.WriteStartElement("multipay");
 
 				xw.WriteElementString("project_id", ConfigKey[1]);
@@ -229,7 +274,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 				xw.WriteElementString("reason", reason2.Prettify(true, allowedChars).Truncate(27));
 				xw.WriteEndElement();
 
-				if (_paymentSettingsSu.UseTestAccount) {
+				if (_paymentSettingsSu.UseTestAccount)
+				{
 					xw.WriteStartElement("sender");
 					xw.WriteElementString("holder", _paymentSettingsSu.AccountHolder);
 					xw.WriteElementString("account_number", _paymentSettingsSu.AccountNumber);
@@ -248,16 +294,11 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 				xw.WriteValue(pluginUrl.FormatWith("Notification"));
 				xw.WriteEndElement();
 				xw.WriteEndElement();
-
 				
 				xw.WriteStartElement("su");
-				//xw.WriteElementString("amount", orderTotal);
-				//xw.WriteStartElement("reasons");
-				//xw.WriteElementString("reason", reason1);
-				//xw.WriteElementString("reason", _workContext.CurrentStore.Name.Truncate(27));
-				//xw.WriteEndElement();
 
-				if (_paymentSettingsSu.CustomerProtection) {
+				if (_paymentSettingsSu.CustomerProtection)
+				{
 					xw.WriteElementString("customer_protection", "1");
 				}
 				xw.WriteEndElement();
@@ -266,7 +307,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 				return true;
 			});
 
-			if (Send(docIn, out docOut)) {
+			if (Send(docIn, out docOut))
+			{
 				transactionID = docOut.GetText("//transaction");
 				paymentUrl = docOut.GetText("//payment_url");
 
@@ -274,14 +316,17 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			}
 			return false;
 		}
-		public bool PaymentDetails(string transactionID) {
-			if (transactionID.HasValue()) {
+		public bool PaymentDetails(string transactionID)
+		{
+			if (transactionID.HasValue())
+			{
 				decimal orderTotal;
 				XmlDocument docOut;
 				XmlNode node;
 				Order order;
 
-				XmlDocument docIn = Helper.CreateXmlDocument(xw => {
+				var docIn = Helper.CreateXmlDocument(xw =>
+				{
 					xw.WriteStartElement("transaction_request");
 					xw.WriteAttributeString("version", _transactionRequestVersion);
 					xw.WriteElementString("transaction", transactionID);
@@ -289,11 +334,13 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 					return true;
 				});
 
-				if (Send(docIn, out docOut) && (node = docOut.SelectSingleNode("//transaction_details[1]")) != null) {
-					PaymentStatus paymentStatus = GetPaymentStatus(node.GetText("status"), node.GetText("status_reason"));
-					SofortueberweisungUserData userData = new SofortueberweisungUserData(node.GetText("user_variables/user_variable[1]"));
+				if (Send(docIn, out docOut) && (node = docOut.SelectSingleNode("//transaction_details[1]")) != null)
+				{
+					var paymentStatus = GetPaymentStatus(node.GetText("status"), node.GetText("status_reason"));
+					var userData = new SofortueberweisungUserData(node.GetText("user_variables/user_variable[1]"));
 					
-					if (userData.OrderGuid != null && (order = _orderService.GetOrderByGuid(userData.OrderGuid)) != null) {
+					if (userData.OrderGuid != null && (order = _orderService.GetOrderByGuid(userData.OrderGuid)) != null)
+					{
 						bool testTransaction = (node.GetText("test", "0") == "1");
 
 						string note = Helper.Resource("PaymentNote").FormatWith(
@@ -311,23 +358,34 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 							node.GetText("/sender/iban", "-"), node.GetText("/sender/bic", "-")
 						);
 
-						order.OrderNotes.Add(new OrderNote() {
+						order.OrderNotes.Add(new OrderNote()
+						{
 							Note = note,
 							DisplayToCustomer = false,
 							CreatedOnUtc = DateTime.UtcNow
 						});
 						_orderService.UpdateOrder(order);
 
-						if (_paymentSettingsSu.ValidateOrderTotal && ParseOrderTotal(node.GetText("amount"), out orderTotal) && !Math.Round(orderTotal, 2).Equals(Math.Round(order.OrderTotal, 2))) {
+						if (_paymentSettingsSu.ValidateOrderTotal && ParseOrderTotal(node.GetText("amount"), out orderTotal) && !Math.Round(orderTotal, 2).Equals(Math.Round(order.OrderTotal, 2)))
+						{
 							_logger.Error(Helper.Resource("OrderTotalUnequal").FormatWith(orderTotal, order.OrderTotal));
 							return false;
 						}
 
-						if ((paymentStatus == PaymentStatus.Paid || testTransaction) && _orderProcessingService.CanMarkOrderAsPaid(order)) {
+						if ((paymentStatus == PaymentStatus.Paid || testTransaction) && _orderProcessingService.CanMarkOrderAsPaid(order))
+						{
 							order.AuthorizationTransactionId = transactionID;
 							_orderService.UpdateOrder(order);
 
 							_orderProcessingService.MarkOrderAsPaid(order);
+						}
+						else if (paymentStatus == PaymentStatus.Voided && _orderProcessingService.CanVoidOffline(order))
+						{
+							_orderProcessingService.VoidOffline(order);
+						}
+						else if (paymentStatus == PaymentStatus.Refunded && _orderProcessingService.CanRefundOffline(order))
+						{
+							_orderProcessingService.RefundOffline(order);
 						}
 						return true;
 					}
@@ -335,44 +393,73 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			}
 			return false;
 		}
-		public bool PaymentDetails(HttpRequestBase request) {
-			if (Processor == null) {
+		public bool PaymentDetails(HttpRequestBase request)
+		{
+			if (Processor == null)
+			{
 				_logger.Error(Helper.Resource("ModuleFailed"));
 				return false;
 			}
 
 			string transaction = null;
-			try {
-				using (var reader = new StreamReader(request.InputStream)) {
-					XmlDocument doc = new XmlDocument();
+			try
+			{
+				using (var reader = new StreamReader(request.InputStream))
+				{
+					var doc = new XmlDocument();
 					doc.Load(reader);
 
 					transaction = doc.GetText("//transaction");
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 				_logger.Error(Helper.Resource("ReadNotificationFailed"), exc);
 			}
 			return PaymentDetails(transaction);
 		}
+		public void SetupConfigurationModel(ConfigurationModel model)
+		{
+			model.AvailablePaymentReason = new List<SelectListItem>()
+			{
+				new SelectListItem { Text = "{0} [StoreName]".FormatWith(Helper.Resource("Order")), Value = "Order [StoreName]" },
+				new SelectListItem { Text = "[OrderID], [OrderDate]", Value = "[OrderID], [OrderDate]" },
+				new SelectListItem { Text = "[OrderID], [StoreID]", Value = "[OrderID], [StoreID]" },
+				new SelectListItem { Text = "[OrderID], [StoreName]", Value = "[OrderID], [StoreName]" },
+				new SelectListItem { Text = "[OrderID]", Value = "[OrderID]" },
+				new SelectListItem { Text = "[OrderDate]", Value = "[OrderDate]" },
+				new SelectListItem { Text = "[StoreID]", Value = "[StoreID]" },
+				new SelectListItem { Text = "[StoreName]", Value = "[StoreName]" }
+			};
 
+			if (model.PaymentReason1.IsNullOrEmpty())
+				model.PaymentReason1 = DefaultPaymentReason1;
+
+			if (model.PaymentReason2.IsNullOrEmpty())
+				model.PaymentReason2 = DefaultPaymentReason2;
+		}
 	}	// class
 
 
 	public class SofortueberweisungUserData
 	{
-		public SofortueberweisungUserData() {
+		public SofortueberweisungUserData()
+		{
 		}
-		public SofortueberweisungUserData(string userData) {
-			try {
+		public SofortueberweisungUserData(string userData)
+		{
+			try
+			{
 				string[] data = userData.SplitSafe("|");
-				if (data.Length >= 2) {
+				if (data.Length >= 2)
+				{
 					OrderID = int.Parse(data[0]);
 					OrderGuid = new Guid(data[1]);
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 		}

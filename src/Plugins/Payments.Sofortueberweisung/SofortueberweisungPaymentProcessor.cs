@@ -30,8 +30,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 			ISettingService settingService,
 			SofortueberweisungPaymentSettings paymentSettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			HttpContextBase httpContext) {
-			
+			HttpContextBase httpContext)
+		{			
 			_api = api;
 			_localizationService = localizationService;
 			_settingService = settingService;
@@ -40,9 +40,16 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 			_httpContext = httpContext;
 		}
 
-		public override void Install() {
-			var paymentSettings = new SofortueberweisungPaymentSettings {
+		public override void Install()
+		{
+			var paymentSettings = new SofortueberweisungPaymentSettings
+			{
+				ShowFurtherInfo = true,
+				FurtherInfoUrl = SofortueberweisungApi.FurtherInfoUrl,
+				CustomerProtectionInfoUrl = SofortueberweisungApi.CustomerProtectionInfoUrl,
 				ValidateOrderTotal = true,
+				PaymentReason1 = SofortueberweisungApi.DefaultPaymentReason1,
+				PaymentReason2 = SofortueberweisungApi.DefaultPaymentReason2,
 				AccountHolder = "Max Mustermann",
 				AccountNumber = "23456789",
 				AccountBankCode = "00000",
@@ -55,7 +62,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 
 			base.Install();
 		}
-		public override void Uninstall() {
+		public override void Uninstall()
+		{
 			_settingService.DeleteSetting<SofortueberweisungPaymentSettings>();
 
 			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
@@ -66,7 +74,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 
 		#region IPaymentMethod Member
 
-		public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest) {
+		public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+		{
 			var result = new ProcessPaymentResult();
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
@@ -74,63 +83,76 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 
 			return result;
 		}
-		public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest) {
+		public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
+		{
 			string transactionID, paymentUrl;
 
-			if (_api.PaymentInitiate(postProcessPaymentRequest, out transactionID, out paymentUrl)) {
+			if (_api.PaymentInitiate(postProcessPaymentRequest, out transactionID, out paymentUrl))
+			{
 				_httpContext.Response.Redirect(paymentUrl);
 			}
 		}
-		public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart) {
+		public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+		{
 			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, _paymentSettings.AdditionalFee, _paymentSettings.AdditionalFeePercentage);
 			return result;
 		}
-		public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest) {
+		public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+		{
 			var result = new CapturePaymentResult();
 			result.AddError("Capture method not supported");
 			return result;
 		}
-		public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest) {
+		public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
+		{
 			var result = new RefundPaymentResult();
 			result.AddError("Refund method not supported");
 			return result;
 		}
-		public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest) {
+		public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
+		{
 			var result = new VoidPaymentResult();
 			result.AddError("Void method not supported");
 			return result;
 		}
-		public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest) {
+		public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
+		{
 			var result = new ProcessPaymentResult();
 			result.AddError("Recurring payment not supported");
 			return result;
 		}
-		public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest) {
+		public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
+		{
 			var result = new CancelRecurringPaymentResult();
 			result.AddError("Recurring payment not supported");
 			return result;
 		}
-		public bool CanRePostProcessPayment(Order order) {
+		public bool CanRePostProcessPayment(Order order)
+		{
 			if (order == null)
 				throw new ArgumentNullException("order");
 
-			if (order.PaymentStatus == PaymentStatus.Pending) {
+			if (order.PaymentStatus == PaymentStatus.Pending)
+			{
 				if ((DateTime.UtcNow - order.CreatedOnUtc).TotalMinutes >= 1)
 					return true;
 			}
 			return false;
 		}
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		{
 			actionName = "Configure";
 			controllerName = "PaymentSofortueberweisung";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Sofortueberweisung.Controllers" }, { "area", null } };
 		}
-		public void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+		public void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		{
 			actionName = "PaymentInfo";
 			controllerName = "PaymentSofortueberweisung";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Sofortueberweisung.Controllers" }, { "area", null } };
 		}
-		public Type GetControllerType() {
+		public Type GetControllerType()
+		{
 			return typeof(PaymentSofortueberweisungController);
 		}
 

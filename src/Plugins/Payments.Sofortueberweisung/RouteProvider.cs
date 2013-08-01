@@ -8,7 +8,8 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung
 	{
 		public int Priority { get { return 0; } }
 
-		public void RegisterRoutes(RouteCollection routes) {
+		public void RegisterRoutes(RouteCollection routes)
+		{
 			routes.MapRoute("Plugin.Payments.Sofortueberweisung.Configure",
 					"Plugins/PaymentSofortueberweisung/Configure",
 					new { controller = "PaymentSofortueberweisung", action = "Configure" },

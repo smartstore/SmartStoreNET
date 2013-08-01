@@ -27,20 +27,25 @@ namespace SmartStore.Web.Framework.Plugins
 		private Currency _euroCurrency;
 		private Dictionary<string, string> _key2ResString = new Dictionary<string, string>();
 
-		public PluginHelperBase(string systemName) {
+		public PluginHelperBase(string systemName)
+		{
 			SystemName = systemName;
 		}
 
 		public static string NotSpecified {
-			get {
+			get
+			{
 				return "__nospec__";	// explicitly do not set a field
 			}
 		}
 		public string SystemName { get; set; }
 
-		public PluginDescriptor Plugin {
-			get {
-				if (_plugin == null) {
+		public PluginDescriptor Plugin
+		{
+			get
+			{
+				if (_plugin == null)
+				{
 					_plugin = EngineContext.Current.Resolve<IPluginFinder>()
 						.GetPluginDescriptors().FirstOrDefault(p => p.SystemName.IsCaseInsensitiveEqual(SystemName));
 				}
@@ -76,12 +81,19 @@ namespace SmartStore.Web.Framework.Plugins
 				return _currencyID ?? 1;
 			}
 		}
-		public string CurrencyCode {
-			get {
-				if (_currencyCode == null) {
-					_currencyCode = EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyById(CurrencyID).CurrencyCode ?? "EUR";
+		public string CurrencyCode
+		{
+			get
+			{
+				try
+				{
+					if (_currencyCode == null)
+						_currencyCode = EngineContext.Current.Resolve<IWorkContext>().WorkingCurrency.CurrencyCode;
 				}
-				return _currencyCode;
+				catch (Exception)
+				{
+				}
+				return _currencyCode ?? "EUR";
 			}
 		}
 		public Currency EuroCurrency {
@@ -93,11 +105,20 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public string Resource(string keyOrShortKey) {
+		public string Resource(string keyOrShortKey)
+		{
 			string res = "";
-			try {
-				if (keyOrShortKey.HasValue()) {
-					keyOrShortKey = (keyOrShortKey.Contains('.') ? keyOrShortKey : "{0}.{1}".FormatWith(Plugin.ResourceRootKey, keyOrShortKey));
+			try
+			{
+				if (keyOrShortKey.HasValue())
+				{
+					if (!keyOrShortKey.Contains('.'))
+					{
+						if (Plugin.ResourceRootKey.HasValue())
+							keyOrShortKey = "{0}.{1}".FormatWith(Plugin.ResourceRootKey, keyOrShortKey);
+						else
+							keyOrShortKey = "Plugins.{0}.{1}".FormatWith(SystemName, keyOrShortKey);
+					}
 
 					if (_key2ResString.ContainsKey(keyOrShortKey))
 						return _key2ResString[keyOrShortKey];
@@ -110,7 +131,8 @@ namespace SmartStore.Web.Framework.Plugins
 					_key2ResString.Add(keyOrShortKey, res);
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return res;

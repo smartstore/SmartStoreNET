@@ -8,25 +8,28 @@
 }
 @model ConfigurationModel
 
+<table class="adminContent">
+<tr>
+    <td>
+		<a href="https://www.sofort.com/" target="_blank">
+			<img src="@Url.Content("~/Plugins/Payments.Sofortueberweisung/Content/images/logo200x75.png")" alt="SOFORT Überweisung" class="config-logo" />
+		</a>
+    </td>
+</tr>
+<tr>
+    <td>
+		@Html.Raw(@T("Plugins.Payments.Sofortueberweisung.AdminInstruction"))
+    </td>
+</tr>
+<tr>
+    <td style="width:100%;">
+        <hr />
+    </td>
+</tr>
+</table>
+
 @using (Html.BeginForm()) {
 	<table class="adminContent">
-    <tr>
-        <td colspan="2">
-			<a href="https://www.payment-network.com/" target="_blank">
-				<img src="@Url.Content("~/Plugins/Payments.Sofortueberweisung/Content/images/logo200x75.png")" alt="Sofortüberweisung" class="config-logo" />
-			</a>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-			@Html.Raw(@T("Plugins.Payments.Sofortueberweisung.AdminInstruction"))
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" style="width:100%;">
-            <hr />
-        </td>
-    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ApiConfigKey)
@@ -34,6 +37,24 @@
         <td class="adminData">
             @Html.EditorFor(model => model.ApiConfigKey)
             @Html.ValidationMessageFor(model => model.ApiConfigKey)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PaymentReason1)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.PaymentReason1, Model.AvailablePaymentReason)
+            @Html.ValidationMessageFor(model => model.PaymentReason1)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PaymentReason2)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.PaymentReason2, Model.AvailablePaymentReason)
+            @Html.ValidationMessageFor(model => model.PaymentReason2)
         </td>
     </tr>
     <tr>
@@ -74,11 +95,38 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ShowFurtherInfo)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ShowFurtherInfo)
+            @Html.ValidationMessageFor(model => model.ShowFurtherInfo)
+        </td>
+    </tr>
+    <tr class="further-info-url">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FurtherInfoUrl)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.FurtherInfoUrl)
+            @Html.ValidationMessageFor(model => model.FurtherInfoUrl)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.CustomerProtection)
         </td>
         <td class="adminData">
             @Html.EditorFor(model => model.CustomerProtection)
             @Html.ValidationMessageFor(model => model.CustomerProtection)
+        </td>
+    </tr>
+    <tr class="customer-protection-url">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CustomerProtectionInfoUrl)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.CustomerProtectionInfoUrl)
+            @Html.ValidationMessageFor(model => model.CustomerProtectionInfoUrl)
         </td>
     </tr>
     <tr>
@@ -141,11 +189,21 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		function ToggleTestAccount() {
+			$('.test-account-data').toggle($('#@Html.FieldIdFor(model => model.UseTestAccount)').is(':checked'));
+		}
+		function ToggleFurtherInfoUrl() {
+			$('.further-info-url').toggle($('#@Html.FieldIdFor(model => model.ShowFurtherInfo)').is(':checked'));
+		}
+		function ToggleCustomerProtectionInfoUrl() {
+			$('.customer-protection-url').toggle($('#@Html.FieldIdFor(model => model.CustomerProtection)').is(':checked'));
+		}
+
 		$('#@Html.FieldIdFor(model => model.UseTestAccount)').click(ToggleTestAccount);
 		ToggleTestAccount();
+		$('#@Html.FieldIdFor(model => model.ShowFurtherInfo)').click(ToggleFurtherInfoUrl);
+		ToggleFurtherInfoUrl();
+		$('#@Html.FieldIdFor(model => model.CustomerProtection)').click(ToggleCustomerProtectionInfoUrl);
+		ToggleCustomerProtectionInfoUrl();
 	});
-
-	function ToggleTestAccount() {
-		$('.test-account-data').toggle($('#@Html.FieldIdFor(model => model.UseTestAccount)').is(':checked'));
-	}
 </script>

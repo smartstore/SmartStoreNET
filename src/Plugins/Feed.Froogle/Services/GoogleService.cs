@@ -33,18 +33,21 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly IProductService _productService;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IStoreService _storeService;
+		private readonly ICategoryService _categoryService;
 
 		public GoogleService(
 			IRepository<GoogleProductRecord> gpRepository,
 			IProductService productService,
 			IManufacturerService manufacturerService,
 			IStoreService storeService,
+			ICategoryService categoryService,
 			FroogleSettings settings)
         {
             this._gpRepository = gpRepository;
 			this._productService = productService;
 			this._manufacturerService = manufacturerService;
 			this._storeService = storeService;
+			this._categoryService = categoryService;
 			this.Settings = settings;
 
 			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () => {
@@ -224,7 +227,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteCData(category);
 			writer.WriteFullEndElement(); 
 
-			string productType = Helper.CategoryBreadCrumbJoined(product);
+			string productType = _categoryService.GetCategoryBreadCrumb(product);
 			if (productType.HasValue())
 			{
 				writer.WriteStartElement("g", "product_type", _googleNamespace);

@@ -518,6 +518,45 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productCategory);
         }
 
+		/// <summary>
+		/// Builds a category bread crump for a particular product
+		/// </summary>
+		/// <param name="product">The product</param>
+		/// <returns>Category bread crump for product</returns>
+		/// <remarks>codehint: sm-add</remarks>
+		public virtual string GetCategoryBreadCrumb(Product product)
+		{
+			var categories = new List<string>();
+			string result = "";
+
+			if (product != null)
+			{
+				var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+
+				if (productCategory != null && productCategory.Category != null && !productCategory.Category.Deleted && productCategory.Category.Published)
+				{
+					categories.Add(productCategory.Category.Name);
+
+					var category = GetCategoryById(productCategory.Category.ParentCategoryId);
+
+					while (category != null && !category.Deleted && category.Published)
+					{
+						categories.Add(category.Name);
+						category = GetCategoryById(category.ParentCategoryId);
+					}
+					categories.Reverse();
+				}
+			}
+
+			for (int i = 0; i < categories.Count; ++i)
+			{
+				result = result + categories[i];
+				if (i != categories.Count - 1)
+					result = result + " > ";
+			}
+			return result;
+		}
+
         #endregion
     }
 }

@@ -83,6 +83,17 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 			return Settings.Availability;
 		}
+		private string CategoryName(Product product)
+		{
+			var productCategory = _categoryService.GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+			if (productCategory != null)
+			{
+				var category = productCategory.Category;
+				if (category != null)
+					return category.Name;
+			}
+			return "";
+		}
 		private void WriteMapping(XmlWriter writer, int column, string name, string type) {
 			writer.WriteStartElement("Mapping");
 			writer.WriteAttributeString("column", column.ToString());
@@ -161,7 +172,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 				price,
 				Helper.ReplaceCsvChars(product.ShortDescription),
 				specialPrice.HasValue() ? "1" : "0",
-				Helper.ReplaceCsvChars(Helper.CategoryName(product)),
+				Helper.ReplaceCsvChars(CategoryName(product)),
 				Helper.ReplaceCsvChars(measureUnit),
 				Helper.ReplaceCsvChars(Helper.ProductDetailUrl(store, product)),
 				Helper.ReplaceCsvChars(Settings.Warranty),

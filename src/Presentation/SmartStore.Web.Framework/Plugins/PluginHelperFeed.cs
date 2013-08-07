@@ -91,43 +91,6 @@ namespace SmartStore.Web.Framework.Plugins
 		public string DecimalUsFormat(decimal value) {
 			return Math.Round(value, 2).ToString(new CultureInfo("en-US", false).NumberFormat);
 		}
-		public string CategoryName(Product product) {
-			var productCategory = EngineContext.Current.Resolve<ICategoryService>().GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-			if (productCategory != null) {
-				var category = productCategory.Category;
-				if (category != null)
-					return category.Name;
-			}
-			return "";
-		}
-		private IList<Category> CategoryBreadCrumb(Product product) {
-			var lst = new List<Category>();
-			var categoryService = EngineContext.Current.Resolve<ICategoryService>();
-			var productCategory = categoryService.GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-
-			if (productCategory != null) {
-				Category category = productCategory.Category;
-
-				while (category != null && !category.Deleted && category.Published) {
-					lst.Add(category);
-					category = categoryService.GetCategoryById(category.ParentCategoryId);
-				}
-				lst.Reverse();
-			}
-			return lst;
-		}
-		public string CategoryBreadCrumbJoined(Product product) {
-			string result = "";
-			var categories = CategoryBreadCrumb(product);
-
-			for (int i = 0; i < categories.Count; i++) {
-				var cat = categories[i];
-				result = result + cat.Name;
-				if (i != categories.Count - 1)
-					result = result + " > ";
-			}
-			return result;
-		}
 		public string BuildProductDescription(Product product, ProductVariant variant, ProductManufacturer manu, Func<string, string> updateResult = null) {
 			if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual(NotSpecified))
 				return "";

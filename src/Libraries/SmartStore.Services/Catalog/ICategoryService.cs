@@ -116,5 +116,13 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productCategory">>Product category mapping</param>
         void UpdateProductCategory(ProductCategory productCategory);
+
+		/// <summary>
+		/// Builds a category bread crump for a particular product
+		/// </summary>
+		/// <param name="product">The product</param>
+		/// <returns>Category bread crump for product</returns>
+		/// <remarks>codehint: sm-add</remarks>
+		string GetCategoryBreadCrumb(Product product);
     }
 }

@@ -482,6 +482,7 @@ namespace SmartStore.Web.Framework
 			if (data != null && data.ActiveStoreScopeConfiguration > 0)
 			{
 				var settingKey = ExpressionHelper.GetExpressionText(expression);
+				var localizeService = EngineContext.Current.Resolve<ILocalizationService>();
 
 				if (!settingKey.Contains("."))
 					settingKey = data.RootSettingClass + "." + settingKey;
@@ -489,15 +490,21 @@ namespace SmartStore.Web.Framework
 				var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
 				var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
-				var checkbox = helper.CheckBox(fieldId, overrideForStore, new Dictionary<string, object>
-				{
-					{ "class", "multi-store-override-option" },
-					{ "onclick", "Admin.checkOverriddenStoreValue(this)" },
-					{ "data-parent-selector", parentSelector.EmptyNull() },
-				});
+				var sb = new StringBuilder();
+				sb.Append("<div class=\"onoffswitch-container\"><div class=\"onoffswitch\">");
 
-				// inputs are not floating, so line-break prevents different distances between them
-				return MvcHtmlString.Create(checkbox + "\r\n");
+				sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"onoffswitch-checkbox multi-store-override-option\"", fieldId);
+				sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
+
+				sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
+				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3, "").ToUpper());
+				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3, "").ToUpper());
+				sb.Append("<span class=\"onoffswitch-switch\"></span>");
+				sb.Append("<span class=\"onoffswitch-inner\"></span>");
+				sb.Append("</label>");
+				sb.Append("</div></div>\r\n");		// controls are not floating, so line-break prevents different distances between them
+
+				return MvcHtmlString.Create(sb.ToString());
 			}
 			return MvcHtmlString.Empty;
 		}

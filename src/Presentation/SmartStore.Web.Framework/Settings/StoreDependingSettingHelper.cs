@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Settings
 			if (rawOverrideKey.HasValue())
 			{
 				var checkboxValue = form[rawOverrideKey].EmptyNull().ToLower();
-				return checkboxValue.Contains("true");
+				return checkboxValue.Contains("on") || checkboxValue.Contains("true");
 			}
 			return false;
 		}

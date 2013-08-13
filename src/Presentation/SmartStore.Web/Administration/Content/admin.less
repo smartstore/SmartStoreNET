@@ -8,9 +8,6 @@
 	padding: 0;
 }
 
-/* Page
--------------------------------------------------------------- */
-
 
 /* Warning panel message
 -------------------------------------------------------------- */
@@ -530,9 +527,6 @@ a:hover {
             .smaller();
         }
     }
-}
-.multi-store-override-option {
-    margin-right: 4px !important;
 }
 
 /* TABLES */
@@ -1230,4 +1224,87 @@ table.order-edit td {
 .color-label {
     vertical-align: text-bottom;
     padding-left: 4px;
+}
+
+/* On/Off switch button
+-------------------------------------------------------------- */
+.onoffswitch-container {
+	display: inline-block;
+	vertical-align: top;
+	margin: 4px 2px 0 0;
+}
+
+.onoffswitch {
+    position: relative;
+    width: 60px;
+    .user-select(none);
+}
+
+.onoffswitch-checkbox {
+    display: none !important;
+}
+
+.onoffswitch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #969696;
+    border-radius: 5px;
+    height: 14px;
+    padding: 0;
+    margin: 0;
+}
+
+.onoffswitch-inner {
+    width: 200%;
+    margin-left: -100%;
+    .transition(all 0.3s ease-in 0s);
+}
+
+.onoffswitch-on, .onoffswitch-off {
+    float: left;
+    width: 50%;
+    height: 15px;
+    line-height: 15px;
+    padding: 0;
+    color: white; 
+    font-size: 11px; 
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: normal;
+    .box-sizing(border-box);
+}
+
+.onoffswitch-on {
+    padding-left: 6px;
+    background-color: #6BB2ED;
+    color: #FFFFFF;
+}
+
+.onoffswitch-off {
+    padding-right: 3px;
+    background-color: #FFFFFF;
+    color: #969696;
+    text-align: right;
+}
+
+.onoffswitch-switch {
+    width: 27px;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 29px;
+    background: #FFFFFF;
+    border: 2px solid #969696;
+    .border-radius(5px);
+    .transition(all 0.3s ease-in 0s);
+    #gradient > .vertical(#dddddd, #ffffff);
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0; 
 }

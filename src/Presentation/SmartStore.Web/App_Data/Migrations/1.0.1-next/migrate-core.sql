@@ -195,6 +195,15 @@ set @resources='
 	<T>Bitte Shops auswählen, für die der Eintrag angezeigt werden soll.</T>
   </LocaleResource>
   
+  <LocaleResource Name="Common.On">
+    <Value>On</Value>
+	<T>An</T>
+  </LocaleResource>
+  <LocaleResource Name="Common.Off">
+    <Value>Off</Value>
+	<T>Aus</T>
+  </LocaleResource>  
+  
 </Language>
 '
 

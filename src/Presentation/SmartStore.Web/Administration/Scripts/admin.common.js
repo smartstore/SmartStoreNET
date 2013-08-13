@@ -33,38 +33,43 @@ function OpenWindow(query, w, h, scroll) {
 // global Admin namespace
 var Admin = {
 
+	checkboxCheck: function (obj, checked) {
+		if (checked)
+			$(obj).attr('checked', 'checked');
+		else
+			$(obj).removeAttr('checked');
+	},
+
 	checkAllOverriddenStoreValue: function (obj) {
 		$('input.multi-store-override-option').each(function (index, elem) {
-			$(elem).attr('checked', obj.checked);
+			Admin.checkboxCheck(elem, obj.checked);
 			Admin.checkOverriddenStoreValue(elem);
 		});
 	},
 
-	checkOverriddenStoreValue: function (obj) {
-		var parentSelector = $(obj).attr('data-parent-selector').toString(),
-			parent = (parentSelector.length > 0 ? $(parentSelector) : $(obj).parent()),
-			enable = $(obj).is(':checked');
+	checkOverriddenStoreValue: function (checkbox) {
+		var parentSelector = $(checkbox).attr('data-parent-selector').toString(),
+			parent = (parentSelector.length > 0 ? $(parentSelector) : $(checkbox).closest('.onoffswitch-container').parent()),
+			checked = $(checkbox).is(':checked');
 
 		parent.find(':input:not([type=hidden])').each(function (index, elem) {
-			var clss = $(elem).attr('class') || '';
-
 			if ($(elem).is('select')) {
-				$(elem).select2(enable ? 'enable' : 'disable');
+				$(elem).select2(checked ? 'enable' : 'disable');
 			}
-			else if (clss != 'multi-store-override-option') {
+			else if (!$(elem).hasClass('multi-store-override-option')) {
 				var tData = $(elem).data('tTextBox');
 
 				if (tData != null) {
-					if (enable)
+					if (checked)
 						tData.enable();
 					else
 						tData.disable();
 				}
 				else {
-					if (enable)
+					if (checked)
 						$(elem).removeAttr('disabled');
 					else
-						$(elem).attr('disabled', true);
+						$(elem).attr('disabled', 'disabled');
 				}
 			}
 		});

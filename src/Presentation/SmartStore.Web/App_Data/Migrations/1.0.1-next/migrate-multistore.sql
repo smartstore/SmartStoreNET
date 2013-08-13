@@ -303,12 +303,12 @@ set @resources='
 	<T>Multi-Shop Konfiguration für</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll">
-	<Value>Check/uncheck all</Value>
-	<T>Alle aus/abwählen</T>
+	<Value>Switch all on/off</Value>
+	<T>Alle aus/anschalten</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll.Hint">
-	<Value>Check boxes if you want to set a custom value for this shop</Value>
-	<T>Kontrollkästchen, falls Sie für diesen Shop separate Werte festlegen möchten</T>
+	<Value>Switch on if you want to set a custom value for this shop</Value>
+	<T>An- bzw. ausschalten, falls Sie für diesen Shop separate Werte festlegen möchten</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys">

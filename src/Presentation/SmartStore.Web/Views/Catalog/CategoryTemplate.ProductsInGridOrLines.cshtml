@@ -45,7 +45,7 @@
                         <li>@cat.Name</li>
 					}
 					else {
-                        <a href="@Url.RouteUrl("Category", new { categoryId = cat.Id, SeName = cat.SeName })" title="@cat.Name">@cat.Name</a>
+                        <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" title="@cat.Name">@cat.Name</a>
                         <span class="divider">/</span>
 					}
                 </li>

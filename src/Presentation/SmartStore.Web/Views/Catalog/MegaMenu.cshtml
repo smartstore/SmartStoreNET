@@ -44,7 +44,7 @@
                     {
                         var state = Model.GetNodePathState(node);
                         <li class='@(GetCssClassForNode(node, state))'> 
-                        <a href="@Url.RouteUrl("Category", new { categoryId = node.Value.Id, SeName = node.Value.SeName })" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@node.Value.Name
+                        <a href="@Url.RouteUrl("Category", new { SeName = node.Value.SeName })" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@node.Value.Name
                             @if (node.Value.NumberOfProducts.HasValue)
                             {
                                 <text> (@(node.Value.NumberOfProducts))</text>
@@ -95,7 +95,7 @@
     {
         var state = Model.GetNodePathState(node);
         <li class='@(GetCssClassForNode(node, state))'> 
-            <a href="@Url.RouteUrl("Category", new { categoryId = node.Value.Id, SeName = node.Value.SeName })">@node.Value.Name</a>
+            <a href="@Url.RouteUrl("Category", new { SeName = node.Value.SeName })">@node.Value.Name</a>
             @if (node.Value.Level <= 2 && node.HasChildren)
             {
                 @CreateDrilldownMenu(node.Children, false)

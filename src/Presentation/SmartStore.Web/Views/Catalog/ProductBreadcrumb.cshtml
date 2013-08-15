@@ -13,7 +13,7 @@
         var catBr = Model.CategoryBreadcrumb[i];
         <li>
             <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-                <a href="@Url.RouteUrl("Category", new { categoryId = catBr.Id, SeName = catBr.SeName })" title="@catBr.Name" itemprop="url">
+                <a href="@Url.RouteUrl("Category", new { SeName = catBr.SeName })" title="@catBr.Name" itemprop="url">
                     <span itemprop="title">@catBr.Name</span>
                 </a>
             </span>

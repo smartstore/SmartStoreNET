@@ -202,6 +202,11 @@ set @resources='
   <LocaleResource Name="Common.Off">
     <Value>Off</Value>
 	<T>Aus</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="RewardPoints.Message.RegisteredAsCustomer">
+    <Value>Registered as customer</Value>
+	<T>Als Kunde registriert</T>
   </LocaleResource>  
   
 </Language>

@@ -214,9 +214,8 @@ namespace SmartStore.Services.Customers
                 request.Customer.CustomerRoles.Remove(guestRole);
 
             //Add reward points for customer registration (if enabled)
-            if (_rewardPointsSettings.Enabled &&
-                _rewardPointsSettings.PointsForRegistration > 0)
-                request.Customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForRegistration, "Registered as customer");
+            if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForRegistration > 0)
+				request.Customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForRegistration, _localizationService.GetResource("RewardPoints.Message.RegisteredAsCustomer"));
 
             _customerService.UpdateCustomer(request.Customer);
             return result;

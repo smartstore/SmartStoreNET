@@ -391,8 +391,9 @@ namespace SmartStore.Services.Filter
 				var variantRepository = EngineContext.Current.Resolve<IRepository<ProductVariant>>();
 
 				var pvq = variantRepository.Table
-					.Where(pv => pv.Published && !pv.Deleted && (!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value < nowUtc) && 
-						(!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value > nowUtc))
+					.Where(pv => pv.Published && !pv.Deleted && 
+						(!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value <= nowUtc) && 
+						(!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value >= nowUtc))
 					.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 
 				query =

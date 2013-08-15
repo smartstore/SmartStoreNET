@@ -453,6 +453,19 @@ namespace SmartStore
             return dtTo;
         }
 
+		/// <remarks>codehint: sm-add</remarks>
+		public static DateTime ToEndOfTheDay(this DateTime dt)
+		{
+			if (dt != null)
+				return new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
+			return dt;
+		}
+
+		/// <remarks>codehint: sm-add</remarks>
+		public static DateTime? ToEndOfTheDay(this DateTime? dt)
+		{
+			return (dt.HasValue ? dt.Value.ToEndOfTheDay() : dt);
+		}
     }
 
 }

@@ -362,6 +362,9 @@ namespace SmartStore.Admin.Controllers
                 var prevStockQuantity = variant.StockQuantity;
                 variant = model.ToEntity(variant);
                 variant.UpdatedOnUtc = DateTime.UtcNow;
+				variant.AvailableEndDateTimeUtc = variant.AvailableEndDateTimeUtc.ToEndOfTheDay();
+				variant.SpecialPriceEndDateTimeUtc = variant.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+
                 //save variant
                 _productService.UpdateProductVariant(variant);
                 //locales

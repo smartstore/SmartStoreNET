@@ -33,10 +33,10 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $("#terms-of-service-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="600" height="200" scrolling="yes" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" height="680" scrolling="no" frameBorder="0" />');
                         });
                         $("#disclaimer-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="600" height="200" scrolling="yes" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" height="680" scrolling="no" frameBorder="0" />');
                         });
                     });
                 </script>

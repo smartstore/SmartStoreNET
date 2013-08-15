@@ -43,6 +43,7 @@
                             .Width(200)
                             .Template(x => Html.ActionLink(x.SystemName, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href='Edit/<#= Id #>'><#= SystemName #></a>");
+						columns.Bound(x => x.Title);
                         columns.Bound(x => x.IsPasswordProtected)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.IsPasswordProtected))

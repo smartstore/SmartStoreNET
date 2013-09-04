@@ -345,6 +345,7 @@ namespace SmartStore.Services.Installation
                 DisplayOrder = 1,
                 Published = true,
             };
+            #region US Regions
             cUsa.StateProvinces.Add(new StateProvince()
             {
                 Name = "AA (Armed Forces Americas)",
@@ -882,6 +883,7 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 DisplayOrder = 1,
             });
+            #endregion
 
             var entities = new List<Country>()
             {
@@ -1174,7 +1176,7 @@ namespace SmartStore.Services.Installation
 	                TwoLetterIsoCode = "HR",
 	                ThreeLetterIsoCode = "HRV",
 	                NumericIsoCode = 191,
-	                SubjectToVat = false,
+	                SubjectToVat = true,
 	                DisplayOrder = 100,
 	                Published = true
                 },

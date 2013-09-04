@@ -64,7 +64,7 @@ namespace SmartStore.Services.Messages
             message.Subject = subject;
             message.Body = body;
             message.IsBodyHtml = true;
-
+            
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.UseDefaultCredentials = emailAccount.UseDefaultCredentials;

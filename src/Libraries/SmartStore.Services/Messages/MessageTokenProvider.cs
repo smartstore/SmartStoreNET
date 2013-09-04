@@ -517,6 +517,9 @@ namespace SmartStore.Services.Messages
 				//not found. let's find topic assigned to all stores
 				topic = _topicService.GetTopicBySystemName(systemName, 0);
 
+            if (topic == null)
+                return string.Empty;
+
             sb.AppendLine("<tr><td style=\"color:#aaa\">");
             sb.AppendLine(topic.Title);
             sb.AppendLine("<td/><tr/><tr><td>");

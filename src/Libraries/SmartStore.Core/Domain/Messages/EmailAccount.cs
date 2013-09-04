@@ -5,7 +5,7 @@ namespace SmartStore.Core.Domain.Messages
     /// <summary>
     /// Represents an email account
     /// </summary>
-    public partial class EmailAccount : BaseEntity
+    public partial class EmailAccount : BaseEntity, ICloneable<EmailAccount>
     {
         /// <summary>
         /// Gets or sets an email address
@@ -58,6 +58,16 @@ namespace SmartStore.Core.Domain.Messages
                     return this.Email + " (" + this.DisplayName + ")";
                 return this.Email;
             }
+        }
+
+        public EmailAccount Clone()
+        {
+            return (EmailAccount)this.MemberwiseClone();
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }

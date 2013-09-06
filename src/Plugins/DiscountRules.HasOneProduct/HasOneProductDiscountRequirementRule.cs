@@ -51,7 +51,6 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 
             //cart
 			var cart = request.Customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart && x.StoreId == request.Store.Id);
-            
 
             bool found = false;
             foreach (var restrictedPv in restrictedProductVariants)

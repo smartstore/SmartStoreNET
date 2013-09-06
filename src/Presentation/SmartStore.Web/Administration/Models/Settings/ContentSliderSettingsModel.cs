@@ -46,6 +46,8 @@ namespace SmartStore.Admin.Models.ContentSlider
     [Validator(typeof(ContentSliderSlideValidator))]
     public class ContentSliderSlideModel : EntityModelBase
     {
+		public int SlideIndex { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.ContentSlider.Slide.DisplayOrder")]
         public int DisplayOrder { get; set; }
 

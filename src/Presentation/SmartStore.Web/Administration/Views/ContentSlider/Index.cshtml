@@ -109,13 +109,12 @@
 <table class="adminContent">
     <tr>
         <td>
-            @{int rowIndex = 0;}
             @(Html.Telerik().Grid<ContentSliderSlideModel>(Model.Slides.OrderBy(s => s.LanguageName).ThenBy(s => s.DisplayOrder))
                     .Name("content-slider-slides-grid")
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Title)
-                            .Template(x => Html.ActionLink(x.Title, "EditSlide", new { index = rowIndex++ }));
+							.Template(x => Html.ActionLink(x.Title, "EditSlide", new { index = x.SlideIndex }));
                         columns.Bound(x => x.DisplayOrder)
                             .Centered();
                         columns.Bound(x => x.LanguageName)

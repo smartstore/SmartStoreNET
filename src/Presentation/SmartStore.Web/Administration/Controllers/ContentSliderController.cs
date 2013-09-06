@@ -59,10 +59,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
                 return AccessDeniedView();
 
+			int rowIndex = 0;
             var model = _contentSliderSettings.ToModel();
 
             foreach (ContentSliderSlideModel slide in model.Slides)
             {
+				slide.SlideIndex = rowIndex++;
                 slide.LanguageName = _languageService.GetLanguageByCulture(slide.LanguageCulture).Name;
             }
 

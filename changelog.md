@@ -1,9 +1,57 @@
+#Release Notes#
 
-Release Notes - SmartStore.NET - Version 1.0.1.0
+##SmartStore.NET 1.2.0.0#
+
+###Highlights###
+ - Multi-store support
+ - "Trusted Shops" plugins
+ - Highly improved _SmartStore.biz Importer_ plugin
+ - Add custom HTML content to pages
+ - Performance optimization
+
+###New Features###
+ - **Multi-store-support:** now multiple stores can be managed within a single application instance (e.g. for building different catalogs, brands, landing pages etc.)
+ - Added 3 new **Trusted Shops** plugins: Seal, Buyer Protection, Store Reviews
+ - Added __HTML Widget__ (store owner now can add arbitrary HTML content to any page region without modifying view files)
+ - **Color attributes** are now displayed on product list pages (as mini squares)
+ - Added __BaseFee and MaxFee__ to _ShippingByTotal_ plugin.
+ - Plugin language resources are now updateable via backend
+ - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.
+
+###Improvements###
+ - Minor improvements for _SOFORT Überweisung_ plugin
+ - ContentSlider: updated 'sequence js' to most recent version and optimized html & css code
+ - Content slider: the background slide behaviour is configurable now (NoSlide, Slide, SlideOpposite)
+ - Some email templates sent to the store owner now have customer's address in the 'from' field
+ - Topic titles are now shown in _Admin > CMS > Topics_ grid
+ - Log entry full messages are now displayed prettified in the backend
+ - Croatia now has EU-VAT handling
+ - Minor theme improvements
+ - Updated _FontAwesome_ to the latest version
+ - Added 'Admin' Link to the header menu (many users just didn't find it in the 'MyAccount' dropdown ;-))
+ - (Developer) Added properties for HtmlHelper and Model to 'AdminTabStripCreated' event type. This way external admin UI customization becomes easier and more flexible.
+ - (Developer) Implemented minor tweaks and optimizations to the Theming Engine
+ - (Developer) Added 'bodyOnly' parameter to TopicBlock ChildAction
+
+###Bugfixes###
+ - A bunch of fixes and improvements for the _SmartStore.biz Importer_ plugin
+ - The feed for "Leguide.com" plugin did not work in Germany
+ - Fixed minor issues in _shipping-by-weight_ plugin
+ - Fixed minor issues in _Google Analytics_ widget
+ - Paginator always jumped to the first page when using the product filter
+ - Modal window for disclaimer topic was missing the scrollbar
+ - Main menu doesn't flicker anymore on page load
+ - ThemeVars cache was not cleaned when theme was switched
+ - Content slider: container background did not slide in Firefox
+ - KeepAlive task minor fix
+ - (Developer) Fixed minor issues in build script
 
 
 
-** Bug
+##SmartStore.NET 1.0.1.0##
+
+###Bug###
+
     * [SMNET-1] - Die Anzahl der eingetragenen Mengen bei Varianten wird nicht richtig im Warenkorb übernommen.
     * [SMNET-5] - Fehler beim Hochladen von Bildern im IE
     * [SMNET-6] - Texte in IFrame werden nicht komplett dargestellt
@@ -30,7 +78,7 @@ Release Notes - SmartStore.NET - Version 1.0.1.0
     * [SMNET-199] - CategoryNavigationModel: Children von inaktiven Warengruppen müssen in Navigationsleisten ignoriert werden
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
-** Improvement
+###Improvement###
     
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
     * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
@@ -55,7 +103,8 @@ Release Notes - SmartStore.NET - Version 1.0.1.0
     * [SMNET-180] - Leichten Border und Verlauf in Lieferzeit-Indikator eingebaut
     * [SMNET-188] - Lokalisierung: IsDirty-Flag und Option "Nur neue anfügen"
 
-** New Feature
+###New Feature###
+
     * [SMNET-14] - Brutto/Netto Preisanzeige über Kundengruppen steuerbar
 
 

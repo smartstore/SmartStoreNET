@@ -53,8 +53,7 @@ namespace SmartStore.Admin.Controllers
             this._adminAreaSettings = adminAreaSettings;
         }
 
-        #endregion
-
+        #endregion 
         #region Utilities
 
         [NonAction]

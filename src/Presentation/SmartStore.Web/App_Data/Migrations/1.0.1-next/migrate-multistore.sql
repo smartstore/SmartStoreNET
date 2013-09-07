@@ -460,7 +460,7 @@ GO
 
 
 
-IF NOT EXISTS (SELECT 1 FROM sysobjects WHERE id = OBJECT_ID(N'[Store]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[Store]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
 	CREATE TABLE [dbo].[Store](
 		[Id] [int] IDENTITY(1,1) NOT NULL,
@@ -474,8 +474,8 @@ BEGIN
 	PRIMARY KEY CLUSTERED 
 	(
 		[Id] ASC
-	)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-	) ON [PRIMARY]
+	)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+	)
 
 	DECLARE @DEFAULT_STORE_NAME nvarchar(400)
 	SELECT @DEFAULT_STORE_NAME = [Value] FROM [Setting] WHERE [name] = N'storeinformationsettings.storename'
@@ -542,7 +542,7 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sysobjects WHERE id = OBJECT_ID(N'[StoreMapping]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[StoreMapping]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
 CREATE TABLE [dbo].[StoreMapping](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
@@ -552,19 +552,19 @@ CREATE TABLE [dbo].[StoreMapping](
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-) ON [PRIMARY]
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
 END
 GO
 
-IF NOT EXISTS (SELECT 1 from sysindexes WHERE [NAME]=N'IX_StoreMapping_EntityId_EntityName' and id=object_id(N'[StoreMapping]'))
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_StoreMapping_EntityId_EntityName' and object_id=object_id(N'[StoreMapping]'))
 BEGIN
 	CREATE NONCLUSTERED INDEX [IX_StoreMapping_EntityId_EntityName] ON [StoreMapping] ([EntityId] ASC, [EntityName] ASC)
 END
 GO
 
 --Store mapping for manufacturers
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Manufacturer]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Manufacturer]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Manufacturer] ADD [LimitedToStores] bit NULL
 END
@@ -575,7 +575,7 @@ ALTER TABLE [Manufacturer] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping for categories
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Category]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Category]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Category] ADD [LimitedToStores] bit NULL
 END
@@ -586,7 +586,7 @@ ALTER TABLE [Category] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping for products
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Product]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Product] ADD [LimitedToStores] bit NULL
 END
@@ -598,8 +598,8 @@ GO
 
 IF EXISTS (
 		SELECT *
-		FROM sysobjects
-		WHERE id = OBJECT_ID(N'[ProductLoadAllPaged]') AND OBJECTPROPERTY(id,N'IsProcedure') = 1)
+		FROM sys.objects
+		WHERE object_id = OBJECT_ID(N'[ProductLoadAllPaged]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)
 DROP PROCEDURE [ProductLoadAllPaged]
 GO
 CREATE PROCEDURE [dbo].[ProductLoadAllPaged]
@@ -1068,7 +1068,7 @@ BEGIN
 			WHERE
 				[fcr].CustomerRoleId IN (
 					SELECT [acl].CustomerRoleId
-					FROM [AclRecord] acl with (NOLOCK)
+					FROM [AclRecord] acl
 					WHERE [acl].EntityId = p.Id AND [acl].EntityName = ''Product''
 				)
 			))'
@@ -1079,7 +1079,7 @@ BEGIN
 	BEGIN
 		SET @sql = @sql + '
 		AND (p.LimitedToStores = 0 OR EXISTS (
-			SELECT 1 FROM [StoreMapping] sm with (NOLOCK)
+			SELECT 1 FROM [StoreMapping] sm
 			WHERE [sm].EntityId = p.Id AND [sm].EntityName = ''Product'' and [sm].StoreId=' + CAST(@StoreId AS nvarchar(max)) + '
 			))'
 	END
@@ -1093,7 +1093,7 @@ BEGIN
 			WHERE
 				[fs].SpecificationAttributeOptionId NOT IN (
 					SELECT psam.SpecificationAttributeOptionId
-					FROM Product_SpecificationAttribute_Mapping psam with (NOLOCK)
+					FROM Product_SpecificationAttribute_Mapping psam
 					WHERE psam.AllowFiltering = 1 AND psam.ProductId = p.Id
 				)
 			)'
@@ -1164,7 +1164,7 @@ BEGIN
 		)
 		INSERT INTO #FilterableSpecs ([SpecificationAttributeOptionId])
 		SELECT DISTINCT [psam].SpecificationAttributeOptionId
-		FROM [Product_SpecificationAttribute_Mapping] [psam] with (NOLOCK)
+		FROM [Product_SpecificationAttribute_Mapping] [psam]
 		WHERE [psam].[AllowFiltering] = 1
 		AND [psam].[ProductId] IN (SELECT [pi].ProductId FROM #PageIndex [pi])
 
@@ -1180,7 +1180,7 @@ BEGIN
 		p.*
 	FROM
 		#PageIndex [pi]
-		INNER JOIN Product p with (NOLOCK) on p.Id = [pi].[ProductId]
+		INNER JOIN Product p on p.Id = [pi].[ProductId]
 	WHERE
 		[pi].IndexId > @PageLowerBound AND 
 		[pi].IndexId < @PageUpperBound
@@ -1193,7 +1193,7 @@ GO
 
 
 --Store mapping for languages
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Language]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Language]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Language] ADD [LimitedToStores] bit NULL
 END
@@ -1206,7 +1206,7 @@ ALTER TABLE [Language] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping for currencies
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Currency]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Currency]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Currency] ADD [LimitedToStores] bit NULL
 END
@@ -1220,10 +1220,10 @@ GO
 
 --drop some constraints
 IF EXISTS (SELECT 1
-           FROM   sysobjects
+           FROM   sys.objects
            WHERE  name = 'Customer_Currency'
-           AND parent_obj = Object_id('Customer')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
+           AND parent_object_id = Object_id('Customer')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
 BEGIN
 	ALTER TABLE dbo.[Customer]
 	DROP CONSTRAINT Customer_Currency
@@ -1234,10 +1234,10 @@ END
 GO
 
 IF EXISTS (SELECT 1
-           FROM   sysobjects
+           FROM   sys.objects
            WHERE  name = 'Customer_Language'
-           AND parent_obj = Object_id('Customer')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
+           AND parent_object_id = Object_id('Customer')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
 BEGIN
 	ALTER TABLE dbo.[Customer]
 	DROP CONSTRAINT Customer_Language
@@ -1248,34 +1248,60 @@ END
 GO
 
 IF EXISTS (SELECT 1
-           FROM   sysobjects
-           WHERE  name = 'Affiliate_AffiliatedCustomers'
-           AND parent_obj = Object_id('Customer')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
+           FROM   sys.objects
+           WHERE  name = 'Customer_Affiliate'
+           AND parent_object_id = Object_id('Customer')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
 BEGIN
-	ALTER TABLE dbo.[Customer] DROP CONSTRAINT Affiliate_AffiliatedCustomers
-	
-	EXEC ('UPDATE [Customer] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL')
-	EXEC ('ALTER TABLE [Customer] ALTER COLUMN [AffiliateId] int NOT NULL')
+	ALTER TABLE dbo.[Customer] DROP CONSTRAINT Customer_Affiliate
 END
 GO
 
 IF EXISTS (SELECT 1
-           FROM   sysobjects
-           WHERE  name = 'Affiliate_AffiliatedOrders'
-           AND parent_obj = Object_id('Order')
-           AND Objectproperty(id,N'IsForeignKey') = 1)
+           FROM   sys.objects
+           WHERE  name = 'Affiliate_AffiliatedCustomers'
+           AND parent_object_id = Object_id('Customer')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
 BEGIN
-	ALTER TABLE dbo.[Order] DROP CONSTRAINT Affiliate_AffiliatedOrders
-	
-	EXEC ('UPDATE [Order] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL')
-	EXEC ('ALTER TABLE [Order] ALTER COLUMN [AffiliateId] int NOT NULL')
+	ALTER TABLE dbo.[Customer] DROP CONSTRAINT Affiliate_AffiliatedCustomers
 END
 GO
 
---Store mapping to shopping cart items
+UPDATE [Customer] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL
+GO
 
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ShoppingCartItem]') and NAME='StoreId')
+ALTER TABLE [Customer] ALTER COLUMN [AffiliateId] int NOT NULL
+GO
+
+IF EXISTS (SELECT 1
+           FROM   sys.objects
+           WHERE  name = 'Order_Affiliate'
+           AND parent_object_id = Object_id('Order')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	ALTER TABLE dbo.[Order]	DROP CONSTRAINT Order_Affiliate
+END
+GO
+
+IF EXISTS (SELECT 1
+           FROM   sys.objects
+           WHERE  name = 'Affiliate_AffiliatedOrders'
+           AND parent_object_id = Object_id('Order')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	ALTER TABLE dbo.[Order] DROP CONSTRAINT Affiliate_AffiliatedOrders
+END
+GO
+
+UPDATE [Order] SET [AffiliateId] = 0 WHERE [AffiliateId] IS NULL
+GO
+
+ALTER TABLE [Order] ALTER COLUMN [AffiliateId] int NOT NULL
+GO
+
+
+--Store mapping to shopping cart items
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShoppingCartItem]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [ShoppingCartItem] ADD [StoreId] int NULL
 END
@@ -1290,7 +1316,7 @@ ALTER TABLE [ShoppingCartItem] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping to orders
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Order]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Order]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [Order] ADD [StoreId] int NULL
 END
@@ -1305,7 +1331,7 @@ ALTER TABLE [Order] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping to return requests
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ReturnRequest]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ReturnRequest]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [ReturnRequest] ADD [StoreId] int NULL
 END
@@ -1320,7 +1346,7 @@ ALTER TABLE [ReturnRequest] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping to message templates
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[MessageTemplate]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[MessageTemplate]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [MessageTemplate] ADD [LimitedToStores] bit NULL
 END
@@ -1333,7 +1359,7 @@ ALTER TABLE [MessageTemplate] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping for topics
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Topic]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [Topic]	ADD [LimitedToStores] bit NULL
 END
@@ -1346,7 +1372,7 @@ ALTER TABLE [Topic] ALTER COLUMN [LimitedToStores] bit NOT NULL
 GO
 
 --Store mapping to news
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[News]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[News]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [News] ADD [LimitedToStores] bit NULL
 END
@@ -1360,7 +1386,7 @@ GO
 
 
 --Store mapping to BackInStockSubscription
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[BackInStockSubscription]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[BackInStockSubscription]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [BackInStockSubscription] ADD [StoreId] int NULL
 END
@@ -1376,7 +1402,7 @@ GO
 
 
 --Store mapping to Forums_PrivateMessage
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Forums_PrivateMessage]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Forums_PrivateMessage]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [Forums_PrivateMessage] ADD [StoreId] int NULL
 END
@@ -1392,7 +1418,7 @@ GO
 
 
 --GenericAttributes cuold be limited to some specific store name
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[GenericAttribute]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[GenericAttribute]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [GenericAttribute] ADD [StoreId] int NULL
 END
@@ -1429,67 +1455,67 @@ WHERE [KeyGroup] =N'Customer' and [Key]=N'OfferedShippingOptions' and [StoreId] 
 GO
 
 --Moved several properties from [Customer] to [GenericAtrribute]
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='TaxDisplayTypeId')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='TaxDisplayTypeId')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [TaxDisplayTypeId]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='SelectedPaymentMethodSystemName')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='SelectedPaymentMethodSystemName')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [SelectedPaymentMethodSystemName]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='UseRewardPointsDuringCheckout')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='UseRewardPointsDuringCheckout')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [UseRewardPointsDuringCheckout]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='CurrencyId')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='CurrencyId')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [CurrencyId]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='LanguageId')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='LanguageId')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [LanguageId]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='VatNumber')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='VatNumber')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [VatNumber]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='VatNumberStatusId')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='VatNumberStatusId')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [VatNumberStatusId]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='TimeZoneId')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='TimeZoneId')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [TimeZoneId]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='DiscountCouponCode')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='DiscountCouponCode')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [DiscountCouponCode]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='GiftCardCouponCodes')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='GiftCardCouponCodes')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [GiftCardCouponCodes]
 END
 GO
 
-IF EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Customer]') and NAME='CheckoutAttributes')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Customer]') and NAME='CheckoutAttributes')
 BEGIN
 	ALTER TABLE [Customer] DROP COLUMN [CheckoutAttributes]
 END
@@ -1497,7 +1523,7 @@ GO
 
 
 --Store mapping to Setting
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[Setting]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Setting]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [Setting] ADD [StoreId] int NULL
 END
@@ -1510,7 +1536,7 @@ ALTER TABLE [Setting] ALTER COLUMN [StoreId] int NOT NULL
 GO
 
 --Store mapping for blog posts
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[BlogPost]') and NAME='LimitedToStores')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[BlogPost]') and NAME='LimitedToStores')
 BEGIN
 	ALTER TABLE [BlogPost] ADD [LimitedToStores] bit NULL
 END
@@ -1620,7 +1646,7 @@ END
 GO
 
 --Store mapping to theme variables
-IF NOT EXISTS (SELECT 1 FROM syscolumns WHERE id=object_id('[ThemeVariable]') and NAME='StoreId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ThemeVariable]') and NAME='StoreId')
 BEGIN
 	ALTER TABLE [ThemeVariable] ADD [StoreId] int NULL
 END

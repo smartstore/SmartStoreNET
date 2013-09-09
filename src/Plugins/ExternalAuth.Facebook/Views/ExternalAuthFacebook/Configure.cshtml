@@ -6,6 +6,14 @@
 @using (Html.BeginForm())
 {
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="alert alert-info">
+					<button class="close" data-dismiss="alert">x</button>
+					@Html.Raw(T("Plugins.ExternalAuth.Facebook.AdminInstruction"))
+				</div>
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ClientKeyIdentifier)
@@ -28,7 +36,7 @@
             <td>&nbsp;</td>
             <td style="padding:10px 0">
                 <button type="submit" name="save" value="save" class="btn btn-primary">
-                    @T("Admin.Common.Save")
+                    <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
                 </button>
             </td>
         </tr>

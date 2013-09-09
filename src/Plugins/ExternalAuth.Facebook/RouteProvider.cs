@@ -8,23 +8,17 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.ExternalAuth.Facebook.Configure",
-                 "Plugins/ExternalAuthFacebook/Configure",
-                 new { controller = "ExternalAuthFacebook", action = "Configure" },
-                 new[] { "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }
-            );
-
-            routes.MapRoute("Plugin.ExternalAuth.Facebook.PublicInfo",
-                 "Plugins/ExternalAuthFacebook/PublicInfo",
-                 new { controller = "ExternalAuthFacebook", action = "PublicInfo" },
-                 new[] { "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }
-            );
-
             routes.MapRoute("Plugin.ExternalAuth.Facebook.Login",
                  "Plugins/ExternalAuthFacebook/Login",
                  new { controller = "ExternalAuthFacebook", action = "Login" },
                  new[] { "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }
             );
+
+			routes.MapRoute("Plugin.ExternalAuth.Facebook.LoginCallback",
+				 "Plugins/ExternalAuthFacebook/LoginCallback",
+				 new { controller = "ExternalAuthFacebook", action = "LoginCallback" },
+				 new[] { "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }
+			);
         }
         public int Priority
         {

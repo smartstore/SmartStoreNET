@@ -4,7 +4,7 @@
 @using SmartStore.Services.Authentication.External;
 @if (openAuthParameters != null)
 {
-    <div class="well external-auth-association">
+    <div class="alert alert-warning external-auth-association">
         @T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <span class="identifier">@openAuthParameters.ExternalIdentifier</span>
             <a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove">
                 (@T("Common.Remove"))

@@ -5,6 +5,7 @@ using SmartStore.Plugin.ExternalAuth.Facebook.Core;
 using SmartStore.Plugin.ExternalAuth.Facebook.Models;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 
@@ -19,13 +20,15 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 		private readonly IStoreContext _storeContext;
+		private readonly IPermissionService _permissionService;
 
         public ExternalAuthFacebookController(ISettingService settingService,
             FacebookExternalAuthSettings facebookExternalAuthSettings,
             IOAuthProviderFacebookAuthorizer oAuthProviderFacebookAuthorizer,
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-			IStoreContext storeContext)
+			IStoreContext storeContext,
+			IPermissionService permissionService)
         {
             this._settingService = settingService;
             this._facebookExternalAuthSettings = facebookExternalAuthSettings;
@@ -33,12 +36,16 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
 			this._storeContext = storeContext;
+			this._permissionService = permissionService;
         }
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
+				return Content("Access denied");
+
             var model = new ConfigurationModel();
             model.ClientKeyIdentifier = _facebookExternalAuthSettings.ClientKeyIdentifier;
             model.ClientSecret = _facebookExternalAuthSettings.ClientSecret;
@@ -51,6 +58,9 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
         [ChildActionOnly]
         public ActionResult Configure(ConfigurationModel model)
         {
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
+				return Content("Access denied");
+
             if (!ModelState.IsValid)
                 return Configure();
             
@@ -68,8 +78,8 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             return View("SmartStore.Plugin.ExternalAuth.Facebook.Views.ExternalAuthFacebook.PublicInfo");
         }
 
-
-        public ActionResult Login(string returnUrl)
+		[NonAction]
+		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
         {
             var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.Facebook");
             if (processor == null ||
@@ -82,7 +92,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             var viewModel = new LoginModel();
             TryUpdateModel(viewModel);
 
-            var result = _oAuthProviderFacebookAuthorizer.Authorize(returnUrl);
+			var result = _oAuthProviderFacebookAuthorizer.Authorize(returnUrl, verifyResponse);
             switch (result.AuthenticationStatus)
             {
                 case OpenAuthenticationStatus.Error:
@@ -117,5 +127,15 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             if (result.Result != null) return result.Result;
             return HttpContext.Request.IsAuthenticated ? new RedirectResult(!string.IsNullOrEmpty(returnUrl) ? returnUrl : "~/") : new RedirectResult(Url.LogOn(returnUrl));
         }
-    }
+
+		public ActionResult Login(string returnUrl)
+		{
+			return LoginInternal(returnUrl, false);
+		}
+
+		public ActionResult LoginCallback(string returnUrl)
+		{
+			return LoginInternal(returnUrl, true);
+		}
+	}
 }

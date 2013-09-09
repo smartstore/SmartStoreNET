@@ -2,19 +2,27 @@
   <LocaleResource Name="Plugins.FriendlyName.ExternalAuth.Facebook" AppendRootKey="false">
     <Value>Facebook</Value>
   </LocaleResource>
-  <LocaleResource Name="Login">
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<ul>
+<li>Die Facebook Zugangsdaten (s.u.) erhalten Sie, indem Sie bei Facebook unter Entwickler eine Anwendung mit der Option Facebook-Anmeldung erstellen.</li>
+<li>Aktivieren Sie in den Kundeneinstellungen die automatische Registrierung, falls extern autorisierte Besucher automatisch registriert werden sollen.</li>
+</ul>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="Login">
     <Value>Loggen Sie sich mit Ihrem Facebook-Account ein</Value>
   </LocaleResource>
   <LocaleResource Name="ClientKeyIdentifier">
-    <Value>Client-Key</Value>
+    <Value>Benutzer-Schlüssel-Identifikator (App ID)</Value>
   </LocaleResource>
   <LocaleResource Name="ClientKeyIdentifier.Hint">
-    <Value>Geben Sie hier Ihren Client-Key an.</Value>
+    <Value>Geben Sie hier Ihren Benutzer-Schlüssel-Identifikator (App ID) an.</Value>
   </LocaleResource>
   <LocaleResource Name="ClientSecret">
-    <Value>Client-Secret</Value>
+    <Value>Benutzer-Sicherheitsschlüssel (App Secret)</Value>
   </LocaleResource>
   <LocaleResource Name="ClientSecret.Hint">
-    <Value>Geben Sie hier Ihren Client-Secret an.</Value>
+    <Value>Geben Sie hier Ihren Benutzer-Sicherheitsschlüssel (App Secret) an.</Value>
   </LocaleResource>
 </Language>

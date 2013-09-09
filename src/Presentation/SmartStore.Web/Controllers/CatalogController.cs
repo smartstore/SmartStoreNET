@@ -2531,8 +2531,8 @@ namespace SmartStore.Web.Controllers
         public ActionResult ProductDetailReviews(int productId)
         {
             var product = _productService.GetProductById(productId);
-            if (product == null)
-                throw new ArgumentException("No product found with the specified id");
+            if (product == null || !product.AllowCustomerReviews)
+                return Content("");
 
             var model = new ProductReviewsModel();
             PrepareProductReviewsModel(model, product);

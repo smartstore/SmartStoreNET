@@ -2,18 +2,18 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Plugin.DiscountRules.HasPaymentMethod.Models;
+using SmartStore.Plugin.DiscountRules.HasShippingOption.Models;
 using SmartStore.Services.Discounts;
 using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod.Controllers
+namespace SmartStore.Plugin.DiscountRules.HasShippingOption.Controllers
 {
 
-    public class DiscountRulesHasPaymentMethodController : PluginControllerBase
+    public class DiscountRulesHasShippingOptionController : PluginControllerBase
     {
         private readonly IDiscountService _discountService;
 
-		public DiscountRulesHasPaymentMethodController(IDiscountService discountService)
+		public DiscountRulesHasShippingOptionController(IDiscountService discountService)
         {
             this._discountService = discountService;
         }
@@ -37,16 +37,16 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod.Controllers
             model.DiscountId = discountId;
 
 			if (discountRequirement != null)
-				model.PaymentMethods = discountRequirement.RestrictedPaymentMethods;
+				model.ShippingOptions = discountRequirement.RestrictedShippingOptions;
 
             //add a prefix
-			ViewData.TemplateInfo.HtmlFieldPrefix = "DiscountRulesHasPaymentMethod{0}".FormatWith(model.RequirementId);
+			ViewData.TemplateInfo.HtmlFieldPrefix = "DiscountRulesHasShippingOption{0}".FormatWith(model.RequirementId);
 
-			return View("SmartStore.Plugin.DiscountRules.HasPaymentMethod.Views.DiscountRulesHasPaymentMethod.Configure", model);
+			return View("SmartStore.Plugin.DiscountRules.HasShippingOption.Views.DiscountRulesHasShippingOption.Configure", model);
         }
 
         [HttpPost]
-		public ActionResult Configure(int discountId, int? discountRequirementId, string paymentMethods)
+		public ActionResult Configure(int discountId, int? discountRequirementId, string shippingOptions)
         {
             var discount = _discountService.GetDiscountById(discountId);
             if (discount == null)
@@ -58,7 +58,7 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod.Controllers
 
             if (discountRequirement != null)
             {
-				discountRequirement.RestrictedPaymentMethods = paymentMethods;
+				discountRequirement.RestrictedShippingOptions = shippingOptions;
 				_discountService.UpdateDiscount(discount);
             }
             else
@@ -66,8 +66,8 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod.Controllers
                 //save new rule
                 discountRequirement = new DiscountRequirement()
                 {
-					DiscountRequirementRuleSystemName = "DiscountRequirement.HasPaymentMethod",
-					RestrictedPaymentMethods = paymentMethods
+					DiscountRequirementRuleSystemName = "DiscountRequirement.HasShippingOption",
+					RestrictedShippingOptions = shippingOptions
                 };
                 discount.DiscountRequirements.Add(discountRequirement);
                 _discountService.UpdateDiscount(discount);

@@ -2,20 +2,21 @@ using System;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
+namespace SmartStore.Plugin.DiscountRules.HasShippingOption
 {
-    public partial class HasPaymentMethodDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
+    public partial class HasShippingOptionDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IStoreContext _storeContext;
 
-		public HasPaymentMethodDiscountRequirementRule(
+		public HasShippingOptionDiscountRequirementRule(
 			ILocalizationService localizationService,
 			IGenericAttributeService genericAttributeService,
 			IStoreContext storeContext)
@@ -41,19 +42,19 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
             if (request.DiscountRequirement == null)
                 throw new SmartException("Discount requirement is not set");
 
-			if (string.IsNullOrWhiteSpace(request.DiscountRequirement.RestrictedPaymentMethods))
+			if (string.IsNullOrWhiteSpace(request.DiscountRequirement.RestrictedShippingOptions))
 				return false;
 
-			var discountPaymentMethods = request.DiscountRequirement.RestrictedPaymentMethods
+			var discountShippingOptions = request.DiscountRequirement.RestrictedShippingOptions
 				.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
 
-			var selectedPaymentMethod = request.Customer.GetAttribute<string>(
-				SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+			var selectedShippingOption = request.Customer.GetAttribute<ShippingOption>(
+				SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-			if (selectedPaymentMethod.IsNullOrEmpty() || discountPaymentMethods.Count <= 0)
+			if (selectedShippingOption == null || selectedShippingOption.Name.IsNullOrEmpty() || discountShippingOptions.Count <= 0)
 				return false;
 
-			return discountPaymentMethods.Exists(x => x.IsCaseInsensitiveEqual(selectedPaymentMethod));
+			return discountShippingOptions.Exists(x => x.IsCaseInsensitiveEqual(selectedShippingOption.Name));
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
         public string GetConfigurationUrl(int discountId, int? discountRequirementId)
         {
             //configured in RouteProvider.cs
-			string result = "Plugins/DiscountRulesHasPaymentMethod/Configure/?discountId=" + discountId;
+			string result = "Plugins/DiscountRulesHasShippingOption/Configure/?discountId=" + discountId;
             if (discountRequirementId.HasValue)
                 result += string.Format("&discountRequirementId={0}", discountRequirementId.Value);
             return result;
@@ -82,7 +83,7 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
         {
             //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-			_localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.DiscountRequirement.HasPaymentMethod", false);
+			_localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.DiscountRequirement.HasShippingOption", false);
 
             base.Uninstall();
         }

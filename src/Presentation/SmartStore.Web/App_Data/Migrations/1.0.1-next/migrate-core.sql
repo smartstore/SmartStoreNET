@@ -338,3 +338,14 @@ END
 GO
 
 
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[DiscountRequirement]') and NAME='RestrictedPaymentMethods')
+BEGIN
+	ALTER TABLE [DiscountRequirement] ADD [RestrictedPaymentMethods] [nvarchar](max) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[DiscountRequirement]') and NAME='RestrictedShippingOptions')
+BEGIN
+	ALTER TABLE [DiscountRequirement] ADD [RestrictedShippingOptions] [nvarchar](max) NULL
+END
+GO

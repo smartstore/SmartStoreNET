@@ -1,21 +1,21 @@
 ﻿@{
     Layout = "";
 }
-@model SmartStore.Plugin.DiscountRules.HasPaymentMethod.Models.RequirementModel
+@model SmartStore.Plugin.DiscountRules.HasShippingOption.Models.RequirementModel
 @using SmartStore.Web.Framework;
 
 <script type="text/javascript">
     $(document).ready(function () {
-    	$('#savehaspaymentmethodrequirement@(Model.RequirementId)').click(function () {
-    		var paymentMethods = $("#@Html.FieldIdFor(model => model.PaymentMethods)").val();
+    	$('#savehasshippingoptionrequirement@(Model.RequirementId)').click(function () {
+    		var shippingOptions = $("#@Html.FieldIdFor(model => model.ShippingOptions)").val();
             var discountId = @Model.DiscountId;
     		var requirementId = @Model.RequirementId;
 
             $.ajax({
                 cache:false,
                 type: "POST",
-                url: "@(Url.Action("Configure", "DiscountRulesHasPaymentMethod"))",
-            	data: { "discountId": discountId, "discountRequirementId": requirementId, "paymentMethods": paymentMethods },
+                url: "@(Url.Action("Configure", "DiscountRulesHasShippingOption"))",
+            	data: { "discountId": discountId, "discountRequirementId": requirementId, "shippingOptions": shippingOptions },
                 success: function (data) {
                         $('#pnl-save-requirement-result@(Model.RequirementId)').fadeIn("slow").delay(1000).fadeOut("slow");
                         //notify parent if it's a new requirement
@@ -35,12 +35,12 @@
 <table class="adminContent">
 <tr>
     <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.PaymentMethods)
+        @Html.SmartLabelFor(model => model.ShippingOptions)
     </td>
     <td class="adminData">
         <div>
-			@Html.EditorFor(model => model.PaymentMethods)
-			<button type="button" name="savehaspaymentmethodrequirement@(Model.RequirementId)" id="savehaspaymentmethodrequirement@(Model.RequirementId)" class="btn">
+			@Html.EditorFor(model => model.ShippingOptions)
+			<button type="button" name="savehasshippingoptionrequirement@(Model.RequirementId)" id="savehasshippingoptionrequirement@(Model.RequirementId)" class="btn">
 				@T("Admin.Common.Save")
 			</button>
         </div>

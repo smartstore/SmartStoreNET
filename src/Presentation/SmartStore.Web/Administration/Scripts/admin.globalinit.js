@@ -20,7 +20,7 @@
         });
 
         // intercept window.alert with pnotify
-        window.alert = function (message) {
+        /*window.alert = function (message) {
         	if (message == null || message.length <= 0)
         		return;
 
@@ -39,7 +39,7 @@
                     });
                 }
             });
-        }
+        }*/
 
         // global notification subscriber
         var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };

@@ -1,0 +1,11 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasShippingOption" AppendRootKey="false">
+    <Value>Customer has selected shipping option</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingOptions">
+		<Value>Shipping option(s)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingOptions.Hint">
+		<Value>The comma-separated list of names of shipping options (e.g. UPS, DHL). You can find the list of all shipping options in the configuration area.</Value>
+  </LocaleResource>
+</Language>

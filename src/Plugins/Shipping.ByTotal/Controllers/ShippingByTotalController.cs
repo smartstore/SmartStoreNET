@@ -16,7 +16,7 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
 {
     [AdminAuthorize]
-    public class ShippingByTotalController : Controller
+    public class ShippingByTotalController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
         private readonly ISettingService _settingService;
@@ -46,16 +46,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
             this._currencySettings = currencySettings;
         }
 
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            //always set culture to 'en-US' (Telerik Grid has a bug related to editing decimal values in other cultures). Like currently it's done for admin area in Global.asax.cs
-            var culture = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = culture;
-
-            base.Initialize(requestContext);
-        }
-
         public ActionResult Configure()
         {
             var shippingMethods = _shippingService.GetAllShippingMethods();
@@ -79,6 +69,8 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
 
             //model.AvailableStates.Add(new SelectListItem() { Text = "*", Value = "0" });
             model.LimitMethodsToCreated = _shippingByTotalSettings.LimitMethodsToCreated;
+            model.SmallQuantityThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
+            model.SmallQuantitySurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
             model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 
             model.Records = _shippingByTotalService.GetAllShippingByTotalRecords()
@@ -96,6 +88,8 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                         UsePercentage = x.UsePercentage,
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
+                        BaseCharge = x.BaseCharge,
+                        MaxCharge = x.MaxCharge
                     };
                     var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
@@ -129,6 +123,8 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                         UsePercentage = x.UsePercentage,
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
+                        BaseCharge = x.BaseCharge,
+                        MaxCharge = x.MaxCharge
                     };
                     var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
@@ -169,6 +165,8 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
             shippingByTotalRecord.UsePercentage = model.UsePercentage;
             shippingByTotalRecord.ShippingChargeAmount = model.ShippingChargeAmount;
             shippingByTotalRecord.ShippingChargePercentage = model.ShippingChargePercentage;
+            shippingByTotalRecord.BaseCharge = model.BaseCharge;
+            shippingByTotalRecord.MaxCharge = model.MaxCharge;
             _shippingByTotalService.UpdateShippingByTotalRecord(shippingByTotalRecord);
 
             return RatesList(command);
@@ -198,7 +196,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                 To = model.AddTo,
                 UsePercentage = model.AddUsePercentage,                
                 ShippingChargePercentage = (model.AddUsePercentage) ? model.AddShippingChargePercentage : 0,
-                ShippingChargeAmount = (model.AddUsePercentage) ? 0 : model.AddShippingChargeAmount
+                ShippingChargeAmount = (model.AddUsePercentage) ? 0 : model.AddShippingChargeAmount,
+                BaseCharge = model.AddBaseCharge,
+                MaxCharge = model.AddMaxCharge
             };
             _shippingByTotalService.InsertShippingByTotalRecord(shippingByTotalRecord);
 
@@ -210,6 +210,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
         {
             //save settings
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
+            _shippingByTotalSettings.SmallQuantityThreshold = model.SmallQuantityThreshold;
+            _shippingByTotalSettings.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
+
             _settingService.SaveSetting(_shippingByTotalSettings);
 
             return Json(new { Result = true });

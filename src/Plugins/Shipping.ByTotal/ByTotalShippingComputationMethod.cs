@@ -95,7 +95,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
 
             if (shippingByTotalRecord == null)
             {
-                if (_shippingByTotalSettings.LimitMethodsToCreated)
+                if (!_shippingByTotalSettings.LimitMethodsToCreated)
                 {
                     return null;
                 }
@@ -105,9 +105,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                 }
             }
 
+            decimal baseCharge = shippingByTotalRecord.BaseCharge;
+            decimal? maxCharge = shippingByTotalRecord.MaxCharge;
+
             if (shippingByTotalRecord.UsePercentage && shippingByTotalRecord.ShippingChargePercentage <= decimal.Zero)
             {
-                return decimal.Zero;
+                return baseCharge; //decimal.Zero;
             }
 
             if (!shippingByTotalRecord.UsePercentage && shippingByTotalRecord.ShippingChargeAmount <= decimal.Zero)
@@ -118,6 +121,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal
             if (shippingByTotalRecord.UsePercentage)
             {
                 shippingTotal = Math.Round((decimal)((((float)subtotal) * ((float)shippingByTotalRecord.ShippingChargePercentage)) / 100f), 2);
+                shippingTotal += baseCharge;
+                if (maxCharge.HasValue && maxCharge > baseCharge)
+                {
+                    // shipping charge should not exceed MaxCharge
+                    shippingTotal = Math.Min(shippingTotal.Value, maxCharge.Value);
+                }
             }
             else
             {
@@ -174,12 +183,21 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                 subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
             }
 
+            decimal sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
+            decimal sqSurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
+
             var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
             foreach (var shippingMethod in shippingMethods)
             {
                 decimal? rate = GetRate(subTotal, shippingMethod.Id, countryId, stateProvinceId, zip);
                 if (rate.HasValue)
                 {
+                    if (rate > 0 && sqThreshold > 0 && subTotal <= sqThreshold)
+                    {
+                        // add small quantity surcharge (Mindermengenzuschalg)
+                        rate += sqSurcharge;
+                    }
+                    
                     var shippingOption = new ShippingOption();
                     shippingOption.Name = shippingMethod.Name;
                     shippingOption.Description = shippingMethod.Description;
@@ -232,10 +250,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         {            
             var settings = new ShippingByTotalSettings()
             {                
-                LimitMethodsToCreated = false
+                LimitMethodsToCreated = false,
+                SmallQuantityThreshold = 0,
+                SmallQuantitySurcharge = 0
             };
             _settingService.SaveSetting(settings);
-
+            
             _objectContext.Install();
 
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);

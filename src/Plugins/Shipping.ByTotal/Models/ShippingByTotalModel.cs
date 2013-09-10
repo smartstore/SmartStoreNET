@@ -3,6 +3,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Models
 {
+
     public class ShippingByTotalModel : EntityModelBase
     {
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Country")]
@@ -40,6 +41,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Models
 
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.ShippingChargeAmount")]
         public decimal ShippingChargeAmount { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.BaseCharge")]
+        public decimal BaseCharge { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.MaxCharge")]
+        public decimal? MaxCharge { get; set; }
 
     }
 }

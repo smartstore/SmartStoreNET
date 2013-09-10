@@ -291,10 +291,13 @@
                                 .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
                     }
 
-                    x.Add().Text(@T("Reviews.ExistingReviews"))
-                            .Content(reviews)
-                            .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
-                            .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                    if (reviews.HasValue())
+                    {
+                        x.Add().Text(@T("Reviews.ExistingReviews"))
+                                .Content(reviews)
+                                .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+                                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                    }
                 })
             
 

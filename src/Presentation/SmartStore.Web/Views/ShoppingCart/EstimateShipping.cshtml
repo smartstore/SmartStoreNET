@@ -83,19 +83,22 @@
             </div>
 
             <div class="shipping-options">
-                <div>
-                    @foreach (var shippingOption in Model.ShippingOptions)
-                    {
-                        <div class="shipping-option-item">
-                            <div class="option-name">
-                                @shippingOption.Name (@shippingOption.Price)
+                @if (Model.ShippingOptions.Any())
+                {
+                    <div>
+                        @foreach (var shippingOption in Model.ShippingOptions)
+                        {
+                            <div class="shipping-option-item" style="margin-bottom: 8px">
+                                <div class="option-name">
+                                    @shippingOption.Name (@shippingOption.Price)
+                                </div>
+                                <div class="option-description muted">
+                                    @Html.Raw(shippingOption.Description)
+                                </div>
                             </div>
-                            <div class="option-description muted">
-                                @Html.Raw(shippingOption.Description)
-                            </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
+                }
                 @if (Model.Warnings.Count > 0)
                 {
                     <div class="alert alert-error" style="margin: 0 0 12px 0">

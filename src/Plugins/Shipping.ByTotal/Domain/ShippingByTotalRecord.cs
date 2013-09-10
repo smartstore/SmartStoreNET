@@ -52,5 +52,15 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Domain
         /// </summary>
         public decimal ShippingChargeAmount { get; set; }
 
+        /// <summary>
+        /// Gets or sets the base shipping charge (if <see cref="UsePercentage"/> is set to <c>true</c>)
+        /// </summary>
+        public decimal BaseCharge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the max shipping charge (if <see cref="UsePercentage"/> is set to <c>true</c>)
+        /// </summary>
+        public decimal? MaxCharge { get; set; }
+
     }
 }

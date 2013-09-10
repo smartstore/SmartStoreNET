@@ -34,6 +34,8 @@
                             .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
                         columns.Bound(x => x.ShippingChargePercentage);
                         columns.Bound(x => x.ShippingChargeAmount);
+                        columns.Bound(x => x.BaseCharge);
+                        columns.Bound(x => x.MaxCharge);
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
@@ -82,10 +84,14 @@
         function toggleAddUsePercentage() {
             if ($('#@Html.FieldIdFor(model => model.AddUsePercentage)').is(':checked')) {
                 $('#pnlAddShippingChargePercentage').show();
+                $('#pnlAddBaseCharge').show();
+                $('#pnlAddMaxCharge').show();
                 $('#pnlAddShippingChargeAmount').hide();
             }
             else {
                 $('#pnlAddShippingChargePercentage').hide();
+                $('#pnlAddBaseCharge').hide();
+                $('#pnlAddMaxCharge').hide();
                 $('#pnlAddShippingChargeAmount').show();
             }
         }
@@ -204,6 +210,24 @@
                     @Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
                 </td>
             </tr>
+            <tr id="pnlAddBaseCharge">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddBaseCharge)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.AddBaseCharge) [@Model.PrimaryStoreCurrencyCode]
+                    @Html.ValidationMessageFor(model => model.AddBaseCharge)
+                </td>
+            </tr>
+            <tr id="pnlAddMaxCharge">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddMaxCharge)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.AddMaxCharge) [@Model.PrimaryStoreCurrencyCode]
+                    @Html.ValidationMessageFor(model => model.AddMaxCharge)
+                </td>
+            </tr>
             <tr id="pnlAddShippingChargeAmount">
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AddShippingChargeAmount)
@@ -232,6 +256,24 @@
     <fieldset>
         <legend><span>@T("Plugins.Shipping.ByTotal.SettingsTitle")</span></legend>
         <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.SmallQuantityThreshold) [@Model.PrimaryStoreCurrencyCode]
+                    @Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
+                    @Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+                </td>
+            </tr>
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.LimitMethodsToCreated)

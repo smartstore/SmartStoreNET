@@ -1,0 +1,7 @@
+﻿FriendlyName: Customer has selected shipping option
+SystemName: DiscountRequirement.HasShippingOption
+Version: 1.00
+SupportedVersions: 1.0
+DisplayOrder: 1
+FileName: SmartStore.Plugin.DiscountRules.HasShippingOption.dll
+ResourceRootKey: Plugins.DiscountRules.HasShippingOption

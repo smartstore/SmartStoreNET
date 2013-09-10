@@ -1,0 +1,11 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasPaymentMethod" AppendRootKey="false">
+    <Value>Customer has selected payment method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.PaymentMethods">
+		<Value>Payment methods (system names)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.PaymentMethods.Hint">
+		<Value>The comma-separated list of system names of payment methods (e.g. Payments.PayPalDirect, Payments.Sofortueberweisung). You can find the payment method's system name in the list of plugins.</Value>
+  </LocaleResource>
+</Language>

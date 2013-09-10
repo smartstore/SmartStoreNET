@@ -3,6 +3,7 @@
     /// <summary>
     /// Represents a discount requirement
     /// </summary>
+	/// <remarks>TODO: more abstract data structuring cause properties are plugin dependent.</remarks>
     public partial class DiscountRequirement : BaseEntity
     {
         /// <summary>
@@ -39,6 +40,16 @@
         /// Gets or sets the restricted product variant identifiers (comma separated)
         /// </summary>
         public string RestrictedProductVariantIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets the restricted payment methods (comma separated)
+		/// </summary>
+		public string RestrictedPaymentMethods { get; set; }
+
+		/// <summary>
+		/// Gets or sets the restricted shipping options (comma separated)
+		/// </summary>
+		public string RestrictedShippingOptions { get; set; }
         
         /// <summary>
         /// Gets or sets the discount

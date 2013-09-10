@@ -42,8 +42,23 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Models
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.ShippingChargeAmount")]
         public decimal AddShippingChargeAmount { get; set; }
 
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.BaseCharge")]
+        public decimal AddBaseCharge { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.MaxCharge")]
+        public decimal AddMaxCharge { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.MaxCharge")]
+        public decimal? MaxCharge { get; set; }
+
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.LimitMethodsToCreated")]
         public bool LimitMethodsToCreated { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold")]
+        public decimal SmallQuantityThreshold { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.SmallQuantitySurcharge")]
+        public decimal SmallQuantitySurcharge { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
 

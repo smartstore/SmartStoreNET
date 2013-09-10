@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Logging;
@@ -16,6 +17,18 @@ namespace SmartStore.Web.Framework.Controllers
     //[UnitOfWork]
     public abstract partial class PluginControllerBase : Controller
     {
+        /// <summary>
+        /// Initialize controller
+        /// </summary>
+        /// <param name="requestContext">Request context</param>
+        protected override void Initialize(RequestContext requestContext)
+        {
+            //set work context to admin mode
+            EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
+
+            base.Initialize(requestContext);
+        }
+        
         /// <summary>
         /// Log exception
         /// </summary>

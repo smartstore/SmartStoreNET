@@ -208,6 +208,31 @@ set @resources='
     <Value>Registered as customer</Value>
 	<T>Als Kunde registriert</T>
   </LocaleResource>  
+
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold">
+    <Value>Threshold for small quantities</Value>
+	<T>Mindermenge bis Bestellwert</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold.Hint">
+    <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
+	<T>Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantitySurcharge">
+    <Value>Surcharge for small quantities</Value>
+	<T>Mindermengenzuschlag</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.BaseCharge">
+    <Value>Base fee</Value>
+	<T>Basisgebühr</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge">
+    <Value>Max. fee</Value>
+	<T>Max. Gebühr</T>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge.Hint">
+    <Value>An amount that the calculated shipping costs may not exceed.</Value>
+	<T>Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</T>
+  </LocaleResource>   
   
 </Language>
 '
@@ -337,4 +362,35 @@ BEGIN
 END
 GO
 
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ShippingByTotal]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	-- ShippingByTotalSettings.SmallQuantityThreshold
+	IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'ShippingByTotalSettings.SmallQuantityThreshold')
+	BEGIN
+		INSERT [Setting] ([Name], [Value], [StoreId])
+		VALUES (N'ShippingByTotalSettings.SmallQuantityThreshold', N'0', 0)
+	END
+
+	-- ShippingByTotalSettings.SmallQuantityThreshold
+	IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'ShippingByTotalSettings.SmallQuantitySurcharge')
+	BEGIN
+		INSERT [Setting] ([Name], [Value], [StoreId])
+		VALUES (N'ShippingByTotalSettings.SmallQuantitySurcharge', N'0', 0)
+	END
+
+	-- Add ShippingByTotalRecord.BaseCharge
+	IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShippingByTotal]') and NAME='BaseCharge')
+	BEGIN
+		ALTER TABLE ShippingByTotal ADD [BaseCharge] decimal(18,2) NOT NULL DEFAULT 0
+	END
+
+	-- Add ShippingByTotalRecord.MaxCharge
+	IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShippingByTotal]') and NAME='MaxCharge')
+	BEGIN
+		ALTER TABLE ShippingByTotal ADD MaxCharge decimal(18,2) NULL
+	END
+END
+GO
 

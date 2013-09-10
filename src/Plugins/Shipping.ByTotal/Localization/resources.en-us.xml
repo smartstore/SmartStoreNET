@@ -69,4 +69,23 @@
   <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
     <Value>If you check this option, then your customers will be limited to shipping options configured here. Otherwise, they'll be able to choose any existing shipping options even if they're not configured here (zero shipping fee in this case).</Value>
   </LocaleResource>
+
+  <LocaleResource Name="Fields.BaseCharge">
+    <Value>Base fee</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.MaxCharge">
+    <Value>Max. fee</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.MaxCharge.Hint">
+    <Value>An amount that the calculated shipping costs may not exceed.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold">
+    <Value>Threshold for small quantities</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold.Hint">
+    <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantitySurcharge">
+    <Value>Surcharge for small quantities</Value>
+  </LocaleResource>
 </Language>

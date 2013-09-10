@@ -1525,7 +1525,7 @@ GO
 --Store mapping to Setting
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Setting]') and NAME='StoreId')
 BEGIN
-	ALTER TABLE [Setting] ADD [StoreId] int NULL
+	ALTER TABLE [Setting] ADD [StoreId] int NOT NULL DEFAULT 0
 END
 GO
 

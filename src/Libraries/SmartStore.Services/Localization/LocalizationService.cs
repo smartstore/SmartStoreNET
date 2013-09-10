@@ -452,7 +452,7 @@ namespace SmartStore.Services.Localization
                                     LanguageId = language.Id,
                                     ResourceName = name,
                                     ResourceValue = value,
-                                    IsFromPlugin = true
+                                    IsFromPlugin = sourceIsPlugin
                                 });
                         }
                     }

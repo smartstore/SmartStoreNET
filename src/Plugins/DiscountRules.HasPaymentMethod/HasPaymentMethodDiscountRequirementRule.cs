@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
@@ -13,16 +12,13 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly IStoreContext _storeContext;
 
 		public HasPaymentMethodDiscountRequirementRule(
 			ILocalizationService localizationService,
-			IGenericAttributeService genericAttributeService,
-			IStoreContext storeContext)
+			IGenericAttributeService genericAttributeService)
         {
             _localizationService = localizationService;
 			_genericAttributeService = genericAttributeService;
-			_storeContext = storeContext;
         }
 
         /// <summary>
@@ -48,7 +44,7 @@ namespace SmartStore.Plugin.DiscountRules.HasPaymentMethod
 				.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
 
 			var selectedPaymentMethod = request.Customer.GetAttribute<string>(
-				SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+				SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, request.Store.Id);
 
 			if (selectedPaymentMethod.IsNullOrEmpty() || discountPaymentMethods.Count <= 0)
 				return false;

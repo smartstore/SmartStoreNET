@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
@@ -14,16 +13,13 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly IStoreContext _storeContext;
 
 		public HasShippingOptionDiscountRequirementRule(
 			ILocalizationService localizationService,
-			IGenericAttributeService genericAttributeService,
-			IStoreContext storeContext)
+			IGenericAttributeService genericAttributeService)
         {
             _localizationService = localizationService;
 			_genericAttributeService = genericAttributeService;
-			_storeContext = storeContext;
         }
 
         /// <summary>
@@ -49,7 +45,7 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption
 				.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
 
 			var selectedShippingOption = request.Customer.GetAttribute<ShippingOption>(
-				SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, _storeContext.CurrentStore.Id);
+				SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, request.Store.Id);
 
 			if (selectedShippingOption == null || selectedShippingOption.Name.IsNullOrEmpty() || discountShippingOptions.Count <= 0)
 				return false;

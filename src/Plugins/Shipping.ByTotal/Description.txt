@@ -1,6 +1,6 @@
 ﻿FriendlyName: Shipping by total
 SystemName: Shipping.ByTotal
-Version: 1.00
+Version: 1.01
 SupportedVersions: 1.0
 DisplayOrder: 1
 FileName: SmartStore.Plugin.Shipping.ByTotal.dll

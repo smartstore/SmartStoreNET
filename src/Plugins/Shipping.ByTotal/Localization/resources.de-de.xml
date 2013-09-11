@@ -88,4 +88,10 @@
   <LocaleResource Name="Fields.SmallQuantitySurcharge">
     <Value>Mindermengenzuschlag</Value>
   </LocaleResource>
+	<LocaleResource Name="Fields.Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Store.Hint">
+		<Value>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</Value>
+	</LocaleResource>
 </Language>

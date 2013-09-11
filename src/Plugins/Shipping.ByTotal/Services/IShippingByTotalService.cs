@@ -27,7 +27,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
         /// <param name="stateProvinceId">state province identifier</param>
         /// <param name="zip">Zip code</param>
         /// <returns>ShippingByTotalRecord</returns>
-        ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int countryId, 
+		ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int storeId, int countryId, 
             decimal subTotal, int stateProvinceId, string zip);
 
         /// <summary>

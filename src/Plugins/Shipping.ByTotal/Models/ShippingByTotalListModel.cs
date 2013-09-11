@@ -13,7 +13,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Models
             AvailableStates = new List<SelectListItem>();
             AvailableShippingMethods = new List<SelectListItem>();
             Records = new List<ShippingByTotalModel>();
+			AvailableStores = new List<SelectListItem>();
         }
+
+		[SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Store")]
+		public int AddStoreId { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Country")]
         public int? AddCountryId { get; set; }
@@ -66,5 +70,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Models
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableShippingMethods { get; set; }
         public IList<ShippingByTotalModel> Records { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

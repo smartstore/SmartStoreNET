@@ -10,6 +10,7 @@ using SmartStore.Plugin.Shipping.ByTotal.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -19,6 +20,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
     public class ShippingByTotalController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
+		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly IShippingByTotalService _shippingByTotalService;
         private readonly ShippingByTotalSettings _shippingByTotalSettings;
@@ -28,6 +30,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
         private readonly CurrencySettings _currencySettings;
 
         public ShippingByTotalController(IShippingService shippingService,
+			IStoreService storeService, 
             ISettingService settingService, 
             IShippingByTotalService shippingByTotalService,
             ShippingByTotalSettings shippingByTotalSettings, 
@@ -37,6 +40,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
             CurrencySettings currencySettings)
         {
             this._shippingService = shippingService;
+			this._storeService = storeService;
             this._settingService = settingService;
             this._shippingByTotalService = shippingByTotalService;
             this._shippingByTotalSettings = shippingByTotalSettings;
@@ -60,6 +64,13 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                 model.AvailableShippingMethods.Add(new SelectListItem() { Text = sm.Name, Value = sm.Id.ToString() });
             }
 
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = "*", Value = "0" });
+			foreach (var store in _storeService.GetAllStores())
+			{
+				model.AvailableStores.Add(new SelectListItem() { Text = store.Name, Value = store.Id.ToString() });
+			}
+
             //model.AvailableCountries.Add(new SelectListItem() { Text = "*", Value = "0" });
             var countries = _countryService.GetAllCountries(true);
             foreach (var c in countries)
@@ -79,6 +90,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                     var m = new ShippingByTotalModel
                     {
                         Id = x.Id,
+						StoreId = x.StoreId,
                         ShippingMethodId = x.ShippingMethodId,
                         CountryId = x.CountryId,
                         StateProvinceId = x.StateProvinceId,
@@ -93,6 +105,10 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                     };
                     var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
+
+					//store
+					var store = _storeService.GetStoreById(x.StoreId);
+					m.StoreName = (store != null) ? store.Name : "*";
                     
                     var c = _countryService.GetCountryById(x.CountryId ?? 0);
                     m.CountryName = (c != null) ? c.Name : "*";
@@ -116,6 +132,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                     var m = new ShippingByTotalModel
                     {
                         Id = x.Id,
+						StoreId = x.StoreId,
                         ShippingMethodId = x.ShippingMethodId,
                         CountryId = x.CountryId,
                         From = x.From,
@@ -128,6 +145,10 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                     };
                     var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
                     m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
+
+					//store
+					var store = _storeService.GetStoreById(x.StoreId);
+					m.StoreName = (store != null) ? store.Name : "*";
                     
                     var c = _countryService.GetCountryById(x.CountryId ?? 0);
                     m.CountryName = (c != null) ? c.Name : "*";
@@ -188,6 +209,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
         {
             var shippingByTotalRecord = new ShippingByTotalRecord
             {
+				StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
                 StateProvinceId = model.AddStateProvinceId,

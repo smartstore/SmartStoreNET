@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Shipping.ByTotal.Data;
@@ -18,6 +19,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         #region Fields
 
         private readonly IShippingService _shippingService;
+		private readonly IStoreContext _storeContext;
         private readonly IShippingByTotalService _shippingByTotalService;
         private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly ShippingByTotalObjectContext _objectContext;
@@ -41,6 +43,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         /// <param name="settingService">Settings service</param>
         /// <param name="logger">Logger</param>
         public ByTotalShippingComputationMethod(IShippingService shippingService,
+			IStoreContext storeContext,
             IShippingByTotalService shippingByTotalService,
             ShippingByTotalSettings shippingByTotalSettings,
             ShippingByTotalObjectContext objectContext,
@@ -50,6 +53,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
             ILocalizationService localizationService)
         {
             this._shippingService = shippingService;
+			this._storeContext = storeContext;
             this._shippingByTotalService = shippingByTotalService;
             this._shippingByTotalSettings = shippingByTotalSettings;
             this._objectContext = objectContext;
@@ -87,11 +91,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         /// <param name="stateProvinceId">state province identifier</param>
         /// <param name="zip">Zip code</param>
         /// <returns>the rate for the shipping method</returns>
-        private decimal? GetRate(decimal subtotal, int shippingMethodId, int countryId, int stateProvinceId, string zip)
+		private decimal? GetRate(decimal subtotal, int shippingMethodId, int storeId, int countryId, int stateProvinceId, string zip)
         {
             decimal? shippingTotal = null;
 
-            var shippingByTotalRecord = _shippingByTotalService.FindShippingByTotalRecord(shippingMethodId, countryId, subtotal, stateProvinceId, zip);
+            var shippingByTotalRecord = _shippingByTotalService.FindShippingByTotalRecord(shippingMethodId, storeId, countryId, subtotal, stateProvinceId, zip);
 
             if (shippingByTotalRecord == null)
             {
@@ -170,10 +174,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                 return response;
             }
 
+			var storeId = _storeContext.CurrentStore.Id;
             int countryId = getShippingOptionRequest.ShippingAddress.CountryId.HasValue ? getShippingOptionRequest.ShippingAddress.CountryId.Value : 0;
             int stateProvinceId = getShippingOptionRequest.ShippingAddress.StateProvinceId.HasValue ? getShippingOptionRequest.ShippingAddress.StateProvinceId.Value : 0;
             string zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
             decimal subTotal = decimal.Zero;
+
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {
                 if (shoppingCartItem.IsFreeShipping || !shoppingCartItem.IsShipEnabled)
@@ -189,7 +195,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
             var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
             foreach (var shippingMethod in shippingMethods)
             {
-                decimal? rate = GetRate(subTotal, shippingMethod.Id, countryId, stateProvinceId, zip);
+                decimal? rate = GetRate(subTotal, shippingMethod.Id, storeId, countryId, stateProvinceId, zip);
                 if (rate.HasValue)
                 {
                     if (rate > 0 && sqThreshold > 0 && subTotal <= sqThreshold)
@@ -275,6 +281,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
             _objectContext.Uninstall();
 
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
+			_localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Shipping.ByTotal", false);
 
             base.Uninstall();
         }

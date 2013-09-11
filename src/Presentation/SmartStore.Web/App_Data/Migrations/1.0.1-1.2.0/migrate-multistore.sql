@@ -1635,6 +1635,21 @@ BEGIN
 END
 GO
 
+--shipping by total plugin
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ShippingByTotal]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	--new [StoreId] column
+	EXEC ('IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id(''[ShippingByTotal]'') and NAME=''StoreId'')
+	BEGIN
+		ALTER TABLE [ShippingByTotal] ADD [StoreId] int NULL
+
+		exec(''UPDATE [ShippingByTotal] SET [StoreId] = 0'')
+		
+		EXEC (''ALTER TABLE [ShippingByTotal] ALTER COLUMN [StoreId] int NOT NULL'')
+	END')
+END
+GO
+
 -- StoreMapping Store foreign key
 IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE 
 	name = 'StoreMapping_Store' AND parent_object_id = Object_id('StoreMapping') AND Objectproperty(object_id,N'IsForeignKey') = 1)

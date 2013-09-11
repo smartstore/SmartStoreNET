@@ -54,7 +54,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             return _cacheManager.Get(key, () =>
             {
                 var query = from sbt in _sbtRepository.Table
-                            orderby sbt.CountryId, sbt.StateProvinceId, sbt.Zip, sbt.ShippingMethodId, sbt.From
+                            orderby sbt.StoreId, sbt.CountryId, sbt.StateProvinceId, sbt.Zip, sbt.ShippingMethodId, sbt.From
                             select sbt;
 
                 var records = query.ToList();
@@ -89,7 +89,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
         /// <param name="stateProvinceId">state province identifier</param>
         /// <param name="zip">Zip code</param>
         /// <returns>ShippingByTotalRecord</returns> 
-        public virtual ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int countryId, decimal subtotal, int stateProvinceId, string zip)
+		public virtual ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int storeId, int countryId, decimal subtotal, int stateProvinceId, string zip)
         {
             if (zip == null)
             {
@@ -105,9 +105,29 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
                 .Where(sbt => sbt.ShippingMethodId == shippingMethodId && subtotal >= sbt.From && (sbt.To == null || subtotal <= sbt.To.Value))
                 .ToList();
 
+			//filter by store
+			var matchedByStore = new List<ShippingByTotalRecord>();
+			foreach (var sbw in existingRates)
+			{
+				if (storeId == sbw.StoreId)
+				{
+					matchedByStore.Add(sbw);
+				}
+			}
+			if (matchedByStore.Count == 0)
+			{
+				foreach (var sbw in existingRates)
+				{
+					if (sbw.StoreId == 0)
+					{
+						matchedByStore.Add(sbw);
+					}
+				}
+			}
+
             //filter by country
             var matchedByCountry = new List<ShippingByTotalRecord>();
-            foreach (var sbt in existingRates)
+			foreach (var sbt in matchedByStore)
             {
                 if (countryId == sbt.CountryId.GetValueOrDefault())
                 {
@@ -116,7 +136,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             }
             if (matchedByCountry.Count == 0)
             {
-                foreach (var sbt in existingRates)
+				foreach (var sbt in matchedByStore)
                 {
                     if (sbt.CountryId.GetValueOrDefault() == 0)
                     {

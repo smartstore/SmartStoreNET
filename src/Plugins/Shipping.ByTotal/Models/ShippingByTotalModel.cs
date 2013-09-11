@@ -6,6 +6,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Models
 
     public class ShippingByTotalModel : EntityModelBase
     {
+		[SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Store")]
+		public int StoreId { get; set; }
+		[SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Store")]
+		public string StoreName { get; set; }
+
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Country")]
         public int? CountryId { get; set; }
 

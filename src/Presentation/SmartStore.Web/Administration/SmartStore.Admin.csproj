@@ -458,7 +458,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Plugin\List_original.cshtml" />
     <Content Include="Views\Shared\Navbar.cshtml" />
     <Content Include="Views\Shared\RichEditor.cshtml" />
     <Content Include="Views\Shared\RichEditor.Telerik.cshtml" />

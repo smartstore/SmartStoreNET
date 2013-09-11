@@ -334,7 +334,6 @@ td.adminData {
 
 	.t-numerictextbox {
 		padding: 3px 4px 2px 5px;
-		//min-width: 120px;
 
 		.t-formatted-value {
 			padding: 3px 4px 2px 5px;
@@ -560,12 +559,13 @@ table.adminContent {
 }
 td.adminTitle {
     padding: 4px;
+    width: 280px;
+}
+.modal td.adminTitle {
+    width: auto;
 }
 td.adminData {
     padding: 4px;
-}
-td.adminTitle {
-    width: 280px;
 }
 td.adminTitle > .ctl-label {
 	position: relative;
@@ -720,13 +720,7 @@ label {
     .box-shadow(0 1px 0 #fff);
     
     & a {
-        //color: #fff;
         text-decoration: none;
-        //text-shadow: 1px 1px 0 #217AB2;
-        //.transition(color 0.2s ease-in-out);
-        &:hover {
-            //color: #CAE2F0;
-        }
     }
 }
 
@@ -734,6 +728,11 @@ a img {
     border: 0;
 }
 
+legend {
+    font-family: 'Segoe UI SemiBold', 'Segoe UI', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+}
 
 /* MASTER HEADER MENU */
 .header-menu {

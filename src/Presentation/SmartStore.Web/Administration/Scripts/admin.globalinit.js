@@ -110,10 +110,13 @@
         var navbarHeight = navbar.outerHeight() || 0;
         var sectionHeader = $('.section-header');
         var sectionHeaderTop = sectionHeader.offset().top - parseFloat(sectionHeader.css('margin-top').replace(/auto/, 0));
-        var sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
+        var sectionHeaderHasButtons = undefined;
 
         $(window).on("scroll resize", function (e) {
-            if (sectionHeaderHasButtons) {
+            if (sectionHeaderHasButtons === undefined) {
+                sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
+            }
+            if (sectionHeaderHasButtons === true) {
                 var y = $(this).scrollTop();
                 sectionHeader.toggleClass("sticky", y >= sectionHeaderTop - navbarHeight);
             }

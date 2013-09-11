@@ -8,6 +8,15 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI
 
+@section PluginOptions{
+    <div>Hallo Welt</div>
+}
+
+<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="btn btn-primary hide">
+    <i class="icon-plus"></i>
+    @T("Plugins.Shipping.ByTotal.AddNewRecordTitle")
+</a>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -48,11 +57,13 @@
         </td>
     </tr>
 </table>
-<p>
-</p>
+
 <script type="text/javascript">
      $(function() {
-            $("#@Html.FieldIdFor(model => model.AddCountryId)").change(function() {
+
+         $("#addrecord-button").appendTo($(".section-header .options")).removeClass("hide");
+
+         $("#@Html.FieldIdFor(model => model.AddCountryId)").change(function () {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.FieldIdFor(model => model.AddStateProvinceId)")
                 $.ajax({
@@ -75,6 +86,7 @@
             });
         });
 </script>
+
 @using (Html.BeginForm())
 {       
     <script type="text/javascript">
@@ -97,7 +109,9 @@
             }
         }
         $(function () {
-            $('#addshippingbytotalrecord').click(function () {
+            $('#addshippingbytotalrecord').click(function (e) {
+                e.preventDefault();
+
                 $.ajax({
                     cache: false,
                     type: 'POST',
@@ -110,6 +124,9 @@
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert('Failed to add record.');
+                    },
+                    complete: function () {
+                        $('#addrecord-window').data('modal').hide();
                     }
                 });
                 return false;
@@ -134,135 +151,139 @@
                 return false;
             });
         });
-
     </script>
-    <fieldset>
-        <legend><span>@T("Plugins.Shipping.ByTotal.AddNewRecordTitle")</span></legend>
-        <table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AddStoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
-					@Html.ValidationMessageFor(model => model.AddStoreId)
-				</td>
-			</tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddCountryId)
-                </td>
-                <td class="adminData">
-                    @Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries, "*")
-                    @Html.ValidationMessageFor(model => model.AddCountryId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddStateProvinceId)
-                </td>
-                <td class="adminData">
-                    @Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates,  "*")
-                    @Html.ValidationMessageFor(model => model.AddStateProvinceId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddZip)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddZip)
-                    @Html.ValidationMessageFor(model => model.AddZip)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddShippingMethodId)
-                </td>
-                <td class="adminData">
-                    @Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
-                    @Html.ValidationMessageFor(model => model.AddShippingMethodId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddFrom)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddFrom) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.AddFrom)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddTo)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddTo) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.AddTo)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddUsePercentage)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddUsePercentage)
-                    @Html.ValidationMessageFor(model => model.AddUsePercentage)
-                </td>
-            </tr>
-            <tr id="pnlAddShippingChargePercentage">
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddShippingChargePercentage)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddShippingChargePercentage)
-                    @Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
-                </td>
-            </tr>
-            <tr id="pnlAddBaseCharge">
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddBaseCharge)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddBaseCharge) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.AddBaseCharge)
-                </td>
-            </tr>
-            <tr id="pnlAddMaxCharge">
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddMaxCharge)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddMaxCharge) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.AddMaxCharge)
-                </td>
-            </tr>
-            <tr id="pnlAddShippingChargeAmount">
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddShippingChargeAmount)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    &nbsp;
-                </td>
-                <td>
-                    <button type="button" id="addshippingbytotalrecord" class="btn btn-primary" style="margin-top: 10px">
-                        <i class="icon-plus"></i>
-                        @T("Common.AddNew")
-                    </button>
-                </td>
-            </tr>
-        </table>
-    </fieldset>
+    
+    {Html.SmartStore().Window()
+        .Name("addrecord-window")
+        .Title(T("Plugins.Shipping.ByTotal.AddNewRecordTitle"))
+        .Content(
+        @<text>
+            <table class="adminContent">
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.AddStoreId)
+				    </td>
+				    <td class="adminData">
+					    @Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
+					    @Html.ValidationMessageFor(model => model.AddStoreId)
+				    </td>
+			    </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddCountryId)
+                    </td>
+                    <td class="adminData">
+                        @Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries, "*")
+                        @Html.ValidationMessageFor(model => model.AddCountryId)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddStateProvinceId)
+                    </td>
+                    <td class="adminData">
+                        @Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates, "*")
+                        @Html.ValidationMessageFor(model => model.AddStateProvinceId)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddZip)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddZip)
+                        @Html.ValidationMessageFor(model => model.AddZip)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddShippingMethodId)
+                    </td>
+                    <td class="adminData">
+                        @Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
+                        @Html.ValidationMessageFor(model => model.AddShippingMethodId)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddFrom)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddFrom) [@Model.PrimaryStoreCurrencyCode]
+                        @Html.ValidationMessageFor(model => model.AddFrom)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddTo)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddTo) [@Model.PrimaryStoreCurrencyCode]
+                        @Html.ValidationMessageFor(model => model.AddTo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddUsePercentage)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddUsePercentage)
+                        @Html.ValidationMessageFor(model => model.AddUsePercentage)
+                    </td>
+                </tr>
+                <tr id="pnlAddShippingChargePercentage">
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddShippingChargePercentage)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddShippingChargePercentage)
+                        @Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
+                    </td>
+                </tr>
+                <tr id="pnlAddBaseCharge">
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddBaseCharge)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddBaseCharge) [@Model.PrimaryStoreCurrencyCode]
+                        @Html.ValidationMessageFor(model => model.AddBaseCharge)
+                    </td>
+                </tr>
+                <tr id="pnlAddMaxCharge">
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddMaxCharge)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddMaxCharge) [@Model.PrimaryStoreCurrencyCode]
+                        @Html.ValidationMessageFor(model => model.AddMaxCharge)
+                    </td>
+                </tr>
+                <tr id="pnlAddShippingChargeAmount">
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddShippingChargeAmount)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
+                        @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
+                    </td>
+                </tr>
+            </table>  
+        </text>)
+        .FooterContent(
+        @<text>
+            <button id="addshippingbytotalrecord" type="button" class="btn">
+                @T("Common.AddNew")
+            </button> 
+            <button type="button" class="btn btn-link" data-dismiss="modal">@T("Admin.Common.Cancel")</button>       
+        </text>)
+        .Modal(true)
+        .Visible(false)
+        .Render();
+    }
+   
     <br />
-    <hr />
     <br />
+    
     <fieldset>
         <legend><span>@T("Plugins.Shipping.ByTotal.SettingsTitle")</span></legend>
         <table class="adminContent">

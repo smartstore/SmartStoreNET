@@ -19,8 +19,10 @@
                         columns.Bound(x => x.ShippingMethodName).Width(200).ReadOnly();
                         columns.Bound(x => x.From).Width(100);
                         columns.Bound(x => x.To).Width(100);
-                        columns.Bound(x => x.UsePercentage).Width(50)
-                            .ClientTemplate("<input type='checkbox' disabled='disabled' name='UsePercentage' <#=UsePercentage ? checked='checked' : ''#> />");
+                        columns.Bound(x => x.UsePercentage)
+                            .Centered()
+                            .Template(item => @Html.SymbolForBool(item.UsePercentage))
+                            .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
                         columns.Bound(x => x.ShippingChargePercentage).Width(100);
                         columns.Bound(x => x.ShippingChargeAmount).Width(100);
                         columns.Command(commands =>
@@ -153,7 +155,8 @@
             <td>&nbsp;</td>
             <td style="padding:10px 0">
                 <button type="submit" name="addshippingbyweightrecord" value="addshippingbyweightrecord" class="btn btn-primary">
-                    @T("Plugins.Shipping.ByWeight.AddRecord")
+                    <i class="icon-plus"></i>
+                    @T("Common.AddNew")
                 </button>
             </td>
         </tr>
@@ -186,7 +189,7 @@
             <td>&nbsp;</td>
             <td style="padding:10px 0">
                 <button type="submit" name="savegeneralsettings" value="savegeneralsettings" class="btn btn-primary">
-                    @T("Admin.Common.Save")
+                    <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
                 </button>
             </td>
         </tr>

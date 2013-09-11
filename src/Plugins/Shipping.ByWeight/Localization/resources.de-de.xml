@@ -56,12 +56,6 @@
   <LocaleResource Name="Fields.CalculatePerWeightUnit.Hint">
     <Value>Wenn diese Option aktiv ist, werden Raten mit der Gewichtseinheit multipliziert (g, kg, etc). Diese Option wird bei festen Raten (ohne prozentuale Berechnung) angewendet.</Value>
   </LocaleResource>
-  <LocaleResource Name="AddRecord">
-    <Value>Datensatz hinzufügen</Value>
-  </LocaleResource>
-  <LocaleResource Name="AddRecord.Hint">
-    <Value>Fügt einen neuen Datensatz zu.</Value>
-  </LocaleResource>
   <LocaleResource Name="Fields.Store">
     <Value>Shop</Value>
   </LocaleResource>

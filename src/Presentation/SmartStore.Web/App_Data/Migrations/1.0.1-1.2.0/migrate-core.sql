@@ -234,6 +234,16 @@ set @resources='
 	<T>Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</T>
   </LocaleResource>   
   
+  <LocaleResource Name="ErrorPage.Title">
+    <Value>We''re sorry, an internal error occurred that prevents the request to complete.</Value>
+	<T>Leider ist ein interner Fehler aufgetreten.</T>
+  </LocaleResource>
+  
+  <LocaleResource Name="ErrorPage.Body">
+    <Value>Our supporting staff has been notified with this error and will address this issue shortly. We profusely apologize for the <strong>inconvenience</strong> and for any damage this may cause. You might want to try the same action at later time.</Value>
+	<T>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</T>
+  </LocaleResource>
+  
 </Language>
 '
 

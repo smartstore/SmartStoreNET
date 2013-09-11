@@ -2077,7 +2077,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("PageNotFound", x =>
                 {
                     x.Title = "";
-                    x.Body = "<p><strong>Die von Ihnen angeforderte Seite wurde nicht gefunden, und wir haben eine feine Vermutung, warum.</strong> <ul> <li>Wenn Sie die URL direkt eingetippt haben, stellen Sie sicher, dass die Schreibweise korrekt ist.</li> <li>Die Seite existiert nicht mehr. In diesem Fall möchten wir uns für die Unannehmlichkeiten entschuldigen.</li> </ul> </p>";
+                    x.Body = "<p><strong>Die von Ihnen angeforderte Seite wurde nicht gefunden, und wir haben eine Vermutung, warum:</strong> <ul> <li>Wenn Sie die URL direkt eingetippt haben, stellen Sie sicher, dass die Schreibweise korrekt ist.</li> <li>Die Seite existiert nicht mehr.</li> </ul> </p>";
                 })
                 .Alter("Imprint", x =>
                 {

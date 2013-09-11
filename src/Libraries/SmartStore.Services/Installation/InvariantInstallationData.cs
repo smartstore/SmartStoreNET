@@ -3970,7 +3970,7 @@ namespace SmartStore.Services.Installation
                     {
                         Name = "NewsLetterSubscription.DeactivationMessage",
                         Subject = "%Store.Name%. Subscription deactivation message.",
-                        Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.DeactivationUrl%\">Click here to unsubscribe from news letters.</a></p><p>If you received this email by mistake, simply delete it.</p>"  + templateFooter,
+                        Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.DeactivationUrl%\">Click here to unsubscribe from our newsletter list.</a></p><p>If you received this email by mistake, simply delete it.</p>"  + templateFooter,
                         IsActive = true,
                         EmailAccountId = eaGeneral.Id,
                     },

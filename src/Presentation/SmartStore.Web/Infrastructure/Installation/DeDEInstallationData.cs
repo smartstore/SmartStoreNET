@@ -241,7 +241,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("NewsLetterSubscription.DeactivationMessage", x =>
                 {
                     x.Subject = "%Store.Name%. Bestätigen Sie Ihre Newsletter-Abmeldung";
-                    x.Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.ActivationUrl%\">Klicken Sie hier, um Ihre Newsletter-Registrierung zu stornieren.</a></p> <p>Sollten Sie diese E-Mail f&auml;lschlich erhalten haben, l&ouml;schen Sie bitte diese E-Mail.</p> <p></p> <p>Ihr&nbsp;%Store.Name% - Team</p>" + templateFooter;
+                    x.Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.DeactivationUrl%\">Klicken Sie hier, um Ihre Newsletter-Registrierung zu stornieren.</a></p> <p>Sollten Sie diese E-Mail f&auml;lschlich erhalten haben, l&ouml;schen Sie bitte diese E-Mail.</p> <p></p> <p>Ihr&nbsp;%Store.Name% - Team</p>" + templateFooter;
                 })
                 .Alter("NewVATSubmitted.StoreOwnerNotification", x =>
                 {

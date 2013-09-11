@@ -3522,7 +3522,7 @@ namespace SmartStore.Web.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Produkt konnte nicht hinzugefügt werden." // TODO: Loc
+                    message = _localizationService.GetResource("AddProductToCompareList.CouldNotBeAdded")
                 });
             }
 
@@ -3534,7 +3534,7 @@ namespace SmartStore.Web.Controllers
             return Json(new
             {
                 success = true,
-                message = string.Format("Das Produkt '{0}' wurde der Vergleichsliste hinzugefügt.", product.Name) // TODO: Loc
+                message = string.Format(_localizationService.GetResource("AddProductToCompareList.ProductWasAdded"), product.Name)
             });
         }
 
@@ -3564,7 +3564,7 @@ namespace SmartStore.Web.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Produkt konnte nicht entfernt werden." // TODO: Loc
+                    message = _localizationService.GetResource("AddProductToCompareList.CouldNotBeRemoved")
                 });
             }
 
@@ -3573,7 +3573,7 @@ namespace SmartStore.Web.Controllers
             return Json(new
             {
                 success = true,
-                message = string.Format("Das Produkt '{0}' wurde von der Vergleichsliste entfernt.", product.Name) // TODO: Loc
+                message = string.Format(_localizationService.GetResource("AddProductToCompareList.ProductWasDeleted"), product.Name)
             });
         }
 

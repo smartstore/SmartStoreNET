@@ -238,12 +238,29 @@ set @resources='
     <Value>We''re sorry, an internal error occurred that prevents the request to complete.</Value>
 	<T>Leider ist ein interner Fehler aufgetreten.</T>
   </LocaleResource>
-  
   <LocaleResource Name="ErrorPage.Body">
     <Value>Our supporting staff has been notified with this error and will address this issue shortly. We profusely apologize for the <strong>inconvenience</strong> and for any damage this may cause. You might want to try the same action at later time.</Value>
 	<T>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</T>
   </LocaleResource>
   
+  <LocaleResource Name="AddProductToCompareList.CouldNotBeAdded">
+    <Value>Product could not be added.</Value>
+	<T>Produkt konnte nicht hinzugefügt werden.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.ProductWasAdded">
+    <Value>The product ''{0}'' was added to the compare list.</Value>
+	<T>Das Produkt ''{0}'' wurde der Vergleichsliste hinzugefügt.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.CouldNotBeRemoved">
+    <Value>Product could not be removed.</Value>
+	<T>Produkt konnte nicht entfernt werden.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.ProductWasDeleted">
+    <Value>The product ''{0}'' was removed from the compare list.</Value>
+	<T>Das Produkt ''{0}'' wurde von der Vergleichsliste entfernt.</T>
+  </LocaleResource>
+
+
 </Language>
 '
 

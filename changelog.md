@@ -14,7 +14,8 @@
  - Added 3 new **Trusted Shops** plugins: Seal, Buyer Protection, Store Reviews
  - Added __HTML Widget__ (store owner now can add arbitrary HTML content to any page region without modifying view files)
  - **Color attributes** are now displayed on product list pages (as mini squares)
- - Added __BaseFee and MaxFee__ to _ShippingByTotal_ plugin.
+ - Added __BaseFee, MaxFee__ and __SmallQuantitySurcharge__ to _ShippingByTotal_ plugin.
+ - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__ 
  - Plugin language resources are now updateable via backend
  - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.
 

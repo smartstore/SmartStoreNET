@@ -238,12 +238,29 @@ set @resources='
     <Value>We''re sorry, an internal error occurred that prevents the request to complete.</Value>
 	<T>Leider ist ein interner Fehler aufgetreten.</T>
   </LocaleResource>
-  
   <LocaleResource Name="ErrorPage.Body">
     <Value>Our supporting staff has been notified with this error and will address this issue shortly. We profusely apologize for the <strong>inconvenience</strong> and for any damage this may cause. You might want to try the same action at later time.</Value>
 	<T>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</T>
   </LocaleResource>
   
+  <LocaleResource Name="AddProductToCompareList.CouldNotBeAdded">
+    <Value>Product could not be added.</Value>
+	<T>Produkt konnte nicht hinzugefügt werden.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.ProductWasAdded">
+    <Value>The product ''{0}'' was added to the compare list.</Value>
+	<T>Das Produkt ''{0}'' wurde der Vergleichsliste hinzugefügt.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.CouldNotBeRemoved">
+    <Value>Product could not be removed.</Value>
+	<T>Produkt konnte nicht entfernt werden.</T>
+  </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList.ProductWasDeleted">
+    <Value>The product ''{0}'' was removed from the compare list.</Value>
+	<T>Das Produkt ''{0}'' wurde von der Vergleichsliste entfernt.</T>
+  </LocaleResource>
+
+
 </Language>
 '
 
@@ -331,36 +348,6 @@ IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'captchasettings.showonas
 BEGIN
 	INSERT [Setting] ([Name], [Value])
 	VALUES (N'captchasettings.showonaskquestionpage', N'False')
-END
-GO
-
--- New MessageTemplate "Product.AskQuestion"
-IF NOT EXISTS (
-  SELECT 1
-  FROM [dbo].[MessageTemplate]
-  WHERE [Name] = N'Product.AskQuestion')
-BEGIN
-	INSERT [dbo].[MessageTemplate] ([Name], [Subject], [IsActive], [EmailAccountId], [Body])
-	VALUES (
-		N'Product.AskQuestion', 
-		N'%Store.Name% - Question concerning "%Product.Name%" from %ProductQuestion.SenderName%', 
-		1, 
-		0, 
-		N'<style type="text/css"><!--
-address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px; font-family: "Segoe UI", Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:800px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; }
---></style>
-<center>
-<table border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" class="template-body">
-<tbody>
-<tr>
-<td>
-<p>%ProductQuestion.Message%</p>
-<p><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name:</strong>&nbsp;%ProductQuestion.SenderName%<br /><strong>Phone:</strong>&nbsp;%ProductQuestion.SenderPhone%&nbsp;</p>
-</td>
-</tr>
-</tbody>
-</table>
-</center>')
 END
 GO
 

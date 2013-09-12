@@ -70,7 +70,34 @@
 
         <div class="clearfix">
             <div class="pull-left attribute-block">
+
                 <table class="attributes" style="width:100%">
+
+                    @if (Model.ShowDeliveryTimes)
+                    {
+                        if (Model.DeliveryTime != null && Model.IsShipEnabled)
+                        {
+                            <tr class="delivery-time">
+                                <td class="attr-label">
+                                    <span><strong>@T("Products.DeliveryTime")</strong></span>
+                                </td>
+                                    
+
+                                @if(Model.DisplayDeliveryTimeAccordingToStock)
+                                {
+                                    <td>
+                                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+                                    </td>
+                                }
+                                else {
+                                    <td>
+                                        <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+
                     @if (Model.ShowSku && !String.IsNullOrWhiteSpace(Model.Sku)) 
                     {
                     <tr valign="top">

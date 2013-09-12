@@ -2201,7 +2201,7 @@
                             <Value>Teilweise geliefert</Value>
                           </LocaleResource>
                           <LocaleResource Name="Shipped">
-                            <Value>Geliefert</Value>
+                            <Value>Versandt</Value>
                           </LocaleResource>
                           <LocaleResource Name="ShippingNotRequired">
                             <Value>Versand nicht erforderlich</Value>
@@ -3414,7 +3414,7 @@
             <Value>Inhaber: {0}</Value>
           </LocaleResource>
           <LocaleResource Name="AccountNumber">
-            <Value>Inhaber: {0}</Value>
+            <Value>Kontonummer: {0}</Value>
           </LocaleResource>
           <LocaleResource Name="Bankcode">
             <Value>Bankleitzahl: {0}</Value>

@@ -46,6 +46,12 @@ namespace SmartStore.Core.Domain.Catalog
 
         /// codehint: sm-add
         /// <summary>
+        /// Gets or sets a value indicating whether to display the delivery time of a product
+        /// </summary>
+        public bool ShowDeliveryTimesInProductDetail { get; set; }
+
+        /// codehint: sm-add
+        /// <summary>
         /// Gets or sets a value indicating whether to display the base price of a product
         /// </summary>
         public bool ShowBasePriceInProductLists { get; set; }

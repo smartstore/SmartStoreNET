@@ -260,6 +260,15 @@ set @resources='
 	<T>Das Produkt ''{0}'' wurde von der Vergleichsliste entfernt.</T>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail">
+    <Value>Show delivery times</Value>
+	<T>Zeige Lieferzeiten</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint">
+    <Value>Detemines whether delivery times should be display on product detail page.</Value>
+	<T>Bestimmt ob Lieferzeitinformationen auf der Produktdetailseite angezeigt werden.</T>
+  </LocaleResource>
+  
 
 </Language>
 '

@@ -56,6 +56,10 @@ namespace SmartStore.Admin.Models.Settings
         public bool ShowDeliveryTimesInProductLists { get; set; }
 
         //codehint: sm-add
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
+        public bool ShowDeliveryTimesInProductDetail { get; set; }
+
+        //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
         public bool ShowProductReviewsInProductLists { get; set; }
 

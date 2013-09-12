@@ -1339,8 +1339,8 @@ namespace SmartStore.Web.Controllers
             model.Width = (productVariant.Width > 0) ? "{0} {1}".FormatCurrent(productVariant.Width.ToString("F2"), dimension) : "";
 
             model.ThumbDimensions = _mediaSettings.ProductVariantPictureSize;
-
             model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(productVariant.DeliveryTimeId.GetValueOrDefault());
+            model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = productVariant.IsShipEnabled;
             model.DisplayDeliveryTimeAccordingToStock = productVariant.DisplayDeliveryTimeAccordingToStock();
             //codehint: sm-edit end

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Orders;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -18,6 +19,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerFullName { get; set; }
 
         public int ProductVariantId { get; set; }
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Product")]

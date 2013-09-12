@@ -74,31 +74,43 @@
                     </dd>
                 </dl>
             </fieldset>
-            <fieldset class="form-fields why">
-                <legend>@T("ReturnRequests.WhyReturning")</legend>
-                <dl>
-                    <dt>
-                        @Html.LabelFor(model => model.ReturnReason):</dt>
-                    <dd>
-                        @Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "return-reasons" })
-                    </dd>
-                    <dt>
-                        @Html.LabelFor(model => model.ReturnAction):</dt>
-                    <dd>
-                        @Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "return-actions" })
-                    </dd>
-                    <dt>
-                        @Html.LabelFor(model => model.Comments):</dt>
-                    <dd>
-                        @Html.TextAreaFor(model => model.Comments, new { @class = "comment" })
-                        @Html.ValidationMessageFor(model => model.Comments)
-                    </dd>
-                </dl>
-            </fieldset>
-            <div class="clear">
-            </div>
+			
+			<table class="table table-striped table-hover">
+			<tbody>
+				<tr>
+					<td>
+						@Html.LabelFor(model => model.ReturnReason)
+					</td>
+					<td>
+						@Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "return-reasons" })
+					</td>
+				</tr>
+				<tr>
+					<td>
+						@Html.LabelFor(model => model.ReturnAction)
+					</td>
+					<td>
+						@Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "return-actions" })
+					</td>
+				</tr>
+				<tr>
+					<td>
+						@Html.LabelFor(model => model.Comments)
+					</td>
+					<td>
+						@Html.TextAreaFor(model => model.Comments, new { @class = "comment", style = "width:400px;" })
+						@Html.ValidationMessageFor(model => model.Comments)
+					</td>
+				</tr>
+			</tbody>
+			</table>
+			
+            <div class="clear"></div>
+			
             <div class="buttons">
-                <input type="submit" name="submit-return-request" class="button-1 submit-return-request-button" value="@T("ReturnRequests.Submit")" />
+				<button type="submit" name="submit-return-request" value="save" class="btn btn-primary">
+					<i class="icon-ok"></i>&nbsp;@T("ReturnRequests.Submit")
+				</button>
             </div>
             }
         }

@@ -1,6 +1,6 @@
 ﻿FriendlyName: Restricted to store
 SystemName: DiscountRequirement.Store
-Version: 1.00
+Version: 1.01
 SupportedVersions: 1.0
 DisplayOrder: 1
 FileName: SmartStore.Plugin.DiscountRules.Store.dll

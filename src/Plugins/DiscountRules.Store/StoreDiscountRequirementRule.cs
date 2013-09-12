@@ -1,7 +1,5 @@
 using System;
-using SmartStore.Core;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 
@@ -10,12 +8,10 @@ namespace SmartStore.Plugin.DiscountRules.Store
     public partial class StoreDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
 		private readonly ILocalizationService _localizationService;
-		private readonly ISettingService _settingService;
 
-		public StoreDiscountRequirementRule(ILocalizationService localizationService, ISettingService settingService)
+		public StoreDiscountRequirementRule(ILocalizationService localizationService)
 		{
 			this._localizationService = localizationService;
-			this._settingService = settingService;
 		}
 
 		/// <summary>
@@ -34,7 +30,7 @@ namespace SmartStore.Plugin.DiscountRules.Store
 			if (request.Customer == null)
 				return false;
 
-			var storeId = _settingService.GetSettingByKey<int>(string.Format("DiscountRequirement.Store-{0}", request.DiscountRequirement.Id));
+			var storeId = request.DiscountRequirement.RestrictedToStoreId ?? 0;
 
 			if (storeId == 0)
 				return false;

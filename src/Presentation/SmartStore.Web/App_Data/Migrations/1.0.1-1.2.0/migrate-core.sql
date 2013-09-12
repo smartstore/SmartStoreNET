@@ -372,6 +372,12 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[DiscountRequirement]') and NAME='RestrictedToStoreId')
+BEGIN
+	ALTER TABLE [DiscountRequirement] ADD [RestrictedToStoreId] int NULL
+END
+GO
+
 IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ShippingByTotal]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
 	-- ShippingByTotalSettings.SmallQuantityThreshold

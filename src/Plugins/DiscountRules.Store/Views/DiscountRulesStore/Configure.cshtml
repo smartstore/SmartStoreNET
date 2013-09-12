@@ -39,7 +39,9 @@
             <td class="adminData">
                 <div>
 					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores) 
-					<button type="button" name="savestorerequirement@(Model.RequirementId)" id="savestorerequirement@(Model.RequirementId)" class="btn" value="@T("Admin.Common.Save")"></button>
+					<button type="button" name="savestorerequirement@(Model.RequirementId)" id="savestorerequirement@(Model.RequirementId)" class="btn">
+						@T("Admin.Common.Save")
+					</button>
                 </div>
                 <div id="pnl-save-requirement-result@(Model.RequirementId)" style="display:none;">@T("Admin.Promotions.Discounts.Requirements.Saved")</div>
             </td>

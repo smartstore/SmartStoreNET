@@ -50,6 +50,11 @@
 		/// Gets or sets the restricted shipping options (comma separated)
 		/// </summary>
 		public string RestrictedShippingOptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the restricted store identifier
+		/// </summary>
+		public int? RestrictedToStoreId { get; set; }
         
         /// <summary>
         /// Gets or sets the discount

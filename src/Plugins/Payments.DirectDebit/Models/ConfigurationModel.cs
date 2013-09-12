@@ -7,13 +7,13 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Models
     public class ConfigurationModel : ModelBase
     {
         [AllowHtml]
-        [SmartResourceDisplayName("Plugins.Payment.DirectDebit.DescriptionText")]
+        [SmartResourceDisplayName("Plugins.Payments.DirectDebit.DescriptionText")]
         public string DescriptionText { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Payment.DirectDebit.AdditionalFee")]
+        [SmartResourceDisplayName("Plugins.Payments.DirectDebit.AdditionalFee")]
         public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payment.DirectDebit.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Plugins.Payments.DirectDebit.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
     }
 }

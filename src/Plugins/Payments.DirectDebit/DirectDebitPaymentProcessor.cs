@@ -187,7 +187,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit
         {
             var settings = new DirectDebitPaymentSettings()
             {
-                DescriptionText = "@Plugins.Payment.DirectDebit.PaymentInfoDescription"
+                DescriptionText = "@Plugins.Payments.DirectDebit.PaymentInfoDescription"
             };
             _settingService.SaveSetting(settings);
 

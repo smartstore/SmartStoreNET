@@ -521,7 +521,7 @@ BEGIN
 	SET @PermissionRecordId = @@IDENTITY
 
 
-	--add it to admin role be default
+	--add it to admin role by default
 	DECLARE @AdminCustomerRoleId int
 	SELECT @AdminCustomerRoleId = Id
 	FROM [CustomerRole]
@@ -531,14 +531,17 @@ BEGIN
 	VALUES (@PermissionRecordId, @AdminCustomerRoleId)
 
 	--codehint: sm-add
-	--add it to super-admin role be default
+	--add it to super-admin role by default
 	DECLARE @SuperAdminCustomerRoleId int
 	SELECT @SuperAdminCustomerRoleId = Id
 	FROM [CustomerRole]
 	WHERE IsSystemRole=1 and [SystemName] = N'SuperAdmins'
 
-	INSERT [dbo].[PermissionRecord_Role_Mapping] ([PermissionRecord_Id], [CustomerRole_Id])
-	VALUES (@PermissionRecordId, @SuperAdminCustomerRoleId)
+	IF NOT @SuperAdminCustomerRoleId IS NULL
+	BEGIN
+		INSERT [dbo].[PermissionRecord_Role_Mapping] ([PermissionRecord_Id], [CustomerRole_Id])
+		VALUES (@PermissionRecordId, @SuperAdminCustomerRoleId)
+	END		
 END
 GO
 

@@ -1,4 +1,8 @@
-﻿@*codehint: sm-refactored-completly *@
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+
+@*codehint: sm-refactored-completly *@
 @model RegisterModel
 @using SmartStore.Web.Models.Customer;
 @{
@@ -38,7 +42,7 @@
         });
     </script>
 }
-@using (Html.BeginForm("Register", "Customer", FormMethod.Post, new { @class = "form-horizontal" }))
+@using (Html.BeginForm("Register", "Customer", new { returnUrl = this.Context.Request.QueryString["returnUrl"] }, FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
     <div class="page registration-page">

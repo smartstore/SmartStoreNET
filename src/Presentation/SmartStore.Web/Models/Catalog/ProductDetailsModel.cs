@@ -122,6 +122,7 @@ namespace SmartStore.Web.Models.Catalog
             public string Height { get; set; }
             public int ThumbDimensions { get; set; }
             public DeliveryTime DeliveryTime { get; set; }
+            public bool DisplayDeliveryTime { get; set; }
             public bool IsShipEnabled { get; set; }
             public bool DisplayDeliveryTimeAccordingToStock { get; set; }
             public bool IsBasePriceEnabled { get; set; }

@@ -76,21 +76,24 @@
             </div>
 
             <!-- delivery time -->
-            <div class="delivery-time">
-                @if (Model.DeliveryTime != null && Model.IsShipEnabled)
-                {
-                    <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+            @if (Model.DisplayDeliveryTime) 
+            {
+                <div class="delivery-time">
+                    @if (Model.DeliveryTime != null && Model.IsShipEnabled)
+                    {
+                        <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
                     
-                    if(Model.DisplayDeliveryTimeAccordingToStock) {
-                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
-                        <span class="delivery-time-value">@Model.DeliveryTime.Name</span>
-                    } 
-                    else {
-                        <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
-                        <span class="delivery-time-value">@Model.StockAvailablity</span>
+                        if(Model.DisplayDeliveryTimeAccordingToStock) {
+                            <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+                            <span class="delivery-time-value">@Model.DeliveryTime.Name</span>
+                        } 
+                        else {
+                            <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+                            <span class="delivery-time-value">@Model.StockAvailablity</span>
+                        }
                     }
-                }
-            </div>
+                </div>
+            }
 
             @if(Model.ShowLegalInfo)
             {

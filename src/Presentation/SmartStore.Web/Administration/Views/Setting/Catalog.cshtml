@@ -556,6 +556,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductDetail)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDeliveryTimesInProductDetail)
+                @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductDetail)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)
             </td>
             <td class="adminData">

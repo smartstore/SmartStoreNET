@@ -81,6 +81,7 @@ namespace SmartStore.Admin.Controllers
                 model.ProductName = opv.ProductVariant.Product.Name;
             model.OrderId = opv.OrderId;
             model.CustomerId = returnRequest.CustomerId;
+			model.CustomerFullName = returnRequest.Customer.GetFullName();
             model.Quantity = returnRequest.Quantity;
             model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);

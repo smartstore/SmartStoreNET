@@ -1795,7 +1795,6 @@
                           </LocaleResource>
                           <LocaleResource Name="ColorSquares">
                             <Value>Color squares</Value>
-                            <Children />
                           </LocaleResource>
                           <LocaleResource Name="Datepicker">
                             <Value>Date picker</Value>

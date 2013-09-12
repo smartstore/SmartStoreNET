@@ -3,10 +3,10 @@
     <Value>Shipping by total</Value>
   </LocaleResource>
 	<LocaleResource Name="AddNewRecordTitle">
-		<Value>Add new 'Shipping By Total' record</Value>
+		<Value>Add new record</Value>
 	</LocaleResource>
   <LocaleResource Name="SettingsTitle">
-    <Value>Shipping By Total Settings</Value>
+    <Value>Settings</Value>
   </LocaleResource>
 
   <LocaleResource Name="Fields.Country">
@@ -34,16 +34,16 @@
     <Value>The shipping method.</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.From">
-    <Value>Order total From</Value>
+    <Value>Order total from</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.From.Hint">
-    <Value>Order total From</Value>
+    <Value>Order total from</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.To">
-    <Value>Order total To</Value>
+    <Value>Order total to</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.To.Hint">
-    <Value>Order total To</Value>
+    <Value>Order total to</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.UsePercentage">
     <Value>Use percentage</Value>
@@ -52,13 +52,13 @@
     <Value>Check to use 'charge percentage' value.</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ShippingChargePercentage">
-    <Value>Charge percentage (of subtotal)</Value>
+    <Value>Charge %</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ShippingChargePercentage.Hint">
     <Value>Charge percentage (of subtotal)</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ShippingChargeAmount">
-    <Value>Charge amount</Value>
+    <Value>Charge</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ShippingChargeAmount.Hint">
     <Value>Charge amount</Value>

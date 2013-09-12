@@ -402,7 +402,6 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("No discount found with the specified id");
 
             var duh = _discountService.GetAllDiscountUsageHistory(discount.Id, null, command.Page - 1, command.PageSize);
-            
             var model = new GridModel<DiscountModel.DiscountUsageHistoryModel>
             {
                 Data = duh.Select(x =>

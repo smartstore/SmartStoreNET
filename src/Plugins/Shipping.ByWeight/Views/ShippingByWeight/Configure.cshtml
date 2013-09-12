@@ -72,13 +72,9 @@
         }
     </script>
 	
-	<div>
+	<fieldset>
+        <legend>@T("Plugins.Shipping.ByWeight.AddNewRecordTitle")</legend>
 		<table class="adminContent">
-        <tr>
-            <td class="adminTitle" colspan="2">
-                <b>@T("Plugins.Shipping.ByWeight.AddRecord.Hint")</b>
-            </td>
-        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AddStoreId)
@@ -161,21 +157,11 @@
             </td>
         </tr>
 		</table>
-	</div>
-
-	<hr />
-
-	<div>
+	</fieldset>
+    
+	<fieldset style="margin-top: 16px">
+        <legend>@T("Plugins.Shipping.ByWeight.SettingsTitle")</legend>
 		<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitMethodsToCreated)
-                @Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CalculatePerWeightUnit)
@@ -183,6 +169,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.CalculatePerWeightUnit)
                 @Html.ValidationMessageFor(model => model.CalculatePerWeightUnit)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.LimitMethodsToCreated)
+                @Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
             </td>
         </tr>
         <tr>
@@ -194,5 +189,5 @@
             </td>
         </tr>
 		</table>
-	</div>
+	</fieldset>
 }

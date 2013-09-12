@@ -62,4 +62,11 @@
 	<LocaleResource Name="Fields.Store.Hint">
 		<Value>If an asterisk is selected, then this shipping rate will apply to all stores.</Value>
 	</LocaleResource>
+
+  <LocaleResource Name="AddNewRecordTitle">
+    <Value>Add new record</Value>
+  </LocaleResource>
+  <LocaleResource Name="SettingsTitle">
+    <Value>Settings</Value>
+  </LocaleResource>
 </Language>

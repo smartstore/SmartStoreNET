@@ -59,21 +59,37 @@ namespace SmartStore.Plugin.Shipping.ByWeight
                 else
                     return decimal.Zero;
             }
+
             if (shippingByWeightRecord.UsePercentage && shippingByWeightRecord.ShippingChargePercentage <= decimal.Zero)
+            {
                 return decimal.Zero;
+            }
             if (!shippingByWeightRecord.UsePercentage && shippingByWeightRecord.ShippingChargeAmount <= decimal.Zero)
+            {
                 return decimal.Zero;
+            }
+
             if (shippingByWeightRecord.UsePercentage)
+            {
                 shippingTotal = Math.Round((decimal)((((float)subTotal) * ((float)shippingByWeightRecord.ShippingChargePercentage)) / 100f), 2);
+            }
             else
             {
                 if (_shippingByWeightSettings.CalculatePerWeightUnit)
+                {
                     shippingTotal = shippingByWeightRecord.ShippingChargeAmount * weight;
+                }
                 else
+                {
                     shippingTotal = shippingByWeightRecord.ShippingChargeAmount;
+                }
             }
+
             if (shippingTotal < decimal.Zero)
+            {
                 shippingTotal = decimal.Zero;
+            }
+
             return shippingTotal;
         }
         

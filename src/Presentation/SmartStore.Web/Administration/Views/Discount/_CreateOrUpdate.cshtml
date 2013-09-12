@@ -439,8 +439,8 @@
                     {
                         columns.Bound(x => x.OrderId)
                             .Width(100)
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\">" + T("Admin.Common.View").Text + "</a>");
+                            .Template(x => Html.ActionLink("{0} (#{1})".FormatCurrentUI(T("Admin.Common.View").Text, x.OrderId), "Edit", "Order", new { id = x.OrderId }, new { }))
+                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\">" + T("Admin.Common.View").Text + " (#<#= OrderId #>)</a>");
                         columns.Bound(x => x.CreatedOn).Width(200);
                         columns.Command(commands =>
                         {

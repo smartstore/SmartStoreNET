@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Plugin.Shipping.ByTotal.Domain;
+using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Services
 {
@@ -169,25 +171,43 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             var matchedByZip = new List<ShippingByTotalRecord>();
             foreach (var sbt in matchedByStateProvince)
             {
-                if ((String.IsNullOrEmpty(zip) && String.IsNullOrEmpty(sbt.Zip)) ||
-                    (zip.Equals(sbt.Zip, StringComparison.InvariantCultureIgnoreCase)))
+                if ((zip.IsEmpty() && sbt.Zip.IsEmpty()) || (ZipMatches(zip, sbt.Zip)))
                 {
                     matchedByZip.Add(sbt);
                 }
             }
 
-            if (matchedByZip.Count == 0)
-            {
-                foreach (var taxRate in matchedByStateProvince)
-                {
-                    if (String.IsNullOrWhiteSpace(taxRate.Zip))
-                    {
-                        matchedByZip.Add(taxRate);
-                    }
-                }
-            }
+            //// Obsolete
+            //if (matchedByZip.Count == 0)
+            //{
+            //    foreach (var sbt in matchedByStateProvince)
+            //    {
+            //        if (sbt.Zip.IsEmpty())
+            //        {
+            //            matchedByZip.Add(sbt);
+            //        }
+            //    }
+            //}
 
             return matchedByZip.FirstOrDefault();
+        }
+
+        private bool ZipMatches(string zip, string pattern)
+        {
+            if (pattern.IsEmpty() || pattern == "*")
+            {
+                return true; // catch all
+            }
+            
+            try
+            {
+                var wildcard = new Wildcard(pattern);
+                return wildcard.IsMatch(zip);
+            }
+            catch
+            {
+                return zip.IsCaseInsensitiveEqual(pattern);
+            }
         }
 
         /// <summary>

@@ -2744,6 +2744,9 @@
               </LocaleResource>
             </Children>
           </LocaleResource>
+          <LocaleResource Name="General">
+            <Value>General</Value>
+          </LocaleResource>
           <LocaleResource Name="Go">
             <Value>Go</Value>
           </LocaleResource>
@@ -2758,6 +2761,9 @@
           </LocaleResource>
           <LocaleResource Name="ImportFromExcelProgress">
             <Value>Please wait while the import is executed</Value>
+          </LocaleResource>
+          <LocaleResource Name="Info">
+            <Value>Info</Value>
           </LocaleResource>
           <LocaleResource Name="List">
             <Value>List</Value>
@@ -2800,6 +2806,41 @@
           </LocaleResource>
           <LocaleResource Name="Standard">
             <Value>Standard</Value>
+          </LocaleResource>
+          <LocaleResource Name="Store">
+            <Value>Store</Value>
+            <Children>
+              <LocaleResource Name="AvailableFor">
+                <Value>Stores</Value>
+                <Children>
+                  <LocaleResource Name="Hint">
+                    <Value>Select stores for which the item will be shown.</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+              <LocaleResource Name="LimitedTo">
+                <Value>Limited to stores</Value>
+                <Children>
+                  <LocaleResource Name="Hint">
+                    <Value>Determines whether the item is available only at certain stores.</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+              <LocaleResource Name="SearchFor">
+                <Value>Store</Value>
+                <Children>
+                  <LocaleResource Name="Hint">
+                    <Value>Search by a specific store.</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+            </Children>
+          </LocaleResource>
+          <LocaleResource Name="Stores">
+            <Value>Stores</Value>
+          </LocaleResource>
+          <LocaleResource Name="StoresAll">
+            <Value>All stores</Value>
           </LocaleResource>
           <LocaleResource Name="Treeview">
             <Value>Tree view</Value>
@@ -4025,6 +4066,9 @@
                   </LocaleResource>
                 </Children>
               </LocaleResource>
+              <LocaleResource Name="Info">
+                <Value>Plugin Info</Value>
+              </LocaleResource>
               <LocaleResource Name="Installed">
                 <Value>The plugin has been installed.</Value>
               </LocaleResource>
@@ -4080,6 +4124,26 @@
               <LocaleResource Name="ReloadList">
                 <Value>Reload list of plugins</Value>
               </LocaleResource>
+              <LocaleResource Name="Resources">
+                <Value>Update resources</Value>
+                <Children>
+                  <LocaleResource Name="Update">
+                    <Value>Update resources</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="UpdateConfirm">
+                    <Value>Do you like to update the language resources for this plugin?</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="UpdateFailure">
+                    <Value>Failed to update language resources.</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="UpdateProgress">
+                    <Value>Refreshing language resources...</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="UpdateSuccess">
+                    <Value>The language resources has been successfully updated.</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
               <LocaleResource Name="Uninstalled">
                 <Value>The plugin has been uninstalled.</Value>
               </LocaleResource>
@@ -4102,6 +4166,14 @@
                         <Children>
                           <LocaleResource Name="Required">
                             <Value>Please provide a setting name.</Value>
+                          </LocaleResource>
+                        </Children>
+                      </LocaleResource>
+                      <LocaleResource Name="StoreName">
+                        <Value>Store</Value>
+                        <Children>
+                          <LocaleResource Name="Hint">
+                            <Value>Name of the store</Value>
                           </LocaleResource>
                         </Children>
                       </LocaleResource>
@@ -4521,6 +4593,14 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Check to including when showing the number of products besides each category.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="ShowColorSquaresInLists">
+                    <Value>Show color squares in product lists</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Specifies whether the colors of the first color type attribute should be displayed in product lists</Value>
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
@@ -5334,6 +5414,9 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="CaptchaEnabledNoKeys">
+                    <Value>Captcha is enabled but the appropriate keys are not entered.</Value>
+                  </LocaleResource>
                   <LocaleResource Name="CaptchaShowOnAskQuestionPage">
                     <Value>Show on 'ask question' page</Value>
                     <Children>
@@ -5747,14 +5830,6 @@
                   <LocaleResource Name="LocalizationSettings">
                     <Value>Localization settings</Value>
                   </LocaleResource>
-                  <LocaleResource Name="NonSharedSSLUrl">
-                    <Value>Non-secured URL</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>Enter your non-secured URL (used when you have shared SSL certificate installed). Actually it is your site URL. For example, http://www.example.com/.</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
                   <LocaleResource Name="PageTitleSeoAdjustment">
                     <Value>Page title SEO adjustment</Value>
                     <Children>
@@ -5828,14 +5903,6 @@
                   <LocaleResource Name="SEOSettings">
                     <Value>SEO settings</Value>
                   </LocaleResource>
-                  <LocaleResource Name="SharedSSLUrl">
-                    <Value>Shared SSL URL</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>Enter your shared SSL URL (used when you have shared SSL certificate installed). For example, https://secure123.yourHosting.com/.</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
                   <LocaleResource Name="SocialSettings">
                     <Value>Social networks</Value>
                     <Children>
@@ -5876,14 +5943,6 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
-                  <LocaleResource Name="SSLSettings">
-                    <Value>SSL settings</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>SSL settings can also be changed in web.config file.</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
                   <LocaleResource Name="StoreClosed">
                     <Value>Store closed</Value>
                     <Children>
@@ -5903,43 +5962,11 @@
                   <LocaleResource Name="StoreInformationSettings">
                     <Value>Store information</Value>
                   </LocaleResource>
-                  <LocaleResource Name="StoreLogo">
-                    <Value>Store logo</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>Upload your store logo</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
-                  <LocaleResource Name="StoreName">
-                    <Value>Store name</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>Enter the name of your store e.g. Your Store</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
-                  <LocaleResource Name="StoreUrl">
-                    <Value>Store URL</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>The URL of your store e.g. http://www.yourstore.com/</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
                   <LocaleResource Name="UseImagesForLanguageSelection">
                     <Value>Use images for language selection</Value>
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Check if you want to use images for language selection.</Value>
-                      </LocaleResource>
-                    </Children>
-                  </LocaleResource>
-                  <LocaleResource Name="UseSSL">
-                    <Value>Use SSL</Value>
-                    <Children>
-                      <LocaleResource Name="Hint">
-                        <Value>Click if your site is secured with SSL.  Don't tick if SSL certificate is not installed.</Value>
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
@@ -6124,6 +6151,9 @@
                     </Children>
                   </LocaleResource>
                 </Children>
+              </LocaleResource>
+              <LocaleResource Name="NoneWithThatId">
+                <Value>No setting could be loaded with the specified ID.</Value>
               </LocaleResource>
               <LocaleResource Name="Order">
                 <Value>Order settings</Value>
@@ -6525,6 +6555,19 @@
                   </LocaleResource>
                 </Children>
               </LocaleResource>
+              <LocaleResource Name="StoreScope">
+                <Value>Multi-store configuration for</Value>
+                <Children>
+                  <LocaleResource Name="CheckAll">
+                    <Value>Switch all on/off</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Switch on if you want to set a custom value for this shop</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
               <LocaleResource Name="Tax">
                 <Value>Tax settings</Value>
                 <Children>
@@ -6849,6 +6892,99 @@
                     <Value>System name</Value>
                   </LocaleResource>
                 </Children>
+              </LocaleResource>
+            </Children>
+          </LocaleResource>
+          <LocaleResource Name="Stores">
+            <Value>The new store has been added successfully.</Value>
+            <Children>
+              <LocaleResource Name="Added">
+                <Value>The new store has been added successfully.</Value>
+              </LocaleResource>
+              <LocaleResource Name="AddNew">
+                <Value>Add a new store</Value>
+              </LocaleResource>
+              <LocaleResource Name="BackToList">
+                <Value>back to store list</Value>
+              </LocaleResource>
+              <LocaleResource Name="Deleted">
+                <Value>The store has been deleted successfully.</Value>
+              </LocaleResource>
+              <LocaleResource Name="EditStoreDetails">
+                <Value>Edit store details</Value>
+              </LocaleResource>
+              <LocaleResource Name="Fields">
+                <Value>Display order</Value>
+                <Children>
+                  <LocaleResource Name="DisplayOrder">
+                    <Value>Display order</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>The display order for this store. 1 represents the top of the list.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="Hosts">
+                    <Value>HOST values</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>The comma separated list of possible HTTP_POST values (for example, "yourstore.com,www.yourstore.com"). This property is required only when you have a multi-store solution to determine the current store.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="Name">
+                    <Value>Store name</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Enter the name of your store e.g. Your Store.</Value>
+                      </LocaleResource>
+                      <LocaleResource Name="Required">
+                        <Value>Please provide a name.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="SecureUrl">
+                    <Value>Secure URL</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>The secure URL of your store e.g. https://www.yourstore.com/ or http://sharedssl.yourstore.com/. Leave it empty if you want secure URL to be detected automatically.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="SslEnabled">
+                    <Value>SSL enabled</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Check if your store will be SSL secured.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="StoreLogo">
+                    <Value>Store logo</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Upload your store logo</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="Url">
+                    <Value>Store URL</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>The URL of your store e.g. http://www.yourstore.com/</Value>
+                      </LocaleResource>
+                      <LocaleResource Name="Required">
+                        <Value>Please provide a store URL.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+              <LocaleResource Name="NoStoresDefined">
+                <Value>No stores defined.</Value>
+              </LocaleResource>
+              <LocaleResource Name="Updated">
+                <Value>The store has been updated successfully.</Value>
               </LocaleResource>
             </Children>
           </LocaleResource>
@@ -7351,6 +7487,12 @@
             <Children>
               <LocaleResource Name="BackToList">
                 <Value>back to return message template list</Value>
+              </LocaleResource>
+              <LocaleResource Name="Copy">
+                <Value>Copy template</Value>
+              </LocaleResource>
+              <LocaleResource Name="Deleted">
+                <Value>The message template has been deleted successfully.</Value>
               </LocaleResource>
               <LocaleResource Name="EditMessageTemplateDetails">
                 <Value>Edit message template details</Value>
@@ -8539,6 +8681,14 @@
                   <LocaleResource Name="ShippingStatus">
                     <Value>Shipping status</Value>
                   </LocaleResource>
+                  <LocaleResource Name="Store">
+                    <Value>Store</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Name of the store.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                 </Children>
               </LocaleResource>
               <LocaleResource Name="PasswordChanged">
@@ -9651,6 +9801,14 @@
                 <Children>
                   <LocaleResource Name="Hint">
                     <Value>The status of the shipping.</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+              <LocaleResource Name="Store">
+                <Value>Store</Value>
+                <Children>
+                  <LocaleResource Name="Hint">
+                    <Value>A store name in which this order was placed.</Value>
                   </LocaleResource>
                 </Children>
               </LocaleResource>
@@ -11379,6 +11537,14 @@
                 <Children>
                   <LocaleResource Name="Hint">
                     <Value>ASP.NET info</Value>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+              <LocaleResource Name="HTTPHOST">
+                <Value>HTTP_HOST</Value>
+                <Children>
+                  <LocaleResource Name="Hint">
+                    <Value>HTTP_HOST is used when you have run a multi-store solution to determine the current store.</Value>
                   </LocaleResource>
                 </Children>
               </LocaleResource>

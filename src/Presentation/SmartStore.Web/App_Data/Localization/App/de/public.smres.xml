@@ -840,6 +840,22 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
+  <LocaleResource Name="AddProductToCompareList">
+    <Children>
+      <LocaleResource Name="CouldNotBeAdded">
+        <Value>Produkt konnte nicht hinzugefügt werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="CouldNotBeRemoved">
+        <Value>Produkt konnte nicht entfernt werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductWasAdded">
+        <Value>Das Produkt '{0}' wurde der Vergleichsliste hinzugefügt.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductWasDeleted">
+        <Value>Das Produkt '{0}' wurde von der Vergleichsliste entfernt.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
   <LocaleResource Name="Address">
     <Value>Adresse</Value>
     <Children>
@@ -2326,6 +2342,16 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
+  <LocaleResource Name="ErrorPage">
+    <Children>
+      <LocaleResource Name="Body">
+        <Value>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Title">
+        <Value>Leider ist ein interner Fehler aufgetreten.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
   <LocaleResource Name="ExampleOfNestedResources">
     <Value>Resource name will be 'ExampleOfNestedResources'</Value>
     <Children>
@@ -2739,6 +2765,62 @@
   </LocaleResource>
   <LocaleResource Name="Information">
     <Value>Informationen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Jquery">
+    <Children>
+      <LocaleResource Name="Validate">
+        <Children>
+          <LocaleResource Name="Creditcard">
+            <Value>Bitte geben Sie eine gültige Kreditkartennummer ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Date">
+            <Value>Bitte geben Sie ein gültiges Datum ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="DateISO">
+            <Value>Bitte geben Sie ein gültiges Datum (nach ISO) ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Digits">
+            <Value>Bitte geben Sie nur Ziffern ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Email">
+            <Value>Bitte geben Sie eine gültige E-Mail-Adresse ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="EqualTo">
+            <Value>Wiederholen Sie bitte die Eingabe.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Max">
+            <Value>Bitte geben Sie einen Wert kleiner oder gleich {0} ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Maxlength">
+            <Value>Bitte geben Sie nicht mehr als {0} Zeichen ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Min">
+            <Value>Bitte geben Sie einen Wert größer oder gleich {0} ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Minlength">
+            <Value>Bitte geben Sie mindestens {0} Zeichen ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Number">
+            <Value>Bitte geben Sie eine gültige Nummer ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Range">
+            <Value>Bitte geben Sie einen Wert zwischen {0} und {1} ein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Rangelength">
+            <Value>Die Länge der Eingabe darf minimal {0} und maximal {1} Zeichen lang sein.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Remote">
+            <Value>Bitte korrigieren Sie dieses Feld.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Required">
+            <Value>Diese Angabe ist erforderlich.</Value>
+          </LocaleResource>
+          <LocaleResource Name="Url">
+            <Value>Bitte geben Sie eine gültige URL ein.</Value>
+          </LocaleResource>
+        </Children>
+      </LocaleResource>
+    </Children>
   </LocaleResource>
   <LocaleResource Name="Languages">
     <Value>Sprachen</Value>
@@ -3991,6 +4073,36 @@
       </LocaleResource>
       <LocaleResource Name="Shipping">
         <Children>
+          <LocaleResource Name="ByTotal">
+            <Children>
+              <LocaleResource Name="Fields">
+                <Children>
+                  <LocaleResource Name="BaseCharge">
+                    <Value>Basisgebühr</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="MaxCharge">
+                    <Value>Max. Gebühr</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="SmallQuantitySurcharge">
+                    <Value>Mindermengenzuschlag</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="SmallQuantityThreshold">
+                    <Value>Mindermenge bis Bestellwert</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                </Children>
+              </LocaleResource>
+            </Children>
+          </LocaleResource>
           <LocaleResource Name="ByWeight">
             <Children>
               <LocaleResource Name="Fields">
@@ -4306,7 +4418,7 @@
         <Value>Bitte geben Sie Ihren Preis ein.</Value>
         <Children>
           <LocaleResource Name="Range">
-            <Value>Der Preis muss zwischen {0} to {1} liegen.</Value>
+            <Value>Der Preis muss zwischen {0} und {1} liegen.</Value>
           </LocaleResource>
         </Children>
       </LocaleResource>

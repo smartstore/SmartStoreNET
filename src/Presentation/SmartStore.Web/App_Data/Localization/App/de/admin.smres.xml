@@ -2811,7 +2811,7 @@
             <Value>Store</Value>
             <Children>
               <LocaleResource Name="AvailableFor">
-                <Value>Stores</Value>
+                <Value>Shops</Value>
                 <Children>
                   <LocaleResource Name="Hint">
                     <Value>Bitte Shops auswählen, für die der Eintrag angezeigt werden soll.</Value>
@@ -5317,16 +5317,16 @@
                 </Children>
               </LocaleResource>
               <LocaleResource Name="General">
-                <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit.</Value>
+                <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit. reCaptcha Konten können über http://www.google.com/recaptcha angelegt werden.</Value>
                 <Children>
                   <LocaleResource Name="Common">
-                    <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit.</Value>
+                    <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit. reCaptcha Konten können über http://www.google.com/recaptcha angelegt werden.</Value>
                     <Children>
                       <LocaleResource Name="Captcha">
-                        <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit.</Value>
+                        <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit. reCaptcha Konten können über http://www.google.com/recaptcha angelegt werden.</Value>
                         <Children>
                           <LocaleResource Name="Hint">
-                            <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit.</Value>
+                            <Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit. reCaptcha Konten können über http://www.google.com/recaptcha angelegt werden.</Value>
                           </LocaleResource>
                         </Children>
                       </LocaleResource>
@@ -8682,7 +8682,7 @@
                     <Value>Versandstatus</Value>
                   </LocaleResource>
                   <LocaleResource Name="Store">
-                    <Value>Store</Value>
+                    <Value>Shop</Value>
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Name des Shops.</Value>
@@ -9805,7 +9805,7 @@
                 </Children>
               </LocaleResource>
               <LocaleResource Name="Store">
-                <Value>Store</Value>
+                <Value>Shop</Value>
                 <Children>
                   <LocaleResource Name="Hint">
                     <Value>Name des Shops für diese Bestellung.</Value>

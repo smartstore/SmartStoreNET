@@ -265,11 +265,78 @@ set @resources='
 	<T>Zeige Lieferzeiten</T>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint">
-    <Value>Detemines whether delivery times should be display on product detail page.</Value>
+    <Value>Determines whether delivery times should be display on product detail page.</Value>
 	<T>Bestimmt ob Lieferzeitinformationen auf der Produktdetailseite angezeigt werden.</T>
   </LocaleResource>
   
 
+  <LocaleResource Name="Jquery.Validate.Email">
+    <Value>Please enter a valid email address.</Value>
+	<T>Bitte geben Sie eine gültige E-Mail-Adresse ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Required">
+    <Value>This field is required.</Value>
+	<T>Diese Angabe ist erforderlich.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Remote">
+    <Value>Please fix this field.</Value>
+	<T>Bitte korrigieren Sie dieses Feld.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Url">
+    <Value>Please enter a valid URL.</Value>
+	<T>Bitte geben Sie eine gültige URL ein.</T>
+  </LocaleResource>
+ <LocaleResource Name="Jquery.Validate.Date">
+    <Value>Please enter a valid date.</Value>
+	<T>Bitte geben Sie ein gültiges Datum ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.DateISO">
+    <Value>Please enter a valid date (ISO).</Value>
+	<T>Bitte geben Sie ein gültiges Datum (nach ISO) ein.</T>
+  </LocaleResource>
+ <LocaleResource Name="Jquery.Validate.Number">
+    <Value>Please enter a valid number.</Value>
+	<T>Bitte geben Sie eine gültige Nummer ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Digits">
+    <Value>Please enter only digits.</Value>
+	<T>Bitte geben Sie nur Ziffern ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Creditcard">
+    <Value>Please enter a valid credit card number.</Value>
+	<T>Bitte geben Sie eine gültige Kreditkartennummer ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.EqualTo">
+    <Value>Please enter the same value again.</Value>
+	<T>Wiederholen Sie bitte die Eingabe.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Maxlength">
+    <Value>Please enter no more than {0} characters.</Value>
+	<T>Bitte geben Sie nicht mehr als {0} Zeichen ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Minlength">
+    <Value>Please enter at least {0} characters.</Value>
+	<T>Bitte geben Sie mindestens {0} Zeichen ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Rangelength">
+    <Value>Please enter a value between {0} and {1} characters long.</Value>
+	<T>Die Länge der Eingabe darf minimal {0} und maximal {1} Zeichen lang sein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Range">
+    <Value>Please enter a value between {0} and {1}.</Value>
+	<T>Bitte geben Sie einen Wert zwischen {0} und {1} ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Max">
+    <Value>Please enter a value less than or equal to {0}.</Value>
+	<T>Bitte geben Sie einen Wert kleiner oder gleich {0} ein.</T>
+  </LocaleResource>
+  <LocaleResource Name="Jquery.Validate.Min">
+    <Value>Please enter a value greater than or equal to {0}.</Value>
+	<T>Bitte geben Sie einen Wert größer oder gleich {0} ein.</T>
+  </LocaleResource>
+  
+  
+  
 </Language>
 '
 

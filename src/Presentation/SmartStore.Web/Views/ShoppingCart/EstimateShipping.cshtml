@@ -5,9 +5,7 @@
     <script type="text/javascript">
         $(function () {
             $("#@Html.FieldIdFor(model => model.CountryId)").change(function () {
-                var selectedItem = $(this).val();
-                if (!selectedItem)
-                    return;
+                var selectedItem = $(this).val() || 0;
 
                 var ddlStates = $("#@Html.FieldIdFor(model => model.StateProvinceId)");
                 var estimateBox = $(this).closest(".estimate-shipping");
@@ -22,7 +20,7 @@
                     cache: false,
                     type: "GET",
                     url: "@(Url.RouteUrl("GetStatesByCountryId"))",
-                    data: { "countryId": selectedItem, "addEmptyStateIfRequired": "true" },
+                    data: { "countryId": selectedItem, "addEmptyStateIfRequired": "false" },
                     success: function (data) {
                         ddlStates.html('');
                         $.each(data, function (id, option) {

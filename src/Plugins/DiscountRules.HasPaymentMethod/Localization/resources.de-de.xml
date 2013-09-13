@@ -3,9 +3,9 @@
     <Value>Der Kunde hat eine bestimmte Zahlungsmethode ausgewählt</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PaymentMethods">
-    <Value>Zahlungsmethoden (Systemnamen)</Value>
+    <Value>Zahlungsmethoden</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PaymentMethods.Hint">
-    <Value>Kommagetrennte Liste der Systemnamen von Zahlungsmethoden (z.B. Payments.PayPalDirect, Payments.Sofortueberweisung). Sie finden den Systemnamen einer Zahlungsmethode in der Plugin-Liste.</Value>
+    <Value>Ein oder mehrere Zahlungsmethoden, bei denen der Rabatt gewährt wird.</Value>
   </LocaleResource>
 </Language>

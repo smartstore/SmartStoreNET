@@ -3,9 +3,9 @@
     <Value>Customer has selected payment method</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PaymentMethods">
-		<Value>Payment methods (system names)</Value>
+		<Value>Payment methods</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PaymentMethods.Hint">
-		<Value>The comma-separated list of system names of payment methods (e.g. Payments.PayPalDirect, Payments.Sofortueberweisung). You can find the payment method's system name in the list of plugins.</Value>
+		<Value>One or more payment methods in which the discount is granted.</Value>
   </LocaleResource>
 </Language>

@@ -3,6 +3,7 @@
 }
 @model SmartStore.Plugin.DiscountRules.HasPaymentMethod.Models.RequirementModel
 @using SmartStore.Web.Framework;
+@using SmartStore;
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -15,7 +16,7 @@
                 cache:false,
                 type: "POST",
                 url: "@(Url.Action("Configure", "DiscountRulesHasPaymentMethod"))",
-            	data: { "discountId": discountId, "discountRequirementId": requirementId, "paymentMethods": paymentMethods },
+            	data: { "discountId": discountId, "discountRequirementId": requirementId, "paymentMethods": paymentMethods ? paymentMethods.join() : '' },
                 success: function (data) {
                         $('#pnl-save-requirement-result@(Model.RequirementId)').fadeIn("slow").delay(1000).fadeOut("slow");
                         //notify parent if it's a new requirement
@@ -28,7 +29,10 @@
                     alert('@T("Admin.Promotions.Discounts.Requirements.FailedToSave")')
                 }  
             });
-        });
+    	});
+
+    	var selectedPaymentMethods = '@Model.PaymentMethods.EmptyNull()'.split(',');
+    	$("#@Html.FieldIdFor(model => model.PaymentMethods)").select2().select2('val', selectedPaymentMethods);
     });
 </script>
     
@@ -39,8 +43,8 @@
     </td>
     <td class="adminData">
         <div>
-			@Html.EditorFor(model => model.PaymentMethods)
-			<button type="button" name="savehaspaymentmethodrequirement@(Model.RequirementId)" id="savehaspaymentmethodrequirement@(Model.RequirementId)" class="btn">
+			@Html.DropDownListFor(model => model.PaymentMethods, Model.AvailablePaymentMethods, null, new { multiple = "multiple" })
+			<button type="button" name="savehaspaymentmethodrequirement@(Model.RequirementId)" id="savehaspaymentmethodrequirement@(Model.RequirementId)" class="btn" style="margin-top:3px;">
 				@T("Admin.Common.Save")
 			</button>
         </div>

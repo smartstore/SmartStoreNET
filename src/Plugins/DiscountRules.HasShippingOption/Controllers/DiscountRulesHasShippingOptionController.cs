@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Plugin.DiscountRules.HasShippingOption.Models;
 using SmartStore.Services.Discounts;
+using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Plugin.DiscountRules.HasShippingOption.Controllers
@@ -12,10 +14,13 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption.Controllers
     public class DiscountRulesHasShippingOptionController : PluginControllerBase
     {
         private readonly IDiscountService _discountService;
+		private readonly IShippingService _shippingService;
 
-		public DiscountRulesHasShippingOptionController(IDiscountService discountService)
+		public DiscountRulesHasShippingOptionController(IDiscountService discountService,
+			IShippingService shippingService)
         {
             this._discountService = discountService;
+			this._shippingService = shippingService;
         }
 
         public ActionResult Configure(int discountId, int? discountRequirementId)
@@ -35,9 +40,29 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption.Controllers
             var model = new RequirementModel();
             model.RequirementId = discountRequirementId ?? 0;
             model.DiscountId = discountId;
+			model.AvailableShippingMethods = new List<SelectListItem>();
 
-			if (discountRequirement != null)
+			var shippingMethods = _shippingService.GetAllShippingMethods().ToList();
+			int[] restrictedShippingOptions = null;
+
+			if (discountRequirement != null && discountRequirement.RestrictedShippingOptions != null)
+			{
 				model.ShippingOptions = discountRequirement.RestrictedShippingOptions;
+
+				restrictedShippingOptions = discountRequirement.RestrictedShippingOptions.ToIntArray();
+			}
+
+			foreach (var method in shippingMethods)
+			{
+				var item = new SelectListItem()
+				{
+					Text = method.Name,
+					Value = method.Id.ToString(),
+					Selected = (restrictedShippingOptions != null && restrictedShippingOptions.Contains(method.Id))
+				};
+
+				model.AvailableShippingMethods.Add(item);
+			}
 
             //add a prefix
 			ViewData.TemplateInfo.HtmlFieldPrefix = "DiscountRulesHasShippingOption{0}".FormatWith(model.RequirementId);

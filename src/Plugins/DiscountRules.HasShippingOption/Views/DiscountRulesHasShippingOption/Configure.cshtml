@@ -3,6 +3,7 @@
 }
 @model SmartStore.Plugin.DiscountRules.HasShippingOption.Models.RequirementModel
 @using SmartStore.Web.Framework;
+@using SmartStore;
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -15,7 +16,7 @@
                 cache:false,
                 type: "POST",
                 url: "@(Url.Action("Configure", "DiscountRulesHasShippingOption"))",
-            	data: { "discountId": discountId, "discountRequirementId": requirementId, "shippingOptions": shippingOptions },
+            	data: { "discountId": discountId, "discountRequirementId": requirementId, "shippingOptions": shippingOptions ? shippingOptions.join() : '' },
                 success: function (data) {
                         $('#pnl-save-requirement-result@(Model.RequirementId)').fadeIn("slow").delay(1000).fadeOut("slow");
                         //notify parent if it's a new requirement
@@ -28,7 +29,10 @@
                     alert('@T("Admin.Promotions.Discounts.Requirements.FailedToSave")')
                 }  
             });
-        });
+    	});
+
+    	var selectedShippingMethods = '@Model.ShippingOptions.EmptyNull()'.split(',');
+    	$("#@Html.FieldIdFor(model => model.ShippingOptions)").select2().select2('val', selectedShippingMethods);
     });
 </script>
     
@@ -39,8 +43,8 @@
     </td>
     <td class="adminData">
         <div>
-			@Html.EditorFor(model => model.ShippingOptions)
-			<button type="button" name="savehasshippingoptionrequirement@(Model.RequirementId)" id="savehasshippingoptionrequirement@(Model.RequirementId)" class="btn">
+			@Html.DropDownListFor(model => model.ShippingOptions, Model.AvailableShippingMethods, null, new { multiple = "multiple" })
+			<button type="button" name="savehasshippingoptionrequirement@(Model.RequirementId)" id="savehasshippingoptionrequirement@(Model.RequirementId)" class="btn" style="margin-top:3px;">
 				@T("Admin.Common.Save")
 			</button>
         </div>

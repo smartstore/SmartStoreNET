@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Shipping;
 
 namespace SmartStore.Plugin.DiscountRules.HasShippingOption
 {
@@ -13,13 +15,16 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
 
 		public HasShippingOptionDiscountRequirementRule(
 			ILocalizationService localizationService,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService,
+			IRepository<ShippingMethod> shippingMethodRepository)
         {
             _localizationService = localizationService;
 			_genericAttributeService = genericAttributeService;
+			_shippingMethodRepository = shippingMethodRepository;
         }
 
         /// <summary>
@@ -41,16 +46,23 @@ namespace SmartStore.Plugin.DiscountRules.HasShippingOption
 			if (string.IsNullOrWhiteSpace(request.DiscountRequirement.RestrictedShippingOptions))
 				return false;
 
-			var discountShippingOptions = request.DiscountRequirement.RestrictedShippingOptions
-				.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+			var discountShippingOptions = request.DiscountRequirement.RestrictedShippingOptions.ToIntArray();
+
+			if (discountShippingOptions.Count() <= 0)
+				return false;
 
 			var selectedShippingOption = request.Customer.GetAttribute<ShippingOption>(
 				SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, request.Store.Id);
 
-			if (selectedShippingOption == null || selectedShippingOption.Name.IsNullOrEmpty() || discountShippingOptions.Count <= 0)
+			if (selectedShippingOption == null || selectedShippingOption.Name.IsNullOrEmpty())
 				return false;
 
-			return discountShippingOptions.Exists(x => x.IsCaseInsensitiveEqual(selectedShippingOption.Name));
+			var selectedShippingMethod = _shippingMethodRepository.Table.FirstOrDefault(x => x.Name == selectedShippingOption.Name);
+
+			if (selectedShippingMethod == null)
+				return false;
+
+			return discountShippingOptions.Exists(x => x == selectedShippingMethod.Id);
         }
 
         /// <summary>

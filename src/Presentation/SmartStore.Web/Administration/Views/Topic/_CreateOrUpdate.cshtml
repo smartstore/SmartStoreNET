@@ -8,7 +8,11 @@
     $(document).ready(function () {
         $("#@Html.FieldIdFor(model => model.IsPasswordProtected)").click(togglePassword);
         togglePassword();
+
+        $("#@Html.FieldIdFor(model => model.RenderAsWidget)").click(toggleRenderAsWidget);
+        toggleRenderAsWidget();
     });
+
     function togglePassword() {
         if ($('#@Html.FieldIdFor(model => model.IsPasswordProtected)').is(':checked')) {
             $('#pnlPasswordEnabled').show();
@@ -16,7 +20,23 @@
         else {
             $('#pnlPasswordEnabled').hide();
         }
-    }       
+    }
+
+    function toggleRenderAsWidget() {
+        if ($('#@Html.FieldIdFor(model => model.RenderAsWidget)').is(':checked')) {
+            $('#pnlWidgetZone').show();
+            $('#pnlWidgetShowTitle').show();
+            $('#pnlWidgetBordered').show();
+            $('#pnlPriority').show();
+        }
+        else {
+            $('#pnlWidgetZone').hide();
+            $('#pnlWidgetShowTitle').hide();
+            $('#pnlWidgetBordered').hide();
+            $('#pnlPriority').hide();
+        }
+    }
+
 </script>
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("topic-edit").Items(x =>
@@ -78,7 +98,60 @@
                 </td>
             </tr>
         }
+        <tr>
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RenderAsWidget)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.RenderAsWidget)
+                @Html.ValidationMessageFor(model => model.RenderAsWidget)
+            </td>
+        </tr>
+        <tr id="pnlWidgetZone">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.WidgetZone)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(x => x.WidgetZone, new { @style = "width:95%" })
+                @Html.ValidationMessageFor(model => model.WidgetZone)
+            </td>
+        </tr>
+        <tr id="pnlWidgetShowTitle">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.WidgetShowTitle)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.WidgetShowTitle)
+                @Html.ValidationMessageFor(model => model.WidgetShowTitle)
+            </td>
+        </tr>
+        <tr id="pnlWidgetBordered">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.WidgetBordered)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.WidgetBordered)
+                @Html.ValidationMessageFor(model => model.WidgetBordered)
+            </td>
+        </tr>
+        <tr id="pnlPriority">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Priority)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.Priority)
+                @Html.ValidationMessageFor(model => model.Priority)
+            </td>
+        </tr>
     </table>
+    
+    <br />
+        
     @(Html.LocalizedEditor<TopicModel, TopicLocalizedModel>("topic-info-localized",
                 @<table class="adminContent">
                     <tr>

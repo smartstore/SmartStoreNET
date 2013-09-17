@@ -107,7 +107,7 @@ namespace SmartStore.Services.Topics
 		public virtual IList<Topic> GetAllTopics(int storeId)
         {
 			var query = _topicRepository.Table;
-			query = query.OrderBy(t => t.SystemName);
+			query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
 
 			//Store mapping
 			if (storeId > 0)

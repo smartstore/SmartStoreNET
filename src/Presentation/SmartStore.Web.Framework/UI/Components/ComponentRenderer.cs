@@ -84,45 +84,7 @@ namespace SmartStore.Web.Framework.UI
 
         protected string SanitizeId(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return null;
-            }
-            StringBuilder builder = new StringBuilder(id.Length);
-            int index = id.IndexOf("#");
-            int num2 = id.LastIndexOf("#");
-            if (num2 > index)
-            {
-                ReplaceInvalidCharacters(id.Substring(0, index), builder);
-                builder.Append(id.Substring(index, (num2 - index) + 1));
-                ReplaceInvalidCharacters(id.Substring(num2 + 1), builder);
-            }
-            else
-            {
-                ReplaceInvalidCharacters(id, builder);
-            }
-            return builder.ToString();
-        }
-
-        private static bool IsValidCharacter(char c)
-        {
-            return (((c != '?') && (c != '!')) && ((c != '#') && (c != '.')));
-        }
-
-        private static void ReplaceInvalidCharacters(string part, StringBuilder builder)
-        {
-            for (int i = 0; i < part.Length; i++)
-            {
-                char c = part[i];
-                if (IsValidCharacter(c))
-                {
-                    builder.Append(c);
-                }
-                else
-                {
-                    builder.Append(HtmlHelper.IdAttributeDotReplacement);
-                }
-            }
+            return id.SanitizeHtmlId();
         }
 
     }

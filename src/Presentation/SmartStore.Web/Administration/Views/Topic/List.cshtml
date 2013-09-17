@@ -54,6 +54,13 @@
                             .Template(item => @Html.SymbolForBool(item.IncludeInSitemap))
                             .ClientTemplate(@Html.SymbolForBool("IncludeInSitemap"))
                             .Centered();
+                        columns.Bound(x => x.RenderAsWidget)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.RenderAsWidget))
+                            .ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
+                            .Centered();
+                        columns.Bound(x => x.WidgetZone);
+                        columns.Bound(x => x.Priority);
                         columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()

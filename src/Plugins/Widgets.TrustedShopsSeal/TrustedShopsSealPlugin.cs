@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Cms;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
@@ -13,11 +14,13 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
     {
         private readonly TrustedShopsSealSettings _trustedShopsSealSettings;
         private readonly ILocalizationService _localizationService;
+		private readonly ISettingService _settingService;
 
-        public TrustedShopsSealPlugin(TrustedShopsSealSettings trustedShopsSealSettings, ILocalizationService localizationService)
+		public TrustedShopsSealPlugin(TrustedShopsSealSettings trustedShopsSealSettings, ILocalizationService localizationService, ISettingService settingService)
         {
             _trustedShopsSealSettings = trustedShopsSealSettings;
             _localizationService = localizationService;
+			_settingService = settingService;
         }
 
         /// <summary>
@@ -81,6 +84,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
             //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
             _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Widgets.TrustedShopsSeal", false);
+
+			_settingService.DeleteSetting<TrustedShopsSealSettings>();
 
             base.Uninstall();
         }

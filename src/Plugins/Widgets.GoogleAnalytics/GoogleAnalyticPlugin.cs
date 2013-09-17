@@ -110,6 +110,8 @@ _gaq.push(['_trackTrans']); ",
             //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
             _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Widgets.GoogleAnalytics", false);
+
+			_settingService.DeleteSetting<GoogleAnalyticsSettings>();
             
             base.Uninstall();
         }

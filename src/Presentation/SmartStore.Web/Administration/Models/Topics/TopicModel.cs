@@ -12,10 +12,27 @@ namespace SmartStore.Admin.Models.Topics
     [Validator(typeof(TopicValidator))]
     public class TopicModel : EntityModelBase, ILocalizedModel<TopicLocalizedModel>
     {
+        #region widget zone names
+        private readonly static string[] s_widgetZones = new string[] { 
+            "main_column_before", 
+            "main_column_after", 
+            "left_side_column_before", 
+            "left_side_column_before", 
+            "right_side_column_before", 
+            "right_side_column_before", 
+            "notifications", 
+            "body_start_html_tag_after",
+            "content_before", 
+            "content_after", 
+            "body_end_html_tag_before"
+        };
+        #endregion
+        
         public TopicModel()
         {
             Locales = new List<TopicLocalizedModel>();
 			AvailableStores = new List<StoreModel>();
+            AvailableWidgetZones = s_widgetZones;
         }
 
         //Store mapping
@@ -61,7 +78,24 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
-        
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
+        public bool RenderAsWidget { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
+        public string WidgetZone { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetShowTitle")]
+        public bool WidgetShowTitle { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetBordered")]
+        public bool WidgetBordered { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Priority")]
+        public int Priority { get; set; }
+
+        public string[] AvailableWidgetZones { get; private set; }
+
         public IList<TopicLocalizedModel> Locales { get; set; }
     }
 

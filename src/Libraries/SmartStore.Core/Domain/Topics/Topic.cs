@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 
@@ -57,5 +60,44 @@ namespace SmartStore.Core.Domain.Topics
 		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
 		/// </summary>
 		public bool LimitedToStores { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the topic should also be rendered as a generic html widget
+        /// </summary>
+        public bool RenderAsWidget { get; set; }
+
+        /// <summary>
+        /// Gets or sets the widget zone name
+        /// </summary>
+        public string WidgetZone { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the title should be displayed in the widget block
+        /// </summary>
+        public bool WidgetShowTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the widget block should have borders
+        /// </summary>
+        public bool WidgetBordered { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sort order (relevant for widgets)
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
+        /// Helper function which gets the comma-separated <c>WidgetZone</c> property as list of strings
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetWidgetZones()
+        {
+            if (this.WidgetZone.IsEmpty())
+            {
+                return Enumerable.Empty<string>();
+            }
+            
+            return this.WidgetZone.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
+        }
     }
 }

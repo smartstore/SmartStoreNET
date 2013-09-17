@@ -335,7 +335,26 @@ set @resources='
 	<T>Bitte geben Sie einen Wert größer oder gleich {0} ein.</T>
   </LocaleResource>
   
-  
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.RenderAsWidget">
+    <Value>Render as HTML widget</Value>
+	<T>Als HTML Widget darstellen</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone">
+    <Value>Widget zone</Value>
+	<T>Widget Zone</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle">
+    <Value>Show title</Value>
+	<T>Titel anzeigen</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetBordered">
+    <Value>Render bordered</Value>
+	<T>Widget umrahmen</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Priority">
+    <Value>Priority</Value>
+	<T>Sortierung</T>
+  </LocaleResource>
   
 </Language>
 '
@@ -481,6 +500,37 @@ BEGIN
 	BEGIN
 		ALTER TABLE ShippingByTotal ADD MaxCharge decimal(18,2) NULL
 	END
+END
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='RenderAsWidget')
+BEGIN
+	ALTER TABLE Topic ADD RenderAsWidget bit NOT NULL DEFAULT 0
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='WidgetZone')
+BEGIN
+	ALTER TABLE Topic ADD WidgetZone [nvarchar](max) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='WidgetShowTitle')
+BEGIN
+	ALTER TABLE Topic ADD WidgetShowTitle bit NOT NULL DEFAULT 1
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='WidgetBordered')
+BEGIN
+	ALTER TABLE Topic ADD WidgetBordered bit NOT NULL DEFAULT 1
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Topic]') and NAME='Priority')
+BEGIN
+	ALTER TABLE Topic ADD Priority int NOT NULL DEFAULT 0
 END
 GO
 

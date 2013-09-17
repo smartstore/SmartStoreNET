@@ -856,6 +856,49 @@ namespace SmartStore
 			return (res.Length > 0 ? res : "null");
 		}
 
+        public static string SanitizeHtmlId(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+            StringBuilder builder = new StringBuilder(value.Length);
+            int index = value.IndexOf("#");
+            int num2 = value.LastIndexOf("#");
+            if (num2 > index)
+            {
+                ReplaceInvalidHtmlIdCharacters(value.Substring(0, index), builder);
+                builder.Append(value.Substring(index, (num2 - index) + 1));
+                ReplaceInvalidHtmlIdCharacters(value.Substring(num2 + 1), builder);
+            }
+            else
+            {
+                ReplaceInvalidHtmlIdCharacters(value, builder);
+            }
+            return builder.ToString();
+        }
+
+        private static bool IsValidHtmlIdCharacter(char c)
+        {
+            return (((c != '?') && (c != '!')) && ((c != '#') && (c != '.')) && (c != ' '));
+        }
+
+        private static void ReplaceInvalidHtmlIdCharacters(string part, StringBuilder builder)
+        {
+            for (int i = 0; i < part.Length; i++)
+            {
+                char c = part[i];
+                if (IsValidHtmlIdCharacter(c))
+                {
+                    builder.Append(c);
+                }
+                else
+                {
+                    builder.Append('_');
+                }
+            }
+        }
+
 		public static string Sha(this string value) 
         {
 			if (value.HasValue()) 

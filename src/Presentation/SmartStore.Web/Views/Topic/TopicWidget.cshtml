@@ -1,0 +1,17 @@
+﻿@model TopicWidgetModel
+@using SmartStore.Web.Models.Topics;
+
+@{
+    Layout = "";
+}
+
+<div class="block @(Model.IsBordered ? "block-bordered" : "") topic-widget topic-widget-@Model.SystemName">
+    @if (Model.ShowTitle) {
+        <div class="block-title">
+            @Html.Raw(Model.Title)
+        </div>
+    }
+    <div class="block-body">
+        @Html.Raw(Model.Html)
+    </div>
+</div>

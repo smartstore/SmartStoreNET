@@ -226,6 +226,19 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string TOPIC_PATTERN_KEY = "sm.pres.topic.details";
 
         /// <summary>
+        /// Key for TopicWidget caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : widget zone
+        /// {1} : store id
+        /// {2} : language id
+        /// </remarks>
+        public const string TOPIC_WIDGET_PATTERN_KEY        = "sm.pres.topic.widget";
+        public const string TOPIC_WIDGET_ALL_MODEL_KEY      = "sm.pres.topic.widget-all-{0}";
+        public const string TOPIC_WIDGET_BYZONE_PATTERN_KEY = "sm.pres.topic.widget-byzone";
+        public const string TOPIC_WIDGET_BYZONE_MODEL_KEY   = "sm.pres.topic.widget-byzone-{0}-{1}-{2}";
+
+        /// <summary>
         /// Key for CategoryTemplate caching
         /// </summary>
         /// <remarks>
@@ -441,6 +454,7 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_SPECS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(TOPIC_WIDGET_BYZONE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
@@ -454,6 +468,7 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_SPECS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(TOPIC_WIDGET_BYZONE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
@@ -660,14 +675,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         //Topics
         public void HandleEvent(EntityInserted<Topic> eventMessage)
         {
+            _cacheManager.RemoveByPattern(TOPIC_WIDGET_PATTERN_KEY);
         }
         public void HandleEvent(EntityUpdated<Topic> eventMessage)
         {
             _cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(TOPIC_WIDGET_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<Topic> eventMessage)
         {
             _cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+            _cacheManager.RemoveByPattern(TOPIC_WIDGET_PATTERN_KEY);
         }
         
         //Category templates

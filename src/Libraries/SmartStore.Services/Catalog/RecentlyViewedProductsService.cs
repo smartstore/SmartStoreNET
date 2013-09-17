@@ -91,9 +91,12 @@ namespace SmartStore.Services.Catalog
         {
             var products = new List<Product>();
             var productIds = GetRecentlyViewedProductsIds(number);
-            foreach (var product in _productService.GetProductsByIds(productIds.ToArray()))
-                if (product.Published && !product.Deleted)
-                    products.Add(product);
+            var recentlyViewedProducts = _productService.GetProductsByIds(productIds.ToArray()).Where(x => x.Published && !x.Deleted);
+
+            foreach (var product in recentlyViewedProducts)
+            {
+                products.Add(product);
+            }
             return products;
         }
 

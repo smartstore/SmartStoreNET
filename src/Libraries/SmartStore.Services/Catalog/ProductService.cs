@@ -254,8 +254,10 @@ namespace SmartStore.Services.Catalog
                         where productIds.Contains(p.Id)
                         select p;
             var products = query.ToList();
+
             //sort by passed identifiers
             var sortedProducts = new List<Product>();
+            sortedProducts.AddRange(products);
             foreach (int id in productIds)
             {
                 var product = products.Find(x => x.Id == id);

@@ -24,6 +24,15 @@
             @Html.EditorFor(model => Model.SearchCategoryName)
         </td>
     </tr>
+	@*codehint: sm-add*@
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchAlias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.SearchAlias)
+        </td>
+    </tr>
     <tr>
         <td colspan="2">
             <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
@@ -44,6 +53,7 @@
 
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+						columns.Bound(x => x.Alias);
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))
@@ -76,7 +86,7 @@
             return false;
         });
 
-        $("#@Html.FieldIdFor(model => model.SearchCategoryName)").keydown(function (event) {
+        $("#@Html.FieldIdFor(model => model.SearchCategoryName), #@Html.FieldIdFor(model => model.SearchAlias)").keydown(function (event) {
             if (event.keyCode == 13) {
                 $("#btnSearch").click();
                 return false;
@@ -86,7 +96,8 @@
 
     function onDataBinding(e) {
         var searchModel = {
-            SearchCategoryName: $('#@Html.FieldIdFor(model => model.SearchCategoryName)').val()
+        	SearchCategoryName: $('#@Html.FieldIdFor(model => model.SearchCategoryName)').val(),
+        	SearchAlias: $('#@Html.FieldIdFor(model => model.SearchAlias)').val()
         };
         e.data = searchModel;
     }

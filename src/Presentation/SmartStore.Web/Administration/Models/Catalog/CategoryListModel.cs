@@ -11,6 +11,10 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SearchCategoryName { get; set; }
 
+		/// <remarks>codehint: sm-add</remarks>
+		[SmartResourceDisplayName("Admin.Catalog.Categories.List.SearchAlias")]
+		public string SearchAlias { get; set; }
+
         public GridModel<CategoryModel> Categories { get; set; }
     }
 }

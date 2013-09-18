@@ -22,9 +22,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="alias">Alias to be filtered</param>
         /// <returns>Categories</returns>
         IPagedList<Category> GetAllCategories(string categoryName = "",
-            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null);
 
         /// <summary>
         /// Gets all categories filtered by parent category identifier

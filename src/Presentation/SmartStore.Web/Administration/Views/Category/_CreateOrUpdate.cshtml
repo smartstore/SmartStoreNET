@@ -65,6 +65,16 @@
                 </table>
 			))
     <table class="adminContent">
+		@* codehint: sm-edit *@
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Alias)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Alias)
+                @Html.ValidationMessageFor(model => model.Alias)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CategoryTemplateId)

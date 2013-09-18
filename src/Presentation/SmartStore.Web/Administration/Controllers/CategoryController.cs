@@ -295,7 +295,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var categories = _categoryService.GetAllCategories(model.SearchCategoryName, 
-                command.Page - 1, command.PageSize, true);
+                command.Page - 1, command.PageSize, true, model.SearchAlias);
             var gridModel = new GridModel<CategoryModel>
             {
                 Data = categories.Select(x =>

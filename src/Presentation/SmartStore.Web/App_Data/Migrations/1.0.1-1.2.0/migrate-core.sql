@@ -356,6 +356,23 @@ set @resources='
 	<T>Sortierung</T>
   </LocaleResource>
   
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.Alias">
+    <Value>Alias</Value>
+	<T>Alias</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.Fields.Alias.Hint">
+    <Value>An optional, language-neutral reference name for internal use</Value>
+	<T>Ein optionaler, sprachneutraler Referenzwert für interne Zwecke</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.List.SearchAlias">
+    <Value>Alias</Value>
+	<T>Alias</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Categories.List.SearchAlias.Hint">
+    <Value>The alias to be filtered</Value>
+	<T>Der Alias, nach dem gefiltert werden soll</T>
+  </LocaleResource>  
+  
 </Language>
 '
 
@@ -534,3 +551,9 @@ BEGIN
 END
 GO
 
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Category]') and NAME='Alias')
+BEGIN
+	ALTER TABLE [Category] ADD [Alias] nvarchar(100) NULL
+END
+GO

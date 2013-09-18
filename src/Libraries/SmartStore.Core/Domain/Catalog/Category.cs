@@ -29,6 +29,13 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public string Description { get; set; }
 
+		/// <summary>
+		/// Gets or sets the category alias 
+		/// (an optional key for advanced customization)
+		/// </summary>
+		/// <remarks>codehint: sm-add</remarks>
+		public string Alias { get; set; }
+
         /// <summary>
         /// Gets or sets a value of used category template identifier
         /// </summary>

@@ -108,14 +108,19 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="alias">Alias to be filtered</param>
         /// <returns>Categories</returns>
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+		/// <remarks>codehint: sm-edit</remarks>
+        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false,
+			string alias = null)
         {
             var query = _categoryRepository.Table;
             if (!showHidden)
                 query = query.Where(c => c.Published);
             if (!String.IsNullOrWhiteSpace(categoryName))
                 query = query.Where(c => c.Name.Contains(categoryName));
+			if (!String.IsNullOrWhiteSpace(alias))
+				query = query.Where(c => c.Alias.Contains(alias));
             query = query.Where(c => !c.Deleted);
             query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
             

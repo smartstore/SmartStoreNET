@@ -1,5 +1,6 @@
 ﻿@model IList<SmartStore.Core.Domain.Catalog.Category>
 @using Telerik.Web.Mvc.UI;
+@using SmartStore.Services.Catalog;
 @{
     var categoryService = EngineContext.Current.Resolve<SmartStore.Services.Catalog.ICategoryService>();
     
@@ -18,11 +19,12 @@
 <table class="adminContent">
     <tr>
         <td>
+			@*codehint: sm-edit*@
             @(Html.Telerik().TreeView()
         .Name("category-treeview")
         .BindTo(Model, (item, category) =>
         {
-            item.Text = category.Name;
+			item.Text = category.GetCategoryTreeName();
             item.Value = category.Id.ToString();
             item.LoadOnDemand = categoryService.GetAllCategoriesByParentCategoryId(category.Id, true).Count > 0;
             item.Enabled = true;

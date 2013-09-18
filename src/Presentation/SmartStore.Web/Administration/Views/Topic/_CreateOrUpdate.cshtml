@@ -117,7 +117,7 @@
                 @Html.SmartLabelFor(model => model.WidgetZone)
             </td>
             <td class="adminData">
-                @Html.TextBoxFor(x => x.WidgetZone, new { @style = "width:95%" })
+                @Html.EditorFor(model => model.WidgetZone, "WidgetZone")
                 @Html.ValidationMessageFor(model => model.WidgetZone)
             </td>
         </tr>

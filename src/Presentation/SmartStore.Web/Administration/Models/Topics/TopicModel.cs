@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
@@ -83,6 +84,7 @@ namespace SmartStore.Admin.Models.Topics
         public bool RenderAsWidget { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
+        [UIHint("WidgetZone")]
         public string WidgetZone { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetShowTitle")]

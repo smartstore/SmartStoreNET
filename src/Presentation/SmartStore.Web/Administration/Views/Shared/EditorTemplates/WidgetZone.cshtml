@@ -1,0 +1,44 @@
+@model string
+
+@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+
+    string availableZones = "";
+    if (ViewData.ContainsKey("AvailableZones")) 
+    {
+        availableZones = (ViewData["AvailableZones"] as string) ?? "";
+    }
+}
+
+<input type="hidden" id="@id" name="@name" class="widgetzone-chooser" value="@Model" data-available-zones="@availableZones" style="min-width: 350px" />
+
+<script>
+    $(function () {
+        var zoneChooser = $("#@id"),
+            zones;
+
+        if (zoneChooser.data("available-zones")) {
+            zones = _.map(zoneChooser.data("available-zones").split(",") /*list*/, function (val) { return _.str.trim(val) } /*iterator*/ );
+        }
+        else {
+            zones = [
+                "head_html_tag", "body_start_html_tag_after", "header", "left_side_column_before", "left_side_column_after_category_navigation",
+                "left_side_column_after", "main_column_before", "content_before", "content_after", "main_column_after", "right_side_column_before",
+                "right_side_column_after", "footer", "body_end_html_tag_before",
+                "categorydetails_after_breadcrumb", "categorydetails_top", "categorydetails_before_subcategories", "categorydetails_before_featured_products", "categorydetails_after_featured_products", "categorydetails_before_product_list", "categorydetails_bottom", "categorydetails_before_filters",
+                "productdetails_top", "productdetails_before_pictures", "productdetails_after_pictures", "productdetails_overview_top", "productdetails_overview_bottom", "productdetails_bottom",
+                "order_summary_content_before", "order_summary_content_deals", "order_summary_content_after",
+                "checkout_billing_address_top", "checkout_billing_address_middle", "checkout_billing_address_bottom", "checkout_shipping_address_top", "checkout_shipping_address_middle", "checkout_shipping_address_bottom",
+                "checkout_payment_method_top", "checkout_payment_method_bottom", "checkout_shipping_method_top", "checkout_shipping_method_bottom", "checkout_payment_info_top", "checkout_payment_info_bottom", "checkout_confirm_top", "checkout_confirm_bottom", "checkout_completed_top", "checkout_completed_bottom", "checkout_progress_before", "checkout_progress_after",
+                "contactus_top", "contactus_bottom", "home_page_top", "home_page_bottom"
+            ];
+        }
+
+        zoneChooser.select2({
+            tags: zones
+        });
+    });
+</script>
+
+

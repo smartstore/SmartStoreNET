@@ -19,7 +19,10 @@
         @Html.Widget("left_side_column_before")
 
         @Html.Action("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId })
-        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId })        
+        @Html.Widget("left_side_column_after_category_navigation")
+
+        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId })
+        @Html.Widget("left_side_column_after_manufacturer_navigation")        
 
         @Html.Widget("left_side_column_after")
     }

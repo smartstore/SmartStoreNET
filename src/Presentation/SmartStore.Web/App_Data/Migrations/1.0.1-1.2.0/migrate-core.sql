@@ -339,13 +339,25 @@ set @resources='
     <Value>Render as HTML widget</Value>
 	<T>Als HTML Widget darstellen</T>
   </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.RenderAsWidget.Hint">
+    <Value>Specifies whether the content should be displayed as an HTML widget.</Value>
+	<T>Legt fest, ob der Content inline als HTML Widget dargestellt werden soll</T>
+  </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone">
     <Value>Widget zone</Value>
 	<T>Widget Zone</T>
   </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone.Hint">
+    <Value>One or more widget zones in which the widget should be rendered. Note: a theme defines clearly more zones as offered here. Search the view files for "@Html.Widget(...)" to locate all zones and determine their corresponding names.</Value>
+	<T>Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Suchen Sie die View-Dateien nach "@Html.Widget(...)" ab, um alle verfügbaren Zonen-Namen zu ermitteln.</T>
+  </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle">
     <Value>Show title</Value>
 	<T>Titel anzeigen</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle.Hint">
+    <Value>Specifies whether the title should be displayed as the widget header.</Value>
+	<T>Legt fest, ob der Titel als Überschrift dargestellt werden soll.</T>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetBordered">
     <Value>Render bordered</Value>
@@ -354,6 +366,10 @@ set @resources='
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Priority">
     <Value>Priority</Value>
 	<T>Sortierung</T>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Priority.Hint">
+    <Value>Specifies the sort order of a widget within a zone.</Value>
+	<T>Legt die Sortierreihenfolge des Widgets innerhalb einer Zone fest.</T>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Catalog.Categories.Fields.Alias">

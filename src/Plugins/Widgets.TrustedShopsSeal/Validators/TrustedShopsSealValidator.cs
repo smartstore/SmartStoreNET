@@ -9,8 +9,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Validators
     {
         public TrustedShopsSealValidator(ILocalizationService localize)
         {
-			RuleFor(x => x.TrustedShopsId).NotEmpty()
-                .WithMessage(localize.GetResource("Plugins.Widgets.TrustedShopsSeal.MandatoryTrustedShopsId"));
+			//RuleFor(x => x.TrustedShopsId).NotEmpty()
+			//	.WithMessage(localize.GetResource("Plugins.Widgets.TrustedShopsSeal.MandatoryTrustedShopsId"));
         }
 	}
 }

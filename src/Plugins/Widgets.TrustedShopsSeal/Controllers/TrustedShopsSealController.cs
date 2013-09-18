@@ -31,7 +31,30 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
             _settingService = settingService;
             _localizationService = localizationService;
         }
-        
+
+		public bool IsTrustedShopIdValid(ConfigurationModel model)
+		{
+			if (model.TrustedShopsId.IsNullOrEmpty())
+				return false;
+
+			if (model.IsTestMode)
+			{
+				var tsProtectionServiceSandbox = new TrustedShopsSeal.com.trustedshops.qa.TSProtectionService();
+				var certStatus = new TrustedShopsSeal.com.trustedshops.qa.CertificateStatus();
+				certStatus = tsProtectionServiceSandbox.checkCertificate(model.TrustedShopsId);
+
+				return (certStatus.stateEnum == "TEST");
+			}
+			else
+			{
+				var tsProtectionServiceLive = new TrustedShopsSeal.com.trustedshops.www.TSProtectionService();
+				var certStatus = new TrustedShopsSeal.com.trustedshops.www.CertificateStatus();
+				certStatus = tsProtectionServiceLive.checkCertificate(model.TrustedShopsId);
+
+				return (certStatus.stateEnum == "PRODUCTION");
+			}
+		}
+
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
@@ -72,66 +95,30 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var trustedShopsSealSettings = _settingService.LoadSetting<TrustedShopsSealSettings>(storeScope);
 
-            var tsProtectionServiceSandbox = new TrustedShopsSeal.com.trustedshops.qa.TSProtectionService();
-            var tsProtectionServiceLive = new TrustedShopsSeal.com.trustedshops.www.TSProtectionService();
+			bool trustedShopIdOverride = storeDependingSettingHelper.IsOverrideChecked(trustedShopsSealSettings, "TrustedShopsId", form);
+			bool isTrustedShopIdValid = true;
 
-            if (model.IsTestMode)
-            {
-                var certStatus = new TrustedShopsSeal.com.trustedshops.qa.CertificateStatus();
-                certStatus = tsProtectionServiceSandbox.checkCertificate(model.TrustedShopsId);
+			if (trustedShopIdOverride || storeScope == 0)	// do validation
+			{
+				isTrustedShopIdValid = IsTrustedShopIdValid(model);
 
-                if (certStatus.stateEnum == "TEST")
-                {
-                    // inform user about successfull validation
-                    this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
+				if (isTrustedShopIdValid)
+					this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
+				else
+					this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
+			}
 
-                    //save settings
-                    trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
-                    trustedShopsSealSettings.IsTestMode = model.IsTestMode;
-                    trustedShopsSealSettings.WidgetZone = model.WidgetZone;
-                    trustedShopsSealSettings.ShopName = model.ShopName;
-                    trustedShopsSealSettings.ShopText = model.ShopText;
+			if (isTrustedShopIdValid)	//save settings
+			{
+				trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
+				trustedShopsSealSettings.IsTestMode = model.IsTestMode;
+				trustedShopsSealSettings.WidgetZone = model.WidgetZone;
+				trustedShopsSealSettings.ShopName = model.ShopName;
+				trustedShopsSealSettings.ShopText = model.ShopText;
 
-					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
-					_settingService.ClearCache();
-                }
-                else
-                {
-                    // inform user about validation error
-                    this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
-                    model.TrustedShopsId = String.Empty;
-                    model.IsTestMode = false;
-                }
-            }
-            else
-            {
-                var certStatus = new TrustedShopsSeal.com.trustedshops.www.CertificateStatus();
-                certStatus = tsProtectionServiceLive.checkCertificate(model.TrustedShopsId);
-
-                if (certStatus.stateEnum == "PRODUCTION")
-                {
-                    // inform user about successfull validation
-                    this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
-
-                    //save settings
-                    trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
-                    trustedShopsSealSettings.IsTestMode = model.IsTestMode;
-                    trustedShopsSealSettings.WidgetZone = model.WidgetZone;
-                    trustedShopsSealSettings.ShopName = model.ShopName;
-                    trustedShopsSealSettings.ShopText = model.ShopText;
-
-					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
-					_settingService.ClearCache();
-                }
-                else
-                {
-                    // inform user about validation error
-                    this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
-                    model.TrustedShopsId = String.Empty;
-                    model.IsTestMode = false;
-
-                }
-            }
+				storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+				_settingService.ClearCache();
+			}
 
             return Configure();
         }

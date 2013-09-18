@@ -353,7 +353,8 @@ namespace SmartStore.Admin.Controllers
             var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x => {
                 var item = new TreeViewItem
                 {
-                    Text = x.Name,
+                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(x.Name, x.Alias) : x.Name,
+                    Encoded = x.Alias.IsEmpty(),
                     Value = x.Id.ToString(),
                     LoadOnDemand = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count > 0,
                     Enabled = true,

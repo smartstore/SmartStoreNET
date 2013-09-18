@@ -89,18 +89,5 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-		/// <remarks>codehint: sm-add</remarks>
-		public static string GetCategoryTreeName(this Category category)
-		{
-			if (category != null)
-			{
-				if (category.Alias.IsNullOrEmpty())
-					return category.Name;
-
-				return "{0} ({1})".FormatWith(category.Name, category.Alias);
-			}
-			return "";
-		}
-
     }
 }

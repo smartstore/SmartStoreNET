@@ -1,462 +1,461 @@
 --upgrade scripts for smartstore.net multistore feature
 
 --new locale resources
-declare @resources xml
+DECLARE @resources xml
 --a resource will be deleted if its value is empty   
-set @resources='
+SET @resources='
 <Language>
   <LocaleResource Name="Admin.Configuration.Stores.AddNew">
 	<Value>Add a new store</Value>
-	<T>Neuen Shop hinzufügen</T>
+	<Value lang="de">Neuen Shop hinzufügen</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.BackToList">
 	<Value>back to store list</Value>
-	<T>Zurück zur Shop-Liste</T>
+	<Value lang="de">Zurück zur Shop-Liste</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.EditStoreDetails">
 	<Value>Edit store details</Value>
-	<T>Shop-Details ändern</T>
+	<Value lang="de">Shop-Details ändern</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Name">
 	<Value>Store name</Value>
-	<T>Shop-Name</T>
+	<Value lang="de">Shop-Name</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Name.Hint">
 	<Value>Enter the name of your store e.g. Your Store.</Value>
-	<T>Bitte den Namen des Shops eingeben, z.B. Mein Online-Shop.</T>
+	<Value lang="de">Bitte den Namen des Shops eingeben, z.B. Mein Online-Shop.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Name.Required">
 	<Value>Please provide a name.</Value>
-	<T>Bitte einen Namen angeben.</T>
+	<Value lang="de">Bitte einen Namen angeben.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.StoreLogo">
 	<Value>Store logo</Value>
-	<T>Shop Logo</T>
+	<Value lang="de">Shop Logo</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.StoreLogo.Hint">
 	<Value>Upload your store logo</Value>
-	<T>Ein Shop Logo hochladen</T>
+	<Value lang="de">Ein Shop Logo hochladen</Value>
   </LocaleResource>  
   <LocaleResource Name="Admin.Configuration.Stores.Fields.DisplayOrder">
 	<Value>Display order</Value>
-	<T>Reihenfolge</T>
+	<Value lang="de">Reihenfolge</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.DisplayOrder.Hint">
 	<Value>The display order for this store. 1 represents the top of the list.</Value>
-	<T>Die Reihenfolge für diesen Shop. 1 bedeutet Anfang der Liste.</T>
+	<Value lang="de">Die Reihenfolge für diesen Shop. 1 bedeutet Anfang der Liste.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Added">
 	<Value>The new store has been added successfully.</Value>
-	<T>Der neue Shop wurde erfolgreich hinzugefügt.</T>
+	<Value lang="de">Der neue Shop wurde erfolgreich hinzugefügt.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Updated">
 	<Value>The store has been updated successfully.</Value>
-	<T>Der Shop wurde erfolgreich aktualisiert.</T>
+	<Value lang="de">Der Shop wurde erfolgreich aktualisiert.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Deleted">
 	<Value>The store has been deleted successfully.</Value>
-	<T>Der Shop wurde erfolgreich gelöscht.</T>
+	<Value lang="de">Der Shop wurde erfolgreich gelöscht.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Stores.NoStoresDefined">
 	<Value>No stores defined.</Value>
-	<T>Keine Shops vorhanden.</T>
+	<Value lang="de">Keine Shops vorhanden.</Value>
   </LocaleResource>
     
   <LocaleResource Name="Admin.Orders.Fields.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Orders.Fields.Store.Hint">
 	<Value>A store name in which this order was placed.</Value>
-	<T>Name des Shops für diese Bestellung.</T>
+	<Value lang="de">Name des Shops für diese Bestellung.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Customers.Customers.Orders.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Customers.Customers.Orders.Store.Hint">
 	<Value>Name of the store.</Value>
-	<T>Name des Shops.</T>
+	<Value lang="de">Name des Shops.</Value>
   </LocaleResource>  
   
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts">
 	<Value>HOST values</Value>
-	<T>HOST Werte</T>
+	<Value lang="de">HOST Werte</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts.Hint">
 	<Value>The comma separated list of possible HTTP_POST values (for example, "yourstore.com,www.yourstore.com"). This property is required only when you have a multi-store solution to determine the current store.</Value>
-	<T>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
+	<Value lang="de">Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.System.SystemInfo.HTTPHOST">
 	<Value>HTTP_HOST</Value>
-	<T>HTTP_HOST</T>
+	<Value lang="de">HTTP_HOST</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.System.SystemInfo.HTTPHOST.Hint">
 	<Value>HTTP_HOST is used when you have run a multi-store solution to determine the current store.</Value>
-	<T>HTTP_HOST wird in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</T>
+	<Value lang="de">HTTP_HOST wird in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreName">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreName.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreUrl">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreUrl.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreLogo">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreLogo.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>  
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url">
 	<Value>Store URL</Value>
-	<T>Shop URL</T>
+	<Value lang="de">Shop URL</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url.Hint">
 	<Value>The URL of your store e.g. http://www.yourstore.com/</Value>
-	<T>Die URL zu Ihrem Shop, z.B. http://www.mein-shop.de/</T>
+	<Value lang="de">Die URL zu Ihrem Shop, z.B. http://www.mein-shop.de/</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.Url.Required">
 	<Value>Please provide a store URL.</Value>
-	<T>Bitte eine Shop-URL angeben.</T>
+	<Value lang="de">Bitte eine Shop-URL angeben.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Deleted">
 	<Value>The message template has been deleted successfully.</Value>
-	<T>Die Nachrichtenvorlage wurde erfolgreich gelöscht.</T>
+	<Value lang="de">Die Nachrichtenvorlage wurde erfolgreich gelöscht.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.MessageTemplates.Copy">
 	<Value>Copy template</Value>
-	<T>Vorlage kopieren</T>
+	<Value lang="de">Vorlage kopieren</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SslEnabled">
 	<Value>SSL enabled</Value>
-	<T>SSL aktivieren</T>
+	<Value lang="de">SSL aktivieren</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SslEnabled.Hint">
 	<Value>Check if your store will be SSL secured.</Value>
-	<T>Aktiviert SSL, falls der Shop SSL gesichert werden soll.</T>
+	<Value lang="de">Aktiviert SSL, falls der Shop SSL gesichert werden soll.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SecureUrl">
 	<Value>Secure URL</Value>
-	<T>Gesicherte URL</T>
+	<Value lang="de">Gesicherte URL</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Stores.Fields.SecureUrl.Hint">
 	<Value>The secure URL of your store e.g. https://www.yourstore.com/ or http://sharedssl.yourstore.com/. Leave it empty if you want secure URL to be detected automatically.</Value>
-	<T>Die gesicherte URL des Shops, z.B. https://www.mein-shop.de/ or http://sharedssl.mein-shop.de/. Die gesicherte URL wird automatisch erkannt, wenn dieses Feld leer ist.</T>
+	<Value lang="de">Die gesicherte URL des Shops, z.B. https://www.mein-shop.de/ or http://sharedssl.mein-shop.de/. Die gesicherte URL wird automatisch erkannt, wenn dieses Feld leer ist.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.UseSSL">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.UseSSL.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SharedSSLUrl">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SharedSSLUrl.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.NonSharedSSLUrl">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.NonSharedSSLUrl.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SSLSettings">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SSLSettings.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Feed.Froogle.ClickHere">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Froogle.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
-	<T>Feed wurde erfolgreich erstellt.</T>
+	<Value lang="de">Feed wurde erfolgreich erstellt.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Froogle.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Froogle.Store.Hint">
 	<Value>Select the store that will be used to generate the feed.</Value>
-	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+	<Value lang="de">Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Feed.Billiger.ClickHere">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Billiger.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
-	<T>Feed wurde erfolgreich erstellt.</T>
+	<Value lang="de">Feed wurde erfolgreich erstellt.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Billiger.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Billiger.Store.Hint">
 	<Value>Select the store that will be used to generate the feed.</Value>
-	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+	<Value lang="de">Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.ClickHere">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
-	<T>Feed wurde erfolgreich erstellt.</T>
+	<Value lang="de">Feed wurde erfolgreich erstellt.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store.Hint">
 	<Value>Select the store that will be used to generate the feed.</Value>
-	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+	<Value lang="de">Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.ElmarShopinfo.StaticFileXmlUrl.Hint">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Feed.Guenstiger.ClickHere">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Guenstiger.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
-	<T>Feed wurde erfolgreich erstellt.</T>
+	<Value lang="de">Feed wurde erfolgreich erstellt.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Guenstiger.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Guenstiger.Store.Hint">
 	<Value>Select the store that will be used to generate the feed.</Value>
-	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+	<Value lang="de">Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Feed.Shopwahl.ClickHere">
 	<Value></Value>
-	<T></T>
+	<Value lang="de"></Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Shopwahl.SuccessResult">
 	<Value>Feed has been successfully generated.</Value>
-	<T>Feed wurde erfolgreich erstellt.</T>
+	<Value lang="de">Feed wurde erfolgreich erstellt.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Shopwahl.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Feed.Shopwahl.Store.Hint">
 	<Value>Select the store that will be used to generate the feed.</Value>
-	<T>Wählen Sie den Shop, für den der Feed erstellt werden soll.</T>
+	<Value lang="de">Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.NoneWithThatId">
 	<Value>No setting could be loaded with the specified ID.</Value>
-	<T>Eine Einstellung mit dieser ID wurde nicht gefunden.</T>
+	<Value lang="de">Eine Einstellung mit dieser ID wurde nicht gefunden.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.AllSettings.Fields.StoreName.Hint">
 	<Value>Name of the store</Value>
-	<T>Name des shops</T>
+	<Value lang="de">Name des shops</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope">
 	<Value>Multi-store configuration for</Value>
-	<T>Multi-Shop Konfiguration für</T>
+	<Value lang="de">Multi-Shop Konfiguration für</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll">
 	<Value>Switch all on/off</Value>
-	<T>Alle aus/anschalten</T>
+	<Value lang="de">Alle aus/anschalten</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.StoreScope.CheckAll.Hint">
 	<Value>Switch on if you want to set a custom value for this shop</Value>
-	<T>An- bzw. ausschalten, falls Sie für diesen Shop separate Werte festlegen möchten</T>
+	<Value lang="de">An- bzw. ausschalten, falls Sie für diesen Shop separate Werte festlegen möchten</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys">
 	<Value>Captcha is enabled but the appropriate keys are not entered.</Value>
-	<T>Captcha wurde aktiviert, aber die zugehörigen Schlüssel fehlen.</T>
+	<Value lang="de">Captcha wurde aktiviert, aber die zugehörigen Schlüssel fehlen.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store">
     <Value>Store</Value>
-    <T>Shop</T>
+    <Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store.Hint">
     <Value>If an asterisk is selected, then this shipping rate will apply to all stores.</Value>
-    <T>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</T>
+    <Value lang="de">Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payment.CashOnDelivery.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.CashOnDelivery.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payment.CheckMoneyOrder.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.CheckMoneyOrder.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payment.Invoice.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.Invoice.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payment.PayInStore.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.PayInStore.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payment.Prepayment.AdditionalFeePercentage">
     <Value>Additional fee. Use percentage</Value>
-    <T>Zusätzliche Gebühren (prozentual)</T>
+    <Value lang="de">Zusätzliche Gebühren (prozentual)</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payment.Prepayment.AdditionalFeePercentage.Hint">
     <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-    <T>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</T>
+    <Value lang="de">Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Plugins.Info">
     <Value>Plugin Info</Value>
-    <T>Plugin Info</T>
+    <Value lang="de">Plugin Info</Value>
   </LocaleResource>
  
 </Language>
 '
 
-CREATE TABLE #LocaleStringResourceTmp
-	(
-		[ResourceName] [nvarchar](200) NOT NULL,
-		[ResourceValue] [nvarchar](max) NOT NULL
-	)
+DECLARE @forceResUpdate bit = 0
 
-INSERT INTO #LocaleStringResourceTmp (ResourceName, ResourceValue)
-SELECT	nref.value('@Name', 'nvarchar(200)'), nref.value('Value[1]', 'nvarchar(MAX)')
-FROM	@resources.nodes('//Language/LocaleResource') AS R(nref)
+CREATE TABLE #ResTmp
+(
+	[Name] [nvarchar](200) NOT NULL, [Lang] [nvarchar](2) NULL DEFAULT N'', [Value] [nvarchar](max) NOT NULL
+)
+
+--flatten the 'Value' nodes into temp table
+INSERT INTO #ResTmp (Name, Lang, Value)
+SELECT
+	R.rref.value('@Name', 'nvarchar(200)'),
+	COALESCE(V.vref.value('@lang', 'nvarchar(2)'), ''),
+	COALESCE(V.vref.value('text()[1]', 'nvarchar(MAX)'), '')
+FROM
+	@resources.nodes('//Language/LocaleResource') AS R(rref)
+CROSS APPLY
+	R.rref.nodes('Value') AS V(vref)
+
 
 --do it for each existing language
 DECLARE @ExistingLanguageID int
+DECLARE @ExistingSeoCode nvarchar(2)
 DECLARE cur_existinglanguage CURSOR FOR
-SELECT [ID]
-FROM [Language]
+SELECT [ID], [UniqueSeoCode] AS Lang FROM [Language]
 OPEN cur_existinglanguage
-FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID
+FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID, @ExistingSeoCode
 WHILE @@FETCH_STATUS = 0
 BEGIN
-	DECLARE @ResourceName nvarchar(200)
-	DECLARE @ResourceValue nvarchar(MAX)
+	DECLARE @Name nvarchar(200)
+	DECLARE @Lang nvarchar(2)
+	DECLARE @Value nvarchar(MAX)
 	DECLARE cur_localeresource CURSOR FOR
-	SELECT ResourceName, ResourceValue
-	FROM #LocaleStringResourceTmp
+	SELECT Name, Lang, Value FROM #ResTmp WHERE Lang = @ExistingSeoCode OR Lang = '' ORDER BY Lang, Name
 	OPEN cur_localeresource
-	FETCH NEXT FROM cur_localeresource INTO @ResourceName, @ResourceValue
+	FETCH NEXT FROM cur_localeresource INTO @Name, @Lang, @Value
 	WHILE @@FETCH_STATUS = 0
 	BEGIN
-		IF (EXISTS (SELECT 1 FROM [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName))
+
+		IF (EXISTS (SELECT 1 FROM [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name))
 		BEGIN
 			UPDATE [LocaleStringResource]
-			SET [ResourceValue]=@ResourceValue
-			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName
+			SET [ResourceValue]=@Value
+			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name AND (@forceResUpdate=1 OR (IsTouched is null OR IsTouched = 0))
 		END
 		ELSE 
 		BEGIN
-			INSERT INTO [LocaleStringResource]
-			(
-				[LanguageId],
-				[ResourceName],
-				[ResourceValue]
-			)
-			VALUES
-			(
-				@ExistingLanguageID,
-				@ResourceName,
-				@ResourceValue
-			)
+			INSERT INTO [LocaleStringResource] (LanguageId, ResourceName, ResourceValue) VALUES (@ExistingLanguageID, @Name, @Value)
 		END
 		
-		IF (@ResourceValue is null or @ResourceValue = '')
+		IF (@Value is null or @Value = '')
 		BEGIN
-			DELETE [LocaleStringResource]
-			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName
+			DELETE [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name
 		END
-		
-		FETCH NEXT FROM cur_localeresource INTO @ResourceName, @ResourceValue
+	
+		FETCH NEXT FROM cur_localeresource INTO @Name, @Lang, @Value
 	END
 	CLOSE cur_localeresource
 	DEALLOCATE cur_localeresource
 
 
 	--fetch next language identifier
-	FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID
+	FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID, @ExistingSeoCode
 END
 CLOSE cur_existinglanguage
 DEALLOCATE cur_existinglanguage
 
-DROP TABLE #LocaleStringResourceTmp
+DROP TABLE #ResTmp
 GO
+
 
 
 

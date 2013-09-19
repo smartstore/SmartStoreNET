@@ -1,466 +1,464 @@
 --upgrade scripts for smartstore.net (only specific parts)
 
 --new locale resources
-declare @resources xml
+DECLARE @resources xml
 --a resource will be deleted if its value is empty   
-set @resources='
+SET @resources='
 <Language>
   <LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint">
     <Value>Show legal hints in order summary on the confirm order page</Value>
-	<T>Rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite anzeigen</T>
+	<Value lang="de">Rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite anzeigen</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint.Hint">
     <Value>Determines whether to show hints in order summary on the confirm order page. This text can be altered in the language resources.</Value>
-	<T>Bestimmt, ob rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite angezeigt werden. Dieser Text kann in den Sprachresourcen geändert werden.</T>
+	<Value lang="de">Bestimmt, ob rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite angezeigt werden. Dieser Text kann in den Sprachresourcen geändert werden.</Value>
   </LocaleResource>
 
   <LocaleResource Name="OrderSummary.ConfirmOrderLegalHint">
     <Value>For deliveries to a non-EU state additional costs in regard to customs, fees and taxes can arise.</Value>
-	<T>Bei Lieferungen in das Nicht-EU-Ausland können zusätzlich Zölle, Steuern und Gebühren anfallen.</T>
+	<Value lang="de">Bei Lieferungen in das Nicht-EU-Ausland können zusätzlich Zölle, Steuern und Gebühren anfallen.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Common.Submit">
     <Value>Submit</Value>
-	<T>Absenden</T>
+	<Value lang="de">Absenden</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.Send">
     <Value>Send</Value>
-	<T>Senden</T>
+	<Value lang="de">Senden</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.Question">
     <Value>Question</Value>
-	<T>Frage</T>
+	<Value lang="de">Frage</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.Error.SendMail">
     <Value>Error while sending the email. Please try again later.</Value>
-	<T>Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.</T>
+	<Value lang="de">Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Account.Fields.FullName">
     <Value>Name</Value>
-	<T>Name</T>
+	<Value lang="de">Name</Value>
   </LocaleResource>
   
   <LocaleResource Name="Account.Fields.FullName.Required">
     <Value>Name is required</Value>
-	<T>Name wird benötigt</T>
+	<Value lang="de">Name wird benötigt</Value>
   </LocaleResource>
   
   <LocaleResource Name="Products.AskQuestion">
     <Value>Question about product?</Value>
-	<T>Fragen zum Artikel?</T>
+	<Value lang="de">Fragen zum Artikel?</Value>
   </LocaleResource>
   
   <LocaleResource Name="Products.AskQuestion.Title">
     <Value>Question about product</Value>
-	<T>Frage zum Artikel</T>
+	<Value lang="de">Frage zum Artikel</Value>
   </LocaleResource>
   
   <LocaleResource Name="Products.AskQuestion.Question.Required">
     <Value>Question is required</Value>
-	<T>Frage ist erforderlich</T>
+	<Value lang="de">Frage ist erforderlich</Value>
   </LocaleResource>
   
   <LocaleResource Name="Products.AskQuestion.Question.Text">
     <Value>I have following questions concerning the product {0}:</Value>
-	<T>Ich habe folgende Fragen zum Artikel {0}:</T>
+	<Value lang="de">Ich habe folgende Fragen zum Artikel {0}:</Value>
   </LocaleResource>
   
   <LocaleResource Name="Products.AskQuestion.Sent">
     <Value>Thank you. Your inquiry has been sent successfully.</Value>
-	<T>Vielen Dank. Ihre Anfage wurde erfolgreich gesendet.</T>
+	<Value lang="de">Vielen Dank. Ihre Anfage wurde erfolgreich gesendet.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.AskQuestionEnabled">
     <Value>''Ask question'' enabled</Value>
-	<T>''Produktanfragen'' ermöglichen</T>
+	<Value lang="de">''Produktanfragen'' ermöglichen</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.AskQuestionEnabled.Hint">
     <Value>Check to allow customers to send an inquiry concerning a product</Value>
-	<T>Legt fest, ob Kunden eine Anfrage zu einem Produkt stellen können</T>
+	<Value lang="de">Legt fest, ob Kunden eine Anfrage zu einem Produkt stellen können</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnAskQuestionPage">
     <Value>Show on ''ask question'' page</Value>
-	<T>Auf der Seite ''Produktanfrage'' zeigen</T>
+	<Value lang="de">Auf der Seite ''Produktanfrage'' zeigen</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnAskQuestionPage.Hint">
     <Value>Check to show CAPTCHA on ''ask question'' page</Value>
-	<T>Legt fest, ob ein CAPTCHA auf der ''Produktanfrage''-Seite angezeigt werden soll.</T>
+	<Value lang="de">Legt fest, ob ein CAPTCHA auf der ''Produktanfrage''-Seite angezeigt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultViewMode">
     <Value>Default view mode</Value>
-	<T>Standard Listendarstellung</T>
+	<Value lang="de">Standard Listendarstellung</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultViewMode.Hint">
     <Value>Specifies how product lists should be displayed by default. The customer can also change the appearance manually.</Value>
-	<T>Legt fest, wie Produktlisten standardmäßig dargestellt werden sollen. Der Kunde kann die Darstellung im Shop ändern.</T>
+	<Value lang="de">Legt fest, wie Produktlisten standardmäßig dargestellt werden sollen. Der Kunde kann die Darstellung im Shop ändern.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.List">
     <Value>List</Value>
-	<T>Liste</T>
+	<Value lang="de">Liste</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.Grid">
     <Value>Grid</Value>
-	<T>Raster</T>
+	<Value lang="de">Raster</Value>
   </LocaleResource>
   
   <LocaleResource Name="ThemeVar.Alpha.SliderBgSlide">
     <Value>Background slide behaviour</Value>
-	<T>Hintergrund slide Verhalten</T>
+	<Value lang="de">Hintergrund slide Verhalten</Value>
   </LocaleResource>
 
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists">
     <Value>Show color squares in product lists</Value>
-	<T>Zeige Farbvarianten in Produktlisten</T>
+	<Value lang="de">Zeige Farbvarianten in Produktlisten</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists.Hint">
     <Value>Specifies whether the colors of the first color type attribute should be displayed in product lists</Value>
-	<T>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</T>
+	<Value lang="de">Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateSuccess">
     <Value>The language resources has been successfully updated.</Value>
-	<T>Die Sprachressourcen wurden erfogreich aktualisiert.</T>
+	<Value lang="de">Die Sprachressourcen wurden erfogreich aktualisiert.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateFailure">
     <Value>Failed to update language resources.</Value>
-	<T>Das Aktualisieren der Sprachressourcen ist fehlgeschlagen.</T>
+	<Value lang="de">Das Aktualisieren der Sprachressourcen ist fehlgeschlagen.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Resources.Update">
     <Value>Update resources</Value>
-	<T>Ressourcen aktualisieren</T>
+	<Value lang="de">Ressourcen aktualisieren</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateConfirm">
     <Value>Do you like to update the language resources for this plugin?</Value>
-	<T>Möchten Sie die Sprachressourcen für dieses Plugin aktualisieren?</T>
+	<Value lang="de">Möchten Sie die Sprachressourcen für dieses Plugin aktualisieren?</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateProgress">
     <Value>Refreshing language resources...</Value>
-	<T>Aktualisiere Sprachressourcen...</T>
+	<Value lang="de">Aktualisiere Sprachressourcen...</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Common.General">
 	<Value>General</Value>
-	<T>Allgemein</T>
+	<Value lang="de">Allgemein</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Stores">
 	<Value>Stores</Value>
-	<T>Shops</T>
+	<Value lang="de">Shops</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Info">
 	<Value>Info</Value>
-	<T>Info</T>
+	<Value lang="de">Info</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.StoresAll">
 	<Value>All stores</Value>
-	<T>Alle Shops</T>
+	<Value lang="de">Alle Shops</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Common.Store.SearchFor">
 	<Value>Store</Value>
-	<T>Shop</T>
+	<Value lang="de">Shop</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store.SearchFor.Hint">
 	<Value>Search by a specific store.</Value>
-	<T>Nach bestimmten Shop suchen.</T>
+	<Value lang="de">Nach bestimmten Shop suchen.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store.LimitedTo">
 	<Value>Limited to stores</Value>
-	<T>Auf Shops begrenzt</T>
+	<Value lang="de">Auf Shops begrenzt</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store.LimitedTo.Hint">
 	<Value>Determines whether the item is available only at certain stores.</Value>
-	<T>Legt fest, ob der Eintrag nur für bestimmte Shops verfügbar ist.</T>
+	<Value lang="de">Legt fest, ob der Eintrag nur für bestimmte Shops verfügbar ist.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store.AvailableFor">
 	<Value>Stores</Value>
-	<T>Shops</T>
+	<Value lang="de">Shops</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Common.Store.AvailableFor.Hint">
 	<Value>Select stores for which the item will be shown.</Value>
-	<T>Bitte Shops auswählen, für die der Eintrag angezeigt werden soll.</T>
+	<Value lang="de">Bitte Shops auswählen, für die der Eintrag angezeigt werden soll.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Common.On">
     <Value>On</Value>
-	<T>An</T>
+	<Value lang="de">An</Value>
   </LocaleResource>
   <LocaleResource Name="Common.Off">
     <Value>Off</Value>
-	<T>Aus</T>
+	<Value lang="de">Aus</Value>
   </LocaleResource>
   
   <LocaleResource Name="RewardPoints.Message.RegisteredAsCustomer">
     <Value>Registered as customer</Value>
-	<T>Als Kunde registriert</T>
+	<Value lang="de">Als Kunde registriert</Value>
   </LocaleResource>  
 
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold">
     <Value>Threshold for small quantities</Value>
-	<T>Mindermenge bis Bestellwert</T>
+	<Value lang="de">Mindermenge bis Bestellwert</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold.Hint">
     <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
-	<T>Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</T>
+	<Value lang="de">Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantitySurcharge">
     <Value>Surcharge for small quantities</Value>
-	<T>Mindermengenzuschlag</T>
+	<Value lang="de">Mindermengenzuschlag</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.BaseCharge">
     <Value>Base fee</Value>
-	<T>Basisgebühr</T>
+	<Value lang="de">Basisgebühr</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge">
     <Value>Max. fee</Value>
-	<T>Max. Gebühr</T>
+	<Value lang="de">Max. Gebühr</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge.Hint">
     <Value>An amount that the calculated shipping costs may not exceed.</Value>
-	<T>Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</T>
+	<Value lang="de">Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</Value>
   </LocaleResource>   
   
   <LocaleResource Name="ErrorPage.Title">
     <Value>We''re sorry, an internal error occurred that prevents the request to complete.</Value>
-	<T>Leider ist ein interner Fehler aufgetreten.</T>
+	<Value lang="de">Leider ist ein interner Fehler aufgetreten.</Value>
   </LocaleResource>
   <LocaleResource Name="ErrorPage.Body">
     <Value>Our supporting staff has been notified with this error and will address this issue shortly. We profusely apologize for the <strong>inconvenience</strong> and for any damage this may cause. You might want to try the same action at later time.</Value>
-	<T>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</T>
+	<Value lang="de">Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</Value>
   </LocaleResource>
   
   <LocaleResource Name="AddProductToCompareList.CouldNotBeAdded">
     <Value>Product could not be added.</Value>
-	<T>Produkt konnte nicht hinzugefügt werden.</T>
+	<Value lang="de">Produkt konnte nicht hinzugefügt werden.</Value>
   </LocaleResource>
   <LocaleResource Name="AddProductToCompareList.ProductWasAdded">
     <Value>The product ''{0}'' was added to the compare list.</Value>
-	<T>Das Produkt ''{0}'' wurde der Vergleichsliste hinzugefügt.</T>
+	<Value lang="de">Das Produkt ''{0}'' wurde der Vergleichsliste hinzugefügt.</Value>
   </LocaleResource>
   <LocaleResource Name="AddProductToCompareList.CouldNotBeRemoved">
     <Value>Product could not be removed.</Value>
-	<T>Produkt konnte nicht entfernt werden.</T>
+	<Value lang="de">Produkt konnte nicht entfernt werden.</Value>
   </LocaleResource>
   <LocaleResource Name="AddProductToCompareList.ProductWasDeleted">
     <Value>The product ''{0}'' was removed from the compare list.</Value>
-	<T>Das Produkt ''{0}'' wurde von der Vergleichsliste entfernt.</T>
+	<Value lang="de">Das Produkt ''{0}'' wurde von der Vergleichsliste entfernt.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail">
     <Value>Show delivery times</Value>
-	<T>Zeige Lieferzeiten</T>
+	<Value lang="de">Zeige Lieferzeiten</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint">
     <Value>Determines whether delivery times should be display on product detail page.</Value>
-	<T>Bestimmt ob Lieferzeitinformationen auf der Produktdetailseite angezeigt werden.</T>
+	<Value lang="de">Bestimmt ob Lieferzeitinformationen auf der Produktdetailseite angezeigt werden.</Value>
   </LocaleResource>
   
 
   <LocaleResource Name="Jquery.Validate.Email">
     <Value>Please enter a valid email address.</Value>
-	<T>Bitte geben Sie eine gültige E-Mail-Adresse ein.</T>
+	<Value lang="de">Bitte geben Sie eine gültige E-Mail-Adresse ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Required">
     <Value>This field is required.</Value>
-	<T>Diese Angabe ist erforderlich.</T>
+	<Value lang="de">Diese Angabe ist erforderlich.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Remote">
     <Value>Please fix this field.</Value>
-	<T>Bitte korrigieren Sie dieses Feld.</T>
+	<Value lang="de">Bitte korrigieren Sie dieses Feld.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Url">
     <Value>Please enter a valid URL.</Value>
-	<T>Bitte geben Sie eine gültige URL ein.</T>
+	<Value lang="de">Bitte geben Sie eine gültige URL ein.</Value>
   </LocaleResource>
  <LocaleResource Name="Jquery.Validate.Date">
     <Value>Please enter a valid date.</Value>
-	<T>Bitte geben Sie ein gültiges Datum ein.</T>
+	<Value lang="de">Bitte geben Sie ein gültiges Datum ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.DateISO">
     <Value>Please enter a valid date (ISO).</Value>
-	<T>Bitte geben Sie ein gültiges Datum (nach ISO) ein.</T>
+	<Value lang="de">Bitte geben Sie ein gültiges Datum (nach ISO) ein.</Value>
   </LocaleResource>
  <LocaleResource Name="Jquery.Validate.Number">
     <Value>Please enter a valid number.</Value>
-	<T>Bitte geben Sie eine gültige Nummer ein.</T>
+	<Value lang="de">Bitte geben Sie eine gültige Nummer ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Digits">
     <Value>Please enter only digits.</Value>
-	<T>Bitte geben Sie nur Ziffern ein.</T>
+	<Value lang="de">Bitte geben Sie nur Ziffern ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Creditcard">
     <Value>Please enter a valid credit card number.</Value>
-	<T>Bitte geben Sie eine gültige Kreditkartennummer ein.</T>
+	<Value lang="de">Bitte geben Sie eine gültige Kreditkartennummer ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.EqualTo">
     <Value>Please enter the same value again.</Value>
-	<T>Wiederholen Sie bitte die Eingabe.</T>
+	<Value lang="de">Wiederholen Sie bitte die Eingabe.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Maxlength">
     <Value>Please enter no more than {0} characters.</Value>
-	<T>Bitte geben Sie nicht mehr als {0} Zeichen ein.</T>
+	<Value lang="de">Bitte geben Sie nicht mehr als {0} Zeichen ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Minlength">
     <Value>Please enter at least {0} characters.</Value>
-	<T>Bitte geben Sie mindestens {0} Zeichen ein.</T>
+	<Value lang="de">Bitte geben Sie mindestens {0} Zeichen ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Rangelength">
     <Value>Please enter a value between {0} and {1} characters long.</Value>
-	<T>Die Länge der Eingabe darf minimal {0} und maximal {1} Zeichen lang sein.</T>
+	<Value lang="de">Die Länge der Eingabe darf minimal {0} und maximal {1} Zeichen lang sein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Range">
     <Value>Please enter a value between {0} and {1}.</Value>
-	<T>Bitte geben Sie einen Wert zwischen {0} und {1} ein.</T>
+	<Value lang="de">Bitte geben Sie einen Wert zwischen {0} und {1} ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Max">
     <Value>Please enter a value less than or equal to {0}.</Value>
-	<T>Bitte geben Sie einen Wert kleiner oder gleich {0} ein.</T>
+	<Value lang="de">Bitte geben Sie einen Wert kleiner oder gleich {0} ein.</Value>
   </LocaleResource>
   <LocaleResource Name="Jquery.Validate.Min">
     <Value>Please enter a value greater than or equal to {0}.</Value>
-	<T>Bitte geben Sie einen Wert größer oder gleich {0} ein.</T>
+	<Value lang="de">Bitte geben Sie einen Wert größer oder gleich {0} ein.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.RenderAsWidget">
     <Value>Render as HTML widget</Value>
-	<T>Als HTML Widget darstellen</T>
+	<Value lang="de">Als HTML Widget darstellen</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.RenderAsWidget.Hint">
     <Value>Specifies whether the content should be displayed as an HTML widget.</Value>
-	<T>Legt fest, ob der Content inline als HTML Widget dargestellt werden soll</T>
+	<Value lang="de">Legt fest, ob der Content inline als HTML Widget dargestellt werden soll</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone">
     <Value>Widget zone</Value>
-	<T>Widget Zone</T>
+	<Value lang="de">Widget Zone</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone.Hint">
     <Value>One or more widget zones in which the widget should be rendered. Note: a theme defines clearly more zones as offered here. Search the view files for "@Html.Widget(...)" to locate all zones and determine their corresponding names.</Value>
-	<T>Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Suchen Sie die View-Dateien nach "@Html.Widget(...)" ab, um alle verfügbaren Zonen-Namen zu ermitteln.</T>
+	<Value lang="de">Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Suchen Sie die View-Dateien nach "@Html.Widget(...)" ab, um alle verfügbaren Zonen-Namen zu ermitteln.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle">
     <Value>Show title</Value>
-	<T>Titel anzeigen</T>
+	<Value lang="de">Titel anzeigen</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle.Hint">
     <Value>Specifies whether the title should be displayed as the widget header.</Value>
-	<T>Legt fest, ob der Titel als Überschrift dargestellt werden soll.</T>
+	<Value lang="de">Legt fest, ob der Titel als Überschrift dargestellt werden soll.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetBordered">
     <Value>Render bordered</Value>
-	<T>Widget umrahmen</T>
+	<Value lang="de">Widget umrahmen</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Priority">
     <Value>Priority</Value>
-	<T>Sortierung</T>
+	<Value lang="de">Sortierung</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.ContentManagement.Topics.Fields.Priority.Hint">
     <Value>Specifies the sort order of a widget within a zone.</Value>
-	<T>Legt die Sortierreihenfolge des Widgets innerhalb einer Zone fest.</T>
+	<Value lang="de">Legt die Sortierreihenfolge des Widgets innerhalb einer Zone fest.</Value>
   </LocaleResource>
   
   <LocaleResource Name="Admin.Catalog.Categories.Fields.Alias">
     <Value>Alias</Value>
-	<T>Alias</T>
+	<Value lang="de">Alias</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.Fields.Alias.Hint">
     <Value>An optional, language-neutral reference name for internal use</Value>
-	<T>Ein optionaler, sprachneutraler Referenzwert für interne Zwecke</T>
+	<Value lang="de">Ein optionaler, sprachneutraler Referenzwert für interne Zwecke</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.List.SearchAlias">
     <Value>Alias</Value>
-	<T>Alias</T>
+	<Value lang="de">Alias</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Catalog.Categories.List.SearchAlias.Hint">
     <Value>The alias to be filtered</Value>
-	<T>Der Alias, nach dem gefiltert werden soll</T>
+	<Value lang="de">Der Alias, nach dem gefiltert werden soll</Value>
   </LocaleResource>  
   
 </Language>
 '
 
-CREATE TABLE #LocaleStringResourceTmp
-	(
-		[ResourceName] [nvarchar](200) NOT NULL,
-		[ResourceValue] [nvarchar](max) NOT NULL
-	)
+DECLARE @forceResUpdate bit = 0
 
-INSERT INTO #LocaleStringResourceTmp (ResourceName, ResourceValue)
-SELECT	nref.value('@Name', 'nvarchar(200)'), nref.value('Value[1]', 'nvarchar(MAX)')
-FROM	@resources.nodes('//Language/LocaleResource') AS R(nref)
+CREATE TABLE #ResTmp
+(
+	[Name] [nvarchar](200) NOT NULL, [Lang] [nvarchar](2) NULL DEFAULT N'', [Value] [nvarchar](max) NOT NULL
+)
+
+--flatten the 'Value' nodes into temp table
+INSERT INTO #ResTmp (Name, Lang, Value)
+SELECT
+	R.rref.value('@Name', 'nvarchar(200)'),
+	COALESCE(V.vref.value('@lang', 'nvarchar(2)'), ''),
+	COALESCE(V.vref.value('text()[1]', 'nvarchar(MAX)'), '')
+FROM
+	@resources.nodes('//Language/LocaleResource') AS R(rref)
+CROSS APPLY
+	R.rref.nodes('Value') AS V(vref)
+
 
 --do it for each existing language
 DECLARE @ExistingLanguageID int
+DECLARE @ExistingSeoCode nvarchar(2)
 DECLARE cur_existinglanguage CURSOR FOR
-SELECT [ID]
-FROM [Language]
+SELECT [ID], [UniqueSeoCode] AS Lang FROM [Language]
 OPEN cur_existinglanguage
-FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID
+FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID, @ExistingSeoCode
 WHILE @@FETCH_STATUS = 0
 BEGIN
-	DECLARE @ResourceName nvarchar(200)
-	DECLARE @ResourceValue nvarchar(MAX)
+	DECLARE @Name nvarchar(200)
+	DECLARE @Lang nvarchar(2)
+	DECLARE @Value nvarchar(MAX)
 	DECLARE cur_localeresource CURSOR FOR
-	SELECT ResourceName, ResourceValue
-	FROM #LocaleStringResourceTmp
+	SELECT Name, Lang, Value FROM #ResTmp WHERE Lang = @ExistingSeoCode OR Lang = '' ORDER BY Lang, Name
 	OPEN cur_localeresource
-	FETCH NEXT FROM cur_localeresource INTO @ResourceName, @ResourceValue
+	FETCH NEXT FROM cur_localeresource INTO @Name, @Lang, @Value
 	WHILE @@FETCH_STATUS = 0
 	BEGIN
-		IF (EXISTS (SELECT 1 FROM [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName))
+
+		IF (EXISTS (SELECT 1 FROM [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name))
 		BEGIN
 			UPDATE [LocaleStringResource]
-			SET [ResourceValue]=@ResourceValue
-			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName
+			SET [ResourceValue]=@Value
+			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name AND (@forceResUpdate=1 OR (IsTouched is null OR IsTouched = 0))
 		END
 		ELSE 
 		BEGIN
-			INSERT INTO [LocaleStringResource]
-			(
-				[LanguageId],
-				[ResourceName],
-				[ResourceValue]
-			)
-			VALUES
-			(
-				@ExistingLanguageID,
-				@ResourceName,
-				@ResourceValue
-			)
+			INSERT INTO [LocaleStringResource] (LanguageId, ResourceName, ResourceValue) VALUES (@ExistingLanguageID, @Name, @Value)
 		END
 		
-		IF (@ResourceValue is null or @ResourceValue = '')
+		IF (@Value is null or @Value = '')
 		BEGIN
-			DELETE [LocaleStringResource]
-			WHERE LanguageID=@ExistingLanguageID AND ResourceName=@ResourceName
+			DELETE [LocaleStringResource] WHERE LanguageID=@ExistingLanguageID AND ResourceName=@Name
 		END
-		
-		FETCH NEXT FROM cur_localeresource INTO @ResourceName, @ResourceValue
+	
+		FETCH NEXT FROM cur_localeresource INTO @Name, @Lang, @Value
 	END
 	CLOSE cur_localeresource
 	DEALLOCATE cur_localeresource
 
 
 	--fetch next language identifier
-	FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID
+	FETCH NEXT FROM cur_existinglanguage INTO @ExistingLanguageID, @ExistingSeoCode
 END
 CLOSE cur_existinglanguage
 DEALLOCATE cur_existinglanguage
 
-DROP TABLE #LocaleStringResourceTmp
+DROP TABLE #ResTmp
 GO
 
 -- CatalogSettings.AskQuestionEnabled

@@ -712,6 +712,14 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="Alias">
+                    <Value>Alias</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Ein optionaler, sprachneutraler Referenzwert für interne Zwecke</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="AllowCustomersToSelectPageSize">
                     <Value>Kunde kann Listengröße ändern</Value>
                     <Children>
@@ -863,8 +871,16 @@
                 <Value>Allgemein</Value>
               </LocaleResource>
               <LocaleResource Name="List">
-                <Value>Filter</Value>
+                <Value>Alias</Value>
                 <Children>
+                  <LocaleResource Name="SearchAlias">
+                    <Value>Alias</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Der Alias, nach dem gefiltert werden soll</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="SearchCategoryName">
                     <Value>Filter</Value>
                     <Children>
@@ -2745,7 +2761,7 @@
             </Children>
           </LocaleResource>
           <LocaleResource Name="General">
-            <Value>General</Value>
+            <Value>Allgemein</Value>
           </LocaleResource>
           <LocaleResource Name="Go">
             <Value>Ausführen</Value>
@@ -2808,7 +2824,7 @@
             <Value>Standard</Value>
           </LocaleResource>
           <LocaleResource Name="Store">
-            <Value>Store</Value>
+            <Value>Shop</Value>
             <Children>
               <LocaleResource Name="AvailableFor">
                 <Value>Shops</Value>
@@ -4601,6 +4617,14 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="ShowDeliveryTimesInProductDetail">
+                    <Value>Zeige Lieferzeiten</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Bestimmt ob Lieferzeitinformationen auf der Produktdetailseite angezeigt werden.</Value>
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
@@ -7878,7 +7902,7 @@
             </Children>
           </LocaleResource>
           <LocaleResource Name="Topics">
-            <Value>Seiten</Value>
+            <Value>Seiten &amp; Inhalte</Value>
             <Children>
               <LocaleResource Name="Added">
                 <Value>Eine neue Seite wurde erfolgreich hinzugefügt</Value>
@@ -7954,6 +7978,22 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="Priority">
+                    <Value>Priority</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt die Sortierreihenfolge des Widgets innerhalb einer Zone fest.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="RenderAsWidget">
+                    <Value>Als HTML Widget darstellen</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt fest, ob der Content inline als HTML Widget dargestellt werden soll.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="SeName">
                     <Value>SEO Namen</Value>
                     <Children>
@@ -7986,6 +8026,25 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>Die URL dieser Seite.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetBordered">
+                    <Value>Widget umrahmen</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetShowTitle">
+                    <Value>Titel anzeigen</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Legt fest, ob der Titel als Überschrift dargestellt werden soll.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetZone">
+                    <Value>Widget Zone</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Suchen Sie die View-Dateien nach "@Html.Widget(...)" ab, um alle verfügbaren Zonen-Namen zu ermitteln.</Value>
                       </LocaleResource>
                     </Children>
                   </LocaleResource>

@@ -712,6 +712,14 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="Alias">
+                    <Value>Alias</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>An optional, language-neutral reference name for internal use</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="AllowCustomersToSelectPageSize">
                     <Value>Allow customers to select page size</Value>
                     <Children>
@@ -863,8 +871,16 @@
                 <Value>Category Info</Value>
               </LocaleResource>
               <LocaleResource Name="List">
-                <Value>Category name</Value>
+                <Value>Alias</Value>
                 <Children>
+                  <LocaleResource Name="SearchAlias">
+                    <Value>Alias</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>The alias to be filtered</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="SearchCategoryName">
                     <Value>Category name</Value>
                     <Children>
@@ -4604,6 +4620,14 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="ShowDeliveryTimesInProductDetail">
+                    <Value>Show delivery times</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Determines whether delivery times should be display on product detail page.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="ShowDeliveryTimesInProductLists">
                     <Value>Show delivery times in product lists</Value>
                     <Children>
@@ -7954,6 +7978,22 @@
                       </LocaleResource>
                     </Children>
                   </LocaleResource>
+                  <LocaleResource Name="Priority">
+                    <Value>Priority</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Specifies the sort order of a widget within a zone.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="RenderAsWidget">
+                    <Value>Render as HTML widget</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Specifies whether the content should be displayed as an HTML widget.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
                   <LocaleResource Name="SeName">
                     <Value>Search engine friendly page name</Value>
                     <Children>
@@ -7986,6 +8026,25 @@
                     <Children>
                       <LocaleResource Name="Hint">
                         <Value>The URL of this topic.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetBordered">
+                    <Value>Render bordered</Value>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetShowTitle">
+                    <Value>Show title</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>Specifies whether the title should be displayed as the widget header.</Value>
+                      </LocaleResource>
+                    </Children>
+                  </LocaleResource>
+                  <LocaleResource Name="WidgetZone">
+                    <Value>Widget zone</Value>
+                    <Children>
+                      <LocaleResource Name="Hint">
+                        <Value>One or more widget zones in which the widget should be rendered. Note: a theme defines clearly more zones as offered here. Search the view files for "@Html.Widget(...)" to locate all zones and determine their corresponding names.</Value>
                       </LocaleResource>
                     </Children>
                   </LocaleResource>

@@ -290,6 +290,7 @@ namespace SmartStore.Web.Controllers
             var allVariants = _productService.GetProductVariantsByProductIds(products.Select(x => x.Id).ToArray());
 
             var models = new List<ProductOverviewModel>();
+
             foreach (var product in products)
             {
                 var productVariants = allVariants.Where(x => x.ProductId == product.Id).ToList();
@@ -320,7 +321,7 @@ namespace SmartStore.Web.Controllers
                     additionalShippingCosts = _localizationService.GetResource("Common.AdditionalShippingSurcharge").FormatWith(_priceFormatter.FormatPrice(addShippingPrice, false, false));
                 }
                 //codehint: sm-edit end
-
+                
                 var model = new ProductOverviewModel()
                 {
                     Id = product.Id,

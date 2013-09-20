@@ -102,7 +102,7 @@ namespace SmartStore.Core.Plugins
                         var pluginDescriptor = dfd.Value;
 
                         //ensure that version of plugin is valid
-                        if (!pluginDescriptor.SupportedVersions.Contains(SmartStoreVersion.CurrentVersion, StringComparer.InvariantCultureIgnoreCase))
+                        if (SmartStoreVersion.FullVersion < pluginDescriptor.MinAppVersion)
                         {
                             incompatiblePlugins.Add(pluginDescriptor.SystemName);
                             continue;

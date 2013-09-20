@@ -1,7 +1,7 @@
 ﻿FriendlyName: Must be assigned to customer role
 SystemName: DiscountRequirement.MustBeAssignedToCustomerRole
-Version: 1.00
-SupportedVersions: 1.0
+Version: 1.1
+MinAppVersion: 1.2
 DisplayOrder: 1
 FileName: SmartStore.Plugin.DiscountRules.CustomerRoles.dll
 ResourceRootKey: Plugins.DiscountRequirement.MustBeAssignedToCustomerRole

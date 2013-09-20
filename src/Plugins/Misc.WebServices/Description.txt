@@ -1,7 +1,7 @@
 ﻿FriendlyName: Web Services
 SystemName: Misc.WebServices
-Version: 1.01
-SupportedVersions: 1.0
+Version: 1.2
+MinAppVersion: 1.2
 DisplayOrder: 1
 FileName: SmartStore.Plugin.Misc.WebServices.dll
 ResourceRootKey: Plugins.Misc.WebServices

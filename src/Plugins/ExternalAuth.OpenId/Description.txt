@@ -1,7 +1,7 @@
 ﻿FriendlyName: OpenID
 SystemName: ExternalAuth.OpenId
-Version: 1.02
-SupportedVersions: 1.0
+Version: 1.3
+MinAppVersion: 1.2
 DisplayOrder: 1
 FileName: SmartStore.Plugin.ExternalAuth.OpenId.dll
 ResourceRootKey: Plugins.ExternalAuth.OpenId

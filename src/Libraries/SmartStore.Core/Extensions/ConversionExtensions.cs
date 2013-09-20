@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using SmartStore.Utilities;
+using System.Diagnostics;
 
 namespace SmartStore
 {
@@ -423,6 +424,19 @@ namespace SmartStore
         public static byte[] ToByteArray(this string value)
         {
             return Encoding.Default.GetBytes(value);
+        }
+
+        [DebuggerStepThrough]
+        public static Version ToVersion(this string value, Version defaultVersion = null)
+        {
+            try
+            {
+                return new Version(value);
+            }
+            catch
+            {
+                return defaultVersion ?? new Version("1.0");
+            }
         }
 
         #endregion

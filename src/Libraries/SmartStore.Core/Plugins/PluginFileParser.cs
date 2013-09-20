@@ -136,14 +136,16 @@ namespace SmartStore.Core.Plugins
                         descriptor.Description = value;
                         break;
                     case "Version":
-                        descriptor.Version = value;
+                        descriptor.Version = value.ToVersion();
                         break;
-                    case "SupportedVersions":
+                    case "SupportedVersions": // compat
+                    case "MinAppVersion":
                         {
-                            //parse supported versions
-                            descriptor.SupportedVersions = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                            //parse supported min app version
+                            descriptor.MinAppVersion = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
-                                .ToList();
+                                .FirstOrDefault() // since V1.2 take the first only
+                                .ToVersion();
                         }
                         break;
                     case "Author":
@@ -171,11 +173,6 @@ namespace SmartStore.Core.Plugins
             {
                 descriptor.Group = group;
             }
-
-            ////nCommerce 2.00 didn't have 'SupportedVersions' parameter
-            ////so let's set it to "2.00"
-            //if (descriptor.SupportedVersions.Count == 0)
-            //    descriptor.SupportedVersions.Add("2.00");
 
             return descriptor;
         }
@@ -222,8 +219,8 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("FriendlyName", plugin.FriendlyName));
             keyValues.Add(new KeyValuePair<string, string>("SystemName", plugin.SystemName));
             keyValues.Add(new KeyValuePair<string, string>("Description", plugin.Description));
-            keyValues.Add(new KeyValuePair<string, string>("Version", plugin.Version));
-            keyValues.Add(new KeyValuePair<string, string>("SupportedVersions", string.Join(",", plugin.SupportedVersions)));
+            keyValues.Add(new KeyValuePair<string, string>("Version", plugin.Version.ToString()));
+            keyValues.Add(new KeyValuePair<string, string>("MinAppVersion", string.Join(",", plugin.MinAppVersion)));
             keyValues.Add(new KeyValuePair<string, string>("Author", plugin.Author));
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));

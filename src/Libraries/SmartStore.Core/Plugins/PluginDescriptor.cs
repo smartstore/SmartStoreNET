@@ -16,7 +16,8 @@ namespace SmartStore.Core.Plugins
 
         public PluginDescriptor()
         {
-            this.SupportedVersions = new List<string>();
+            this.Version = new Version("1.0");
+            this.MinAppVersion = SmartStoreVersion.FullVersion;
         }
 
         public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
@@ -126,12 +127,12 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets or sets the version
         /// </summary>
-        public string Version { get; set; }
+        public Version Version { get; set; }
 
         /// <summary>
-        /// Gets or sets the supported versions
+        /// Gets or sets the minimum supported app version
         /// </summary>
-        public IList<string> SupportedVersions { get; set; }
+        public Version MinAppVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the author

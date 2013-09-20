@@ -16,7 +16,6 @@ namespace SmartStore.Core
             get
             {
                 return "{0}.{1}".FormatInvariant(s_version.Major, s_version.Minor);
-                //return "1.00";
             }
         }
 
@@ -28,7 +27,15 @@ namespace SmartStore.Core
             get
             {
                 //return s_version.ToString();
-                return "1.0.1.0"; // TODO: (MC) read it from attribute
+                return "1.2.0.0"; // TODO: (MC) read it from attribute
+            }
+        }
+
+        internal static Version FullVersion
+        {
+            get
+            {
+                return s_version;
             }
         }
     }

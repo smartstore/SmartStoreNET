@@ -1427,6 +1427,8 @@ namespace SmartStore.Web.Controllers
 
                         model.ProductVariantPrice.PriceValue = finalPriceWithoutDiscount;
                         model.ProductVariantPrice.PriceWithDiscountValue = finalPriceWithDiscount;
+
+						model.BasePriceInfo = productVariant.GetBasePriceInfo(_localizationService, _priceFormatter, attributesTotalPriceBase);
                     }
                 }
             }

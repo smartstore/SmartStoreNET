@@ -381,8 +381,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="productVariant">Product variant</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="priceFormatter">Price formatter</param>
+		/// <param name="priceAdjustment">Price adjustment</param>
         /// <returns>The base price</returns>
-        public static string GetBasePriceInfo(this ProductVariant productVariant, ILocalizationService localizationService, IPriceFormatter priceFormatter)
+        public static string GetBasePriceInfo(this ProductVariant productVariant, ILocalizationService localizationService, IPriceFormatter priceFormatter,
+			decimal priceAdjustment = decimal.Zero)
         {
             if (productVariant == null)
                 throw new ArgumentNullException("productVariant");
@@ -406,7 +408,8 @@ namespace SmartStore.Services.Catalog
 
 				if (productVariant.BasePrice.Amount != Decimal.Zero)
 				{
-					decimal basePriceValue = Convert.ToDecimal((productVariant.Price / productVariant.BasePrice.Amount) * productVariant.BasePrice.BaseAmount);
+					decimal price = decimal.Add(productVariant.Price, priceAdjustment);
+					decimal basePriceValue = Convert.ToDecimal((price / productVariant.BasePrice.Amount) * productVariant.BasePrice.BaseAmount);
 
 					string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
 					string unit = "{0} {1}".FormatWith(productVariant.BasePrice.BaseAmount, productVariant.BasePrice.MeasureUnit);

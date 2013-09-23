@@ -113,15 +113,6 @@
 				@Html.ValidationMessageFor(model => model.DeliveryTimeId)
 			</td>
 		</tr>
-            <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePriceAmount)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.BasePriceAmount)
-                @Html.ValidationMessageFor(model => model.BasePriceAmount)
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
@@ -129,6 +120,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.BasePriceBaseAmount)
                 @Html.ValidationMessageFor(model => model.BasePriceBaseAmount)
+            </td>
+        </tr>
+		<tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BasePriceAmount)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BasePriceAmount)
+                @Html.ValidationMessageFor(model => model.BasePriceAmount)
             </td>
         </tr>
         <tr class="adminSeparator">

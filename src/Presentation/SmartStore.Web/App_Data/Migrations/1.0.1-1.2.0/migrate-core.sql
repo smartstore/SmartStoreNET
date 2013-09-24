@@ -389,6 +389,15 @@ SET @resources='
 	<Value lang="de">Der Alias, nach dem gefiltert werden soll</Value>
   </LocaleResource>  
   
+  <LocaleResource Name="Admin.Catalog.Products.Variants.Fields.MUBase">
+    <Value>Basic unit</Value>
+	<Value lang="de">Grundeinheit (PAngV)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Catalog.Products.Variants.Fields.MUAmount">
+    <Value>Amount</Value>
+	<Value lang="de">Menge</Value>
+  </LocaleResource>
+
 </Language>
 '
 

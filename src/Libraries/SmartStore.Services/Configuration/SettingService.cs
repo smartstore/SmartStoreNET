@@ -83,7 +83,7 @@ namespace SmartStore.Services.Configuration
 				var dictionary = new Dictionary<string, IList<SettingForCaching>>();
 				foreach (var s in settings)
 				{
-					var resourceName = s.Name.ToLowerInvariant();
+					var settingName = s.Name.ToLowerInvariant();
 					var settingForCaching = new SettingForCaching()
 					{
 						Id = s.Id,
@@ -91,10 +91,10 @@ namespace SmartStore.Services.Configuration
 						Value = s.Value,
 						StoreId = s.StoreId
 					};
-					if (!dictionary.ContainsKey(resourceName))
+					if (!dictionary.ContainsKey(settingName))
 					{
 						//first setting
-						dictionary.Add(resourceName, new List<SettingForCaching>()
+						dictionary.Add(settingName, new List<SettingForCaching>()
                         {
                             settingForCaching
                         });
@@ -103,7 +103,7 @@ namespace SmartStore.Services.Configuration
 					{
 						//already added
 						//most probably it's the setting with the same name but for some certain store (storeId > 0)
-						dictionary[resourceName].Add(settingForCaching);
+						dictionary[settingName].Add(settingForCaching);
 					}
 				}
 				return dictionary;
@@ -343,14 +343,15 @@ namespace SmartStore.Services.Configuration
         /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
 		public virtual void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
         {
-            if (key == null)
-                throw new ArgumentNullException("key");
+            Guard.ArgumentNotEmpty(() => key);
+
             key = key.Trim().ToLowerInvariant();
 			string valueStr = CommonHelper.GetCustomTypeConverter(typeof(T)).ConvertToInvariantString(value);
 
 			var allSettings = GetAllSettingsCached();
 			var settingForCaching = allSettings.ContainsKey(key) ?
 				allSettings[key].FirstOrDefault(x => x.StoreId == storeId) : null;
+
 			if (settingForCaching != null)
 			{
 				//update

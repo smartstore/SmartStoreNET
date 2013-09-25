@@ -16,7 +16,7 @@ namespace SmartStore.Core.Plugins
         {
             public override int Compare(string x, string y)
             {
-                return Array.FindIndex(KnownGroups, s => s == x) - Array.FindIndex(KnownGroups, s => s == y);
+                return Array.FindIndex( KnownGroups, s => s == x) - Array.FindIndex(KnownGroups, s => s == y);
             }
         }
         

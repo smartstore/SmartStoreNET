@@ -13,7 +13,7 @@
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "template-edit", this.Html, this.Model));
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
 @helper TabInfo()
 {

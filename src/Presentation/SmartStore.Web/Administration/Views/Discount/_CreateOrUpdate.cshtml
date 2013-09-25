@@ -18,7 +18,7 @@
     }
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "discount-edit", this.Html, this.Model));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "discount-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     {

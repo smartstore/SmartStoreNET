@@ -191,7 +191,7 @@
     <Compile Include="Controllers\SmartController.cs" />
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
-    <Compile Include="Events\AdminTabStripCreated.cs" />
+    <Compile Include="Events\TabStripCreated.cs" />
     <Compile Include="Extensions\HttpRequestExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="HandleInstallFilter.cs" />

@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
+using System.Data.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core;
@@ -52,7 +54,7 @@ namespace SmartStore.Data
             this.Entities.Add(entity);
 
             if (this.AutoCommitEnabled)
-                Commit();
+                _context.SaveChanges();
         }
 
         public void InsertRange(IEnumerable<T> entities, int batchSize = 100)
@@ -110,7 +112,7 @@ namespace SmartStore.Data
 
             if (this.AutoCommitEnabled)
             {
-                Commit();
+                _context.SaveChanges();
             }
             else
             {
@@ -136,7 +138,7 @@ namespace SmartStore.Data
             this.Entities.Remove(entity);
 
             if (this.AutoCommitEnabled)
-                Commit();
+                _context.SaveChanges();
         }
 
         public IQueryable<T> Expand(IQueryable<T> query, string path)
@@ -182,18 +184,6 @@ namespace SmartStore.Data
         #endregion
 
         #region Helpers
-
-        private void Commit()
-        {
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch (DbEntityValidationException ex)
-            {
-                throw ex;
-            }
-        }
 
         protected internal ObjectContextBase InternalContext
         {

@@ -123,7 +123,7 @@ namespace SmartStore
 
         public static bool HasItems(this IEnumerable source)
         {
-            return source == null || source.GetEnumerator().MoveNext();
+            return source != null && source.GetEnumerator().MoveNext();
         }
 
         public static int GetCount(this IEnumerable source)

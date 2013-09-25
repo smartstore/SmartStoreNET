@@ -11,7 +11,7 @@
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
     //generate an event
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "content-slide-edit", this.Html, this.Model));
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "content-slide-edit", this.Html, this.Model));
 })
 
     <script type="text/javascript">

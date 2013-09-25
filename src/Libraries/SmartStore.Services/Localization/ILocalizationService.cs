@@ -102,9 +102,6 @@ namespace SmartStore.Services.Localization
         /// <returns>A string representing the requested resource string.</returns>
         string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false);
 
-		/// <remarks>codehint: sm-add</remarks>
-		SelectListItem GetResourceToSelectListItem(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false);
-
         /// <summary>
         /// Export language resources to xml
         /// </summary>
@@ -136,5 +133,15 @@ namespace SmartStore.Services.Localization
 		/// <param name="forceToList">Load them into list rather than into database</param>
 		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
 		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true);
+
+        /// <summary>
+        /// Flattens all nested <c>LocaleResource</c> child nodes into a new document
+        /// </summary>
+        /// <param name="source">The source xml resource file</param>
+        /// <returns>
+        /// Either a new document with flattened resources or - if no nesting is determined - 
+        /// the original document, which was passed as <c>source</c>
+        /// </returns>
+        XmlDocument FlattenResourceFile(XmlDocument source);
     }
 }

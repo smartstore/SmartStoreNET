@@ -526,10 +526,8 @@
     <Compile Include="Validators\Common\ContactUsValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Localization\App\de\admin.smres.xml" />
-    <Content Include="App_Data\Localization\App\de\public.smres.xml" />
-    <Content Include="App_Data\Localization\App\en\admin.smres.xml" />
-    <Content Include="App_Data\Localization\App\en\public.smres.xml" />
+    <Content Include="App_Data\Localization\App\de\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\en\all.smres.xml" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>

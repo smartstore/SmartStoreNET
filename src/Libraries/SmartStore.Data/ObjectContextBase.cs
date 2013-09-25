@@ -316,13 +316,40 @@ namespace SmartStore.Data
             
             // SAVE NOW!!!
             this.Configuration.ValidateOnSaveEnabled = false;
-            int result = base.SaveChanges();
+            int result = this.Commit();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
             if (hooksEnabled && _postHooks.Count > 0)
             {
                 ExecutePostActionHooks(modifiedEntries);
             }
+
+            return result;
+        }
+
+        private int Commit()
+        {
+            int result = 0;
+            bool commitFailed = false;
+            do
+            {
+                commitFailed = false;
+
+                try
+                {
+                    result = base.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    commitFailed = true;
+
+                    foreach (var entry in ex.Entries)
+                    {
+                        entry.Reload();
+                    }
+                }
+            }
+            while (commitFailed);
 
             return result;
         }

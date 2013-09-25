@@ -1059,23 +1059,23 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			model.CompanyInformationSettings.Salutations.Add(_localizationService.GetResourceToSelectListItem("Admin.Address.Salutation.Mr"));
-			model.CompanyInformationSettings.Salutations.Add(_localizationService.GetResourceToSelectListItem("Admin.Address.Salutation.Mrs"));
+            model.CompanyInformationSettings.Salutations.Add(ResToSelectListItem("Admin.Address.Salutation.Mr"));
+            model.CompanyInformationSettings.Salutations.Add(ResToSelectListItem("Admin.Address.Salutation.Mrs"));
 
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Manager"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Manager"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shopkeeper"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shopkeeper"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Procurator"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Procurator"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shareholder"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shareholder"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.AuthorizedPartner"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.AuthorizedPartner"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Director"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Director"));
 			model.CompanyInformationSettings.ManagementDescriptions.Add(
-				_localizationService.GetResourceToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.ManagingPartner"));
+                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.ManagingPartner"));
 
 			//contact data
 			var contactDataSettings = _settingService.LoadSetting<ContactDataSettings>(storeScope);
@@ -1116,6 +1116,13 @@ namespace SmartStore.Admin.Controllers
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
+
+        private SelectListItem ResToSelectListItem(string resourceKey)
+        {
+            string value = _localizationService.GetResource(resourceKey).EmptyNull();
+            return new SelectListItem() { Text = value, Value = value };
+        }
+
         [HttpPost]
         [FormValueRequired("save")]
         public ActionResult GeneralCommon(GeneralCommonSettingsModel model, string selectedTab, FormCollection form)

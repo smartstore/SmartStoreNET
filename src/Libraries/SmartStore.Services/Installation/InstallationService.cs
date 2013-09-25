@@ -188,83 +188,6 @@ namespace SmartStore.Services.Installation
 
         #endregion Ctor
 
-        #region Classes
-
-        private class LocaleStringResourceParent : LocaleStringResource
-        {
-            public LocaleStringResourceParent(XmlNode localStringResource, string nameSpace = "")
-            {
-                Namespace = nameSpace;
-                var resNameAttribute = localStringResource.Attributes["Name"];
-                var resValueNode = localStringResource.SelectSingleNode("Value");
-
-                if (resNameAttribute == null)
-                {
-                    throw new SmartException("All language resources must have an attribute Name=\"Value\".");
-                }
-                var resName = resNameAttribute.Value.Trim();
-                if (string.IsNullOrEmpty(resName))
-                {
-                    throw new SmartException("All languages resource attributes 'Name' must have a value.'");
-                }
-                ResourceName = resName;
-
-                if (resValueNode == null || string.IsNullOrEmpty(resValueNode.InnerText.Trim()))
-                {
-                    IsPersistable = false;
-                }
-                else
-                {
-                    IsPersistable = true;
-                    ResourceValue = resValueNode.InnerText.Trim();
-                }
-
-                foreach (XmlNode childResource in localStringResource.SelectNodes("Children/LocaleResource"))
-                {
-                    ChildLocaleStringResources.Add(new LocaleStringResourceParent(childResource, NameWithNamespace));
-                }
-            }
-            public string Namespace { get; set; }
-            public IList<LocaleStringResourceParent> ChildLocaleStringResources = new List<LocaleStringResourceParent>();
-
-            public bool IsPersistable { get; set; }
-
-            public string NameWithNamespace
-            {
-                get
-                {
-                    var newNamespace = Namespace;
-                    if (!string.IsNullOrEmpty(newNamespace))
-                    {
-                        newNamespace += ".";
-                    }
-                    return newNamespace + ResourceName;
-                }
-            }
-        }
-
-        private class ComparisonComparer<T> : IComparer<T>, IComparer
-        {
-            private readonly Comparison<T> _comparison;
-
-            public ComparisonComparer(Comparison<T> comparison)
-            {
-                _comparison = comparison;
-            }
-
-            public int Compare(T x, T y)
-            {
-                return _comparison(x, y);
-            }
-
-            public int Compare(object o1, object o2)
-            {
-                return _comparison((T)o1, (T)o2);
-            }
-        }
-
-        #endregion Classes
-
         #region Utilities
 
         // codehint: sm-add
@@ -276,42 +199,6 @@ namespace SmartStore.Services.Installation
             {
                 _installContext.ProgressCallback(progress);
             }
-        }
-
-        private void RecursivelyWriteResource(LocaleStringResourceParent resource, XmlWriter writer)
-        {
-            //The value isn't actually used, but the name is used to create a namespace.
-            if (resource.IsPersistable)
-            {
-                writer.WriteStartElement("LocaleResource", "");
-
-                writer.WriteStartAttribute("Name", "");
-                writer.WriteString(resource.NameWithNamespace);
-                writer.WriteEndAttribute();
-
-                writer.WriteStartElement("Value", "");
-                writer.WriteString(resource.ResourceValue);
-                writer.WriteEndElement();
-
-                writer.WriteEndElement();
-            }
-
-            foreach (var child in resource.ChildLocaleStringResources)
-            {
-                RecursivelyWriteResource(child, writer);
-            }
-
-        }
-
-        private void RecursivelySortChildrenResource(LocaleStringResourceParent resource)
-        {
-            ArrayList.Adapter((IList)resource.ChildLocaleStringResources).Sort(new InstallationService.ComparisonComparer<LocaleStringResourceParent>((x1, x2) => x1.ResourceName.CompareTo(x2.ResourceName)));
-
-            foreach (var child in resource.ChildLocaleStringResources)
-            {
-                RecursivelySortChildrenResource(child);
-            }
-
         }
 
 		private void InstallStores()
@@ -441,56 +328,25 @@ namespace SmartStore.Services.Installation
                 var language = _languageRepository.Table.Single();
 
                 var locPath = _webHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
-                // codehint: sm-add
                 if (!System.IO.Directory.Exists(locPath))
                 {
                     // Fallback to neutral language folder (de, en etc.)
                     locPath = _webHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
                 }
 
+                var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+
                 // save resources
                 foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
                 {
-                    #region Parse resource files (with <Children> elements)
-                    //read and parse original file with resources (with <Children> elements)
+                    var doc = new XmlDocument();
+                    doc.Load(filePath);
 
-                    var originalXmlDocument = new XmlDocument();
-                    originalXmlDocument.Load(filePath);
-
-                    var resources = new List<LocaleStringResourceParent>();
-
-                    foreach (XmlNode resNode in originalXmlDocument.SelectNodes(@"//Language/LocaleResource"))
-                        resources.Add(new LocaleStringResourceParent(resNode));
-
-                    resources.Sort((x1, x2) => x1.ResourceName.CompareTo(x2.ResourceName));
-
-                    foreach (var resource in resources)
-                        RecursivelySortChildrenResource(resource);
-
-                    var sb = new StringBuilder();
-                    var writer = XmlWriter.Create(sb);
-                    writer.WriteStartDocument();
-                    writer.WriteStartElement("Language", "");
-
-                    writer.WriteStartAttribute("Name", "");
-                    writer.WriteString(originalXmlDocument.SelectSingleNode(@"//Language").Attributes["Name"].InnerText.Trim());
-                    writer.WriteEndAttribute();
-
-                    foreach (var resource in resources)
-                        RecursivelyWriteResource(resource, writer);
-
-                    writer.WriteEndElement();
-                    writer.WriteEndDocument();
-                    writer.Flush();
-
-                    var parsedXml = sb.ToString();
-                    
-                    #endregion Parse resource files (with <Children> elements)
+                    doc = localizationService.FlattenResourceFile(doc);
 
                     // now we have a parsed XML file (the same structure as exported language packs)
                     // let's save resources
-                    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
-                    localizationService.ImportResourcesFromXml(language, parsedXml);
+                    localizationService.ImportResourcesFromXml(language, doc);
                 }
                 IncreaseProgress();
             }
@@ -5329,17 +5185,6 @@ namespace SmartStore.Services.Installation
             //_pollRepository.Insert(poll1);
 
             #endregion oldcode
-
-            //try
-            //{
-            //    _installData.PollAnswers().Each(x => _pollAnswerRepository.Insert(x));
-            //    IncreaseProgress();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new InstallationException("InstallPollAnswers", ex);
-            //}
-            
             
             try
             {
@@ -5539,8 +5384,8 @@ namespace SmartStore.Services.Installation
                 InstallPolls();
             }
 
-            //_dbContext.AutoDetectChangesEnabled = true;
-            //_dbContext.ValidateOnSaveEnabled = true;
+            _dbContext.AutoDetectChangesEnabled = true;
+            _dbContext.ValidateOnSaveEnabled = true;
 
         }
 

@@ -312,6 +312,7 @@ namespace SmartStore.Admin.Controllers
 
             var resources = _localizationService
                 .GetResourceValues(languageId, true)
+                .Where(x => x.Key != "!!___EOF___!!")
                 .OrderBy(x => x.Key)
                 .ToList();
             var gridModel = new GridModel<LanguageResourceModel>
@@ -324,7 +325,7 @@ namespace SmartStore.Admin.Controllers
                         LanguageName = language.Name,
                         Id = x.Value.Item1,
                         Name = x.Key,
-                        Value = x.Value.Item2,
+                        Value = x.Value.Item2.EmptyNull(),
                     }),
                 Total = resources.Count
             };
@@ -342,13 +343,14 @@ namespace SmartStore.Admin.Controllers
             var resources = _localizationService
                 .GetResourceValues(languageId, true)
                 .OrderBy(x => x.Key)
+                .Where(x => x.Key != "!!___EOF___!!")
                 .Select(x => new LanguageResourceModel()
                 {
                     LanguageId = languageId,
                     LanguageName = language.Name,
                     Id = x.Value.Item1,
                     Name = x.Key,
-                    Value = x.Value.Item2,
+                    Value = x.Value.Item2.EmptyNull(),
                 })
                 .ForCommand(command)
                 .ToList();

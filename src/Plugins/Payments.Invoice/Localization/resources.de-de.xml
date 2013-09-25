@@ -19,7 +19,7 @@
     <Value>Zusätzliche Gebühr</Value>
   </LocaleResource>
   <LocaleResource Name="AdditionalFee.Hint">
-    <Value>Bestimmt die Gebühr die dem Kunden für die Nutzung dieser Zahlart berechnet wird.</Value>
+    <Value>Bestimmt die Gebühr, die dem Kunden für die Nutzung dieser Zahlart berechnet wird.</Value>
   </LocaleResource>
 	<LocaleResource Name="AdditionalFeePercentage">
 		<Value>Zusätzliche Gebühren (prozentual)</Value>

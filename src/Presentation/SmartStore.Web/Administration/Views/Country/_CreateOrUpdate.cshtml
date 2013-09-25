@@ -9,7 +9,7 @@
     x.Add().Text(T("Admin.Configuration.Countries.States").Text).Content(TabStates());
     
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "country-edit", this.Html, this.Model));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "country-edit", this.Html, this.Model));
 })
 @helper TabInfo()
     {        

@@ -7,9 +7,9 @@ namespace SmartStore.Web.Framework.Events
     /// <summary>
     /// Admin tabstrip created event
     /// </summary>
-    public class AdminTabStripCreated
+    public class TabStripCreated
     {
-        public AdminTabStripCreated(TabFactory itemFactory, string tabStripName, HtmlHelper html, object model = null)
+        public TabStripCreated(TabFactory itemFactory, string tabStripName, HtmlHelper html, object model = null)
         {
             this.TabStripName = tabStripName;
             this.Html = html;

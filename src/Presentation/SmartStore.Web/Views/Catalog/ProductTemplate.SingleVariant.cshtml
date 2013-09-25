@@ -4,9 +4,11 @@
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Infrastructure;
-@using SmartStore.Web;
+@using SmartStore.Services.Events;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Events;
+
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
@@ -298,6 +300,9 @@
                                 .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
                                 .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
                     }
+                    
+                    //generate an event
+                    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
                 })
             
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -17,6 +18,7 @@ using SmartStore.Core.Plugins;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using System.Web.Mvc;
+using System.Collections;
 
 namespace SmartStore.Services.Localization
 {
@@ -26,8 +28,8 @@ namespace SmartStore.Services.Localization
     public partial class LocalizationService : ILocalizationService
     {
         #region Constants
-        private const string LOCALSTRINGRESOURCES_ALL_KEY = "SmartStore.lsr.all-{0}";
-        private const string LOCALSTRINGRESOURCES_PATTERN_KEY = "SmartStore.lsr.";
+        private const string LOCALESTRINGRESOURCES_ALL_KEY = "SmartStore.lsr.all-{0}";
+        private const string LOCALESTRINGRESOURCES_PATTERN_KEY = "SmartStore.lsr.";
         #endregion
 
         #region Fields
@@ -113,14 +115,17 @@ namespace SmartStore.Services.Localization
 		/// <returns>Number of deleted string resources</returns>
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
 			int result = 0;
-			if (key.HasValue()) {
-				try {
+			if (key.HasValue()) 
+            {
+				try 
+                {
 					string sqlDelete = "Delete From LocaleStringResource Where ResourceName Like '{0}%'".FormatWith(key.EndsWith(".") || !keyIsRootKey ? key : key + ".");
 					result = _dbContext.ExecuteSqlCommand(sqlDelete);
 
-                    _cacheManager.RemoveByPattern(LOCALSTRINGRESOURCES_PATTERN_KEY);
+                    _cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
 				}
-				catch (Exception exc) {
+				catch (Exception exc) 
+                {
 					exc.Dump();
 				}
 			}
@@ -246,31 +251,45 @@ namespace SmartStore.Services.Localization
 
         public virtual IDictionary<string, Tuple<int, string>> GetResourceValues(int languageId, bool forceAll = false)
         {
-            string key = string.Format(LOCALSTRINGRESOURCES_ALL_KEY, languageId);
-            return _cacheManager.Get(key, () =>
+            Action<ConcurrentDictionary<string, Tuple<int, string>>> loadAllAction = (d) =>
             {
-                var dict = new ConcurrentDictionary<string, Tuple<int, string>>(8, 2000, StringComparer.CurrentCultureIgnoreCase);
-                
-                if (forceAll || _localizationSettings.LoadAllLocaleRecordsOnStartup)
-                {
-                    var query = from l in _lsrRepository.Table
-                                orderby l.ResourceName
-                                where l.LanguageId == languageId
-                                select l;
-                    var locales = query.ToList();
+                var locales = this.GetAllResources(languageId);
 
-                    foreach (var locale in locales)
-                    {
-                        var resourceName = locale.ResourceName.ToLowerInvariant();
-                        dict.TryAdd(resourceName, new Tuple<int, string>(locale.Id, locale.ResourceValue));
-                    }
+                foreach (var locale in locales)
+                {
+                    var resourceName = locale.ResourceName.ToLowerInvariant();
+                    //if (!d.ContainsKey(resourceName))
+                    //{
+                        //d.TryAdd(resourceName, new Tuple<int, string>(locale.Id, locale.ResourceValue));
+                        d.AddOrUpdate(
+                            resourceName, 
+                            (k) => new Tuple<int, string>(locale.Id, locale.ResourceValue), 
+                            (k, v) => { d[k] = v; return v; });
+                    //}
                 }
 
-                return dict;
-                
+                // perf: add a dummy item indicating that data is fully loaded
+                d.TryAdd("!!___EOF___!!", new Tuple<int, string>(0, string.Empty));
+            };
 
-                //return dictionary;
+            string cacheKey = string.Format(LOCALESTRINGRESOURCES_ALL_KEY, languageId);
+            var dict = _cacheManager.Get(cacheKey, () => {
+                var result = new ConcurrentDictionary<string, Tuple<int, string>>(8, 2000, StringComparer.CurrentCultureIgnoreCase);
+                if (forceAll || _localizationSettings.LoadAllLocaleRecordsOnStartup)
+                {
+                    loadAllAction(result);
+                }
+                return result;
             });
+
+            if (forceAll && !_localizationSettings.LoadAllLocaleRecordsOnStartup && !dict.ContainsKey("!!___EOF___!!"))
+            {
+                // In this case the resources MIGHT not be loaded completely
+                // from the DB, but cached already. So load all and enforce merge.
+                loadAllAction(dict);
+            }
+
+            return dict;
         }
 
 
@@ -337,13 +356,6 @@ namespace SmartStore.Services.Localization
             }
             return result;
         }
-
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual SelectListItem GetResourceToSelectListItem(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
-		{
-			string resource = GetResource(resourceKey, languageId, logIfNotFound, defaultValue, returnEmptyIfNotFound);
-			return new SelectListItem() { Text = resource, Value = resource };
-		}
 
         /// <summary>
         /// Export language resources to xml
@@ -467,11 +479,12 @@ namespace SmartStore.Services.Localization
                 {
                     _lsrRepository.Update(x);
                 });
+                
                 _lsrRepository.Context.SaveChanges();
                 toUpdate.Clear();
 
                 //clear cache
-                _cacheManager.RemoveByPattern(LOCALSTRINGRESOURCES_PATTERN_KEY);
+                _cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
             }
             catch (Exception ex)
             {
@@ -547,6 +560,170 @@ namespace SmartStore.Services.Localization
 				}
 			}
 		}
+
+        public virtual XmlDocument FlattenResourceFile(XmlDocument source)
+        {
+            Guard.NotNull(() => source);
+
+            if (!source.SelectNodes("//Children").HasItems())
+            {
+                // the document contains absolutely NO nesting,
+                // so don't bother parsing.
+                return source;
+            }
+
+            var resources = new List<LocaleStringResourceParent>();
+
+            foreach (XmlNode resNode in source.SelectNodes(@"//Language/LocaleResource"))
+            {
+                resources.Add(new LocaleStringResourceParent(resNode));
+            }
+
+            resources.Sort((x1, x2) => x1.ResourceName.CompareTo(x2.ResourceName));
+
+            foreach (var resource in resources)
+            {
+                RecursivelySortChildrenResource(resource);
+            }
+
+            var sb = new StringBuilder();
+            using (var writer = XmlWriter.Create(sb))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("Language", "");
+
+                writer.WriteStartAttribute("Name", "");
+                writer.WriteString(source.SelectSingleNode(@"//Language").Attributes["Name"].InnerText.Trim());
+                writer.WriteEndAttribute();
+
+                foreach (var resource in resources)
+                {
+                    RecursivelyWriteResource(resource, writer);
+                }
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+                writer.Flush();
+            }
+
+            var result = new XmlDocument();
+            result.LoadXml(sb.ToString());
+
+            return result;
+        }
+
+        private void RecursivelyWriteResource(LocaleStringResourceParent resource, XmlWriter writer)
+        {
+            //The value isn't actually used, but the name is used to create a namespace.
+            if (resource.IsPersistable)
+            {
+                writer.WriteStartElement("LocaleResource", "");
+
+                writer.WriteStartAttribute("Name", "");
+                writer.WriteString(resource.NameWithNamespace);
+                writer.WriteEndAttribute();
+
+                writer.WriteStartElement("Value", "");
+                writer.WriteString(resource.ResourceValue);
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+            }
+
+            foreach (var child in resource.ChildLocaleStringResources)
+            {
+                RecursivelyWriteResource(child, writer);
+            }
+
+        }
+
+        private void RecursivelySortChildrenResource(LocaleStringResourceParent resource)
+        {
+            ArrayList.Adapter((IList)resource.ChildLocaleStringResources).Sort(new LocalizationService.ComparisonComparer<LocaleStringResourceParent>((x1, x2) => x1.ResourceName.CompareTo(x2.ResourceName)));
+
+            foreach (var child in resource.ChildLocaleStringResources)
+            {
+                RecursivelySortChildrenResource(child);
+            }
+
+        }
+
+        #endregion
+
+        #region Classes
+
+        private class LocaleStringResourceParent : LocaleStringResource
+        {
+            public LocaleStringResourceParent(XmlNode localStringResource, string nameSpace = "")
+            {
+                Namespace = nameSpace;
+                var resNameAttribute = localStringResource.Attributes["Name"];
+                var resValueNode = localStringResource.SelectSingleNode("Value");
+
+                if (resNameAttribute == null)
+                {
+                    throw new SmartException("All language resources must have an attribute Name=\"Value\".");
+                }
+                var resName = resNameAttribute.Value.Trim();
+                if (string.IsNullOrEmpty(resName))
+                {
+                    throw new SmartException("All languages resource attributes 'Name' must have a value.'");
+                }
+                ResourceName = resName;
+
+                if (resValueNode == null || string.IsNullOrEmpty(resValueNode.InnerText.Trim()))
+                {
+                    IsPersistable = false;
+                }
+                else
+                {
+                    IsPersistable = true;
+                    ResourceValue = resValueNode.InnerText.Trim();
+                }
+
+                foreach (XmlNode childResource in localStringResource.SelectNodes("Children/LocaleResource"))
+                {
+                    ChildLocaleStringResources.Add(new LocaleStringResourceParent(childResource, NameWithNamespace));
+                }
+            }
+            public string Namespace { get; set; }
+            public IList<LocaleStringResourceParent> ChildLocaleStringResources = new List<LocaleStringResourceParent>();
+
+            public bool IsPersistable { get; set; }
+
+            public string NameWithNamespace
+            {
+                get
+                {
+                    var newNamespace = Namespace;
+                    if (!string.IsNullOrEmpty(newNamespace))
+                    {
+                        newNamespace += ".";
+                    }
+                    return newNamespace + ResourceName;
+                }
+            }
+        }
+
+        private class ComparisonComparer<T> : IComparer<T>, IComparer
+        {
+            private readonly Comparison<T> _comparison;
+
+            public ComparisonComparer(Comparison<T> comparison)
+            {
+                _comparison = comparison;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return _comparison(x, y);
+            }
+
+            public int Compare(object o1, object o2)
+            {
+                return _comparison((T)o1, (T)o2);
+            }
+        }
 
         #endregion
     }

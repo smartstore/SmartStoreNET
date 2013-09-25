@@ -30,7 +30,7 @@
     x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
 
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new AdminTabStripCreated(x, "customersettings-edit", this.Html, this.Model));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
 })
 }
 @helper TabCustomerSettings()

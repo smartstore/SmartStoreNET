@@ -553,7 +553,6 @@ namespace SmartStore.Web.Controllers
 
                     foreach (var plugin in plugins)
                     {
-                        // codehint: sm-edit
                         try
                         {
                             plugin.Install();
@@ -564,7 +563,7 @@ namespace SmartStore.Web.Controllers
                             {
                                 PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
                             }
-                            System.Diagnostics.Debug.Write(ex.Message);
+                            //System.Diagnostics.Debug.Write(ex.Message);
                         }
                         finally
                         {

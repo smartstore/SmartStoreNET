@@ -102,7 +102,7 @@ namespace SmartStore.Core.Plugins
                         var pluginDescriptor = dfd.Value;
 
                         //ensure that version of plugin is valid
-                        if (SmartStoreVersion.FullVersion < pluginDescriptor.MinAppVersion)
+                        if (!IsAssumedCompatible(pluginDescriptor))
                         {
                             incompatiblePlugins.Add(pluginDescriptor.SystemName);
                             continue;
@@ -250,6 +250,50 @@ namespace SmartStore.Core.Plugins
                 File.Delete(filePath);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether a plugin is assumed
+        /// to be compatible with the current app version
+        /// </summary>
+        /// <remarks>
+        /// A plugin is generally compatible when both app version and plugin's 
+        /// <c>MinorAppVersion</c> are equal, OR - when app version is greater - it is 
+        /// assumed to be compatible when no breaking changes occured since <c>MinorAppVersion</c>.
+        /// </remarks>
+        /// <param name="descriptor">The plugin to check</param>
+        /// <returns><c>true</c> when the plugin is assumed to be compatible</returns>
+        public static bool IsAssumedCompatible(PluginDescriptor descriptor)
+        {
+            if (SmartStoreVersion.FullVersion == descriptor.MinAppVersion)
+            {
+                return true;
+            }
+            
+            if (SmartStoreVersion.FullVersion < descriptor.MinAppVersion)
+            {
+                return false;
+            }
+
+            bool compatible = true;
+
+            foreach (var version in SmartStoreVersion.BreakingChangesHistory)
+            {
+                if (version > descriptor.MinAppVersion)
+                {
+                    // there was a breaking change in a version greater
+                    // than plugin's MinorAppVersion.
+                    compatible = false;
+                    break;
+                }
+
+                if (version <= descriptor.MinAppVersion)
+                {
+                    break;
+                }
+            }
+
+            return compatible;
+        }
+
         #endregion
 
         #region Utilities
@@ -288,15 +332,6 @@ namespace SmartStore.Core.Plugins
         /// <returns>Result</returns>
         private static bool IsAlreadyLoaded(FileInfo fileInfo)
         {
-            //compare full assembly name
-            //var fileAssemblyName = AssemblyName.GetAssemblyName(fileInfo.FullName);
-            //foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
-            //{
-            //    if (a.FullName.Equals(fileAssemblyName.FullName, StringComparison.InvariantCultureIgnoreCase))
-            //        return true;
-            //}
-            //return false;
-
             //do not compare the full assembly name, just filename
             try
             {

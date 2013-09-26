@@ -557,13 +557,13 @@ namespace SmartStore.Web.Controllers
                         {
                             plugin.Install();
                         }
-                        catch (Exception ex)
+                        catch /*(Exception ex)*/
                         {
+                            //System.Diagnostics.Debug.Write(ex.Message);
                             if (plugin.PluginDescriptor.Installed)
                             {
                                 PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
                             }
-                            //System.Diagnostics.Debug.Write(ex.Message);
                         }
                         finally
                         {

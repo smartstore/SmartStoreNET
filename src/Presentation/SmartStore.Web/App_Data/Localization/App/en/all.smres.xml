@@ -13621,4 +13621,178 @@
 	<LocaleResource Name="Wishlist.YourWishlistURL">
 		<Value>Your wishlist URL for sharing</Value>
 	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.CurrencyExchange.ECB">
+		<Value>ECB exchange rate provider</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.CurrencyExchange.MoneyConverter">
+		<Value>Money converter exchange rate provider</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.BillingCountryIs">
+		<Value>Billing country is</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HadSpentAmount">
+		<Value>Customer had spent x.xx amount</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasAllProducts">
+		<Value>Customer has all of these product variants in the cart</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasOneProduct">
+		<Value>Customer has one of these product variants in the cart</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.MustBeAssignedToCustomerRole">
+		<Value>Must be assigned to customer role</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.PurchasedAllProducts">
+		<Value>Customer had previously purchased all of these product variants</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.PurchasedOneProduct">
+		<Value>Customer had previously purchased one of these product variants</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.ShippingCountryIs">
+		<Value>Shipping country is</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.ExternalAuth.Facebook">
+		<Value>Facebook</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.ExternalAuth.OpenId">
+		<Value>OpenID</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.ExternalAuth.Twitter">
+		<Value>Twitter</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Misc.MailChimp">
+		<Value>MailChimp e-mail synchronization</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Misc.WebServices">
+		<Value>Web Services</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Mobile.SMS.Clickatell">
+		<Value>Clickatell SMS Provider</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.CashOnDelivery">
+		<Value>Cash on delivery</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.CheckMoneyOrder">
+		<Value>Check / Money Order</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.DirectDebit">
+		<Value>Direct Debit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.GoogleCheckout">
+		<Value>Google Checkout</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Invoice">
+		<Value>Invoice</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.IPaymentCreditCard">
+		<Value>iPayment credit card</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.IPaymentDirectDebit">
+		<Value>iPayment direct debit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Manual">
+		<Value>Credit card</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PayInStore">
+		<Value>Pay in store</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalDirect">
+		<Value>PayPal Express</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalStandard">
+		<Value>PayPal Standard</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PostFinanceECommerce">
+		<Value>PostFinance</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Prepayment">
+		<Value>Prepayment</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Payments.Sofortueberweisung">
+		<Value>Sofortüberweisung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Shipping.ByTotal">
+		<Value>Shipping by total</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Shipping.ByWeight">
+		<Value>Shipping by weight</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Shipping.FedEx">
+		<Value>FedEx</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Shipping.FixedRate">
+		<Value>Fixed rate shipping</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Shipping.UPS">
+		<Value>UPS (United Parcel Service)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Tax.CountryStateZip">
+		<Value>Tax By Country &amp; State &amp; Zip</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Tax.FixedRate">
+		<Value>Fixed rate</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Tax.Free">
+		<Value>Free tax rate</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.FriendlyName.Widgets.LivePersonChat">
+		<Value>LivePerson (Chat)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Admin">
+		<Value>Administration</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Analytics">
+		<Value>Analytics &amp; Stats</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Api">
+		<Value>API</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.CMS">
+		<Value>Content Management</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.CurrencyExchange">
+		<Value>Exchange rate providers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.DiscountRequirement">
+		<Value>Discount requirements</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.ExternalAuth">
+		<Value>Authentication</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Import">
+		<Value>Import</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Marketing">
+		<Value>Marketing</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Misc">
+		<Value>Miscellaneous</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Mobile">
+		<Value>Mobile</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Payment">
+		<Value>Payment &amp; Gateways</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.PromotionFeed">
+		<Value>Promotion feeds</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Security">
+		<Value>Security</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.SEO">
+		<Value>SEO</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Shipping">
+		<Value>Shipping &amp; Logistics</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Social">
+		<Value>Social</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Tax">
+		<Value>Tax providers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Widget">
+		<Value>Widgets</Value>
+	</LocaleResource>
 </Language>

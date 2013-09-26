@@ -12,8 +12,9 @@
 ###New Features###
  - **Multi-store-support:** now multiple stores can be managed within a single application instance (e.g. for building different catalogs, brands, landing pages etc.)
  - Added 3 new **Trusted Shops** plugins: Seal, Buyer Protection, Store Reviews
- - Added __HTML Widget__ (store owner now can add arbitrary HTML content to any page region without modifying view files)
+ - Added **Display as HTML Widget** to CMS Topics (store owner now can add arbitrary HTML content to any page region without modifying view files)
  - **Color attributes** are now displayed on product list pages (as mini squares)
+ - Added **ask question form** to product pages
  - _ShippingByTotal_ plugin: added __BaseFee__, __MaxFee__ and __SmallQuantitySurcharge__.
  - _ShippingByTotal_ plugin: added the ability to define __zip ranges__ including __wildcards__.
  - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__ 

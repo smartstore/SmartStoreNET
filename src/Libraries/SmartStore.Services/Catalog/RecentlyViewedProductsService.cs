@@ -59,20 +59,12 @@ namespace SmartStore.Services.Catalog
             var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts");
             if ((recentlyViewedCookie == null) || (recentlyViewedCookie.Values == null))
                 return productIds;
+
             string[] values = recentlyViewedCookie.Values.GetValues("RecentlyViewedProductIds");
             if (values == null)
                 return productIds;
-            foreach (string productId in values)
-            {
-                int prodId = int.Parse(productId);
-                if (!productIds.Contains(prodId))
-                {
-                    productIds.Add(prodId);
-                    if (productIds.Count >= number)
-                        break;
-                }
 
-            }
+            productIds.AddRange(values.Select(x => int.Parse(x)).Distinct().Take(number));
 
             return productIds;
         }
@@ -93,10 +85,7 @@ namespace SmartStore.Services.Catalog
             var productIds = GetRecentlyViewedProductsIds(number);
             var recentlyViewedProducts = _productService.GetProductsByIds(productIds.ToArray()).Where(x => x.Published && !x.Deleted);
 
-            foreach (var product in recentlyViewedProducts)
-            {
-                products.Add(product);
-            }
+            products.AddRange(recentlyViewedProducts);
             return products;
         }
 
@@ -110,27 +99,27 @@ namespace SmartStore.Services.Catalog
                 return;
 
             var oldProductIds = GetRecentlyViewedProductsIds();
-            var newProductIds = new List<int>();
-            newProductIds.Add(productId);
-            foreach (int oldProductId in oldProductIds)
-                if (oldProductId != productId)
-                    newProductIds.Add(oldProductId);
+            var newProductIds = new List<int>(oldProductIds);
+
+            if (!newProductIds.Contains(productId)) 
+            {
+                newProductIds.Add(productId);
+            }
 
             var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts");
             if (recentlyViewedCookie == null)
                 recentlyViewedCookie = new HttpCookie("SmartStore.RecentlyViewedProducts");
             recentlyViewedCookie.Values.Clear();
+
             int maxProducts = _catalogSettings.RecentlyViewedProductsNumber;
             if (maxProducts <= 0)
                 maxProducts = 10;
-            int i = 1;
-            foreach (int newProductId in newProductIds)
-            {
-                recentlyViewedCookie.Values.Add("RecentlyViewedProductIds", newProductId.ToString());
-                if (i == maxProducts)
-                    break;
-                i++;
-            }
+
+            int skip = Math.Max(0, newProductIds.Count - maxProducts);
+            newProductIds.Skip(skip).Take(maxProducts).Each(x => {
+                recentlyViewedCookie.Values.Add("RecentlyViewedProductIds", x.ToString());
+            });
+
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);
         }

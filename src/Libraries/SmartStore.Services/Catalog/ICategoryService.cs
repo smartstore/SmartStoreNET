@@ -24,8 +24,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
         /// <returns>Categories</returns>
-        IPagedList<Category> GetAllCategories(string categoryName = "",
-            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null);
+        IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null);
 
         /// <summary>
         /// Gets all categories filtered by parent category identifier
@@ -33,8 +32,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="parentCategoryId">Parent category identifier</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Category collection</returns>
-        IList<Category> GetAllCategoriesByParentCategoryId(int parentCategoryId,
-            bool showHidden = false);
+        IList<Category> GetAllCategoriesByParentCategoryId(int parentCategoryId, bool showHidden = false);
 
         /// <summary>
         /// Gets all categories displayed on the home page

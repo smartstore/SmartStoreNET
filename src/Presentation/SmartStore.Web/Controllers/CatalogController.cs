@@ -12,7 +12,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Directory;  /* codehint: sm-add */
+using SmartStore.Core.Domain.Directory; 
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -692,27 +692,6 @@ namespace SmartStore.Web.Controllers
                     Name = category.GetLocalized(x => x.Name),
                     SeName = category.GetSeName()
                 };
-
-                //// resolve number of products
-                //if (_catalogSettings.ShowCategoryProductNumber)
-                //{
-                //    var categoryIds = new List<int>();
-                //    categoryIds.Add(category.Id);
-                //    if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
-                //    {
-                //        // include subcategories
-                //        categoryIds.AddRange(GetChildCategoryIds(category.Id));
-                //    }
-
-                //    var ctx = new ProductSearchContext();
-                //    ctx.CategoryIds = categoryIds;
-                //    //ctx.OrderBy = ProductSortingEnum.Position;
-                //    //ctx.PageSize = 1;
-				//	ctx.StoreId = _storeContext.CurrentStore.Id;
-
-                //    //model.NumberOfProducts = _productService.SearchProducts(ctx).TotalCount;
-                //    model.NumberOfProducts = _productService.CountProducts(ctx);
-                //}
 
                 // determine parent
                 if (prevCat != null)

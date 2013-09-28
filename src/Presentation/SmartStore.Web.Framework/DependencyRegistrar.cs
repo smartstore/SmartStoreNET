@@ -111,12 +111,14 @@ namespace SmartStore.Web.Framework
 
                 builder.Register<IDbContext>(c => new SmartObjectContext(dataProviderSettings.DataConnectionString))
                     .InstancePerHttpRequest()
+                    //.OnActivated(e => ((ObjectContextBase)e.Instance).Hooks = e.Context.Resolve<IEnumerable<IHook>>());
                     .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
             }
             else
             {
                 builder.Register<IDbContext>(c => new SmartObjectContext(dataSettingsManager.LoadSettings().DataConnectionString))
                     .InstancePerHttpRequest()
+                    //.OnActivated(e => ((ObjectContextBase)e.Instance).Hooks = e.Context.Resolve<IEnumerable<IHook>>());
                     .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
             }
 

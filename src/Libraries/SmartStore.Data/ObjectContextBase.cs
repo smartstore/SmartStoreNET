@@ -270,7 +270,7 @@ namespace SmartStore.Data
         public override int SaveChanges()
         {
             HookedEntityEntry[] modifiedEntries = null;
-            bool hooksEnabled = this.HooksEnabled && _preHooks.Count > 0 && _postHooks.Count > 0;
+            bool hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
             
             if (hooksEnabled)
             {

@@ -23,6 +23,7 @@ namespace SmartStore.Web.Models.Customer
         #region Nested classes
         public partial class OrderDetailsModel : EntityModelBase
         {
+            public string OrderNumber { get; set; }
             public string OrderTotal { get; set; }
             public bool IsReturnRequestAllowed { get; set; }
             public string OrderStatus { get; set; }

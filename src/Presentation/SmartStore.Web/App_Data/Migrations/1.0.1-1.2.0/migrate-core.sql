@@ -398,6 +398,30 @@ SET @resources='
 	<Value lang="de">Menge</Value>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Orders.List.OrderGuid">
+	<Value lang="de"></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.List.OrderGuid">
+	<Value lang="de">Auftrags-GUID</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Admin.Orders.List.OrderNumber">
+    <Value>Order Number</Value>
+	<Value lang="de">Auftragsnummer</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.List.OrderNumber.Hint">
+    <Value>Search by order number or part of order number. Leave empty to load all orders.</Value>
+	<Value lang="de">Suche über die Auftragsnummer oder Teile davon. Freilassen, um alle Aufträge zu laden.</Value>
+  </LocaleResource>
+    <LocaleResource Name="Admin.Orders.Fields.OrderNumber">
+    <Value>Order Number</Value>
+	<Value lang="de">Auftragsnummer</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Orders.Fields.OrderNumber.Hint">
+    <Value>The (formatted) order number</Value>
+	<Value lang="de">Die formattierte Auftragsnummer.</Value>
+  </LocaleResource>
+
 </Language>
 '
 
@@ -579,5 +603,11 @@ GO
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Category]') and NAME='Alias')
 BEGIN
 	ALTER TABLE [Category] ADD [Alias] nvarchar(100) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Order]') and NAME='OrderNumber')
+BEGIN
+	ALTER TABLE [Order] ADD [OrderNumber] [nvarchar](500) NULL
 END
 GO

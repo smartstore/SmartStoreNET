@@ -26,11 +26,11 @@
                     @T("Checkout.YourOrderHasBeenSuccessfullyProcessed")
                 </strong>
                 <p>
-                    @T("Checkout.OrderNumber"): @Model.OrderId
+                    @T("Checkout.OrderNumber"): @Model.OrderNumber
                 </p>
             </div>
             <div class="select-button">
-                <a href="@Url.RouteUrl("OrderDetails", new { orderID = @Model.OrderId})" class="btn btn-warning">
+                <a href="@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId})" class="btn btn-warning">
                     <i class="icon-list-alt"></i>&nbsp;@T("Checkout.PlacedOrderDetails")
                 </a>
                 <a href="@Url.RouteUrl("HomePage")" class="btn order-completed-continue-button">

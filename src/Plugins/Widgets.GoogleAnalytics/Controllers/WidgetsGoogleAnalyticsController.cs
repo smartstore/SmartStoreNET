@@ -122,7 +122,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
         private Order GetLastOrder()
         {
 			var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 			return order;
         }
         
@@ -198,7 +198,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
             {
                 analyticsEcommerceScript = googleAnalyticsSettings.EcommerceScript + "\n";
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{ORDERID}", order.Id.ToString());
+                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{ORDERID}", order.GetOrderNumber());
 				analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SITE}", _storeContext.CurrentStore.Url.Replace("http://", "").Replace("/", ""));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TAX}", order.OrderTax.ToString("0.00", usCulture));

@@ -145,6 +145,7 @@
     <Compile Include="Domain\Common\BankConnectionSettings.cs" />
     <Compile Include="Domain\Common\SocialSettings.cs" />
     <Compile Include="Domain\Directory\DeliveryTime.cs" />
+    <Compile Include="Domain\Orders\OrderExtensions.cs" />
     <Compile Include="Domain\Stores\IStoreMappingSupported.cs" />
     <Compile Include="Domain\Stores\Store.cs" />
     <Compile Include="Domain\Stores\StoreExtensions.cs" />

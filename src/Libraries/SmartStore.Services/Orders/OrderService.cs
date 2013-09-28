@@ -106,6 +106,27 @@ namespace SmartStore.Services.Orders
             return sortedOrders;
         }
 
+        public virtual Order GetOrderByNumber(string orderNumber)
+        {
+            if (orderNumber.IsEmpty())
+            {
+                return null;
+            }
+
+            var query = from o in _orderRepository.Table
+                        where o.OrderNumber == orderNumber
+                        select o;
+            var order = query.FirstOrDefault();
+
+            int id = 0;
+            if (order == null && int.TryParse(orderNumber, out id) && id > 0)
+            {
+                return this.GetOrderById(id);
+            }
+
+            return order;
+        }
+
         /// <summary>
         /// Gets an order
         /// </summary>
@@ -154,7 +175,7 @@ namespace SmartStore.Services.Orders
 		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId,
 			DateTime? startTime, DateTime? endTime,
             OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, int pageIndex, int pageSize)
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize)
         {
             int? orderStatusId = null;
             if (os.HasValue)
@@ -185,6 +206,8 @@ namespace SmartStore.Services.Orders
                 query = query.Where(o => shippingStatusId.Value == o.ShippingStatusId);
             if (!String.IsNullOrEmpty(billingEmail))
                 query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
+            if (orderNumber.HasValue())
+                query = query.Where(o => o.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
 
@@ -227,7 +250,7 @@ namespace SmartStore.Services.Orders
         /// <returns>Order collection</returns>
         public virtual IList<Order> LoadAllOrders()
         {
-            return SearchOrders(0, 0, null, null, null, null, null, null, null, 0, int.MaxValue);
+            return SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
         }
 
         /// <summary>

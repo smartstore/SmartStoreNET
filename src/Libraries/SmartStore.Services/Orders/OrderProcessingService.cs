@@ -222,7 +222,7 @@ namespace SmartStore.Services.Orders
                 return;
 
             //add reward points
-            order.Customer.AddRewardPointsHistoryEntry(points, string.Format(_localizationService.GetResource("RewardPoints.Message.EarnedForOrder"), order.Id));
+            order.Customer.AddRewardPointsHistoryEntry(points, string.Format(_localizationService.GetResource("RewardPoints.Message.EarnedForOrder"), order.GetOrderNumber()));
             order.RewardPointsWereAdded = true;
             _orderService.UpdateOrder(order);
         }
@@ -252,7 +252,7 @@ namespace SmartStore.Services.Orders
                 return;
 
             //reduce reward points
-            order.Customer.AddRewardPointsHistoryEntry(-points, string.Format(_localizationService.GetResource("RewardPoints.Message.ReducedForOrder"), order.Id));
+            order.Customer.AddRewardPointsHistoryEntry(-points, string.Format(_localizationService.GetResource("RewardPoints.Message.ReducedForOrder"), order.GetOrderNumber()));
             _orderService.UpdateOrder(order);
         }
 
@@ -1223,7 +1223,7 @@ namespace SmartStore.Services.Orders
                         if (redeemedRewardPointsAmount > decimal.Zero)
                         {
                             customer.AddRewardPointsHistoryEntry(-redeemedRewardPoints,
-                                string.Format(_localizationService.GetResource("RewardPoints.Message.RedeemedForOrder", order.CustomerLanguageId), order.Id),
+                                string.Format(_localizationService.GetResource("RewardPoints.Message.RedeemedForOrder", order.CustomerLanguageId), order.GetOrderNumber()),
                                 order,
                                 redeemedRewardPointsAmount);
                             _customerService.UpdateCustomer(customer);
@@ -1322,19 +1322,19 @@ namespace SmartStore.Services.Orders
                         if (!processPaymentRequest.IsRecurringPayment)
 							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
 
-                        if (!processPaymentRequest.IsRecurringPayment)
-                        {
-                            _customerActivityService.InsertActivity(
-                                "PublicStore.PlaceOrder",
-                                _localizationService.GetResource("ActivityLog.PublicStore.PlaceOrder"),
-                                order.Id);
-                        }
-
                         //uncomment this line to support transactions
                         //scope.Complete();
 
                         //raise event       
                         _eventPublisher.PublishOrderPlaced(order);
+
+                        if (!processPaymentRequest.IsRecurringPayment)
+                        {
+                            _customerActivityService.InsertActivity(
+                                "PublicStore.PlaceOrder",
+                                _localizationService.GetResource("ActivityLog.PublicStore.PlaceOrder"),
+                                order.GetOrderNumber());
+                        }
 
                         //raise event         
                         if (order.PaymentStatus == PaymentStatus.Paid)
@@ -1916,7 +1916,7 @@ namespace SmartStore.Services.Orders
                 _orderService.UpdateOrder(order);
 
                 //log it
-                string logError = string.Format(T("OrderCaptureError"), order.Id, error);
+                string logError = string.Format(T("OrderCaptureError"), order.GetOrderNumber(), error);
                 _logger.InsertLog(LogLevel.Error, logError, logError);
             }
             return result.Errors;
@@ -2075,7 +2075,7 @@ namespace SmartStore.Services.Orders
                 _orderService.UpdateOrder(order);
 
                 //log it
-                string logError = string.Format("Error refunding order #{0}. Error: {1}", order.Id, error);
+                string logError = string.Format("Error refunding order '{0}'. Error: {1}", order.GetOrderNumber(), error);
                 _logger.InsertLog(LogLevel.Error, logError, logError);
             }
             return result.Errors;
@@ -2248,7 +2248,7 @@ namespace SmartStore.Services.Orders
                 _orderService.UpdateOrder(order);
 
                 //log it
-                string logError = string.Format("Error refunding order #{0}. Error: {1}", order.Id, error);
+                string logError = string.Format("Error refunding order '{0}'. Error: {1}", order.GetOrderNumber(), error);
                 _logger.InsertLog(LogLevel.Error, logError, logError);
             }
             return result.Errors;
@@ -2413,7 +2413,7 @@ namespace SmartStore.Services.Orders
                 _orderService.UpdateOrder(order);
 
                 //log it
-                string logError = string.Format("Error voiding order #{0}. Error: {1}", order.Id, error);
+                string logError = string.Format("Error voiding order '{0}'. Error: {1}", order.GetOrderNumber(), error);
                 _logger.InsertLog(LogLevel.Error, logError, logError);
             }
             return result.Errors;

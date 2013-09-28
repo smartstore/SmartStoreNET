@@ -11,7 +11,7 @@
 
     <div class="section-header">
         <div class="title">
-            @T("Admin.Orders.EditOrderDetails") - @Model.Id @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
+            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
         </div>
         <div class="options">
             @if (Model.DisplayPdfInvoice)
@@ -188,10 +188,10 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Id)
+                @Html.SmartLabelFor(model => model.OrderNumber)
             </td>
             <td class="adminData">
-                @Model.Id
+                @Model.OrderNumber
             </td>
         </tr>
         <tr>

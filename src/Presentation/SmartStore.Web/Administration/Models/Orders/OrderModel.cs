@@ -24,6 +24,8 @@ namespace SmartStore.Admin.Models.Orders
         //identifiers
         [SmartResourceDisplayName("Admin.Orders.Fields.ID")]
         public override int Id { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderNumber")]
+        public string OrderNumber { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderGuid")]
         public Guid OrderGuid { get; set; }
 

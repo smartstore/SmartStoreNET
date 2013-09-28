@@ -54,7 +54,7 @@ namespace SmartStore.Plugin.SMS.Clickatell
 
             var order = eventMessage.Order;
             //send SMS
-            if (plugin.SendSms(String.Format("New order(#{0}) has been placed.", order.Id)))
+            if (plugin.SendSms(String.Format("New order '{0}' has been placed.", order.GetOrderNumber())))
             {
                 order.OrderNotes.Add(new OrderNote()
                 {

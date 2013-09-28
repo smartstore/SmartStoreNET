@@ -89,6 +89,14 @@
                 @Html.EditorFor(model => Model.OrderGuid)
             </td>
         </tr>
+		<tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OrderNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.OrderNumber)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.GoDirectlyToNumber)
@@ -100,7 +108,10 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="btnSearch" class="btn">
+                    <i class="icon-search"></i>
+                    @T("Admin.Common.Search")
+                </button>
             </td>
         </tr>
     </table>
@@ -118,13 +129,13 @@
                         .Columns(columns =>
                         {
                             columns.Bound(x => x.Id)
-                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
+                                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                                .Title("<input id='mastercheckbox' type='checkbox'/>")
+                                .Width(50)
+                                .HtmlAttributes(new { style = "text-align:center" })
+                                .HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                            columns.Bound(x => x.Id);
+                            columns.Bound(x => x.OrderNumber);
                             columns.Bound(x => x.OrderStatus);
                             columns.Bound(x => x.PaymentStatus);
                             columns.Bound(x => x.ShippingStatus);
@@ -228,7 +239,8 @@
                     PaymentStatusId: $('#@Html.FieldIdFor(model => model.PaymentStatusId)').val(),
             		ShippingStatusId: $('#@Html.FieldIdFor(model => model.ShippingStatusId)').val(),
             		StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
-                    OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val()
+                    OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
+                    OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val()
                     };
             e.data = searchModel;
         }

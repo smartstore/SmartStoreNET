@@ -41,7 +41,7 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
                 return false;
 
 			var orders = _orderService.SearchOrders(request.Store.Id, request.Customer.Id,
-				null, null, OrderStatus.Complete, null, null, null, null, 0, int.MaxValue);
+				null, null, OrderStatus.Complete, null, null, null, null, null, 0, int.MaxValue);
             decimal spentAmount = orders.Sum(o => o.OrderTotal);
             return spentAmount > request.DiscountRequirement.SpentAmount;
         }

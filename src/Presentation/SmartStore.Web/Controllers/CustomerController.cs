@@ -339,12 +339,13 @@ namespace SmartStore.Web.Controllers
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
 			var orders = _orderService.SearchOrders(_storeContext.CurrentStore.Id, customer.Id,
-				null, null, null, null, null, null, null, 0, int.MaxValue);
+				null, null, null, null, null, null, null, null, 0, int.MaxValue);
             foreach (var order in orders)
             {
                 var orderModel = new CustomerOrderListModel.OrderDetailsModel()
                 {
                     Id = order.Id,
+                    OrderNumber = order.GetOrderNumber(),
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
                     OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
                     IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order)

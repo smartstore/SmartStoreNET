@@ -1435,7 +1435,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var orders = _orderService.SearchOrders(0, customerId,
-				null, null, null, null, null, null, null, 0, int.MaxValue);
+				null, null, null, null, null, null, null, null, 0, int.MaxValue);
 
             var model = new GridModel<CustomerModel.OrderModel>
             {

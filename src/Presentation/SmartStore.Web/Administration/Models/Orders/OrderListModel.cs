@@ -41,9 +41,13 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string OrderGuid { get; set; }
 
+        [SmartResourceDisplayName("Admin.Orders.List.OrderNumber")]
+        [AllowHtml]
+        public string OrderNumber { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.GoDirectlyToNumber")]
         [AllowHtml]
-        public int GoDirectlyToNumber { get; set; }
+        public string GoDirectlyToNumber { get; set; }
 
         
 

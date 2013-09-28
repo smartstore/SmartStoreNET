@@ -68,6 +68,11 @@ namespace SmartStore.Core.Domain.Orders
         #region Properties
 
         /// <summary>
+        /// Gets or sets the (formatted) order number
+        /// </summary>
+        public string OrderNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets the order identifier
         /// </summary>
         [DataMember]

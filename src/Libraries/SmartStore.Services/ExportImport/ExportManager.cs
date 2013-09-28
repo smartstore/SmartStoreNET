@@ -907,7 +907,7 @@ namespace SmartStore.Services.ExportImport
             {
                 xmlWriter.WriteStartElement("Order");
 
-                xmlWriter.WriteElementString("OrderId", null, order.Id.ToString());
+                xmlWriter.WriteElementString("OrderId", null, order.GetOrderNumber());
                 xmlWriter.WriteElementString("OrderGuid", null, order.OrderGuid.ToString());
                 xmlWriter.WriteElementString("CustomerId", null, order.CustomerId.ToString());
                 xmlWriter.WriteElementString("CustomerLanguageId", null, order.CustomerLanguageId.ToString());
@@ -1121,7 +1121,7 @@ namespace SmartStore.Services.ExportImport
                     int col = 1;
 
                     //order properties
-                    worksheet.Cells[row, col].Value = order.Id;
+                    worksheet.Cells[row, col].Value = order.GetOrderNumber();
                     col++;
 
                     worksheet.Cells[row, col].Value = order.OrderGuid;

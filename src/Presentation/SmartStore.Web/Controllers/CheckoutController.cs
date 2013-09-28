@@ -380,7 +380,7 @@ namespace SmartStore.Web.Controllers
                 return true;
 
 			var lastOrder = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				 null, null, null, null, null, null, null, 0, 1)
+				 null, null, null, null, null, null, null, null, 0, 1)
                 .FirstOrDefault();
 			if (lastOrder == null)
                 return true;
@@ -984,7 +984,7 @@ namespace SmartStore.Web.Controllers
             var model = new CheckoutCompletedModel();
 
 			var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 
 			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
 			{
@@ -992,6 +992,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			model.OrderId = order.Id;
+            model.OrderNumber = order.GetOrderNumber();
 
             return View(model);
         }
@@ -1708,7 +1709,7 @@ namespace SmartStore.Web.Controllers
 
                 //get the order
 				var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-					null, null, null, null, null, null, null, 0, 1)
+					null, null, null, null, null, null, null, null, 0, 1)
 					.FirstOrDefault();
 				if (order == null)
                     return RedirectToRoute("HomePage");

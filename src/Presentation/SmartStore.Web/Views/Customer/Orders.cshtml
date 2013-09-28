@@ -75,7 +75,7 @@
                                     </td>
                                     <td>
                                         @*codehint: sm-edit *@
-                                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = @item.InitialOrderId })">
+                                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = item.InitialOrderId })">
                                             @string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
                                         </a>
                                     </td>
@@ -112,7 +112,7 @@
                 foreach (var order in Model.Orders)
                 {
                 <fieldset class="order-item clearfix">
-                    <legend class="title">@T("Account.CustomerOrders.OrderNumber"): @order.Id</legend>
+                    <legend class="title">@T("Account.CustomerOrders.OrderNumber"): @order.OrderNumber</legend>
                     <div class="info pull-left">
                         <dl class="dl-horizontal" style="margin-top: 0">
                           <dt>@T("Account.CustomerOrders.OrderStatus"):</dt>
@@ -127,13 +127,13 @@
                         @if (order.IsReturnRequestAllowed)
                         {
                             @*codehint: sm-edit *@
-                            <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { orderId = @order.Id })">
+                            <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { orderId = order.Id })">
                                 @T("Account.CustomerOrders.ReturnItems")
                             </a>
                             <text>&nbsp;&nbsp;&nbsp;</text>
                         }
                         @*codehint: sm-edit *@
-                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = @order.Id })">
+                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = order.Id })">
                             @T("Account.CustomerOrders.OrderDetails")
                         </a>
                     </div>

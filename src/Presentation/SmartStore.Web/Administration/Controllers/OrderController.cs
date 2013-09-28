@@ -156,6 +156,7 @@ namespace SmartStore.Admin.Controllers
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
+            model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
 			var store = _storeService.GetStoreById(order.StoreId);
 			model.StoreName = store != null ? store.Name : "Unknown";
@@ -647,7 +648,7 @@ namespace SmartStore.Admin.Controllers
 
             //load orders
 			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatus,
-                paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, command.Page - 1, command.PageSize);
+                paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize);
             var gridModel = new GridModel<OrderModel>
             {
                 Data = orders.Select(x =>
@@ -656,6 +657,7 @@ namespace SmartStore.Admin.Controllers
                     return new OrderModel()
                     {
                         Id = x.Id,
+                        OrderNumber = x.GetOrderNumber(),
 						StoreName = store != null ? store.Name : "Unknown",
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
@@ -691,7 +693,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("go-to-order-by-number")]
         public ActionResult GoToOrderId(OrderListModel model)
         {
-            var order = _orderService.GetOrderById(model.GoDirectlyToNumber);
+            var order = _orderService.GetOrderByNumber(model.GoDirectlyToNumber);
             if (order != null)
                 return RedirectToAction("Edit", "Order", new { id = order.Id });
             else
@@ -710,7 +712,7 @@ namespace SmartStore.Admin.Controllers
             try
             {
 				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, 0, int.MaxValue);
+                    null, null, null, null, null, 0, int.MaxValue);
 
                 var xml = _exportManager.ExportOrdersToXml(orders);
                 return new XmlDownloadResult(xml, "orders.xml");
@@ -749,7 +751,7 @@ namespace SmartStore.Admin.Controllers
             try
             {
 				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, 0, int.MaxValue);
+                    null, null, null, null, null, 0, int.MaxValue);
                 
                 byte[] bytes = null;
                 using (var stream = new MemoryStream())

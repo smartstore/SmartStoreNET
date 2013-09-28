@@ -186,7 +186,7 @@ namespace SmartStore.Services.Common
                 var cell = new PdfPCell();
                 cell.Border = Rectangle.NO_BORDER;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                var pOrderId = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.Order#", lang.Id), order.Id), titleFont);
+                var pOrderId = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.Order#", lang.Id), order.GetOrderNumber()), titleFont);
                 pOrderId.Alignment = Element.ALIGN_LEFT;
                 cell.AddElement(pOrderId);
                 //var anchor = new Anchor(_storeInformationSettings.StoreUrl.Trim(new char[] { '/' }), font);
@@ -767,7 +767,7 @@ namespace SmartStore.Services.Common
                 if (order.ShippingAddress != null)
                 {
                     doc.Add(new Paragraph(String.Format(_localizationService.GetResource("PDFPackagingSlip.Shipment", lang.Id), shipment.Id), titleFont));
-                    doc.Add(new Paragraph(String.Format(_localizationService.GetResource("PDFPackagingSlip.Order", lang.Id), order.Id), titleFont));
+                    doc.Add(new Paragraph(String.Format(_localizationService.GetResource("PDFPackagingSlip.Order", lang.Id), order.GetOrderNumber()), titleFont));
 
                     if (_addressSettings.CompanyEnabled && !String.IsNullOrEmpty(order.ShippingAddress.Company))
                         doc.Add(new Paragraph(String.Format(_localizationService.GetResource("PDFPackagingSlip.Company", lang.Id), order.ShippingAddress.Company), font));

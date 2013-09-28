@@ -213,13 +213,13 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 				case "Order [StoreName]":
 					return "{0} {1}".FormatWith(Helper.Resource("Order"), _storeContext.CurrentStore.Name);
 				case "[OrderID], [OrderDate]":
-					return "{0}, {1}".FormatWith(payment.Order.Id, payment.Order.CreatedOnUtc.ToShortDateString());
+                    return "{0}, {1}".FormatWith(payment.Order.GetOrderNumber(), payment.Order.CreatedOnUtc.ToShortDateString());
 				case "[OrderID], [StoreID]":
-					return "{0}, {1}".FormatWith(payment.Order.Id, _storeContext.CurrentStore.Id);
+                    return "{0}, {1}".FormatWith(payment.Order.GetOrderNumber(), _storeContext.CurrentStore.Id);
 				case "[OrderID], [StoreName]":
-					return "{0}, {1}".FormatWith(payment.Order.Id, _storeContext.CurrentStore.Name);
+                    return "{0}, {1}".FormatWith(payment.Order.GetOrderNumber(), _storeContext.CurrentStore.Name);
 				case "[OrderID]":
-					return payment.Order.Id.ToString();
+                    return payment.Order.GetOrderNumber();
 				case "[OrderDate]":
 					return payment.Order.CreatedOnUtc.ToShortDateString();
 				case "[StoreID]":
@@ -254,7 +254,7 @@ namespace SmartStore.Plugin.Payments.Sofortueberweisung.Core
 			string orderTotal = Math.Round(payment.Order.OrderTotal, 2).ToString("0.00", CultureInfo.InvariantCulture);
 			string reason1 = GetPaymentReason(payment, true);
 			string reason2 = GetPaymentReason(payment, false);
-			string userData = "{0}|{1}".FormatWith(payment.Order.Id, payment.Order.OrderGuid.ToString());
+            string userData = "{0}|{1}".FormatWith(payment.Order.GetOrderNumber(), payment.Order.OrderGuid.ToString());
 			string pluginUrl = "{0}Plugins/PaymentSofortueberweisung/{{0}}".FormatWith(_webHelper.GetStoreLocation(false));
 
 			var docIn = Helper.CreateXmlDocument(xw =>

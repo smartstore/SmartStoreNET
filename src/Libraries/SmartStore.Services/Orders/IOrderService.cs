@@ -22,6 +22,17 @@ namespace SmartStore.Services.Orders
         Order GetOrderById(int orderId);
 
         /// <summary>
+        /// Gets an order either by it's formatted number or by id
+        /// </summary>
+        /// <param name="orderNumber">
+        /// The order number. If no order can be found, this param gets
+        /// converted to <c>int</c> and - if successfull - an order with
+        /// an <c>int Id</c> is fetched.
+        /// </param>
+        /// <returns>Order</returns>
+        Order GetOrderByNumber(string orderNumber);
+
+        /// <summary>
         /// Get orders by identifiers
         /// </summary>
         /// <param name="orderIds">Order identifiers</param>
@@ -59,7 +70,7 @@ namespace SmartStore.Services.Orders
 		IPagedList<Order> SearchOrders(int storeId, int customerId,
 			DateTime? startTime, DateTime? endTime,
             OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, int pageIndex, int pageSize);
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize);
 
         /// <summary>
         /// Gets all orders by affiliate identifier

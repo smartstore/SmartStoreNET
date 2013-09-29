@@ -972,13 +972,13 @@ namespace SmartStore.Admin.Controllers
 
 			//seo settings
 			var seoSettings = _settingService.LoadSetting<SeoSettings>(storeScope);
+            model.SeoSettings.PageTitleSeoAdjustment = seoSettings.PageTitleSeoAdjustment;
 			model.SeoSettings.PageTitleSeparator = seoSettings.PageTitleSeparator;
 			model.SeoSettings.DefaultTitle = seoSettings.DefaultTitle;
 			model.SeoSettings.DefaultMetaKeywords = seoSettings.DefaultMetaKeywords;
 			model.SeoSettings.DefaultMetaDescription = seoSettings.DefaultMetaDescription;
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
 			model.SeoSettings.CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled;
-			model.SeoSettings.PageTitleSeoAdjustmentValues = seoSettings.PageTitleSeoAdjustment.ToSelectList();
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _settingService, false);
 

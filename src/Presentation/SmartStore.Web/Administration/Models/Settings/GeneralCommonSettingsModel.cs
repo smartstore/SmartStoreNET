@@ -70,7 +70,6 @@ namespace SmartStore.Admin.Models.Settings
             
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment")]
             public PageTitleSeoAdjustment PageTitleSeoAdjustment { get; set; }
-            public SelectList PageTitleSeoAdjustmentValues { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultTitle")]
             [AllowHtml]

@@ -20,6 +20,12 @@ namespace SmartStore.Services.Catalog
         IList<Product> GetComparedProducts();
 
         /// <summary>
+        /// Gets the count of compared products
+        /// </summary>
+        /// <returns></returns>
+        int GetComparedProductsCount();
+
+        /// <summary>
         /// Removes a product from a "compare products" list
         /// </summary>
         /// <param name="productId">Product identifier</param>

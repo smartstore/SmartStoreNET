@@ -611,3 +611,10 @@ BEGIN
 	ALTER TABLE [Order] ADD [OrderNumber] [nvarchar](500) NULL
 END
 GO
+
+-- SeoSettings.ExtraRobotsDisallows
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'SeoSettings.ExtraRobotsDisallows')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'SeoSettings.ExtraRobotsDisallows', N'', 0)
+END

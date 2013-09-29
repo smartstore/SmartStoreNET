@@ -12,6 +12,7 @@
 
     //title
     Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+    Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
 }
 
 @functions{

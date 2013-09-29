@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -29,14 +30,9 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
         /// <returns>Result</returns>
-        public static int GetTotalProducts(this IList<ShoppingCartItem> shoppingCart)
+        public static int GetTotalProducts(this IEnumerable<ShoppingCartItem> shoppingCart)
         {
-            int result = 0;
-            foreach (ShoppingCartItem sci in shoppingCart)
-            {
-                result += sci.Quantity;
-            }
-            return result;
+            return shoppingCart.Sum(x => x.Quantity);
         }
 
         /// <summary>

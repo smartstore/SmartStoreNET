@@ -18,6 +18,17 @@ namespace SmartStore.Core
     /// </summary>
     public partial class CommonHelper
     {
+        private static readonly ShippingOptionListTypeConverter s_soListTypeConverter = new ShippingOptionListTypeConverter();
+        private static readonly Dictionary<Type, TypeConverter> s_customTypeConverters = new Dictionary<Type, TypeConverter>
+        {
+            { typeof(List<int>), new GenericListTypeConverter<int>() },
+            { typeof(List<decimal>), new GenericListTypeConverter<decimal>() },
+            { typeof(List<string>), new GenericListTypeConverter<string>() },
+            { typeof(ShippingOption), new ShippingOptionTypeConverter() },
+            { typeof(List<ShippingOption>), s_soListTypeConverter },
+            { typeof(IList<ShippingOption>), s_soListTypeConverter }
+        };
+        
         /// <summary>
         /// Ensures the subscriber email or throw.
         /// </summary>
@@ -240,16 +251,11 @@ namespace SmartStore.Core
 
             #endregion
 
-            if (type == typeof(List<int>))
-                return new GenericListTypeConverter<int>();
-            if (type == typeof(List<decimal>))
-                return new GenericListTypeConverter<decimal>();
-            if (type == typeof(List<string>))
-                return new GenericListTypeConverter<string>();
-            if (type == typeof(ShippingOption))
-                return new ShippingOptionTypeConverter();
-            if (type == typeof(List<ShippingOption>) || type == typeof(IList<ShippingOption>))
-                return new ShippingOptionListTypeConverter();
+            TypeConverter result;
+            if (s_customTypeConverters.TryGetValue(type, out result))
+            {
+                return result;
+            }
 
             return TypeDescriptor.GetConverter(type);
         }

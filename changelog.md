@@ -19,6 +19,7 @@
  - _ShippingByTotal_ plugin: added the ability to define __zip ranges__ including __wildcards__.
  - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__ 
  - Plugin language resources are now updateable via backend
+ - Added new (hidden) setting __ExtraRobotsDisallows__ (enables store owner to add new Disallow lines to the dynamically generated robots.txt)
  - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.
 
 ###Improvements###

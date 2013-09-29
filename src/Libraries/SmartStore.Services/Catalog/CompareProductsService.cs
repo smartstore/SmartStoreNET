@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
@@ -96,6 +97,17 @@ namespace SmartStore.Services.Catalog
                     products.Add(product);
             }
             return products;
+        }
+
+        public virtual int GetComparedProductsCount()
+        {
+            var products = new List<Product>();
+            
+            var productIds = GetComparedProductIds();
+            var query = _productService.GetAllProducts(null, null)
+                .Where(x => productIds.Contains(x.Id));
+
+            return query.Count();
         }
 
 

@@ -315,16 +315,40 @@ namespace SmartStore.Services.Configuration
 				var key = typeof(T).Name + "." + prop.Name;
 				//load by store
 				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
-				if (setting == null)
+
+                if (setting == null)
+                {
+                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>)) 
+                    {   
+                        // convenience: don't return null for simple list types
+                        var listArg = prop.PropertyType.GetGenericArguments()[0];
+                        object list = null;
+
+                        if (listArg == typeof(int))
+                            list = new List<int>();
+                        else if (listArg == typeof(decimal))
+                            list = new List<decimal>();
+                        else if (listArg == typeof(string))
+                            list = new List<string>();
+
+                        if (list != null)
+                        {
+                            prop.SetValue(settings, list, null);
+                        }
+                    }
+
+                    continue;          
+                }
+
+                var converter = CommonHelper.GetCustomTypeConverter(prop.PropertyType);
+
+                if (!converter.CanConvertFrom(typeof(string)))
 					continue;
 
-				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+                if (!converter.IsValid(setting))
 					continue;
 
-				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).IsValid(setting))
-					continue;
-
-				object value = CommonHelper.GetCustomTypeConverter(prop.PropertyType).ConvertFromInvariantString(setting);
+                object value = converter.ConvertFromInvariantString(setting);
 
 				//set property
 				prop.SetValue(settings, value, null);

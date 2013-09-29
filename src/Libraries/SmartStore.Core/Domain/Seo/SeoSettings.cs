@@ -21,5 +21,7 @@ namespace SmartStore.Core.Domain.Seo
         /// Slugs (sename) reserved for some other needs
         /// </summary>
         public List<string> ReservedUrlRecordSlugs { get; set; }
+
+        public List<string> ExtraRobotsDisallows { get; set; }
     }
 }

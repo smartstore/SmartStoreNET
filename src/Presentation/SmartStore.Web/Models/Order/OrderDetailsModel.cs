@@ -19,6 +19,7 @@ namespace SmartStore.Web.Models.Order
             ShippingAddress = new AddressModel();
         }
 
+        public string OrderNumber { get; set; }
         public bool PrintMode { get; set; }
         public bool DisplayPdfInvoice { get; set; }
 

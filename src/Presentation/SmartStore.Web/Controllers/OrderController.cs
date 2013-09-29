@@ -104,6 +104,7 @@ namespace SmartStore.Web.Controllers
             var model = new OrderDetailsModel();
 
             model.Id = order.Id;
+            model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.IsReOrderAllowed = _orderSettings.IsReOrderAllowed;

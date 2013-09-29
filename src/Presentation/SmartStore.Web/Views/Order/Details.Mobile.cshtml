@@ -16,7 +16,7 @@
         @Html.Widget("mobile_orderdetails_page_top")
         <div class="order-overview">
             <div>
-                <strong>@T("Order.Order#")@Model.Id</strong>
+                <strong>@T("Order.Order#")@Model.OrderNumber</strong>
             </div>
             <div>
                 @T("Order.OrderDate"): @Model.CreatedOn.ToString("D")

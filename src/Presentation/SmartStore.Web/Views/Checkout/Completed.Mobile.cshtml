@@ -19,10 +19,10 @@
                 <strong>
                     @T("Checkout.YourOrderHasBeenSuccessfullyProcessed")</strong>
                 <p>
-                    @T("Checkout.OrderNumber"): @Model.OrderId
+                    @T("Checkout.OrderNumber"): @Model.OrderNumber
                 </p>
                 <p>
-                    <a href="@Url.RouteUrl("OrderDetails", new { orderID = @Model.OrderId })" data-role="button">@T("Checkout.PlacedOrderDetails")</a>
+                    <a href='@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId })' data-role="button">@T("Checkout.PlacedOrderDetails")</a>
                 </p>
             </div>
             <div class="select-button">

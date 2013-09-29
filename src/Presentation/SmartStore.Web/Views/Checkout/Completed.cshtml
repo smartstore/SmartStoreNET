@@ -22,21 +22,24 @@
         <div class="order-completed">
             @Html.Widget("checkout_completed_top")
             <div class="body">
-                <strong>
+                <p class="text-success">
                     @T("Checkout.YourOrderHasBeenSuccessfullyProcessed")
-                </strong>
+                </p>
                 <p>
-                    @T("Checkout.OrderNumber"): @Model.OrderNumber
+                    @T("Checkout.OrderNumber"): 
+                    <a href="@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId})">@Model.OrderNumber</a>
                 </p>
             </div>
-            <div class="select-button">
+            <p class="select-button">
                 <a href="@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId})" class="btn btn-warning">
-                    <i class="icon-list-alt"></i>&nbsp;@T("Checkout.PlacedOrderDetails")
+                    <i class="icon-list-alt"></i>
+                    @T("Checkout.PlacedOrderDetails")
                 </a>
                 <a href="@Url.RouteUrl("HomePage")" class="btn order-completed-continue-button">
-                    <i class="icon-home"></i>&nbsp;@T("Checkout.Continue")
+                    <i class="icon-home"></i>
+                    @T("Checkout.Continue")
                 </a>
-            </div>
+            </p>
             @Html.Widget("checkout_completed_bottom")
         </div>
     </div>

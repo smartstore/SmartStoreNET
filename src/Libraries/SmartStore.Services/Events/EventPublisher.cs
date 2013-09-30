@@ -23,11 +23,11 @@ namespace SmartStore.Services.Events
 
         private static void PublishToConsumer<T>(IConsumer<T> x, T eventMessage)
         {
-            var assembly = x.GetType().Assembly;
-            var pluginDescriptor = PluginManager.ReferencedPlugins.FirstOrDefault(p => p.ReferencedAssembly == assembly);
-            if (pluginDescriptor != null && !pluginDescriptor.Installed)
-                return; 
-            
+            if (!PluginManager.IsActivePluginAssembly(x.GetType().Assembly)) 
+            {
+                return;
+            }
+
             try
             {
                 x.HandleEvent(eventMessage);

@@ -23,8 +23,7 @@ namespace SmartStore.Web.Framework.Mvc.Routes
 
             foreach (var providerType in routeProviderTypes)
             {
-                var pluginDescriptor = PluginManager.ReferencedPlugins.FirstOrDefault(x => x.ReferencedAssembly == providerType.Assembly);
-                if (pluginDescriptor != null && !pluginDescriptor.Installed)
+                if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
                 {
                     continue;
                 }

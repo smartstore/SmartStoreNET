@@ -25,8 +25,7 @@ namespace SmartStore.Web.Framework.Mvc.Bundles
             var bundleProviders = new List<IBundleProvider>();
             foreach (var providerType in bundleProviderTypes)
             {
-                var pluginDescriptor = PluginManager.ReferencedPlugins.FirstOrDefault(x => x.ReferencedAssembly == providerType.Assembly);
-                if (pluginDescriptor != null && !pluginDescriptor.Installed)
+                if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
                 {
                     continue;
                 }

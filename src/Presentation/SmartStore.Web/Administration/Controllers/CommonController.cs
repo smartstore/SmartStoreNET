@@ -152,8 +152,7 @@ namespace SmartStore.Admin.Controllers
 
                 foreach (var type in providerTypes)
                 {
-                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly, false);
-                    if (pluginDescriptor != null && !pluginDescriptor.Installed)
+                    if (!PluginManager.IsActivePluginAssembly(type.Assembly))
                     {
                         continue;
                     }

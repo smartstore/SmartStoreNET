@@ -34,6 +34,7 @@ namespace SmartStore.Core.Plugins
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;
+        private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
         #endregion
 
@@ -116,7 +117,6 @@ namespace SmartStore.Core.Plugins
 
                         //set 'Installed' property
                         pluginDescriptor.Installed = installedPluginSystemNames
-                            .ToList()
                             .Where(x => x.Equals(pluginDescriptor.SystemName, StringComparison.InvariantCultureIgnoreCase))
                             .FirstOrDefault() != null;
 
@@ -135,6 +135,11 @@ namespace SmartStore.Core.Plugins
 
                             //shadow copy main plugin file
                             pluginDescriptor.ReferencedAssembly = PerformFileDeploy(mainPluginFile);
+
+                            if (!pluginDescriptor.Installed)
+                            {
+                                _inactiveAssemblies.Add(pluginDescriptor.ReferencedAssembly);
+                            }
 
                             //load all other referenced assemblies now
                             foreach (var plugin in pluginFiles
@@ -205,12 +210,11 @@ namespace SmartStore.Core.Plugins
 
             var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(GetInstalledPluginsFilePath());
             bool alreadyMarkedAsInstalled = installedPluginSystemNames
-                                .ToList()
                                 .Where(x => x.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
                                 .FirstOrDefault() != null;
             if (!alreadyMarkedAsInstalled)
                 installedPluginSystemNames.Add(systemName);
-            PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames,filePath);
+            PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, filePath);
         }
 
         /// <summary>
@@ -292,6 +296,17 @@ namespace SmartStore.Core.Plugins
             }
 
             return compatible;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the plugin assembly
+        /// was properly installed and is active.
+        /// </summary>
+        /// <param name="assembly">The assembly to check for</param>
+        /// <returns><c>true</c> when the assembly is installed and active</returns>
+        public static bool IsActivePluginAssembly(Assembly assembly)
+        {
+            return !_inactiveAssemblies.Contains(assembly);
         }
 
         #endregion

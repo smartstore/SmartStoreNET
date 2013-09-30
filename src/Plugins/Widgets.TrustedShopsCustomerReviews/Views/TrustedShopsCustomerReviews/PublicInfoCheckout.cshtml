@@ -1,0 +1,24 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+
+
+@model SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.Models.PublicInfoCheckoutModel
+@{
+    Layout = "";
+
+    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerReviews/Content/trustedshops.css"));
+}
+@using SmartStore.Web.Framework;
+
+@if(Model.DisplayReviewLinkOnOrderCompleted) {
+    <div class="trusted-shops-customer-protection-order-completed clearfix">    
+        <div class="pull-left">
+            <img src="@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerReviews/Content/images/TrustedShops-rgb-Siegel_100Hpx.png")" />
+        </div>
+
+        <a href="https://www.trustedshops.com/buyerrating/rate_@(Model.TrustedShopsId).html&buyerEmail=@(Model.BuyerEmail)&shopOrderID=@(Model.ShopOrderId)" 
+            class="btn btn-warning" target="_blank" title="@T("Plugins.Widgets.TrustedShopsCustomerReviews.WriteReview")" value="WriteReview">
+                @T("Plugins.Widgets.TrustedShopsCustomerReviews.WriteReview")
+        </a>
+    </div>
+}

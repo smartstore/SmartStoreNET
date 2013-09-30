@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerProtection.AdminInstruction"))
+</div>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+	
+@using (Html.BeginForm())
+{    
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ProtectionMode)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.ProtectionMode)
+            @Html.DropDownListFor(model => model.ProtectionMode, Model.AvailableModes)
+            @Html.ValidationMessageFor(model => model.ProtectionMode)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TrustedShopsId)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.TrustedShopsId)
+            @Html.ValidationMessageFor(model => model.TrustedShopsId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsTestMode)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.IsTestMode)
+            @Html.ValidationMessageFor(model => model.IsTestMode)
+        </td>
+    </tr>
+
+    <tr id="pnlUsername">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UserName)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.UserName)
+            @Html.ValidationMessageFor(model => model.UserName)
+        </td>
+    </tr>
+    <tr id="pnlPassword">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Password)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.Password)
+            @Html.ValidationMessageFor(model => model.Password)
+        </td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td style="padding:10px 0">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+            </button>
+        </td>
+    </tr>
+
+    <tr id="pnlCheckLogin">
+        <td>&nbsp;</td>
+        <td style="padding:10px 0">
+            <button type="submit" id="check-login" name="check-login" value="check-login" class="btn btn-info">
+				<i class="icon-ok"></i>&nbsp;@T("Plugins.Widgets.TrustedShopsCustomerProtection.CheckLogin")
+            </button>
+        </td>
+    </tr>
+    <tr id="pnlGetProtectionItems">
+        <td>&nbsp;</td>
+        <td style="padding:10px 0">
+            <button type="submit" id="get-protection-items" name="get-protection-items" value="get-protection-items" class="btn btn-danger">
+				<i class="icon-ok"></i>&nbsp;@T("Plugins.Widgets.TrustedShopsCustomerProtection.GetProtectionItems")
+            </button>
+        </td>
+    </tr>
+
+</table>
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#@Html.FieldIdFor(model => model.ProtectionMode)").change(changeProtectionMode);
+
+        changeProtectionMode();
+
+        function changeProtectionMode() {
+            if ($('#@Html.FieldIdFor(model => model.ProtectionMode)').val() == "Classic") {
+                $('#pnlUsername').hide();
+                $('#pnlPassword').hide();
+                $('#pnlGetProtectionItems').hide();
+                $('#pnlCheckLogin').hide();
+            }
+            else {
+                $('#pnlUsername').show();
+                $('#pnlPassword').show();
+                $('#pnlGetProtectionItems').show();
+                $('#pnlCheckLogin').show();
+            }
+        }
+    });
+
+</script>

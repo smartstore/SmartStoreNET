@@ -1,0 +1,93 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsCustomerReviews" AppendRootKey="false">
+    <Value>Trusted Shops Customer Reviews</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Please find our step by step set up guide detailed below:</p>
+        <ul>
+            <li>Register at <a href="https://www.trustedshops.co.uk/merchants/partners/?smartstore">Trusted Shops</a></li>
+            <li>Enter your Trusted Shops ID, username and password in the assigned areas below.</li>
+            <li>Enter the name of your shop, as it should be displayed within the widget.</li>
+            <li>Now the customer reviews will be display in your shop.</li>
+            <li>Determine if your customers should be able to write a review after they've completed an order.</li>
+            <!--li>Add the Trusted Shop Token to the message template OrderCompleted.CustomerNotification so customers can write a review from within the order confirmation email.</li-->
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Title">
+    <Value>Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId">
+    <Value>Trusted Shops ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId.Hint">
+    <Value>Please enter your Trusted Shops ID here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode">
+    <Value>Activate test mode</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode.Hint">
+    <Value>Activate test mode</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsActivation">
+    <Value>Activate Trusted Shops ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsActivation.Hint">
+    <Value>Deactivate only if instructed to do so by Trusted Shops.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName">
+    <Value>Name of the shop</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName.Hint">
+    <Value>Please enter the name of the shop here, as it'll be shown within the widget.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdSuccess">
+    <Value>The widget was successfully updated.</Value>
+  </LocaleResource>
+  <LocaleResource Name="InvalidId">
+    <Value>Your Trusted Shops ID is registered at Trusted Shops.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NotRegistered">
+    <Value>Your Trusted Shops ID wasn't activated for customer reviews.</Value>
+  </LocaleResource>
+  <LocaleResource Name="WrongCredentials">
+    <Value>Your username or password were wrong.</Value>
+  </LocaleResource>
+  <LocaleResource Name="OtherError">
+    <Value>An unknown error occured</Value>
+  </LocaleResource>
+  <LocaleResource Name="MandatoryTrustedShopsId">
+    <Value>Please enter your Trusted Shops ID.</Value>
+  </LocaleResource>
+  <LocaleResource Name="LinkTitle">
+    <Value>See customer reviews of {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="ImageAltText">
+    <Value>Customer reviews of {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="WriteReview">
+    <Value>Write a review!</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidget">
+    <Value>Display wigdet</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidget.Hint">
+    <Value>Determine whether the widget should be display within your shop.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkOnOrderCompleted">
+    <Value>Activate the oportunity to write a review after order completion</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkOnOrderCompleted.Hint">
+    <Value>Determine whether a customer is able to write a review after order completion</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkInEmail">
+    <Value>Activate the oportunity to write a review out of the order confirmation mail</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkInEmail.Hint">
+    <Value>Determine whether a customer is able to write a review out of the order confirmation mail. To determine the placement of the rating link yourself add the token %TrustedShops.CustomerReviews% to the message template OrderPlaced.CustomerNotification.</Value>
+  </LocaleResource>
+</Language>

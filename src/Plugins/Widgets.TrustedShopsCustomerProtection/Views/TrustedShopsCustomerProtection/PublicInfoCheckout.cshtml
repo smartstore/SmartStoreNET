@@ -1,0 +1,45 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+
+
+@model SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Models.PublicInfoModel
+@{
+    Layout = "";
+
+    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerProtection/Content/trustedshops.css"));
+}
+@using SmartStore.Web.Framework;
+
+<div class="alert alert-success block-trusted-shops-customer-protection clearfix">
+    <div class="pull-left">
+        <a href="https://www.trustedshops.com/shop/certificate.php?shop_id=@(Model.TrustedShopsId)" target="_blank">
+            <img title="@T("Plugins.Widgets.TrustedShopsCustomerProtection.SealTitle")" 
+                src="@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerProtection/Content/images/TrustedShops-rgb-Siegel_100Hpx.png")" />
+        </a>
+    </div>
+    <div>
+        <p>
+            @T("Plugins.Widgets.TrustedShopsCustomerProtection.RegistrationText")
+        </p>
+
+        @using(Html.BeginForm("", "", FormMethod.Post, new { @id="formTShops", @name="formTShops", target="_blank",
+                action="https://www.trustedshops.com/shop/protection.php"} )) 
+        {
+            
+                <input name="_charset_" type="hidden" value="UTF-8">
+                <input name="shop_id" type="hidden" value="@Model.TrustedShopsId">
+                <input name="email" type="hidden" value="@Model.BuyerEmail">
+                <input name="amount" type="hidden" value="@Model.Amount">
+                <input name="curr" type="hidden" value="@Model.Currency">
+                <input name="paymentType" type="hidden" value="@Model.PaymentType">
+                <input name="kdnr" type="hidden" value="@Model.CustomerId">
+                <input name="ordernr" type="hidden" value="@Model.OrderId">
+
+                <button type="submit" class="btn btn-success" target="_blank" name="Register"
+                    title="@T("Plugins.Widgets.TrustedShopsCustomerProtection.ButtonText")">
+                    @T("Plugins.Widgets.TrustedShopsCustomerProtection.ButtonText")
+                </button>
+        }
+
+    </div>
+</div>

@@ -1,0 +1,188 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsCustomerProtection" AppendRootKey="false">
+    <Value>Trusted Shops Käuferschutz</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Um das Trusted Shops Siegel auf Ihrer Seite einzubinden, finden Sie nachfolgend eine Schritt-für-Schritt Anleitung:</p>
+        <ul>
+            <li>Registrieren Sie sich bei <a href="http://www.trustedshops.de/shopbetreiber/mitgliedschaft_partner.html?smartstore">Trusted Shops</a></li>
+            <li>Geben Sie Ihre Trusted Shops ID in dem vorgesehenen Feld an.</li>
+            <li>Geben Sie optional den Namen Ihres Shops und einen beschreibenden Text an, die Im Widget angezeigt werden sollen.</li>
+            <li>Das Siegel wird nun in der angegebenen Widget-Zone in Ihrem Shop dargestellt.</li>
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Title">
+    <Value>Trusted Shops</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="TrustedShopsId">
+    <Value>Trusted Shops Id</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId.Hint">
+    <Value>Geben Sie hier Ihre Trusted Shops Id an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode.Hint">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="UserName">
+    <Value>Trusted Shops Benutzername</Value>
+  </LocaleResource>
+  <LocaleResource Name="UserName.Hint">
+    <Value>Geben Sie hier den Benutzernamen an, der Ihnen von Trusted Shops mitgeteilt wurde.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Password">
+    <Value>Beschreibender Text</Value>
+  </LocaleResource>
+  <LocaleResource Name="Password.Hint">
+    <Value>Geben Sie hier das Passwort an, das Ihnen von Trusted Shops mitgeteilt wurde.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdSuccess">
+    <Value>Die Validierung Ihrer Trusted Shops ID war erfolgreich.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdError">
+    <Value>Die Validierung Ihrer Trusted Shops ID war nicht erfolgreich.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MandatoryTrustedShopsId">
+    <Value>Bitte geben Sie Ihre Trusted Shops ID an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AltContentSealGraphic">
+    <Value>Trusted Shops Siegel - Klicken Sie hier für eine Bestätigung.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ProtectionMode">
+    <Value>Art des Käuferschutzes</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Classic">
+    <Value>Classic</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence">
+    <Value>Excellence</Value>
+  </LocaleResource>
+  <LocaleResource Name="SealTitle">
+    <Value>Trusted Shops Gütesiegel - Bitte hier Gültigkeit prüfen!</Value>
+  </LocaleResource>
+  <LocaleResource Name="RegistrationText">
+    <Value>Als zusätzlichen Service bieten wir Ihnen den Trusted Shops Käuferschutz an. Wir übernehmen alle Kosten dieser Garantie, Sie müssen sich lediglich anmelden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ButtonText">
+    <Value>Anmeldung zum Trusted Shops Käuferschutz</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="CheckLogin">
+    <Value>Login prüfen</Value>
+  </LocaleResource>
+  <LocaleResource Name="GetProtectionItems">
+    <Value>Trusted Shops Produkte zufügen</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="CheckLoginSuccess">
+    <Value>Die Validierung Ihrer Login-Daten war erfolgreich.</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="Error.-10001">
+    <Value>Web service login or TS-ID invalid</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10002">
+    <Value>The shop's credit limit has been suspended by Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10003">
+    <Value>Order number already used</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10004">
+    <Value>Unsupported Buyer Protection product</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10005">
+    <Value>Inactive payment method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10006">
+    <Value>Unsupported payment method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10007">
+    <Value>The currency of the Buyer Protection product does not match with the currency of the shopping basket</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10008">
+    <Value>This currency is not supported in this shop</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10009">
+    <Value>This exchange rate is not supported</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10010">
+    <Value>This payment method is not supported</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10011">
+    <Value>No credit limit available for this certificate</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10012">
+    <Value>The delivery date is in the past</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10013">
+    <Value>The guarantee is for a purchase that was made over 3 days ago</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10014">
+    <Value>The email address contains an error</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10015">
+    <Value>No order number was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10016">
+    <Value>No customer number was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10017">
+    <Value>The credit limit for this certificate has been exceeded</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10018">
+    <Value>No email address was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10019">
+    <Value>Non-applicable Buyer Protection product</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10010L">
+    <Value>The order date is in the future</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-11001">
+    <Value>Invalid security token</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-11111">
+    <Value>General system error, please contact Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.Heading">
+    <Value>Leider ist folgender Fehler aufgetreten: </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Error.MissingParams">
+    <Value>Bitte füllen Sie alle Felder aus.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Title">
+    <Value>Trusted Shops Käuferschutz (empfohlen)</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Name">
+    <Value>Käuferschutz bis {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Description">
+    <Value>
+      <![CDATA[
+        Die im Käuferschutz enthaltene <a href="http://www.trustedshops.com/shop/protection_conditions.php?shop_id={0}" target="_blank">Trusted Shops Garantie</a>
+        sichert Ihren Online-Kauf ab. Mit der Übermittlung und <a href="http://www.trustedshops.com/shop/data_privacy.php?shop_id={0}" target="_blank">Speicherung</a>
+        meiner E-Mail-Adresse zur Abwicklung des Käuferschutzes durch Trusted Shops bin ich einverstanden. 
+        <a href="http://www.trustedshops.com/shop/protection_conditions.php?shop_id={0}" target="_blank">Garantiebedingungen</a> für den Käuferschutz.
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.ButtonText">
+    <Value>Käuferschutz zum Warenkorb zufügen</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="TrustedShopsProduct.Description">
+    <Value>Dauer der Garantie {0} Tage. Höhe der der Garantiesumme {1}</Value>
+  </LocaleResource>
+  
+</Language>

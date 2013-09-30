@@ -1,0 +1,20 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+
+
+@model SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.Models.PublicInfoModel
+@{
+    Layout = "";
+
+    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerReviews/Content/trustedshops.css"));
+}
+@using SmartStore.Web.Framework;
+
+@if(Model.DisplayWidget) {
+    <div id="trusted-shops-cutomer-reviews">
+        <a href="https://www.trustedshops.de/bewertung/info_@(Model.TrustedShopsId).html" title="@(String.Format(T("Plugins.Widgets.TrustedShopsCustomerReviews.LinkTitle"), Model.ShopName))">
+            <img src="https://www.trustedshops.com/bewertung/widget/widgets/@(Model.TrustedShopsId).gif" alt="@(String.Format(T("Plugins.Widgets.TrustedShopsCustomerReviews.ImageAltText"), Model.ShopName))"/>
+        </a>
+    </div>
+    
+}

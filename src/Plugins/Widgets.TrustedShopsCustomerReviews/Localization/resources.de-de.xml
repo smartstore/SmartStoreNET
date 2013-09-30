@@ -1,0 +1,93 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsCustomerReviews" AppendRootKey="false">
+    <Value>Trusted Shops Kundenbewertungen</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminInstruction">
+    <Value>
+      <![CDATA[
+        <p>Um die Trusted Shops Käuferbewertungen auf Ihrer Seite einzubinden, finden Sie nachfolgend eine Schritt-für-Schritt Anleitung:</p>
+        <ul>
+            <li>Registrieren Sie sich bei <a href="http://www.trustedshops.de/shopbetreiber/mitgliedschaft_partner.html?smartstore">Trusted Shops</a></li>
+            <li>Geben Sie Ihre Trusted Shops ID, Ihren Benutzernamen und Ihr Passwort in den vorgesehenen Feldern an.</li>
+            <li>Geben Sie optional den Namen Ihres Shops an, der Im Widget angezeigt werden soll.</li>
+            <li>Die Käuferbewertungen werden nun in der angegebenen Widget-Zone in Ihrem Shop dargestellt.</li>
+            <li>Bestimmen Sie, ob Ihren Kunden nach Abschluss der Bestellung die Möglichkeit hat, eine Bewertung für Ihren Shop zu schreiben.</li>
+            <!--li>Fügen Sie das Trusted Shops Token zu der Nachrichtenvorlage OrderCompleted.CustomerNotification hinzu, damit Ihre Kunden Ihren Shop auch aus der Bestellbestätigungs-Email bewerten können</li-->
+        </ul>
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="Title">
+    <Value>Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId">
+    <Value>Trusted Shops ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsId.Hint">
+    <Value>Geben Sie hier Ihre Trusted Shops ID an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsTestMode.Hint">
+    <Value>Testmodus aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsActivation">
+    <Value>Trusted Shops ID aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="TrustedShopsActivation.Hint">
+    <Value>Deaktivieren Sie diese Option nur, wenn Sie von Trusted Shops dazu aufgefordert wurden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName">
+    <Value>Name des Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShopName.Hint">
+    <Value>Geben Sie hier den Namen Ihres Shops an, wie er im Widget angezeigt werden soll.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CheckIdSuccess">
+    <Value>Das Widget wurde erfolgreich aktualisiert.</Value>
+  </LocaleResource>
+  <LocaleResource Name="InvalidId">
+    <Value>Ihre Trusted Shops ID ist nicht bei Trusted Shops hinterlegt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NotRegistered">
+    <Value>Ihre Trusted Shops ID wurde nicht für Kundenbewertungen aktiviert.</Value>
+  </LocaleResource>
+  <LocaleResource Name="WrongCredentials">
+    <Value>Der Benutzername oder Ihr Passwort war nicht korrekt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="OtherError">
+    <Value>Es ist ein unbekannter Fehler aufgetreten.</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="MandatoryTrustedShopsId">
+    <Value>Bitte geben Sie Ihre Trusted Shops ID an.</Value>
+  </LocaleResource>
+  <LocaleResource Name="LinkTitle">
+    <Value>Betrachte alle Kundenbewertungen von {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="ImageAltText">
+    <Value>Kundenbewertungen von {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="WriteReview">
+    <Value>Bewerten Sie unseren Shop!</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidget">
+    <Value>Widget darstellen</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidget.Hint">
+    <Value>Bestimmen Sie ob das Widget auf Ihrer Webseite angezeigt werden soll.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkOnOrderCompleted">
+    <Value>Bewertungsmöglichkeit nach Bestellabschluss aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkOnOrderCompleted.Hint">
+    <Value>Bestimmen Sie ob ein Kunde nach Bestellabschluss Ihren Shop bewerten kann.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkInEmail">
+    <Value>Bewertungsmöglichkeit in Bestellbestätigungsemail aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayReviewLinkInEmail.Hint">
+    <Value>Bestimmen Sie ob ein Kunde Ihren Shop aus der Bestellbestätigungsemail bewerten kann. Um die automatische Platzierung des Bewertungslinks selbst zu bestimmen fügen Sie das Token %TrustedShops.CustomerReviews% zu der Nachrichtenvorlage OrderPlaced.CustomerNotification zu.</Value>
+  </LocaleResource>
+</Language>

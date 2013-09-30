@@ -72,6 +72,40 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var trustedShopsSealSettings = _settingService.LoadSetting<TrustedShopsSealSettings>(storeScope);
 
+            //TODO: test and remove duplicate code
+            //var tsProtectionService = new TrustedShopsSeal.com.trustedshops.qa.TSProtectionService();
+            //if (!model.IsTestMode)
+            //{
+            //    tsProtectionService.Url = "https://www.trustedshops.com/ts/services/TsProtection?wsdl";
+            //}
+
+            //var certStatus = new TrustedShopsSeal.com.trustedshops.qa.CertificateStatus();
+            //certStatus = tsProtectionService.checkCertificate(model.TrustedShopsId);
+
+            //if (certStatus.stateEnum == "TEST" || certStatus.stateEnum == "PRODUCTION")
+            //{
+            //    // inform user about successfull validation
+            //    this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
+
+            //    //save settings
+            //    trustedShopsSealSettings.TrustedShopsId = model.TrustedShopsId;
+            //    trustedShopsSealSettings.IsTestMode = model.IsTestMode;
+            //    trustedShopsSealSettings.WidgetZone = model.WidgetZone;
+            //    trustedShopsSealSettings.ShopName = model.ShopName;
+            //    trustedShopsSealSettings.ShopText = model.ShopText;
+
+            //    storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+            //    _settingService.ClearCache();
+            //}
+            //else
+            //{
+            //    // inform user about validation error
+            //    this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
+            //    model.TrustedShopsId = String.Empty;
+            //    model.IsTestMode = false;
+            //}
+
+
             var tsProtectionServiceSandbox = new TrustedShopsSeal.com.trustedshops.qa.TSProtectionService();
             var tsProtectionServiceLive = new TrustedShopsSeal.com.trustedshops.www.TSProtectionService();
 
@@ -92,8 +126,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
                     trustedShopsSealSettings.ShopName = model.ShopName;
                     trustedShopsSealSettings.ShopText = model.ShopText;
 
-					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
-					_settingService.ClearCache();
+                    storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+                    _settingService.ClearCache();
                 }
                 else
                 {
@@ -120,8 +154,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
                     trustedShopsSealSettings.ShopName = model.ShopName;
                     trustedShopsSealSettings.ShopText = model.ShopText;
 
-					storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
-					_settingService.ClearCache();
+                    storeDependingSettingHelper.UpdateSettings(trustedShopsSealSettings, form, storeScope, _settingService);
+                    _settingService.ClearCache();
                 }
                 else
                 {

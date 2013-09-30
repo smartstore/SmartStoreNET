@@ -1,0 +1,32 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+
+
+@model SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Models.PublicInfoModel
+@{
+    Layout = "";
+
+    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerProtection/Content/trustedshops.css"));
+}
+@using SmartStore.Web.Framework;
+
+<div class="alert alert-success block block-trusted-shops-customer-protection">
+    <h4>@T("Plugins.Widgets.TrustedShopsCustomerProtection.ProtectionMode.Excellence.Public.Title")</h4>
+    <div class="cllearfix">
+        <div class="pull-left">
+            <a href="https://www.trustedshops.com/shop/certificate.php?shop_id=@(Model.TrustedShopsId)" target="_blank">
+                <img title="@T("Plugins.Widgets.TrustedShopsCustomerProtection.SealTitle")" 
+                    src="@Url.Content("~/Plugins/Widgets.TrustedShopsCustomerProtection/Content/images/TrustedShops-rgb-Siegel_100Hpx.png")" />
+            </a>
+        </div>
+        <div class="description">
+            <strong>@Model.ExcellenceName</strong>
+            <p>@Html.Raw(Model.ExcellenceDescription)</p>
+            <a data-href="/addproductvarianttocart/@Model.TrustedShopsProductId/1" href="#" class="btn btn-warning ajax-cart-link" rel="tooltip" data-type="cart" data-action="add" data-original-title="In den Warenkorb"> 
+                <i class="icon-shopping-cart"></i>&nbsp;
+                @T("Plugins.Widgets.TrustedShopsCustomerProtection.ProtectionMode.Excellence.Public.ButtonText")
+            </a>
+        </div>
+    </div>
+
+</div>

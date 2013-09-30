@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://rating.action.b2b.ts.nhp.com/" name="TSRatingService" targetNamespace="http://rating.action.b2b.ts.nhp.com/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xs:schema targetNamespace="http://rating.action.b2b.ts.nhp.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="ShopProfile" type="tns:ShopProfileSummary" />
+      <xs:complexType name="webServiceResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="statusCode" type="xs:int" />
+          <xs:element minOccurs="0" name="statusMessage" type="xs:string" />
+          <xs:element minOccurs="0" name="userResponse" type="xs:anyType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="rating">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="average" type="xs:string" />
+          <xs:element minOccurs="0" name="buyerStatement" type="xs:string" />
+          <xs:element minOccurs="0" name="changeDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="deliveryRating" type="xs:string" />
+          <xs:element minOccurs="0" name="goodsRating" type="xs:string" />
+          <xs:element minOccurs="0" name="mark" type="xs:string" />
+          <xs:element minOccurs="0" name="serviceRating" type="xs:string" />
+          <xs:element minOccurs="0" name="websiteRating" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopRatingDataWidget">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="averageRating" type="xs:string" />
+          <xs:element minOccurs="0" name="averageRecommendationPercentage" type="xs:string" />
+          <xs:element minOccurs="0" name="country" type="xs:string" />
+          <xs:element minOccurs="0" name="displayStatement" type="xs:string" />
+          <xs:element minOccurs="0" name="hasValidCertificate" type="xs:string" />
+          <xs:element minOccurs="0" name="isBranded" type="xs:string" />
+          <xs:element minOccurs="0" name="language" type="xs:string" />
+          <xs:element minOccurs="0" name="mark" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="posStatements" type="xs:string" />
+          <xs:element minOccurs="0" name="ratingCount" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ratings" nillable="true" type="tns:rating" />
+          <xs:element minOccurs="0" name="tsId" type="xs:string" />
+          <xs:element minOccurs="0" name="valid" type="xs:string" />
+          <xs:element minOccurs="0" name="widgetWidth" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopTrustbadgeData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="averageRating" type="xs:decimal" />
+          <xs:element name="averageRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="certificateState" type="xs:long" />
+          <xs:element minOccurs="0" name="certificateType" type="tns:certificateTypeEnum" />
+          <xs:element minOccurs="0" name="certificateValidFrom" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="certificateValidTo" type="xs:dateTime" />
+          <xs:element name="earlyIntegration" type="xs:boolean" />
+          <xs:element name="hasValidCertificate" type="xs:boolean" />
+          <xs:element minOccurs="0" name="language" type="xs:string" />
+          <xs:element minOccurs="0" name="mainProtectionCurrency" type="tns:currencyEnum" />
+          <xs:element minOccurs="0" name="maxProtectionAmount" type="xs:decimal" />
+          <xs:element name="maxProtectionDuration" type="xs:int" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element name="positiveProtectionsTwelveMonth" type="xs:int" />
+          <xs:element name="reliabilityRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="reliabilityRatingPercent" type="xs:decimal" />
+          <xs:element minOccurs="0" name="targetMarket" type="tns:targetMarketEnum" />
+          <xs:element minOccurs="0" name="tsId" type="xs:string" />
+          <xs:element minOccurs="0" name="valid" type="tns:ratingWidgetStateEnum" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopRatingGoogleData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="city" type="xs:string" />
+          <xs:element minOccurs="0" name="country" type="xs:string" />
+          <xs:element minOccurs="0" name="email" type="xs:string" />
+          <xs:element minOccurs="0" name="language" type="xs:string" />
+          <xs:element minOccurs="0" name="shopId" type="xs:long" />
+          <xs:element minOccurs="0" name="shopName" type="xs:string" />
+          <xs:element minOccurs="0" name="shopTSID" type="xs:string" />
+          <xs:element minOccurs="0" name="street" type="xs:string" />
+          <xs:element minOccurs="0" name="url" type="xs:string" />
+          <xs:element minOccurs="0" name="zip" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ShopRatingDataProfile">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="averageRating" type="xs:decimal" />
+          <xs:element name="averageRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="averageRecommendationPercentage" type="xs:decimal" />
+          <xs:element minOccurs="0" name="countStatements_A" type="xs:string" />
+          <xs:element minOccurs="0" name="countStatements_B" type="xs:string" />
+          <xs:element minOccurs="0" name="countStatements_C" type="xs:string" />
+          <xs:element minOccurs="0" name="countStatements_D" type="xs:string" />
+          <xs:element minOccurs="0" name="countStatements_E" type="xs:string" />
+          <xs:element minOccurs="0" name="countStatements_all" type="xs:string" />
+          <xs:element minOccurs="0" name="deliveryRating" type="xs:decimal" />
+          <xs:element name="deliveryRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="goodsRating" type="xs:decimal" />
+          <xs:element name="goodsRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="language" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements_A" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements_B" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements_C" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements_D" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="lastBuyerStatements_E" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" name="mark" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element name="negativeProtectionsLastMonth" type="xs:int" />
+          <xs:element name="negativeProtectionsSixMonth" type="xs:int" />
+          <xs:element name="negativeProtectionsTwelveMonth" type="xs:int" />
+          <xs:element name="negativeRecommendationsCount" type="xs:int" />
+          <xs:element name="neutralProtectionsLastMonth" type="xs:int" />
+          <xs:element name="neutralProtectionsSixMonth" type="xs:int" />
+          <xs:element name="neutralProtectionsTwelveMonth" type="xs:int" />
+          <xs:element name="openedVetoesTwelveMonths" type="xs:int" />
+          <xs:element name="positiveProtectionsLastMonth" type="xs:int" />
+          <xs:element name="positiveProtectionsSixMonth" type="xs:int" />
+          <xs:element name="positiveProtectionsTwelveMonth" type="xs:int" />
+          <xs:element name="positiveRecommendationsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="reliabilityRating" type="xs:decimal" />
+          <xs:element name="reliabilityRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="reliabilityRatingInPercent" type="xs:decimal" />
+          <xs:element minOccurs="0" name="serviceRating" type="xs:decimal" />
+          <xs:element name="serviceRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="shopProfileSummary" type="tns:ShopProfileSummary" />
+          <xs:element name="solvedVetoesTwelveMonths" type="xs:int" />
+          <xs:element minOccurs="0" name="state" type="tns:ratingWidgetStateEnum" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statements_A" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statements_B" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statements_C" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statements_D" nillable="true" type="tns:RatingStatement" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statements_E" nillable="true" type="tns:RatingStatement" />
+          <xs:element name="totalRatingsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="tsCertified" type="xs:string" />
+          <xs:element minOccurs="0" name="tsId" type="xs:string" />
+          <xs:element name="vetoesLastTwelveMonths" type="xs:int" />
+          <xs:element minOccurs="0" name="websiteRating" type="xs:decimal" />
+          <xs:element name="websiteRatingCount" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RatingStatement">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="buyerStatement" type="xs:string" />
+          <xs:element minOccurs="0" name="changeDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="mark" type="xs:string" />
+          <xs:element minOccurs="0" name="orderDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="recommend" type="xs:boolean" />
+          <xs:element minOccurs="0" name="shopStatement" type="xs:string" />
+          <xs:element minOccurs="0" name="veto" type="xs:boolean" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ShopProfileSummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="averageRating" type="xs:decimal" />
+          <xs:element name="averageRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="becomeCategory" type="xs:string" />
+          <xs:element minOccurs="0" name="categories">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="category" type="tns:ProductCategorySummary" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="certificate" type="tns:CertificateSummary" />
+          <xs:element minOccurs="0" name="certificationLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="certificationLanguageCode" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element name="earlyIntegration" type="xs:boolean" />
+          <xs:element name="hasBannerRotation" type="xs:boolean" />
+          <xs:element name="hasLogoInNewsletter" type="xs:boolean" />
+          <xs:element name="hasProfileInNewsletter" type="xs:boolean" />
+          <xs:element minOccurs="0" name="headline" type="xs:string" />
+          <xs:element minOccurs="0" name="interviewLink" type="xs:string" />
+          <xs:element minOccurs="0" name="linkText" type="xs:string" />
+          <xs:element minOccurs="0" name="logoURL" type="xs:string" />
+          <xs:element minOccurs="0" name="metaDescription" type="xs:string" />
+          <xs:element minOccurs="0" name="metaKeywords" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element name="neutralProtectionsTwelveMonth" type="xs:int" />
+          <xs:element minOccurs="0" name="offeredLanguages">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="language" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="ownCategories" type="xs:string" />
+          <xs:element minOccurs="0" name="pangoraId" type="xs:string" />
+          <xs:element name="positiveProtectionsTwelveMonth" type="xs:int" />
+          <xs:element name="profileActive" type="xs:boolean" />
+          <xs:element minOccurs="0" name="reliabilityRating" type="xs:decimal" />
+          <xs:element name="reliabilityRatingCount" type="xs:int" />
+          <xs:element minOccurs="0" name="reliabilityRatingPercent" type="xs:decimal" />
+          <xs:element name="screenshotHidden" type="xs:boolean" />
+          <xs:element minOccurs="0" name="shopAddress" type="tns:AddressSummary" />
+          <xs:element minOccurs="0" name="shopContact" type="tns:ContactSummary" />
+          <xs:element minOccurs="0" name="shopKeeper" type="tns:CompanySummary" />
+          <xs:element minOccurs="0" name="shopLink" type="xs:string" />
+          <xs:element minOccurs="0" name="shopOfTheWeekLink" type="xs:string" />
+          <xs:element minOccurs="0" name="shopTargetMarket" type="xs:string" />
+          <xs:element minOccurs="0" name="specialFeatures" type="xs:string" />
+          <xs:element minOccurs="0" name="tsId" type="xs:string" />
+          <xs:element minOccurs="0" name="url" type="xs:string" />
+          <xs:element minOccurs="0" name="urlLink" type="xs:string" />
+          <xs:element minOccurs="0" name="webdomains">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="webdomain" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="widgetState" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ProductCategorySummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element name="topShopInCategory" type="xs:boolean" />
+          <xs:element minOccurs="0" name="xml2Id" type="xs:long" />
+          <xs:element minOccurs="0" name="xml2Name" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CertificateSummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="state" type="xs:string" />
+          <xs:element minOccurs="0" name="stateEnum" type="xs:string" />
+          <xs:element minOccurs="0" name="typeEnum" type="xs:string" />
+          <xs:element minOccurs="0" name="validFrom" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="validTo" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AddressSummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="city" type="xs:string" />
+          <xs:element minOccurs="0" name="country" type="xs:string" />
+          <xs:element minOccurs="0" name="countryCode" type="xs:string" />
+          <xs:element minOccurs="0" name="street" type="xs:string" />
+          <xs:element minOccurs="0" name="zip" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ContactSummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="email" type="xs:string" />
+          <xs:element minOccurs="0" name="fax" type="xs:string" />
+          <xs:element minOccurs="0" name="faxTariff" type="xs:string" />
+          <xs:element minOccurs="0" name="firstname" type="xs:string" />
+          <xs:element minOccurs="0" name="lastname" type="xs:string" />
+          <xs:element minOccurs="0" name="phone" type="xs:string" />
+          <xs:element minOccurs="0" name="phoneTariff" type="xs:string" />
+          <xs:element minOccurs="0" name="title" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CompanySummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="commercialRegisterNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="companyAddress" type="tns:AddressSummary" />
+          <xs:element minOccurs="0" name="companyContact" type="tns:ContactSummary" />
+          <xs:element minOccurs="0" name="jurisdication" type="xs:string" />
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="responsible" type="xs:string" />
+          <xs:element minOccurs="0" name="taxNumber" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buyerRatingSimplified">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="average" type="xs:decimal" />
+          <xs:element minOccurs="0" name="content" type="xs:string" />
+          <xs:element minOccurs="0" name="reviewDate" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="certificateTypeEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="CLASSIC" />
+          <xs:enumeration value="EXCELLENCE" />
+          <xs:enumeration value="MIGRATION" />
+          <xs:enumeration value="SPONSORSHIP" />
+          <xs:enumeration value="NO_AUDIT" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="currencyEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="EUR" />
+          <xs:enumeration value="USD" />
+          <xs:enumeration value="AUD" />
+          <xs:enumeration value="CAD" />
+          <xs:enumeration value="CHF" />
+          <xs:enumeration value="DKK" />
+          <xs:enumeration value="GBP" />
+          <xs:enumeration value="JPY" />
+          <xs:enumeration value="NZD" />
+          <xs:enumeration value="SEK" />
+          <xs:enumeration value="PLN" />
+          <xs:enumeration value="NOK" />
+          <xs:enumeration value="BGN" />
+          <xs:enumeration value="LVL" />
+          <xs:enumeration value="LTL" />
+          <xs:enumeration value="RON" />
+          <xs:enumeration value="RUB" />
+          <xs:enumeration value="TRY" />
+          <xs:enumeration value="CZK" />
+          <xs:enumeration value="HUF" />
+          <xs:enumeration value="HRK" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="targetMarketEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="AUT" />
+          <xs:enumeration value="BEL" />
+          <xs:enumeration value="CHE" />
+          <xs:enumeration value="DEU" />
+          <xs:enumeration value="DNK" />
+          <xs:enumeration value="ESP" />
+          <xs:enumeration value="FIN" />
+          <xs:enumeration value="FRA" />
+          <xs:enumeration value="GBR" />
+          <xs:enumeration value="GRC" />
+          <xs:enumeration value="ITA" />
+          <xs:enumeration value="LUX" />
+          <xs:enumeration value="NLD" />
+          <xs:enumeration value="NOR" />
+          <xs:enumeration value="POL" />
+          <xs:enumeration value="PRT" />
+          <xs:enumeration value="SWE" />
+          <xs:enumeration value="EUO" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ratingWidgetStateEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BADGE" />
+          <xs:enumeration value="WIDGET" />
+          <xs:enumeration value="DISABLED" />
+          <xs:enumeration value="WIDGET_ORDERED" />
+          <xs:enumeration value="REVIEWS" />
+          <xs:enumeration value="RECOMMENDATIONS" />
+          <xs:enumeration value="BADGE_SIMPLIFIED" />
+          <xs:enumeration value="WIDGET_SIMPLIFIED" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="ratingArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:rating" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopRatingDataWidgetArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:shopRatingDataWidget" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopTrustbadgeDataArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:shopTrustbadgeData" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="shopRatingGoogleDataArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:shopRatingGoogleData" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RatingStatementArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:RatingStatement" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buyerRatingSimplifiedArray" final="#all">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="item" nillable="true" type="tns:buyerRatingSimplified" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </types>
+  <message name="TSRating_rateSimpleServiceProviderResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveAllShopsGoogleDataResponse">
+    <part name="allShopsGoogleData" type="tns:shopRatingGoogleDataArray" />
+  </message>
+  <message name="TSRating_rateAndRecommendShop">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommendation" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderByReferenceResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveShopRatingStatementsResponse">
+    <part name="shopRatingStatements" type="tns:ratingArray" />
+  </message>
+  <message name="TSRating_rateShopByReference">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderByReferenceNGNResponse">
+    <part name="wsResponse" type="tns:webServiceResponseBase" />
+  </message>
+  <message name="TSRating_updateRatingWidgetState">
+    <part name="tsId" type="xsd:string" />
+    <part name="activation" type="xsd:boolean" />
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+    <part name="partnerPackage" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveAllShopRatingData">
+    <part name="countRatings" type="xsd:int" />
+  </message>
+  <message name="TSRating_rateShopResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveShopRatingDataListResponse">
+    <part name="retrieveShopRatingDataList" type="tns:RatingStatementArray" />
+  </message>
+  <message name="TSRating_alive" />
+  <message name="TSRating_rateShop">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateShopByReferenceNGNResponse">
+    <part name="wsResponse" type="tns:webServiceResponseBase" />
+  </message>
+  <message name="TSRating_retrieveShopRatingStatements">
+    <part name="tsId" type="xsd:string" />
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateShopNGN">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateShopNGNResponse">
+    <part name="wsResponse" type="tns:webServiceResponseBase" />
+  </message>
+  <message name="TSRating_updateRatingWidgetStateResponse">
+    <part name="updateResult" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveShopRatingDataList">
+    <part name="tsId" type="xsd:string" />
+    <part name="operation" type="xsd:string" />
+    <part name="startIndex" type="xsd:int" />
+    <part name="pageSize" type="xsd:int" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderByReference">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommend" type="xsd:string" />
+  </message>
+  <message name="TSRating_aliveResponse">
+    <part name="return" type="xsd:int" />
+  </message>
+  <message name="TSRating_retrieveAllTrustbadgeData">
+    <part name="wsUser" type="xsd:string" />
+    <part name="wsPassword" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveAllShopsGoogleData" />
+  <message name="TSRating_retrieveAllRatingsPerShopGoogleData">
+    <part name="tsId" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveAllRatingsPerShopGoogleDataResponse">
+    <part name="allRatingPerShopGoogleData" type="tns:buyerRatingSimplifiedArray" />
+  </message>
+  <message name="TSRating_rateShopByReferenceNGN">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateAndRecommendShopResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderNGN">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommendation" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderNGNResponse">
+    <part name="wsResponse" type="tns:webServiceResponseBase" />
+  </message>
+  <message name="TSRating_rateAndRecommendShopByReference">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommend" type="xsd:string" />
+  </message>
+  <message name="TSRating_retrieveAllTrustbadgeDataResponse">
+    <part name="allTrustbadgeData" type="tns:shopTrustbadgeDataArray" />
+  </message>
+  <message name="TSRating_retrieveAllShopRatingDataResponse">
+    <part name="allShopRatingData" type="tns:shopRatingDataWidgetArray" />
+  </message>
+  <message name="TSRating_pingResponse">
+    <part name="return" type="xsd:int" />
+  </message>
+  <message name="TSRating_rateShopLaterResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateAndRecommendShopByReferenceResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProvider">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommendation" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateShopByReferenceResponse">
+    <part name="ratingNumber" type="xsd:string" />
+  </message>
+  <message name="TSRating_ping">
+    <part name="arg0" type="xsd:int" />
+  </message>
+  <message name="TSRating_retrieveShopRatingDataOptimized">
+    <part name="tsId" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="TSRating_rateShopLater">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="rateLaterDays" type="xsd:int" />
+  </message>
+  <message name="TSRating_retrieveShopRatingDataOptimizedResponse">
+    <part name="shopRatingDataOptimized" type="tns:ShopRatingDataProfile" />
+  </message>
+  <message name="TSRating_rateSimpleServiceProviderByReferenceNGN">
+    <part name="tsId" type="xsd:string" />
+    <part name="buyerEmail" type="xsd:string" />
+    <part name="websiteRating" type="xsd:string" />
+    <part name="deliveryRating" type="xsd:string" />
+    <part name="goodsRating" type="xsd:string" />
+    <part name="serviceRating" type="xsd:string" />
+    <part name="buyerStatement" type="xsd:string" />
+    <part name="reference" type="xsd:string" />
+    <part name="recommend" type="xsd:string" />
+  </message>
+  <portType name="TSRating">
+    <operation name="alive">
+      <input message="tns:TSRating_alive" />
+      <output message="tns:TSRating_aliveResponse" />
+    </operation>
+    <operation name="ping" parameterOrder="arg0">
+      <input message="tns:TSRating_ping" />
+      <output message="tns:TSRating_pingResponse" />
+    </operation>
+    <operation name="rateAndRecommendShop" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommendation">
+      <input message="tns:TSRating_rateAndRecommendShop" />
+      <output message="tns:TSRating_rateAndRecommendShopResponse" />
+    </operation>
+    <operation name="rateAndRecommendShopByReference" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommend">
+      <input message="tns:TSRating_rateAndRecommendShopByReference" />
+      <output message="tns:TSRating_rateAndRecommendShopByReferenceResponse" />
+    </operation>
+    <operation name="rateShop" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference">
+      <input message="tns:TSRating_rateShop" />
+      <output message="tns:TSRating_rateShopResponse" />
+    </operation>
+    <operation name="rateShopByReference" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference">
+      <input message="tns:TSRating_rateShopByReference" />
+      <output message="tns:TSRating_rateShopByReferenceResponse" />
+    </operation>
+    <operation name="rateShopByReferenceNGN" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference">
+      <input message="tns:TSRating_rateShopByReferenceNGN" />
+      <output message="tns:TSRating_rateShopByReferenceNGNResponse" />
+    </operation>
+    <operation name="rateShopLater" parameterOrder="tsId buyerEmail reference rateLaterDays">
+      <input message="tns:TSRating_rateShopLater" />
+      <output message="tns:TSRating_rateShopLaterResponse" />
+    </operation>
+    <operation name="rateShopNGN" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference">
+      <input message="tns:TSRating_rateShopNGN" />
+      <output message="tns:TSRating_rateShopNGNResponse" />
+    </operation>
+    <operation name="rateSimpleServiceProvider" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommendation">
+      <input message="tns:TSRating_rateSimpleServiceProvider" />
+      <output message="tns:TSRating_rateSimpleServiceProviderResponse" />
+    </operation>
+    <operation name="rateSimpleServiceProviderByReference" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommend">
+      <input message="tns:TSRating_rateSimpleServiceProviderByReference" />
+      <output message="tns:TSRating_rateSimpleServiceProviderByReferenceResponse" />
+    </operation>
+    <operation name="rateSimpleServiceProviderByReferenceNGN" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommend">
+      <input message="tns:TSRating_rateSimpleServiceProviderByReferenceNGN" />
+      <output message="tns:TSRating_rateSimpleServiceProviderByReferenceNGNResponse" />
+    </operation>
+    <operation name="rateSimpleServiceProviderNGN" parameterOrder="tsId buyerEmail websiteRating deliveryRating goodsRating serviceRating buyerStatement reference recommendation">
+      <input message="tns:TSRating_rateSimpleServiceProviderNGN" />
+      <output message="tns:TSRating_rateSimpleServiceProviderNGNResponse" />
+    </operation>
+    <operation name="retrieveAllRatingsPerShopGoogleData" parameterOrder="tsId">
+      <input message="tns:TSRating_retrieveAllRatingsPerShopGoogleData" />
+      <output message="tns:TSRating_retrieveAllRatingsPerShopGoogleDataResponse" />
+    </operation>
+    <operation name="retrieveAllShopRatingData" parameterOrder="countRatings">
+      <input message="tns:TSRating_retrieveAllShopRatingData" />
+      <output message="tns:TSRating_retrieveAllShopRatingDataResponse" />
+    </operation>
+    <operation name="retrieveAllShopsGoogleData">
+      <input message="tns:TSRating_retrieveAllShopsGoogleData" />
+      <output message="tns:TSRating_retrieveAllShopsGoogleDataResponse" />
+    </operation>
+    <operation name="retrieveAllTrustbadgeData" parameterOrder="wsUser wsPassword">
+      <input message="tns:TSRating_retrieveAllTrustbadgeData" />
+      <output message="tns:TSRating_retrieveAllTrustbadgeDataResponse" />
+    </operation>
+    <operation name="retrieveShopRatingDataList" parameterOrder="tsId operation startIndex pageSize password">
+      <input message="tns:TSRating_retrieveShopRatingDataList" />
+      <output message="tns:TSRating_retrieveShopRatingDataListResponse" />
+    </operation>
+    <operation name="retrieveShopRatingDataOptimized" parameterOrder="tsId password">
+      <input message="tns:TSRating_retrieveShopRatingDataOptimized" />
+      <output message="tns:TSRating_retrieveShopRatingDataOptimizedResponse" />
+    </operation>
+    <operation name="retrieveShopRatingStatements" parameterOrder="tsId wsUser wsPassword">
+      <input message="tns:TSRating_retrieveShopRatingStatements" />
+      <output message="tns:TSRating_retrieveShopRatingStatementsResponse" />
+    </operation>
+    <operation name="updateRatingWidgetState" parameterOrder="tsId activation wsUser wsPassword partnerPackage">
+      <input message="tns:TSRating_updateRatingWidgetState" />
+      <output message="tns:TSRating_updateRatingWidgetStateResponse" />
+    </operation>
+  </portType>
+  <binding name="TSRatingBinding" type="tns:TSRating">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <operation name="alive">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="ping">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateAndRecommendShop">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateAndRecommendShopByReference">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateShop">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateShopByReference">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateShopByReferenceNGN">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateShopLater">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateShopNGN">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateSimpleServiceProvider">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateSimpleServiceProviderByReference">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateSimpleServiceProviderByReferenceNGN">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="rateSimpleServiceProviderNGN">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveAllRatingsPerShopGoogleData">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveAllShopRatingData">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveAllShopsGoogleData">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveAllTrustbadgeData">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveShopRatingDataList">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveShopRatingDataOptimized">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="retrieveShopRatingStatements">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+    <operation name="updateRatingWidgetState">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://rating.action.b2b.ts.nhp.com/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="TSRatingService">
+    <port name="TSRatingPort" binding="tns:TSRatingBinding">
+      <soap:address location="https://qa.trustedshops.com:443/ts/services/TsRating" />
+    </port>
+  </service>
+</definitions>

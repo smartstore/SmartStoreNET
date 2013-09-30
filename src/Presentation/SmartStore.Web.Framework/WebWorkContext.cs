@@ -206,7 +206,7 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-                //get language from URL (if possible)
+                // get language from URL (if possible)
                 if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 {
                     if (_httpContext != null)
@@ -283,7 +283,7 @@ namespace SmartStore.Web.Framework
 					return allStoreLanguages.FirstOrDefault();
 
 				//if not found in languages filtered by the current store, then return any language
-				return _languageService.GetAllLanguages().FirstOrDefault();
+				return _languageService.GetAllLanguages(true).FirstOrDefault();
             }
             set
             {

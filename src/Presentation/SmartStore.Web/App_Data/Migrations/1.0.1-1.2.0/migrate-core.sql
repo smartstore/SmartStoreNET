@@ -421,6 +421,13 @@ SET @resources='
     <Value>The (formatted) order number</Value>
 	<Value lang="de">Die formattierte Auftragsnummer.</Value>
   </LocaleResource>
+  
+  <LocaleResource Name="Admin.ContentManagement">
+    <Value lang="en"></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.ContentManagement">
+    <Value lang="en">CMS</Value>
+  </LocaleResource>
 
 </Language>
 '

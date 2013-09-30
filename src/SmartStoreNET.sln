@@ -113,6 +113,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C0A5A9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsSeal", "Plugins\Widgets.TrustedShopsSeal\SmartStore.Plugin.Widgets.TrustedShopsSeal.csproj", "{DD12934F-62E5-4A12-858A-82B2F17EA1D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews", "Plugins\Widgets.TrustedShopsCustomerReviews\SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.csproj", "{94282A97-176B-4813-B3E6-AD435AC44E01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection", "Plugins\Widgets.TrustedShopsCustomerProtection\SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.csproj", "{C33D99D8-B428-4DB9-BC56-35505D68A0B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -503,6 +507,26 @@ Global
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|x86.ActiveCfg = Release|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -549,6 +573,8 @@ Global
 		{A999F243-C752-4430-9AF6-8FCE281C9C20} = {252FB086-B3DA-4645-9DC1-40DC1BC82FD5}
 		{C2B83AF5-80F6-4B8C-8628-FA7DE10C3BB5} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4} = {80D551E6-D959-413D-8470-8B02C1A122B7}
+		{94282A97-176B-4813-B3E6-AD435AC44E01} = {80D551E6-D959-413D-8470-8B02C1A122B7}
+		{C33D99D8-B428-4DB9-BC56-35505D68A0B7} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

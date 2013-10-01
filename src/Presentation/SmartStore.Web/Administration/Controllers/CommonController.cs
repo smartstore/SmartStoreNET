@@ -309,12 +309,8 @@ namespace SmartStore.Admin.Controllers
             var model = new List<SystemWarningModel>();
             
             //store URL
-			var currentStoreUrl = _storeContext.CurrentStore.Url;
-			if (!String.IsNullOrEmpty(currentStoreUrl) &&
-				(currentStoreUrl.Equals(_webHelper.GetStoreLocation(false), StringComparison.InvariantCultureIgnoreCase)
-                ||
-				currentStoreUrl.Equals(_webHelper.GetStoreLocation(true), StringComparison.InvariantCultureIgnoreCase)
-                ))
+			var currentStoreUrl = _storeContext.CurrentStore.Url.EnsureEndsWith("/");
+			if (currentStoreUrl.HasValue() && (currentStoreUrl.IsCaseInsensitiveEqual(_webHelper.GetStoreLocation(false)) || currentStoreUrl.IsCaseInsensitiveEqual(_webHelper.GetStoreLocation(true))))
                 model.Add(new SystemWarningModel()
                     {
                         Level = SystemWarningLevel.Pass,

@@ -96,7 +96,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews
             var link = "<a href=\"https://www.trustedshops.com/buyerrating/rate_{0}.html&buyerEmail={1}&shopOrderID={2}\" target=\"_blank\" title=\"{3}\" ><img alt=\"{4}\" src=\"{5}\"></a>";
 
             var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-                null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+                null, null, null, null, null, _workContext.CurrentCustomer.BillingAddress.Email, null, null, 0, 1).FirstOrDefault();
 
             var buyerMail = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_workContext.CurrentCustomer.BillingAddress.Email));
             var orderId = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(order.Id.ToString()));

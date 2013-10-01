@@ -181,6 +181,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="AppPath.cs" />
+    <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />
     <Compile Include="Controllers\PluginControllerBase.cs" />
     <Compile Include="Controllers\CheckAffiliateAttribute.cs" />
     <Compile Include="Controllers\ContollerExtensions.cs" />
@@ -192,7 +193,7 @@
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\TabStripCreated.cs" />
-    <Compile Include="Extensions\HttpRequestExtensions.cs" />
+    <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="HandleInstallFilter.cs" />
     <Compile Include="HtmlAttribute.cs" />
@@ -200,6 +201,8 @@
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Less\ImportedFilePathResolver.cs" />
     <Compile Include="Less\LessMinify.cs" />
+    <Compile Include="Localization\CultureCodeConstraint.cs" />
+    <Compile Include="Localization\LocalizedRouteHandler.cs" />
     <Compile Include="Mvc\Bundles\BundlePublisher.cs" />
     <Compile Include="Mvc\Bundles\IBundleProvider.cs" />
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />

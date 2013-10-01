@@ -13,6 +13,7 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Web.Framework.Controllers
 {
 
+    [SetWorkingCulture]
     [AdminAuthorize]
     //[UnitOfWork]
     public abstract partial class PluginControllerBase : Controller

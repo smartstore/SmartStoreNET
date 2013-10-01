@@ -14,12 +14,12 @@ namespace SmartStore.Web.Framework.Controllers
     /// </summary>
     public class LanguageSeoCodeAttribute : ActionFilterAttribute
     {
-        
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
-            
+
             HttpRequestBase request = filterContext.HttpContext.Request;
             if (request == null)
                 return;
@@ -32,28 +32,44 @@ namespace SmartStore.Web.Framework.Controllers
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
-                return;
-
-            var localizationSettings = EngineContext.Current.Resolve<LocalizationSettings>();
-            if (!localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
-                return;
-
-            //ensure that this route is registered and localizable (LocalizedRoute in RouteProvider.cs)
+            // ensure that this route is registered and localizable (LocalizedRoute in RouteProvider.cs)
             if (filterContext.RouteData == null || filterContext.RouteData.Route == null || !(filterContext.RouteData.Route is LocalizedRoute))
                 return;
 
-
-            //process current URL
-            var pageUrl = filterContext.HttpContext.Request.RawUrl;
-            string applicationPath = filterContext.HttpContext.Request.ApplicationPath;
-            if (pageUrl.IsLocalizedUrl(applicationPath, true))
-                //already localized URL
+            if (!DataSettingsHelper.DatabaseIsInstalled())
                 return;
-            //add language code to URL
+
+            var route = filterContext.RouteData.Route as LocalizedRoute;
+            
+            if (!route.SeoFriendlyUrlsEnabled)
+                return;
+
+            var routeValues = filterContext.RouteData.Values;
+
+            string requestedCultureCode;
+            if (routeValues.TryGetCultureCode(out requestedCultureCode)) 
+            {
+                // a lang specific url is already requested
+                return;
+            }
+
+            // add culture code of working language to route values
             var workContext = EngineContext.Current.Resolve<IWorkContext>();
-            pageUrl = pageUrl.AddLanguageSeoCodeToRawUrl(applicationPath, workContext.WorkingLanguage);
-            filterContext.Result = new RedirectResult(pageUrl);
+            routeValues["cultureCode"] = workContext.WorkingLanguage.UniqueSeoCode;
+
+            //filterContext.Result = new RedirectToRouteResult(routeValues);
+
+            ////process current URL
+            //var pageUrl = filterContext.HttpContext.Request.RawUrl;
+            //string applicationPath = filterContext.HttpContext.Request.ApplicationPath;
+            //if (pageUrl.IsLocalizedUrl(applicationPath, true))
+            //    //already localized URL
+            //    return;
+            ////add language code to URL
+            //var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            //pageUrl = pageUrl.AddLanguageSeoCodeToRawUrl(applicationPath, workContext.WorkingLanguage);
+            //filterContext.Result = new RedirectResult(pageUrl);
         }
+
     }
 }

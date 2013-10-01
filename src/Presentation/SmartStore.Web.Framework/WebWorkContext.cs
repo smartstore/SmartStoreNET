@@ -206,90 +206,176 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-                // get language from URL (if possible)
-                if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+                int customerLangId = 0;
+                if (this.CurrentCustomer != null)
                 {
-                    if (_httpContext != null)
+                    customerLangId = this.CurrentCustomer.GetAttribute<int>(
+                        SystemCustomerAttributeNames.LanguageId, 
+                        _genericAttributeService, 
+                        _storeContext.CurrentStore.Id);
+                }
+                
+                // get requested language from cached route data.
+                // We cached this in 'LocalizedRouteHandler'
+                if (_httpContext != null)
+                {
+                    // these both are never set when 'SeoFriendlyUrlsForLanguagesEnabled' is FALSE.
+                    string requestedCulture = "";
+                    //string defaultCulture = "";
+
+                    var routeData = _httpContext.GetRouteData();
+                    if (routeData.Values.TryGetCultureCode(out requestedCulture)) 
                     {
-                        string virtualPath = _httpContext.Request.AppRelativeCurrentExecutionFilePath;
-                        string applicationPath = _httpContext.Request.ApplicationPath;
+                        // a specific language was requested (URL: .../>>en<</something)
                         Language langByCulture;
-                        if (virtualPath.IsLocalizedUrl(applicationPath, false))
+                        langByCulture = _languageService.GetAllLanguages()
+                            .Where(l => requestedCulture.Equals(l.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase))
+                            .FirstOrDefault();
+                        if (langByCulture != null && langByCulture.Published)
                         {
-                            var seoCode = virtualPath.GetLanguageSeoCodeFromUrl(applicationPath, false);
-                            if (!String.IsNullOrEmpty(seoCode))
+                            // the language is found. now we need to save it
+                            if (this.CurrentCustomer != null && customerLangId != langByCulture.Id)
                             {
-                                //langByCulture = _languageService.GetAllLanguages()
-                                //    .Where(l => seoCode.Equals(l.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase))
-                                //    .FirstOrDefault();
-                                langByCulture = _languageService.GetLanguageByCulture(seoCode); // codehint: sm-edit
-                                if (langByCulture != null && langByCulture.Published)
-                                {
-                                    //the language is found. now we need to save it
-									if (this.CurrentCustomer != null && this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-										_genericAttributeService, _storeContext.CurrentStore.Id) != langByCulture.Id)
-                                    {
-										_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-											 SystemCustomerAttributeNames.LanguageId, langByCulture.Id, _storeContext.CurrentStore.Id);
-                                    }
-                                }
+                                customerLangId = langByCulture.Id;
+                                _genericAttributeService.SaveAttribute(
+                                    this.CurrentCustomer,
+                                    SystemCustomerAttributeNames.LanguageId,
+                                    langByCulture.Id,
+                                    _storeContext.CurrentStore.Id);
                             }
                         }
                     }
+
+                    //if (_httpContext.Items.Contains(LocalizedRouteHandler.CULTURECODE_REQUESTED_CACHEKEY))
+                    //{
+                    //    requestedCulture = _httpContext.Items[LocalizedRouteHandler.CULTURECODE_REQUESTED_CACHEKEY] as string;
+                    //}
+                    //if (_httpContext.Items.Contains(LocalizedRouteHandler.CULTURECODE_DEFAULT_CACHEKEY))
+                    //{
+                    //    defaultCulture = _httpContext.Items[LocalizedRouteHandler.CULTURECODE_DEFAULT_CACHEKEY] as string;
+                    //}
+
+                    //if (requestedCulture.HasValue() && requestedCulture != "default")
+                    //{
+                    //    // a specific language was requested (URL: .../>>en<</something)
+                    //    Language langByCulture;
+                    //    langByCulture = _languageService.GetAllLanguages()
+                    //        .Where(l => requestedCulture.Equals(l.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase))
+                    //        .FirstOrDefault();
+                    //    if (langByCulture != null && langByCulture.Published)
+                    //    {
+                    //        // the language is found. now we need to save it
+                    //        if (this.CurrentCustomer != null && customerLangId != langByCulture.Id)
+                    //        {
+                    //            customerLangId = langByCulture.Id;
+                    //            _genericAttributeService.SaveAttribute(
+                    //                this.CurrentCustomer,
+                    //                SystemCustomerAttributeNames.LanguageId,
+                    //                langByCulture.Id,
+                    //                _storeContext.CurrentStore.Id);
+                    //        }
+                    //    }
+                    //}
                 }
+
+                //// get language from URL (if possible)
+                //if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+                //{
+                //    if (_httpContext != null)
+                //    {
+                //        string virtualPath = _httpContext.Request.AppRelativeCurrentExecutionFilePath;
+                //        string applicationPath = _httpContext.Request.ApplicationPath;
+                //        Language langByCulture;
+                //        if (virtualPath.IsLocalizedUrl(applicationPath, false))
+                //        {
+                //            var seoCode = virtualPath.GetLanguageSeoCodeFromUrl(applicationPath, false);
+                //            if (!String.IsNullOrEmpty(seoCode))
+                //            {
+                //                langByCulture = _languageService.GetAllLanguages()
+                //                    .Where(l => seoCode.Equals(l.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase))
+                //                    .FirstOrDefault();
+                //                if (langByCulture != null && langByCulture.Published)
+                //                {
+                //                    // the language is found. now we need to save it
+                //                    if (this.CurrentCustomer != null && customerLangId != langByCulture.Id)
+                //                    {
+                //                        _genericAttributeService.SaveAttribute(
+                //                            this.CurrentCustomer,
+                //                            SystemCustomerAttributeNames.LanguageId, 
+                //                            langByCulture.Id, 
+                //                            _storeContext.CurrentStore.Id);
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+
 				var allStoreLanguages = _languageService.GetAllLanguages(storeId: _storeContext.CurrentStore.Id);
                 if (allStoreLanguages.Count > 0 && this.CurrentCustomer != null)
                 {
-                    //find current customer language
+                    // find current customer language
                     foreach (var lang in allStoreLanguages)
                     {
-						if (this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-							_genericAttributeService, _storeContext.CurrentStore.Id) == lang.Id)
+                        if (customerLangId == lang.Id)
                         {
                             return lang;
                         }
-                    }                    
-                }
-
-                // codehint: sm-add
-                // Fallback to browser detected language
-                Language browserLanguage = null;
-
-				if (_httpContext != null && _httpContext.Request != null && _httpContext.Request.UserLanguages != null)
-                {
-                    var userLangs = _httpContext.Request.UserLanguages.Select(x => x.Split(new[] { ';' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
-                    if (userLangs.HasItems())
-                    {
-                        foreach (var culture in userLangs)
-                        {
-                            browserLanguage = _languageService.GetLanguageByCulture(culture);
-                            if (browserLanguage != null && browserLanguage.Published)
-                            {
-                                //the language is found. now we need to save it
-								if (this.CurrentCustomer != null && this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
-										_genericAttributeService, _storeContext.CurrentStore.Id) != browserLanguage.Id)
-                                {
-									_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-										 SystemCustomerAttributeNames.LanguageId, browserLanguage.Id, _storeContext.CurrentStore.Id);
-                                }
-                                return browserLanguage;
-                            }
-                        }
                     }
+
+                    // it not specified, then return the first found one
+                    return allStoreLanguages.FirstOrDefault();
                 }
 
-                // Absolute fallback
-				if (allStoreLanguages.Count > 0)
-					return allStoreLanguages.FirstOrDefault();
+                //// codehint: sm-add
+                //// Fallback to browser detected language
+                //Language browserLanguage = null;
 
-				//if not found in languages filtered by the current store, then return any language
-				return _languageService.GetAllLanguages(true).FirstOrDefault();
+                //if (_httpContext != null && _httpContext.Request != null && _httpContext.Request.UserLanguages != null)
+                //{
+                //    var userLangs = _httpContext.Request.UserLanguages.Select(x => x.Split(new[] { ';' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
+                //    if (userLangs.HasItems())
+                //    {
+                //        foreach (var culture in userLangs)
+                //        {
+                //            browserLanguage = _languageService.GetLanguageByCulture(culture);
+                //            if (browserLanguage != null && browserLanguage.Published)
+                //            {
+                //                //the language is found. now we need to save it
+                //                if (this.CurrentCustomer != null && this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId,
+                //                        _genericAttributeService, _storeContext.CurrentStore.Id) != browserLanguage.Id)
+                //                {
+                //                    _genericAttributeService.SaveAttribute(this.CurrentCustomer,
+                //                         SystemCustomerAttributeNames.LanguageId, browserLanguage.Id, _storeContext.CurrentStore.Id);
+                //                }
+                //                return browserLanguage;
+                //            }
+                //        }
+                //    }
+                //}
+
+                //// Absolute fallback
+                //if (allStoreLanguages.Count > 0)
+                //    return allStoreLanguages.FirstOrDefault();
+
+				// if not found in languages filtered by the current store, then return any language
+				var fallback = _languageService.GetAllLanguages().FirstOrDefault();
+                if (fallback == null)
+                {
+                    // handle the rare case where all languages are unpublished
+                    fallback = _languageService.GetAllLanguages(true).FirstOrDefault();
+                }
+
+                return fallback;
             }
             set
             {
 				var languageId = value != null ? value.Id : 0;
-				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-					SystemCustomerAttributeNames.LanguageId, languageId, _storeContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(
+                    this.CurrentCustomer,
+					SystemCustomerAttributeNames.LanguageId, 
+                    languageId, 
+                    _storeContext.CurrentStore.Id);
 			}
         }
 

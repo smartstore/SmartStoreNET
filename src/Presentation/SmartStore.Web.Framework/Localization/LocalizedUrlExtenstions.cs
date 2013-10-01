@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Web.Framework.Localization
@@ -7,7 +9,36 @@ namespace SmartStore.Web.Framework.Localization
     public static class LocalizedUrlExtenstions
     {
         private static int _seoCodeLength = 2;
-        
+
+        /// <summary>
+        /// Tries to get an explicitly set culture code
+        /// </summary>
+        /// <param name="routeValues"></param>
+        /// <param name="requestedCultureCode"></param>
+        /// <returns></returns>
+        public static bool TryGetCultureCode(this RouteValueDictionary routeValues, out string requestedCultureCode)
+        {
+            requestedCultureCode = null;
+            if (routeValues.ContainsKey("cultureCode"))
+            {
+                string value = routeValues["cultureCode"] as string;
+                if (value.HasValue() && value != "default")
+                {
+                    requestedCultureCode = value;
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        public static void SetCultureCode(this RouteValueDictionary routeValues, string cultureCode) 
+        {
+            Guard.ArgumentNotEmpty(() => cultureCode);
+
+            routeValues["cultureCode"] = cultureCode;
+        }
+
         private static bool IsVirtualDirectory(this string applicationPath)
         {
             if (string.IsNullOrEmpty(applicationPath))

@@ -182,7 +182,7 @@ namespace SmartStore.Web
                 Context = HttpContext.Current
             });
             
-            //ignore static resources
+            // ignore static resources
 			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
 			if (webHelper.IsStaticResource(this.Request))
 				return;
@@ -196,14 +196,14 @@ namespace SmartStore.Web
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-			//ignore static resources
+			// ignore static resources
 			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
 			if (webHelper.IsStaticResource(this.Request))
 				return;
 
             if (DataSettingsHelper.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
-                //stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
+                // stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
                 MiniProfiler.Stop();
             }
 
@@ -238,34 +238,34 @@ namespace SmartStore.Web
 
         protected void SetWorkingCulture()
         {
-            if (!DataSettingsHelper.DatabaseIsInstalled())
-                return;
+            //if (!DataSettingsHelper.DatabaseIsInstalled())
+            //    return;
 
-			//ignore static resources
-            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-            if (webHelper.IsStaticResource(this.Request))
-                return;
+            ////ignore static resources
+            //var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+            //if (webHelper.IsStaticResource(this.Request))
+            //    return;
 
-            //keep alive page requested (we ignore it to prevent creating a guest customer records)
-            string keepAliveUrl = string.Format("{0}keepalive", webHelper.GetStoreLocation());
-            if (webHelper.GetThisPageUrl(false).StartsWith(keepAliveUrl, StringComparison.InvariantCultureIgnoreCase))
-                return;
+            ////keep alive page requested (we ignore it to prevent creating a guest customer records)
+            //string keepAliveUrl = string.Format("{0}keepalive", webHelper.GetStoreLocation());
+            //if (webHelper.GetThisPageUrl(false).StartsWith(keepAliveUrl, StringComparison.InvariantCultureIgnoreCase))
+            //    return;
 
-            // codehint: sm-edit
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            //// codehint: sm-edit
+            //var workContext = EngineContext.Current.Resolve<IWorkContext>();
 
-            // codehint: sm-add
-            CultureInfo culture;
-            if (workContext.CurrentCustomer != null && workContext.WorkingLanguage != null)
-            {
-                culture = new CultureInfo(workContext.WorkingLanguage.LanguageCulture);
-            }
-            else
-            {
-                culture = new CultureInfo("en-US");
-            }
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = culture;
+            //// codehint: sm-add
+            //CultureInfo culture;
+            //if (workContext.CurrentCustomer != null && workContext.WorkingLanguage != null)
+            //{
+            //    culture = new CultureInfo(workContext.WorkingLanguage.LanguageCulture);
+            //}
+            //else
+            //{
+            //    culture = new CultureInfo("en-US");
+            //}
+            //Thread.CurrentThread.CurrentCulture = culture;
+            //Thread.CurrentThread.CurrentUICulture = culture;
         }
 
         protected void LogException(Exception exc)

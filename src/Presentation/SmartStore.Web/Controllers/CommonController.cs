@@ -348,23 +348,37 @@ namespace SmartStore.Web.Controllers
             {
                 _workContext.WorkingLanguage = language;
             }
-
-            //url referrer
+            
+            // url referrer
             if (String.IsNullOrEmpty(returnUrl))
+            {
                 returnUrl = _webHelper.GetUrlReferrer();
-            //home page
+            }
+
+            // home page
             if (String.IsNullOrEmpty(returnUrl))
+            {
                 returnUrl = Url.RouteUrl("HomePage");
+            }
+
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                string applicationPath = HttpContext.Request.ApplicationPath;
-                if (returnUrl.IsLocalizedUrl(applicationPath, true))
+                string requestedCultureCode;
+                if (this.RouteData.Values.TryGetCultureCode(out requestedCultureCode))
                 {
-                    //already localized URL
-                    returnUrl = returnUrl.RemoveLanguageSeoCodeFromRawUrl(applicationPath);
+                    // the url is lang specific already
+                    this.RouteData.Values.SetCultureCode(language.UniqueSeoCode);
+
+                    string applicationPath = HttpContext.Request.ApplicationPath;
+                    if (returnUrl.IsLocalizedUrl(applicationPath, true))
+                    {
+                        //already localized URL
+                        returnUrl = returnUrl.RemoveLanguageSeoCodeFromRawUrl(applicationPath);
+                    }
+                    returnUrl = returnUrl.AddLanguageSeoCodeToRawUrl(applicationPath, _workContext.WorkingLanguage);
                 }
-                returnUrl = returnUrl.AddLanguageSeoCodeToRawUrl(applicationPath, _workContext.WorkingLanguage);
             }
+
             return Redirect(returnUrl);
         }
 

@@ -4,6 +4,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.Web.Framework.Controllers
 {
+    [SetWorkingCulture]
     public abstract class PaymentControllerBase : Controller
     {
         public abstract IList<string> ValidatePaymentForm(FormCollection form);

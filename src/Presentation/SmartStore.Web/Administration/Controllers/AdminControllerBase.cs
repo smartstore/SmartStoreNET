@@ -12,7 +12,8 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Admin.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+    [SetWorkingCulture]
+    [RequireHttpsByConfig(SslRequirement.Yes)]
     [AdminValidateIpAddress]
     [CustomerLastActivity]
     [StoreIpAddress]

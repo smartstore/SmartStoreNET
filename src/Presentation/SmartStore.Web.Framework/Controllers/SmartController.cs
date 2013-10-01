@@ -12,6 +12,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Controllers
 {
+    [SetWorkingCulture]
     [CustomerLastActivity]
     [StoreIpAddress]
     [StoreLastVisitedPage]

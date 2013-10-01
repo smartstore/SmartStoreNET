@@ -10,35 +10,6 @@ namespace SmartStore.Web.Framework.Localization
     {
         private static int _seoCodeLength = 2;
 
-        /// <summary>
-        /// Tries to get an explicitly set culture code
-        /// </summary>
-        /// <param name="routeValues"></param>
-        /// <param name="requestedCultureCode"></param>
-        /// <returns></returns>
-        public static bool TryGetCultureCode(this RouteValueDictionary routeValues, out string requestedCultureCode)
-        {
-            requestedCultureCode = null;
-            if (routeValues.ContainsKey("cultureCode"))
-            {
-                string value = routeValues["cultureCode"] as string;
-                if (value.HasValue() && value != "default")
-                {
-                    requestedCultureCode = value;
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        public static void SetCultureCode(this RouteValueDictionary routeValues, string cultureCode) 
-        {
-            Guard.ArgumentNotEmpty(() => cultureCode);
-
-            routeValues["cultureCode"] = cultureCode;
-        }
-
         private static bool IsVirtualDirectory(this string applicationPath)
         {
             if (string.IsNullOrEmpty(applicationPath))
@@ -57,7 +28,7 @@ namespace SmartStore.Web.Framework.Localization
 
             
             var result = rawUrl.Substring(applicationPath.Length);
-            //raw url always starts with '/'
+            // raw url always starts with '/'
             if (!result.StartsWith("/"))
                 result = "/" + result;
             return result;
@@ -83,13 +54,14 @@ namespace SmartStore.Web.Framework.Localization
 
         public static bool IsLocalizedUrl(this string url, string applicationPath, bool isRawPath)
         {
-            if (string.IsNullOrEmpty(url))
+            if (url.IsEmpty())
                 return false;
+
             if (isRawPath)
             {
                 if (applicationPath.IsVirtualDirectory())
                 {
-                    //we're in virtual directory. So remove its path
+                    // we're in virtual directory. So remove its path
                     url = url.RemoveApplicationPathFromRawUrl(applicationPath);
                 }
 

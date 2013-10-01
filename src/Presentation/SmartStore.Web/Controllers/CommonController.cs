@@ -363,20 +363,13 @@ namespace SmartStore.Web.Controllers
 
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                string requestedCultureCode;
-                if (this.RouteData.Values.TryGetCultureCode(out requestedCultureCode))
+                string applicationPath = HttpContext.Request.ApplicationPath;
+                if (returnUrl.IsLocalizedUrl(applicationPath, true))
                 {
-                    // the url is lang specific already
-                    this.RouteData.Values.SetCultureCode(language.UniqueSeoCode);
-
-                    string applicationPath = HttpContext.Request.ApplicationPath;
-                    if (returnUrl.IsLocalizedUrl(applicationPath, true))
-                    {
-                        //already localized URL
-                        returnUrl = returnUrl.RemoveLanguageSeoCodeFromRawUrl(applicationPath);
-                    }
-                    returnUrl = returnUrl.AddLanguageSeoCodeToRawUrl(applicationPath, _workContext.WorkingLanguage);
+                    //already localized URL
+                    returnUrl = returnUrl.RemoveLanguageSeoCodeFromRawUrl(applicationPath);
                 }
+                returnUrl = returnUrl.AddLanguageSeoCodeToRawUrl(applicationPath, _workContext.WorkingLanguage);
             }
 
             return Redirect(returnUrl);

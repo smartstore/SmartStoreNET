@@ -52,8 +52,9 @@ namespace SmartStore.Web.Infrastructure
         {
             get
             {
-                //it should be the first route
-                return -int.MaxValue;
+                //it should be the last route
+                //we do not set it to -int.MaxValue so it could be overriden (if required)
+                return -1000000;
             }
         }
     }

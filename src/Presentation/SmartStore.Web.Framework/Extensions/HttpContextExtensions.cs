@@ -6,13 +6,13 @@ using System.Web;
 using System.Web.Routing;
 using System.IO;
 using System.Diagnostics;
+using System.Web.Mvc;
 
 namespace SmartStore
 {
 	/// <remarks>codehint: sm-add</remarks>
     public static class HttpContextExtensions
 	{
-        private const string ROUTEDATA_CACHEKEY = "__Current_RouteData__";
 
         public static Stream ToFileStream(this HttpRequestBase request, out string fileName, out string contentType, string paramName = "qqfile") {
 			fileName = contentType = "";
@@ -41,21 +41,14 @@ namespace SmartStore
 			return stream;
 		}
 
-        public static void SetRouteData(this HttpContextBase httpContext, RouteData data)
-        {
-            Guard.ArgumentNotNull(() => httpContext);
-            Guard.ArgumentNotNull(() => data);
-
-            httpContext.Items[ROUTEDATA_CACHEKEY] = data;
-        }
-
         public static RouteData GetRouteData(this HttpContextBase httpContext)
         {
             Guard.ArgumentNotNull(() => httpContext);
 
-            if (httpContext.Items.Contains(ROUTEDATA_CACHEKEY))
+            var handler = httpContext.Handler as MvcHandler;
+            if (handler != null && handler.RequestContext != null)
             {
-                return httpContext.Items[ROUTEDATA_CACHEKEY] as RouteData; 
+                return handler.RequestContext.RouteData;
             }
 
             return null;
@@ -63,17 +56,8 @@ namespace SmartStore
 
         public static bool TryGetRouteData(this HttpContextBase httpContext, out RouteData routeData)
         {
-            Guard.ArgumentNotNull(() => httpContext);
-
-            routeData = null;
-
-            if (httpContext.Items.Contains(ROUTEDATA_CACHEKEY))
-            {
-                routeData = httpContext.Items[ROUTEDATA_CACHEKEY] as RouteData;
-                return true;
-            }
-
-            return false;
+            routeData = httpContext.GetRouteData();
+            return routeData != null;
         }
 
 

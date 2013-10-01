@@ -391,7 +391,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
             model.IsTestMode = TrustedShopsCustomerProtectionSettings.IsTestMode;
 
             var lastOrder = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-                null, null, null, null, null, _workContext.CurrentCustomer.BillingAddress.Email, null, null, 0, 1).FirstOrDefault();
+                null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 
             string paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
             

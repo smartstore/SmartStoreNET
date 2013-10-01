@@ -128,7 +128,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.Controllers
                 checkoutModel.BuyerEmail = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_workContext.CurrentCustomer.BillingAddress.Email));
 
                 var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-                    null, null, null, null, null, _workContext.CurrentCustomer.BillingAddress.Email, null, null, 0, 1).FirstOrDefault();
+                    null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 
                 checkoutModel.ShopOrderId = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(order.Id.ToString()));
                 checkoutModel.DisplayReviewLinkOnOrderCompleted = trustedShopsCustomerReviewsSettings.DisplayReviewLinkOnOrderCompleted;

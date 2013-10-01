@@ -80,7 +80,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
 
             string buyerEmail = _workContext.CurrentCustomer.BillingAddress.Email;
             var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-                null, null, null, null, null, buyerEmail, null, null, 0, 1).FirstOrDefault();
+                null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
             
             string amount = order.OrderSubtotalInclTax.ToString();
             string currency = order.CustomerCurrencyCode;

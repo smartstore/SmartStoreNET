@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
@@ -11,6 +12,9 @@ using System.Text.RegularExpressions;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
+using Microsoft.SqlServer;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 
 // codehint: sm-add (whole file)
 
@@ -254,6 +258,33 @@ namespace SmartStore.Data
 
             return result;
         }
+
+		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
+		/// <remarks>codehint: sm-add</remarks>
+		public int ExecuteSqlThroughSmo(string sql, DataSettings settings)
+		{
+			Guard.ArgumentNotEmpty(sql, "sql");
+			Guard.ArgumentNotNull(settings, "settings");
+
+			int result = 0;
+			bool isSqlServerCompact = settings.DataProvider.IsCaseInsensitiveEqual("sqlce");
+
+			if (isSqlServerCompact)
+			{
+				result = ExecuteSqlCommand(sql);
+			}
+			else
+			{
+				using (var sqlConnection = new SqlConnection(settings.DataConnectionString))
+				{
+					var serverConnection = new ServerConnection(sqlConnection);
+					var server = new Server(serverConnection);
+
+					result = server.ConnectionContext.ExecuteNonQuery(sql);
+				}
+			}
+			return result;
+		}
 
         // codehint: sm-add
         public bool HasChanges

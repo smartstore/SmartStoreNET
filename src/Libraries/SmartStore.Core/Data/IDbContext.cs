@@ -31,6 +31,10 @@ namespace SmartStore.Core.Data
         /// <returns>The result returned by the database after executing the command.</returns>
         int ExecuteSqlCommand(string sql, int? timeout = null, params object[] parameters);
 
+		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
+		/// <remarks>codehint: sm-add</remarks>
+		int ExecuteSqlThroughSmo(string sql, DataSettings settings);
+
         // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 

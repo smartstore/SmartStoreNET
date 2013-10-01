@@ -605,9 +605,11 @@ namespace SmartStore.Admin.Controllers
             if (model.SqlQuery.HasValue())
             {
                 var dbContext = EngineContext.Current.Resolve<IDbContext>();
+				var dataSettings = EngineContext.Current.Resolve<DataSettings>();
                 try
                 {
-                    dbContext.ExecuteSqlCommand(model.SqlQuery);
+					dbContext.ExecuteSqlThroughSmo(model.SqlQuery, dataSettings);
+
                     SuccessNotification("The sql command was executed successfully.");
                 }
                 catch (Exception ex)

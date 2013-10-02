@@ -3,16 +3,15 @@
 }
 @model SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerReviews.AdminInstruction"))
+</div>
 	
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 
 @using (Html.BeginForm())
-{
-    
-    <div class="alert alert-info">
-        @Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerReviews.AdminInstruction"))
-    </div>
-    
+{    
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -96,7 +95,7 @@
         <td>&nbsp;</td>
         <td style="padding:10px 0">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                @T("Admin.Common.Save")
+                <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>
         </td>
     </tr>

@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Plugins;
@@ -605,10 +604,9 @@ namespace SmartStore.Admin.Controllers
             if (model.SqlQuery.HasValue())
             {
                 var dbContext = EngineContext.Current.Resolve<IDbContext>();
-				var dataSettings = EngineContext.Current.Resolve<DataSettings>();
                 try
                 {
-					dbContext.ExecuteSqlThroughSmo(model.SqlQuery, dataSettings);
+					dbContext.ExecuteSqlThroughSmo(model.SqlQuery);
 
                     SuccessNotification("The sql command was executed successfully.");
                 }

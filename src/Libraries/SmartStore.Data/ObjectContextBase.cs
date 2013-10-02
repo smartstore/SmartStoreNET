@@ -15,6 +15,7 @@ using SmartStore.Core.Data.Hooks;
 using Microsoft.SqlServer;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
+using SmartStore.Core.Infrastructure;
 
 // codehint: sm-add (whole file)
 
@@ -246,7 +247,7 @@ namespace SmartStore.Data
             }
 
             // remove the GO statements
-            sql = Regex.Replace(sql, @"\r{0,1}\n[Gg][Oo]\r{0,1}\n", "\n");
+            //sql = Regex.Replace(sql, @"\r{0,1}\n[Gg][Oo]\r{0,1}\n", "\n");
 
             var result = this.Database.ExecuteSqlCommand(sql, parameters);
 
@@ -261,13 +262,14 @@ namespace SmartStore.Data
 
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		/// <remarks>codehint: sm-add</remarks>
-		public int ExecuteSqlThroughSmo(string sql, DataSettings settings)
+		public int ExecuteSqlThroughSmo(string sql)
 		{
 			Guard.ArgumentNotEmpty(sql, "sql");
-			Guard.ArgumentNotNull(settings, "settings");
+
+			var dataSettings = EngineContext.Current.Resolve<DataSettings>();
 
 			int result = 0;
-			bool isSqlServerCompact = settings.DataProvider.IsCaseInsensitiveEqual("sqlce");
+			bool isSqlServerCompact = dataSettings.DataProvider.IsCaseInsensitiveEqual("sqlce");
 
 			if (isSqlServerCompact)
 			{
@@ -275,7 +277,7 @@ namespace SmartStore.Data
 			}
 			else
 			{
-				using (var sqlConnection = new SqlConnection(settings.DataConnectionString))
+				using (var sqlConnection = new SqlConnection(dataSettings.DataConnectionString))
 				{
 					var serverConnection = new ServerConnection(sqlConnection);
 					var server = new Server(serverConnection);

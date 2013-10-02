@@ -20,6 +20,7 @@ using System.IO;
 using System.Text;
 using SmartStore.Services.Events;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -101,7 +102,7 @@ namespace SmartStore.Admin.Controllers
             model.MobileThemes.AddRange(GetThemes(true, themeSettings));
 
 			model.StoreId = selectedStoreId;
-			model.AvailableStores = _storeService.GetAllStoresAsListItems();
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
 
             return View(model);
         }
@@ -198,7 +199,7 @@ namespace SmartStore.Admin.Controllers
             {
                 ThemeName = theme,
 				StoreId = storeId,
-				AvailableStores = _storeService.GetAllStoresAsListItems()
+				AvailableStores = _storeService.GetAllStores().ToSelectListItems()
             };
 
 			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme, selectedTab = selectedTab });

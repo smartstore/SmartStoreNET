@@ -22,13 +22,6 @@ namespace SmartStore.Services.Stores
 		IList<Store> GetAllStores();
 
 		/// <summary>
-		/// Gets all stores
-		/// </summary>
-		/// <returns>Store collection</returns>
-		/// <remarks>codehint: sm-add</remarks>
-		IList<SelectListItem> GetAllStoresAsListItems(IList<Store> stores = null);
-
-		/// <summary>
 		/// Gets a store 
 		/// </summary>
 		/// <param name="storeId">Store identifier</param>

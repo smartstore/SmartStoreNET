@@ -89,29 +89,6 @@ namespace SmartStore.Services.Stores
 		}
 
 		/// <summary>
-		/// Gets all stores
-		/// </summary>
-		/// <returns>Store collection</returns>
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual IList<SelectListItem> GetAllStoresAsListItems(IList<Store> stores = null)
-		{
-			if (stores == null)
-				stores = GetAllStores();
-
-			var lst = new List<SelectListItem>();
-
-			foreach (var store in stores)
-			{
-				lst.Add(new SelectListItem
-				{
-					Text = store.Name,
-					Value = store.Id.ToString()
-				});
-			}
-			return lst;
-		}
-
-		/// <summary>
 		/// Gets a store 
 		/// </summary>
 		/// <param name="storeId">Store identifier</param>

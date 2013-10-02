@@ -20,6 +20,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
 using System.Web.Mvc;
 using System.Collections.Generic;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -449,7 +450,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			model.AvailableStores = new List<SelectListItem>();
 			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
-			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
+			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
 
 			if (task != null)
 			{

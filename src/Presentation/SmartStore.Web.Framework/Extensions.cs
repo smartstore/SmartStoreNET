@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -280,5 +281,24 @@ namespace SmartStore.Web.Framework
             }
             return result;
         }
+
+		/// <summary>
+		/// Get a list of all stores
+		/// </summary>
+		/// <remarks>codehint: sm-add</remarks>
+		public static IList<SelectListItem> ToSelectListItems(this IEnumerable<Store> stores)
+		{
+			var lst = new List<SelectListItem>();
+
+			foreach (var store in stores)
+			{
+				lst.Add(new SelectListItem
+				{
+					Text = store.Name,
+					Value = store.Id.ToString()
+				});
+			}
+			return lst;
+		}
     }
 }

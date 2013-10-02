@@ -20,6 +20,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain;
 using SmartStore.Services.Media;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 {
@@ -477,7 +478,7 @@ namespace SmartStore.Plugin.Feed.ElmarShopinfo.Services
 
 			model.AvailableStores = new List<SelectListItem>();
 			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
-			model.AvailableStores.AddRange(_storeService.GetAllStoresAsListItems(stores));
+			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
 
 			model.DayList = new List<SelectListItem> {
 				new	SelectListItem { Text = Helper.Resource("Daily"), Value = "daily" },

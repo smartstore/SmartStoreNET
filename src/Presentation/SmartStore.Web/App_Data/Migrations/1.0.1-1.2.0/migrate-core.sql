@@ -429,6 +429,56 @@ SET @resources='
     <Value lang="en">CMS</Value>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage">
+    <Value>Detect browser user language</Value>
+	<Value lang="de">Browsersprache erkennen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage.Hint">
+    <Value>Specifies whether the browser language of the visitor should be detected and assigned on his first visit (when inactive, the default store language will be assigned)</Value>
+	<Value lang="de">Legt fest, ob beim Erstbesuch die Browsersprache des Besuchers automatisch erkannt und zugewiesen werden soll (wenn inaktiv, wird die Standardsprache des Stores zugewiesen)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour">
+    <Value>Default language redirect behaviour</Value>
+	<Value lang="de">Verhalten bei Standardsprache</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour.Hint">
+    <Value>Specifies the redirect behavior when a page is requested in the default language (the default language is the first active store language)</Value>
+	<Value lang="de">Legt das Redirect-Verhalten fest, wenn eine Seite in der Standardsprache angefordert wird (die Standardsprache ist die erste aktive Sprache eines Stores).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.InvalidLanguageRedirectBehaviour">
+    <Value>Invalid language redirect behaviour</Value>
+	<Value lang="de">Verhalten bei ungültiger Sprache</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.InvalidLanguageRedirectBehaviour.Hint">
+    <Value>Specifies the redirect behavior when the given SEO code is invalid or the corresponding language does not exist or is unpublished.</Value>
+	<Value lang="de">Legt das Redirect-Verhalten fest, wenn eine Seite mit einem ungültigen bzw. inaktiven SEO code (Sprachkürzel) angefordert wird.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.DefaultLanguageRedirectBehaviour.PrependSeoCodeAndRedirect">
+    <Value>Prepend SEO code to url and redirect</Value>
+	<Value lang="de">Der URL SEO Code voranstellen und weiterleiten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.DefaultLanguageRedirectBehaviour.DoNoRedirect">
+    <Value>Do not redirect</Value>
+	<Value lang="de">Nicht weiterleiten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.DefaultLanguageRedirectBehaviour.StripSeoCode">
+    <Value>Strip SEO code if specified (recommended)</Value>
+	<Value lang="de">SEO Code entfernen wenn angegeben (empfohlen)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.InvalidLanguageRedirectBehaviour.Tolerate">
+    <Value>Tolerate</Value>
+	<Value lang="de">Tolerieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage">
+    <Value>Fallback to working language</Value>
+	<Value lang="de">Zur aktiven Sprache bzw. Standardsprache umleiten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.Core.Domain.Localization.InvalidLanguageRedirectBehaviour.ReturnHttp404">
+    <Value>Return HTTP 404 (page not found) (recommended)</Value>
+	<Value lang="de">HTTP 404 zurückgeben (Seite nicht gefunden) (empfohlen)</Value>
+  </LocaleResource>
+
 </Language>
 '
 
@@ -639,4 +689,26 @@ IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'SeoSettings.ExtraRobotsD
 BEGIN
 	INSERT [Setting] ([Name], [Value], [StoreId])
 	VALUES (N'SeoSettings.ExtraRobotsDisallows', N'', 0)
+END
+
+
+-- LocalizationSettings.DetectBrowserUserLanguage
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'LocalizationSettings.DetectBrowserUserLanguage')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'LocalizationSettings.DetectBrowserUserLanguage', N'False', 0)
+END
+
+-- LocalizationSettings.DefaultLanguageRedirectBehaviour
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'LocalizationSettings.DefaultLanguageRedirectBehaviour')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'LocalizationSettings.DefaultLanguageRedirectBehaviour', N'0', 0)
+END
+
+-- LocalizationSettings.InvalidLanguageRedirectBehaviour
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'LocalizationSettings.InvalidLanguageRedirectBehaviour')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'LocalizationSettings.InvalidLanguageRedirectBehaviour', N'0', 0)
 END

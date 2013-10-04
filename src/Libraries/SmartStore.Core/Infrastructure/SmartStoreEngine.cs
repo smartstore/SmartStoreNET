@@ -6,6 +6,7 @@ using Autofac;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Infrastructure
 {
@@ -42,12 +43,20 @@ namespace SmartStore.Core.Infrastructure
             var typeFinder = _containerManager.Resolve<ITypeFinder>();
             var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>();
             var startUpTasks = new List<IStartupTask>();
+
             foreach (var startUpTaskType in startUpTaskTypes)
-                startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
+            {
+                if (PluginManager.IsActivePluginAssembly(startUpTaskType.Assembly))
+                {
+                    startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
+                }
+            }
+            
             //sort
-            startUpTasks = startUpTasks.AsQueryable().OrderBy(st => st.Order).ToList();
-            foreach (var startUpTask in startUpTasks)
+            foreach (var startUpTask in startUpTasks.OrderBy(st => st.Order))
+            {
                 startUpTask.Execute();
+            }
         }
         
         private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker, SmartStoreConfig config)

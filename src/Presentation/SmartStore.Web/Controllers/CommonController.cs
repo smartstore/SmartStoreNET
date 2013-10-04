@@ -153,12 +153,12 @@ namespace SmartStore.Web.Controllers
 
         #region Utilities
 
-        //page not found
+        // page not found
         public ActionResult PageNotFound()
         {
             this.Response.StatusCode = 404;
             this.Response.TrySkipIisCustomErrors = true;
-
+            
             return View();
         }
 
@@ -176,18 +176,40 @@ namespace SmartStore.Web.Controllers
                         // codehint: sm-add
                         NativeName = GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
                         ISOCode = x.LanguageCulture,
+                        SeoCode = x.UniqueSeoCode,
                         FlagImageFileName = x.FlagImageFileName,
                     })
                     .ToList();
                 return result;
             });
 
+            var workingLanguage = _workContext.WorkingLanguage;
+
             var model = new LanguageSelectorModel()
             {
-                CurrentLanguageId = _workContext.WorkingLanguage.Id,
+                CurrentLanguageId = workingLanguage.Id,
                 AvailableLanguages = availableLanguages,
                 UseImages = _localizationSettings.UseImagesForLanguageSelection
             };
+
+            string defaultSeoCode = _workContext.GetDefaultLanguageSeoCode();
+
+            foreach (var lang in model.AvailableLanguages)
+            {
+                var helper = new LocalizedUrlHelper(HttpContext.Request, true);
+
+                if (lang.SeoCode == defaultSeoCode && (int)(_localizationSettings.DefaultLanguageRedirectBehaviour) > 0)
+                {
+                    helper.StripSeoCode();
+                }
+                else
+                {
+                    helper.PrependSeoCode(lang.SeoCode, true);
+                }
+
+                model.ReturnUrls[lang.SeoCode] = HttpUtility.UrlEncode(helper.GetAbsolutePath());
+            }
+
             return model;
         }
 
@@ -363,13 +385,9 @@ namespace SmartStore.Web.Controllers
 
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                string applicationPath = HttpContext.Request.ApplicationPath;
-                if (returnUrl.IsLocalizedUrl(applicationPath, true))
-                {
-                    //already localized URL
-                    returnUrl = returnUrl.RemoveLanguageSeoCodeFromRawUrl(applicationPath);
-                }
-                returnUrl = returnUrl.AddLanguageSeoCodeToRawUrl(applicationPath, _workContext.WorkingLanguage);
+                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, true);
+                helper.PrependSeoCode(_workContext.WorkingLanguage.UniqueSeoCode, true);
+                returnUrl = helper.GetAbsolutePath();
             }
 
             return Redirect(returnUrl);

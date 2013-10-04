@@ -8,9 +8,12 @@ namespace SmartStore.Web.Models.Common
         public LanguageSelectorModel()
         {
             AvailableLanguages = new List<LanguageModel>();
+            ReturnUrls = new Dictionary<string, string>();
         }
 
         public IList<LanguageModel> AvailableLanguages { get; set; }
+
+        public IDictionary<string, string> ReturnUrls { get; private set; }
 
         public int CurrentLanguageId { get; set; }
 

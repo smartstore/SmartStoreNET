@@ -41,7 +41,8 @@ namespace SmartStore.Web.Framework
         {
             // create a
             var a = new TagBuilder("a");
-            a.MergeAttribute("href", "javascript:void(0)");
+            a.MergeAttribute("href", "#");
+            a.MergeAttribute("onclick", "return false;");
             a.MergeAttribute("rel", "tooltip");
             a.MergeAttribute("title", value);
             a.MergeAttribute("tabindex", "-1");
@@ -155,25 +156,45 @@ namespace SmartStore.Web.Framework
         {
             var result = new StringBuilder();
             var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
-            var hintResource = string.Empty;
+            string labelText = null;
+            string hint = null;
+            
+            SmartResourceDisplayName resourceDisplayName;
             object value = null;
-            result.Append("<div class='ctl-label'>");
-            result.Append(helper.LabelFor(expression));
+
             if (metadata.AdditionalValues.TryGetValue("SmartResourceDisplayName", out value))
             {
-                var resourceDisplayName = value as SmartResourceDisplayName;
-                if (resourceDisplayName != null && displayHint)
+                resourceDisplayName = value as SmartResourceDisplayName;
+                if (resourceDisplayName != null)
                 {
-                    var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
-                    hintResource =
-                        EngineContext.Current.Resolve<ILocalizationService>()
-                        .GetResource(resourceDisplayName.ResourceKey + ".Hint", langId, false, resourceDisplayName.DisplayName);
+                    // resolve label display name
+                    labelText = resourceDisplayName.DisplayName.NullEmpty();
+                    if (labelText == null)
+                    {
+                        // take reskey as absolute fallback
+                        labelText = resourceDisplayName.ResourceKey;
+                    }
 
-                    result.Append(helper.Hint(hintResource).ToHtmlString());
+                    // resolve hint
+                    if (displayHint)
+                    {
+                        var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
+                        hint = EngineContext.Current.Resolve<ILocalizationService>()
+                            .GetResource(resourceDisplayName.ResourceKey + ".Hint", langId, false, "", true);
+                    }
+                }
+            }
+
+            result.Append("<div class='ctl-label'>");
+            {
+                result.Append(helper.LabelFor(expression, labelText));
+                if (hint.HasValue())
+                {
+                    result.Append(helper.Hint(hint).ToHtmlString());
                 }
             }
             result.Append("</div>");
-            
+
             return MvcHtmlString.Create(result.ToString());
         }
 
@@ -363,7 +384,7 @@ namespace SmartStore.Web.Framework
         {
             var result = helper.Action("WidgetsByZone", "Widget", new { widgetZone = widgetZone });
             return result;
-            //return MvcHtmlString.Create("");
+            ////return MvcHtmlString.Create("");
         }
 
         // codehint: sm-add

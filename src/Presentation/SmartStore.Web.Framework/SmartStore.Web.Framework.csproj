@@ -201,8 +201,7 @@
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Less\ImportedFilePathResolver.cs" />
     <Compile Include="Less\LessMinify.cs" />
-    <Compile Include="Localization\CultureCodeConstraint.cs" />
-    <Compile Include="Localization\LocalizedRouteHandler.cs" />
+    <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Mvc\Bundles\BundlePublisher.cs" />
     <Compile Include="Mvc\Bundles\IBundleProvider.cs" />
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />
@@ -241,7 +240,6 @@
     <Compile Include="EmbeddedViews\IEmbeddedViewResolver.cs" />
     <Compile Include="Localization\LocalizedRoute.cs" />
     <Compile Include="Localization\LocalizedRouteExtensions.cs" />
-    <Compile Include="Localization\LocalizedUrlExtenstions.cs" />
     <Compile Include="Mvc\ModelBase.cs" />
     <Compile Include="Controllers\AdminAuthorizeAttribute.cs" />
     <Compile Include="Controllers\FormValueExistsAttribute.cs" />

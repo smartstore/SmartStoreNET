@@ -224,9 +224,8 @@ namespace SmartStore.Web
         }
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
-        { 
-            //we don't do it in Application_BeginRequest because a user is not authenticated yet
-            SetWorkingCulture();
+        {
+            // [...]
         }
 
         protected void Application_Error(Object sender, EventArgs e)
@@ -234,38 +233,6 @@ namespace SmartStore.Web
             //disable compression (if enabled). More info - http://stackoverflow.com/questions/3960707/asp-net-mvc-weird-characters-in-error-page
             //log error
             LogException(Server.GetLastError());
-        }
-
-        protected void SetWorkingCulture()
-        {
-            //if (!DataSettingsHelper.DatabaseIsInstalled())
-            //    return;
-
-            ////ignore static resources
-            //var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-            //if (webHelper.IsStaticResource(this.Request))
-            //    return;
-
-            ////keep alive page requested (we ignore it to prevent creating a guest customer records)
-            //string keepAliveUrl = string.Format("{0}keepalive", webHelper.GetStoreLocation());
-            //if (webHelper.GetThisPageUrl(false).StartsWith(keepAliveUrl, StringComparison.InvariantCultureIgnoreCase))
-            //    return;
-
-            //// codehint: sm-edit
-            //var workContext = EngineContext.Current.Resolve<IWorkContext>();
-
-            //// codehint: sm-add
-            //CultureInfo culture;
-            //if (workContext.CurrentCustomer != null && workContext.WorkingLanguage != null)
-            //{
-            //    culture = new CultureInfo(workContext.WorkingLanguage.LanguageCulture);
-            //}
-            //else
-            //{
-            //    culture = new CultureInfo("en-US");
-            //}
-            //Thread.CurrentThread.CurrentCulture = culture;
-            //Thread.CurrentThread.CurrentUICulture = culture;
         }
 
         protected void LogException(Exception exc)

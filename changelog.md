@@ -17,7 +17,8 @@
  - Added **ask question form** to product pages
  - _ShippingByTotal_ plugin: added __BaseFee__, __MaxFee__ and __SmallQuantitySurcharge__.
  - _ShippingByTotal_ plugin: added the ability to define __zip ranges__ including __wildcards__.
- - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__ 
+ - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__
+ - Better handling of localized SEO URLs (new settings: __DetectBrowserUserLanguage__, __DefaultLanguageRedirectBehaviour__ and __InvalidLanguageRedirectBehaviour__) 
  - Plugin language resources are now updateable via backend
  - Added new (hidden) setting __ExtraRobotsDisallows__ (enables store owner to add new Disallow lines to the dynamically generated robots.txt)
  - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.
@@ -36,6 +37,7 @@
  - (Developer) Added properties for HtmlHelper and Model to 'AdminTabStripCreated' event type. This way external admin UI customization becomes easier and more flexible.
  - (Developer) Implemented minor tweaks and optimizations to the Theming Engine
  - (Developer) Added 'bodyOnly' parameter to TopicBlock ChildAction
+ - (Developer) HtmlHelper __SmartLabelFor__ now renders the model property name by default (instead of the _SmartResourceDisplayName_ resource key)
 
 ###Bugfixes###
  - A bunch of fixes and improvements for the _SmartStore.biz Importer_ plugin

@@ -4354,6 +4354,10 @@ namespace SmartStore.Services.Installation
                     //DefaultAdminLanguageId = _languageRepository.Table.First().Id, // TODO: ZA
                     DefaultAdminLanguageId = _languageService.GetAllLanguages().First().Id,
                     UseImagesForLanguageSelection = true,
+                    SeoFriendlyUrlsForLanguagesEnabled = false,
+                    DetectBrowserUserLanguage = false,
+                    DefaultLanguageRedirectBehaviour = DefaultLanguageRedirectBehaviour.StripSeoCode,
+                    InvalidLanguageRedirectBehaviour = InvalidLanguageRedirectBehaviour.ReturnHttp404
                 },
                 new CustomerSettings()
                 {

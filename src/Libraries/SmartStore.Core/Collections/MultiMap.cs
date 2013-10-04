@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 
 using SmartStore.Utilities.Threading;
@@ -125,6 +126,19 @@ namespace SmartStore.Collections
         public virtual ICollection<IList<TValue>> Values
         {
             get { return _items.Values; }
+        }
+
+        public IEnumerable<TValue> Find(TKey key, Expression<Func<TValue, bool>> predicate)
+        {
+            Guard.ArgumentNotNull(() => key);
+            Guard.ArgumentNotNull(() => predicate);
+
+            if (_items.ContainsKey(key))
+            {
+                return _items[key].Where(predicate.Compile());
+            }
+
+            return Enumerable.Empty<TValue>();
         }
 
         /// <summary>

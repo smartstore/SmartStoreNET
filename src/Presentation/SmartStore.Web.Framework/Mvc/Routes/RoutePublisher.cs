@@ -34,10 +34,6 @@ namespace SmartStore.Web.Framework.Mvc.Routes
             }
             routeProviders = routeProviders.OrderByDescending(rp => rp.Priority).ToList();
             routeProviders.Each(rp => rp.RegisterRoutes(routes));
-
-            if (true /* TODO */) {
-                routes.EnableSeoFriendlyUrls(new string[] { "de", "en", "it" });
-            }
         }
     }
 }

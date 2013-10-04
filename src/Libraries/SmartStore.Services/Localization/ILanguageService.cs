@@ -37,12 +37,20 @@ namespace SmartStore.Services.Localization
         Language GetLanguageById(int languageId);
 
         /// <summary>
-        /// Gets a language by unique seo culture code (e.g.: en-US)
+        /// Gets a language by culture code (e.g.: en-US)
         /// </summary>
         /// <param name="culture">Culture code</param>
         /// <returns>Language</returns>
         /// <![CDATA[ codehint: sm-add ]]>
         Language GetLanguageByCulture(string culture);
+
+        /// <summary>
+        /// Gets a language by it's unique seo code (e.g.: en)
+        /// </summary>
+        /// <param name="seoCode">SEO code</param>
+        /// <returns>Language</returns>
+        /// <![CDATA[ codehint: sm-add ]]>
+        Language GetLanguageBySeoCode(string seoCode);
 
         /// <summary>
         /// Inserts a language

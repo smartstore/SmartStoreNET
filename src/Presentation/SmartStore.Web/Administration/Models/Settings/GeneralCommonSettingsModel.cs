@@ -7,6 +7,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Admin.Validators.Settings;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -168,6 +169,15 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.LoadAllLocaleRecordsOnStartup")]
             public bool LoadAllLocaleRecordsOnStartup { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour")]
+            public DefaultLanguageRedirectBehaviour DefaultLanguageRedirectBehaviour { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.InvalidLanguageRedirectBehaviour")]
+            public InvalidLanguageRedirectBehaviour InvalidLanguageRedirectBehaviour { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage")]
+            public bool DetectBrowserUserLanguage { get; set; }
         }
 
 		public partial class FullTextSettingsModel

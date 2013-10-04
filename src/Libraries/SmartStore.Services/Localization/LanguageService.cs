@@ -20,6 +20,7 @@ namespace SmartStore.Services.Localization
         private const string LANGUAGES_COUNT = "SmartStore.language.count-{0}";
         private const string LANGUAGES_BY_ID_KEY = "SmartStore.language.id-{0}";
         private const string LANGUAGES_BY_CULTURE_KEY = "SmartStore.language.culture-{0}";
+        private const string LANGUAGES_BY_SEOCODE_KEY = "SmartStore.language.seocode-{0}";
         private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.";
         #endregion
 
@@ -168,7 +169,7 @@ namespace SmartStore.Services.Localization
         }
 
         /// <summary>
-        /// Gets a language by unique seo culture code (e.g.: en-US)
+        /// Gets a language by culture code (e.g.: en-US)
         /// </summary>
         /// <param name="culture">Culture code</param>
         /// <returns>Language</returns>
@@ -182,6 +183,18 @@ namespace SmartStore.Services.Localization
             return _cacheManager.Get(key, () =>
             {
                 return _languageRepository.Table.Where(x => culture.Equals(x.LanguageCulture, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            });
+        }
+
+        public virtual Language GetLanguageBySeoCode(string seoCode)
+        {
+            if (!seoCode.HasValue())
+                return null;
+
+            string key = string.Format(LANGUAGES_BY_SEOCODE_KEY, seoCode);
+            return _cacheManager.Get(key, () =>
+            {
+                return _languageRepository.Table.Where(x => seoCode.Equals(x.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             });
         }
 

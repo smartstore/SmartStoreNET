@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
@@ -12,10 +13,7 @@ namespace SmartStore.Web.Framework.Localization
     /// </summary>
     public class LocalizedRoute : Route, ICloneable<LocalizedRoute>
     {
-        #region Fields & Consts
-
-        internal const string CULTURECODE_TOKEN = "cultureCode";
-        internal const string CULTURECODE_SPECIFIED_TOKEN = "cultureCodeIsSpecifiedInUrl";
+        #region Fields
 
         private bool? _seoFriendlyUrlsForLanguagesEnabled;
 
@@ -85,24 +83,11 @@ namespace SmartStore.Web.Framework.Localization
         {
             if (DataSettingsHelper.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                string virtualPath = httpContext.Request.AppRelativeCurrentExecutionFilePath;
-                string applicationPath = httpContext.Request.ApplicationPath;
-                if (virtualPath.IsLocalizedUrl(applicationPath, false))
+                var helper = new LocalizedUrlHelper(httpContext.Request);
+                if (helper.IsLocalizedUrl())
                 {
-                    //In ASP.NET Development Server, an URL like "http://localhost/Blog.aspx/Categories/BabyFrog" will return 
-                    //"~/Blog.aspx/Categories/BabyFrog" as AppRelativeCurrentExecutionFilePath.
-                    //However, in II6, the AppRelativeCurrentExecutionFilePath is "~/Blog.aspx"
-                    //It seems that IIS6 think we're process Blog.aspx page.
-                    //So, I'll use RawUrl to re-create an AppRelativeCurrentExecutionFilePath like ASP.NET Development Server.
-
-                    //Question: should we do path rewriting right here?
-                    string rawUrl = httpContext.Request.RawUrl;
-                    var newVirtualPath = rawUrl.RemoveLocalizedPathFromRawUrl(applicationPath);
-                    if (string.IsNullOrEmpty(newVirtualPath))
-                        newVirtualPath = "/";
-                    newVirtualPath = newVirtualPath.RemoveApplicationPathFromRawUrl(applicationPath);
-                    newVirtualPath = "~" + newVirtualPath;
-                    httpContext.RewritePath(newVirtualPath, true);
+                    helper.StripSeoCode();
+                    httpContext.RewritePath("~/" + helper.RelativePath, true);
                 }
             }
             RouteData data = base.GetRouteData(httpContext);
@@ -123,12 +108,11 @@ namespace SmartStore.Web.Framework.Localization
 
             if (data != null && DataSettingsHelper.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                string rawUrl = requestContext.HttpContext.Request.RawUrl;
-                string applicationPath = requestContext.HttpContext.Request.ApplicationPath;
-                if (rawUrl.IsLocalizedUrl(applicationPath, true))
+                var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
+                string cultureCode;
+                if (helper.IsLocalizedUrl(out cultureCode))
                 {
-                    data.VirtualPath = string.Concat(rawUrl.GetLanguageSeoCodeFromUrl(applicationPath, true), "/",
-                                                        data.VirtualPath);
+                    data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath);
                 }
             }
             return data;
@@ -142,10 +126,6 @@ namespace SmartStore.Web.Framework.Localization
         #endregion
 
         #region Properties
-
-        public bool SeoFriendlyUrlsEnabled { get; set; }
-
-        public string DefaultCultureCode { get; set; }
 
         public bool IsClone { get; private set; }
 
@@ -170,9 +150,9 @@ namespace SmartStore.Web.Framework.Localization
                 new RouteValueDictionary(this.Defaults),
                 new RouteValueDictionary(this.Constraints), 
                 new RouteValueDictionary(this.DataTokens), 
-                new LocalizedRouteHandler());
+                new MvcRouteHandler());
             clone.RouteExistingFiles = this.RouteExistingFiles;
-            clone.SeoFriendlyUrlsEnabled = this.SeoFriendlyUrlsEnabled;
+            clone._seoFriendlyUrlsForLanguagesEnabled = this._seoFriendlyUrlsForLanguagesEnabled;
             clone.IsClone = true;
             return clone;
         }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
@@ -21,7 +23,12 @@ namespace SmartStore.Web.Framework
         IConsumer<EntityDeleted<ThemeVariable>>,
         IConsumer<EntityInserted<CustomerRole>>,
         IConsumer<EntityUpdated<CustomerRole>>,
-        IConsumer<EntityDeleted<CustomerRole>>
+        IConsumer<EntityDeleted<CustomerRole>>,
+        IConsumer<EntityInserted<Store>>,
+        IConsumer<EntityDeleted<Store>>,
+        IConsumer<EntityInserted<Language>>,
+        IConsumer<EntityUpdated<Language>>,
+        IConsumer<EntityDeleted<Language>>
     {
         /// <summary>
         /// Key for ThemeVariables caching
@@ -43,6 +50,8 @@ namespace SmartStore.Web.Framework
 		/// </remarks>
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "sm.fw.customerroles.taxdisplaytypes-{0}-{1}";
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "sm.fw.customerroles.taxdisplaytypes";
+
+        public const string STORE_LANGUAGE_MAP_KEY = "sm.fw.storelangmap";
 
         private readonly ICacheManager _cacheManager;
 
@@ -89,6 +98,31 @@ namespace SmartStore.Web.Framework
             _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
         }
 
+
+        public void HandleEvent(EntityInserted<Store> eventMessage)
+        {
+            _cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
+        }
+
+        public void HandleEvent(EntityDeleted<Store> eventMessage)
+        {
+            _cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
+        }
+
+        public void HandleEvent(EntityInserted<Language> eventMessage)
+        {
+            _cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
+        }
+
+        public void HandleEvent(EntityUpdated<Language> eventMessage)
+        {
+            _cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
+        }
+
+        public void HandleEvent(EntityDeleted<Language> eventMessage)
+        {
+            _cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
@@ -39,34 +40,55 @@ namespace SmartStore.Web.Framework.Controllers
             if (!DataSettingsHelper.DatabaseIsInstalled())
                 return;
 
-            var route = filterContext.RouteData.Route as LocalizedRoute;
-            
-            if (!route.SeoFriendlyUrlsEnabled)
+            var localizationSettings = EngineContext.Current.Resolve<LocalizationSettings>();
+            if (!localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 return;
+            
+            // process current URL
+            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            var workingLanguage = workContext.WorkingLanguage;
+            var helper = new LocalizedUrlHelper(filterContext.HttpContext.Request, true);
+            string defaultSeoCode = workContext.GetDefaultLanguageSeoCode();
 
-            //string requestedCultureCode;
-            if (filterContext.RouteData.IsCultureCodeSpecified()) 
+            string seoCode;
+            if (helper.IsLocalizedUrl(out seoCode)) 
             {
-                // a lang specific url is already requested
+                if (!workContext.IsPublishedLanguage(seoCode))
+                {
+                    // language is not defined in system or not assigned to store
+                    if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.ReturnHttp404)
+                    {
+                        filterContext.Result = new RedirectResult("/404");
+                    }
+                    else if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage)
+                    {
+                        helper.StripSeoCode();
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
+                    }
+                }
+                else
+                {
+                    // redirect default language (if desired)
+                    if (seoCode == defaultSeoCode && localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.StripSeoCode)
+                    {
+                        helper.StripSeoCode();
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
+                    }
+                }
+
+                // already localized URL, skip the rest
                 return;
             }
 
-            //// add culture code of working language to route values
-            //var workContext = EngineContext.Current.Resolve<IWorkContext>();
-            //filterContext.RouteData.Values.SetCultureCode(workContext.WorkingLanguage.UniqueSeoCode);
-
-            //filterContext.Result = new RedirectToRouteResult(filterContext.RouteData.Values);
-
-            //process current URL
-            var pageUrl = filterContext.HttpContext.Request.RawUrl;
-            string applicationPath = filterContext.HttpContext.Request.ApplicationPath;
-            if (pageUrl.IsLocalizedUrl(applicationPath, true))
-                //already localized URL
+            // keep default language prefixless (if desired)
+            if (workingLanguage.UniqueSeoCode == defaultSeoCode && (int)(localizationSettings.DefaultLanguageRedirectBehaviour) > 0)
+            {
                 return;
-            //add language code to URL
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
-            pageUrl = pageUrl.AddLanguageSeoCodeToRawUrl(applicationPath, workContext.WorkingLanguage);
-            filterContext.Result = new RedirectResult(pageUrl);
+            }
+
+            // add language code to URL
+            helper.PrependSeoCode(workingLanguage.UniqueSeoCode);
+            filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
         }
 
     }

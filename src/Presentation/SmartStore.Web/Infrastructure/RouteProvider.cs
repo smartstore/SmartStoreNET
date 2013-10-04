@@ -655,7 +655,7 @@ namespace SmartStore.Web.Infrastructure
 
             //page not found
             routes.MapLocalizedRoute("PageNotFound",
-                            "page-not-found",
+                            "404",
                             new { controller = "Common", action = "PageNotFound" },
                             new[] { "SmartStore.Web.Controllers" });
         }

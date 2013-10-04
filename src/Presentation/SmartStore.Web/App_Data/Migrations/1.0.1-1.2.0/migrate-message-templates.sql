@@ -202,11 +202,12 @@ IF NOT EXISTS (
   FROM [dbo].[MessageTemplate]
   WHERE [Name] = N'Product.AskQuestion')
 BEGIN
-	INSERT [dbo].[MessageTemplate] ([Name], [Subject], [IsActive], [EmailAccountId], [Body])
+	INSERT [dbo].[MessageTemplate] ([Name], [Subject], [IsActive], [EmailAccountId], [LimitedToStores], [Body])
 	VALUES (
 		N'Product.AskQuestion', 
 		N'%Store.Name% - Question concerning "%Product.Name%" from %ProductQuestion.SenderName%', 
 		1, 
+		0, 
 		0, 
 		N'<style type="text/css"><!--
 address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px; font-family: "Segoe UI", Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:720px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; }

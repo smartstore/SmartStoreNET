@@ -38,6 +38,7 @@ using SmartStore.Services.Stores;
 // codehint: begin sm-add
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Filter;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Data;
@@ -104,6 +105,7 @@ namespace SmartStore.Web.Controllers
         private readonly IFilterService _filterService;
         private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IDbContext _dbContext;
+        private readonly ISettingService _settingService;
         //codehint: sm-edit end
 
         #endregion
@@ -136,7 +138,7 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings,
             ICacheManager cacheManager,
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,     /* codehint: sm-add */
-            IDeliveryTimeService deliveryTimeService, IDbContext dbContext                                                              /* codehint: sm-add */
+            IDeliveryTimeService deliveryTimeService, IDbContext dbContext, ISettingService settingService                              /* codehint: sm-add */
             )
         {
             this._categoryService = categoryService;
@@ -180,6 +182,7 @@ namespace SmartStore.Web.Controllers
             this._filterService = filterService;
             this._deliveryTimeService = deliveryTimeService;
             this._dbContext = dbContext;
+            this._settingService = settingService;
             //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
@@ -929,6 +932,8 @@ namespace SmartStore.Web.Controllers
                 Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
                 ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
                 DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
+                EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
+                HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight"))
             };
 
             //template

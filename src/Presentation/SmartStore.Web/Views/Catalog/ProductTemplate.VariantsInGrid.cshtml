@@ -184,9 +184,12 @@
         };
         $('#product-details-form').productDetail(settings);
 
-        var moreLess = $('.more-less');
-        if (moreLess.height() > 260) {
-            $('.more-less').moreLess();
+        if( toBool('@(Model.EnableHtmlTextCollapser)') )
+        {
+            var moreLess = $('.more-less');
+            if (moreLess.height() > parseInt(@(Model.HtmlTextCollapsedHeight))) {
+                $('.more-less').moreLess({ adjustheight: parseInt(@(Model.HtmlTextCollapsedHeight))});
+            }
         }
     });
 </script>

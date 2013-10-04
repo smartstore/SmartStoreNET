@@ -33,6 +33,8 @@ namespace SmartStore.Web.Models.Catalog
 
         //codehint: sm-ad
         public bool DisplayAdminLink { get; set; }
+        public bool EnableHtmlTextCollapser { get; set; }
+        public string HtmlTextCollapsedHeight { get; set; }
 
         //picture(s)
 		//codehint: sm-edit (refactored)

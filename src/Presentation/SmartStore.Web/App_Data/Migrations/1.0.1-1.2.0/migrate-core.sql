@@ -526,6 +526,21 @@ BEGIN
 END
 GO
 
+-- CatalogSettings.EnableHtmlTextCollapser
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.EnableHtmlTextCollapser')
+BEGIN
+	INSERT [Setting] ([Name], [Value])
+	VALUES (N'CatalogSettings.EnableHtmlTextCollapser', N'False')
+END
+GO
+
+-- CatalogSettings.HtmlTextCollapsedHeight
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.HtmlTextCollapsedHeight')
+BEGIN
+	INSERT [Setting] ([Name], [Value])
+	VALUES (N'CatalogSettings.HtmlTextCollapsedHeight', N'260')
+END
+GO 
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[DiscountRequirement]') and NAME='RestrictedPaymentMethods')
 BEGIN

@@ -38,10 +38,7 @@ namespace SmartStore.Web
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            //do not register HandleErrorAttribute. use classic error handling mode
-            //filters.Add(new HandleErrorAttribute());
-
-			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();	// codehint: sm-add
+			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppRegisterGlobalFiltersEvent {
 				Filters = filters
 			});
@@ -52,7 +49,7 @@ namespace SmartStore.Web
             routes.IgnoreRoute("favicon.ico");
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             
-            //register custom routes (plugins, etc)
+            // register custom routes (plugins, etc)
             var routePublisher = EngineContext.Current.Resolve<IRoutePublisher>();
             routePublisher.RegisterRoutes(routes);
             
@@ -101,41 +98,38 @@ namespace SmartStore.Web
 
         protected void Application_Start()
         {
-            
-            // codehint: sm-add
-            //MiniProfilerEF.Initialize_EF42();
 
-            //we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
+            // we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
 			var mobileDisplayMode = DisplayModeProvider.Instance.Modes
 				.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
 
             
-            //initialize engine context
+            // initialize engine context
             EngineContext.Initialize(false);
 
             bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
 
-            //set dependency resolver
+            // set dependency resolver
             var dependencyResolver = new SmartDependencyResolver();
             DependencyResolver.SetResolver(dependencyResolver);
 
-            //model binders
+            // model binders
             ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
 
             if (databaseInstalled)
             {
-                //remove all view engines
+                // remove all view engines
                 ViewEngines.Engines.Clear();
-                //except the themeable razor view engine we use
+                // except the themeable razor view engine we use
                 ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
             }
 
-            //Add some functionality on top of the default ModelMetadataProvider
+            // Add some functionality on top of the default ModelMetadataProvider
             ModelMetadataProviders.Current = new SmartMetadataProvider();
 
-            //Registering some regular mvc stuff
+            // Registering some regular mvc stuff
             AreaRegistration.RegisterAllAreas();
 
             // codehint: sm-add
@@ -151,22 +145,22 @@ namespace SmartStore.Web
                 GlobalFilters.Filters.Add(new HandleInstallFilter());
             }
 
-            //StackExchange profiler
+            // StackExchange profiler
             if (databaseInstalled && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
                 GlobalFilters.Filters.Add(new ProfilingActionFilter());
             }
             
-            //fluent validation
+            // fluent validation
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             ModelValidatorProviders.Providers.Add(new FluentValidationModelValidatorProvider(new SmartValidatorFactory()));
 
-            //register virtual path provider for embedded views
+            // register virtual path provider for embedded views
             var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
             var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
             HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
 
-            //start scheduled tasks
+            // start scheduled tasks
             if (databaseInstalled)
             {
                 TaskManager.Instance.Initialize();

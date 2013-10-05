@@ -17,21 +17,39 @@ namespace SmartStore
 	/// <remarks>codehint: sm-add</remarks>
 	public static class NameValueCollectionExtension
 	{
-		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productVariantId = 0) {
+
+        public static IDictionary<string, string> ToDictionary(this NameValueCollection collection)
+        {
+            Guard.ArgumentNotNull(() => collection);
+            
+            var query = from key in collection.AllKeys
+                        where key != null
+                        select key;
+
+            Func<string, string> elementSelector = key => collection[key];
+
+            return query.ToDictionary<string, string, string>(key => key, elementSelector);
+        }
+        
+        private static string AttributeFormatedName(int productAttributeId, int attributeId, int productVariantId = 0) 
+        {
 			if (productVariantId == 0)
 				return "product_attribute_{0}_{1}".FormatWith(productAttributeId, attributeId);
 			else
 				return "product_attribute_{0}_{1}_{2}".FormatWith(productVariantId, productAttributeId, attributeId);
 		}
 
-		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productVariantId = 0) {
+		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productVariantId = 0) 
+        {
 			if (productAttributeId != 0 && attributeId != 0 && valueId != 0) {
 				string name = AttributeFormatedName(productAttributeId, attributeId, productVariantId);
 
 				collection.Add(name, valueId.ToString());
 			}
 		}
-		public static void ConvertQueryData(this NameValueCollection collection, List<List<int>> queryData, int productVariantId = 0) {
+
+		public static void ConvertQueryData(this NameValueCollection collection, List<List<int>> queryData, int productVariantId = 0) 
+        {
 			if (collection == null || queryData == null || queryData.Count <= 0)
 				return;
 
@@ -148,5 +166,5 @@ namespace SmartStore
 			return selectedAttributes;
 		}
 
-	}	// class
+	}
 }

@@ -479,6 +479,11 @@ SET @resources='
 	<Value lang="de">HTTP 404 zurückgeben (Seite nicht gefunden) (empfohlen)</Value>
   </LocaleResource>
 
+  <LocaleResource Name="Plugins.KnownGroup.Developer">
+    <Value>Developer</Value>
+	<Value lang="de">Entwickler</Value>
+  </LocaleResource>
+
 </Language>
 '
 
@@ -579,16 +584,16 @@ GO
 -- CatalogSettings.EnableHtmlTextCollapser
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.EnableHtmlTextCollapser')
 BEGIN
-	INSERT [Setting] ([Name], [Value])
-	VALUES (N'CatalogSettings.EnableHtmlTextCollapser', N'False')
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'CatalogSettings.EnableHtmlTextCollapser', N'False', 0)
 END
 GO
 
 -- CatalogSettings.HtmlTextCollapsedHeight
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.HtmlTextCollapsedHeight')
 BEGIN
-	INSERT [Setting] ([Name], [Value])
-	VALUES (N'CatalogSettings.HtmlTextCollapsedHeight', N'260')
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'CatalogSettings.HtmlTextCollapsedHeight', N'260', 0)
 END
 GO 
 

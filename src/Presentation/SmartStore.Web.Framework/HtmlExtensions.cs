@@ -185,6 +185,11 @@ namespace SmartStore.Web.Framework
                 }
             }
 
+            if (labelText == null)
+            {
+                labelText = metadata.PropertyName.SplitPascalCase();
+            }
+
             result.Append("<div class='ctl-label'>");
             {
                 result.Append(helper.LabelFor(expression, labelText));

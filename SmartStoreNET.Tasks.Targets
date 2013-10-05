@@ -156,8 +156,8 @@
 		<Delete Files="$(StageFolder)\Web.Debug.config" />
 
 		<!-- extra processing of the staged config files -->
-
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/compilation/@debug" Value="false" />
+		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/trace/@enabled" Value="false" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@validationKey" Value="AutoGenerate" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@decryptionKey" Value="AutoGenerate" />
 

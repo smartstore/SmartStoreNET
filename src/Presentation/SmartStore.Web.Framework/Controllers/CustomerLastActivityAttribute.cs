@@ -27,7 +27,7 @@ namespace SmartStore.Web.Framework.Controllers
 
             var workContext = EngineContext.Current.Resolve<IWorkContext>();
             var customer = workContext.CurrentCustomer;
-
+            
             //update last activity date
             if (customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
             {

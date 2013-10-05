@@ -67,10 +67,12 @@ namespace SmartStore.Web.Framework.Settings
 			var settingName = settings.GetType().Name;
 			var properties = settings.GetType().GetProperties();
 
+            var modelType = model.GetType();
+
 			foreach (var prop in properties)
 			{
 				var name = prop.Name;
-				var modelProperty = model.GetType().GetProperty(name);
+                var modelProperty = modelType.GetProperty(name);
 
 				if (modelProperty == null)
 					continue;	// setting is not configurable or missing or whatever... however we don't need the override info

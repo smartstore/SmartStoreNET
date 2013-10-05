@@ -9,6 +9,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
+using Microsoft.Web.Infrastructure;
 using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Plugins;
 using SmartStore.Utilities.Threading;
@@ -141,21 +142,38 @@ namespace SmartStore.Core.Plugins
                                 _inactiveAssemblies.Add(pluginDescriptor.ReferencedAssembly);
                             }
 
-                            //load all other referenced assemblies now
+                            // load all other referenced assemblies now
                             foreach (var plugin in pluginFiles
                                 .Where(x => !x.Name.Equals(mainPluginFile.Name, StringComparison.InvariantCultureIgnoreCase))
                                 .Where(x => !IsAlreadyLoaded(x)))
                                     PerformFileDeploy(plugin);
                             
-                            //init plugin type (only one plugin per assembly is allowed)
-                            foreach (var t in pluginDescriptor.ReferencedAssembly.GetTypes())
-                                if (typeof(IPlugin).IsAssignableFrom(t))
-                                    if (!t.IsInterface)
-                                        if (t.IsClass && !t.IsAbstract)
-                                        {
-                                            pluginDescriptor.PluginType = t;
-                                            break;
-                                        }
+                            // init plugin type (only one plugin per assembly is allowed)
+                            var exportedTypes = pluginDescriptor.ReferencedAssembly.ExportedTypes;
+                            bool pluginFound = false;
+                            bool preStarterFound = !pluginDescriptor.Installed;
+                            foreach (var t in exportedTypes)
+                            {
+                                if (typeof(IPlugin).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract)
+                                {
+                                    pluginDescriptor.PluginType = t;
+                                    pluginFound = true;
+                                }
+                                else if (pluginDescriptor.Installed && typeof(IPreApplicationStart).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract && t.HasDefaultConstructor())
+                                {
+                                    try
+                                    {
+                                        var preStarter = Activator.CreateInstance(t) as IPreApplicationStart;
+                                        preStarter.Start();
+                                    }
+                                    catch { }
+                                    preStarterFound = true;
+                                }
+                                if (pluginFound && preStarterFound)
+                                {
+                                    break;
+                                }
+                            }
 
                             referencedPlugins.Add(pluginDescriptor);
                         }

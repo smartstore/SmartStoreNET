@@ -36,6 +36,8 @@
  - Minor theme improvements
  - Updated _FontAwesome_ to the latest version
  - Added 'Admin' Link to the header menu (many users just didn't find it in the 'MyAccount' dropdown ;-))
+ - Added new option to disable/enable the display of a more button when the long description is to large
+ - Added option to switch back to mobile view when displaying the desktop version on a mobile device
  - (Developer) Added properties for HtmlHelper and Model to 'AdminTabStripCreated' event type. This way external admin UI customization becomes easier and more flexible.
  - (Developer) Implemented minor tweaks and optimizations to the Theming Engine
  - (Developer) Added 'bodyOnly' parameter to TopicBlock ChildAction

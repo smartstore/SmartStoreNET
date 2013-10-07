@@ -484,6 +484,27 @@ SET @resources='
 	<Value lang="de">Entwickler</Value>
   </LocaleResource>
 
+  <LocaleResource Name="Admin.Common.GenericAttributes">
+    <Value>Attributes</Value>
+	<Value lang="de">Attribute</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.GenericAttributes.NameAlreadyExists">
+    <Value>An attribute with the name "{0}" already exists</Value>
+	<Value lang="de">Ein Attribut mit dem Namen "{0}" existiert bereits</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.GenericAttributes.Fields.Name">
+    <Value>Name</Value>
+	<Value lang="de">Name</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.GenericAttributes.Fields.Name.Required">
+    <Value>Please provide an attribute name</Value>
+	<Value lang="de">Bitte geben Sie einen Attribut-Namen an</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Common.GenericAttributes.Fields.Value">
+    <Value>Value</Value>
+	<Value lang="de">Wert</Value>
+  </LocaleResource>
+
 </Language>
 '
 

@@ -36,21 +36,57 @@ namespace SmartStore.Services.Common
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+            if (genericAttributeService == null)
+                genericAttributeService = EngineContext.Current.Resolve<IGenericAttributeService>();
+
             string keyGroup = entity.GetUnproxiedEntityType().Name;
 
-			var props = genericAttributeService.GetAttributesForEntity(entity.Id, keyGroup);
-			//little hack here (only for unit testing). we should write expect-return rules in unit tests for such cases
-			if (props == null)
-				return default(TPropType);
-			props = props.Where(x => x.StoreId == storeId).ToList();
-			if (props.Count == 0)
-				return default(TPropType);
+            return genericAttributeService.GetAttribute<TPropType>(keyGroup, entity.Id, key, storeId);
+
+            #region Old
+            //var props = genericAttributeService.GetAttributesForEntity(entity.Id, keyGroup);
+            ////little hack here (only for unit testing). we should write expect-return rules in unit tests for such cases
+            //if (props == null)
+            //    return default(TPropType);
+            //props = props.Where(x => x.StoreId == storeId).ToList();
+            //if (props.Count == 0)
+            //    return default(TPropType);
+
+            //var prop = props.FirstOrDefault(ga =>
+            //    ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
+
+            //if (prop == null || string.IsNullOrEmpty(prop.Value))
+            //    return default(TPropType);
+
+            //return CommonHelper.To<TPropType>(prop.Value);
+            #endregion
+        }
+
+        public static TPropType GetAttribute<TPropType>(this IGenericAttributeService genericAttributeService, string entityName, int entityId, string key, int storeId = 0)
+        {
+            Guard.ArgumentNotNull(() => genericAttributeService);
+            Guard.ArgumentNotEmpty(() => entityName);
+
+            var props = genericAttributeService.GetAttributesForEntity(entityId, entityName);
+
+            // little hack here (only for unit testing). we should write expect-return rules in unit tests for such cases
+            if (props == null)
+            {
+                return default(TPropType);
+            }
+
+            if (!props.Any(x => x.StoreId == storeId))
+            {
+                return default(TPropType);
+            }
 
             var prop = props.FirstOrDefault(ga =>
-                ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
+                ga.StoreId == storeId && ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
 
-            if (prop == null || string.IsNullOrEmpty(prop.Value))
+            if (prop == null || prop.Value.IsEmpty())
+            {
                 return default(TPropType);
+            }
 
             return CommonHelper.To<TPropType>(prop.Value);
         }

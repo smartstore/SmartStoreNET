@@ -35,6 +35,7 @@
     var tabShippingInfo = x.Add().Text(T("Admin.Orders.ShippingInfo").Text).Content(TabShippingInfo());
     var tabProducts = x.Add().Text(T("Admin.Orders.Products").Text).Content(TabProducts());
     var tabOrderNotes = x.Add().Text(T("Admin.Orders.OrderNotes").Text).Content(TabOrderNotes());
+    var tabAttributes = x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabOrderAttributes());
 
     var selectedTab = (string)ViewData["selectedTab"];
     switch (selectedTab)
@@ -53,6 +54,9 @@
             break;
         case "ordernotes":
             tabOrderNotes.Selected(true);
+            break;
+        case "orderattributes":
+            tabAttributes.Selected(true);
             break;
         default:
             tabInfo.Selected(true);
@@ -1674,9 +1678,7 @@
         .EnableCustomBinding(true))
             </td>
         </tr>
-    </table>
-    <div class="clear">
-    </div>    
+    </table>  
     <p style="margin-top:14px;">
         <strong>
             @T("Admin.Orders.OrderNotes.AddTitle")
@@ -1734,4 +1736,9 @@
             });
         });
     </script>
+}
+
+@helper TabOrderAttributes()
+{
+    @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
 }

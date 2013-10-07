@@ -130,7 +130,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
                 if (tsApplicationNumber > 0)
                 {
                     messageTokenEvent.Tokens.Add(new Token("TrustedShops.CustomerProtection.ApplicationNumber", Convert.ToString(tsApplicationNumber), true));
-                    _genericAttributeService.SaveAttribute(order, "Trusted Shops Customer Protection Application-ID", tsApplicationNumber, _storeContext.CurrentStore.Id);
+                    _genericAttributeService.SaveAttribute(order, "TrustedShopsCustomerProtectionApplicationID", tsApplicationNumber, _storeContext.CurrentStore.Id);
                 }
                 else {
                     messageTokenEvent.Tokens.Add(new Token("TrustedShops.CustomerProtection.ApplicationNumber",

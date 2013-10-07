@@ -1,0 +1,44 @@
+﻿@model object
+
+@(Html.Telerik().Grid<GenericAttributeModel>()
+        .Name("generic-attributes-grid")
+        .DataKeys(x =>
+        {
+            x.Add(y => y.Id).RouteKey("id");
+            x.Add(y => y.EntityName).RouteKey("entityName");
+            x.Add(y => y.EntityId).RouteKey("entityId");
+        })
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Key).Width(400);
+            columns.Bound(x => x.Value);
+            columns.Command(commands =>
+            {
+                commands.Edit().Localize(T);
+                commands.Delete().Localize(T);
+            }).Width(200);
+
+        })
+        .ToolBar(x => x.Insert())
+        .Editable(x =>
+        {
+            x.Mode(GridEditMode.InLine);
+        })
+        //.Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding =>
+        {
+            dataBinding.Ajax()
+                .Select("GenericAttributesSelect", "Common", new { entityName = ViewBag.EntityName, entityId = ViewBag.EntityId })
+                .Update("GenericAttributeUpdate", "Common")
+                .Delete("GenericAttributeDelete", "Common")
+                .Insert("GenericAttributeAdd", "Common");
+        })
+        .EnableCustomBinding(true)
+        .ClientEvents(x => x.OnError("Grid_onError")))
+
+<script type="text/javascript">
+    function Grid_onError(e) {
+        alert(e.XMLHttpRequest.responseText);
+        e.preventDefault();
+    }
+</script>

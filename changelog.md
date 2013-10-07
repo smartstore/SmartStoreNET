@@ -20,6 +20,7 @@
  - Added 2 DiscountRule plugins: __HasPaymentMethod__ and __HasShippingOption__
  - Better handling of localized SEO URLs (new settings: __DetectBrowserUserLanguage__, __DefaultLanguageRedirectBehaviour__ and __InvalidLanguageRedirectBehaviour__) 
  - Plugin language resources are now updateable via backend
+ - Added __Attributes__ tab to Admin > Order Detail
  - Added new (hidden) setting __ExtraRobotsDisallows__ (enables store owner to add new Disallow lines to the dynamically generated robots.txt)
  - (Developer) Added new plugin __Glimpse for SmartStore.NET__
  - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.

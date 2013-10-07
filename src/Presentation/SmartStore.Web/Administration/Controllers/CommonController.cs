@@ -25,10 +25,12 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Collections;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.UI;
-using Telerik.Web.Mvc;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Data;
+using Telerik.Web.Mvc;
+using SmartStore.Services.Common;
+using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -56,6 +58,7 @@ namespace SmartStore.Admin.Controllers
         private readonly SecuritySettings _securitySettings; // codehint: sm-add
         private readonly ITypeFinder _typeFinder; // codehint: sm-add
         private readonly IPluginFinder _pluginFinder; // codehint: sm-add
+        private readonly IGenericAttributeService _genericAttributeService; // codehint: sm-add
 
 		private readonly static object _lock = new object();	// codehint: sm-add
 
@@ -81,7 +84,8 @@ namespace SmartStore.Admin.Controllers
             IImageCache imageCache,
 			SecuritySettings securitySettings,
 			ITypeFinder typeFinder,
-            IPluginFinder pluginFinder)
+            IPluginFinder pluginFinder,
+            IGenericAttributeService genericAttributeService)
         {
             this._paymentService = paymentService;
             this._shippingService = shippingService;
@@ -102,6 +106,7 @@ namespace SmartStore.Admin.Controllers
             this._securitySettings = securitySettings; // codehint: sm-add
             this._typeFinder = typeFinder; // codehint: sm-add
 			this._pluginFinder = pluginFinder;	// codehint: sm-add
+            this._genericAttributeService = genericAttributeService; // codehint: sm-add
         }
 
         #endregion
@@ -660,7 +665,8 @@ namespace SmartStore.Admin.Controllers
         }
         #endregion
 
-        #region Searh engine friendly names
+        #region Search engine friendly names
+
         public ActionResult SeNames()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMaintenance))
@@ -729,6 +735,154 @@ namespace SmartStore.Admin.Controllers
             }
 
             return Json(new { Result = true });
+        }
+
+        #endregion
+
+
+        #region Generic Attributes
+
+        [ChildActionOnly]
+        public ActionResult GenericAttributes(string entityName, int entityId)
+        {
+            ViewBag.EntityName = entityName;
+            ViewBag.EntityId = entityId;
+
+            return PartialView();
+        }
+
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        public ActionResult GenericAttributesSelect(string entityName, int entityId, GridCommand command)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            var storeId = _storeContext.CurrentStore.Id;
+            ViewBag.StoreId = storeId;
+
+            var model = new List<GenericAttributeModel>();
+            if (entityName.HasValue() && entityId > 0)
+            {
+                var attributes = _genericAttributeService.GetAttributesForEntity(entityId, entityName);
+                var query = from attr in attributes
+                            where attr.StoreId == storeId || attr.StoreId == 0
+                            select new GenericAttributeModel
+                            {
+                                Id = attr.Id,
+                                EntityId = attr.EntityId,
+                                EntityName = attr.KeyGroup,
+                                Key = attr.Key,
+                                Value = attr.Value
+                            };
+                model.AddRange(query);
+            }
+
+
+            var result = new GridModel<GenericAttributeModel>
+            {
+                Data = model,
+                Total = model.Count
+            };
+            return new JsonResult
+            {
+                Data = model
+            };
+        }
+
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult GenericAttributeAdd(GenericAttributeModel model, GridCommand command)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            model.Key = model.Key.TrimSafe();
+            model.Value = model.Value.TrimSafe();
+
+            if (!ModelState.IsValid)
+            {
+                // display the first model error
+                var modelStateErrorMessages = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrorMessages.FirstOrDefault());
+            }
+
+            var storeId = _storeContext.CurrentStore.Id;
+
+            var attr = _genericAttributeService.GetAttribute<string>(model.EntityName, model.EntityId, model.Key, storeId);
+            if (attr == null)
+            {
+                var ga = new GenericAttribute
+                {
+                    StoreId = storeId,
+                    KeyGroup = model.EntityName,
+                    EntityId = model.EntityId,
+                    Key = model.Key,
+                    Value = model.Value
+                };
+                _genericAttributeService.InsertAttribute(ga);
+            }
+            else
+            {
+                return Content(string.Format(_localizationService.GetResource("Admin.Common.GenericAttributes.NameAlreadyExists"), model.Key));
+            }
+
+            return GenericAttributesSelect(model.EntityName, model.EntityId, command);
+        }
+
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult GenericAttributeUpdate(GenericAttributeModel model, GridCommand command)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            model.Key = model.Key.TrimSafe();
+            model.Value = model.Value.TrimSafe();
+
+            if (!ModelState.IsValid)
+            {
+                // display the first model error
+                var modelStateErrorMessages = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrorMessages.FirstOrDefault());
+            }
+
+            var storeId = _storeContext.CurrentStore.Id;
+
+            var attr = _genericAttributeService.GetAttributeById(model.Id);
+            // if the key changed, ensure it isn't being used by another attribute
+            if (!attr.Key.IsCaseInsensitiveEqual(model.Key))
+            {
+                var attr2 = _genericAttributeService.GetAttributesForEntity(model.EntityId, model.EntityName)
+                    .Where(x => x.StoreId == storeId && x.Key.Equals(model.Key, StringComparison.InvariantCultureIgnoreCase))
+                    .FirstOrDefault();
+                if (attr2 != null && attr2.Id != attr.Id)
+                {
+                    return Content(string.Format(_localizationService.GetResource("Admin.Common.GenericAttributes.NameAlreadyExists"), model.Key));
+                }
+            }
+
+            attr.Key = model.Key;
+            attr.Value = model.Value;
+
+            _genericAttributeService.UpdateAttribute(attr);
+
+            return GenericAttributesSelect(model.EntityName, model.EntityId, command);
+        }
+
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult GenericAttributeDelete(int id, GridCommand command)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            var attr = _genericAttributeService.GetAttributeById(id);
+
+            if (attr == null)
+            {
+                throw new System.Web.HttpException(404, "No resource found with the specified id");
+            }
+
+            _genericAttributeService.DeleteAttribute(attr);
+
+            return GenericAttributesSelect(attr.KeyGroup, attr.EntityId, command);
         }
 
         #endregion

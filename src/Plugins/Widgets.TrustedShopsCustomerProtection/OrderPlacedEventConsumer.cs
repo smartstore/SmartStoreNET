@@ -94,7 +94,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
 
             var tsProduct = order.OrderProductVariants.Where(x => x.ProductVariant.AdminComment == "TrustedShops-Product").FirstOrDefault();
 
-            if (tsProduct != null)
+            if (tsProduct != null) 
             {
                 long tsApplicationNumber = 0;
                 if (_trustedShopsCustomerProtectionSettings.IsTestMode)

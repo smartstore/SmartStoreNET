@@ -386,7 +386,7 @@
         {
             var moreLess = $('.more-less');
             if (moreLess.height() > parseInt(@(Model.HtmlTextCollapsedHeight))) {
-                $('.more-less').moreLess(parseInt(@(Model.HtmlTextCollapsedHeight)));
+                $('.more-less').moreLess({ adjustheight: parseInt(@(Model.HtmlTextCollapsedHeight))});
             }
         }
     });

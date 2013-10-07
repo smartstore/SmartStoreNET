@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Stores;
@@ -25,6 +26,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
         private readonly IStoreService _storeService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
+        private readonly IGenericAttributeService _genericAttributeService;
         private readonly TrustedShopsCustomerProtection.com.trustedshops.protectionqa.ApplicationRequestService _applicationRequestServiceSandbox;
         private readonly TrustedShopsCustomerProtection.com.trustedshops.protection.ApplicationRequestService _applicationRequestServiceLive;
 
@@ -36,7 +38,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
             IWorkContext workContext,
             IStoreService storeService,
             IEventPublisher eventPublisher,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IGenericAttributeService genericAttributeService)
         {
             _trustedShopsCustomerProtectionSettings = trustedShopsCustomerProtectionSettings;
             _pluginFinder = pluginFinder;
@@ -47,6 +50,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
             _storeService = storeService;
             _eventPublisher = eventPublisher;
             _localizationService = localizationService;
+            _genericAttributeService = genericAttributeService;
             _applicationRequestServiceSandbox = new TrustedShopsCustomerProtection.com.trustedshops.protectionqa.ApplicationRequestService();
             _applicationRequestServiceLive = new TrustedShopsCustomerProtection.com.trustedshops.protection.ApplicationRequestService();
         }
@@ -112,7 +116,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
                     );
                 }
 
-                //scrape message for TrustedShops.CustomerProtection.ApplicationNUmber and add it if it doesn't exist
+                //scrape message for TrustedShops.CustomerProtection.ApplicationNumber and add it if it doesn't exist
                 var containsTrustedShopsToken = messageTokenEvent.Message.Body.IndexOf("%TrustedShops.CustomerProtection.ApplicationNumber%");
 
                 //if token doesn't exist add it to message template
@@ -126,6 +130,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection
                 if (tsApplicationNumber > 0)
                 {
                     messageTokenEvent.Tokens.Add(new Token("TrustedShops.CustomerProtection.ApplicationNumber", Convert.ToString(tsApplicationNumber), true));
+                    _genericAttributeService.SaveAttribute(order, "Trusted Shops Customer Protection Application-ID", tsApplicationNumber, _storeContext.CurrentStore.Id);
                 }
                 else {
                     messageTokenEvent.Tokens.Add(new Token("TrustedShops.CustomerProtection.ApplicationNumber",

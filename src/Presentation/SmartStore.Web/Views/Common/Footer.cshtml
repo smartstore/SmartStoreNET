@@ -137,6 +137,10 @@
     <div class="pull-right">@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)</div>
 </div>
 
+<div id="switch-to-mobile">
+    @Html.Action("ChangeDeviceBlock", "Common")
+</div>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('#newsletter-subscribe-button').click(function () {
@@ -168,5 +172,9 @@
             });                
             return false;
         });
+
+        if (Modernizr.touch) {
+            $('#switch-to-mobile').css('display', 'block');
+        }
     });
 </script>

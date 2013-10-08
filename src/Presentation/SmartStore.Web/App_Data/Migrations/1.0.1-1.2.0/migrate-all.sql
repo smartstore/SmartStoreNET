@@ -885,6 +885,118 @@ SET @resources='
     <Value>Value</Value>
 	<Value lang="de">Wert</Value>
   </LocaleResource>
+  
+
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.CurrencyExchange">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.DiscountRequirement">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.ExternalAuth">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Import">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Misc">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Mobile">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Payment">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.PromotionFeed">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Shipping">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Tax">
+    <Value></Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Plugins.KnownGroup.Widget">
+    <Value></Value>
+  </LocaleResource>
+  
+	<LocaleResource Name="Plugins.KnownGroup.Admin">
+		<Value>Administration</Value>
+		<Value lang="de">Administration</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Analytics">
+		<Value>Analytics &amp; Stats</Value>
+		<Value lang="de">Analyse &amp; Statistiken</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Api">
+		<Value>API</Value>
+		<Value lang="de">API</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.CMS">
+		<Value>Content Management</Value>
+		<Value lang="de">Content Management</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.CurrencyExchange">
+		<Value>Exchange rate providers</Value>
+		<Value lang="de">Wechselkursdienst</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.DiscountRequirement">
+		<Value>Discount requirements</Value>
+		<Value lang="de">Rabattkonditionen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.ExternalAuth">
+		<Value>Authentication</Value>
+		<Value lang="de">Authentifizierung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Import">
+		<Value>Import</Value>
+		<Value lang="de">Import</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Marketing">
+		<Value>Marketing</Value>
+		<Value lang="de">Marketing</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Misc">
+		<Value>Miscellaneous</Value>
+		<Value lang="de">Sonstige</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Mobile">
+		<Value>Mobile</Value>
+		<Value lang="de">Mobile</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Payment">
+		<Value>Payment &amp; Gateways</Value>
+		<Value lang="de">Zahlungsschnittstellen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.PromotionFeed">
+		<Value>Promotion Feeds</Value>
+		<Value lang="de">Promotion Feeds</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Security">
+		<Value>Security</Value>
+		<Value lang="de">Sicherheit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Shipping">
+		<Value>Shipping &amp; Logistics</Value>
+		<Value lang="de">Versand &amp; Logistik</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.SEO">
+		<Value>SEO</Value>
+		<Value lang="de">SEO</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Social">
+		<Value>Social</Value>
+		<Value lang="de">Social</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Tax">
+		<Value>Tax providers</Value>
+		<Value lang="de">Steuern</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.KnownGroup.Widget">
+		<Value>Widgets</Value>
+		<Value lang="de">Widgets</Value>
+	</LocaleResource>
  
 </Language>
 '
@@ -2197,24 +2309,24 @@ GO
 -- CatalogSettings.AskQuestionEnabled
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'catalogsettings.askquestionenabled')
 BEGIN
-	INSERT [Setting] ([Name], [Value])
-	VALUES (N'catalogsettings.askquestionenabled', N'True')
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'catalogsettings.askquestionenabled', N'True', 0)
 END
 GO
 
 -- CaptchaSettings.ShowOnAskQuestionPage
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'captchasettings.showonaskquestionpage')
 BEGIN
-	INSERT [Setting] ([Name], [Value])
-	VALUES (N'captchasettings.showonaskquestionpage', N'False')
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'captchasettings.showonaskquestionpage', N'False', 0)
 END
 GO
 
 -- CatalogSettings.ShowColorSquaresInLists
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'CatalogSettings.ShowColorSquaresInLists')
 BEGIN
-	INSERT [Setting] ([Name], [Value])
-	VALUES (N'CatalogSettings.ShowColorSquaresInLists', N'True')
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'CatalogSettings.ShowColorSquaresInLists', N'True', 0)
 END
 GO
 
@@ -2354,6 +2466,7 @@ BEGIN
 	INSERT [Setting] ([Name], [Value], [StoreId])
 	VALUES (N'LocalizationSettings.InvalidLanguageRedirectBehaviour', N'0', 0)
 END
+
 
 
 

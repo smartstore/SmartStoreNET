@@ -181,7 +181,7 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-search input.select2-active {
-    @bg1: url('images/spinner.gif') no-repeat 100%;
+    @bg1: url('images/spinner.gif') 100% 0 no-repeat;
     @bg2: linear-gradient(center bottom, white 85%, #eeeeee 99%);
     background: #fff @bg1;
     background: @bg1, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
@@ -207,7 +207,7 @@ Source: https://github.com/ivaynberg/select2
     .box-shadow(0 1px 0 #fff inset);
     #gradient > .vertical(#eee, #fff);
     color: @grayDark !important;
-    text-shadow: none: important;
+    text-shadow: none !important;
 }
 
 .select2-dropdown-open .select2-choice div {

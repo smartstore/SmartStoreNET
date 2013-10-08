@@ -1,11 +1,4 @@
-﻿/*!
-** Unobtrusive Ajax support library for jQuery
-** Copyright (C) Microsoft Corporation. All rights reserved.
-*/
-
-/*jslint white: true, browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true, strict: false */
-/*global window: false, jQuery: false */
-
+﻿
 (function ($) {
     var data_click = "unobtrusiveAjaxClick",
         data_validation = "unobtrusiveValidation";

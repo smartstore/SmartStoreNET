@@ -88,8 +88,9 @@ namespace SmartStore.Web.Infrastructure
 
             // jquery validation
             bundles.Add(new ScriptBundle("~/bundles/jquery-val").Include(
-                "~/Scripts/jquery.unobtrusive*",
-                "~/Scripts/jquery.validate*"));
+                "~/Scripts/jquery.unobtrusive-ajax.js",
+                "~/Scripts/jquery.validate.js",
+                "~/Scripts/jquery.validate.unobtrusive.js"));
 
             // system (underscore, core helpers, utils etc.)
             bundles.Add(new ScriptBundle("~/bundles/system").Include(

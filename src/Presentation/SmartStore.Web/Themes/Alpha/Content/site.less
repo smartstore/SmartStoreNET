@@ -167,7 +167,6 @@ nav ul, nav li {
 }
 
 #shopbar {
-	x-luma: lightness(@shopBarBackgroundColor);
     overflow: visible;
 	position: fixed;
     top: 0;
@@ -753,7 +752,7 @@ form.form-search {
 	margin: 0 2px;
 	//color: #888;
 	text-align: center;
-	vertical-align: center;
+	vertical-align: middle;
 	text-decoration: none;
 	font-family: Arial, sans-serif;
 }
@@ -1180,12 +1179,6 @@ form.form-search {
 .store-closed-page .page-title{}
 .store-closed-page .page-body{}
 
-/* COPYRIGHT INFO */
-/*
-.copyright{float:right;padding-right:10px;x-font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;}
-.copyright a{color:#3664A5;background-color:inherit;}
-*/
-
 /* SITEMAP */
 .sitemap-page{margin-left:auto;margin-right:auto;width:100%;}
 .sitemap-page .entity{margin:5px 0 30px;}
@@ -1238,13 +1231,11 @@ form.form-search {
 fieldset > legend {
 	font-family: @pageTitleFontFamily;
 	font-weight: @pageTitleFontWeight;
-	//color: #999; //@pageTitleColor;
-	font-size: 20px; //25px; //18px;
-	line-height: 28px; //40px; //20px;
+	font-size: 20px;
+	line-height: 28px;
 	margin-bottom: 12px;
 	padding-bottom: 8px;
 	border-bottom: 1px solid @var_SimpleBoxHeaderColor;
-	color: 1px solid @var_SimpleBoxHeaderColor;
 
 	& > * {
 		// probably h1-h6
@@ -1587,11 +1578,11 @@ table.cart .cart-item-row .qty-input {
 	.opacity(75);
 }
 .order-progress .order-progress-step.step-cart:before 		{ }
-.order-progress .order-progress-step.step-address:before	{ content: '\f015' /* icon-home */; x-content: '\f040' /* icon-pencil */; }
-.order-progress .order-progress-step.step-shipping:before 	{ content: '\f0d1' /* icon-truck */; x-content: '\f072' /* icon-plane */ }
+.order-progress .order-progress-step.step-address:before	{ content: '\f015' /* icon-home */; }
+.order-progress .order-progress-step.step-shipping:before 	{ content: '\f0d1' /* icon-truck */; }
 .order-progress .order-progress-step.step-payment:before 	{ content: '\f09d' /* icon-creditcard */ }
-.order-progress .order-progress-step.step-confirm:before 	{ content: '\f087' /* icon-thumbs-up */; x-content: '\f046' /* icon-check */ }
-.order-progress .order-progress-step.step-complete:before 	{ x-content: '\f087' /* icon-thumbs-up */; x-content: '\f00c' /* icon-ok */; x-content: '\f05d' /* icon-ok-circle */; content: '\f058' /* icon-ok-sign */ }
+.order-progress .order-progress-step.step-confirm:before 	{ content: '\f087' /* icon-thumbs-up */; }
+.order-progress .order-progress-step.step-complete:before 	{ content: '\f058' /* icon-ok-sign */ }
 
 .order-summary-page #content-body {
 	margin-top: 0;
@@ -1719,11 +1710,6 @@ table.cart .cart-item-row .qty-input {
 
 .checkout-confirm-page .terms-of-service {
 	margin: 10px 0;
-}
-
-.checkout-data .use-reward-points {
-	xmargin: 12px 0;
-	xcolor: @successText;
 }
 
 .checkout-data a.change-checkout-data {
@@ -2614,11 +2600,9 @@ table.cart .cart-item-row .qty-input {
 	margin-bottom: 10px;
 }
 #content-center.omega .page.product-details-page {
-	x-margin: 0;
 }
 .product-details-page .product-data,
 .product-details-page .bottom-content {
-	x-margin-right: @gridGutterWidth;
 }
 .product-details-page .price-details .legal-info {
 	text-align: center;
@@ -3102,7 +3086,7 @@ table.cart .cart-item-row .qty-input {
 
 /* BBCODES */
 pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white-space:0;/* Opera 4-6 */white-space:0;/* Opera 7 */word-wrap:break-word;/* Internet Explorer 5.5+ */}
-.csharpcode,.csharpcode pre{font-size:small;color:#000;x-font-family:Consolas, "Courier New", Courier, Monospace;background-color:#fff;}
+.csharpcode,.csharpcode pre{font-size:small;color:#000;background-color:#fff;}
 .csharpcode pre{margin:0;}
 .csharpcode .rem{color:green;}
 .csharpcode .kwrd{color:#00f;}
@@ -3250,7 +3234,6 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 }
 
 .checkout-confirm-page .order-summary-content form {
-    x-background: #f7f7f7;
     border: 1px solid @var_ContainerBorder;
     border-bottom: none;
     margin: 0 !important;
@@ -3258,7 +3241,6 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
     .border-radius(@baseBlockRadius @baseBlockRadius 0 0);
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
-    x-background: #f7f7f7;
     border: 1px solid @var_ContainerBorder;
     border-top: none;
     padding: 20px;

@@ -58,11 +58,14 @@ namespace SmartStore.Web.Framework.WebApi
             routePublisher.RegisterRoutes(config.Routes);
 
             // register default api route
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+			if (!config.Routes.ContainsKey("DefaultApi"))
+			{
+				config.Routes.MapHttpRoute(
+					name: "DefaultApi",
+					routeTemplate: "api/{controller}/{id}",
+					defaults: new { id = RouteParameter.Optional }
+				);
+			}
         }
 
         private IEdmModel GetEdmModel()
@@ -112,7 +115,11 @@ namespace SmartStore.Web.Framework.WebApi
             config.EnableQuerySupport();
 
             var model = GetEdmModel();
-            config.Routes.MapODataRoute("ODataRoute.Default", "odata", model);
+
+			if (!config.Routes.ContainsKey("ODataRoute.Default"))
+			{
+				config.Routes.MapODataRoute("ODataRoute.Default", "odata", model);
+			}
 
             //// set json indentation
             //config.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;

@@ -29,7 +29,7 @@
 
 		<CompileFolder>$(BuildFolder)\Compile</CompileFolder>
 		<WebSitesFolder>$(CompileFolder)\_PublishedWebsites</WebSitesFolder>
-		<StageFolder>$(BuildFolder)\Stage</StageFolder>
+		<StageFolder>$(BuildFolder)\Web</StageFolder>
 		<MsDeployFolder>$(BuildFolder)\MsDeploy</MsDeployFolder>
 		<PrecompiledFolder>$(BuildFolder)\Precompiled</PrecompiledFolder>
 		<ProfilingFolder>$(BuildFolder)\Profiling</ProfilingFolder>
@@ -42,8 +42,11 @@
 		<BuildPlatform Condition="$(ProgramW6432) != ''">x64</BuildPlatform>
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
-		<!-- TeamCity build number -->
-		<Version>$(BUILD_NUMBER)</Version>
+		<xVersion>$(BUILD_NUMBER)</xVersion>
+		<Version>1.2.0</Version>
+		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
+		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
+		<ZipFileSuffix>.Web</ZipFileSuffix>
 	</PropertyGroup>
 
 	<Import Project="$(LibFolder)\MSBuild\MSBuild.Community.Tasks.Targets"/>
@@ -167,13 +170,8 @@
 		<ItemGroup>
 			<Zip-Stage Include="$(StageFolder)\**\*" />
 		</ItemGroup>
-
-		<PropertyGroup>
-			<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
-			<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
-		</PropertyGroup>
 		
-		<Zip Files="@(Zip-Stage)" WorkingDirectory="$(StageFolder)" ZipFileName="$(BuildFolder)\SmartStoreNET.Web.zip" />
+		<Zip Files="@(Zip-Stage)" WorkingDirectory="$(StageFolder)" ZipFileName="$(BuildFolder)\SmartStoreNET$(ZipFileSuffix)$(ZipVersionFileSuffix).zip" />
 	</Target>
 	
 	<!-- Testing -->

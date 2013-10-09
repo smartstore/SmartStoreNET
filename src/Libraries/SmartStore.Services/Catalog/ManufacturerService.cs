@@ -117,9 +117,10 @@ namespace SmartStore.Services.Catalog
 				var currentStoreId = _storeContext.CurrentStore.Id;
 
 				query = from m in query
-						join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+						join sm in _storeMappingRepository.Table
+						on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
 						from sm in m_sm.DefaultIfEmpty()
-						where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+						where !m.LimitedToStores || currentStoreId == sm.StoreId
 						select m;
 
 				//only distinct manufacturers (group by ID)
@@ -257,9 +258,10 @@ namespace SmartStore.Services.Catalog
 
 					query = from pm in query
 							join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-							join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+							join sm in _storeMappingRepository.Table
+							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
 							from sm in m_sm.DefaultIfEmpty()
-							where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+							where !m.LimitedToStores || currentStoreId == sm.StoreId
 							select pm;
 
 					//only distinct manufacturers (group by ID)
@@ -306,9 +308,10 @@ namespace SmartStore.Services.Catalog
 
 						query = from pm in query
 								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-								join sm in _storeMappingRepository.Table on m.Id equals sm.EntityId into m_sm
+								join sm in _storeMappingRepository.Table
+								on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
 								from sm in m_sm.DefaultIfEmpty()
-								where !m.LimitedToStores || (sm.EntityName == "Manufacturer" && currentStoreId == sm.StoreId)
+								where !m.LimitedToStores || currentStoreId == sm.StoreId
 								select pm;
 
 						//only distinct manufacturers (group by ID)

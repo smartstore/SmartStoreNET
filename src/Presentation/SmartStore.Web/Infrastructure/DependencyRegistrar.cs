@@ -7,6 +7,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Services.Installation;
 using SmartStore.Web.Controllers;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Installation;
 
 namespace SmartStore.Web.Infrastructure
@@ -24,8 +25,10 @@ namespace SmartStore.Web.Infrastructure
             builder.RegisterType<PollController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
             builder.RegisterType<ShoppingCartController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
             builder.RegisterType<TopicController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
+
+            builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerHttpRequest();
             
-            //installation localization service
+            // installation localization service
             builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerHttpRequest();
 
             // codehint: sm-add

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using System.Web.Routing;
 using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
@@ -15,11 +13,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.UI;
-using Telerik.Web.Mvc.UI;
 using SmartStore.Utilities;
 using System.Web;
 using System.Threading;
-using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework.Settings; // codehint: sm-add
 
 namespace SmartStore.Web.Framework
@@ -387,9 +383,19 @@ namespace SmartStore.Web.Framework
 
         public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone)
         {
-            var result = helper.Action("WidgetsByZone", "Widget", new { widgetZone = widgetZone });
-            return result;
-            ////return MvcHtmlString.Create("");
+            if (widgetZone.HasValue())
+            {
+                var widgetSelector = EngineContext.Current.Resolve<IWidgetSelector>();
+                var widgets = widgetSelector.GetWidgets(widgetZone);
+
+                if (widgets.Any())
+                {
+                    var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets });
+                    return result;
+                }
+            }
+
+            return MvcHtmlString.Create("");
         }
 
         // codehint: sm-add

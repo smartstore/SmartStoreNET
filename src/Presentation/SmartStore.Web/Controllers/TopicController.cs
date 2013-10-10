@@ -3,11 +3,9 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Models.Cms;
 
 namespace SmartStore.Web.Controllers
 {

@@ -1,9 +1,9 @@
 ﻿using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc;
 
-namespace SmartStore.Web.Models.Cms
+namespace SmartStore.Web.Framework.UI
 {
-    public partial class RenderWidgetModel : ModelBase
+    public partial class WidgetRouteInfo : ModelBase
     {
         public string ActionName { get; set; }
         public string ControllerName { get; set; }

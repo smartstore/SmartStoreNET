@@ -1,5 +1,6 @@
-﻿@model List<RenderWidgetModel>
-@using SmartStore.Web.Models.Cms;
+﻿@model IEnumerable<WidgetRouteInfo>
+@using SmartStore.Web.Framework.UI;
+
 @foreach (var widget in Model) {
     @Html.Action(widget.ActionName, widget.ControllerName, widget.RouteValues)
 }

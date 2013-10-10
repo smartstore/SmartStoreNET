@@ -223,6 +223,7 @@
     <Compile Include="UI\Components\Window\WindowRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />
+    <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\ScaffoldExtensions.cs" />
     <Compile Include="Security\AdminValidateIpAddressAttribute.cs" />
     <Compile Include="Security\FilePermissionHelper.cs" />
@@ -319,6 +320,7 @@
     <Compile Include="UI\Components\TabStrip\TabBuilder.cs" />
     <Compile Include="UI\Components\TabStrip\TabFactory.cs" />
     <Compile Include="UI\Components\TabStrip\TabStripRenderer.cs" />
+    <Compile Include="UI\WidgetRouteInfo.cs" />
     <Compile Include="UrlHelperExtensions.cs" />
     <Compile Include="Validators\ValidatorExtensions .cs" />
     <Compile Include="Validators\CreditCardPropertyValidator.cs" />

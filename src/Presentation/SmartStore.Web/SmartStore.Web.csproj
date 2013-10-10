@@ -364,6 +364,7 @@
     </Compile>
     <Compile Include="Infrastructure\Cache\ModelCacheEventConsumer.cs" />
     <Compile Include="Infrastructure\DefaultBundleProvider.cs" />
+    <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\GenericUrlRouteProvider.cs" />
     <Compile Include="Infrastructure\Installation\DeDEInstallationData.cs">
@@ -434,7 +435,6 @@
     <Compile Include="Models\Checkout\OnePageCheckoutModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
-    <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Common\AddressModel.cs" />
     <Compile Include="Models\Common\FooterModel.cs" />
     <Compile Include="Models\Common\ShopHeaderModel.cs" />

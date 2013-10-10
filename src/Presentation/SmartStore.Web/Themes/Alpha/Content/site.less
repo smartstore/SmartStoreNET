@@ -1527,7 +1527,7 @@ table.cart .cart-item-row .qty-input {
 	text-align: center;
 	border-bottom: 1px solid #ddd;
 	padding: 8px 0;
-	background-color: #f5f5f5;
+	background-color: @var_CheckoutProgressBackgroundColor;
 }
 .order-progress ul li {
 	display: inline;
@@ -1675,7 +1675,7 @@ table.cart .cart-item-row .qty-input {
 }
 .shipping-option-item.odd,
 .payment-method-item.odd {
-	background: #f5f5f5;
+	background: @alternateListItem;
 }
 .shipping-option-item.even,
 .payment-method-item.even {
@@ -1899,17 +1899,18 @@ table.cart .cart-item-row .qty-input {
 .product-list-options .btn { max-width: 160px; .text-overflow(); }
 .product-list-options .product-viewmode .btn { padding-left: 8px; padding-right: 8px }
 
+
+
+
 /* sm */
 .block-product-filters .listbox {
-	background-color: #f4f8f9 !important;
+	background-color: @var_ProductFilterBackgroundColor !important;
 	.small();
 }
-
 /* NEW PRODUCT FILTER */
 .product-filter-block { }
-
 .product-filter-block .listbox {
-	background-color: #f4f8f9 !important;
+	background-color: @var_ProductFilterBackgroundColor !important;
 	.small();
 	padding: 0 !important;
 	position: relative;
@@ -1929,14 +1930,14 @@ table.cart .cart-item-row .qty-input {
 .product-filter-block .filter-group {
 	position: relative;
 	clear: both;
-	border-bottom: 1px dotted #d2d2d2; /* TODO: LessVar */
+	border-bottom: 1px dotted darken(@grayLighter, 10%);
 	.transition(background-color .1s ease-in);
 	
 	&:last-child { 
 		border-bottom: none;
 	}
 	&:hover {
-		background-color: #ededed; /* TODO: LessVar */
+        background-color: lighten(greyscale(@var_ProductFilterBackgroundColor), 10%); 
 	}
 	.chevron-icon {
 		display: inline-block;

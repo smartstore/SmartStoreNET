@@ -981,6 +981,15 @@ namespace SmartStore
 			return arr.Contains(value);
 		}
 
+		[DebuggerStepThrough]
+		public static string RemoveInvalidXmlChars(this string s)
+		{
+			if (s.IsNullOrEmpty())
+				return s;
+
+			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);
+		}
+
 		// codehint: sm-add (end)
 		#endregion
 

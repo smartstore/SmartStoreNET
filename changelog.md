@@ -8,6 +8,7 @@
 
 ###Bugfixes###
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
+* XML exports could fail cause of invalid characters
 
 ###Improvements###
 * ...

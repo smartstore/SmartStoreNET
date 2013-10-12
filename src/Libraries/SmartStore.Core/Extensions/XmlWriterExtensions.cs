@@ -15,7 +15,7 @@ namespace SmartStore
 					writer.WriteStartElement(name);
 				else
 					writer.WriteStartElement(prefix, name, ns);
-				writer.WriteCData(value);
+				writer.WriteCData(value.RemoveInvalidXmlChars());
 				writer.WriteEndElement();
 			}
 		}

@@ -99,11 +99,11 @@ namespace SmartStore.Utilities
                 return xml;
             
             // first read the xml ignoring whitespace
-            using (var xmlReader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true }))
+            using (var xmlReader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true, CheckCharacters = false }))
             {
                 // then write it out with indentation
                 var sb = new StringBuilder();
-                using (XmlWriter writer = XmlWriter.Create(sb, new XmlWriterSettings { Indent = true, IndentChars = "\t" }))
+                using (XmlWriter writer = XmlWriter.Create(sb, new XmlWriterSettings { Indent = true, IndentChars = "\t", CheckCharacters = false }))
                 {
                     writer.WriteNode(xmlReader, true);
                 }

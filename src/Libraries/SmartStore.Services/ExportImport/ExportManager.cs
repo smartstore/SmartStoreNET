@@ -221,7 +221,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("ProductId", null, product.Id.ToString());
                 xmlWriter.WriteElementString("Name", null, product.Name);
                 xmlWriter.WriteElementString("ShortDescription", null, product.ShortDescription);
-                xmlWriter.WriteElementString("FullDescription", null, product.FullDescription);
+                xmlWriter.WriteElementString("FullDescription", null, product.FullDescription.RemoveInvalidXmlChars());
                 xmlWriter.WriteElementString("AdminComment", null, product.AdminComment);
                 xmlWriter.WriteElementString("ProductTemplateId", null, product.ProductTemplateId.ToString());
                 xmlWriter.WriteElementString("ShowOnHomePage", null, product.ShowOnHomePage.ToString());

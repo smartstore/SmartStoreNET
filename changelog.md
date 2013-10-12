@@ -4,13 +4,12 @@
 
 ###New Features###
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
+* (Developer) New property 'ExtraData' for DiscountRequirement entity
 
 ###Bugfixes###
-* ...
-* ...
+* #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
 
 ###Improvements###
-* ...
 * ...
 
 

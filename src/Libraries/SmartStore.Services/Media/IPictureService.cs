@@ -77,7 +77,7 @@ namespace SmartStore.Services.Media
         /// </summary>
         /// <param name="picture">Picture instance</param>
         /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
+        /// <param name="showDefaultPicture">A value indicating whether the default picture should be shown</param>
         /// <returns></returns>
         string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true);
 

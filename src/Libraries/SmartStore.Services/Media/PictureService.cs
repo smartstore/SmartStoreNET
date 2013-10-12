@@ -182,26 +182,32 @@ namespace SmartStore.Services.Media
         /// <returns></returns>
         public virtual string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true)
         {
-            var settings = this.CreateResizeSettings(targetSize);
+            // 'GetPictureUrl' takes care of creating the thumb when not created already
+            string url = this.GetPictureUrl(picture, targetSize, showDefaultPicture);
 
-            var cachedImage = _imageCache.GetCachedImage(picture, settings);
-            if (cachedImage.Exists)
+            if (url.HasValue())
             {
-                return cachedImage.LocalPath;
-            }
+                var settings = this.CreateResizeSettings(targetSize);
 
-            if (showDefaultPicture)
-            {
-                var fileName = this.GetDefaultImageFileName();
-                cachedImage = _imageCache.GetCachedImage(
-                    0,
-                    Path.GetFileNameWithoutExtension(fileName),
-                    Path.GetExtension(fileName).TrimStart('.'),
-                    settings);
+                var cachedImage = _imageCache.GetCachedImage(picture, settings);
                 if (cachedImage.Exists)
                 {
                     return cachedImage.LocalPath;
                 }
+
+                if (showDefaultPicture)
+                {
+                    var fileName = this.GetDefaultImageFileName();
+                    cachedImage = _imageCache.GetCachedImage(
+                        0,
+                        Path.GetFileNameWithoutExtension(fileName),
+                        Path.GetExtension(fileName).TrimStart('.'),
+                        settings);
+                    if (cachedImage.Exists)
+                    {
+                        return cachedImage.LocalPath;
+                    }
+                }  
             }
 
             return string.Empty;
@@ -455,7 +461,7 @@ namespace SmartStore.Services.Media
             {
                 _imageCache.DeleteCachedImages(picture);
 
-                //we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
+                // we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
                 picture = UpdatePicture(picture.Id,
                     pictureBinary,
                     picture.MimeType,

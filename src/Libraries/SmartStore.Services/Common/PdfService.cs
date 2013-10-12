@@ -203,12 +203,15 @@ namespace SmartStore.Services.Common
                 if (logoExists)
                 {
                     var logoFilePath = _pictureService.GetThumbLocalPath(logoPicture, 0, false);
-                    var img = Image.GetInstance(logoFilePath);
-                    img.ScaleToFit(250, 40);
-                    var cellLogo = new PdfPCell(img);
-                    cellLogo.Border = Rectangle.NO_BORDER;
-                    cellLogo.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    headerTable.AddCell(cellLogo);
+                    if (logoFilePath.HasValue())
+                    {
+                        var img = Image.GetInstance(logoFilePath);
+                        img.ScaleToFit(250, 40);
+                        var cellLogo = new PdfPCell(img);
+                        cellLogo.Border = Rectangle.NO_BORDER;
+                        cellLogo.HorizontalAlignment = Element.ALIGN_RIGHT;
+                        headerTable.AddCell(cellLogo);
+                    }
                 }
                 doc.Add(headerTable);
 

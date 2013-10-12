@@ -55,6 +55,11 @@
 		/// Gets or sets the restricted store identifier
 		/// </summary>
 		public int? RestrictedToStoreId { get; set; }
+
+        /// <summary>
+        /// Gets or sets extra data for use with the discount requirement (could be JSON, XML or any arbitrary deserializable string expression)
+        /// </summary>
+        public string ExtraData { get; set; }
         
         /// <summary>
         /// Gets or sets the discount

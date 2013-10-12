@@ -1,11 +1,24 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
   <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HadSpentAmount" AppendRootKey="false">
-    <Value>Der Kunde hat x.xx ausgegeben</Value>
+    <Value>Kunde hat Betrag x ausgegeben</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Amount">
-    <Value>Benötigter ausgegebener Betrag</Value>
+    <Value>Betrag</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Amount.Hint">
-    <Value>Der Rabatt wird angewendet wenn der Kunde den Betrag x.xx ausgegeben hat.</Value>
+    <Value>Der Rabatt wird angewendet, wenn der Kunde den angegebenen Betrag ausgegeben hat.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal">
+    <Value>Bezogen auf Warenkorb-Zwischensumme</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
+    <Value>Legt fest, ob sich der angegebene Betrag auf die Zwischensumme im aktuellen Warenkorb oder - wenn inaktiv - auf die Summe aller zuvor vom Kunden getätigten Bestellungen bezieht.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts">
+    <Value>Positions-Rabatte berücktichtigen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts.Hint">
+    <Value>Wenn aktiv, ist der Vergleichswert die Warenkorbsumme abzüglich aller Positions-Rabatte.</Value>
   </LocaleResource>
 </Language>

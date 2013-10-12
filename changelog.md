@@ -1,5 +1,19 @@
 #Release Notes#
 
+##SmartStore.NET 1.2.1.0#
+
+###New Features###
+* Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
+
+###Bugfixes###
+* ...
+* ...
+
+###Improvements###
+* ...
+* ...
+
+
 ##SmartStore.NET 1.2.0.0#
 
 ###Highlights###

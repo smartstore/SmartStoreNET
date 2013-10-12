@@ -5,7 +5,23 @@ DECLARE @resources xml
 --a resource will be deleted if its value is empty   
 SET @resources='
 <Language>
-  
+	<LocaleResource Name="Fields.LimitToCurrentBasketSubTotal">
+		<Value>Limit to basket subtotal</Value>
+		<Value lang="de">Bezogen auf Warenkorb-Zwischensumme</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
+		<Value>Specifies whether the amount refers to the current basket subtotal or - when unselected - to the sum of all previously incurred orders.</Value>
+		<Value lang="de">Legt fest, ob sich der angegebene Betrag auf die Zwischensumme im aktuellen Warenkorb oder - wenn inaktiv - auf die Summe aller zuvor vom Kunden getätigten Bestellungen bezieht.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts">
+		<Value>Include discounts</Value>
+		<Value lang="de">Positions-Rabatte berücktichtigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts.Hint">
+		<Value>When selected the specified amount is compared with the basket subtotal excluding all cart item discounts.</Value>
+		<Value lang="de">Wenn aktiv, ist der Vergleichswert die Warenkorbsumme abzüglich aller Positions-Rabatte.</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

@@ -580,8 +580,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected void PrepareWishlistModel(WishlistModel model,
-            IList<ShoppingCartItem> cart, bool isEditable = true)
+        protected void PrepareWishlistModel(WishlistModel model, IList<ShoppingCartItem> cart, bool isEditable = true)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -1449,10 +1448,6 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
 
-            //var profiler = MiniProfiler.Current;
-
-            //using (profiler.Step("MYCART"))
-            //{
 				var cart = _workContext.CurrentCustomer.ShoppingCartItems
 					.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
 					.Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
@@ -1460,7 +1455,6 @@ namespace SmartStore.Web.Controllers
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
                 return View(model);
-            //}
         }
 
         [ChildActionOnly]

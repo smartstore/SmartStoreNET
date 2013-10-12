@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Plugin.DiscountRules.HadSpentAmount.Models;
 using SmartStore.Services.Discounts;
@@ -32,10 +33,20 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount.Controllers
                     return Content("Failed to load requirement.");
             }
 
+            // parse settings from ExtraData
+            string extraData = null;
+            if (discountRequirement != null)
+            {
+                extraData = discountRequirement.ExtraData;
+            }
+            var settings = HadSpentAmountDiscountRequirementRule.DeserializeSettings(extraData);
+
             var model = new RequirementModel();
             model.RequirementId = discountRequirementId.HasValue ? discountRequirementId.Value : 0;
             model.DiscountId = discountId;
             model.SpentAmount = discountRequirement != null ? discountRequirement.SpentAmount : decimal.Zero;
+            model.LimitToCurrentBasketSubTotal = settings.LimitToCurrentBasketSubTotal;
+            model.BasketSubTotalIncludesDiscounts = settings.BasketSubTotalIncludesDiscounts;
 
             //add a prefix
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesHadSpentAmount{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
@@ -44,7 +55,7 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount.Controllers
         }
 
         [HttpPost]
-        public ActionResult Configure(int discountId, int? discountRequirementId, decimal spentAmount)
+        public ActionResult Configure(int discountId, int? discountRequirementId, decimal spentAmount, string settings)
         {
             var discount = _discountService.GetDiscountById(discountId);
             if (discount == null)
@@ -58,6 +69,8 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount.Controllers
             {
                 //update existing rule
                 discountRequirement.SpentAmount = spentAmount;
+                discountRequirement.ExtraData = settings;
+
                 _discountService.UpdateDiscount(discount);
             }
             else
@@ -66,7 +79,8 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount.Controllers
                 discountRequirement = new DiscountRequirement()
                 {
                     DiscountRequirementRuleSystemName = "DiscountRequirement.HadSpentAmount",
-                    SpentAmount = spentAmount,
+                    ExtraData = settings,
+                    SpentAmount = spentAmount
                 };
                 discount.DiscountRequirements.Add(discountRequirement);
                 _discountService.UpdateDiscount(discount);

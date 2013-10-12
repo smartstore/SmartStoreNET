@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
-using SmartStore.Core;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 {
@@ -14,11 +16,19 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IOrderService _orderService;
+        private readonly IPriceCalculationService _priceCalculationService;
+        private readonly ITaxService _taxService;
 
-		public HadSpentAmountDiscountRequirementRule(ILocalizationService localizationService, IOrderService orderService)
+		public HadSpentAmountDiscountRequirementRule(
+            ILocalizationService localizationService, 
+            IOrderService orderService,
+            IPriceCalculationService priceCalculationService,
+            ITaxService taxService)
         {
-            _localizationService = localizationService;
-			_orderService = orderService;
+            this._localizationService = localizationService;
+			this._orderService = orderService;
+            this._priceCalculationService = priceCalculationService;
+            this._taxService = taxService;
         }
 
         /// <summary>
@@ -37,13 +47,58 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
             if (request.DiscountRequirement.SpentAmount == decimal.Zero)
                 return true;
 
-            if (request.Customer == null || request.Customer.IsGuest())
+            if (request.Customer == null)
                 return false;
 
-			var orders = _orderService.SearchOrders(request.Store.Id, request.Customer.Id,
-				null, null, OrderStatus.Complete, null, null, null, null, null, 0, int.MaxValue);
+            var settings = DeserializeSettings(request.DiscountRequirement.ExtraData);
+
+            if (settings.LimitToCurrentBasketSubTotal)
+            {
+                return CheckCurrentSubTotalRequirement(request, settings.BasketSubTotalIncludesDiscounts);
+            }
+            else
+            {
+                return CheckTotalHistoryRequirement(request);
+            }
+        }
+
+        private bool CheckTotalHistoryRequirement(CheckDiscountRequirementRequest request)
+        {
+            if (request.Customer.IsGuest())
+                return false;
+
+            var orders = _orderService.SearchOrders(
+                request.Store.Id, 
+                request.Customer.Id,
+                null, 
+                null, 
+                OrderStatus.Complete, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                0, 
+                int.MaxValue);
+
             decimal spentAmount = orders.Sum(o => o.OrderTotal);
-            return spentAmount > request.DiscountRequirement.SpentAmount;
+            return spentAmount >= request.DiscountRequirement.SpentAmount;
+        }
+
+        private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request, bool includingDiscount = true)
+        {
+            var cartItems = request.Customer.ShoppingCartItems
+                .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == request.Store.Id)
+                .ToList();
+
+            decimal spentAmount = decimal.Zero;
+            decimal taxRate = decimal.Zero;
+            foreach (var sci in cartItems) 
+            {
+                spentAmount += sci.Quantity * _taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
+            }       
+            
+            return spentAmount >= request.DiscountRequirement.SpentAmount;
         }
 
         /// <summary>
@@ -70,11 +125,26 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 
         public override void Uninstall()
         {
-            //locales
+            // locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
             _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.DiscountRequirement.HadSpentAmount", false);
 
             base.Uninstall();
+        }
+
+        internal static RequirementSettings DeserializeSettings(string expression)
+        {
+            var settings = new RequirementSettings();
+            if (expression.HasValue())
+            {
+                try
+                {
+                    settings = JsonConvert.DeserializeObject<RequirementSettings>(expression);
+                }
+                catch { }
+            }
+
+            return settings;
         }
     }
 }

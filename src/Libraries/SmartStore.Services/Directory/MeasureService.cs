@@ -16,9 +16,7 @@ namespace SmartStore.Services.Directory
     {
         #region Constants
         private const string MEASUREDIMENSIONS_ALL_KEY = "SmartStore.measuredimension.all";
-        private const string MEASUREDIMENSIONS_BY_ID_KEY = "SmartStore.measuredimension.id-{0}";
         private const string MEASUREWEIGHTS_ALL_KEY = "SmartStore.measureweight.all";
-        private const string MEASUREWEIGHTS_BY_ID_KEY = "SmartStore.measureweight.id-{0}";
         private const string MEASUREDIMENSIONS_PATTERN_KEY = "SmartStore.measuredimension.";
         private const string MEASUREWEIGHTS_PATTERN_KEY = "SmartStore.measureweight.";
         #endregion
@@ -90,11 +88,7 @@ namespace SmartStore.Services.Directory
             if (measureDimensionId == 0)
                 return null;
 
-            string key = string.Format(MEASUREDIMENSIONS_BY_ID_KEY, measureDimensionId);
-            return _cacheManager.Get(key, () =>
-            {
-                return _measureDimensionRepository.GetById(measureDimensionId);
-            });
+            return _measureDimensionRepository.GetById(measureDimensionId);
         }
 
         /// <summary>
@@ -261,11 +255,7 @@ namespace SmartStore.Services.Directory
             if (measureWeightId == 0)
                 return null;
 
-            string key = string.Format(MEASUREWEIGHTS_BY_ID_KEY, measureWeightId);
-            return _cacheManager.Get(key, () =>
-            {
-                return _measureWeightRepository.GetById(measureWeightId);
-            });
+            return _measureWeightRepository.GetById(measureWeightId);
         }
 
         /// <summary>

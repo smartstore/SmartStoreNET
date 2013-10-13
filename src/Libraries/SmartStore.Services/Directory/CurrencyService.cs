@@ -19,7 +19,6 @@ namespace SmartStore.Services.Directory
     {
         #region Constants
         private const string CURRENCIES_ALL_KEY = "SmartStore.currency.all-{0}-{1}";
-        private const string CURRENCIES_BY_ID_KEY = "SmartStore.currency.id-{0}";
         private const string CURRENCIES_PATTERN_KEY = "SmartStore.currency.";
         #endregion
 
@@ -102,8 +101,7 @@ namespace SmartStore.Services.Directory
             if (currencyId == 0)
                 return null;
 
-            string key = string.Format(CURRENCIES_BY_ID_KEY, currencyId);
-            return _cacheManager.Get(key, () => _currencyRepository.GetById(currencyId));
+            return _currencyRepository.GetById(currencyId);
         }
 
         /// <summary>

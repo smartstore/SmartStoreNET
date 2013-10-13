@@ -20,9 +20,7 @@ namespace SmartStore.Services.Forums
     {
         #region Constants
         private const string FORUMGROUP_ALL_KEY = "SmartStore.forumgroup.all";
-        private const string FORUMGROUP_BY_ID_KEY = "SmartStore.forumgroup.id-{0}";
         private const string FORUM_ALLBYFORUMGROUPID_KEY = "SmartStore.forum.allbyforumgroupid-{0}";
-        private const string FORUM_BY_ID_KEY = "SmartStore.forum.id-{0}";
         private const string FORUMGROUP_PATTERN_KEY = "SmartStore.forumgroup.";
         private const string FORUM_PATTERN_KEY = "SmartStore.forum.";
         #endregion
@@ -281,16 +279,9 @@ namespace SmartStore.Services.Forums
         public virtual ForumGroup GetForumGroupById(int forumGroupId)
         {
             if (forumGroupId == 0)
-            {
                 return null;
-            }
 
-            string key = string.Format(FORUMGROUP_BY_ID_KEY, forumGroupId);
-            return _cacheManager.Get(key, () =>
-            {
-                var forumGroup = _forumGroupRepository.GetById(forumGroupId);
-                return forumGroup;
-            });
+            return _forumGroupRepository.GetById(forumGroupId);
         }
 
         /// <summary>
@@ -405,16 +396,9 @@ namespace SmartStore.Services.Forums
         public virtual Forum GetForumById(int forumId)
         {
             if (forumId == 0)
-            {
                 return null;
-            }
 
-            string key = string.Format(FORUM_BY_ID_KEY, forumId);
-            return _cacheManager.Get(key, () =>
-            {
-                var forum = _forumRepository.GetById(forumId);
-                return forum;
-            });
+            return _forumRepository.GetById(forumId);
         }
 
         /// <summary>

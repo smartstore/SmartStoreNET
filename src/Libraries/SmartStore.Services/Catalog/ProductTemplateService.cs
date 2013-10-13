@@ -13,18 +13,11 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductTemplateService : IProductTemplateService
     {
-        #region Constants
-        private const string PRODUCTTEMPLATES_BY_ID_KEY = "SmartStore.producttemplate.id-{0}";
-        private const string PRODUCTTEMPLATES_ALL_KEY = "SmartStore.producttemplate.all";
-        private const string PRODUCTTEMPLATES_PATTERN_KEY = "SmartStore.producttemplate.";
-
-        #endregion
 
         #region Fields
 
         private readonly IRepository<ProductTemplate> _productTemplateRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
 
         #endregion
         
@@ -36,11 +29,8 @@ namespace SmartStore.Services.Catalog
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="productTemplateRepository">Product template repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public ProductTemplateService(ICacheManager cacheManager,
-            IRepository<ProductTemplate> productTemplateRepository,
-            IEventPublisher eventPublisher)
+        public ProductTemplateService(IRepository<ProductTemplate> productTemplateRepository, IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
             _productTemplateRepository = productTemplateRepository;
             _eventPublisher = eventPublisher;
         }
@@ -60,8 +50,6 @@ namespace SmartStore.Services.Catalog
 
             _productTemplateRepository.Delete(productTemplate);
 
-            _cacheManager.RemoveByPattern(PRODUCTTEMPLATES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(productTemplate);
         }
@@ -72,16 +60,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product templates</returns>
         public virtual IList<ProductTemplate> GetAllProductTemplates()
         {
-            string key = PRODUCTTEMPLATES_ALL_KEY;
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from pt in _productTemplateRepository.Table
-                            orderby pt.DisplayOrder
-                            select pt;
+            var query = from pt in _productTemplateRepository.Table
+                        orderby pt.DisplayOrder
+                        select pt;
 
-                var templates = query.ToList();
-                return templates;
-            });
+            var templates = query.ToList();
+            return templates;
         }
  
         /// <summary>
@@ -94,12 +78,7 @@ namespace SmartStore.Services.Catalog
             if (productTemplateId == 0)
                 return null;
 
-            string key = string.Format(PRODUCTTEMPLATES_BY_ID_KEY, productTemplateId);
-            return _cacheManager.Get(key, () =>
-            {
-                var template = _productTemplateRepository.GetById(productTemplateId);
-                return template;
-            });
+            return _productTemplateRepository.GetById(productTemplateId);
         }
 
         /// <summary>
@@ -112,9 +91,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("productTemplate");
 
             _productTemplateRepository.Insert(productTemplate);
-
-            //cache
-            _cacheManager.RemoveByPattern(PRODUCTTEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productTemplate);
@@ -130,9 +106,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("productTemplate");
 
             _productTemplateRepository.Update(productTemplate);
-
-            //cache
-            _cacheManager.RemoveByPattern(PRODUCTTEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productTemplate);

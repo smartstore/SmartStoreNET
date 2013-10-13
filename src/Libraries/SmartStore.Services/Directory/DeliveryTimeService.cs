@@ -19,7 +19,6 @@ namespace SmartStore.Services.Directory
     {
         #region Constants
         private const string DELIVERYTIMES_ALL_KEY = "SMN.deliverytime.all";
-        private const string DELIVERYTIMES_BY_ID_KEY = "SMN.deliverytime.id-{0}";
         private const string DELIVERYTIMES_PATTERN_KEY = "SMN.deliverytime.";
         #endregion
 
@@ -111,8 +110,7 @@ namespace SmartStore.Services.Directory
             if (deliveryTimeId == 0)
                 return null;
 
-            string key = string.Format(DELIVERYTIMES_BY_ID_KEY, deliveryTimeId);
-            return _cacheManager.Get(key, () => _deliveryTimeRepository.GetById(deliveryTimeId));
+            return  _deliveryTimeRepository.GetById(deliveryTimeId);
         }
 
         /// <summary>

@@ -24,10 +24,7 @@ namespace SmartStore.Services.Catalog
     public partial class ProductService : IProductService
     {
         #region Constants
-        private const string PRODUCTS_BY_ID_KEY = "SmartStore.product.id-{0}";
         private const string PRODUCTVARIANTS_ALL_KEY = "SmartStore.productvariant.all-{0}-{1}";
-        private const string PRODUCTVARIANTS_BY_ID_KEY = "SmartStore.productvariant.id-{0}";
-        private const string PRODUCTS_PATTERN_KEY = "SmartStore.product.";
         private const string PRODUCTVARIANTS_PATTERN_KEY = "SmartStore.productvariant.";
         private const string TIERPRICES_PATTERN_KEY = "SmartStore.tierprice.";
         #endregion
@@ -241,12 +238,7 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return null;
 
-            string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            return _cacheManager.Get(key, () =>
-            {
-                var product = _productRepository.GetById(productId);
-                return product;
-            });
+            return _productRepository.GetById(productId);
         }
 
         /// <summary>
@@ -289,7 +281,6 @@ namespace SmartStore.Services.Catalog
             _productRepository.Insert(product);
 
             //clear cache
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
             
@@ -310,7 +301,6 @@ namespace SmartStore.Services.Catalog
             _productRepository.Update(product);
 
             //cache
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
@@ -907,12 +897,7 @@ namespace SmartStore.Services.Catalog
             if (productVariantId == 0)
                 return null;
 
-            string key = string.Format(PRODUCTVARIANTS_BY_ID_KEY, productVariantId);
-            return _cacheManager.Get(key, () =>
-            {
-                var pv = _productVariantRepository.GetById(productVariantId);
-                return pv;
-            });
+            return _productVariantRepository.GetById(productVariantId);
         }
         
         /// <summary>
@@ -1004,7 +989,6 @@ namespace SmartStore.Services.Catalog
 
             _productVariantRepository.Insert(productVariant);
 
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
@@ -1023,7 +1007,6 @@ namespace SmartStore.Services.Catalog
 
             _productVariantRepository.Update(productVariant);
 
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
@@ -1524,7 +1507,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
@@ -1557,7 +1539,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
@@ -1576,7 +1557,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 

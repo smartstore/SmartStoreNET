@@ -23,13 +23,6 @@ namespace SmartStore.Services.Shipping
     /// </summary>
     public partial class ShippingService : IShippingService
     {
-        #region Constants
-
-        private const string SHIPPINGMETHODS_BY_ID_KEY = "SmartStore.shippingMethod.id-{0}";
-        private const string SHIPPINGMETHODS_PATTERN_KEY = "SmartStore.shippingMethod.";
-
-        #endregion
-
         #region Fields
 
         private readonly IRepository<ShippingMethod> _shippingMethodRepository;
@@ -152,8 +145,6 @@ namespace SmartStore.Services.Shipping
 
             _shippingMethodRepository.Delete(shippingMethod);
 
-            _cacheManager.RemoveByPattern(SHIPPINGMETHODS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(shippingMethod);
         }
@@ -168,12 +159,7 @@ namespace SmartStore.Services.Shipping
             if (shippingMethodId == 0)
                 return null;
 
-            string key = string.Format(SHIPPINGMETHODS_BY_ID_KEY, shippingMethodId);
-            return _cacheManager.Get(key, () =>
-            {
-                var shippingMethod = _shippingMethodRepository.GetById(shippingMethodId);
-                return shippingMethod;
-            });
+            return _shippingMethodRepository.GetById(shippingMethodId);
         }
         
         /// <summary>
@@ -219,8 +205,6 @@ namespace SmartStore.Services.Shipping
 
             _shippingMethodRepository.Insert(shippingMethod);
 
-            _cacheManager.RemoveByPattern(SHIPPINGMETHODS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(shippingMethod);
         }
@@ -235,8 +219,6 @@ namespace SmartStore.Services.Shipping
                 throw new ArgumentNullException("shippingMethod");
 
             _shippingMethodRepository.Update(shippingMethod);
-
-            _cacheManager.RemoveByPattern(SHIPPINGMETHODS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(shippingMethod);

@@ -14,11 +14,7 @@ namespace SmartStore.Services.Catalog
     public partial class SpecificationAttributeService : ISpecificationAttributeService
     {
         #region Constants
-        private const string SPECIFICATIONATTRIBUTE_BY_ID_KEY = "SmartStore.specificationattributes.id-{0}";
-        private const string SPECIFICATIONATTRIBUTEOPTION_BY_ID_KEY = "SmartStore.specificationattributeoptions.id-{0}";
         private const string PRODUCTSPECIFICATIONATTRIBUTE_ALLBYPRODUCTID_KEY = "SmartStore.productspecificationattribute.allbyproductid-{0}-{1}-{2}";
-        private const string SPECIFICATIONATTRIBUTE_PATTERN_KEY = "SmartStore.specificationattributes.";
-        private const string SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY = "SmartStore.specificationattributeoptions.";
         private const string PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY = "SmartStore.productspecificationattribute.";
         #endregion
 
@@ -71,12 +67,7 @@ namespace SmartStore.Services.Catalog
             if (specificationAttributeId == 0)
                 return null;
 
-            string key = string.Format(SPECIFICATIONATTRIBUTE_BY_ID_KEY, specificationAttributeId);
-            return _cacheManager.Get(key, () =>
-            {
-                var sa = _specificationAttributeRepository.GetById(specificationAttributeId);
-                return sa;
-            });
+            return _specificationAttributeRepository.GetById(specificationAttributeId);
         }
 
         /// <summary>
@@ -109,8 +100,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Delete(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -128,8 +117,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Insert(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -147,8 +134,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Update(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -169,12 +154,7 @@ namespace SmartStore.Services.Catalog
             if (specificationAttributeOptionId == 0)
                 return null;
 
-            string key = string.Format(SPECIFICATIONATTRIBUTEOPTION_BY_ID_KEY, specificationAttributeOptionId);
-            return _cacheManager.Get(key, () =>
-            {
-                var sao = _specificationAttributeOptionRepository.GetById(specificationAttributeOptionId);
-                return sao;
-            });
+            return _specificationAttributeOptionRepository.GetById(specificationAttributeOptionId);
         }
 
         /// <summary>
@@ -203,8 +183,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Delete(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -222,8 +200,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Insert(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -241,8 +217,6 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Update(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -264,8 +238,6 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Delete(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -340,8 +312,6 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
@@ -359,8 +329,6 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Update(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(SPECIFICATIONATTRIBUTEOPTION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification

@@ -15,10 +15,6 @@ namespace SmartStore.Services.Blogs
     /// </summary>
     public partial class BlogService : IBlogService
     {
-        #region Constants
-        private const string BLOGPOST_BY_ID_KEY = "SmartStore.blogpost.id-{0}";
-        private const string BLOGPOST_PATTERN_KEY = "SmartStore.blogpost.";
-        #endregion
 
         #region Fields
 
@@ -57,8 +53,6 @@ namespace SmartStore.Services.Blogs
 
             _blogPostRepository.Delete(blogPost);
 
-            _cacheManager.RemoveByPattern(BLOGPOST_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(blogPost);
         }
@@ -73,12 +67,7 @@ namespace SmartStore.Services.Blogs
             if (blogPostId == 0)
                 return null;
 
-            string key = string.Format(BLOGPOST_BY_ID_KEY, blogPostId);
-            return _cacheManager.Get(key, () =>
-            {
-                var pv = _blogPostRepository.GetById(blogPostId);
-                return pv;
-            });
+                return _blogPostRepository.GetById(blogPostId);
         }
 
         /// <summary>
@@ -208,8 +197,6 @@ namespace SmartStore.Services.Blogs
 
             _blogPostRepository.Insert(blogPost);
 
-            _cacheManager.RemoveByPattern(BLOGPOST_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(blogPost);
         }
@@ -224,8 +211,6 @@ namespace SmartStore.Services.Blogs
                 throw new ArgumentNullException("blogPost");
 
             _blogPostRepository.Update(blogPost);
-
-            _cacheManager.RemoveByPattern(BLOGPOST_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(blogPost);

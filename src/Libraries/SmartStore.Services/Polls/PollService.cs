@@ -13,10 +13,6 @@ namespace SmartStore.Services.Polls
     /// </summary>
     public partial class PollService : IPollService
     {
-        #region Constants
-        private const string POLLS_BY_ID_KEY = "SmartStore.polls.id-{0}";
-        private const string POLLS_PATTERN_KEY = "SmartStore.polls.";
-        #endregion
 
         #region Fields
 
@@ -56,12 +52,7 @@ namespace SmartStore.Services.Polls
             if (pollId == 0)
                 return null;
 
-            string key = string.Format(POLLS_BY_ID_KEY, pollId);
-            return _cacheManager.Get(key, () =>
-            {
-                var poll = _pollRepository.GetById(pollId);
-                return poll;
-            });
+            return _pollRepository.GetById(pollId);
         }
 
         /// <summary>
@@ -127,8 +118,6 @@ namespace SmartStore.Services.Polls
 
             _pollRepository.Delete(poll);
 
-            _cacheManager.RemoveByPattern(POLLS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(poll);
         }
@@ -144,8 +133,6 @@ namespace SmartStore.Services.Polls
 
             _pollRepository.Insert(poll);
 
-            _cacheManager.RemoveByPattern(POLLS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(poll);
         }
@@ -160,8 +147,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("poll");
 
             _pollRepository.Update(poll);
-
-            _cacheManager.RemoveByPattern(POLLS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(poll);
@@ -194,8 +179,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("pollAnswer");
 
             _pollAnswerRepository.Delete(pollAnswer);
-
-            _cacheManager.RemoveByPattern(POLLS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(pollAnswer);

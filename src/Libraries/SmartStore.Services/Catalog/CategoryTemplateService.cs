@@ -13,12 +13,6 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class CategoryTemplateService : ICategoryTemplateService
     {
-        #region Constants
-        private const string CATEGORYTEMPLATES_BY_ID_KEY = "SmartStore.categorytemplate.id-{0}";
-        private const string CATEGORYTEMPLATES_ALL_KEY = "SmartStore.categorytemplate.all";
-        private const string CATEGORYTEMPLATES_PATTERN_KEY = "SmartStore.categorytemplate.";
-
-        #endregion
 
         #region Fields
 
@@ -59,8 +53,6 @@ namespace SmartStore.Services.Catalog
 
             _categoryTemplateRepository.Delete(categoryTemplate);
 
-            _cacheManager.RemoveByPattern(CATEGORYTEMPLATES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(categoryTemplate);
         }
@@ -71,16 +63,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Category templates</returns>
         public virtual IList<CategoryTemplate> GetAllCategoryTemplates()
         {
-            string key = CATEGORYTEMPLATES_ALL_KEY;
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from pt in _categoryTemplateRepository.Table
-                            orderby pt.DisplayOrder
-                            select pt;
+            var query = from pt in _categoryTemplateRepository.Table
+                        orderby pt.DisplayOrder
+                        select pt;
 
-                var templates = query.ToList();
-                return templates;
-            });
+            var templates = query.ToList();
+            return templates;
         }
  
         /// <summary>
@@ -93,12 +81,7 @@ namespace SmartStore.Services.Catalog
             if (categoryTemplateId == 0)
                 return null;
 
-            string key = string.Format(CATEGORYTEMPLATES_BY_ID_KEY, categoryTemplateId);
-            return _cacheManager.Get(key, () =>
-            {
-                var template = _categoryTemplateRepository.GetById(categoryTemplateId);
-                return template;
-            });
+            return _categoryTemplateRepository.GetById(categoryTemplateId);
         }
 
         /// <summary>
@@ -111,9 +94,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("categoryTemplate");
 
             _categoryTemplateRepository.Insert(categoryTemplate);
-
-            //cache
-            _cacheManager.RemoveByPattern(CATEGORYTEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(categoryTemplate);
@@ -129,9 +109,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("categoryTemplate");
 
             _categoryTemplateRepository.Update(categoryTemplate);
-
-            //cache
-            _cacheManager.RemoveByPattern(CATEGORYTEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(categoryTemplate);

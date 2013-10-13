@@ -17,11 +17,6 @@ namespace SmartStore.Services.Logging
     /// </summary>
     public class CustomerActivityService : ICustomerActivityService
     {
-        #region Constants
-        private const string ACTIVITYTYPE_BY_ID_KEY = "SmartStore.activitytype.id-{0}";
-        private const string ACTIVITYTYPE_PATTERN_KEY = "SmartStore.activitytype.";
-        #endregion
-
         #region Fields
 
         /// <summary>
@@ -80,7 +75,6 @@ namespace SmartStore.Services.Logging
 
             s_logTypes.Clear();
             _activityLogTypeRepository.Insert(activityLogType);
-            _cacheManager.RemoveByPattern(ACTIVITYTYPE_PATTERN_KEY);
         }
 
         /// <summary>
@@ -94,7 +88,6 @@ namespace SmartStore.Services.Logging
 
             s_logTypes.Clear();
             _activityLogTypeRepository.Update(activityLogType);
-            _cacheManager.RemoveByPattern(ACTIVITYTYPE_PATTERN_KEY);
         }
 
         /// <summary>
@@ -108,7 +101,6 @@ namespace SmartStore.Services.Logging
 
             s_logTypes.Clear();
             _activityLogTypeRepository.Delete(activityLogType);
-            _cacheManager.RemoveByPattern(ACTIVITYTYPE_PATTERN_KEY);
         }
 
         /// <summary>
@@ -150,11 +142,7 @@ namespace SmartStore.Services.Logging
             if (activityLogTypeId == 0)
                 return null;
 
-            string key = string.Format(ACTIVITYTYPE_BY_ID_KEY, activityLogTypeId);
-            return _cacheManager.Get(key, () =>
-            {
-                return _activityLogTypeRepository.GetById(activityLogTypeId);
-            });
+            return _activityLogTypeRepository.GetById(activityLogTypeId);
         }
 
         public virtual ActivityLogType GetActivityTypeBySystemKeyword(string systemKeyword)

@@ -21,7 +21,6 @@ namespace SmartStore.Services.Discounts
     {
         #region Constants
         private const string DISCOUNTS_ALL_KEY = "SmartStore.discount.all-{0}-{1}";
-        private const string DISCOUNTS_BY_ID_KEY = "SmartStore.discount.id-{0}";
         private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.";
         #endregion
 
@@ -151,12 +150,7 @@ namespace SmartStore.Services.Discounts
             if (discountId == 0)
                 return null;
 
-            string key = string.Format(DISCOUNTS_BY_ID_KEY, discountId);
-            return _cacheManager.Get(key, () =>
-            {
-                var discount = _discountRepository.GetById(discountId);
-                return discount;
-            });
+            return _discountRepository.GetById(discountId);
         }
 
         /// <summary>

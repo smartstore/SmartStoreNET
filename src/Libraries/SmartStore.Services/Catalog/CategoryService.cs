@@ -17,11 +17,9 @@ namespace SmartStore.Services.Catalog
     public partial class CategoryService : ICategoryService
     {
         #region Constants
-        private const string CATEGORIES_BY_ID_KEY = "SmartStore.category.id-{0}";
         private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
 		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "SmartStore.productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
-        private const string PRODUCTCATEGORIES_BY_ID_KEY = "SmartStore.productcategory.id-{0}";
         private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
         private const string PRODUCTCATEGORIES_PATTERN_KEY = "SmartStore.productcategory.";
 
@@ -226,12 +224,7 @@ namespace SmartStore.Services.Catalog
             if (categoryId == 0)
                 return null;
 
-            string key = string.Format(CATEGORIES_BY_ID_KEY, categoryId);
-            return _cacheManager.Get(key, () =>
-            {
-                var category = _categoryRepository.GetById(categoryId);
-                return category;
-            });
+            return _categoryRepository.GetById(categoryId);
         }
 
         /// <summary>
@@ -445,11 +438,7 @@ namespace SmartStore.Services.Catalog
             if (productCategoryId == 0)
                 return null;
 
-            string key = string.Format(PRODUCTCATEGORIES_BY_ID_KEY, productCategoryId);
-            return _cacheManager.Get(key, () =>
-            {
-                return _productCategoryRepository.GetById(productCategoryId);
-            });
+            return _productCategoryRepository.GetById(productCategoryId);
         }
 
         /// <summary>

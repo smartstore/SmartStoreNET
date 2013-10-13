@@ -14,11 +14,6 @@ namespace SmartStore.Services.News
     /// </summary>
     public partial class NewsService : INewsService
     {
-        #region Constants
-        private const string NEWS_BY_ID_KEY = "SmartStore.news.id-{0}";
-        private const string NEWS_PATTERN_KEY = "SmartStore.news.";
-        #endregion
-
         #region Fields
 
         private readonly IRepository<NewsItem> _newsItemRepository;
@@ -56,8 +51,6 @@ namespace SmartStore.Services.News
 
             _newsItemRepository.Delete(newsItem);
 
-            _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(newsItem);
         }
@@ -72,12 +65,7 @@ namespace SmartStore.Services.News
             if (newsId == 0)
                 return null;
 
-            string key = string.Format(NEWS_BY_ID_KEY, newsId);
-            return _cacheManager.Get(key, () =>
-            {
-                var n = _newsItemRepository.GetById(newsId);
-                return n;
-            });
+            return _newsItemRepository.GetById(newsId);
         }
 
         /// <summary>
@@ -137,8 +125,6 @@ namespace SmartStore.Services.News
 
             _newsItemRepository.Insert(news);
 
-            _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(news);
         }
@@ -153,8 +139,6 @@ namespace SmartStore.Services.News
                 throw new ArgumentNullException("news");
 
             _newsItemRepository.Update(news);
-
-            _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(news);

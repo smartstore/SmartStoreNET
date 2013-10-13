@@ -25,7 +25,6 @@ namespace SmartStore.Services.Customers
         #region Constants
 
         private const string CUSTOMERROLES_ALL_KEY = "SmartStore.customerrole.all-{0}";
-        private const string CUSTOMERROLES_BY_ID_KEY = "SmartStore.customerrole.id-{0}";
         private const string CUSTOMERROLES_BY_SYSTEMNAME_KEY = "SmartStore.customerrole.systemname-{0}";
         private const string CUSTOMERROLES_PATTERN_KEY = "SmartStore.customerrole.";
         #endregion
@@ -608,12 +607,7 @@ namespace SmartStore.Services.Customers
             if (customerRoleId == 0)
                 return null;
 
-            string key = string.Format(CUSTOMERROLES_BY_ID_KEY, customerRoleId);
-            return _cacheManager.Get(key, () =>
-            {
-                var customerRole = _customerRoleRepository.GetById(customerRoleId);
-                return customerRole;
-            });
+            return _customerRoleRepository.GetById(customerRoleId);
         }
 
         /// <summary>

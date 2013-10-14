@@ -43,7 +43,7 @@ namespace SmartStore.Core
             get
             {
                 //return s_version.ToString();
-                return "1.2.0.0"; // TODO: (MC) read it from attribute
+                return "1.2.1.0"; // TODO: (MC) read it from attribute
             }
         }
 

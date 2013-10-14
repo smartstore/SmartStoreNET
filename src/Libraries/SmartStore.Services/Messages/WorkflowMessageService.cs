@@ -170,7 +170,7 @@ namespace SmartStore.Services.Messages
                 name = getName(customer.Addresses.FirstOrDefault());
             }
 
-            name = name.Trim().NullEmpty();
+            name = name.TrimSafe().NullEmpty();
 
             return name ?? customer.Username.EmptyNull();
         }

@@ -8,7 +8,8 @@
 
 ###Bugfixes###
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
-* XML exports could fail cause of invalid characters
+* #114: Runtime error occurs after new customer registration in the storefront
+* #115: XML exports could fail because of invalid characters
 
 ###Improvements###
 * ...

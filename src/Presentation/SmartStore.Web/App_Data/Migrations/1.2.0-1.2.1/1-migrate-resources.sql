@@ -22,6 +22,15 @@ SET @resources='
 		<Value lang="de">Wenn aktiv, ist der Vergleichswert die Warenkorbsumme abzüglich aller Positions-Rabatte.</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Admin.System.SystemInfo.DatabaseSize">
+		<Value>Size of database</Value>
+		<Value lang="de">Größe der Datenbank</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.SystemInfo.DatabaseSize.Hint">
+		<Value>The number of megabytes that the database takes on the server hard disk.</Value>
+		<Value lang="de">Die Anzahl an Megabytes, die die Datenbank auf der Server-Festplatte in Anspruch nimmt.</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

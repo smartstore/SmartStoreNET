@@ -39,6 +39,9 @@ namespace SmartStore.Admin.Models.Common
         [SmartResourceDisplayName("Admin.System.SystemInfo.LoadedAssemblies")]
         public IList<LoadedAssembly> LoadedAssemblies { get; set; }
 
+		[SmartResourceDisplayName("Admin.System.SystemInfo.DatabaseSize")]
+		public double DatabaseSize { get; set; }
+
         public class LoadedAssembly : ModelBase
         {
             public string FullName { get; set; }

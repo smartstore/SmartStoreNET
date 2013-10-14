@@ -59,6 +59,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ITypeFinder _typeFinder; // codehint: sm-add
         private readonly IPluginFinder _pluginFinder; // codehint: sm-add
         private readonly IGenericAttributeService _genericAttributeService; // codehint: sm-add
+		private readonly IDbContext _dbContext;	 // codehint: sm-add
 
 		private readonly static object _lock = new object();	// codehint: sm-add
 
@@ -85,7 +86,8 @@ namespace SmartStore.Admin.Controllers
 			SecuritySettings securitySettings,
 			ITypeFinder typeFinder,
             IPluginFinder pluginFinder,
-            IGenericAttributeService genericAttributeService)
+            IGenericAttributeService genericAttributeService,
+			IDbContext dbContext)
         {
             this._paymentService = paymentService;
             this._shippingService = shippingService;
@@ -107,6 +109,7 @@ namespace SmartStore.Admin.Controllers
             this._typeFinder = typeFinder; // codehint: sm-add
 			this._pluginFinder = pluginFinder;	// codehint: sm-add
             this._genericAttributeService = genericAttributeService; // codehint: sm-add
+			this._dbContext = dbContext;	// codehint: sm-add
         }
 
         #endregion
@@ -296,6 +299,15 @@ namespace SmartStore.Admin.Controllers
             model.UtcTime = DateTime.UtcNow;
 			model.HttpHost = _webHelper.ServerVariables("HTTP_HOST");
             //Environment.GetEnvironmentVariable("USERNAME");
+
+			try
+			{
+				var mbSize = _dbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
+
+				model.DatabaseSize = Convert.ToDouble(mbSize);
+			}
+			catch (Exception) {	}
+
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 model.LoadedAssemblies.Add(new SystemInfoModel.LoadedAssembly()

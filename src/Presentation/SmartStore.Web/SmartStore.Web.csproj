@@ -2282,6 +2282,7 @@
     <Content Include="Views\Catalog\ProductAskQuestionButton.cshtml" />
     <Content Include="Views\Catalog\ProductAskQuestionButton.Mobile.cshtml" />
     <Content Include="Views\Topic\TopicWidget.cshtml" />
+    <Content Include="Views\Shared\_ClientRes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />

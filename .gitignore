@@ -191,6 +191,7 @@ $RECYCLE.BIN/
 _[Bb]ackup/
 _[Bb]ackups/
 *.bak
+*.orig
 Kopie von*
 
 ###########

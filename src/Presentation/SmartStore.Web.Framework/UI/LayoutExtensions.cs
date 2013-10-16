@@ -142,17 +142,18 @@ namespace SmartStore.Web.Framework.UI
         }
 
 
-        // codehint: sm-add (MC)
         public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
         {
             var pageTitleBuilder = EngineContext.Current.Resolve<IPageTitleBuilder>();
             pageTitleBuilder.AddBodyCssClass(cssClassName);
         }
+
         public static MvcHtmlString BodyCssClass(this HtmlHelper html)
         {
             var pageTitleBuilder = EngineContext.Current.Resolve<IPageTitleBuilder>();
             return MvcHtmlString.Create(html.Encode(pageTitleBuilder.GenerateBodyCssClasses()));
         }
+
 		public static MvcHtmlString BodyId(this HtmlHelper html)
 		{
 			string result = "";
@@ -160,10 +161,9 @@ namespace SmartStore.Web.Framework.UI
 			try
 			{
 				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-
 				result = storeContext.CurrentStore.HtmlBodyId.ToAttribute("id");
 			}
-			catch (Exception) { }
+			catch { }
 
 			return MvcHtmlString.Create(result);
 		}

@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Controllers
                     else if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage)
                     {
                         helper.StripSeoCode();
-                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), true);
                     }
                 }
                 else
@@ -72,7 +72,7 @@ namespace SmartStore.Web.Framework.Controllers
                     if (seoCode == defaultSeoCode && localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.StripSeoCode)
                     {
                         helper.StripSeoCode();
-                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), true);
                     }
                 }
 

@@ -11,6 +11,14 @@ namespace SmartStore.Services.Media
     public partial interface IPictureService
     {
         /// <summary>
+        /// Validates input picture dimensions and prevents that the image size exceeds global max size
+        /// </summary>
+        /// <param name="pictureBinary">Picture binary</param>
+        /// <param name="mimeType">MIME type</param>
+        /// <returns>Picture binary or throws an exception</returns>
+        byte[] ValidatePicture(byte[] pictureBinary);
+        
+        /// <summary>
         /// Gets the loaded picture binary depending on picture storage settings
         /// </summary>
         /// <param name="picture">Picture</param>
@@ -106,16 +114,9 @@ namespace SmartStore.Services.Media
         /// Gets pictures by product identifier
         /// </summary>
         /// <param name="productId">Product identifier</param>
-        /// <returns>Pictures</returns>
-        IList<Picture> GetPicturesByProductId(int productId);
-
-        /// <summary>
-        /// Gets pictures by product identifier
-        /// </summary>
-        /// <param name="productId">Product identifier</param>
         /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
         /// <returns>Pictures</returns>
-        IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn);
+        IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
         /// <summary>
         /// Inserts a picture

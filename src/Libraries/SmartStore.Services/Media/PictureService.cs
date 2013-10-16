@@ -124,7 +124,7 @@ namespace SmartStore.Services.Media
         /// <param name="pictureBinary">Picture binary</param>
         /// <param name="mimeType">MIME type</param>
         /// <returns>Picture binary or throws an exception</returns>
-        protected virtual byte[] ValidatePicture(byte[] pictureBinary)
+        public virtual byte[] ValidatePicture(byte[] pictureBinary)
         {
             Size originalSize = this.GetPictureSize(pictureBinary);
   
@@ -570,19 +570,9 @@ namespace SmartStore.Services.Media
         /// Gets pictures by product identifier
         /// </summary>
         /// <param name="productId">Product identifier</param>
-        /// <returns>Pictures</returns>
-        public virtual IList<Picture> GetPicturesByProductId(int productId)
-        {
-            return GetPicturesByProductId(productId, 0);
-        }
-
-        /// <summary>
-        /// Gets pictures by product identifier
-        /// </summary>
-        /// <param name="productId">Product identifier</param>
         /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
         /// <returns>Pictures</returns>
-        public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn)
+        public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0)
         {
             if (productId == 0)
                 return new List<Picture>();

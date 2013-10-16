@@ -11,9 +11,11 @@
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
 * #114: Runtime error occurs after new customer registration in the storefront
 * #115: XML exports could fail because of invalid characters
+* #121: Categories restricted to specific stores could also show up in other stores.
 
 ###Improvements###
 * #97: Product numbers of attribute combinations can not be searched
+* #120: Excel product import: The same product pictures were imported repeatedly which led to duplicate pictures.
 
 
 ##SmartStore.NET 1.2.0.0#

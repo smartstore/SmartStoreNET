@@ -333,91 +333,6 @@ namespace SmartStore.Services.ExportImport
 						basePriceBaseAmount = GetValue<int>(worksheet, iRow, "BasePrice_BaseAmount");
 
 
-                    //string name = worksheet.Cells[iRow, GetColumnIndex(properties, "Name")].Value as string;
-                    //string shortDescription = worksheet.Cells[iRow, GetColumnIndex(properties, "ShortDescription")].Value as string;
-                    //string fullDescription = worksheet.Cells[iRow, GetColumnIndex(properties, "FullDescription")].Value as string;
-                    //int productTemplateId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "ProductTemplateId")].Value);
-                    //bool showOnHomePage = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "ShowOnHomePage")].Value);
-                    //string metaKeywords = worksheet.Cells[iRow, GetColumnIndex(properties, "MetaKeywords")].Value as string;
-                    //string metaDescription = worksheet.Cells[iRow, GetColumnIndex(properties, "MetaDescription")].Value as string;
-                    //string metaTitle = worksheet.Cells[iRow, GetColumnIndex(properties, "MetaTitle")].Value as string;
-                    //string seName = worksheet.Cells[iRow, GetColumnIndex(properties, "SeName")].Value as string;
-                    //bool allowCustomerReviews = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "AllowCustomerReviews")].Value);
-                    //bool published = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "Published")].Value);
-                    //string productVariantName = worksheet.Cells[iRow, GetColumnIndex(properties, "ProductVariantName")].Value as string;
-                    //string sku = worksheet.Cells[iRow, GetColumnIndex(properties, "SKU")].Value as string;
-                    //string manufacturerPartNumber = worksheet.Cells[iRow, GetColumnIndex(properties, "ManufacturerPartNumber")].Value as string;
-                    //string gtin = worksheet.Cells[iRow, GetColumnIndex(properties, "Gtin")].Value as string;
-                    //bool isGiftCard = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsGiftCard")].Value);
-                    //int giftCardTypeId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "GiftCardTypeId")].Value);
-                    //bool requireOtherProducts = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "RequireOtherProducts")].Value);
-                    //string requiredProductVariantIds = worksheet.Cells[iRow, GetColumnIndex(properties, "RequiredProductVariantIds")].Value as string;
-                    //bool automaticallyAddRequiredProductVariants = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "AutomaticallyAddRequiredProductVariants")].Value);
-                    //bool isDownload = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsDownload")].Value);
-                    //int downloadId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "DownloadId")].Value);
-                    //bool unlimitedDownloads = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "UnlimitedDownloads")].Value);
-                    //int maxNumberOfDownloads = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "MaxNumberOfDownloads")].Value);
-                    //int downloadActivationTypeId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "DownloadActivationTypeId")].Value);
-                    //bool hasSampleDownload = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "HasSampleDownload")].Value);
-                    //int sampleDownloadId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "SampleDownloadId")].Value);
-                    //bool hasUserAgreement = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "HasUserAgreement")].Value);
-                    //string userAgreementText = worksheet.Cells[iRow, GetColumnIndex(properties, "UserAgreementText")].Value as string;
-                    //bool isRecurring = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsRecurring")].Value);
-                    //int recurringCycleLength = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "RecurringCycleLength")].Value);
-                    //int recurringCyclePeriodId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "RecurringCyclePeriodId")].Value);
-                    //int recurringTotalCycles = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "RecurringTotalCycles")].Value);
-                    //bool isShipEnabled = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsShipEnabled")].Value);
-                    //bool isFreeShipping = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsFreeShipping")].Value);
-                    //decimal additionalShippingCharge = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "AdditionalShippingCharge")].Value);
-                    //bool isTaxExempt = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "IsTaxExempt")].Value);
-                    //int taxCategoryId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "TaxCategoryId")].Value);
-                    //int manageInventoryMethodId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "ManageInventoryMethodId")].Value);
-                    //int stockQuantity = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "StockQuantity")].Value);
-                    //bool displayStockAvailability = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "DisplayStockAvailability")].Value);
-                    //bool displayStockQuantity = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "DisplayStockQuantity")].Value);
-                    //int minStockQuantity = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "MinStockQuantity")].Value);
-                    //int lowStockActivityId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "LowStockActivityId")].Value);
-                    //int notifyAdminForQuantityBelow = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "NotifyAdminForQuantityBelow")].Value);
-                    //int backorderModeId = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "BackorderModeId")].Value);
-                    //bool allowBackInStockSubscriptions = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "AllowBackInStockSubscriptions")].Value);
-                    //int orderMinimumQuantity = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "OrderMinimumQuantity")].Value);
-                    //int orderMaximumQuantity = Convert.ToInt32(worksheet.Cells[iRow, GetColumnIndex(properties, "OrderMaximumQuantity")].Value);
-                    //string allowedQuantities = worksheet.Cells[iRow, GetColumnIndex(properties, "AllowedQuantities")].Value as string;
-                    //bool disableBuyButton = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "DisableBuyButton")].Value);
-                    //bool disableWishlistButton = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "DisableWishlistButton")].Value);
-                    //bool callForPrice = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "CallForPrice")].Value);
-                    //decimal price = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "Price")].Value);
-                    //decimal oldPrice = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "OldPrice")].Value);
-                    //decimal productCost = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "ProductCost")].Value);
-
-                    //decimal? specialPrice = null;
-                    //var specialPriceExcel = worksheet.Cells[iRow, GetColumnIndex(properties, "SpecialPrice")].Value;
-                    //if (specialPriceExcel != null)
-                    //    specialPrice = Convert.ToDecimal(specialPriceExcel);
-                    //DateTime? specialPriceStartDateTimeUtc = null;
-                    //var specialPriceStartDateTimeUtcExcel = worksheet.Cells[iRow, GetColumnIndex(properties, "SpecialPriceStartDateTimeUtc")].Value;
-                    //if (specialPriceStartDateTimeUtcExcel != null)
-                    //    specialPriceStartDateTimeUtc = DateTime.FromOADate(Convert.ToDouble(specialPriceStartDateTimeUtcExcel));
-                    //DateTime? specialPriceEndDateTimeUtc = null;
-                    //var specialPriceEndDateTimeUtcExcel = worksheet.Cells[iRow, GetColumnIndex(properties, "SpecialPriceEndDateTimeUtc")].Value;
-                    //if (specialPriceEndDateTimeUtcExcel != null)
-                    //    specialPriceEndDateTimeUtc = DateTime.FromOADate(Convert.ToDouble(specialPriceEndDateTimeUtcExcel));
-
-                    //bool customerEntersPrice = Convert.ToBoolean(worksheet.Cells[iRow, GetColumnIndex(properties, "CustomerEntersPrice")].Value);
-                    //decimal minimumCustomerEnteredPrice = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "MinimumCustomerEnteredPrice")].Value);
-                    //decimal maximumCustomerEnteredPrice = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "MaximumCustomerEnteredPrice")].Value);
-                    //decimal weight = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "Weight")].Value);
-                    //decimal length = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "Length")].Value);
-                    //decimal width = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "Width")].Value);
-                    //decimal height = Convert.ToDecimal(worksheet.Cells[iRow, GetColumnIndex(properties, "Height")].Value);
-                    //DateTime createdOnUtc = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[iRow, GetColumnIndex(properties, "CreatedOnUtc")].Value));
-                    //string categoryIds = worksheet.Cells[iRow, GetColumnIndex(properties, "CategoryIds")].Value as string;
-                    //string manufacturerIds = worksheet.Cells[iRow, GetColumnIndex(properties, "ManufacturerIds")].Value as string;
-                    //string picture1 = worksheet.Cells[iRow, GetColumnIndex(properties, "Picture1")].Value as string;
-                    //string picture2 = worksheet.Cells[iRow, GetColumnIndex(properties, "Picture2")].Value as string;
-                    //string picture3 = worksheet.Cells[iRow, GetColumnIndex(properties, "Picture3")].Value as string;
-
-
                     ProductVariant productVariant = null;
 					// codehint: sm-edit
                     if (sku.HasValue())
@@ -665,16 +580,27 @@ namespace SmartStore.Services.ExportImport
                     }
 
                     //pictures
+                    bool hasNewPictures = false;
                     foreach (var picture in new string[] { picture1, picture2, picture3 })
                     {
                         if (String.IsNullOrEmpty(picture) || !File.Exists(picture))
                             continue;
-                        
-                        productVariant.Product.ProductPictures.Add(new ProductPicture()
+
+                        var pictureBinary = FindEqualPicture(picture, productVariant.Product.ProductPictures);
+                        if (pictureBinary != null && pictureBinary.Length > 0)
                         {
-                            Picture = _pictureService.InsertPicture(File.ReadAllBytes(picture), "image/jpeg", _pictureService.GetPictureSeName(name), true),
-                            DisplayOrder = 1,
-                        });
+                            // no equal picture found in sequence
+                            productVariant.Product.ProductPictures.Add(new ProductPicture()
+                            {
+                                Picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(name), true, true),
+                                DisplayOrder = 1,
+                            });
+                            hasNewPictures = true;
+                        }           
+                    }
+
+                    if (hasNewPictures)
+                    {
                         _productService.UpdateProduct(productVariant.Product);
                     }
 
@@ -687,5 +613,42 @@ namespace SmartStore.Services.ExportImport
                 }
             }
         }
+
+        /// <summary>
+        /// Finds an equal picture by comparing the binary buffer
+        /// </summary>
+        /// <param name="path">The picture to find a duplicate for</param>
+        /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+        /// <returns>The picture binary for <c>path</c> when no picture euqals in the sequence, <c>null</c> otherwise.</returns>
+        private byte[] FindEqualPicture(string path, IEnumerable<ProductPicture> productPictures)
+        {
+            try
+            {
+                var myBuffer = File.ReadAllBytes(path);
+
+                foreach (var pictureMap in productPictures.Where(x => x.Id > 0))
+                {
+                    var otherBuffer = _pictureService.LoadPictureBinary(pictureMap.Picture);
+                    using (var myStream = new MemoryStream(myBuffer))
+                    {
+                        using (var otherStream = new MemoryStream(otherBuffer))
+                        {
+                            var equals = myStream.ContentsEqual(otherStream);
+                            if (equals)
+                            {
+                                return null;
+                            }
+                        }
+                    }
+                }
+
+                return myBuffer;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
@@ -151,5 +153,19 @@ namespace SmartStore.Web.Framework.UI
             var pageTitleBuilder = EngineContext.Current.Resolve<IPageTitleBuilder>();
             return MvcHtmlString.Create(html.Encode(pageTitleBuilder.GenerateBodyCssClasses()));
         }
+		public static MvcHtmlString BodyId(this HtmlHelper html)
+		{
+			string result = "";
+
+			try
+			{
+				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+
+				result = storeContext.CurrentStore.HtmlBodyId.ToAttribute("id");
+			}
+			catch (Exception) { }
+
+			return MvcHtmlString.Create(result);
+		}
     }
 }

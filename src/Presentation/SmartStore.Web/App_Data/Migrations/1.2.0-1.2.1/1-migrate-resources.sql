@@ -31,6 +31,19 @@ SET @resources='
 		<Value lang="de">Die Anzahl an Megabytes, die die Datenbank auf der Server-Festplatte in Anspruch nimmt.</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId">
+		<Value>ID of HTML body</Value>
+		<Value lang="de">ID des HTML-Body</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Hint">
+		<Value>Allows to use individual CSS and javascript for a store.</Value>
+		<Value lang="de">Emöglicht es, individuelles CSS und Javascript für einen Shop zu verwenden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Validation">
+		<Value>Please only use letters, digits, underscores or hyphens.</Value>
+		<Value lang="de">Bitte verwenden Sie nur Buchstaben, Ziffern, Unterstriche oder Bindestriche.</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

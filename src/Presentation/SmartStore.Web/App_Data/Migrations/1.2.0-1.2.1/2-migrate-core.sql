@@ -601,3 +601,9 @@ BEGIN
 	DROP TABLE #PageIndex
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Store]') and NAME='HtmlBodyId')
+BEGIN
+	ALTER TABLE Store ADD HtmlBodyId nvarchar(50) NULL
+END
+GO

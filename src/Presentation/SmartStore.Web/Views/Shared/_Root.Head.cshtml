@@ -90,7 +90,7 @@
     }
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>
-<body class="@Html.BodyCssClass()">
+<body class="@Html.BodyCssClass()"@(Html.BodyId())>
     @RenderBody()
     @Html.SmartCssFiles(ResourceLocation.Foot)
     @Html.SmartScripts(ResourceLocation.Foot)

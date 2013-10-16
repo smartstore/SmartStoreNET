@@ -42,6 +42,11 @@ namespace SmartStore.Core.Domain.Stores
 		public int DisplayOrder { get; set; }
 
 		/// <summary>
+		/// Gets or sets a store specific id for the HTML body
+		/// </summary>
+		public string HtmlBodyId { get; set; }
+
+		/// <summary>
 		/// Gets the security mode for the store
 		/// </summary>
 		/// <remarks>codehint: sm-add</remarks>

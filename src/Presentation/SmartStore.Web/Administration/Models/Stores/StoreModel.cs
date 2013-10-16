@@ -35,5 +35,8 @@ namespace SmartStore.Admin.Models.Stores
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.DisplayOrder")]
 		public int DisplayOrder { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.HtmlBodyId")]
+		public string HtmlBodyId { get; set; }
 	}
 }

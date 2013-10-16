@@ -121,7 +121,7 @@
     <link rel="shortcut icon" href="~/Administration/favicon.ico" />
 
 </head>
-<body class="@Html.BodyCssClass()">   
+<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 
     <div id="page">
 		@if (ViewData["warning.panel.message"] != null)

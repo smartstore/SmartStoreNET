@@ -207,15 +207,16 @@ BEGIN
 
 
 		--SKU
-		SET @sql = @sql + '
-		UNION
-		SELECT pv.ProductId
-		FROM ProductVariant pv with (NOLOCK)
-		WHERE '
-		IF @UseFullTextSearch = 1
-			SET @sql = @sql + 'CONTAINS(pv.[Sku], @Keywords) '
-		ELSE
-			SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Sku]) > 0 '
+        SET @sql = @sql + '
+        UNION
+        SELECT pv.ProductId
+        FROM ProductVariant pv with (NOLOCK)
+        INNER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
+        WHERE '
+        IF @UseFullTextSearch = 1
+            SET @sql = @sql + 'CONTAINS((pv.[Sku], pvac.[Sku]), @Keywords) '
+        ELSE
+            SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Sku]) > 0 OR PATINDEX(@Keywords, pvac.[Sku]) > 0 '
 
 
 		--localized product name

@@ -5,13 +5,19 @@
 ###New Features###
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
 * (Developer) New property 'ExtraData' for DiscountRequirement entity
+* Added a field for the HTML body id to store entity
 
 ###Bugfixes###
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
+* #114: Runtime error occurs after new customer registration in the storefront
+* #115: XML exports could fail because of invalid characters
+* #121: Categories restricted to specific stores could also show up in other stores.
 * #125: Widget Trusted Shops Customer Reviews can not be configured
 
 ###Improvements###
-* ...
+* #97: Product numbers of attribute combinations can not be searched
+* #120: Excel product import: The same product pictures were imported repeatedly which led to duplicate pictures.
+* Info pages for all Trusted Shops widgets 
 
 
 ##SmartStore.NET 1.2.0.0#

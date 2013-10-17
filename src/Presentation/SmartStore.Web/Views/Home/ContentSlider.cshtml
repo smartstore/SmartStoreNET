@@ -18,7 +18,7 @@
 }
 
 @{
-    var isActive = Model.IsActive && Model.Slides.Count > 0;
+    var isActive = Model.IsActive && Model.Slides.Where(x => x.Published).Any();
 
     if (isActive) 
     {

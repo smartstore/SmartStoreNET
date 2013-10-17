@@ -387,7 +387,7 @@ SET @resources='
 </Language>
 '
 
-DECLARE @forceResUpdate bit
+DECLARE @forceResUpdate bit = 0
 SET @forceResUpdate = 0
 
 CREATE TABLE #ResTmp

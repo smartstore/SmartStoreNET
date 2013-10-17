@@ -790,7 +790,6 @@ namespace SmartStore.Services.Messages
             if (messageTemplate == null)
                 return 0;
 
-            // TODO: (MC) create message template
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);

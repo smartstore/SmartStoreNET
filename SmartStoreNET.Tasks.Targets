@@ -166,7 +166,7 @@
 
 	</Target>
   
-	<Target Name="Package-Zip" DependsOnTargets="Stage">
+	<Target Name="Package-Zip">
 		<ItemGroup>
 			<Zip-Stage Include="$(StageFolder)\**\*" />
 		</ItemGroup>

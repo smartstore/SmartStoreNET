@@ -31,6 +31,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         private IThemeContext _themeContext;
         private ThemeManifest _themeManifest;
         private ExpandoObject _themeVars;
+        private bool? _isHomePage;
 
         // codehint: sm-add (mc)
         protected int CurrentCategoryId
@@ -75,6 +76,20 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
                     id = Convert.ToInt32(routeValues["productId"].ToString());
                 }
                 return id;
+            }
+        }
+
+        protected bool IsHomePage
+        {
+            get
+            {
+                if (!_isHomePage.HasValue)
+                {
+                    var routeData = Url.RequestContext.RouteData;
+                    _isHomePage = routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
+                        routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Index");
+                }
+                return _isHomePage.Value;
             }
         }
 

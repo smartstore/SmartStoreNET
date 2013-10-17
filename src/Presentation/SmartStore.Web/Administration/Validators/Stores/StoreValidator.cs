@@ -15,7 +15,7 @@ namespace SmartStore.Admin.Validators.Stores
 				.NotNull()
 				.WithMessage(localizationService.GetResource("Admin.Configuration.Stores.Fields.Url.Required"));
 
-			RuleFor(x => x.HtmlBodyId).Matches(@"^(\w|\-)*$")
+			RuleFor(x => x.HtmlBodyId).Matches(@"^([A-Za-z])(\w|\-)*$")
 				.WithMessage(localizationService.GetResource("Admin.Configuration.Stores.Fields.HtmlBodyId.Validation"));
 		}
 	}

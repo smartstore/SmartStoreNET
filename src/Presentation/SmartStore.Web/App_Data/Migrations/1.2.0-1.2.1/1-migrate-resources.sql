@@ -40,8 +40,8 @@ SET @resources='
 		<Value lang="de">Emöglicht es, individuelles CSS und Javascript für einen Shop zu verwenden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Validation">
-		<Value>Please only use letters, digits, underscores or hyphens.</Value>
-		<Value lang="de">Bitte verwenden Sie nur Buchstaben, Ziffern, Unterstriche oder Bindestriche.</Value>
+		<Value>Please only use letters, digits, underscores or hyphens. The first character should be a letter.</Value>
+		<Value lang="de">Bitte verwenden Sie nur Buchstaben, Ziffern, Unterstriche oder Bindestriche. Das erste Zeichen sollte ein Buchstabe sein.</Value>
 	</LocaleResource>
 	
 </Language>

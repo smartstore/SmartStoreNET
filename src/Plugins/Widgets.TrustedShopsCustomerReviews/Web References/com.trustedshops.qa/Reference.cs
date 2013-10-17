@@ -73,6 +73,17 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.com.trustedshops
         
         private bool useDefaultCredentialsSetExplicitly;
         
+        /// <remarks/>
+        public TSRatingService() {
+            this.Url = global::SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.Properties.Settings.Default.SmartStore_Plugin_Widgets_TrustedShopsCustomerReviews_com_trustedshops_qa_TSRatingService;
+            if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
+                this.UseDefaultCredentials = true;
+                this.useDefaultCredentialsSetExplicitly = false;
+            }
+            else {
+                this.useDefaultCredentialsSetExplicitly = true;
+            }
+        }
         
         public new string Url {
             get {

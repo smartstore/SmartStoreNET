@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.IO;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -13,6 +15,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Media;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
@@ -36,6 +39,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
         private readonly ICurrencyService _currencyService;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ITaxService _taxService;
+        private readonly IPictureService _pictureService;
+        private readonly IPluginFinder _pluginFinder;
 
         private readonly TrustedShopsCustomerProtection.com.trustedshops.qa.TSProtectionService _protectionServiceSandbox;
         private readonly TrustedShopsCustomerProtection.com.trustedshops.www.TSProtectionService _protectionServiceLive;
@@ -45,7 +50,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
             ISettingService settingService, IProductService productService,
             ILocalizationService localizationService, IOrderService orderService,
             IPriceFormatter priceFormatter, ICurrencyService currencyService,
-            IOrderTotalCalculationService orderTotalCalculationService, ITaxService taxService)
+            IOrderTotalCalculationService orderTotalCalculationService, ITaxService taxService,
+            IPictureService pictureService, IPluginFinder pluginFinder)
         {
 			_workContext = workContext;
 			_storeContext = storeContext;
@@ -58,7 +64,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
             _currencyService = currencyService;
             _orderTotalCalculationService = orderTotalCalculationService;
             _taxService = taxService;
-
+            _pictureService = pictureService;
+            _pluginFinder = pluginFinder;
             _protectionServiceSandbox = new TrustedShopsCustomerProtection.com.trustedshops.qa.TSProtectionService();
             _protectionServiceLive = new TrustedShopsCustomerProtection.com.trustedshops.www.TSProtectionService();
         }
@@ -233,6 +240,13 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
 
             var tsProtectionServiceSandbox = new TrustedShopsCustomerProtection.com.trustedshops.qa.TSProtectionService();
             var tsProtectionServiceLive = new TrustedShopsCustomerProtection.com.trustedshops.www.TSProtectionService();
+            var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("Widgets.TrustedShopsCustomerProtection");
+
+            //add trusted shops logo 
+            var tsLogo = _pictureService.InsertPicture(System.IO.File.ReadAllBytes(pluginDescriptor.PhysicalPath +  "/Content/images/TrustedShops-rgb-Siegel_100Hpx.png"), 
+                "image/png", 
+                _pictureService.GetPictureSeName("Trusted Shops Logo"), 
+                true);
 
             //TODO: remove duplicate code
             if (model.IsTestMode)
@@ -242,7 +256,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                 foreach(var tsProduct in tsProtectionProducts) 
                 {
                     var tsProductName = _localizationService.GetResource("Plugins.Widgets.TrustedShopsCustomerProtection.ProtectionMode.Excellence.Public.Name").FormatWith(
-                        _priceFormatter.FormatPrice(tsProduct.protectedAmountDecimal, false, false)
+                        _priceFormatter.FormatPrice(tsProduct.protectedAmountDecimal, false, false) + " (" +
+                        _priceFormatter.FormatPrice(tsProduct.grossFee, false, false) + ")"
                     );
                     
                     var tsProductDesc = _localizationService.GetResource("TrustedShopsProduct.Description").FormatWith(
@@ -281,6 +296,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                         tsProductVariant.OrderMaximumQuantity = 1;
                         tsProductVariant.OrderMinimumQuantity = 1;
                         tsProductVariant.AdminComment = "TrustedShops-Product";
+                        tsProductVariant.PictureId = tsLogo.Id;
 
                         var tempname = product.Name;
                         var temp = product.Id;
@@ -300,6 +316,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                         tsProductVariant.OrderMaximumQuantity = 1;
                         tsProductVariant.OrderMinimumQuantity = 1;
                         tsProductVariant.AdminComment = "TrustedShops-Product";
+                        tsProductVariant.PictureId = tsLogo.Id;
                         //update variant
                         _productService.UpdateProductVariant(tsProductVariant);
                     }
@@ -312,7 +329,8 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                 foreach (var tsProduct in tsProtectionProducts)
                 {
                     var tsProductName = _localizationService.GetResource("Plugins.Widgets.TrustedShopsCustomerProtection.ProtectionMode.Excellence.Public.Name").FormatWith(
-                        _priceFormatter.FormatPrice(tsProduct.protectedAmountDecimal, false, false)
+                        _priceFormatter.FormatPrice(tsProduct.protectedAmountDecimal, false, false) + " (" +
+                        _priceFormatter.FormatPrice(tsProduct.grossFee, false, false) + ")"
                     );
 
                     var tsProductDesc = _localizationService.GetResource("TrustedShopsProduct.Description").FormatWith(
@@ -351,6 +369,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                         tsProductVariant.OrderMaximumQuantity = 1;
                         tsProductVariant.OrderMinimumQuantity = 1;
                         tsProductVariant.AdminComment = "TrustedShops-Product";
+                        tsProductVariant.PictureId = tsLogo.Id;
 
                         var tempname = product.Name;
                         var temp = product.Id;
@@ -371,6 +390,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.Controllers
                         tsProductVariant.OrderMaximumQuantity = 1;
                         tsProductVariant.OrderMinimumQuantity = 1;
                         tsProductVariant.AdminComment = "TrustedShops-Product";
+                        tsProductVariant.PictureId = tsLogo.Id;
                         //update variant
                         _productService.UpdateProductVariant(tsProductVariant);
                     }

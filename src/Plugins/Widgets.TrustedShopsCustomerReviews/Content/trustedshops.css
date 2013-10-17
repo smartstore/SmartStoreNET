@@ -14,3 +14,28 @@
 .trusted-shops-customer-protection-order-completed a {
     margin: 35px 0 0 20px;
 }
+
+.ts-info {
+    padding: 0 20px 20px 20px;
+}
+.ts-info .prepared {
+    background-image: url('images/prepared.jpg');
+    height: 75px;
+	background-repeat: no-repeat;
+	background-position: top left; 		
+    color: white;
+    font: bold 13px/13px sans-serif;
+    text-align: right;
+    width: 240px;
+    margin-left: 11px;
+    padding-top: 4px;
+    text-transform: uppercase;
+}
+.ts-info .prepared span {
+    margin-right: 70px;
+    display: block;
+}
+.ts-info .intro {
+    width: 900px;
+    margin-bottom: 10px;
+}

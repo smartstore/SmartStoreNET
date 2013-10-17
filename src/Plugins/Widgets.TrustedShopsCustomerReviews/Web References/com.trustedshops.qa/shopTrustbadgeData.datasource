@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="shopTrustbadgeData" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.com.trustedshops.qa.shopTrustbadgeData</TypeInfo>
+   <TypeInfo>SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.com.trustedshops.qa.shopTrustbadgeData, Web References.com.trustedshops.qa.Reference.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>

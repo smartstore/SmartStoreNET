@@ -2,6 +2,45 @@
   <LocaleResource Name="Plugins.FriendlyName.Widgets.TrustedShopsCustomerReviews" AppendRootKey="false">
     <Value>Trusted Shops Customer Reviews</Value>
   </LocaleResource>
+  <LocaleResource Name="Introduction.Headline">
+    <Value>
+      <![CDATA[
+            Trusted Shops is the well-known internet Seal of Approval for online shops which also offers
+            customers a Buyer Protection. During the audit, your online shop is subjected to extensive and
+            thorough tests. This audit, consisting of over 100 individual criteria, is based on the requirements of
+            consumer protection, national and European legislation.
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="Introduction.Body">
+    <Value>
+      <![CDATA[
+        <div style="margin-left:250px; width:600px">
+          
+          <h4>More trust leads to more sales!</h4>
+          <p>
+            The Trusted Shops Seal of Approval is the optimal way to increase the trust of your online customers.
+            Trust increases customers' willingness to buy from you.
+          </p>
+
+          <h4>Less abandoned purchases</h4>
+          <p>
+            Give your online customers a strong reason to buy proposing the Trusted Shops Buyer Protection.
+            This additional security leads to less shopping basket abandonment.
+          </p>
+
+          <h4>Your Customers become Sellers</h4>
+          <p>
+            Use our retailer evaluation with integrated customer opinions as an important marketing tool to
+            increase the trust of your customers. Display your positive evaluation at Google Shopping and
+            increase your traffic.
+          </p>
+          <a href="#" class="btn btn-info">Apply now!</a>
+        </div>
+      ]]>
+  </Value>
+</LocaleResource>
+  
   <LocaleResource Name="AdminInstruction">
     <Value>
       <![CDATA[
@@ -89,5 +128,14 @@
   </LocaleResource>
   <LocaleResource Name="DisplayReviewLinkInEmail.Hint">
     <Value>Determine whether a customer is able to write a review out of the order confirmation mail. To determine the placement of the rating link yourself add the token %TrustedShops.CustomerReviews% to the message template OrderPlaced.CustomerNotification.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Image.Logo">
+    <Value>~/Plugins/Widgets.TrustedShopsCustomerReviews/Content/images/logo_en.jpg</Value>
+  </LocaleResource>
+  <LocaleResource Name="Image.Seal">
+    <Value>~/Plugins/Widgets.TrustedShopsCustomerReviews/Content/images/seal_rating_en.jpg</Value>
+  </LocaleResource>
+  <LocaleResource Name="Prepared">
+    <Value>SmartStore.NET is already well prepared for certification!</Value>
   </LocaleResource>
 </Language>

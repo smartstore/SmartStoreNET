@@ -58,7 +58,7 @@ namespace SmartStore.Web.Framework.Controllers
                     // language is not defined in system or not assigned to store
                     if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.ReturnHttp404)
                     {
-                        filterContext.Result = new RedirectResult("/404");
+                        filterContext.Result = new RedirectResult("~/404");
                     }
                     else if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage)
                     {

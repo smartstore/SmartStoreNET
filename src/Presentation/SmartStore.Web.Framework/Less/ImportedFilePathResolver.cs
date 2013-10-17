@@ -29,7 +29,7 @@ namespace SmartStore.Web.Framework.Less
         }
 
         /// <summary>
-        /// Returns the absolute path for the specified improted file path.
+        /// Returns the absolute path for the specified imported file path.
         /// </summary>
         /// <param name="filePath">The imported file path.</param>
         public string GetFullPath(string filePath)

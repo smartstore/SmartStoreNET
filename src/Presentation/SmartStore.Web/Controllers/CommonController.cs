@@ -177,7 +177,7 @@ namespace SmartStore.Web.Controllers
                         NativeName = GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
                         ISOCode = x.LanguageCulture,
                         SeoCode = x.UniqueSeoCode,
-                        FlagImageFileName = x.FlagImageFileName,
+                        FlagImageFileName = x.FlagImageFileName
                     })
                     .ToList();
                 return result;
@@ -191,20 +191,23 @@ namespace SmartStore.Web.Controllers
                 AvailableLanguages = availableLanguages,
                 UseImages = _localizationSettings.UseImagesForLanguageSelection
             };
-
+            
             string defaultSeoCode = _workContext.GetDefaultLanguageSeoCode();
 
             foreach (var lang in model.AvailableLanguages)
             {
                 var helper = new LocalizedUrlHelper(HttpContext.Request, true);
 
-                if (lang.SeoCode == defaultSeoCode && (int)(_localizationSettings.DefaultLanguageRedirectBehaviour) > 0)
+                if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 {
-                    helper.StripSeoCode();
-                }
-                else
-                {
-                    helper.PrependSeoCode(lang.SeoCode, true);
+                    if (lang.SeoCode == defaultSeoCode && (int)(_localizationSettings.DefaultLanguageRedirectBehaviour) > 0)
+                    {
+                        helper.StripSeoCode();
+                    }
+                    else
+                    {
+                        helper.PrependSeoCode(lang.SeoCode, true);
+                    }
                 }
 
                 model.ReturnUrls[lang.SeoCode] = HttpUtility.UrlEncode(helper.GetAbsolutePath());
@@ -327,6 +330,7 @@ namespace SmartStore.Web.Controllers
             var model = PrepareLanguageSelectorModel();
             return PartialView(model);
         }
+
         [ChildActionOnly]
         public ActionResult Header()
         {

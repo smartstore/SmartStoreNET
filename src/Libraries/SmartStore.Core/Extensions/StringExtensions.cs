@@ -880,7 +880,8 @@ namespace SmartStore
 
         private static bool IsValidHtmlIdCharacter(char c)
         {
-            return (((c != '?') && (c != '!')) && ((c != '#') && (c != '.')) && (c != ' '));
+            bool invalid = (c == '?' || c == '!' || c == '#' || c == '.' || c == ' ' || c == ';' || c == ':');
+            return !invalid;
         }
 
         private static void ReplaceInvalidHtmlIdCharacters(string part, StringBuilder builder)

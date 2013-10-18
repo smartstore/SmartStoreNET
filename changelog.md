@@ -5,6 +5,7 @@
 ###New Features###
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
 * Added the ability to set multiple *favicons* depending on stores and/or themes
+* Plugin management: multiple plugins can now be (un)installed in one go
 * Added a field for the HTML body id to store entity
 * (Developer) New property 'ExtraData' for DiscountRequirement entity
 

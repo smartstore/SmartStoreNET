@@ -52,6 +52,31 @@ SET @resources='
 		<Value>The unique numeric id of the entity</Value>
 		<Value lang="de">Die eindeutige nummerische ID des Datensatzes</Value>
 	</LocaleResource>
+
+	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Install.Confirm">
+		<Value></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Install.Progress">
+		<Value></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Uninstall.Confirm">
+		<Value></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Uninstall.Progress">
+		<Value></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks">
+		<Value>Execute tasks</Value>
+		<Value lang="de">Aufgaben ausführen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks.Confirm">
+		<Value>Do you really want to execute the queued installation tasks?</Value>
+		<Value lang="de">Möchten Sie die anstehenden Installationsaufgaben wirklich ausführen?</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks.Progress">
+		<Value>The installation tasks are being executed. Please wait...</Value>
+		<Value lang="de">Die Installationsaufgaben werden ausgeführt. Bitte warten...</Value>
+	</LocaleResource>
 	
 </Language>
 '

@@ -22,6 +22,7 @@ using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Configuration;
 using System.IO;
 using SmartStore.Services.Stores;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -224,64 +225,51 @@ namespace SmartStore.Admin.Controllers
             var model = PreparePluginListModel();
             return View(model);
         }
-        
-        public ActionResult Install(string systemName)
+
+        [HttpPost]
+        public ActionResult ExecuteTasks(IEnumerable<string> pluginsToInstall, IEnumerable<string> pluginsToUninstall)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
                 return AccessDeniedView();
 
             try
             {
-                var pluginDescriptor = _pluginFinder.GetPluginDescriptors(false)
-                    .Where(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-                    .FirstOrDefault();
-                if (pluginDescriptor == null)
-                    //No plugin found with the specified id
-                    return RedirectToAction("List");
+                int tasksCount = 0;
+                IEnumerable<PluginDescriptor> descriptors = null;
 
-                //check whether plugin is not installed
-                if (pluginDescriptor.Installed)
-                    return RedirectToAction("List");
+                // Uninstall first
+                if (pluginsToUninstall != null && pluginsToUninstall.Any())
+                {
+                    descriptors = _pluginFinder.GetPluginDescriptors(false).Where(x => pluginsToUninstall.Contains(x.SystemName));
+                    foreach (var d in descriptors)
+                    {
+                        if (d.Installed)
+                        {
+                            d.Instance().Uninstall();
+                            tasksCount++;
+                        }
+                    }
+                }
 
-                //install plugin
-                pluginDescriptor.Instance().Install();
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Installed"));
+                // now execute installations
+                if (pluginsToInstall != null && pluginsToInstall.Any())
+                {
+                    descriptors = _pluginFinder.GetPluginDescriptors(false).Where(x => pluginsToInstall.Contains(x.SystemName));
+                    foreach (var d in descriptors)
+                    {
+                        if (!d.Installed)
+                        {
+                            d.Instance().Install();
+                            tasksCount++;
+                        }
+                    }
+                }
 
-                //restart application
-                _webHelper.RestartAppDomain();
-            }
-            catch (Exception exc)
-            {
-                ErrorNotification(exc);
-            }
-             
-            return RedirectToAction("List");
-        }
-
-        public ActionResult Uninstall(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
-                return AccessDeniedView();
-
-            try
-            {
-                var pluginDescriptor = _pluginFinder.GetPluginDescriptors(false)
-                    .Where(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-                    .FirstOrDefault();
-                if (pluginDescriptor == null)
-                    //No plugin found with the specified id
-                    return RedirectToAction("List");
-
-                //check whether plugin is installed
-                if (!pluginDescriptor.Installed)
-                    return RedirectToAction("List");
-
-                //uninstall plugin
-                pluginDescriptor.Instance().Uninstall();
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Uninstalled"));
-
-                //restart application
-                _webHelper.RestartAppDomain();
+                // restart application
+                if (tasksCount > 0)
+                {
+                    _webHelper.RestartAppDomain();
+                }
             }
             catch (Exception exc)
             {

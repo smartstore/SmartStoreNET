@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Blogs;
@@ -910,12 +911,35 @@ namespace SmartStore.Web.Controllers
 
         //favicon
         [ChildActionOnly]
+        [OutputCache(Duration=3600, VaryByCustom="Theme_Store")]
         public ActionResult Favicon()
         {
+            var icons = new string[] 
+            { 
+                "favicon-{0}.ico".FormatInvariant(_storeContext.CurrentStore.Id), 
+                "favicon.ico" 
+            };
+
+            string virtualPath = null;
+
+            foreach (var icon in icons)
+            {
+                virtualPath = Url.ThemeAwareContent(icon);
+                if (virtualPath.HasValue())
+                {
+                    break;
+                }
+            }
+
+            if (virtualPath.IsEmpty())
+            {
+                return Content("");
+            }
+
             var model = new FaviconModel()
             {
-                Uploaded = System.IO.File.Exists(System.IO.Path.Combine(Request.PhysicalApplicationPath, "favicon.ico")),
-                FaviconUrl = _webHelper.GetStoreLocation() + "favicon.ico"
+                Uploaded = true,
+                FaviconUrl = virtualPath
             };
 
             return PartialView(model);

@@ -168,6 +168,38 @@ namespace SmartStore.Web
             }
         }
 
+        public override string GetVaryByCustomString(HttpContext context, string custom)
+        {
+            string result = string.Empty;
+            
+            if (DataSettingsHelper.DatabaseIsInstalled())
+            {
+                custom = custom.ToLower();
+                
+                switch (custom) 
+                {
+                    case "theme":
+                        result = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
+                        break;
+                    case "store":
+                        result = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id.ToString();
+                        break;
+                    case "theme_store":
+                        result = "{0}-{1}".FormatInvariant(
+                            EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName,
+                            EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id.ToString());
+                        break;
+                }
+            }
+
+            if (result.HasValue())
+            {
+                return result;
+            }
+
+            return base.GetVaryByCustomString(context, custom);
+        }
+
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
             // must be at head, because the BizUrlMapper must also handle static html files

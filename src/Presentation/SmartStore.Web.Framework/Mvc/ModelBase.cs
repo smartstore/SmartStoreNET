@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Mvc
@@ -22,6 +23,7 @@ namespace SmartStore.Web.Framework.Mvc
 
     public abstract partial class EntityModelBase : ModelBase
     {
+        [SmartResourceDisplayName("Admin.Common.Entity.Fields.Id")]
         public virtual int Id { get; set; }
     }
 }

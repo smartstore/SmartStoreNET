@@ -44,6 +44,15 @@ SET @resources='
 		<Value lang="de">Bitte verwenden Sie nur Buchstaben, Ziffern, Unterstriche oder Bindestriche. Das erste Zeichen sollte ein Buchstabe sein.</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Admin.Common.Entity.Fields.Id">
+		<Value>ID</Value>
+		<Value lang="de">ID</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Entity.Fields.Id.Hint">
+		<Value>The unique numeric id of the entity</Value>
+		<Value lang="de">Die eindeutige nummerische ID des Datensatzes</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

@@ -4,6 +4,7 @@
 
 ###New Features###
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
+* Added the ability to set multiple *favicons* depending on stores and/or themes
 * Added a field for the HTML body id to store entity
 * (Developer) New property 'ExtraData' for DiscountRequirement entity
 

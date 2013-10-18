@@ -1,0 +1,19 @@
+﻿
+How to specify a favicon for your store
+=======================================================================
+
+SmartStore.NET tries to find an existing icon file by looking up
+pathes in the following order:
+
+1. [Root]/Themes/[CurrentTheme]/favicon-[StoreId].ico
+2. [Root]/favicon-[StoreId].ico
+3. [Root]/Themes/[CurrentTheme]/favicon.ico
+4. [Root]/favicon.ico
+
+The [StoreId] is displayed in 'Admin > Configuration > Stores > {Edit}'.
+
+For the sake of performance, once found, the resulting icon path is cached 
+for the duration of one hour with any [CurrentTheme] and [StoreId] combination.
+So when your new icon is not showing up in the browser, restart the application
+or just be patient ;-)
+

@@ -278,16 +278,7 @@ namespace SmartStore.Services.Tax
         public virtual decimal GetProductPrice(ProductVariant productVariant, decimal price,
             Customer customer, out decimal taxRate)
         {
-            bool includingTax = false;
-            switch (_workContext.TaxDisplayType)
-            {
-                case TaxDisplayType.ExcludingTax:
-                    includingTax = false;
-                    break;
-                case TaxDisplayType.IncludingTax:
-                    includingTax = true;
-                    break;
-            }
+            bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
             return GetProductPrice(productVariant, price, includingTax, customer, out taxRate);
         }
 

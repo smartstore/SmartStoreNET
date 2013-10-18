@@ -41,8 +41,10 @@ namespace SmartStore.Web.Framework
         private readonly ICacheManager _cacheManager;
         private readonly IStoreService _storeService;
 
+        private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
         private Customer _cachedCustomer;
+        private Currency _cachedCurrency;
         private Customer _originalCustomerIfImpersonated; 
 
         public WebWorkContext(ICacheManager cacheManager,
@@ -319,44 +321,61 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-                Currency primaryStoreCurrency = null;
+                if (_cachedCurrency != null)
+                    return _cachedCurrency;
+                
+                Currency currency = null;
                 // return primary store currency when we're in admin area/mode
                 if (this.IsAdmin)
                 {
-                    primaryStoreCurrency =  _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-                    if (primaryStoreCurrency != null)
-                        return primaryStoreCurrency;
+                    currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
                 }
 
-				var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
-				if (allStoreCurrencies.Count > 0)
-				{
-					// find current customer language
-					var customerCurrencyId = this.CurrentCustomer.GetAttribute<int>(
-                        SystemCustomerAttributeNames.CurrencyId,
-						_genericAttributeService, 
-                        _storeContext.CurrentStore.Id);
-					foreach (var currency in allStoreCurrencies)
-					{
-						if (customerCurrencyId == currency.Id)
-						{
-							return currency;
-						}
-					}
-				}
-
-                // codehint: sm-edit
-                primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-                if (primaryStoreCurrency != null && primaryStoreCurrency.Published)
+                if (currency == null)
                 {
-                    return primaryStoreCurrency;
-                }
+                    // find current customer language
+                    var customerCurrencyId = this.CurrentCustomer.GetAttribute<int>(
+                        SystemCustomerAttributeNames.CurrencyId,
+                        _genericAttributeService,
+                        _storeContext.CurrentStore.Id);
 
-				if (allStoreCurrencies.Count > 0)
-					return allStoreCurrencies.FirstOrDefault();
+                    var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
+                    foreach (var cur in allStoreCurrencies)
+                    {
+                        if (customerCurrencyId == cur.Id)
+                        {
+                            currency = cur;
+                            break;
+                        }
+                    }
+
+                    if (currency == null)
+                    {
+                        // codehint: sm-edit
+                        currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+                        if (currency != null && !currency.Published)
+                        {
+                            currency = null;
+                        }
+                    }
+
+                    if (currency == null)
+                    {
+                        if (allStoreCurrencies.Count > 0)
+                        {
+                            currency = allStoreCurrencies.FirstOrDefault();
+                        }
+                    }
+                }
 
 				// if not found in currencies filtered by the current store, then return any currency
-                return _currencyService.GetAllCurrencies().FirstOrDefault();
+                if (currency == null)
+                {
+                    currency = _currencyService.GetAllCurrencies().FirstOrDefault();
+                }
+
+                _cachedCurrency = currency;
+                return _cachedCurrency;
             }
             set
             {
@@ -364,6 +383,8 @@ namespace SmartStore.Web.Framework
 				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
 					SystemCustomerAttributeNames.CurrencyId,
 					currencyId, _storeContext.CurrentStore.Id);
+                _cachedCurrency = null;
+
 			}
         }
 
@@ -389,33 +410,42 @@ namespace SmartStore.Web.Framework
 
         public TaxDisplayType GetTaxDisplayTypeFor(Customer customer, int storeId)
         {
-            if (_taxSettings.AllowCustomersToSelectTaxDisplayType)
+            if (_cachedTaxDisplayType.HasValue)
             {
-                if (customer != null)
-                {
-					int? taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
-
-					if (taxDisplayType.HasValue)
-						return (TaxDisplayType)taxDisplayType.Value;
-                }
+                return _cachedTaxDisplayType.Value;
             }
 
-            var customerRoles = customer.CustomerRoles;
-            string key = string.Format(FrameworkCacheConsumer.CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY, String.Join(",", customerRoles.Select(x => x.Id)), storeId);
-            return _cacheManager.Get(key, () =>
+            int? taxDisplayType = null;
+
+            if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
             {
-                var roleTaxDisplayTypes = customerRoles
-                    .Where(x => x.TaxDisplayType.HasValue)
-                    .OrderByDescending(x => x.TaxDisplayType.Value)
-                    .Select(x => x.TaxDisplayType.Value);
+		        taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
+            }
 
-                if (roleTaxDisplayTypes.Any())
+            if (!taxDisplayType.HasValue)
+            {
+                var customerRoles = customer.CustomerRoles;
+                string key = string.Format(FrameworkCacheConsumer.CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY, String.Join(",", customerRoles.Select(x => x.Id)), storeId);
+                var cacheResult = _cacheManager.Get(key, () =>
                 {
-                    return (TaxDisplayType)roleTaxDisplayTypes.FirstOrDefault();
-                }
+                    var roleTaxDisplayTypes = customerRoles
+                        .Where(x => x.TaxDisplayType.HasValue)
+                        .OrderByDescending(x => x.TaxDisplayType.Value)
+                        .Select(x => x.TaxDisplayType.Value);
 
-                return _taxSettings.TaxDisplayType;
-            });
+                    if (roleTaxDisplayTypes.Any())
+                    {
+                        return (TaxDisplayType)roleTaxDisplayTypes.FirstOrDefault();
+                    }
+
+                    return _taxSettings.TaxDisplayType;
+                });
+
+                taxDisplayType = (int)cacheResult;
+            }
+
+            _cachedTaxDisplayType = (TaxDisplayType)taxDisplayType.Value;
+            return _cachedTaxDisplayType.Value;
         }
 
 		/// <summary>

@@ -130,9 +130,9 @@ namespace SmartStore.Services.Catalog
 
             var tierPrices = productVariant.TierPrices
                 .OrderBy(tp => tp.Quantity)
-                .ToList()
 				.FilterByStore(_storeContext.CurrentStore.Id)
                 .FilterForCustomer(customer)
+                .ToList()
                 .RemoveDuplicatedQuantities();
 
             int previousQty = 1;
@@ -187,7 +187,7 @@ namespace SmartStore.Services.Catalog
                 }
             }
             return minPriceVariant;
-            //previous implementation (compares only Price property but much faster)
+            ////previous implementation (compares only Price property but much faster)
             //var tmp1 = variants.ToList();
             //tmp1.Sort(new GenericComparer<ProductVariant>("Price", GenericComparer<ProductVariant>.SortOrder.Ascending));
             //return tmp1.Count > 0 ? tmp1[0] : null;
@@ -283,6 +283,7 @@ namespace SmartStore.Services.Catalog
             bool includeDiscounts, 
             int quantity)
         {
+            
             //initial price
             decimal result = productVariant.Price;
 

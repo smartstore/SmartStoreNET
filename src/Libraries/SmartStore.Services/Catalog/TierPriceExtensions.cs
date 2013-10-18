@@ -17,23 +17,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="source">Tier prices</param>
 		/// <param name="storeId">Store identifier</param>
 		/// <returns>Filtered tier prices</returns>
-		public static IList<TierPrice> FilterByStore(this IList<TierPrice> source,
-			int storeId)
+        public static IEnumerable<TierPrice> FilterByStore(this IEnumerable<TierPrice> source, int storeId)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
 
-			var result = new List<TierPrice>();
-			foreach (var tierPrice in source)
-			{
-				//check store requirement
-				if (tierPrice.StoreId > 0 && tierPrice.StoreId != storeId)
-					continue;
-
-				result.Add(tierPrice);
-			}
-
-			return result;
+            return source.Where(x => x.StoreId == 0 || x.StoreId == storeId);
 		}
 
         /// <summary>
@@ -42,13 +31,11 @@ namespace SmartStore.Services.Catalog
         /// <param name="source">Tier prices</param>
         /// <param name="customer">Customer</param>
         /// <returns>Filtered tier prices</returns>
-        public static IList<TierPrice> FilterForCustomer(this IList<TierPrice> source,
-            Customer customer)
+        public static IEnumerable<TierPrice> FilterForCustomer(this IEnumerable<TierPrice> source, Customer customer)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
 
-            var result = new List<TierPrice>();
             foreach (var tierPrice in source)
             {
                 //check customer role requirement
@@ -57,24 +44,25 @@ namespace SmartStore.Services.Catalog
                     if (customer == null)
                         continue;
 
-                    var customerRoles = customer.CustomerRoles.Where(cr => cr.Active).ToList();
-                    if (customerRoles.Count == 0)
+                    var customerRoles = customer.CustomerRoles.Where(cr => cr.Active);
+                    if (!customerRoles.Any())
                         continue;
 
                     bool roleIsFound = false;
                     foreach (var customerRole in customerRoles)
+                    {
                         if (customerRole == tierPrice.CustomerRole)
                             roleIsFound = true;
+                    }
 
                     if (!roleIsFound)
                         continue;
 
                 }
 
-                result.Add(tierPrice);
+                yield return tierPrice;
             }
 
-            return result;
         }
 
         /// <summary>
@@ -82,7 +70,7 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="source">Tier prices</param>
         /// <returns>Filtered tier prices</returns>
-        public static IList<TierPrice> RemoveDuplicatedQuantities(this IList<TierPrice> source)
+        public static ICollection<TierPrice> RemoveDuplicatedQuantities(this ICollection<TierPrice> source)
         {
             if (source == null)
                 throw new ArgumentNullException("source");

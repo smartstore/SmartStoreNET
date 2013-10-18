@@ -294,30 +294,37 @@ namespace SmartStore.Web.Controllers
 
             var models = new List<ProductOverviewModel>();
 
+            var permDisplayPrices = _permissionService.Authorize(StandardPermissionProvider.DisplayPrices);
+            var permEnableCart = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart);
+            var permEnableWishlist = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist);
+            var workingCurrency = _workContext.WorkingCurrency;
+            var primaryStoreCurrency = _currencyService.GetCurrencyById(EngineContext.Current.Resolve<CurrencySettings>().PrimaryStoreCurrencyId);
+            var currentCustomer = _workContext.CurrentCustomer;
+            var taxDisplayType = _workContext.GetTaxDisplayTypeFor(currentCustomer, _storeContext.CurrentStore.Id);
+            bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            string taxInfo = (taxDisplayType == TaxDisplayType.IncludingTax)
+                ? _localizationService.GetResource("Tax.InclVAT")
+                : _localizationService.GetResource("Tax.ExclVAT");
+            string shippingInfoLink = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+
             foreach (var product in products)
             {
                 var productVariants = allVariants.Where(x => x.ProductId == product.Id).ToList();
                 //codehint: sm-edit begin
                 decimal? minimalPrice = null;
                 ProductVariant productVariant = null;
-                if (productVariants.Count != 0)
+                if (productVariants.Count > 0)
                 {
-                    productVariant = _priceCalculationService.GetProductVariantWithMinimalPrice(productVariants, _workContext.CurrentCustomer, true, int.MaxValue, out minimalPrice);
+                    productVariant = _priceCalculationService.GetProductVariantWithMinimalPrice(productVariants, currentCustomer, true, int.MaxValue, out minimalPrice);
                 }
 
                 if (productVariant == null)
                     continue;
 
-                string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
-                    ? _localizationService.GetResource("Tax.InclVAT")
-                    : _localizationService.GetResource("Tax.ExclVAT");
-
-                string shippingInfoLink = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-
                 string weight = "";
                 weight = productVariant.Weight > 0 ? "{0} {1}".FormatCurrent(productVariant.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : "";
 
-                var addShippingPrice = _currencyService.ConvertFromPrimaryStoreCurrency(productVariant.AdditionalShippingCharge, _workContext.WorkingCurrency);
+                var addShippingPrice = _currencyService.ConvertCurrency(productVariant.AdditionalShippingCharge, primaryStoreCurrency, workingCurrency);
                 string additionalShippingCosts = "";
                 if (addShippingPrice > 0)
                 {
@@ -388,8 +395,8 @@ namespace SmartStore.Web.Controllers
                             break;
                         default:
                             {
-
-                                if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
+                                #region DisplayPrices
+                                if (permDisplayPrices)
                                 {
                                     //calculate for the maximum quantity (in case if we have tier prices)
                                     //codehint: sm-edit begin
@@ -408,11 +415,11 @@ namespace SmartStore.Web.Controllers
                                         {
                                             //calculate prices
                                             decimal taxRate = decimal.Zero;
-                                            decimal oldPriceBase = _taxService.GetProductPrice(productVariant, productVariant.OldPrice, out taxRate);
-                                            decimal finalPriceBase = _taxService.GetProductPrice(productVariant, minimalPrice.Value, out taxRate);
+                                            decimal oldPriceBase = _taxService.GetProductPrice(productVariant, productVariant.OldPrice, includingTax, currentCustomer, out taxRate);
+                                            decimal finalPriceBase = _taxService.GetProductPrice(productVariant, minimalPrice.Value, includingTax, currentCustomer, out taxRate);
 
-                                            decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
-                                            decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, _workContext.WorkingCurrency);
+                                            decimal oldPrice = _currencyService.ConvertCurrency(oldPriceBase, primaryStoreCurrency, workingCurrency);
+                                            decimal finalPrice = _currencyService.ConvertCurrency(finalPriceBase, primaryStoreCurrency, workingCurrency);
 
                                             //do we have tier prices configured?
                                             var tierPrices = new List<TierPrice>();
@@ -420,9 +427,9 @@ namespace SmartStore.Web.Controllers
                                             {
                                                 tierPrices.AddRange(productVariant.TierPrices
                                                     .OrderBy(tp => tp.Quantity)
+                                                    .FilterByStore(_storeContext.CurrentStore.Id)
+                                                    .FilterForCustomer(currentCustomer)
                                                     .ToList()
-													.FilterByStore(_storeContext.CurrentStore.Id)
-                                                    .FilterForCustomer(_workContext.CurrentCustomer)
                                                     .RemoveDuplicatedQuantities());
                                             }
                                             bool displayFromMessage =
@@ -457,6 +464,7 @@ namespace SmartStore.Web.Controllers
                                         }
                                     }
                                 }
+                                #endregion
                                 else
                                 {
                                     //hide prices
@@ -485,13 +493,13 @@ namespace SmartStore.Web.Controllers
                                 //only one variant
                                 //codehint: sm-edit
                                 //var productVariant = productVariants[0];
-                                priceModel.DisableBuyButton = productVariant.DisableBuyButton || !_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart);
-                                if (!_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
+                                priceModel.DisableBuyButton = productVariant.DisableBuyButton || !permEnableCart;
+                                if (!permDisplayPrices)
                                 {
                                     priceModel.DisableBuyButton = true;
                                 }
                                 //codehint: sm-add
-                                priceModel.DisableWishListButton = productVariant.DisableWishlistButton || !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist);
+                                priceModel.DisableWishListButton = productVariant.DisableWishlistButton || !permEnableWishlist;
 
                                 priceModel.AvailableForPreOrder = productVariant.AvailableForPreOrder;
                             }
@@ -2542,9 +2550,9 @@ namespace SmartStore.Web.Controllers
 
             var model = variant.TierPrices
                 .OrderBy(x => x.Quantity)
-                .ToList()
 				.FilterByStore(_storeContext.CurrentStore.Id)
                 .FilterForCustomer(_workContext.CurrentCustomer)
+                .ToList()
                 .RemoveDuplicatedQuantities()
                 .Select(tierPrice =>
                 {

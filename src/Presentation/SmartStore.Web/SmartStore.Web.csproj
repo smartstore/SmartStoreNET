@@ -646,6 +646,7 @@
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
+    <Content Include="favicon.readme.txt" />
     <Content Include="Media\default-avatar.jpg" />
     <Content Include="Media\default-image.jpg" />
     <Content Include="Media\Thumbs\placeholder.txt" />

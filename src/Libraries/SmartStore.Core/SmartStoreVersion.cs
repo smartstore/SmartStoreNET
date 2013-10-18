@@ -8,6 +8,7 @@ namespace SmartStore.Core
 {
     public static class SmartStoreVersion
     {
+        private static readonly Version s_infoVersion = new Version("1.0.0.0");
         private static readonly Version s_version = Assembly.GetExecutingAssembly().GetName().Version;
         private static readonly List<Version> s_breakingChangesHistory = new List<Version> 
         { 
@@ -22,6 +23,13 @@ namespace SmartStore.Core
         static SmartStoreVersion()
         {
             s_breakingChangesHistory.Reverse();
+
+            // get informational version
+            var infoVersionAttr = Assembly.GetExecutingAssembly().GetAttribute<AssemblyInformationalVersionAttribute>(false);
+            if (infoVersionAttr != null)
+            {
+                s_infoVersion = new Version(infoVersionAttr.InformationalVersion);
+            }   
         }
 
         /// <summary>
@@ -31,7 +39,7 @@ namespace SmartStore.Core
         {
             get
             {
-                return "{0}.{1}".FormatInvariant(s_version.Major, s_version.Minor);
+                return "{0}.{1}".FormatInvariant(s_infoVersion.Major, s_infoVersion.Minor);
             }
         }
 
@@ -42,8 +50,7 @@ namespace SmartStore.Core
         {
             get
             {
-                //return s_version.ToString();
-                return "1.2.1.0"; // TODO: (MC) read it from attribute
+                return s_infoVersion.ToString();
             }
         }
 
@@ -51,7 +58,8 @@ namespace SmartStore.Core
         {
             get
             {
-                return s_version;
+                //return s_version;
+                return s_infoVersion; // MC: (???)
             }
         }
 

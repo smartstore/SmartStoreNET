@@ -27,9 +27,6 @@ namespace SmartStore.Web.Framework
         {
             get
             {
-                //do not cache resources because it causes issues when you have multiple languages
-                //if (!_resourceValueRetrived)
-                //{
                 string value = null;
                 var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
                 value = EngineContext.Current.Resolve<ILocalizationService>()
@@ -41,10 +38,6 @@ namespace SmartStore.Web.Framework
                 }
 
                 return value;
-
-                //    _resourceValueRetrived = true;
-                //}
-                //return _resourceValue;
             }
         }
 

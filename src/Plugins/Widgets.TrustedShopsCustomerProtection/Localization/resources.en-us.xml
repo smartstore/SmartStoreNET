@@ -98,6 +98,133 @@
     <Value>Trusted Shops Seal of Approval - click to verify.</Value>
   </LocaleResource>
 
+  <LocaleResource Name="ProtectionMode">
+    <Value>Protection mode</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Classic">
+    <Value>Classic</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence">
+    <Value>Excellence</Value>
+  </LocaleResource>
+  <LocaleResource Name="SealTitle">
+    <Value>Trusted Shops Seal of Approval - Click to verify.</Value>
+  </LocaleResource>
+  <LocaleResource Name="RegistrationText">
+    <Value>We offer you the Trusted Shops Buyer Protection as an additional service. We cover all costs for this guarantee. All you have to do is register!</Value>
+  </LocaleResource>
+  <LocaleResource Name="ButtonText">
+    <Value>Register for Trusted Shops Buyer Protection</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="CheckLogin">
+    <Value>Check login</Value>
+  </LocaleResource>
+  <LocaleResource Name="GetProtectionItems">
+    <Value>Get Trusted Shops protection items</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="CheckLoginSuccess">
+    <Value>Your login data is valid!</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Error.-10001">
+    <Value>Web service login or TS-ID invalid</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10002">
+    <Value>The shop's credit limit has been suspended by Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10003">
+    <Value>Order number already used</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10004">
+    <Value>Unsupported Buyer Protection product</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10005">
+    <Value>Inactive payment method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10006">
+    <Value>Unsupported payment method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10007">
+    <Value>The currency of the Buyer Protection product does not match with the currency of the shopping basket</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10008">
+    <Value>This currency is not supported in this shop</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10009">
+    <Value>This exchange rate is not supported</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10010">
+    <Value>This payment method is not supported</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10011">
+    <Value>No credit limit available for this certificate</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10012">
+    <Value>The delivery date is in the past</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10013">
+    <Value>The guarantee is for a purchase that was made over 3 days ago</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10014">
+    <Value>The email address contains an error</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10015">
+    <Value>No order number was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10016">
+    <Value>No customer number was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10017">
+    <Value>The credit limit for this certificate has been exceeded</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10018">
+    <Value>No email address was assigned</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10019">
+    <Value>Non-applicable Buyer Protection product</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-10010L">
+    <Value>The order date is in the future</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-11001">
+    <Value>Invalid security token</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.-11111">
+    <Value>General system error, please contact Trusted Shops</Value>
+  </LocaleResource>
+  <LocaleResource Name="Error.Heading">
+    <Value>The following error occured: </Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Error.MissingParams">
+    <Value>Please enter a value for every field.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Title">
+    <Value>Trusted Shops Buyer Protection (recommended)</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Name">
+    <Value>Buyer protection up to {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.Description">
+    <Value>
+      <![CDATA[
+        The Trusted Shops Buyer Protection secures your online purchase. I agree to my email
+        address being transferred and <a href="http://www.trustedshops.com/shop/data_privacy.php?shop_id={0}" target="_blank">save</a> for the purposes of Buyer Protection processing by
+        Trusted Shops. <a href="http://www.trustedshops.com/shop/protection_conditions.php?shop_id={0}" target="_blank">Conditions</a> for Buyer Protection.
+      ]]>
+    </Value>
+  </LocaleResource>
+  <LocaleResource Name="ProtectionMode.Excellence.Public.ButtonText">
+    <Value>Add protection to basket</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="TrustedShopsProduct.Description">
+    <Value>Guarantee duration {0} days. Guarantee amount {1}</Value>
+  </LocaleResource>
+
 
   <LocaleResource Name="ProtectionMode">
     <Value>Protection mode</Value>

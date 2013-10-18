@@ -1,5 +1,5 @@
 ﻿FriendlyName: Trusted Shops Buyer Protection
-SystemName: Widgets.TrustedShopsBuyerProtection
+SystemName: Widgets.TrustedShopsCustomerProtection
 Version: 1.00
 MinAppVersion: 1.2
 DisplayOrder: 1

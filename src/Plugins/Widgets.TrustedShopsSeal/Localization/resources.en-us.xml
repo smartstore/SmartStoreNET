@@ -77,7 +77,7 @@
     <Value>Please enter the name of the shop here, as it'll be shown within the widget.</Value>
   </LocaleResource>
   <LocaleResource Name="ShopText">
-    <Value>Descritive text</Value>
+    <Value>Descriptive text</Value>
   </LocaleResource>
   <LocaleResource Name="ShopText.Hint">
     <Value>Please enter a descriptive text, as it'll be shown within the widget.</Value>

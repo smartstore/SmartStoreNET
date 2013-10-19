@@ -9,9 +9,6 @@ namespace SmartStore.Web.Framework
 {
     public class SmartResourceDisplayName : System.ComponentModel.DisplayNameAttribute, IModelAttribute
     {
-        //private string _resourceValue = string.Empty;
-        //private bool _resourceValueRetrived;
-
         private readonly string _callerPropertyName;
 
         public SmartResourceDisplayName(string resourceKey, [CallerMemberName] string propertyName = null)

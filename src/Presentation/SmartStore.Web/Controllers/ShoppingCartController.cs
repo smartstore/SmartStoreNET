@@ -1038,24 +1038,10 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            ////display notification message and update appropriate blocks
-            //var updatetopcartsectionhtml = string.Format("({0})",
-            //     _workContext
-            //     .CurrentCustomer
-            //     .ShoppingCartItems
-            //     .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-            //     .ToList()
-            //     .GetTotalProducts());
-            //var updateflyoutcartsectionhtml = _shoppingCartSettings.MiniShoppingCartEnabled
-            //    ? this.RenderPartialViewToString("FlyoutShoppingCart", PrepareMiniShoppingCartModel())
-            //    : "";
-
             return Json(new
             {
                 success = true,
-                message = string.Format(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart.Link"), Url.RouteUrl("ShoppingCart")),
-                //updatetopcartsectionhtml = updatetopcartsectionhtml,
-                //updateflyoutcartsectionhtml = updateflyoutcartsectionhtml,
+                message = string.Format(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart.Link"), Url.RouteUrl("ShoppingCart"))
             });
 
         }

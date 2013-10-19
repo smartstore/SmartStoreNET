@@ -14,39 +14,51 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("product-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+@Html.SmartStore().TabStrip().Name("product-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
 {
     x.Add().Text(T("Admin.Catalog.Products.Info").Text)
-           .Content(TabInfo())
-           .Selected(true);
+        .Content(TabInfo())
+        .Icon("icon-pencil")
+        .Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text)
-           .Content(TabSeo());
+        .Icon("icon-signal")
+        .Content(TabSeo());
     if (Model.Id > 0)
     {
         x.Add().Text(T("Admin.Catalog.Products.Variants").Text)
-               .Content(TabVariants())
-               .Badge(Model.ProductVariantModels.Count.ToString(), BadgeStyle.Default, Model.ProductVariantModels.Count > 0);
+            .Icon("icon-circle-blank")
+            .Content(TabVariants())
+            .Badge(Model.ProductVariantModels.Count.ToString(), BadgeStyle.Default, Model.ProductVariantModels.Count > 0);
     }
     else
     {
         x.Add().Text(T("Admin.Catalog.Products.FirstVariant").Text)
-               .Content(TabFirstVariantInfo());
+            .Content(TabFirstVariantInfo());
     }
     x.Add().Text(T("Admin.Catalog.Products.Categories").Text)
-           .Content(TabCategories());
+        .Icon("icon-sitemap")
+        .Content(TabCategories());
     x.Add().Text(T("Admin.Catalog.Products.Manufacturers").Text)
-           .Content(TabManufacturers());
+        .Icon("icon-truck")
+        .Content(TabManufacturers());
     x.Add().Text(T("Admin.Catalog.Products.RelatedProducts").Text)
-           .Content(TabRelatedProducts());
+        .Icon("icon-link")
+        .Content(TabRelatedProducts());
     x.Add().Text(T("Admin.Catalog.Products.CrossSells").Text)
-           .Content(TabCrossSells());
+        .Icon("icon-bullhorn")
+        .Content(TabCrossSells());
     x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
-           .Content(TabPictures());
+        .Icon("icon-picture")
+        .Content(TabPictures());
     x.Add().Text(T("Admin.Catalog.Products.SpecificationAttributes").Text)
-           .Content(TabSpecificationAttributes());
+        .Icon("icon-reorder")
+        .Content(TabSpecificationAttributes());
     x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
-           .Content(TabAcl());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+        .Icon("icon-group")
+        .Content(TabAcl());
+	x.Add().Text(T("Admin.Common.Stores").Text)
+        .Icon("icon-globe")    
+        .Content(TabStores());
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));

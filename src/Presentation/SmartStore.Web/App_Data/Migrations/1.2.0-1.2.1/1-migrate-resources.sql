@@ -77,6 +77,14 @@ SET @resources='
 		<Value>The installation tasks are being executed. Please wait...</Value>
 		<Value lang="de">Die Installationsaufgaben werden ausgeführt. Bitte warten...</Value>
 	</LocaleResource>
+
+	<LocaleResource Name="Admin.Common.SEO">
+		<Value></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.SEO">
+		<Value>Search engines (SEO)</Value>
+		<Value lang="de">Suchmaschinen (SEO)</Value>
+	</LocaleResource>
 	
 </Language>
 '

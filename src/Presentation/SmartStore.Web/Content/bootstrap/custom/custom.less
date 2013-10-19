@@ -273,10 +273,19 @@ input[type="color"],
 
 // add icon support to nav tabs and pills
 .nav > li > a > img,
-.nav > li > a > [class^="icon-"], 
-.nav > li > a > [class*=" icon-"] {
+.nav > li > a > [class^="icon-"] {
 	vertical-align: baseline;
 	margin-right: 4px;
+    color: @grayLight;
+}
+
+.nav > li > a:hover > [class^="icon-"], 
+.nav > li.active > a > [class^="icon-"] {
+    color: @textColor;
+}
+
+.tabs-left .nav > li > a > [class^="icon-"] {
+    min-width: 16px;
 }
 
 // make nav pills look nicer

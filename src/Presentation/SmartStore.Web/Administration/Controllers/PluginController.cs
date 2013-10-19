@@ -184,14 +184,14 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected PluginListModel PreparePluginListModel()
+        protected LocalPluginsModel PrepareLocalPluginsModel()
         {
             var plugins = _pluginFinder.GetPluginDescriptors(false)
                 .OrderBy(p => p.Group, PluginFileParser.KnownGroupComparer)
                 .ThenBy(p => p.DisplayOrder)
                 .Select(x => PreparePluginModel(x));
 
-            var model = new PluginListModel();
+            var model = new LocalPluginsModel();
 
             var groupedPlugins = from p in plugins
                                  group p by p.Group into g
@@ -222,7 +222,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
                 return AccessDeniedView();
 
-            var model = PreparePluginListModel();
+            var model = PrepareLocalPluginsModel();
             return View(model);
         }
 

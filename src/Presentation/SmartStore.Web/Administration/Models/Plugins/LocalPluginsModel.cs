@@ -10,10 +10,10 @@ using SmartStore.Collections;
 namespace SmartStore.Admin.Models.Plugins
 {
 
-    public class PluginListModel : ModelBase
+    public class LocalPluginsModel : ModelBase
     {
 
-        public PluginListModel()
+        public LocalPluginsModel()
         {
             this.Groups = new Multimap<string, PluginModel>();
         }
@@ -23,7 +23,7 @@ namespace SmartStore.Admin.Models.Plugins
         /// </summary>
         public Multimap<string, PluginModel> Groups { get; set; }
 
-        public ICollection<PluginModel> AllPlugins 
+        public ICollection<PluginModel> AllPlugins
         {
             get
             {

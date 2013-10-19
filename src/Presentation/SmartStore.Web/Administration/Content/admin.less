@@ -1080,41 +1080,70 @@ table.order-edit td {
 
 /* PLUGINS */
 
-#plugins-tab .plugins-table {	
-	thead > tr {
-		font-size: 16px; 
-		color: #bbb;
-	}
-	tr.uninstalled {
-		background-color: #fcfcfc;
-	}
-	td.cell-icon {
-		text-align: center;
-		width: 48px;
-		min-width: 48px;
-		max-width: 48px;
-		.icon { max-width: 48px; }
-	}
-	td.cell-data {
-		width: 60%;
-		.plugin-name { font-weight: bold }
-		.attr-value { color: #bbb; }
-	}
-	td.cell-data .plugin-data {	
-		margin-top: 2px;
-	}
-	td.cell-data .plugin-description {	
-		margin: 4px 0;
-	}
-	td.cell-data .plugin-actions {
-		margin-top: 6px;
-		[class^="icon-"] { color: #bbb }
-		.plugin-action-link { display: inline-block; margin-right: 10px }
-	}
-	td.cell-install {
-		width: 40%;
-		vertical-align: middle;
-	}
+.plugins-group h3 {
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Helvetica, Arial; 
+    font-weight: 600;
+    color: inherit; 
+    font-size: 18px;
+}
+
+.plugins-table {
+    thead > tr {
+        font-size: 16px;
+        color: #bbb;
+    }
+
+    tr.uninstalled {
+        background-color: #fcfcfc;
+    }
+
+    td.cell-icon {
+        text-align: center;
+        width: 48px;
+        min-width: 48px;
+        max-width: 48px;
+
+        .icon {
+            max-width: 48px;
+        }
+    }
+
+    td.cell-data {
+        width: 50%;
+
+        .plugin-name {
+            font-weight: bold;
+        }
+
+        .attr-value {
+            color: #bbb;
+        }
+    }
+
+        td.cell-data .plugin-data {
+            margin-top: 2px;
+        }
+
+        td.cell-data .plugin-description {
+            margin: 4px 0;
+        }
+
+        td.cell-data .plugin-actions {
+            margin-top: 6px;
+
+            [class^="icon-"] {
+                color: #bbb;
+            }
+
+            a {
+                margin-right: 10px;
+            }
+        }
+
+    td.cell-install {
+        width: 50%;
+        vertical-align: middle;
+    }
 }
 
 /* Special icons */

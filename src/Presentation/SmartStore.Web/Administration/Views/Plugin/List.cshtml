@@ -1,4 +1,4 @@
-﻿@model PluginListModel
+﻿@model LocalPluginsModel
 @using SmartStore.Web.Framework.UI;
 @{    
     //page title
@@ -18,6 +18,7 @@
             @T("Admin.Configuration.Plugins")
         </div>
         <div class="options">
+            @Html.TextBox("filter-query", "", new { style = "margin: 0", placeholder = T("Common.Search").Text })
             <button id="btn-execute-tasks" type="submit" class="btn" disabled="disabled">
                 <i class="icon-cogs"></i>
                 @T("Admin.Configuration.Plugins.ExecuteTasks")
@@ -31,36 +32,31 @@
         </div>
     </div>
     
-    <table class="adminContent">
+    <div class="alert alert-info fade in">
+        <button class="close" data-dismiss="alert">x</button>
+        <p style="font-weight: bold">@T("Admin.Configuration.Plugins.Description")</p>
+        <ol>
+            <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
+            <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
+            <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
+            <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
+            <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
+        </ol>
+    </div>
+    
+    <table class="adminContent" id="local-plugins">
         <tr>
             <td>
-                <div class="alert alert-info fade in">
-                    <button class="close" data-dismiss="alert">x</button>
-                    <p style="font-weight: bold">@T("Admin.Configuration.Plugins.Description")</p>
-                    <ol>
-                        <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
-                        <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
-                        <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
-                        <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
-                        <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
-                    </ol>
-                </div>
     
-                @Html.SmartStore().TabStrip().Name("plugins-tab").Position(TabsPosition.Left).Items(x =>
-           {
-               bool isFirst = true;
-               Model.Groups.Each(g =>
-               {
-                   var tab = x.Add().Text(g.Key)
-                               .Content(PluginList(g.Value))
-                               .Badge(g.Value.Count.ToString(), BadgeStyle.Info, g.Value.Count > 0);
-                   if (isFirst)
-                   {
-                       tab.Selected(true);
-                   }
-                   isFirst = false;
-               });
-           })
+                @foreach (var g in Model.Groups)
+                {
+                    <div class="plugins-group">
+                        <h3 class="group-title">
+                            @g.Key
+                        </h3>
+                        @PluginList(g.Value)
+                    </div>
+                }
 
                 <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
             </td>
@@ -70,20 +66,12 @@
     @helper PluginList(IEnumerable<PluginModel> plugins)
 {  
         <table class="table plugins-table">
-
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th style="width: 60%">@T("Common.Plugin")</th>
-                    <th>@T("Admin.Configuration.Plugins.Fields.Installation")</th>
-                </tr>
-            </thead>
             
             <tbody>
 
             @foreach (var plugin in plugins)
             {
-                <tr @Html.Attr("class", "uninstalled", !plugin.Installed)>
+                <tr class='plugin-item@(!plugin.Installed ? " uninstalled" : "")' data-system-name="@plugin.SystemName" data-friendly-name="@plugin.FriendlyName">
                     <td class="cell-icon">
                         <img class="icon" src='@Url.Content(plugin.IconUrl)' />
                     </td>
@@ -120,29 +108,25 @@
                         }
 
                         <div class="plugin-actions">
-							<div class="plugin-action-link">
-								<i class="icon-edit"></i>
-								<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
-									@T("Admin.Common.Edit")
-								</a>
-							</div>
+
+							<i class="icon-edit"></i>
+							<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
+								@T("Admin.Common.Edit")
+							</a>
+
                             @if (plugin.ConfigurationUrl.HasValue())
                             {
-							<div class="plugin-action-link">
                                 <i class="icon-cog"></i>
                                 <a class="plugin-configure" href="@plugin.ConfigurationUrl">
                                     @T("Admin.Configuration.Plugins.Fields.Configure")
                                 </a>
-							</div>
                             }
                             @if (plugin.Installed)
                             {
-							<div class="plugin-action-link">
                                 <i class="icon-refresh"></i>
                                 <a class="plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
                                     @T("Admin.Configuration.Plugins.Resources.Update")
                                 </a>								
-							</div>
                             }
                         </div>
 
@@ -184,6 +168,40 @@
                 dropdownUninstall = $('#pluginsToUninstall'),
                 btnExecuteTasks = $('#btn-execute-tasks');
 
+            // Execute filtering
+            $('#filter-query').on('keyup', function (e) {
+                var el = $(this);
+
+                // Retrieve the input field text and reset the count to zero
+                var filter = el.val(),
+                    rg = new RegExp(filter, "i");
+
+                // Loop through the plugin items
+                $('.plugins-group').each(function () {
+                    var group = $(this),
+                        count = 0;
+
+                    group.find('.plugin-item').each(function () {
+                        // If the list item does not contain the text phrase hide it
+                        if (filter.length > 1 && $(this).data('system-name').search(rg) < 0 && $(this).data('friendly-name').search(rg) < 0) {
+                            $(this).hide();
+                        }
+                        // Show the list item if the phrase matches and increase the count by 1
+                        else {
+                            $(this).show();
+                            count++;
+                        }
+                    });
+
+                    if (count > 0) {
+                        group.show();
+                    }
+                    else {
+                        group.hide();
+                    }
+                });
+            });
+
             // Create tooltip for  ExecuteTasks button which informs 
             // about plugins to be installed and uninstalled
             btnExecuteTasks.tooltip({
@@ -212,12 +230,12 @@
             });
 
             // Add/Remove plugins to/from the list of (un)installable plugins
-            $('#plugins-tab').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
+            $('#plugins-form').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
                 e.preventDefault();
 
                 var el = $(this),
                     systemName = el.parent().data('system-name'),
-                    dropdown = null;             
+                    dropdown = null;
 
                 if (el.hasClass("plugin-install")) {
                     dropdown = dropdownInstall;
@@ -276,27 +294,29 @@
             });
 
             // Update plugin resources
-        	$('#plugins-tab').on('click', 'a.plugin-update-resources', function (e) {
+            $('#plugins-form').on('click', 'a.plugin-update-resources', function (e) {
+                e.preventDefault();
                 var el = $(this);
 
-        	    var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
+                var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
                     progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
 
-                if (!confirm(_.str.unescapeHTML(confirmText).format(el.parent().data('plugin-name')))) {
-                    return false;
-                }
+        	    if (!confirm(_.str.unescapeHTML(confirmText).format(el.parent().data('plugin-name')))) {
+        	        return false;
+        	    }
 
-                e.preventDefault();
-                $.throbber.show({
-                    message: progressText,
-                    callback: function () {
-                        setLocation($(e.currentTarget).attr("href"));
-                    }
-                });
+        	    e.preventDefault();
+        	    $.throbber.show({
+        	        message: progressText,
+        	        callback: function () {
+        	            console.log(el.attr("href"));
+        	            setLocation(el.attr("href"));
+        	        }
+        	    });
 
-            });
+        	});
 
-            $('#plugins-tab').on('click', '.plugin-edit', function (e) {
+            $('#plugins-form').on('click', '.plugin-edit', function (e) {
                 OpenWindow(
                     '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
                         '@Url.Content("~/Admin/Plugin/EditPopup")',

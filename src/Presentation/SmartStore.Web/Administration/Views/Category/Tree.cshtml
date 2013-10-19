@@ -1,9 +1,7 @@
 ﻿@model IList<SmartStore.Core.Domain.Catalog.Category>
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Services.Catalog;
-@{
-    var categoryService = EngineContext.Current.Resolve<SmartStore.Services.Catalog.ICategoryService>();
-    
+@{   
     //page title
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
 }
@@ -13,7 +11,7 @@
         @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToListView") + ")", "List")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
 <table class="adminContent">

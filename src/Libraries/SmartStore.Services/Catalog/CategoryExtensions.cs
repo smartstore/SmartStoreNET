@@ -57,6 +57,19 @@ namespace SmartStore.Services.Catalog
             return null;
         }
 
+		/// <remarks>codehint: sm-add</remarks>
+		public static string GetFullCategoryName(this Category category)
+		{
+			if (category != null)
+			{
+				if (category.Alias.HasValue())
+					return "{0} ({1})".FormatWith(category.Name, category.Alias);
+				else
+					return category.Name;
+			}
+			return null;
+		}
+
         public static string GetCategoryNameWithPrefix(this Category category, ICategoryService categoryService)
         {
             string result = string.Empty;
@@ -64,9 +77,10 @@ namespace SmartStore.Services.Catalog
             while (category != null)
             {
                 if (String.IsNullOrEmpty(result))
-                    result = category.Name;
+					result = category.GetFullCategoryName();	// codehint: sm-edit
                 else
                     result = "--" + result;
+
                 category = categoryService.GetCategoryById(category.ParentCategoryId);
             }
             return result;
@@ -78,13 +92,13 @@ namespace SmartStore.Services.Catalog
 
             while (category != null && !category.Deleted)
             {
+				// codehint: sm-edit
                 if (String.IsNullOrEmpty(result))
-                    result = category.Name;
+                    result = category.GetFullCategoryName();
                 else
-                    result = category.Name + " >> " + result;
+					result = category.GetFullCategoryName() + " >> " + result;
 
                 category = categoryService.GetCategoryById(category.ParentCategoryId);
-
             }
             return result;
         }

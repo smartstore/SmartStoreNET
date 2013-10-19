@@ -57,7 +57,6 @@ namespace SmartStore.Services.Catalog
             return null;
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static string GetFullCategoryName(this Category category)
 		{
 			if (category != null)
@@ -77,7 +76,7 @@ namespace SmartStore.Services.Catalog
             while (category != null)
             {
                 if (String.IsNullOrEmpty(result))
-					result = category.GetFullCategoryName();	// codehint: sm-edit
+                    result = category.GetFullCategoryName();
                 else
                     result = "--" + result;
 

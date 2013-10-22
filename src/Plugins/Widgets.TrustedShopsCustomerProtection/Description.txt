@@ -1,7 +1,0 @@
-﻿FriendlyName: Trusted Shops Buyer Protection
-SystemName: Widgets.TrustedShopsCustomerProtection
-Version: 1.00
-MinAppVersion: 1.2
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.dll
-ResourceRootKey: Plugins.Widgets.TrustedShopsCustomerProtection

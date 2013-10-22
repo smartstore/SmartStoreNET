@@ -1,7 +1,7 @@
 ﻿FriendlyName: Customer has all of these product variants in the cart
 SystemName: DiscountRequirement.HasAllProducts
-Version: 1.11
-MinAppVersion: 1.2
+Version: 1.12
+MinAppVersion: 1.2.1
 DisplayOrder: 1
 FileName: SmartStore.Plugin.DiscountRules.HasAllProducts.dll
 ResourceRootKey: Plugins.DiscountRules.HasAllProducts

@@ -1,8 +1,0 @@
-﻿FriendlyName: SOFORT Überweisung
-SystemName: Payments.Sofortueberweisung
-Version: 1.3
-MinAppVersion: 1.2
-Author: SmartStore AG
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Payments.Sofortueberweisung.dll
-ResourceRootKey: Plugins.Payments.Sofortueberweisung

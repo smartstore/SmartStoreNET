@@ -1,7 +1,0 @@
-﻿FriendlyName: Trusted Shops Customer Reviews
-SystemName: Widgets.TrustedShopsCustomerReviews
-Version: 1.00
-MinAppVersion: 1.2
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.dll
-ResourceRootKey: Plugins.Widgets.TrustedShopsCustomerReviews

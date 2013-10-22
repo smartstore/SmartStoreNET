@@ -63,15 +63,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.Prepayment", "Plugins\Payments.Prepayment\SmartStore.Plugin.Payments.Prepayment.csproj", "{5B378AAD-5E5D-441D-9824-30A2995BCA68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.Sofortueberweisung", "Plugins\Payments.Sofortueberweisung\SmartStore.Plugin.Payments.Sofortueberweisung.csproj", "{FD6D6857-6D2F-490A-8017-CACBB5030118}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Misc.WebServices", "Plugins\Misc.WebServices\SmartStore.Plugin.Misc.WebServices.csproj", "{E9253D76-D037-4C53-9B91-EC6EB7EE1A2C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.SMS.Clickatell", "Plugins\SMS.Clickatell\SmartStore.Plugin.SMS.Clickatell.csproj", "{E3362B5B-DA5A-4515-BCB0-0DF982F80E89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Feed.Froogle", "Plugins\Feed.Froogle\SmartStore.Plugin.Feed.Froogle.csproj", "{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Feed.ElmarShopinfo", "Plugins\Feed.ElmarShopinfo\SmartStore.Plugin.Feed.ElmarShopinfo.csproj", "{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.ExternalAuth.OpenId", "Plugins\ExternalAuth.OpenId\SmartStore.Plugin.ExternalAuth.OpenId.csproj", "{A10220DE-A72B-4FDB-A1F8-E5C111657088}"
 EndProject
@@ -112,10 +108,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C0A5A9
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsSeal", "Plugins\Widgets.TrustedShopsSeal\SmartStore.Plugin.Widgets.TrustedShopsSeal.csproj", "{DD12934F-62E5-4A12-858A-82B2F17EA1D4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews", "Plugins\Widgets.TrustedShopsCustomerReviews\SmartStore.Plugin.Widgets.TrustedShopsCustomerReviews.csproj", "{94282A97-176B-4813-B3E6-AD435AC44E01}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection", "Plugins\Widgets.TrustedShopsCustomerProtection\SmartStore.Plugin.Widgets.TrustedShopsCustomerProtection.csproj", "{C33D99D8-B428-4DB9-BC56-35505D68A0B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -327,16 +319,6 @@ Global
 		{5B378AAD-5E5D-441D-9824-30A2995BCA68}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5B378AAD-5E5D-441D-9824-30A2995BCA68}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5B378AAD-5E5D-441D-9824-30A2995BCA68}.Release|x86.ActiveCfg = Release|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FD6D6857-6D2F-490A-8017-CACBB5030118}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9253D76-D037-4C53-9B91-EC6EB7EE1A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9253D76-D037-4C53-9B91-EC6EB7EE1A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9253D76-D037-4C53-9B91-EC6EB7EE1A2C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -367,16 +349,6 @@ Global
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Release|x86.ActiveCfg = Release|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{A10220DE-A72B-4FDB-A1F8-E5C111657088}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A10220DE-A72B-4FDB-A1F8-E5C111657088}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A10220DE-A72B-4FDB-A1F8-E5C111657088}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -507,26 +479,6 @@ Global
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4}.Release|x86.ActiveCfg = Release|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{94282A97-176B-4813-B3E6-AD435AC44E01}.Release|x86.ActiveCfg = Release|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -553,7 +505,6 @@ Global
 		{A284F47B-9DAF-4475-BB79-7A418EECC01D} = {83983F89-88C0-4EDD-9F11-C33D8CB64B2B}
 		{83235353-0D04-4028-82B2-81116E7361DA} = {83983F89-88C0-4EDD-9F11-C33D8CB64B2B}
 		{5B378AAD-5E5D-441D-9824-30A2995BCA68} = {83983F89-88C0-4EDD-9F11-C33D8CB64B2B}
-		{FD6D6857-6D2F-490A-8017-CACBB5030118} = {83983F89-88C0-4EDD-9F11-C33D8CB64B2B}
 		{5B956174-04FA-4E95-AA00-3736630FEEFB} = {32A863AA-B05C-4FF7-9024-CF0AF278E04F}
 		{36261AB6-2FD4-4BDA-A941-AF4CC18C21E5} = {32A863AA-B05C-4FF7-9024-CF0AF278E04F}
 		{C4FFB99C-8A99-47E2-B863-3586AE2CF9C9} = {32A863AA-B05C-4FF7-9024-CF0AF278E04F}
@@ -562,7 +513,6 @@ Global
 		{A10220DE-A72B-4FDB-A1F8-E5C111657088} = {B9803B1B-6798-45A1-BDAA-5C8AA181B4D6}
 		{446FED73-BCA1-4D8F-BC13-EA1507C7EF29} = {B9803B1B-6798-45A1-BDAA-5C8AA181B4D6}
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D} = {2759D748-6E7B-449E-8369-5F910670F976}
-		{A556E354-2D04-42CD-BA26-1D9EA7D79DA7} = {2759D748-6E7B-449E-8369-5F910670F976}
 		{E9253D76-D037-4C53-9B91-EC6EB7EE1A2C} = {419140B0-A90E-47F0-8ADB-697BE532725C}
 		{E3362B5B-DA5A-4515-BCB0-0DF982F80E89} = {419140B0-A90E-47F0-8ADB-697BE532725C}
 		{ACC1E122-B2C8-4441-BDED-D4A77763331A} = {8B84F0CD-726D-45D0-8EB5-09BC4ED5BCB0}
@@ -573,8 +523,6 @@ Global
 		{A999F243-C752-4430-9AF6-8FCE281C9C20} = {252FB086-B3DA-4645-9DC1-40DC1BC82FD5}
 		{C2B83AF5-80F6-4B8C-8628-FA7DE10C3BB5} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4} = {80D551E6-D959-413D-8470-8B02C1A122B7}
-		{94282A97-176B-4813-B3E6-AD435AC44E01} = {80D551E6-D959-413D-8470-8B02C1A122B7}
-		{C33D99D8-B428-4DB9-BC56-35505D68A0B7} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

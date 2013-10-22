@@ -1,7 +1,7 @@
 ﻿FriendlyName: Fixed Rate Shipping
 SystemName: Shipping.FixedRate
-Version: 1.1
-MinAppVersion: 1.2
+Version: 1.2
+MinAppVersion: 1.2.1
 DisplayOrder: 1
 FileName: SmartStore.Plugin.Shipping.FixedRateShipping.dll
 ResourceRootKey: Plugins.Shipping.FixedRateShipping

@@ -17,6 +17,7 @@
 * #127: Redirection to 404 failed with localized urls when shop ran under virtual application paths
 * #128: _Switch language_ in store failed when SEO friendly urls were disabled
 * #134: Fix mobile checkout
+* #111: Send wishlist via e-mail doesn't work
 
 ###Improvements###
 * #97: Product numbers of attribute combinations could not be searched

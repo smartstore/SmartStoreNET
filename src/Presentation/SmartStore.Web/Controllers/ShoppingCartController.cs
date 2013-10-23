@@ -2525,6 +2525,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //If we got this far, something failed, redisplay form
+            ModelState.AddModelError("", _localizationService.GetResource("Common.Error.Sendmail"));
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage;
             return View(model);
         }

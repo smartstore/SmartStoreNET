@@ -16,6 +16,7 @@
 * #121: Categories restricted to specific stores could also show up in other stores.* #125: Widget Trusted Shops Customer Reviews can not be configured
 * #127: Redirection to 404 failed with localized urls when shop ran under virtual application paths
 * #128: _Switch language_ in store failed when SEO friendly urls were disabled
+* #134: Fix mobile checkout
 
 ###Improvements###
 * #97: Product numbers of attribute combinations could not be searched

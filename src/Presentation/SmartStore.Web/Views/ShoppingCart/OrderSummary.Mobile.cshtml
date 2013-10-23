@@ -153,16 +153,18 @@
                 @Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
                 @if (Model.IsEditable)
                 {
-                    if (Model.TermsOfServiceEnabled)
+                    @*if (Model.TermsOfServiceEnabled)
                     {
                     <div class="terms-of-service">
                         <input id="termsofservice" type="checkbox" name="termsofservice" />
                         <label for="termsofservice">@T("Checkout.TermsOfService.IAccept")</label>
                     </div>
                     }
+                    *@
                     <div class="checkout-buttons">
                         @if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
                         {
+                            @*
                             <script type="text/javascript">
                                 $(document).ready(function () {
                                     $('#checkout').click(function () {
@@ -185,8 +187,8 @@
                                         }
                                     });
                                 });
-                            </script>
-                            <input type="submit" name="checkout" value="@T("Checkout.Button")" id="checkout" onclick="javascript: startcheckout()" />
+                            </script>*@
+                            <input type="submit" name="checkout" value="@T("Checkout.Button")" id="checkout" onclick="$('#startcheckout').trigger('click'); return false;" />
                         }
                     </div>
                 }

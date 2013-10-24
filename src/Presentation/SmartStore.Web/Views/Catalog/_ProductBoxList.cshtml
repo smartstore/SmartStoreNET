@@ -202,9 +202,9 @@
                 <div class="pull-left quicklinks">
                     @if (!Model.ProductPrice.DisableWishListButton)
                     {
-                        <a data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                        <a class="ajax-cart-link" 
+                            data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                             href="#"
-                            class="ajax-cart-link"
                             data-form-selector="#product-details-form"
                             data-type="wishlist"
                             data-action="add">
@@ -214,7 +214,11 @@
                     }
                     @if (Model.CompareEnabled)
                     {
-                        <a href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.Id })">
+                        <a class="ajax-cart-link"
+                            data-href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.Id })"
+                            href="#"
+                            data-type="compare"
+                            data-action="add">
                             <i class="icon-retweet"></i>
                             @T("Categories.Compare")
                         </a>

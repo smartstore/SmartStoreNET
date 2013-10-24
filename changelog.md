@@ -23,6 +23,7 @@
 * #97: Product numbers of attribute combinations could not be searched
 * #120: Excel product import: The same product pictures were imported repeatedly which led to duplicate pictures.
 * Info pages for all Trusted Shops widgets 
+* Better display and handling when choosing a flag for languages
 
 
 ##SmartStore.NET 1.2.0.0#

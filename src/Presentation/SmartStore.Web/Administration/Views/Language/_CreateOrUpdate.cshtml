@@ -71,9 +71,11 @@
             <div id="pnlAllFlags" style="display: none">
                 @foreach (var fileName in Model.FlagFileNames)
                 {
-                    <img alt="" src="@Url.Content("~/Content/Images/flags/" + fileName)"/>
-                    @fileName
-                    <text>, </text>
+                    <a href="javascript: void(0)" class="flag" data-filename="@fileName">
+                        <img alt="" src="@Url.Content("~/Content/Images/flags/" + fileName)"/>
+                        @fileName
+                        <text>, </text>
+                    </a>
                 }
             </div>
         </td>
@@ -115,7 +117,11 @@
 
     		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
 
-        	toggleStoreMapping();
+    	    toggleStoreMapping();
+
+    	    $("#pnlAllFlags a.flag").click(function () {
+    	        $("#FlagImageFileName").val($(this).data("filename"));
+    	    });
         });
 
 

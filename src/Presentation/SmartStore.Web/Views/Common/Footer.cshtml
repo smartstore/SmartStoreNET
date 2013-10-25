@@ -62,7 +62,7 @@
                             <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofUse" })">@T("ConditionsOfUse")</a></li>
                             @if (Model.Topics.ContainsKey("paymentinfo"))
                             {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })">@Model.Topics["paymentinfo"]</a></li>
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })">@T("Paymentinfo")</a></li>
                             }
                         </ul>
                     </nav>
@@ -73,11 +73,11 @@
                             <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a> </li>
                             <li><a href="@Url.RouteUrl("Topic", new { SystemName = "aboutus" })">@T("AboutUs")</a></li>
                             @if (Model.Topics.ContainsKey("imprint")) {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@Model.Topics["imprint"]</a></li>
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@T("Imprint")</a></li>
                             }
                             @if (Model.Topics.ContainsKey("disclaimer"))
                             {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@Model.Topics["disclaimer"]</a></li>
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@T("Disclaimer")</a></li>
                             }
                             @if (Model.BlogEnabled)
                             {

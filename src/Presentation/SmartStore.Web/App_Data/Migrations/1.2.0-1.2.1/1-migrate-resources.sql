@@ -86,6 +86,21 @@ SET @resources='
 		<Value lang="de">Suchmaschinen (SEO)</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Imprint">
+		<Value>Imprint</Value>
+		<Value lang="de">Impressum</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Disclaimer">
+		<Value>Disclaimer</Value>
+		<Value lang="de">Rechtshinweise</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Paymentinfo">
+		<Value>Payment info</Value>
+		<Value lang="de">Zahlungsarten</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

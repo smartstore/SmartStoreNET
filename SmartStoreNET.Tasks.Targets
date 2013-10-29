@@ -43,7 +43,8 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>1.2.0</Version>
+		<Version>1.2.1</Version>
+		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
 		<ZipFileSuffix>.Web</ZipFileSuffix>
@@ -168,10 +169,10 @@
   
 	<Target Name="Package-Zip">
 		<ItemGroup>
-			<Zip-Stage Include="$(StageFolder)\**\*" />
+			<Zip-Files Include="$(ZipDirectory)\**\*" />
 		</ItemGroup>
 		
-		<Zip Files="@(Zip-Stage)" WorkingDirectory="$(StageFolder)" ZipFileName="$(BuildFolder)\SmartStoreNET$(ZipFileSuffix)$(ZipVersionFileSuffix).zip" />
+		<Zip Files="@(Zip-Files)" WorkingDirectory="$(ZipDirectory)" ZipFileName="$(BuildFolder)\SmartStoreNET$(ZipFileSuffix)$(ZipVersionFileSuffix).zip" />
 	</Target>
 	
 	<!-- Testing -->

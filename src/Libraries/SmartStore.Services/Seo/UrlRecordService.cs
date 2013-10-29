@@ -146,7 +146,7 @@ namespace SmartStore.Services.Seo
         /// <param name="languageId">Language identifier</param>
         /// <returns>Found slug</returns>
         public virtual string GetActiveSlug(int entityId, string entityName, int languageId)
-        {
+        {   
             string key = string.Format(URLRECORD_ACTIVE_BY_ID_NAME_LANGUAGE_KEY, entityId, entityName, languageId);
             return _cacheManager.Get(key, () =>
             {

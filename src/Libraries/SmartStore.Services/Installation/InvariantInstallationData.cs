@@ -4347,7 +4347,8 @@ namespace SmartStore.Services.Installation
                     FileUploadMaximumSizeBytes = 1024 * 200, //200KB
                     ManufacturersBlockItemsToDisplay = 5,
 					DisplayAllImagesNumber = 6,	// codehint: sm-add
-                    ShowColorSquaresInLists = true
+                    ShowColorSquaresInLists = true,
+                    ShowDiscountSign = true
                 },
                 new LocalizationSettings()
                 {

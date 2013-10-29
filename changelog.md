@@ -4,6 +4,8 @@
 
 ###New Features###
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
+* Items in product lists can be labelled as _NEW_ for a configurable period of time
+* Product templates can optionally display a _discount sign_ when discounts were applied
 * Added the ability to set multiple *favicons* depending on stores and/or themes
 * Plugin management: multiple plugins can now be (un)installed in one go
 * Added a field for the HTML body id to store entity
@@ -22,6 +24,8 @@
 ###Improvements###
 * #97: Product numbers of attribute combinations could not be searched
 * #120: Excel product import: The same product pictures were imported repeatedly which led to duplicate pictures.
+* Updated _FontAwesome_ to version 3.2.1
+* Minor CSS fixes
 * Info pages for all Trusted Shops widgets 
 * Better display and handling when choosing a flag for languages
 

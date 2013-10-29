@@ -839,20 +839,37 @@ form.form-search {
 	text-align: center;
 }
 .item-box .name {
-	font-family: inherit;
-	font-weight: normal;
-	font-size: inherit; 
-	line-height: inherit; 
-	color: inherit;  
-	overflow: hidden;
-	margin-bottom: 0.3em;
+    font-family: inherit;
+    font-weight: normal;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    overflow: hidden;
+    margin-bottom: 0.3em;
     margin-top: 0;
-	a {
-		font-weight: bold;
-		text-decoration: none;
-		color: inherit; //#555;
-		&:hover { color: darken(@textColor, 12%) }
-	}
+
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        color: inherit; //#555;
+        &:hover {
+            color: darken(@textColor, 12%);
+        }
+
+        > span {
+            vertical-align: middle;
+        }
+
+        // Label 'IsNew' for products
+        .label.label-isnew {
+            font-size: 10px;
+            line-height: 10px;
+            font-weight: normal;
+            text-shadow: none;
+            text-transform: uppercase;
+                
+        }
+    }
 }
 .item-box.details .name {
     margin-top: 10px;
@@ -972,6 +989,11 @@ form.form-search {
 	.base-price {
 		.smaller();
 	}
+}
+
+.label-discount-sign {
+    font-weight: normal;
+    vertical-align: text-bottom;
 }
 
 
@@ -3259,3 +3281,4 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
     margin: 0 0 10px 0;
     display: none;
 }
+

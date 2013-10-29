@@ -607,3 +607,17 @@ BEGIN
 	ALTER TABLE Store ADD HtmlBodyId nvarchar(50) NULL
 END
 GO
+
+-- CatalogSettings.LabelAsNewForMaxDays
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'CatalogSettings.LabelAsNewForMaxDays')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'CatalogSettings.LabelAsNewForMaxDays', N'', 0)
+END
+
+-- CatalogSettings.ShowDiscountSign
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'CatalogSettings.ShowDiscountSign')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'CatalogSettings.ShowDiscountSign', N'True', 0)
+END

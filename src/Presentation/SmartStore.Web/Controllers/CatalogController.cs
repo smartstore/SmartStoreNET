@@ -369,9 +369,17 @@ namespace SmartStore.Web.Controllers
                     DisplayBasePrice = _catalogSettings.ShowBasePriceInProductLists,
                     BasePriceInfo = productVariant.GetBasePriceInfo(_localizationService, _priceFormatter),
                     DefaultProductVariantId = (productVariant == null ? 0 : productVariant.Id),
-                    CompareEnabled = _catalogSettings.CompareProductsEnabled
+                    CompareEnabled = _catalogSettings.CompareProductsEnabled,
                     //codehint: sm-add end
                 };
+
+
+                // IsNew
+                if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
+                {
+                    model.IsNew = (DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value;
+                }
+
                 //price
                 if (preparePriceModel)
                 {
@@ -432,6 +440,8 @@ namespace SmartStore.Web.Controllers
                                                     .ToList()
                                                     .RemoveDuplicatedQuantities());
                                             }
+                                            priceModel.ShowDiscountSign = _catalogSettings.ShowDiscountSign;
+                                            priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero;
                                             bool displayFromMessage =
                                                 //When there is just one tier (with  qty 1), there are no actual savings in the list.
                                                 (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices[0].Quantity <= 1)) ||
@@ -444,7 +454,7 @@ namespace SmartStore.Web.Controllers
                                             }
                                             else
                                             {
-                                                if (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero)
+                                                if (priceModel.HasDiscount)
                                                 {
                                                     priceModel.OldPrice = _priceFormatter.FormatPrice(oldPrice);
                                                     priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
@@ -2682,26 +2692,12 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        //recently added products
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult RecentlyAddedProducts(CatalogPagingFilteringModel command)
         {
 
-            //codehint: Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen
-            //codehint: sm-edit
+            //codehint: sm-edit (Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen)
             var model = new RecentlyAddedProductsModel();
-            //var model = new List<ProductOverviewModel>();
-
-            // codehint: sm-add begin
-            //if (command.PageNumber <= 0) command.PageNumber = 1;
-
-            //PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
-            //{
-            //    AllowCustomersToSelectPageSize = _catalogSettings.RecentlyAddedProductsAllowCustomersToSelectPageSize,
-            //    PageSize = _catalogSettings.RecentlyAddedProductsNumber,
-            //    PageSizeOptions = _catalogSettings.RecentlyAddedProductsPageSizeOptions
-            //});
-            // codehint: sm-add end
 
             if (_catalogSettings.RecentlyAddedProductsEnabled)
             {

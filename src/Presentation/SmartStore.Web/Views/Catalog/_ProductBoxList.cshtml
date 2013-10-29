@@ -57,9 +57,15 @@
     }
 </div>
 <div style="margin-left:@leftContentWidth">
-    <div class="data">
+    <div class="data">  
         <h3 class="name">
-            <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.Name">@Model.Name</a>
+            <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.Name">
+                @if (Model.IsNew)
+                {
+                    <span class="label label-isnew">@T("Common.New")</span>
+                } 
+                <span>@Model.Name</span>
+            </a>
         </h3>
         @if (Model.ShortDescription.HasValue()) 
         {
@@ -164,11 +170,15 @@
                     @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
                     {
                         <p class="old-product-price">
-                            <span class="prefix">@T("Products.Price.OldPrice")<text>:</text></span>
+                            <span class="prefix">@T("Products.Price.OldPrice"):</span>
                             <span class="price">@Model.ProductPrice.OldPrice</span>
                         </p>
                     }
                     <p class="product-price">
+                        @if (Model.ProductPrice.ShowDiscountSign && Model.ProductPrice.HasDiscount)
+                        {
+                            <span class="label label-important label-discount-sign">%</span>
+                        }
                         <span class="price text-success">@Model.ProductPrice.Price</span>
                     </p>
                 </div>

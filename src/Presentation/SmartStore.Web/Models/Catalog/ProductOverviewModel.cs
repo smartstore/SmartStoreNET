@@ -51,6 +51,7 @@ namespace SmartStore.Web.Models.Catalog
         public string BasePriceInfo { get; set; }
 		public int DefaultProductVariantId { get; set; }
         public bool CompareEnabled { get; set; }
+        public bool IsNew { get; set; }
         //codehint: sm-add end
 
         //price
@@ -69,6 +70,10 @@ namespace SmartStore.Web.Models.Catalog
             public string OldPrice { get; set; }
 
             public string Price {get;set;}
+
+            public bool HasDiscount { get; set; }
+
+            public bool ShowDiscountSign { get; set; }
 
             public bool DisableBuyButton { get; set; }
 

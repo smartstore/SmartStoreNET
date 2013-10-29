@@ -17,7 +17,12 @@
     }
     <h3 class="name" data-equalized-part="name">
         <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@nameTitle">
-            @name</a>
+            @if (Model.IsNew)
+            {
+                <span class="label label-isnew">@T("Common.New")</span>
+            } 
+            <span>@name</span>
+        </a>
     </h3>
     <div class="prices" data-equalized-part="prices">
         <div class="text-success product-price"><span class="price">@Model.ProductPrice.Price</span></div>

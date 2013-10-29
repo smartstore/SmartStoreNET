@@ -86,6 +86,33 @@ SET @resources='
 		<Value lang="de">Suchmaschinen (SEO)</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Common.New">
+		<Value>New</Value>
+		<Value lang="de">Neu</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays">
+		<Value>Label product as "new" for max. [x] days</Value>
+		<Value lang="de">Produkt als "neu" kennzeichnen für max. [x] Tage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays.Hint">
+		<Value>Specifies the number of days that a "NEW" label should be displayed in the product list. Leave the field blank to disable this feature.</Value>
+		<Value lang="de">Legt die Anzahl Tage fest, die das Produkt in der Liste mit einer "NEU"-Kennzeichnung versehen werden soll. Lassen Sie das Feld leer, um die Funktion zu deaktivieren.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign">
+		<Value>Show discount sign</Value>
+		<Value lang="de">Rabattzeichen anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign.Hint">
+		<Value>Specifies whether a discount sign ("%") should be displayed next to the final price when discounts were applied</Value>
+		<Value lang="de">Legt fest, ob ein Rabattzeichen ("%") neben dem Endpreis angezeigt werden soll, wenn Rabatte angewendet wurden.</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Common.Navigation">
+		<Value>Navigation</Value>
+		<Value lang="de">Navigation</Value>
+	</LocaleResource>
+	
 	<LocaleResource Name="Imprint">
 		<Value>Imprint</Value>
 		<Value lang="de">Impressum</Value>

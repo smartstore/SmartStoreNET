@@ -173,6 +173,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
         public string DefaultViewMode { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays")]
+        public int? LabelAsNewForMaxDays { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDiscountSign")]
+        public bool ShowDiscountSign { get; set; }
+
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
     }
 }

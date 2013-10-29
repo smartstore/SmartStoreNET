@@ -89,7 +89,13 @@
         }
     }
     <h3 class="name" data-equalized-part="name">
-        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@nameTitle">@name</a>
+        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@nameTitle">
+            @if (Model.IsNew)
+            {
+                <span class="label label-isnew">@T("Common.New")</span>
+            } 
+            <span>@name</span>
+        </a>
     </h3>
     @{
         string desc = null, descTitle = null;
@@ -118,8 +124,6 @@
                 <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
             }
             
-        } else {
-            <text>&nbsp;</text>
         }
     </div>
     }
@@ -132,6 +136,10 @@
             </p>
         }
         <p class="product-price">
+            @if (Model.ProductPrice.ShowDiscountSign && Model.ProductPrice.HasDiscount)
+            {
+                <span class="label label-important label-discount-sign">%</span>
+            }
             <span class="price text-success">@Model.ProductPrice.Price</span>
         </p>
 

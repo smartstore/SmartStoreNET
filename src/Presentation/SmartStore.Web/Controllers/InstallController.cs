@@ -245,7 +245,6 @@ namespace SmartStore.Web.Controllers
         public async Task<JsonResult> Install(InstallModel model)
         {
             var result = await InstallCore(model);
-            //var r = Task.Run<InstallationResult>(() => InstallCore(model));
             return Json(result);
         }
 

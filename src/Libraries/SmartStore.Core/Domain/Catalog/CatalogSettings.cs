@@ -254,6 +254,10 @@ namespace SmartStore.Core.Domain.Catalog
 
         public bool ShowColorSquaresInLists { get; set; }
 
+        public int? LabelAsNewForMaxDays { get; set; }
+
+        public bool ShowDiscountSign { get; set; }
+
         //codehint: sm-add end
 
         /// <summary>

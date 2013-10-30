@@ -2862,6 +2862,12 @@
 	<LocaleResource Name="Admin.Common.Edit">
 		<Value>Bearbeiten</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Entity.Fields.Id">
+		<Value>ID</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Entity.Fields.Id.Hint">
+		<Value>Die eindeutige nummerische ID des Datensatzes</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExcelFile">
 		<Value>Excel-Datei</Value>
 	</LocaleResource>
@@ -2956,7 +2962,7 @@
 		<Value>Suchen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.SEO">
-		<Value>Suchmaschinenoptimierung (SEO)</Value>
+		<Value>Suchmaschinen (SEO)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Settings">
 		<Value>Einstellungen</Value>
@@ -3900,6 +3906,15 @@
 	<LocaleResource Name="Admin.Configuration.Plugins.EditDetails">
 		<Value>Plugin Details bearbeiten</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks">
+		<Value>Aufgaben ausführen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks.Confirm">
+		<Value>Möchten Sie die anstehenden Installationsaufgaben wirklich ausführen?</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ExecuteTasks.Progress">
+		<Value>Die Installationsaufgaben werden ausgeführt. Bitte warten...</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Author">
 		<Value>Autor</Value>
 	</LocaleResource>
@@ -3927,12 +3942,6 @@
 	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Install">
 		<Value>Installieren</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Install.Confirm">
-		<Value>Soll das Plugin "{0}" wirklich instaliert werden?</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Install.Progress">
-		<Value>Plugin wird installiert...</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Installation">
 		<Value>Installation</Value>
 	</LocaleResource>
@@ -3950,12 +3959,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Uninstall">
 		<Value>Deinstallieren</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Uninstall.Confirm">
-		<Value>Soll das Pugin "{0} wirklich deinstalliert werden?</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Uninstall.Progress">
-		<Value>Deinstalliere Plugin...</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Fields.Version">
 		<Value>Version</Value>
@@ -4155,6 +4158,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts.Hint">
 		<Value>Legt fest, ob beim Produktvergleich die Kurzbeschreibung angezeigt werden soll.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays">
+		<Value>Produkt als "neu" kennzeichnen für max. [x] Tage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays.Hint">
+		<Value>Legt die Anzahl Tage fest, die das Produkt in der Liste mit einer "NEU"-Kennzeichnung versehen werden soll. Lassen Sie das Feld leer, um die Funktion zu deaktivieren.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay">
 		<Value>Anzahl der anzuzeigenen Hersteller</Value>
 	</LocaleResource>
@@ -4352,6 +4361,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDimensions.Hint">
 		<Value>Zeigt die Maße des Produktes an.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign">
+		<Value>Rabattzeichen anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign.Hint">
+		<Value>Legt fest, ob ein Rabattzeichen ("%") neben dem Endpreis angezeigt werden soll, wenn Rabatte angewendet wurden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowGtin">
 		<Value>EAN anzeigen</Value>
@@ -4876,7 +4891,7 @@
 		<Value>Legt die Seitengröße für Themen im Forum fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.General.Common.Captcha.Hint">
-		<Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit.</Value>
+		<Value>CAPTCHAs werden verwendet, damit man entscheiden kann, ob das Gegenüber ein Mensch oder eine Maschine ist. In der Regel macht man dies, um zu prüfen, ob Eingaben in Internetformulare über Menschen oder Maschinen (Roboter, kurz Bot) erfolgt sind, weil Roboter hier oft missbräuchlich eingesetzt werden. CAPTCHAs dienen also der Sicherheit. reCaptcha Konten können über http://www.google.com/recaptcha angelegt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon">
 		<Value>Allgemeine Einstellungen</Value>
@@ -6111,6 +6126,15 @@
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts.Hint">
 		<Value>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId">
+		<Value>ID des HTML-Body</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Hint">
+		<Value>Emöglicht es, individuelles CSS und Javascript für einen Shop zu verwenden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Validation">
+		<Value>Bitte verwenden Sie nur Buchstaben, Ziffern, Unterstriche oder Bindestriche. Das erste Zeichen sollte ein Buchstabe sein.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.Name">
 		<Value>Shop-Name</Value>
 	</LocaleResource>
@@ -6193,7 +6217,7 @@
 		<Value>Themes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Author">
-		<Value>Author</Value>
+		<Value>Autor</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.AvailableDesktopThemes">
 		<Value>Verfügbare Desktop Themes</Value>
@@ -6835,7 +6859,7 @@
 		<Value>Die Umfrage wurde erfolgreich aktualisiert.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics">
-		<Value>Seiten</Value>
+		<Value>Seiten &amp; Inhalte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Added">
 		<Value>Eine neue Seite wurde erfolgreich hinzugefügt</Value>
@@ -8478,8 +8502,8 @@
 	<LocaleResource Name="Admin.Orders.OrderNotes.Fields.Note">
 		<Value>Notiz</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Orders.PdfInvoice">
-		<Value>Rechnung als PDF</Value>
+	<LocaleResource Name="admin.orders.pdfinvoice">
+		<Value>Bestellbestätigung als PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products">
 		<Value>Produkte</Value>
@@ -9673,7 +9697,7 @@
 		<Value>Nach dem eine Aufgabe verändert wurde, ist ein Neustart erforderlich.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.Seconds">
-		<Value>Sekunden (Laufzeit)</Value>
+		<Value>Sekunden (Intervall)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.Seconds.Positive">
 		<Value>Sekunden dürfen nicht negativ sein.</Value>
@@ -9722,6 +9746,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.SystemInfo.ASPNETInfo.Hint">
 		<Value>ASP.NET Info</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.SystemInfo.DatabaseSize">
+		<Value>Größe der Datenbank</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.SystemInfo.DatabaseSize.Hint">
+		<Value>Die Anzahl an Megabytes, die die Datenbank auf der Server-Festplatte in Anspruch nimmt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.SystemInfo.HTTPHOST">
 		<Value>HTTP_HOST</Value>
@@ -10545,6 +10575,12 @@
 	<LocaleResource Name="Common.Month">
 		<Value>Monat</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Navigation">
+		<Value>Navigation</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.New">
+		<Value>Neu</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.No">
 		<Value>Nein</Value>
 	</LocaleResource>
@@ -10721,6 +10757,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Customer.Guest">
 		<Value>Gast</Value>
+	</LocaleResource>
+	<LocaleResource Name="Disclaimer">
+		<Value>Rechtshinweise</Value>
 	</LocaleResource>
 	<LocaleResource Name="DownloadableProducts.Fields.Date">
 		<Value>Datum</Value>
@@ -11050,7 +11089,7 @@
 		<Value>Teilweise geliefert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Shipping.ShippingStatus.Shipped">
-		<Value>Geliefert</Value>
+		<Value>Versandt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Shipping.ShippingStatus.ShippingNotRequired">
 		<Value>Versand nicht erforderlich</Value>
@@ -11083,28 +11122,28 @@
 		<Value>Gültig</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.DropoffType.BusinessServiceCenter">
-		<Value>Service-Center</Value>
+		<Value>Business Service Center</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.DropoffType.DropBox">
-		<Value>Packstation</Value>
+		<Value>Drop Box</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.DropoffType.RegularPickup">
 		<Value>Normale Abholung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.DropoffType.RequestCourier">
-		<Value>Kurier-Anforderung</Value>
+		<Value>Kurier</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.DropoffType.Station">
-		<Value>Packstation</Value>
+		<Value>Pack-Station</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.PackingType.PackByDimensions">
-		<Value>Nach Abmessungen verpacken</Value>
+		<Value>Nach Abmessungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.PackingType.PackByOneItemPerPackage">
-		<Value>Jeden Artikel einzeln verpacken</Value>
+		<Value>Ein Artikel pro Paket</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Plugin.Shipping.Fedex.PackingType.PackByVolume">
-		<Value>Nach Volumen verpacken</Value>
+		<Value>Nach Volumen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Services.Payments.RecurringPaymentType.Automatic">
 		<Value>Automatisch</Value>
@@ -11132,6 +11171,18 @@
 	</LocaleResource>
 	<LocaleResource Name="ExampleOfNestedResources.Childred2.Childred3">
 		<Value>Resource name will be 'ExampleOfNestedResources.Childred2.Childred3'</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts">
+		<Value>Positions-Rabatte berücktichtigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts.Hint">
+		<Value>Wenn aktiv, ist der Vergleichswert die Warenkorbsumme abzüglich aller Positions-Rabatte.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.LimitToCurrentBasketSubTotal">
+		<Value>Bezogen auf Warenkorb-Zwischensumme</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
+		<Value>Legt fest, ob sich der angegebene Betrag auf die Zwischensumme im aktuellen Warenkorb oder - wenn inaktiv - auf die Summe aller zuvor vom Kunden getätigten Bestellungen bezieht.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Filtering.FilterResults">
 		<Value>Ergebnisfilterung</Value>
@@ -11472,6 +11523,9 @@
 	<LocaleResource Name="HomePage.Products">
 		<Value>Empfohlene Produkte</Value>
 	</LocaleResource>
+	<LocaleResource Name="Imprint">
+		<Value>Impressum</Value>
+	</LocaleResource>
 	<LocaleResource Name="Information">
 		<Value>Informationen</Value>
 	</LocaleResource>
@@ -11587,7 +11641,7 @@
 		<Value>Download</Value>
 	</LocaleResource>
 	<LocaleResource Name="Messages.Order.Product(s).Name">
-		<Value>Name</Value>
+		<Value>Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Messages.Order.Product(s).Price">
 		<Value>Preis</Value>
@@ -11724,8 +11778,8 @@
 	<LocaleResource Name="Order.Fax">
 		<Value>Fax</Value>
 	</LocaleResource>
-	<LocaleResource Name="Order.GetPDFInvoice">
-		<Value>Rechnung als PDF</Value>
+	<LocaleResource Name="order.getpdfinvoice">
+		<Value>Bestellbestätigung als PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.GiftCardInfo">
 		<Value>Geschenkgutschein ({0})</Value>
@@ -12063,6 +12117,9 @@
 	<LocaleResource Name="Payment.SelectCreditCard">
 		<Value>Wähle Kreditkarte aus</Value>
 	</LocaleResource>
+	<LocaleResource Name="Paymentinfo">
+		<Value>Zahlungsarten</Value>
+	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Address">
 		<Value>Strasse: {0}</Value>
 	</LocaleResource>
@@ -12091,7 +12148,7 @@
 		<Value>Inhaber: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Footer.AccountNumber">
-		<Value>Inhaber: {0}</Value>
+		<Value>Kontonummer: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Footer.Bankcode">
 		<Value>Bankleitzahl: {0}</Value>
@@ -12249,81 +12306,6 @@
 	<LocaleResource Name="PDFProductCatalog.Weight">
 		<Value>Gewicht</Value>
 	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.ApiKey">
-		<Value>MailChimp API Key</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.AutoSync">
-		<Value>AutoSync-Aufgabe aktivieren</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.AutoSyncEachMinutes">
-		<Value>AutoSync Intervall (Minuten)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.AutoSyncRestart">
-		<Value>Die AutoSync Intervall Änderung tritt erst nach einem Neustart der Anwendung in Kraft.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.DefaultListId">
-		<Value>Voreinstellung MailChimp Liste</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.ManualSync">
-		<Value>Manuelles Sync</Value>
-	</LocaleResource>
-	<LocaleResource Name="plugin.misc.mailchimp.manualsync.hint">
-		<Value>Manuell synchronisieren der SmartStore.NET Newsletter-Abonnenten mit der Mail-Chimp-Datenbank.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.QueueAll">
-		<Value>Initial Queue</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.QueueAll.Hint">
-		<Value>Bestehende Newsletter Abonnenten in Warteschlange aufnehmen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugin.Misc.MailChimp.WebHookKey">
-		<Value>WebHooks Key</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Billiger.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Billiger.Store.Hint">
-		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Billiger.SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.Store.Hint">
-		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Froogle.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Froogle.Store.Hint">
-		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Froogle.SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Guenstiger.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Guenstiger.Store.Hint">
-		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Guenstiger.SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Shopwahl.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Shopwahl.Store.Hint">
-		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Feed.Shopwahl.SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Plugins.KnownGroup.Admin">
 		<Value>Administration</Value>
 	</LocaleResource>
@@ -12383,66 +12365,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Plugins.KnownGroup.Widget">
 		<Value>Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.CashOnDelivery.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.CashOnDelivery.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.CheckMoneyOrder.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.CheckMoneyOrder.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.DirectDebit.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.Invoice.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.Invoice.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.PayInStore.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.PayInStore.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.Prepayment.AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Payment.Prepayment.AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.BaseCharge">
-		<Value>Basisgebühr</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge">
-		<Value>Max. Gebühr</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.MaxCharge.Hint">
-		<Value>Ein Betrag, den die berechneten Versandkosten nicht übersteigen dürfen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantitySurcharge">
-		<Value>Mindermengenzuschlag</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold">
-		<Value>Mindermenge bis Bestellwert</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByTotal.Fields.SmallQuantityThreshold.Hint">
-		<Value>Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Plugins.Shipping.ByWeight.Fields.Store.Hint">
-		<Value>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Polls.OnlyRegisteredUsersVote">
 		<Value>Nur registrierte Benutzer können abstimmen</Value>
@@ -12643,7 +12565,7 @@
 		<Value>Maße</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.DimensionsValue">
-		<Value>{0} x {1} x {2} (W/H/L)</Value>
+		<Value>{0} x {1} x {2} (B/H/L)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.DownloadSample">
 		<Value>Beispiel herunterladen</Value>
@@ -12691,7 +12613,7 @@
 		<Value>Bitte geben Sie Ihren Preis ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.EnterProductPrice.Range">
-		<Value>Der Preis muss zwischen {0} to {1} liegen.</Value>
+		<Value>Der Preis muss zwischen {0} und {1} liegen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ExclTaxSuffix">
 		<Value>{0} *</Value>

@@ -69,13 +69,16 @@ namespace SmartStore
             return builder.ToString();
         }
 
-		public static T GetValue<K, T>(this IDictionary<K, object> dic, K key) {
-			try {
+		public static T GetValue<K, T>(this IDictionary<K, object> instance, K key)
+		{
+			try
+			{
 				object val;
-				if (dic.TryGetValue(key, out val) && val != null)
+				if (instance != null && instance.TryGetValue(key, out val) && val != null)
 					return (T)Convert.ChangeType(val, typeof(T), CultureInfo.InvariantCulture);
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return default(T);

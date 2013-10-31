@@ -15,7 +15,8 @@
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
 * #114: Runtime error occurs after new customer registration in the storefront
 * #115: XML exports could fail because of invalid characters
-* #121: Categories restricted to specific stores could also show up in other stores.* #125: Widget Trusted Shops Customer Reviews can not be configured
+* #121: Categories restricted to specific stores could also show up in other stores.
+* #125: Widget Trusted Shops Customer Reviews can not be configured
 * #127: Redirection to 404 failed with localized urls when shop ran under virtual application paths
 * #128: _Switch language_ in store failed when SEO friendly urls were disabled
 * #134: Fix mobile checkout

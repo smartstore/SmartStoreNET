@@ -13,8 +13,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Services.Events;
 using SmartStore.Services.Common;
 
-using System.Data.Entity;
-
 namespace SmartStore.Services.Customers
 {
     /// <summary>

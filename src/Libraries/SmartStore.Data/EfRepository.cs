@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
-using System.Data.Objects;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core;
@@ -119,7 +119,7 @@ namespace SmartStore.Data
                 try
                 {
                     this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.EntityState.Modified;
+                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
                 }
                 finally { }
             }
@@ -130,7 +130,7 @@ namespace SmartStore.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            if (InternalContext.Entry(entity).State == System.Data.EntityState.Detached)
+            if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
             {
                 this.Entities.Attach(entity);
             }

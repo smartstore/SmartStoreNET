@@ -11,7 +11,7 @@ using SmartStore.Services.Catalog;
 using System.Linq.Dynamic;
 using SmartStore.Core.Data;
 using System.Globalization;
-using System.Data.Objects.SqlClient;
+//using System.Data.Objects.SqlClient;
 using SmartStore.Core;
 
 namespace SmartStore.Services.Filter

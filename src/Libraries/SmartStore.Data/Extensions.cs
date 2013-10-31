@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.Objects;
+using System.Data.Entity.Core.Objects;
 using SmartStore.Core;
 
 namespace SmartStore.Data

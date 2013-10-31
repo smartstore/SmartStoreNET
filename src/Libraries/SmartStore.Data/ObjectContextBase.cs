@@ -306,7 +306,7 @@ namespace SmartStore.Data
             get
             {
                 return this.ChangeTracker.Entries()
-                           .Where(x => x.State != System.Data.EntityState.Unchanged && x.State != System.Data.EntityState.Detached)
+                           .Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
                            .Any();
             }
         }
@@ -320,7 +320,7 @@ namespace SmartStore.Data
             if (hooksEnabled)
             {
                 modifiedEntries = this.ChangeTracker.Entries()
-                                .Where(x => x.State != System.Data.EntityState.Unchanged && x.State != System.Data.EntityState.Detached)
+                                .Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
                                 .Select(x => new HookedEntityEntry()
                                 {
                                     Entity = x.Entity,

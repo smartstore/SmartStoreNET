@@ -178,7 +178,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="App.config" />
     <None Include="web.config" />
   </ItemGroup>
   <ItemGroup />

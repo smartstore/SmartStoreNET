@@ -140,7 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\ShippingByTotal\Configure.cshtml" />
-    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="web.config" />
   </ItemGroup>

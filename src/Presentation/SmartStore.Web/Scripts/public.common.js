@@ -60,11 +60,15 @@
     var _commonPluginFactories = [
         // select2
         function (ctx) {
-            ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            if (!Modernizr.touch) {
+                ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            }
         },
         // tooltips
         function (ctx) {
-            ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
+            if (!Modernizr.touch) {
+                ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
+            }
         },
         // column equalizer
         function (ctx) {

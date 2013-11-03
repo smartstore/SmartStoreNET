@@ -16,7 +16,7 @@
     var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
     
     // styles
-    Html.AppendCssFileParts(@Url.Content("~/Administration/Content/theme.less"));
+    Html.AppendCssFileParts(true, "~/Administration/Content/theme.less");
     
     //page title
     string adminPageTitle = "";
@@ -44,7 +44,7 @@
     @Styles.Render(
         "~/Content/jquery-ui/base/css",
         "~/Content/telerik/common/css")
-    @Html.SmartCssFiles(ResourceLocation.Head)
+    @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Styles.Render("~/Content/shared-ui")
 
     @Scripts.Render("~/bundles/jquery")
@@ -116,7 +116,7 @@
         });
     </script>
 
-    @Html.SmartScripts(ResourceLocation.Head)
+    @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
     <link rel="shortcut icon" href="~/Administration/favicon.ico" />
 
@@ -166,8 +166,9 @@
             .jQueryValidation(false)
             .Globalization(true) // codehint: sm-add
             )
-    @Html.SmartCssFiles(ResourceLocation.Foot)
-    @Html.SmartScripts(ResourceLocation.Foot)
+
+    @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
+    @Html.SmartScripts(this.Url, ResourceLocation.Foot)
 
 </body>
 </html>

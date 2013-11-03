@@ -88,8 +88,11 @@
                         break;
                     case AttributeControlType.FileUpload:
                         {
-                            Html.AddScriptParts("~/bundles/fileupload-single");
-                            Html.AddCssFileParts(@Url.Content("~/Content/fileupload/jquery.fileupload-single-ui.css"));
+                            Html.AddScriptParts(true,
+                                "~/Content/fileupload/jquery.iframe-transport.js",
+                                "~/Content/fileupload/jquery.fileupload.js",
+                                "~/Content/fileupload/jquery.fileupload-single-ui.js");
+                            Html.AddCssFileParts(true, "~/Content/fileupload/jquery.fileupload-single-ui.css");
 
                             var random = CommonHelper.GenerateRandomInteger();
                             var clientId = "upload" + CommonHelper.GenerateRandomInteger();

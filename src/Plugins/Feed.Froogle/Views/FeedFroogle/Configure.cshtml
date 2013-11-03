@@ -9,10 +9,13 @@
 @{
 	Layout = "";
 
-	Html.AddCssFileParts(Url.Content("~/Content/x-editable/bootstrap-editable.css")); // bundle doesn't work for whatever reason
-	Html.AddCssFileParts(Url.Content("~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css"));
+	Html.AddCssFileParts(true,
+        "~/Content/x-editable/bootstrap-editable.css",
+        "~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css");
 
-	Html.AppendScriptParts(ResourceLocation.Head, "~/bundles/x-editable");
+    Html.AppendScriptParts(true,
+        "~/Content/bootstrap/js/bootstrap-typeahead.js", 
+        "~/Content/x-editable/bootstrap-editable.js");
 }
 
 <p>

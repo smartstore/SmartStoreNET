@@ -166,7 +166,7 @@ namespace SmartStore.Web.Infrastructure
                 bootstrapJsRoot + "custom/bootstrap-colorpicker.js",
                 bootstrapJsRoot + "custom/bootstrap-colorpicker-globalinit.js"));
 
-            //upload @Scripts.Render("~/bundles/admin/fileupload");
+            // file upload
             bundles.Add(new ScriptBundle("~/bundles/fileupload-single").Include(
                 "~/Content/fileupload/jquery.iframe-transport.js",
                 "~/Content/fileupload/jquery.fileupload.js",

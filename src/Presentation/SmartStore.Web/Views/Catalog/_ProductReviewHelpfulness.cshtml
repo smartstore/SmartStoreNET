@@ -1,20 +1,18 @@
 ﻿@model ProductReviewHelpfulnessModel
 @using SmartStore.Web.Models.Catalog;
 
-@* codehint: sm-edit (massively) *@
-
 @{
-    Html.AddScriptParts(Url.Content("~/Scripts/public.reviews.js"));
+    Html.AddScriptParts("~/Scripts/public.reviews.js");
 }
 
-<div class="product-review-vote muted" data-review-id="@(Model.ProductReviewId)" data-href='@(Url.RouteUrl("SetProductReviewHelpfulness"))' x-style="margin-top: 12px">
+<div class="product-review-vote muted" data-review-id="@(Model.ProductReviewId)" data-href='@(Url.RouteUrl("SetProductReviewHelpfulness"))'>
     <span>@T("Reviews.Helpfulness.WasHelpful?")</span>
-    <a class="vote vote-yes" href="#" title="@T("Common.Yes")" rel="tooltip" x-style="text-decoration:none; color: #46a546; margin-right: 4px;">
-        <i class="icon-thumbs-up" x-style="font-size: 16px"></i>
+    <a class="vote vote-yes" href="#" title="@T("Common.Yes")" rel="tooltip">
+        <i class="icon-thumbs-up"></i>
         <span class="vote-count" data-bind-to="TotalYes"><strong style="font-size:12px">@(Model.HelpfulYesTotal)</strong></span>
     </a>
-    <a class="vote vote-no" href="#" title="@T("Common.No")" rel="tooltip" x-style="text-decoration:none; color: #9d261d">
-        <i class="icon-thumbs-down" x-style="font-size: 16px"></i>
+    <a class="vote vote-no" href="#" title="@T("Common.No")" rel="tooltip">
+        <i class="icon-thumbs-down"></i>
         <span class="vote-count" data-bind-to="TotalNo"><strong style="font-size:12px">@(Model.HelpfulNoTotal)</strong></span>
     </a>
 </div>

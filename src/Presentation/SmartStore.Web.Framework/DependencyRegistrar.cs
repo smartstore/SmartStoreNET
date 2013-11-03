@@ -287,7 +287,7 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerHttpRequest();
             builder.RegisterType<SitemapGenerator>().As<ISitemapGenerator>().InstancePerHttpRequest();
-            builder.RegisterType<PageTitleBuilder>().As<IPageTitleBuilder>().InstancePerHttpRequest();
+            builder.RegisterType<PageAssetsBuilder>().As<IPageAssetsBuilder>().InstancePerHttpRequest();
 
             builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerHttpRequest();
 
@@ -311,6 +311,7 @@ namespace SmartStore.Web.Framework
             // codehint: sm-add
             builder.RegisterType<HttpRoutePublisher>().As<IHttpRoutePublisher>().SingleInstance();
             builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
+            builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().SingleInstance();
 
             //HTML Editor services
             builder.RegisterType<NetAdvDirectoryService>().As<INetAdvDirectoryService>().InstancePerHttpRequest();

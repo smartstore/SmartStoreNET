@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Polls;
 
 @{
-    Html.AddScriptParts(Url.Content("~/Scripts/public.voting.js"));
+    Html.AddScriptParts("~/Scripts/public.voting.js");
 }
 
 <div id="poll-block-@(Model.Id)" class="poll-item equalized-column" data-equalized-deep="true">

@@ -33,11 +33,13 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $("#terms-of-service-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" height="680" scrolling="no" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                         $("#disclaimer-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" height="680" scrolling="no" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
+
+
                     });
                 </script>
                 <label class="checkbox">
@@ -47,7 +49,7 @@
 
                 <!-- Terms of service -->
                 <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1" style="width: 650px">
-                    <div class="modal-body" style="max-height: 300px"></div>
+                    <div class="modal-body" style="min-height: 300px;overflow:hidden"></div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
                     </div>

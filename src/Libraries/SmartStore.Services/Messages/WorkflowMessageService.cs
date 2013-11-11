@@ -710,6 +710,7 @@ namespace SmartStore.Services.Messages
 
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, _storeContext.CurrentStore);
+            _messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, subscription);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);

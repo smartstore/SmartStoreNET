@@ -65,7 +65,15 @@ namespace SmartStore.Admin.Controllers
             foreach (ContentSliderSlideModel slide in model.Slides)
             {
 				slide.SlideIndex = rowIndex++;
-                slide.LanguageName = _languageService.GetLanguageByCulture(slide.LanguageCulture).Name;
+
+                var language = _languageService.GetLanguageByCulture(slide.LanguageCulture);
+                if (language != null)
+                {
+                    slide.LanguageName = language.Name;
+                }
+                else {
+                    slide.LanguageName = _languageService.GetAllLanguages(false).FirstOrDefault().Name;
+                }
             }
 
             return View(model);

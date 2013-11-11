@@ -1456,6 +1456,11 @@ table.cart .cart-item-row .qty-input {
 	width: 32px;
 }
 
+
+.order-summary-content .cart-footer {
+	margin-top: 20px;
+}
+
 .order-summary-content .cart-footer {
 	margin-top: 20px;
 }
@@ -3257,20 +3262,24 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 }
 
 .checkout-confirm-page .order-summary-content form {
-    border: 1px solid @var_ContainerBorder;
+    border: 1px solid #bbb;
+    background: #efefef;
     border-bottom: none;
     margin: 0 !important;
     padding-bottom: 20px;
     .border-radius(@baseBlockRadius @baseBlockRadius 0 0);
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
-    border: 1px solid @var_ContainerBorder;
+    border: 1px solid #bbb;
+    background: #efefef;
     border-top: none;
     padding: 20px;
     margin-bottom: 30px;
     .border-radius(0 0 @baseBlockRadius @baseBlockRadius);
 }
 .checkout-confirm-page .confirm-order-legal-hint {
+    border-left: 1px solid #bbb !important;
+    border-right: 1px solid #bbb !important;
     margin: auto;
     text-align: center;
     .border-radius(0);

@@ -97,7 +97,8 @@
 
 		<ItemGroup>
 			<PluginFiles Include="$(WebPluginsFolder)\**\*" />
-			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*" />
+			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.sql" />
+			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.txt" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>

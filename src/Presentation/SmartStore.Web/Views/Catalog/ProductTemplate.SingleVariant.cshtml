@@ -18,11 +18,12 @@
     Html.AddMetaKeywordParts(Model.MetaKeywords);
     
     //codehint: sm-add
-    Html.AddCssFileParts("~/Content/image-gallery"); // << is a bundle
+    Html.AddCssFileParts("~/Content/smartstore.smartgallery.css");
 
-    Html.AddScriptParts(ResourceLocation.Foot,
-        "~/bundles/image-gallery", // << is a bundle
-        @Url.Content("~/Scripts/public.product-detail.js"));
+    Html.AddScriptParts(
+        "~/Scripts/jquery.elevatezoom.js",
+        "~/Scripts/smartstore.smartgallery.js",
+        "~/Scripts/public.product-detail.js");
     
     var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
     if (canonicalUrlsEnabled)

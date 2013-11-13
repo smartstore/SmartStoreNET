@@ -473,7 +473,10 @@ namespace SmartStore.Web.Framework
 
             sb.Append("</div>");
 
-            html.AppendScriptParts("~/bundles/colorbox");
+            var bootstrapJsRoot = "~/Content/bootstrap/js/";
+            html.AppendScriptParts(false,
+                bootstrapJsRoot + "custom/bootstrap-colorpicker.js",
+                bootstrapJsRoot + "custom/bootstrap-colorpicker-globalinit.js");
 
             return MvcHtmlString.Create(sb.ToString());
         }

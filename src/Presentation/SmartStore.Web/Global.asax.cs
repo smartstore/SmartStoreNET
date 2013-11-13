@@ -75,7 +75,7 @@ namespace SmartStore.Web
             // it's way better to depend minifying on DebugMode than 
             // the explicit definition in web.config, so overwrite here!
             lessConfig.MinifyOutput = HttpContext.Current.IsDebuggingEnabled;
-
+            
             // handle theme settings
             if (databaseInstalled)
             {
@@ -89,11 +89,9 @@ namespace SmartStore.Web
                     if (themeSettings.CssMinifyEnabled > 0)
                         lessConfig.MinifyOutput = themeSettings.CssMinifyEnabled == 2;
                 }
-
-                // bundling config
-                if (themeSettings.BundleOptimizationEnabled > 0)
-                    BundleTable.EnableOptimizations = themeSettings.BundleOptimizationEnabled == 2;
             }
+
+            BundleTable.EnableOptimizations = true;
         }
 
         protected void Application_Start()

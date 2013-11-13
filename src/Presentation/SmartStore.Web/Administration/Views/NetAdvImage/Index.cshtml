@@ -8,8 +8,21 @@
 <head>
     <title>Insert Image</title>
 
-    @Scripts.Render("~/bundles/admin/tiny-mce-js") 
-    @Styles.Render("~/Content/tiny-mce-css", "~/Content/telerik/common/css")
+    <script src="~/Content/editors/tinymce/tiny_mce_popup.js"></script>
+    <script src="~/Content/editors/tinymce/utils/mctabs.js"></script>
+    <script src="~/Content/editors/tinymce/utils/form_utils.js"></script>
+    <script src="~/Content/editors/tinymce/utils/validate.js"></script>
+    <script src="~/Content/editors/tinymce/utils/editable_selects.js"></script>
+    <script src="~/Content/editors/tinymce/plugins/netadvimage/js/jquery.js"></script>
+    <script src="~/Content/editors/tinymce/plugins/netadvimage/js/jquery-ui.js"></script>
+    <script src="~/Content/editors/tinymce/plugins/netadvimage/js/jquery.layout.js"></script>
+    <script src="~/Content/editors/tinymce/plugins/netadvimage/js/dialog.js"></script>
+    <script src="~/Content/editors/tinymce/plugins/netadvimage/js/fileuploader.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="~/Content/editors/tinymce/plugins/netadvimage/css/dialog.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/editors/tinymce/plugins/netadvimage/css/fileuploader.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/2012.2.607/telerik.common.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/2012.2.607/telerik.rtl.css" />
 
     @*Little hack here. Store URL js variable used by dialog.js file*@
     @*TODO pass storeLocation value in init method of ImageDialog*@

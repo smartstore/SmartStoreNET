@@ -1,8 +1,9 @@
 ﻿@model String
 @using SmartStore.Web.Framework.UI;
 @{
-    Html.AddScriptParts(@Url.Content("~/Content/editors/tinymce/tiny_mce_gzip.js"));
-    Html.AddScriptParts(@Url.Content("~/Content/editors/tinymce/globalinit.js"));
+    Html.AddScriptParts(true,
+        "~/Content/editors/tinymce/tiny_mce_gzip.js", 
+        "~/Content/editors/tinymce/globalinit.js");
 
     var availableLangs = new string[] { "de", "en" };
     var lang = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower();

@@ -2,7 +2,7 @@
 @{
     Layout = "";
 
-    Html.AddCssFileParts(@Url.Content("~/Plugins/ExternalAuth.Facebook/Content/facebookstyles.css"));    
+    Html.AddCssFileParts(true, "~/Plugins/ExternalAuth.Facebook/Content/facebookstyles.css");    
 }
 <fieldset class="oauth-login-facebook">
     <legend>@T("Plugins.ExternalAuth.Facebook.Login")</legend>

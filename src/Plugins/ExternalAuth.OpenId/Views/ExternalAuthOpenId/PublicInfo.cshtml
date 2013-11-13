@@ -5,10 +5,11 @@
     Layout = "";
 
 
-    Html.AddCssFileParts(@Url.Content("~/Plugins/ExternalAuth.OpenId/Content/openidstyles.css"));
+    Html.AddCssFileParts(true, "~/Plugins/ExternalAuth.OpenId/Content/openidstyles.css");
 
-    Html.AddScriptParts(@Url.Content("~/Plugins/ExternalAuth.OpenId/Scripts/openid-jquery-1.3b1.js")); // codehint: sm-deleted
-    Html.AddScriptParts(@Url.Content("~/Plugins/ExternalAuth.OpenId/Scripts/openid-en.js"));
+    Html.AddScriptParts(true, 
+        "~/Plugins/ExternalAuth.OpenId/Scripts/openid-jquery-1.3b1.js",
+        "~/Plugins/ExternalAuth.OpenId/Scripts/openid-en.js");
 
     var storeLocation = EngineContext.Current.Resolve<SmartStore.Core.IWebHelper>().GetStoreLocation();
 }

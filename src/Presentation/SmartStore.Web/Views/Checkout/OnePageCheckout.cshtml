@@ -5,8 +5,9 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    Html.AddScriptParts(@Url.Content("~/Scripts/public.accordion.js"));
-    Html.AddScriptParts(@Url.Content("~/Scripts/public.onepagecheckout.js"));
+    Html.AddScriptParts(true,
+        "~/Scripts/public.accordion.js",
+        "~/Scripts/public.onepagecheckout.js");
 
     var storeLocation = EngineContext.Current.Resolve<SmartStore.Core.IWebHelper>().GetStoreLocation();
 

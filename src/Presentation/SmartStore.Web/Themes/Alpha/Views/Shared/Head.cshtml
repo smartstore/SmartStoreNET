@@ -6,7 +6,7 @@
     var supportRtl = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Rtl;
 }
 @{
-    Html.AppendCssFileParts(Url.Content("~/Themes/Alpha/Content/theme.less"));
+    Html.AppendCssFileParts(true, "~/Themes/Alpha/Content/theme.less");
 }
 
 @Html.Partial("ConditionalComments")

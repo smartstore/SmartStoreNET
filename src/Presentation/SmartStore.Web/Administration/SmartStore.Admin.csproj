@@ -196,7 +196,6 @@
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
-    <Compile Include="Infrastructure\AdminBundleProvider.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
@@ -1095,7 +1094,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\PromotionFeeds\" />
-    <Folder Include="Views\Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />

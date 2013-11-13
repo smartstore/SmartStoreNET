@@ -7,147 +7,74 @@
     // we do not use standard smnet localization because database is not installed yet
     // locale resources fpr installation process are stored into \App_Data\Localization\Installation directory
     var ILS = EngineContext.Current.Resolve<IInstallationLocalizationService>();
+
+    // Install styles
+    Html.AppendCssFileParts(true, "~/Content/install/install.less");
+    
+    // add js assets (Head)
+    Html.AppendScriptParts(ResourceLocation.Head,
+        "~/Scripts/modernizr-2.6.2.js",
+        "~/Scripts/jquery-1.8.3.js");
+
+    var bootstrapJsRoot = "~/Content/bootstrap/js/";
+    Html.AppendScriptParts(ResourceLocation.Foot,
+        // jQuery UI Core
+        "~/Scripts/jquery-ui/jquery.ui.core.js",
+        "~/Scripts/jquery-ui/jquery.ui.widget.js",
+        "~/Scripts/jquery-ui/jquery.effects.core.js",
+        "~/Scripts/jquery-ui/jquery.ui.position.js",
+        // jQuery Validation
+        "~/Scripts/jquery.unobtrusive-ajax.js",
+        "~/Scripts/jquery.validate.js",
+        "~/Scripts/jquery.validate.unobtrusive.js",
+        // SmartStore system
+        "~/Scripts/smartstore.system.js",
+        "~/Scripts/underscore.js",
+        "~/Scripts/underscore.string.js",
+        "~/Scripts/underscore.mixins.js",
+        "~/Scripts/smartstore.jquery.utils.js",
+        "~/Scripts/jquery.transit.js",
+        "~/Scripts/smartstore.doAjax.js",
+        "~/Scripts/jquery.addeasing.js",
+        "~/Scripts/smartstore.eventbroker.js",
+        "~/Scripts/smartstore.hacks.js",
+        // Bootstrap
+        bootstrapJsRoot + "bootstrap-transition.js",
+        bootstrapJsRoot + "bootstrap-alert.js",
+        bootstrapJsRoot + "bootstrap-button.js",
+        bootstrapJsRoot + "bootstrap-collapse.js",
+        bootstrapJsRoot + "bootstrap-dropdown.js",
+        bootstrapJsRoot + "bootstrap-modal.js",
+        bootstrapJsRoot + "bootstrap-tooltip.js",
+        bootstrapJsRoot + "bootstrap-popover.js",
+        bootstrapJsRoot + "bootstrap-tab.js",
+        // Shared UI
+        "~/Scripts/smartstore.placeholder.js",
+        "~/Scripts/select2.js",
+        "~/Scripts/smartstore.selectwrapper.js",
+        "~/Scripts/smartstore.throbber.js",
+        "~/Scripts/jquery.pnotify.js",
+        "~/Scripts/jquery.scrollTo.js",
+        "~/Scripts/jquery.serialScroll.js",
+        // Install
+        "~/Scripts/public.common.js");
 }
 <!DOCTYPE html>
 <html>
 <head>
     <title>@ILS.GetResource("Title")</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        <link href="~/Content/install/install.less" type="text/css" rel="stylesheet" />
     
     <script>
-        try {
-            if (typeof navigator === 'undefined') navigator = {};
-            html = document.documentElement;
-            if ('mozMatchesSelector' in html) { html.className += ' moz' }
-            else if ('webkitMatchesSelector' in html) { html.className += ' wkit' };
-            html.className += (this.top === this.window ? ' not-' : ' ') + 'framed';
-        } catch (e) { }
-
         window.Res = {
             "Common.Notification": "@ILS.GetResource("Common.Notification").EncodeJsString()",
         }
-
     </script>
-    <!--[if IE 9]><script>try{html.className+=' ie ie9 iepost8 iepre10'}catch(e){};navigator.isIE=9</script><![endif]-->
-    <!--[if IE 8]><script>try{html.className+=' ie ie8 iepre9 iepre10'}catch(e){};navigator.isIE=8</script><![endif]-->
-    <!--[if IE 7]><script>try{html.className+=' ie ie7 iepre9 iepre10'}catch(e){};navigator.isIE=7</script><![endif]-->
-    <!--[if gt IE 9]><script>try{html.className+=' ie ie10 iepost8'}catch(e){};navigator.isIE=10</script><![endif]-->
-    <!--[if !IE]>--><script>try { html.className += ' not-ie' } catch (e) { }; navigator.isIE = 0</script><!-- <![endif]-->
 
-    @Scripts.Render(
-        "~/bundles/modernizr",
-        "~/bundles/jquery",
-        "~/bundles/jquery-val",
-        "~/bundles/jquery-ui-core",
-        "~/bundles/system",
-        "~/bundles/bootstrap",
-        "~/bundles/shared-ui")
+    @Html.Partial("ConditionalComments")
 
-    <script src="~/Scripts/public.common.js" type="text/javascript"></script>
-
-    <script>
-        var Installation = (function () {
-            
-            var progressIntervall;
-
-            function checkProgress() {
-                $.ajax({
-                    url: '@Url.Action("Progress", "Install")',
-                    dataType: "json",
-                    async: true,
-                    type: "POST",
-                    cache: false,
-                    success: function (data, status) {
-                        console.log(data);
-
-                        if (!data.Completed) {
-                            if (data.Progress !== undefined && data.Progress > -1 && data.Progress <= 100) {
-                                $("#install-progress").html(data.Progress + "%");
-                            }
-                        }
-                    },
-                    error: function () {
-                        console.log("ERROR");
-                        handleError(arguments[0].responseText);
-                    }
-                });
-            }
-
-            function finalizeInstallation(success) {
-                $.ajax({
-                    url: '@Url.Action("Finalize", "Install")',
-                    data: { restart: success },
-                    dataType: "json",
-                    async: false,
-                    type: "POST"
-                });
-            }
-
-            function handleError(errors) {
-                var validationSummary = $("#messages");
-                var ul = validationSummary.find("ul");
-                ul.html("");
-                
-                if ($.isArray(errors)) {
-                    for (i = 0; i < errors.length; i++) {
-                        ul.append("<li>" + errors[i] + "</li>");
-                    }
-                }
-                else {
-                    ul.append("<li>" + errors + "</li>");
-                }
-                validationSummary.removeClass("hide");
-                validationSummary.addClass("in");
-                $.scrollTo(validationSummary, 800, { offset: -10 });
-                $("#install-button").removeAttr("disabled");
-            }
-
-            return {
-
-                onStart: function (context) {
-
-                    $.throbber.show({
-                        message: '<span id="install-message">@ILS.GetResource("Installing")' + '&nbsp;<span id="install-progress">0%</span></span>'
-                    });
-
-                    // start the checkprogress interval
-                    progressIntervall = window.setInterval(checkProgress, 2000);
-
-                    $("#install-button").attr("disabled", "disabled");
-
-                },
-
-                onSuccess: function (data) {
-
-                    finalizeInstallation(data.Success);
-
-                    if (data.Success) {
-                        $("#install-message").html("@ILS.GetResource("Common.StartShop")");
-                        setLocation(data.RedirectUrl);
-                    }
-                    else {
-                        $.throbber.hide();
-                        if (data.HasErrors) {
-                            handleError(data.Errors);
-                        }
-                    }
-                },
-
-                onFailure: function (context) {                 
-                    handleError(context);
-                },
-
-                onComplete: function () {
-                    window.clearInterval(progressIntervall);
-                    $("#install-button").removeAttr("disabled");
-                }
-
-            };
-
-        })();
-
-    </script>
+    @Html.SmartCssFiles(this.Url, ResourceLocation.Head, false)
+    @Html.SmartScripts(this.Url, ResourceLocation.Head, false)
 
 </head>
 <body class="container-main">
@@ -440,5 +367,111 @@
 
         </div>
     }
+
+    @Html.SmartCssFiles(this.Url, ResourceLocation.Foot, false)
+    @Html.SmartScripts(this.Url, ResourceLocation.Foot, false)
+
+    <script>
+        var Installation = (function () {
+
+            var progressIntervall;
+
+            function checkProgress() {
+                $.ajax({
+                    url: '@Url.Action("Progress", "Install")',
+                    dataType: "json",
+                    async: true,
+                    type: "POST",
+                    cache: false,
+                    success: function (data, status) {
+                        console.log(data);
+
+                        if (!data.Completed) {
+                            if (data.Progress !== undefined && data.Progress > -1 && data.Progress <= 100) {
+                                $("#install-progress").html(data.Progress + "%");
+                            }
+                        }
+                    },
+                    error: function () {
+                        console.log("ERROR");
+                        handleError(arguments[0].responseText);
+                    }
+                });
+            }
+
+            function finalizeInstallation(success) {
+                $.ajax({
+                    url: '@Url.Action("Finalize", "Install")',
+                    data: { restart: success },
+                    dataType: "json",
+                    async: false,
+                    type: "POST"
+                });
+            }
+
+            function handleError(errors) {
+                var validationSummary = $("#messages");
+                var ul = validationSummary.find("ul");
+                ul.html("");
+
+                if ($.isArray(errors)) {
+                    for (i = 0; i < errors.length; i++) {
+                        ul.append("<li>" + errors[i] + "</li>");
+                    }
+                }
+                else {
+                    ul.append("<li>" + errors + "</li>");
+                }
+                validationSummary.removeClass("hide");
+                validationSummary.addClass("in");
+                $.scrollTo(validationSummary, 800, { offset: -10 });
+                $("#install-button").removeAttr("disabled");
+            }
+
+            return {
+
+                onStart: function (context) {
+
+                    $.throbber.show({
+                        message: '<span id="install-message">@ILS.GetResource("Installing")' + '&nbsp;<span id="install-progress">0%</span></span>'
+                    });
+
+                    // start the checkprogress interval
+                    progressIntervall = window.setInterval(checkProgress, 2000);
+
+                    $("#install-button").attr("disabled", "disabled");
+
+                },
+
+                onSuccess: function (data) {
+
+                    finalizeInstallation(data.Success);
+
+                    if (data.Success) {
+                        $("#install-message").html("@ILS.GetResource("Common.StartShop")");
+                        setLocation(data.RedirectUrl);
+                    }
+                    else {
+                        $.throbber.hide();
+                        if (data.HasErrors) {
+                            handleError(data.Errors);
+                        }
+                    }
+                },
+
+                onFailure: function (context) {
+                    handleError(context);
+                },
+
+                onComplete: function () {
+                    window.clearInterval(progressIntervall);
+                    $("#install-button").removeAttr("disabled");
+                }
+
+            };
+
+        })();
+
+    </script>
 </body>
 </html>

@@ -474,7 +474,7 @@ namespace SmartStore.Web.Framework
             sb.Append("</div>");
 
             var bootstrapJsRoot = "~/Content/bootstrap/js/";
-            html.AppendScriptParts(
+            html.AppendScriptParts(false,
                 bootstrapJsRoot + "custom/bootstrap-colorpicker.js",
                 bootstrapJsRoot + "custom/bootstrap-colorpicker-globalinit.js");
 

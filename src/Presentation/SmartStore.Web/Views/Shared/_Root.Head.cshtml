@@ -22,7 +22,7 @@
     
     // add js assets
     Html.AppendScriptParts(ResourceLocation.Head, 
-        "~/Scripts/modernizr-{version}.js",
+        "~/Scripts/modernizr-2.6.2.js",
         "~/Scripts/jquery-1.8.3.js");
 
     var bootstrapJsRoot = "~/Content/bootstrap/js/";
@@ -104,16 +104,6 @@
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
-    <script>
-        // globals
-        // jquery CDN fallback
-        if (typeof jQuery == 'undefined') {
-            var e = document.createElement('script');
-            e.src = '@Url.Content("~/Scripts/jquery-1.8.3.js")';
-            e.type = 'text/javascript';
-            document.getElementsByTagName("head")[0].appendChild(e);
-        }
-    </script>
 
     @Html.CanonicalUrls()
     @Html.Action("RssHeaderLink", "News")

@@ -49,7 +49,7 @@ namespace SmartStore.Web.Framework.UI
                             new ScriptBundle(bundleVirtualPath) as Bundle: 
                             new StyleBundle(bundleVirtualPath) as Bundle;
                         bundle.Orderer = new NullBundleOrderer();
-                        bundle.EnableFileExtensionReplacements = false;
+                        //bundle.EnableFileExtensionReplacements = false;
 
                         if (type == BundleType.Script)
                         {

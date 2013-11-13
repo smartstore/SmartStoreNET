@@ -13,6 +13,46 @@
             $.fn.transition = $.fn.animate;
         }
 
+        // init Globalize
+        if (Globalize) {
+            // Ask ASP.NET what culture we prefer, because we stuck it in a meta tag
+            var data = $("meta[name='accept-language']").attr("content")
+            // Tell jQuery to figure it out also on the client side.
+            Globalize.culture(data || "en-US");
+            if ($.fn.datepicker) {
+                // globalize bootstrap datepicker
+                var c = Globalize.culture().calendars.standard;
+                $.fn.datepicker.defaults = {
+                    format: Globalize.culture().calendars.standard.patterns['d'].toLowerCase(),
+                    weekStart: Globalize.culture().calendars.standard.firstDay,
+                    autoclose: true,
+                    todayHighlight: true
+                };
+                $.fn.datepicker.dates['glob'] = {
+                    days: c.days.names,
+                    daysShort: c.days.namesShort,
+                    daysMin: c.days.namesAbbr,
+                    months: c.months.names,
+                    monthsShort: c.months.namesAbbr,
+                    today: "Today" // TODO: Localize
+                };
+            }
+
+            // Use the Globalization plugin to parse some values
+            jQuery.extend(jQuery.validator.methods, {
+                number: function (value, element) {
+                    return this.optional(element) || !isNaN(Globalize.parseFloat(value));
+                },
+                date: function (value, element) {
+                    return this.optional(element) || !isNaN(Globalize.parseDate(value));
+                },
+                range: function (value, element, param) {
+                    var val = Globalize.parseFloat(value);
+                    return this.optional(element) || (val >= param[0] && val <= param[1]);
+                }
+            });
+        }
+
         // adjust pnotify global defaults
         $.extend($.pnotify.defaults, {
             history: false,

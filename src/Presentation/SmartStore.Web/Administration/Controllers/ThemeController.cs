@@ -147,8 +147,7 @@ namespace SmartStore.Admin.Controllers
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
-            bool showRestartNote = model.BundleOptimizationEnabled != themeSettings.BundleOptimizationEnabled
-                                    || model.CssCacheEnabled != themeSettings.CssCacheEnabled
+            bool showRestartNote = model.CssCacheEnabled != themeSettings.CssCacheEnabled
                                     || model.CssMinifyEnabled != themeSettings.CssMinifyEnabled
                                     || model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
 

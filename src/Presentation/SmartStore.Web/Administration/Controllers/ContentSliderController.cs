@@ -10,6 +10,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Stores;
+using SmartStore.Core;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -18,6 +19,7 @@ namespace SmartStore.Admin.Controllers
     {
         #region Fields
 
+        private readonly IWorkContext _workContext;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
@@ -38,7 +40,8 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService,
             IPictureService pictureService,
             ContentSliderSettings contentSliderSettings,
-			IStoreService storeService)
+			IStoreService storeService,
+            IWorkContext workContext)
         {
             this._settingService = settingService;
             this._localizationService = localizationService;
@@ -48,6 +51,7 @@ namespace SmartStore.Admin.Controllers
             this._pictureService = pictureService;
             this._contentSliderSettings = contentSliderSettings;
 			this._storeService = storeService;
+            this._workContext = workContext;
         }
         
         #endregion
@@ -72,7 +76,8 @@ namespace SmartStore.Admin.Controllers
                     slide.LanguageName = language.Name;
                 }
                 else {
-                    slide.LanguageName = _languageService.GetAllLanguages(false).FirstOrDefault().Name;
+                    var seoCode = _workContext.GetDefaultLanguageSeoCode();
+                    slide.LanguageName = _languageService.GetLanguageBySeoCode(seoCode).Name;
                 }
             }
 

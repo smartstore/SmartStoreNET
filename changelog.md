@@ -1,5 +1,19 @@
 #Release Notes#
 
+##SmartStore.NET 1.3.0.0#
+
+###New Features###
+
+###Bugfixes###
+
+* #150 GTB & disclaimer aren't readable when they become to long
+* #151 NewsletterSubscriptionDeactivationUrl-Token doesn't get repleaced
+* #153 Admin->Contentslider throws an error when asigned languages aren't available anymore
+
+###Improvements###
+
+
+
 ##SmartStore.NET 1.2.1.0#
 
 ###New Features###

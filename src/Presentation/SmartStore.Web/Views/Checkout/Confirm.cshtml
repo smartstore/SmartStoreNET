@@ -111,7 +111,7 @@
                                 {
                                         <text>
                                 if (!$('#termsofservice').is(':checked')) {
-                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept")', "error");
+                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
                                     termOfServiceOk = false;
                                     $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                                 }

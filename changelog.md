@@ -9,6 +9,7 @@
 * #150 GTB & disclaimer aren't readable when they become to long
 * #151 NewsletterSubscriptionDeactivationUrl-Token doesn't get repleaced
 * #153 Admin->Contentslider throws an error when asigned languages aren't available anymore
+* #160 Resource on confirm order page isn't escaped
 
 ###Improvements###
 

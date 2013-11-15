@@ -469,6 +469,21 @@ namespace SmartStore.Data
             }
         }
 
+        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        {
+            Guard.ArgumentNotNull(() => entity);
+            return Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault() != null;
+        }
+
+        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        {
+            Guard.ArgumentNotNull(() => entity);
+            if (this.IsAttached(entity)) 
+            {
+                ((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+            }
+        }
+
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();

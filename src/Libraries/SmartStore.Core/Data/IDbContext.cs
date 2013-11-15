@@ -32,7 +32,6 @@ namespace SmartStore.Core.Data
         int ExecuteSqlCommand(string sql, int? timeout = null, params object[] parameters);
 
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		int ExecuteSqlThroughSmo(string sql);
 
         // codehint: sm-add (required for UoW implementation)
@@ -43,5 +42,20 @@ namespace SmartStore.Core.Data
         bool AutoDetectChangesEnabled { get; set; }
         bool ValidateOnSaveEnabled{ get; set; }
         bool HasChanges { get; }
+
+        /// <summary>
+        /// Determines whether the given entity is already attached to the current object context
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <param name="entity">The entity instance to attach</param>
+        /// <returns><c>true</c> when the entity is attched already, <c>false</c> otherwise</returns>
+        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+
+        /// <summary>
+        /// Detaches an entity from the current object context if it's attached
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <param name="entity">The entity instance to detach</param>
+        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
     }
 }

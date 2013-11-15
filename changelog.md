@@ -10,6 +10,7 @@
 * #151 NewsletterSubscriptionDeactivationUrl-Token doesn't get repleaced
 * #153 Admin->Contentslider throws an error when asigned languages aren't available anymore
 * #160 Resource on confirm order page isn't escaped
+* #152 Copy message template does not work
 
 ###Improvements###
 

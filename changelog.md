@@ -11,6 +11,7 @@
 * #153 Admin->Contentslider throws an error when asigned languages aren't available anymore
 * #160 Resource on confirm order page isn't escaped
 * #152 Copy message template does not work
+* SKU search did not work cause of wrong join statement
 
 ###Improvements###
 

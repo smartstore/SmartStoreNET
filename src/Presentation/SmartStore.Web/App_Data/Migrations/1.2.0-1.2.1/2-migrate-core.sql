@@ -160,7 +160,7 @@ BEGIN
         UNION
         SELECT pv.ProductId
         FROM ProductVariant pv with (NOLOCK)
-        INNER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
+        LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
         WHERE '
         IF @UseFullTextSearch = 1
             SET @sql = @sql + 'CONTAINS((pv.[Sku], pvac.[Sku]), @Keywords) '

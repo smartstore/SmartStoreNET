@@ -4,6 +4,8 @@
 
 ###New Features###
 
+* (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
+
 ###Bugfixes###
 
 * #150 GTB & disclaimer aren't readable when they become to long

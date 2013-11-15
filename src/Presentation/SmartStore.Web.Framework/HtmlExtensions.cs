@@ -134,7 +134,10 @@ namespace SmartStore.Web.Framework
             {
                 Id = helper.ViewData.Model.Id,
                 ControllerName = helper.ViewContext.RouteData.GetRequiredString("controller"),
-                ActionName = actionName
+                ActionName = actionName,
+                ButtonSelector = buttonsSelector,
+                // TODO: (MC) this is really awkward, but sufficient for the moment
+                EntityType = buttonsSelector.Replace("-delete", "")
             };
 
             var window = helper.SmartStore().Window().Name(modalId)

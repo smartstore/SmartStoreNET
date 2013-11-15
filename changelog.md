@@ -12,6 +12,7 @@
 * #160 Resource on confirm order page isn't escaped
 * #152 Copy message template does not work
 * SKU search did not work cause of wrong join statement
+* #165 TopicWidgets Sorting is not applied
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

@@ -14,7 +14,7 @@
 * SKU search did not work cause of wrong join statement
 
 ###Improvements###
-
+* #171: select2 Dropdown too short in OPC
 
 
 ##SmartStore.NET 1.2.1.0#

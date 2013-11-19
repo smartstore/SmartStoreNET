@@ -8,7 +8,7 @@
 	<div class="control-group">
 		@Html.LabelFor(model => model.CreditCardTypes, new { @class="control-label required" })
 		<div class="controls">
-			@Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes, new { @class = "dropdownlists" })
+			@Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes, new { @class = "dropdownlists", style = "min-width: 180px;" })
 		</div>
 	</div>
 	<div class="control-group">

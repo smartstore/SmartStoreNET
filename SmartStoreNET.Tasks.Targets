@@ -19,6 +19,7 @@
 		<MsBuildTasksFolder>$(RootFolder)\buildtasks</MsBuildTasksFolder>
 		<ArtifactsFolder>$(RootFolder)\artifacts</ArtifactsFolder>
 		<SqlCeFolder>$(LibFolder)\sqlce</SqlCeFolder>
+		<NoesisFolder>$(LibFolder)\Javascript</NoesisFolder>
 		<SourceArtifactFolder>$(ArtifactsFolder)\Source</SourceArtifactFolder>
 		<MsDeployArtifactFolder>$(ArtifactsFolder)\MsDeploy</MsDeployArtifactFolder>
 		<GalleryArtifactFolder>$(ArtifactsFolder)\Gallery</GalleryArtifactFolder>
@@ -102,6 +103,9 @@
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
+		  	<Noesis-Libs Include="$(NoesisFolder)\lib\**\*"/>
+		  	<Noesis-Native-Binaries-x86 Include="$(NoesisFolder)\Native\x86\**\*"/>
+		  	<Noesis-Native-Binaries-amd64 Include="$(NoesisFolder)\Native\amd64\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -147,9 +151,14 @@
 		<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
 		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 
-		<!--Lets copy SQL Compact native binaries-->
+		<!-- copy SQL Compact native binaries-->
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		
+		<!-- copy Noesis Javascript engine files (V8) -->
+		<Copy SourceFiles="@(Noesis-Libs)" DestinationFolder="$(StageFolder)\Noesis.Javascript\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Noesis-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Noesis-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />

@@ -56,13 +56,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Autofac.WebApi.3.0.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
     </Reference>
-    <Reference Include="dotless.AspNet, Version=1.3.1.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\dotless.1.3.1.0-custom\lib\dotless.AspNet.dll</HintPath>
-    </Reference>
-    <Reference Include="dotless.Core, Version=1.3.1.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\dotless.1.3.1.0-custom\lib\dotless.Core.dll</HintPath>
+    <Reference Include="BundleTransformer.Core">
+      <HintPath>..\..\packages\BundleTransformer.Core.1.8.11\lib\net40\BundleTransformer.Core.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -162,9 +157,6 @@
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="WebActivatorEx">
-      <HintPath>..\..\packages\WebActivatorEx.2.0.3\lib\net40\WebActivatorEx.dll</HintPath>
-    </Reference>
     <Reference Include="WebGrease">
       <HintPath>..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
     </Reference>
@@ -195,8 +187,6 @@
     <Compile Include="HtmlAttribute.cs" />
     <Compile Include="HtmlAttributeExtensions.cs" />
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />
-    <Compile Include="Less\ImportedFilePathResolver.cs" />
-    <Compile Include="Less\LessMinify.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Mvc\Bundles\BundlePublisher.cs" />
     <Compile Include="Mvc\Bundles\IBundleProvider.cs" />
@@ -211,9 +201,10 @@
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
     <Compile Include="Settings\StoreDependingSettingData.cs" />
     <Compile Include="Settings\StoreDependingSettingHelper.cs" />
-    <Compile Include="Themes\DbParameterSource.cs" />
+    <Compile Include="Themes\ThemeVarsCacheDependency.cs" />
+    <Compile Include="Themes\ThemeVarsVirtualFile.cs" />
+    <Compile Include="Themes\ThemeVarsVirtualPathProvider.cs" />
     <Compile Include="Themes\ThemeHtmlExtensions.cs" />
-    <Compile Include="Themes\HttpFileReader.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Themes\ThemeVarsRepository.cs" />
     <Compile Include="UI\Components\ComponentRendererUtils.cs" />
@@ -340,10 +331,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Less\" />
     <Folder Include="WebApi\OData\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Themes\EnhancedLessCssHttpHandler.cs" />
+    <Compile Include="Themes\Obsolete\EnhancedLessCssHttpHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

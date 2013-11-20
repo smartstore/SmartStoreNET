@@ -22,7 +22,7 @@
 
     if (isActive) 
     {
-        Html.AddCssFileParts(true, Url.ThemeAwareContent("Content/slider.less"));
+        Html.AddCssFileParts(false, Html.ThemePath("Content/slider.less"));
         Html.AddScriptParts(
             "~/Scripts/jquery.backgroundpos.js",
             "~/Scripts/jquery.sequence.js",
@@ -32,7 +32,6 @@
 
 @if (isActive) 
 {
-
     <div id="slider" class="slider" style="height: @(Model.ContentSliderHeight); @(GetSliderBgExpression())">
         
         @if (Model.Slides.Count > 1)

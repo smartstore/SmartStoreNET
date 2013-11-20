@@ -55,7 +55,6 @@ using SmartStore.Web.Framework.UI.Editor;
 using SmartStore.Services.Filter;
 using SmartStore.Web.Framework.WebApi.Routes;
 using SmartStore.Core.Data.Hooks;
-using dotless.Core.Parameters;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Stores;
@@ -312,18 +311,17 @@ namespace SmartStore.Web.Framework
             // codehint: sm-add
             builder.RegisterType<HttpRoutePublisher>().As<IHttpRoutePublisher>().SingleInstance();
             builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
-            builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().SingleInstance();
+            builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerHttpRequest();
 
             //HTML Editor services
             builder.RegisterType<NetAdvDirectoryService>().As<INetAdvDirectoryService>().InstancePerHttpRequest();
             builder.RegisterType<NetAdvImageService>().As<INetAdvImageService>().SingleInstance(); // xxx (http)
 
             //Register event consumers
-            var consumers = typeFinder.FindClassesOfType(typeof(IConsumer<>)).ToList();
+            var consumers = typeFinder.FindClassesOfType(typeof(IConsumer<>));
             foreach (var consumer in consumers)
             {
-                builder.RegisterType(consumer)
-                    .As(consumer.FindInterfaces((type, criteria) =>
+                builder.RegisterType(consumer).As(consumer.FindInterfaces((type, criteria) =>
                     {
                         var isMatch = type.IsGenericType && ((Type)criteria).IsAssignableFrom(type.GetGenericTypeDefinition());
                         return isMatch;
@@ -334,13 +332,19 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<SubscriptionService>().As<ISubscriptionService>().SingleInstance();
 
             // register theming services (codehint: sm-add)
-			builder.RegisterType<DbParameterSource>().As<IParameterSource>().InstancePerHttpRequest();
             builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerHttpRequest();
 
             // register UI component renderers (codehint: sm-add)
             builder.RegisterType<TabStripRenderer>().As<ComponentRenderer<TabStrip>>();
             builder.RegisterType<PagerRenderer>().As<ComponentRenderer<Pager>>();
             builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
+
+            // Register simple (code) widgets
+            var widgetTypes = typeFinder.FindClassesOfType(typeof(IWidget)).Where(x => !typeof(IWidgetPlugin).IsAssignableFrom(x));
+            foreach (var widgetType in widgetTypes)
+            {
+                builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerHttpRequest();
+            }
 
             //// codehint: sm-add (enable mvc action filter property injection) >>> CRASHES! :-(
             //builder.RegisterFilterProvider();

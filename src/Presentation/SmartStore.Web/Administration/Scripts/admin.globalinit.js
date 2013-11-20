@@ -128,9 +128,6 @@
             btn.closest("form").append('<input type="hidden" name="save-continue" value="true" />');
         });
 
-        // Temp only: Init Bootstrap DatePicker
-        //$(".datepicker").datepicker();
-
         // Ajax activity indicator bound to ajax start/stop document events
         $(document).ajaxStart(function () {
             $('#ajax-busy').addClass("busy");
@@ -143,6 +140,18 @@
 		// check overridden store settings
         $('input.multi-store-override-option').each(function (index, elem) {
         	Admin.checkOverriddenStoreValue(elem);
+        });
+
+        // publish entity commit messages
+        $('.entity-commit-trigger').on('click', function (e) {
+            var el = $(this);
+            if (el.data('commit-type')) {
+                EventBroker.publish("entity-commit", {
+                    type: el.data('commit-type'),
+                    action: el.data('commit-action'),
+                    id: el.data('commit-id')
+                });
+            }
         });
 
         // sticky section-header

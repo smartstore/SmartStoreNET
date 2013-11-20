@@ -13,7 +13,7 @@ namespace SmartStore.Web.Framework.UI
 {
     public partial class PageAssetsBuilder : IPageAssetsBuilder
     {
-        private readonly HttpContextBase _httpContext; // codehint: sm-add
+        private readonly HttpContextBase _httpContext;
         private readonly SeoSettings _seoSettings;
         private readonly ThemeSettings _themeSettings;
         private readonly List<string> _titleParts;
@@ -204,22 +204,18 @@ namespace SmartStore.Web.Framework.UI
                 enableBundling = this.BundlingEnabled;
             }
 
+            var prevEnableOptimizations = BundleTable.EnableOptimizations;
+            BundleTable.EnableOptimizations = enableBundling.Value;
+
             var parts = _scriptParts[location];
-            var nonBundledParts = Enumerable.Empty<string>();
+            var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
+            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
+            
             var sb = new StringBuilder();
 
-            if (enableBundling.Value == true)
+            if (bundledParts.Any())
             {
-                var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-                nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-                if (bundledParts.Any())
-                {
-                    sb.AppendLine(_bundleBuilder.Build(BundleType.Script, bundledParts));
-                }
-            }
-            else
-            {
-                nonBundledParts = parts.Select(x => x.Part).Distinct();
+                sb.AppendLine(_bundleBuilder.Build(BundleType.Script, bundledParts));
             }
 
             if (nonBundledParts.Any())
@@ -230,6 +226,8 @@ namespace SmartStore.Web.Framework.UI
                     sb.Append(Environment.NewLine);
                 }
             }
+
+            BundleTable.EnableOptimizations = prevEnableOptimizations;
 
             return sb.ToString();
         }
@@ -251,14 +249,6 @@ namespace SmartStore.Web.Framework.UI
 
         public string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null)
         {
-            //// TODO: wieder reinfrickeln
-            //// themes are store dependent: append store-id so that browser cache holds one less file for each store (and not one for all stores).
-            //for (int i = 0; i < list.Count; ++i)
-            //{
-            //    if (list[i].EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-            //        list[i] = "{0}?storeId={1}".FormatWith(list[i], _storeContext.CurrentStore.Id);
-            //}
-
             if (!_cssParts.ContainsKey(location) || _cssParts[location] == null)
                 return "";
 
@@ -270,22 +260,28 @@ namespace SmartStore.Web.Framework.UI
                 enableBundling = this.BundlingEnabled;
             }
 
+            var prevEnableOptimizations = BundleTable.EnableOptimizations;
+            BundleTable.EnableOptimizations = enableBundling.Value;
+
             var parts = _cssParts[location];
-            var nonBundledParts = Enumerable.Empty<string>();
+
+            //// themes are store dependent: append store-id so that browser cache holds one less file for each store (and not one for all stores).
+            //foreach (var part in parts)
+            //{
+            //    if (part.Part.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        part.Part = "{0}?storeId={1}".FormatWith(part.Part, _storeContext.CurrentStore.Id);
+            //    }
+            //}
+
+            var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
+            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
+
             var sb = new StringBuilder();
 
-            if (enableBundling.Value == true)
+            if (bundledParts.Any())
             {
-                var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-                nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-                if (bundledParts.Any())
-                {
-                    sb.AppendLine(_bundleBuilder.Build(BundleType.Stylesheet, bundledParts));
-                }
-            }
-            else
-            {
-                nonBundledParts = parts.Select(x => x.Part).Distinct();
+                sb.AppendLine(_bundleBuilder.Build(BundleType.Stylesheet, bundledParts));
             }
 
             if (nonBundledParts.Any())
@@ -296,6 +292,8 @@ namespace SmartStore.Web.Framework.UI
                     sb.Append(Environment.NewLine);
                 }
             }
+
+            BundleTable.EnableOptimizations = prevEnableOptimizations;
 
             return sb.ToString();
         }

@@ -25,7 +25,6 @@ using StackExchange.Profiling.MVCHelpers;
 using SmartStore.Services.Events;
 using SmartStore.Core.Events;
 using System.Web;
-using dotless.Core.configuration;
 using SmartStore.Core.Domain.Themes;
 
 
@@ -70,28 +69,8 @@ namespace SmartStore.Web
             var bundlePublisher = EngineContext.Current.Resolve<IBundlePublisher>();
             bundlePublisher.RegisterBundles(bundles);
 
-            var lessConfig = new WebConfigConfigurationLoader().GetConfiguration();
-
-            // it's way better to depend minifying on DebugMode than 
-            // the explicit definition in web.config, so overwrite here!
-            lessConfig.MinifyOutput = HttpContext.Current.IsDebuggingEnabled;
-            
-            // handle theme settings
-            if (databaseInstalled)
-            {
-                var themeSettings = EngineContext.Current.Resolve<ThemeSettings>();
-
-                // dotless config
-                if (themeSettings.CssCacheEnabled > 0 || themeSettings.CssMinifyEnabled > 0)
-                {
-                    if (themeSettings.CssCacheEnabled > 0)
-                        lessConfig.CacheEnabled = themeSettings.CssCacheEnabled == 2;
-                    if (themeSettings.CssMinifyEnabled > 0)
-                        lessConfig.MinifyOutput = themeSettings.CssMinifyEnabled == 2;
-                }
-            }
-
-            BundleTable.EnableOptimizations = true;
+            //// register virtual path provider for theme variables
+            //BundleTable.VirtualPathProvider = new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider);
         }
 
         protected void Application_Start()
@@ -152,6 +131,9 @@ namespace SmartStore.Web
             // fluent validation
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             ModelValidatorProviders.Providers.Add(new FluentValidationModelValidatorProvider(new SmartValidatorFactory()));
+
+            // register virtual path provider for theme variables
+            HostingEnvironment.RegisterVirtualPathProvider(new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
 
             // register virtual path provider for embedded views
             var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();

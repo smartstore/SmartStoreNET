@@ -24,7 +24,7 @@
     adminPageTitle += T("Admin.PageTitle").Text;
 
     // admin styles
-    Html.AppendCssFileParts(true, "~/Administration/Content/theme.less");
+    Html.AddCssFileParts(false, "~/Administration/Content/theme.less");
     
     // add css assets
     var jqueryCssRootPath = "~/Content/jquery-ui/base/";
@@ -42,8 +42,8 @@
 
     // add js assets (Head)
     Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/modernizr-2.6.2.js",
-        "~/Scripts/jquery-1.8.3.js");
+        "~/Scripts/modernizr-{version}.js",
+        "~/Scripts/jquery-{version}.js");
 
     // add js assets (Foot)
     var bootstrapJsRoot = "~/Content/bootstrap/js/";

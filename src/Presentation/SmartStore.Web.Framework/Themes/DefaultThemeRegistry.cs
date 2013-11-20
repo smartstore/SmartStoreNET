@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.Themes
     {
 		#region Fields
 
-        private readonly ReaderWriterLockSlim _rwLock; // codehint: sm-add
+        private readonly ReaderWriterLockSlim _rwLock;
 
         private readonly IList<ThemeManifest> _themeManifests = new List<ThemeManifest>();
         private string _virtualBasePath = string.Empty;

@@ -4256,7 +4256,7 @@ namespace SmartStore.Services.Installation
                 },
                 new CommonSettings
                 {
-                    UseSystemEmailForContactUsForm = true,
+                    UseSystemEmailForContactUsForm = false,
                     UseStoredProceduresIfSupported = true,
                     SitemapEnabled = true,
                     SitemapIncludeCategories = true,

@@ -2191,9 +2191,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.TaxBasedOn = TaxBasedOn.ShippingAddress;
                     x.TaxDisplayType = TaxDisplayType.IncludingTax;
                     x.DisplayTaxSuffix = true;
-                    x.ShippingIsTaxable = false;
+                    x.ShippingIsTaxable = true;
+                    x.ShippingPriceIncludesTax = false;
+                    x.ShippingTaxClassId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
                     x.EuVatEnabled = true;
-                    x.EuVatShopCountryId = 0;
+                    x.EuVatShopCountryId = _countryRepository.Table.Where(c => c.TwoLetterIsoCode == "DE").Single().Id;
                     x.EuVatAllowVatExemption = true;
                     x.EuVatUseWebService = false;
                     x.EuVatEmailAdminWhenNewVatSubmitted = true;

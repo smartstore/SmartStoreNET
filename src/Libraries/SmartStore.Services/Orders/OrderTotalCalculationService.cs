@@ -850,7 +850,18 @@ namespace SmartStore.Services.Orders
                 resultTemp += shoppingCartShipping.Value;
             }
             resultTemp += paymentMethodAdditionalFeeWithoutTax;
-            resultTemp += shoppingCartTax;
+
+            //// (VATFIX)
+            //resultTemp += shoppingCartTax;
+            if (_taxService.IsVatExempt(null, customer))
+            {
+                // add nothing to total
+            }
+            else
+            {
+                resultTemp += shoppingCartTax;
+            }
+
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 resultTemp = Math.Round(resultTemp, 2);
 

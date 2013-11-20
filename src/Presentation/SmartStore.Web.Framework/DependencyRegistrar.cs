@@ -148,6 +148,7 @@ namespace SmartStore.Web.Framework
             //work context
             builder.RegisterType<WebWorkContext>().As<IWorkContext>()
                 .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                 .InstancePerHttpRequest();
 			//store context
 			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerHttpRequest();

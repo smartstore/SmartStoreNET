@@ -16,6 +16,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework
@@ -103,6 +104,8 @@ namespace SmartStore.Web.Framework
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
+
+        public Lazy<ITaxService> TaxService { get; set; }
 
         /// <summary>
         /// Gets or sets the current customer
@@ -420,6 +423,14 @@ namespace SmartStore.Web.Framework
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
             {
 		        taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
+            }
+
+            if (!taxDisplayType.HasValue && _taxSettings.EuVatEnabled)
+            {
+                if (customer != null && TaxService.Value.IsVatExempt(null, customer))
+                {
+                    taxDisplayType = (int)TaxDisplayType.ExcludingTax;
+                }
             }
 
             if (!taxDisplayType.HasValue)

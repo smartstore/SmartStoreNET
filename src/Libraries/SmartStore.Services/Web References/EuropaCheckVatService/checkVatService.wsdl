@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:impl="urn:ec.europa.eu:taxud:vies:services:checkVat" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns1="urn:ec.europa.eu:taxud:vies:services:checkVat:types" targetNamespace="urn:ec.europa.eu:taxud:vies:services:checkVat" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:impl="urn:ec.europa.eu:taxud:vies:services:checkVat:types" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns1="urn:ec.europa.eu:taxud:vies:services:checkVat:types" targetNamespace="urn:ec.europa.eu:taxud:vies:services:checkVat:types" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <xsd:documentation>
 	 Specific disclaimer for this service ----------------------------------------- The
 	    objective of this Internet site is to allow persons involved in the intra-Community supply of

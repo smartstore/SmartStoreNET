@@ -196,7 +196,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
 				StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
-				StateProvinceId = 0,
+				//StateProvinceId = 0,
                 From = model.AddFrom,
                 To = model.AddTo,
                 UsePercentage = model.AddUsePercentage,

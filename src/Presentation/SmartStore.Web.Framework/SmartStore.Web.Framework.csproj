@@ -201,7 +201,6 @@
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
     <Compile Include="Settings\StoreDependingSettingData.cs" />
     <Compile Include="Settings\StoreDependingSettingHelper.cs" />
-    <Compile Include="Themes\ThemeVarsCacheDependency.cs" />
     <Compile Include="Themes\ThemeVarsVirtualFile.cs" />
     <Compile Include="Themes\ThemeVarsVirtualPathProvider.cs" />
     <Compile Include="Themes\ThemeHtmlExtensions.cs" />

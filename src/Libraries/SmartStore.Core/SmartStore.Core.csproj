@@ -116,6 +116,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Caching\DefaultCacheManager.cs" />
+    <Compile Include="Caching\AspNetCache.cs" />
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />

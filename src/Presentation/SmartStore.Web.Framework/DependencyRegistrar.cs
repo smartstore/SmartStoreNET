@@ -132,11 +132,17 @@ namespace SmartStore.Web.Framework
             //cache manager
             builder.RegisterType<StaticCache>().As<ICache>().Named<ICache>("static").SingleInstance();
             builder.RegisterType<RequestCache>().As<ICache>().Named<ICache>("request").InstancePerHttpRequest();
+            builder.RegisterType<AspNetCache>().As<ICache>().Named<ICache>("aspnet").InstancePerHttpRequest();
             
             builder.RegisterType<DefaultCacheManager>()
                 .As<ICacheManager>()
                 .Named<ICacheManager>("sm_cache_static")
                 .WithParameter(ResolvedParameter.ForNamed<ICache>("static"))
+                .InstancePerHttpRequest();
+            builder.RegisterType<DefaultCacheManager>()
+                .As<ICacheManager>()
+                .Named<ICacheManager>("sm_cache_aspnet")
+                .WithParameter(ResolvedParameter.ForNamed<ICache>("aspnet"))
                 .InstancePerHttpRequest();
             builder.RegisterType<DefaultCacheManager>()
                 .As<ICacheManager>()

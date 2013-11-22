@@ -134,6 +134,7 @@ namespace SmartStore.Web
 
             // register virtual path provider for theme variables
             HostingEnvironment.RegisterVirtualPathProvider(new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
+            BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
 
             // register virtual path provider for embedded views
             var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();

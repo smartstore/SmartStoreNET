@@ -14,6 +14,7 @@ using BundleTransformer.Core.Builders;
 using BundleTransformer.Core.Orderers;
 using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -33,11 +34,9 @@ namespace SmartStore.Web.Framework.UI
     {
 
         private static readonly object s_lock = new object();
-        private readonly IStoreContext _storeContext;
 
-        public BundleBuilder(IStoreContext storeContext)
+        public BundleBuilder()
         {
-            _storeContext = storeContext;
         }
 
         //public string Build(BundleType type, IEnumerable<string> files)
@@ -101,7 +100,7 @@ namespace SmartStore.Web.Framework.UI
 
                         Bundle bundle = (type == BundleType.Script) ?
                             new CustomScriptBundle(bundleVirtualPath) as Bundle :
-                            new SmartStyleBundle(bundleVirtualPath, hasLessFiles ? _storeContext.CurrentStore.Id : (int?)null) as Bundle;
+                            new SmartStyleBundle(bundleVirtualPath, hasLessFiles) as Bundle;
                         bundle.Orderer = nullOrderer;
 
                         bundle.Include(files.ToArray());
@@ -157,25 +156,40 @@ namespace SmartStore.Web.Framework.UI
 
     public class SmartStyleBundle : Bundle
     {
-        private readonly int? _storeId;
-        
-        public SmartStyleBundle(string virtualPath, int? storeId)
-		  : this(virtualPath, null, storeId)
+        private readonly bool _varyCacheByStore;
+
+        public SmartStyleBundle(string virtualPath, bool varyCacheByStore)
+		  : this(virtualPath, null, varyCacheByStore)
 		{ }
 
-        public SmartStyleBundle(string virtualPath, string cdnPath, int? storeId)
+        public SmartStyleBundle(string virtualPath, string cdnPath, bool varyCacheByStore)
 			: base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.GetCssTransformerInstance() })
 		{
 			Builder = new NullBuilder();
-            _storeId = storeId;
+            _varyCacheByStore = varyCacheByStore;
 		}
+
+        public override IEnumerable<BundleFile> EnumerateFiles(BundleContext context)
+        {
+            var files = base.EnumerateFiles(context);
+            return files;
+        }
+
+        public override BundleResponse GenerateBundleResponse(BundleContext context)
+        {
+            var response = base.GenerateBundleResponse(context);
+            return response;
+        }
 
         public override string GetCacheKey(BundleContext context)
         {
-            if (_storeId.HasValue)
+            if (_varyCacheByStore)
             {
-                return "{0}_{1}".FormatInvariant(base.GetCacheKey(context), _storeId.Value);
+                var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+                var cacheKey = "{0}_{1}".FormatInvariant(base.GetCacheKey(context), storeContext.CurrentStore.Id);
+                return cacheKey;
             }
+
             return base.GetCacheKey(context);
         }
     }

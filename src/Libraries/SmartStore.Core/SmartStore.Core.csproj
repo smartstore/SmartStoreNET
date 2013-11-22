@@ -448,7 +448,7 @@
     <Compile Include="Utilities\DateTimeConvert.cs" />
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\Inflector.cs" />
-    <Compile Include="Utilities\JsonObject.cs" />
+    <Compile Include="Utilities\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />

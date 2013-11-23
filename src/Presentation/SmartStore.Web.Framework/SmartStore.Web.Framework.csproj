@@ -324,6 +324,7 @@
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />
     <Compile Include="WebApi\WebApiCore.cs" />
+    <Compile Include="WebApi\WebApiEntityController.cs" />
     <Compile Include="WebApi\WebApiExtension.cs" />
     <Compile Include="WebApi\WebApiSettings.cs" />
     <Compile Include="WebApi\WebApiStartupTask.cs" />

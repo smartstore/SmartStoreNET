@@ -323,6 +323,7 @@
     <Compile Include="WebApi\Security\WebApiPermissionProvider.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />
+    <Compile Include="WebApi\WebApiCaching.cs" />
     <Compile Include="WebApi\WebApiCore.cs" />
     <Compile Include="WebApi\WebApiEntityController.cs" />
     <Compile Include="WebApi\WebApiExtension.cs" />

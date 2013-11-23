@@ -321,6 +321,9 @@
     <Compile Include="WebApi\Security\WebApiPermissionProvider.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />
+    <Compile Include="WebApi\WebApiCore.cs" />
+    <Compile Include="WebApi\WebApiExtension.cs" />
+    <Compile Include="WebApi\WebApiSettings.cs" />
     <Compile Include="WebApi\WebApiStartupTask.cs" />
     <Compile Include="WebStoreContext.cs" />
     <Compile Include="WebWorkContext.cs" />

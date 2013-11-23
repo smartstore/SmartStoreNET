@@ -321,6 +321,7 @@
     <Compile Include="WebApi\GenericApiController.cs" />
     <Compile Include="WebApi\OData\WebApiQueryableAttribute.cs" />
     <Compile Include="WebApi\Security\HmacAuthentication.cs" />
+    <Compile Include="WebApi\Security\WebApiAuthenticateAttribute.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />
     <Compile Include="WebApi\WebApiCaching.cs" />

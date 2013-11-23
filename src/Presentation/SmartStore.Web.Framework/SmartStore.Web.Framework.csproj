@@ -314,10 +314,11 @@
     <Compile Include="ViewEngines\Razor\WebViewPage.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyResolver.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyScope.cs" />
+    <Compile Include="WebApi\Configuration\IWebApiConfigurationProvider.cs" />
+    <Compile Include="WebApi\Configuration\IWebApiConfigurationPublisher.cs" />
+    <Compile Include="WebApi\Configuration\WebApiConfigurationBroadcaster.cs" />
+    <Compile Include="WebApi\Configuration\WebApiConfigurationPublisher.cs" />
     <Compile Include="WebApi\GenericApiController.cs" />
-    <Compile Include="WebApi\Routes\IHttpRouteProvider.cs" />
-    <Compile Include="WebApi\Routes\IHttpRoutePublisher.cs" />
-    <Compile Include="WebApi\Routes\HttpRoutePublisher.cs" />
     <Compile Include="WebApi\Security\WebApiPermissionProvider.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />

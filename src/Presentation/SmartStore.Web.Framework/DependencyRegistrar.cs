@@ -53,11 +53,11 @@ using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Editor;
 using SmartStore.Services.Filter;
-using SmartStore.Web.Framework.WebApi.Routes;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework.WebApi.Configuration;
 
 namespace SmartStore.Web.Framework
 {
@@ -315,7 +315,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<EmbeddedViewResolver>().As<IEmbeddedViewResolver>().SingleInstance();
             builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
             // codehint: sm-add
-            builder.RegisterType<HttpRoutePublisher>().As<IHttpRoutePublisher>().SingleInstance();
+			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>().SingleInstance();
             builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
             builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerHttpRequest();
 

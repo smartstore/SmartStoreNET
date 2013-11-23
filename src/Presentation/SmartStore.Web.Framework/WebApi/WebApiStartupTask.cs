@@ -15,7 +15,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Security;
-using SmartStore.Web.Framework.WebApi.Routes;
 using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.Web.Framework.WebApi
@@ -54,8 +53,8 @@ namespace SmartStore.Web.Framework.WebApi
             permissionService.InstallPermissions(new WebApiPermissionProvider());
 
             // register custom web api routes (from plugins etc.)
-            var routePublisher = EngineContext.Current.Resolve<IHttpRoutePublisher>();
-            routePublisher.RegisterRoutes(config.Routes);
+			//var routePublisher = EngineContext.Current.Resolve<IHttpRoutePublisher>();
+			//routePublisher.RegisterRoutes(config.Routes);
 
             // register default api route
 			if (!config.Routes.ContainsKey("DefaultApi"))

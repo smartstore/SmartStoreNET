@@ -259,15 +259,7 @@ namespace SmartStore
 				}
 				else 
                 {
-					StringBuilder sb = new StringBuilder();
-
-                    byte[] hashBytes = md5.ComputeHash(data);
-                    foreach (byte b in hashBytes)
-                    {
-                        sb.Append(b.ToString("x2").ToLower());
-                    }
-
-					return sb.ToString();
+					return md5.ComputeHash(data).ToHexString().ToLower();
 				}
             }
         }
@@ -907,12 +899,8 @@ namespace SmartStore
 				using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider()) 
                 {
 					byte[] data = Encoding.ASCII.GetBytes(value);
-					StringBuilder sb = new StringBuilder();
 
-					foreach (byte b in sha1.ComputeHash(data))
-						sb.Append(b.ToString("x2"));
-
-					return sb.ToString();
+					return sha1.ComputeHash(data).ToHexString();
 				}
 			}
 			return "";

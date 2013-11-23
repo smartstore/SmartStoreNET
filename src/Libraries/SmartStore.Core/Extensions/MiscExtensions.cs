@@ -92,5 +92,23 @@ namespace SmartStore
         {
             return default(T).Equals(value.GetValueOrDefault());
         }
+
+		/// <summary>Converts bytes into a hex string.</summary>
+		public static string ToHexString(this byte[] bytes, int length = 0)
+		{
+			if (bytes == null || bytes.Length <= 0)
+				return "";
+
+			var sb = new StringBuilder();
+
+			foreach (byte b in bytes)
+			{
+				sb.Append(b.ToString("x2"));
+
+				if (length > 0 && sb.Length >= length)
+					break;
+			}
+			return sb.ToString();
+		}
     }	// class
 }

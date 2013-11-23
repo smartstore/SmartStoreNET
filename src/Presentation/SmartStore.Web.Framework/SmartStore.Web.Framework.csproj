@@ -319,6 +319,7 @@
     <Compile Include="WebApi\Configuration\WebApiConfigurationBroadcaster.cs" />
     <Compile Include="WebApi\Configuration\WebApiConfigurationPublisher.cs" />
     <Compile Include="WebApi\GenericApiController.cs" />
+    <Compile Include="WebApi\OData\WebApiQueryableAttribute.cs" />
     <Compile Include="WebApi\Security\WebApiPermissionProvider.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerActivator.cs" />
     <Compile Include="WebApi\SmartStoreWebApiHttpControllerSelector.cs" />
@@ -334,7 +335,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Less\" />
-    <Folder Include="WebApi\OData\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Themes\Obsolete\EnhancedLessCssHttpHandler.cs" />

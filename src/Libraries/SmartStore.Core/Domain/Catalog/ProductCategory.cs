@@ -11,12 +11,14 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the product identifier
         /// </summary>
-        public int ProductId { get; set; }
+		[DataMember]
+		public int ProductId { get; set; }
 
         /// <summary>
         /// Gets or sets the category identifier
         /// </summary>
-        public int CategoryId { get; set; }
+		[DataMember]
+		public int CategoryId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the product is featured
@@ -33,7 +35,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets the category
         /// </summary>
-        [DataMember]
         public virtual Category Category { get; set; }
 
         /// <summary>

@@ -6,9 +6,11 @@ using System.Xml;
 using SmartStore.Core.Infrastructure;
 using System.Linq;
 using SmartStore.Utilities;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Plugins
 {
+	[DataContract]
     public class PluginDescriptor : IComparable<PluginDescriptor>
     {
         private string _resourceRootKey;
@@ -97,7 +99,8 @@ namespace SmartStore.Core.Plugins
         /// Gets or sets the plugin group
         /// </summary>
         /// <remarks>codehint:sm-add</remarks>
-        public string Group { get; internal set; }
+		[DataMember]
+		public string Group { get; internal set; }
 
         // codehint: sm-add
         public bool IsInKnownGroup
@@ -111,43 +114,51 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets or sets the friendly name
         /// </summary>
-        public string FriendlyName { get; set; }
+		[DataMember]
+		public string FriendlyName { get; set; }
 
         /// <summary>
         /// Gets or sets the system name
         /// </summary>
-        public string SystemName { get; set; }
+		[DataMember]
+		public string SystemName { get; set; }
 
         /// <summary>
         /// Gets the plugin description
         /// </summary>
         /// <remarks>codehint:sm-add</remarks>
-        public string Description { get; internal set; }
+		[DataMember]
+		public string Description { get; internal set; }
 
         /// <summary>
         /// Gets or sets the version
         /// </summary>
-        public Version Version { get; set; }
+		[DataMember]
+		public Version Version { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum supported app version
         /// </summary>
-        public Version MinAppVersion { get; set; }
+		[DataMember]
+		public Version MinAppVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the author
         /// </summary>
-        public string Author { get; set; }
+		[DataMember]
+		public string Author { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
+		[DataMember]
+		public int DisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether plugin is installed
         /// </summary>
-        public bool Installed { get; set; }
+		[DataMember]
+		public bool Installed { get; set; }
 
 		/// <summary>
 		/// Gets or sets the root key of string resources.

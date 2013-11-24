@@ -34,6 +34,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// (an optional key for advanced customization)
 		/// </summary>
 		/// <remarks>codehint: sm-add</remarks>
+		[DataMember]
 		public string Alias { get; set; }
 
         /// <summary>
@@ -75,27 +76,32 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the page size
         /// </summary>
-        public int PageSize { get; set; }
+		[DataMember]
+		public int PageSize { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers can select the page size
         /// </summary>
-        public bool AllowCustomersToSelectPageSize { get; set; }
+		[DataMember]
+		public bool AllowCustomersToSelectPageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the available customer selectable page size options
         /// </summary>
-        public string PageSizeOptions { get; set; }
+		[DataMember]
+		public string PageSizeOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the available price ranges
         /// </summary>
-        public string PriceRanges { get; set; }
+		[DataMember]
+		public string PriceRanges { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the category on home page
         /// </summary>
-        public bool ShowOnHomePage { get; set; }
+		[DataMember]
+		public bool ShowOnHomePage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this category has discounts applied
@@ -104,16 +110,19 @@ namespace SmartStore.Core.Domain.Catalog
         /// if this property is set to false, then we do not need to load Applied Discounts navifation property
         /// </remarks>
         /// </summary>
-        public bool HasDiscountsApplied { get; set; }
+		[DataMember]
+		public bool HasDiscountsApplied { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is subject to ACL
         /// </summary>
-        public bool SubjectToAcl { get; set; }
+		[DataMember]
+		public bool SubjectToAcl { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
 		/// </summary>
+		[DataMember]
 		public bool LimitedToStores { get; set; }
 
         /// <summary>
@@ -125,7 +134,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
         /// </summary>
-        [DataMember]
         public bool Deleted { get; set; }
 
         /// <summary>
@@ -149,7 +157,8 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the collection of applied discounts
         /// </summary>
-        public virtual ICollection<Discount> AppliedDiscounts
+		[DataMember]
+		public virtual ICollection<Discount> AppliedDiscounts
         {
             get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }
             protected set { _appliedDiscounts = value; }

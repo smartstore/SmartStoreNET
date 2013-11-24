@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Discounts
 {
     /// <summary>
     /// Represents a discount
     /// </summary>
-    public partial class Discount : BaseEntity
+	[DataContract]
+	public partial class Discount : BaseEntity
     {
         private ICollection<DiscountRequirement> _discountRequirements;
         private ICollection<Category> _appliedToCategories;
@@ -16,62 +18,74 @@ namespace SmartStore.Core.Domain.Discounts
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the discount type identifier
         /// </summary>
-        public int DiscountTypeId { get; set; }
+		[DataMember]
+		public int DiscountTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use percentage
         /// </summary>
-        public bool UsePercentage { get; set; }
+		[DataMember]
+		public bool UsePercentage { get; set; }
 
         /// <summary>
         /// Gets or sets the discount percentage
         /// </summary>
-        public decimal DiscountPercentage { get; set; }
+		[DataMember]
+		public decimal DiscountPercentage { get; set; }
 
         /// <summary>
         /// Gets or sets the discount amount
         /// </summary>
-        public decimal DiscountAmount { get; set; }
+		[DataMember]
+		public decimal DiscountAmount { get; set; }
 
         /// <summary>
         /// Gets or sets the discount start date and time
         /// </summary>
-        public DateTime? StartDateUtc { get; set; }
+		[DataMember]
+		public DateTime? StartDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the discount end date and time
         /// </summary>
-        public DateTime? EndDateUtc { get; set; }
+		[DataMember]
+		public DateTime? EndDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether discount requires coupon code
         /// </summary>
-        public bool RequiresCouponCode { get; set; }
+		[DataMember]
+		public bool RequiresCouponCode { get; set; }
 
         /// <summary>
         /// Gets or sets the coupon code
         /// </summary>
-        public string CouponCode { get; set; }
+		[DataMember]
+		public string CouponCode { get; set; }
 
         /// <summary>
         /// Gets or sets the discount limitation identifier
         /// </summary>
-        public int DiscountLimitationId { get; set; }
+		[DataMember]
+		public int DiscountLimitationId { get; set; }
 
         /// <summary>
         /// Gets or sets the discount limitation times (used when Limitation is set to "N Times Only" or "N Times Per Customer")
         /// </summary>
-        public int LimitationTimes { get; set; }
+		[DataMember]
+		public int LimitationTimes { get; set; }
 
         /// <summary>
         /// Gets or sets the discount type
         /// </summary>
-        public DiscountType DiscountType
+		[DataMember]
+		public DiscountType DiscountType
         {
             get
             {
@@ -86,7 +100,8 @@ namespace SmartStore.Core.Domain.Discounts
         /// <summary>
         /// Gets or sets the discount limitation
         /// </summary>
-        public DiscountLimitationType DiscountLimitation
+		[DataMember]
+		public DiscountLimitationType DiscountLimitation
         {
             get
             {
@@ -110,7 +125,8 @@ namespace SmartStore.Core.Domain.Discounts
         /// <summary>
         /// Gets or sets the categories
         /// </summary>
-        public virtual ICollection<Category> AppliedToCategories
+		[DataMember]
+		public virtual ICollection<Category> AppliedToCategories
         {
             get { return _appliedToCategories ?? (_appliedToCategories = new List<Category>()); }
             protected set { _appliedToCategories = value; }

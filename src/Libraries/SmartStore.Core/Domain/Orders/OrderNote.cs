@@ -1,31 +1,37 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Orders
 {
     /// <summary>
     /// Represents an order note
     /// </summary>
-    public partial class OrderNote : BaseEntity
+	[DataContract]
+	public partial class OrderNote : BaseEntity
     {
         /// <summary>
         /// Gets or sets the order identifier
         /// </summary>
-        public int OrderId { get; set; }
+		[DataMember]
+		public int OrderId { get; set; }
 
         /// <summary>
         /// Gets or sets the note
         /// </summary>
-        public string Note { get; set; }
+		[DataMember]
+		public string Note { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a customer can see a note
         /// </summary>
-        public bool DisplayToCustomer { get; set; }
+		[DataMember]
+		public bool DisplayToCustomer { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of order note creation
         /// </summary>
-        public DateTime CreatedOnUtc { get; set; }
+		[DataMember]
+		public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets the order

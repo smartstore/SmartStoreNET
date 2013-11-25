@@ -6,6 +6,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Web.Framework.WebApi.OData;
+using System.Web.Http.Cors;
 
 namespace SmartStore.Web.Framework.WebApi
 {   
@@ -37,6 +38,9 @@ namespace SmartStore.Web.Framework.WebApi
 				MaxTop = WebApiGlobal.MaxTop
 			};
 			config.EnableQuerySupport(queryAttribute);
+
+			var corsAttribute = new EnableCorsAttribute("*", "*", "*");
+			config.EnableCors(corsAttribute);
 
 			//config.EnableQuerySupport();
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;

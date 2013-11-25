@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
 
 namespace SmartStore.Web.Framework.WebApi
 {
-
     public class SmartStoreWebApiHttpControllerSelector : DefaultHttpControllerSelector
     {
         private readonly HttpConfiguration _configuration;
@@ -25,7 +19,5 @@ namespace SmartStore.Web.Framework.WebApi
             var selector = base.SelectController(request);
             return selector;
         }
-
     }
-
 }

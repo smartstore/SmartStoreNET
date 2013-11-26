@@ -16,6 +16,7 @@
 * #152 Copy message template does not work
 * SKU search did not work cause of wrong join statement
 * #165 TopicWidgets Sorting is not applied
+* Google Analytics: with active _Order Number Formatter_ plugin the order number was posted twice (formatted and unformatted)
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

@@ -7,6 +7,8 @@ namespace SmartStore.Web.Framework.WebApi.OData
 {
 	public class WebApiQueryableAttribute : QueryableAttribute
 	{
+		public bool PagingOptional { get; set; }
+
 		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
 		{
 			var request = actionExecutedContext.Request;
@@ -18,19 +20,20 @@ namespace SmartStore.Web.Framework.WebApi.OData
 
 				if (responseContent != null)
 				{
-					// TODO: check
-					//responseContent.Value is SingleResult
-
-					var query = request.RequestUri.Query;
-
-					bool missingClientPaging = query.IsNullOrEmpty() || !query.Contains("$top=");
-
-					if (missingClientPaging)
+					if (!PagingOptional)
 					{
-						actionExecutedContext.Response = request.CreateErrorResponse(HttpStatusCode.BadRequest,
-							"Missing client paging. Please specify odata $top query option. Maximum value is {0}.".FormatWith(WebApiGlobal.MaxTop));
+						//bool single = responseContent.Value is SingleResult;
+						var query = request.RequestUri.Query;
 
-						return;
+						bool missingClientPaging = query.IsNullOrEmpty() || !query.Contains("$top=");
+
+						if (missingClientPaging)
+						{
+							actionExecutedContext.Response = request.CreateErrorResponse(HttpStatusCode.BadRequest,
+								"Missing client paging. Please specify odata $top query option. Maximum value is {0}.".FormatWith(WebApiGlobal.MaxTop));
+
+							return;
+						}
 					}
 				}
 			}

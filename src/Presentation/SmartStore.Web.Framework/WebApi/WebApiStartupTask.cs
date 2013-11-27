@@ -55,7 +55,7 @@ namespace SmartStore.Web.Framework.WebApi
 			config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",
 				new { version = "v1", controller = "Home", id = RouteParameter.Optional });
 
-			config.Routes.MapODataRoute(WebApiGlobal.RouteNameDefaultOdata, "odata/v1",
+			config.Routes.MapODataRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
 				configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
         }
 

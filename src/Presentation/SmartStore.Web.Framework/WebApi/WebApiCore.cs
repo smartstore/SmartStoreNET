@@ -42,6 +42,7 @@ namespace SmartStore.Web.Framework.WebApi
 		public static int DefaultTimePeriodMinutes { get { return 15; } }
 		public static string RouteNameDefaultApi { get { return "WebApi.Default"; } }
 		public static string RouteNameDefaultOdata { get { return "WebApi.OData.Default"; } }
+		public static string MostRecentOdataPath { get { return "odata/v1"; } }
 
 		/// <remarks>see http://tools.ietf.org/html/rfc6648 </remarks>
 		public static class HeaderName

@@ -19,7 +19,6 @@ namespace SmartStore.Web.Framework.Themes
 
         public ThemeVarsRepository()
         {
-
         }
 
         public string GetVariablesAsLess(string themeName, int storeId)
@@ -38,19 +37,6 @@ namespace SmartStore.Web.Framework.Themes
                 return lessCss;
             });
         }
-
-        //public IDictionary<string, string> GetParameters(int storeId)
-        //{
-        //    Guard.ArgumentIsPositive(storeId, "storeId");
-
-        //    string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
-        //    if (themeName.IsEmpty())
-        //    {
-        //        return new Dictionary<string, string>();
-        //    }
-
-        //    return this.GetLessCssVariables(themeName, storeId);
-        //}
 
         private IDictionary<string, string> GetLessCssVariables(string themeName, int storeId)
         {

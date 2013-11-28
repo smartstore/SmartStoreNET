@@ -11,11 +11,13 @@ namespace SmartStore.Web.Framework.Themes
 {
     public class ThemeVarsVirtualFile : VirtualFile
     {
+        private readonly string _themeName;
         private readonly int _storeId;
 
-        public ThemeVarsVirtualFile(string virtualPath, int storeId)
+        public ThemeVarsVirtualFile(string virtualPath, string themeName, int storeId)
             : base(virtualPath)
         {
+            _themeName = themeName;
             _storeId = storeId;
         }
 
@@ -27,9 +29,11 @@ namespace SmartStore.Web.Framework.Themes
         public override Stream Open()
         {
             var repo = new ThemeVarsRepository();
-            var parameters = repo.GetParameters(_storeId);
-            var lessCss = TransformToLess(parameters);
 
+            if (_themeName.IsEmpty())
+                return GenerateStreamFromString(string.Empty);
+
+            var lessCss = repo.GetVariablesAsLess(_themeName, _storeId);
             return GenerateStreamFromString(lessCss);
         }
 
@@ -41,25 +45,6 @@ namespace SmartStore.Web.Framework.Themes
             writer.Flush();
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
-        }
-        
-        private string TransformToLess(IDictionary<string, string> parameters)
-        {
-            if (parameters.Count == 0)
-                return string.Empty;
-
-            var sb = new StringBuilder();
-            foreach (var parameter in parameters.Where(ValueIsNotNullOrEmpty))
-            {
-                sb.AppendFormat("@{0}: {1};\n", parameter.Key, parameter.Value);
-            }
-
-            return sb.ToString();
-        }
-
-        private static bool ValueIsNotNullOrEmpty(KeyValuePair<string, string> kvp)
-        {
-            return !string.IsNullOrEmpty(kvp.Value);
         }
 
     }

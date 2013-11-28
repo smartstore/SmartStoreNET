@@ -32,6 +32,15 @@ namespace SmartStore.Web.Framework
     {
 
         /// <summary>
+        /// Key for ThemeVariables caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : theme name
+        /// {1} : store identifier
+        /// </remarks>
+        public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}-{1}";
+        
+        /// <summary>
         /// Key for tax display type caching
         /// </summary>
         /// <remarks>
@@ -53,17 +62,20 @@ namespace SmartStore.Web.Framework
 
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
         {
-
+            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
         {
-
+            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
         {
-
+            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
 
@@ -113,6 +125,23 @@ namespace SmartStore.Web.Framework
             // clear models which depend on settings
             _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY); // depends on TaxSettings.TaxDisplayType
         }
+
+        #region Helpers
+
+        private static string BuildThemeVarsCacheKey(ThemeVariable entity)
+        {
+            return BuildThemeVarsCacheKey(entity.Theme, entity.StoreId);
+        }
+
+        internal static string BuildThemeVarsCacheKey(string themeName, int storeId)
+        {
+            var cacheKey = THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
+            return cacheKey;
+        }
+
+        #endregion
+
+
     }
 
 }

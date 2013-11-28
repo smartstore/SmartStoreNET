@@ -116,6 +116,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Caching\DefaultCacheManager.cs" />
+    <Compile Include="Caching\AspNetCache.cs" />
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
@@ -447,7 +448,7 @@
     <Compile Include="Utilities\DateTimeConvert.cs" />
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\Inflector.cs" />
-    <Compile Include="Utilities\JsonObject.cs" />
+    <Compile Include="Utilities\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
+using System.Web.Optimization;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Themes
@@ -18,68 +20,51 @@ namespace SmartStore.Web.Framework.Themes
             _previous = previous;
         }
 
-        private bool IsThemeVars(string virtualPath)
-        {
-            if (string.IsNullOrEmpty(virtualPath))
-                return false;
-
-            return virtualPath.ToLower().EndsWith("/.db/themevars.less");
-        }
-
         public override bool FileExists(string virtualPath)
         {
-            return (IsThemeVars(virtualPath) || _previous.FileExists(virtualPath));
+            return (ThemeHelper.PathIsThemeVars(virtualPath) || _previous.FileExists(virtualPath));
         }
-        
-
+         
         public override VirtualFile GetFile(string virtualPath)
         {
-            if (IsThemeVars(virtualPath))
+            if (ThemeHelper.PathIsThemeVars(virtualPath))
             {
+                string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
                 int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-                virtualPath = ToStoreSpecificPath(virtualPath, storeId);
-                return new ThemeVarsVirtualFile(virtualPath, storeId);
+                return new ThemeVarsVirtualFile(virtualPath, themeName, storeId);
             }
 
             return _previous.GetFile(virtualPath);
         }
-
-        //public override string GetCacheKey(string virtualPath)
-        //{
-        //    if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        return Guid.NewGuid().ToString();
-        //    }
-        //    return _previous.GetCacheKey(virtualPath);
-        //}
-
-        //public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
-        //{
-        //    if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        //return virtualPath;
-        //        return Guid.NewGuid().ToString();
-        //    }
-        //    return _previous.GetFileHash(virtualPath, virtualPathDependencies);
-        //}
         
         public override CacheDependency GetCacheDependency(
             string virtualPath,
             IEnumerable virtualPathDependencies,
             DateTime utcStart)
         {
-            //if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    return null;
-            //}
-            //return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 
-            if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase) || virtualPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+            bool isLess;
+            if (IsStyleSheet(virtualPath, out isLess))
             {
+                if (isLess)
+                {
+                    // the LESS HTTP handler made the call
+                    // [...]
+                }
+                else
+                {
+                    // the Bundler made the call
+                    var bundle = BundleTable.Bundles.GetBundleFor(virtualPath);
+                    if (bundle == null)
+                    {
+                        return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+                    }
+                }
+                
                 var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
                 // determine the virtual themevars.less import reference
-                var themeVarsFile = arrPathDependencies.Where(x => IsThemeVars(x)).FirstOrDefault();
+                var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
 
                 if (themeVarsFile.IsEmpty())
                 {
@@ -88,20 +73,17 @@ namespace SmartStore.Web.Framework.Themes
                 }
 
                 // exclude the themevars import from the file dependencies list,
-                // 'cause this one cannot be monitored by physical file system
+                // 'cause this one cannot be monitored by the physical file system
                 var fileDependencies = arrPathDependencies.Except(new string[] { themeVarsFile });
 
                 if (arrPathDependencies.Any())
                 {
                     int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-                    //var fileDep = new CacheDependency(fileDependencies.Select(x => HostingEnvironment.MapPath(x)).ToArray(), utcStart);
-                    var fileDep = _previous.GetCacheDependency(virtualPath, fileDependencies, utcStart);
-                    var themeVarsDep = new ThemeVarsCacheDependency(storeId);
-
-                    var aggDep = new AggregateCacheDependency();
-                    aggDep.Add(themeVarsDep, fileDep);
-
-                    return aggDep;
+                    string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
+                    // invalidate the cache when variables change
+                    string cacheKey = AspNetCache.BuildKey(FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId));
+                    var cacheDependency = new CacheDependency(fileDependencies.Select(x => HostingEnvironment.MapPath(x)).ToArray(), new string[] { cacheKey }, utcStart);
+                    return cacheDependency;
                 }
 
                 return null;
@@ -110,12 +92,14 @@ namespace SmartStore.Web.Framework.Themes
             return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
         }
 
-        private string ToStoreSpecificPath(string virtualPath, int storeId)
+        private static bool IsStyleSheet(string virtualPath, out bool isLess)
         {
-            if (VirtualPathUtility.IsAbsolute(virtualPath)) {
-                return virtualPath;
-            }
-            return "/{0}{1}".FormatInvariant(storeId, virtualPath.TrimStart('~'));
+            bool isCss = false;
+            isLess = virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
+            if (!isLess)
+                isCss = virtualPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
+            return isLess || isCss;
         }
+
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using SmartStore.Core;
-//using SmartStore.Core.Caching;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Themes;
 
@@ -19,17 +21,21 @@ namespace SmartStore.Web.Framework.Themes
         {
         }
 
-        public IDictionary<string, string> GetParameters(int storeId)
+        public string GetVariablesAsLess(string themeName, int storeId)
         {
+            Guard.ArgumentNotEmpty(() => themeName);
             Guard.ArgumentIsPositive(storeId, "storeId");
 
-            string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
-            if (themeName.IsEmpty())
-            {
-                return new Dictionary<string, string>();
-            }
+            // we need the Asp.Net here cache in order to define cacheKey dependencies
+            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
 
-            return this.GetLessCssVariables(themeName, storeId);
+            string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
+            return cacheManager.Get(cacheKey, () =>
+            {
+                var variables = GetLessCssVariables(themeName, storeId);
+                var lessCss = TransformToLess(variables);
+                return lessCss;
+            });
         }
 
         private IDictionary<string, string> GetLessCssVariables(string themeName, int storeId)
@@ -56,7 +62,7 @@ namespace SmartStore.Web.Framework.Themes
             return result;
         }
 
-        protected internal virtual ExpandoObject GetRawVariables(string themeName, int storeId)
+        internal virtual ExpandoObject GetRawVariables(string themeName, int storeId)
         {
             var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
             var result = themeVarService.GetThemeVariables(themeName, storeId);
@@ -67,6 +73,20 @@ namespace SmartStore.Web.Framework.Themes
             }
 
             return result;
+        }
+
+        private string TransformToLess(IDictionary<string, string> parameters)
+        {
+            if (parameters.Count == 0)
+                return string.Empty;
+
+            var sb = new StringBuilder();
+            foreach (var parameter in parameters.Where(kvp => kvp.Value.HasValue()))
+            {
+                sb.AppendFormat("@{0}: {1};\n", parameter.Key, parameter.Value);
+            }
+
+            return sb.ToString();
         }
 
     }

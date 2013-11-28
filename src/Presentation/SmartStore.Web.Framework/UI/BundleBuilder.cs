@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Optimization;
-using SmartStore.Services.Seo;
-using BundleTransformer.Core;
-using BundleTransformer.Core.Builders;
 using BundleTransformer.Core.Orderers;
 using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
+using SmartStore.Web.Framework.Themes;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -31,55 +27,15 @@ namespace SmartStore.Web.Framework.UI
 
     public class BundleBuilder : IBundleBuilder
     {
-
-        private static readonly object s_lock = new object();
         private readonly IStoreContext _storeContext;
+        private readonly IWorkContext _workContext;
+        private static readonly object s_lock = new object();
 
-        public BundleBuilder(IStoreContext storeContext)
+        public BundleBuilder(IStoreContext storeContext, IWorkContext workContext)
         {
-            _storeContext = storeContext;
+            this._storeContext = storeContext;
+            this._workContext = workContext;
         }
-
-        //public string Build(BundleType type, IEnumerable<string> files)
-        //{
-        //    if (files == null || !files.Any())
-        //        return string.Empty;
-
-        //    string bundleVirtualPath = this.GetBundleVirtualPath(type, files);
-        //    var bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
-        //    if (bundleFor == null)
-        //    {
-        //        lock (s_lock)
-        //        {
-        //            bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
-        //            if (bundleFor == null)
-        //            {
-        //                Bundle bundle = (type == BundleType.Script) ? 
-        //                    new ScriptBundle(bundleVirtualPath) as Bundle: 
-        //                    new StyleBundle(bundleVirtualPath) as Bundle;
-        //                bundle.Orderer = new NullBundleOrderer();
-        //                //bundle.EnableFileExtensionReplacements = false;
-
-        //                if (type == BundleType.Script)
-        //                {
-        //                    bundle.Include(files.ToArray());
-        //                }
-        //                else
-        //                {
-        //                    files.Each(x => bundle.Include(x, new CssRewriteUrlTransform()));
-        //                }
-
-        //                BundleTable.Bundles.Add(bundle);
-        //                BundleTable.Bundles.IgnoreList.Clear();
-        //            }
-        //        }
-        //    }
-
-        //    if (type == BundleType.Script)
-        //        return Scripts.Render(bundleVirtualPath).ToString();
-
-        //    return Styles.Render(bundleVirtualPath).ToString();
-        //}
 
         public string Build(BundleType type, IEnumerable<string> files)
         {
@@ -97,11 +53,9 @@ namespace SmartStore.Web.Framework.UI
                     {
                         var nullOrderer = new NullOrderer();
 
-                        var hasLessFiles = files.Any(x => x.EndsWith(".less", StringComparison.OrdinalIgnoreCase));
-
                         Bundle bundle = (type == BundleType.Script) ?
                             new CustomScriptBundle(bundleVirtualPath) as Bundle :
-                            new SmartStyleBundle(bundleVirtualPath, hasLessFiles ? _storeContext.CurrentStore.Id : (int?)null) as Bundle;
+                            new SmartStyleBundle(bundleVirtualPath) as Bundle;
                         bundle.Orderer = nullOrderer;
 
                         bundle.Include(files.ToArray());
@@ -143,7 +97,14 @@ namespace SmartStore.Web.Framework.UI
 
                 byte[] input = sha.ComputeHash(Encoding.Unicode.GetBytes(hashInput));
                 hash = HttpServerUtility.UrlTokenEncode(input);
+
+                // append StoreId to hash in order to vary cache by store
+                if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".less", StringComparison.OrdinalIgnoreCase)))
+                {
+                    hash += "-s" + _storeContext.CurrentStore.Id;
+                }
             }
+
             // ensure only valid chars
             hash = SeoExtensions.GetSeName(hash);
 
@@ -153,31 +114,6 @@ namespace SmartStore.Web.Framework.UI
             return sb.ToString();
         }
 
-    }
-
-    public class SmartStyleBundle : Bundle
-    {
-        private readonly int? _storeId;
-        
-        public SmartStyleBundle(string virtualPath, int? storeId)
-		  : this(virtualPath, null, storeId)
-		{ }
-
-        public SmartStyleBundle(string virtualPath, string cdnPath, int? storeId)
-			: base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.GetCssTransformerInstance() })
-		{
-			Builder = new NullBuilder();
-            _storeId = storeId;
-		}
-
-        public override string GetCacheKey(BundleContext context)
-        {
-            if (_storeId.HasValue)
-            {
-                return "{0}_{1}".FormatInvariant(base.GetCacheKey(context), _storeId.Value);
-            }
-            return base.GetCacheKey(context);
-        }
     }
 
 }

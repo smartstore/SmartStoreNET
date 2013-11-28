@@ -79,6 +79,8 @@ var Checkout = {
             });
         }
         
+        applyCommonPlugins($("body"));
+
         //TODO move it to a new method
         if ($("#billing-address-select").length > 0) {
             Billing.newAddress(!$('#billing-address-select').val());

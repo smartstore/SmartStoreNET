@@ -583,7 +583,6 @@
     <Content Include="Content\bootstrap\font\path.less" />
     <Content Include="Content\bootstrap\font\variables.less" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font\FontAwesome.otf" />
-    <Content Include="Themes\Alpha\Content\themevars.less" />
     <None Include="Config\BundleTransformer.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>

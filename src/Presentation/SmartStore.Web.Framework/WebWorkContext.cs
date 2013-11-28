@@ -397,7 +397,8 @@ namespace SmartStore.Web.Framework
                 {
                     _currencySettings.PrimaryStoreCurrencyId = currency.Id;
                     _settingService.UpdateSetting(_currencySettings, x => x.PrimaryStoreCurrencyId, true, _storeContext.CurrentStore.Id);
-                }
+                } 
+
 
                 _cachedCurrency = currency;
                 return _cachedCurrency;

@@ -18,6 +18,7 @@
 * #165 TopicWidgets Sorting is not applied
 * Google Analytics: with active _Order Number Formatter_ plugin the order number was posted twice (formatted and unformatted)
 * #188 Token Order.CustomerFullName doesn't get replaced when ordering as a guest
+* #194 Installation fails when installing products
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

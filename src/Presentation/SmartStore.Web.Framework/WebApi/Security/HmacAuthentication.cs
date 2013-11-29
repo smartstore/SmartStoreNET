@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -117,6 +118,19 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				return schemeConsumer;
 			}
 			return Scheme1;	// fallback to first version
+		}
+
+		/// <summary>Parse ISO-8601 UTC timestamp including milliseconds.</summary>
+		public bool ParseTimestamp(string timestamp, out DateTime time)
+		{
+			if (DateTime.TryParseExact(timestamp, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out time))
+				return true;
+
+			if (DateTime.TryParseExact(timestamp, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out time))
+				return true;
+
+			time = new DateTime();
+			return false;
 		}
 	}
 

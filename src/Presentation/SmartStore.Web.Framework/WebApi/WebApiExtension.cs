@@ -11,6 +11,10 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return new HttpResponseException(apiController.Request.CreateErrorResponse(HttpStatusCode.BadRequest, apiController.ModelState));
 		}
+		public static HttpResponseException ExceptionBadRequest(this ApiController apiController, string message)
+		{
+			return new HttpResponseException(apiController.Request.CreateErrorResponse(HttpStatusCode.BadRequest, message));
+		}
 		public static HttpResponseException ExceptionUnprocessableEntity(this ApiController apiController, string message)
 		{
 			return new HttpResponseException(apiController.Request.CreateErrorResponse((HttpStatusCode)422, message));

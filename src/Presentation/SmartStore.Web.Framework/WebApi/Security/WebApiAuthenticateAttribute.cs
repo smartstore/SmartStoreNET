@@ -7,7 +7,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Security;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -111,10 +110,10 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!_hmac.IsAuthorizationHeaderValid(scheme, signatureConsumer))
 				return HmacResult.InvalidAuthorizationHeader;
 
-			if (!DateTime.TryParseExact(headTimestamp, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out headDateTime))
+			if (!_hmac.ParseTimestamp(headTimestamp, out headDateTime))
 				return HmacResult.InvalidTimestamp;
 
-			int maxMinutes = (cacheControllingData.ValidMinutePeriod <= 0 ? 15 : cacheControllingData.ValidMinutePeriod);
+			int maxMinutes = (cacheControllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : cacheControllingData.ValidMinutePeriod);
 
 			if (Math.Abs((headDateTime - now).TotalMinutes) > maxMinutes)
 				return HmacResult.TimestampOutOfPeriod;

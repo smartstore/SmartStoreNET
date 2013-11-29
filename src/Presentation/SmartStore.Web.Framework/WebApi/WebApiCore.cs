@@ -55,6 +55,15 @@ namespace SmartStore.Web.Framework.WebApi
 			public static string HmacResultId { get { return Prefix + "HmacResultId"; } }
 			public static string HmacResultDescription { get { return Prefix + "HmacResultDesc"; } }
 			//public static string LastRequest { get { return Prefix + "LastRequest"; } }
+
+			public static string CorsExposed
+			{
+				get
+				{
+					string headers = string.Join(",", Date, MaxTop, HmacResultId, HmacResultDescription);
+					return headers;
+				}
+			}
 		}
 
 		public static class QueryOption

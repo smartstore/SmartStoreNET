@@ -144,6 +144,9 @@ namespace SmartStore.Web.Framework.WebApi
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
+			if (entity == null)
+				throw this.ExceptionBadRequest("No data to be inserted.");
+
 			Insert(FulfillPropertiesOn(entity));
 
 			return entity;
@@ -216,6 +219,9 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			try
 			{
+				if (entity == null)
+					return entity;
+
 				var queries = Request.RequestUri.ParseQueryString();
 
 				if (queries == null || queries.Count <= 0)

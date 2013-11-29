@@ -13,6 +13,13 @@ SET @resources='
 		<Value>Delivery time was successfully updated</Value>
 		<Value lang="de">Die Lieferzeit wurde erfolgreich aktualisiert.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="products.callforprice">
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="products.callforprice">
+		<Value lang="de">Preis auf Anfrage</Value>
+	</LocaleResource>
 </Language>
 '
 

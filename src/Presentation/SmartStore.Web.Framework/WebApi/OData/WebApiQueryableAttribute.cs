@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -9,34 +10,42 @@ namespace SmartStore.Web.Framework.WebApi.OData
 	{
 		public bool PagingOptional { get; set; }
 
-		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+		protected virtual bool MissingClientPaging(HttpActionExecutedContext actionExecutedContext)
 		{
-			var request = actionExecutedContext.Request;
-			var response = actionExecutedContext.Response;
+			if (PagingOptional)
+				return false;
 
-			if (request != null && request.RequestUri != null && response != null && response.IsSuccessStatusCode)
+			try
 			{
 				var responseContent = actionExecutedContext.Response.Content as ObjectContent;
+				bool singleResult = (responseContent != null && responseContent.Value is SingleResult);
 
-				if (responseContent != null)
+				if (singleResult)
+					return false;
+
+				var query = actionExecutedContext.Request.RequestUri.Query;
+
+				bool missingClientPaging = query.IsNullOrEmpty() || !query.Contains("$top=");
+
+				if (missingClientPaging)
 				{
-					if (!PagingOptional)
-					{
-						//bool single = responseContent.Value is SingleResult;
-						var query = request.RequestUri.Query;
+					actionExecutedContext.Response = actionExecutedContext.Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+						"Missing client paging. Please specify odata $top query option. Maximum value is {0}.".FormatWith(WebApiGlobal.MaxTop));
 
-						bool missingClientPaging = query.IsNullOrEmpty() || !query.Contains("$top=");
-
-						if (missingClientPaging)
-						{
-							actionExecutedContext.Response = request.CreateErrorResponse(HttpStatusCode.BadRequest,
-								"Missing client paging. Please specify odata $top query option. Maximum value is {0}.".FormatWith(WebApiGlobal.MaxTop));
-
-							return;
-						}
-					}
+					return true;
 				}
 			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+			return false;
+		}
+
+		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+		{
+			if (MissingClientPaging(actionExecutedContext))
+				return;
 
 			base.OnActionExecuted(actionExecutedContext);
 		}

@@ -97,7 +97,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
-			return this.GetEntitySet().FirstOrDefault(x => x.Id == key);
+			return GetEntitySet().FirstOrDefault(x => x.Id == key);
 		}
 		protected internal virtual TEntity GetEntityByKeyNotNull(int key)
 		{
@@ -107,6 +107,13 @@ namespace SmartStore.Web.Framework.WebApi
 				throw ExceptionEntityNotFound(key);
 
 			return entity;
+		}
+		protected internal virtual SingleResult<TEntity> GetSingleResult(int key)
+		{
+			if (!ModelState.IsValid)
+				throw this.ExceptionInvalidModelState();
+
+			return SingleResult.Create(GetEntitySet().Where(x => x.Id == key));
 		}
 
 		protected internal virtual TEntity GetExpandedEntity<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)

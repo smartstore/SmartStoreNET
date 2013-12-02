@@ -127,7 +127,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!apiUser.Enabled)
 				return HmacResult.UserDisabled;
 
-			if (apiUser.LastRequest.HasValue && headDateTime < apiUser.LastRequest.Value)
+			if (apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
 				return HmacResult.TimestampOlderThanLastRequest;
 
 			var context = new WebApiRequestContext()

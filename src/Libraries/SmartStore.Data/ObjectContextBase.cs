@@ -258,9 +258,6 @@ namespace SmartStore.Data
                 ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = timeout;
             }
 
-            // remove the GO statements
-            //sql = Regex.Replace(sql, @"\r{0,1}\n[Gg][Oo]\r{0,1}\n", "\n");
-
             var result = this.Database.ExecuteSqlCommand(sql, parameters);
 
             if (timeout.HasValue)
@@ -273,29 +270,38 @@ namespace SmartStore.Data
         }
 
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		public int ExecuteSqlThroughSmo(string sql)
 		{
 			Guard.ArgumentNotEmpty(sql, "sql");
 
-			var dataSettings = EngineContext.Current.Resolve<DataSettings>();
-
 			int result = 0;
-			bool isSqlServerCompact = dataSettings.DataProvider.IsCaseInsensitiveEqual("sqlce");
 
-			if (isSqlServerCompact)
+			try
 			{
-				result = ExecuteSqlCommand(sql);
-			}
-			else
-			{
-				using (var sqlConnection = new SqlConnection(dataSettings.DataConnectionString))
+				var dataSettings = EngineContext.Current.Resolve<DataSettings>();
+				bool isSqlServerCompact = dataSettings.DataProvider.IsCaseInsensitiveEqual("sqlce");
+
+				if (isSqlServerCompact)
 				{
-					var serverConnection = new ServerConnection(sqlConnection);
-					var server = new Server(serverConnection);
-
-					result = server.ConnectionContext.ExecuteNonQuery(sql);
+					result = ExecuteSqlCommand(sql);
 				}
+				else
+				{
+					using (var sqlConnection = new SqlConnection(dataSettings.DataConnectionString))
+					{
+						var serverConnection = new ServerConnection(sqlConnection);
+						var server = new Server(serverConnection);
+
+						result = server.ConnectionContext.ExecuteNonQuery(sql);
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// remove the GO statements
+				sql = Regex.Replace(sql, @"\r{0,1}\n[Gg][Oo]\r{0,1}\n", "\n");
+
+				result = ExecuteSqlCommand(sql);
 			}
 			return result;
 		}

@@ -99,8 +99,8 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				return HmacResult.ApiUnavailable;
 
 			string headContentMd5 = request.Headers["Content-Md5"] ?? request.Headers["Content-MD5"];
-			string headTimestamp = request.Headers[WebApiGlobal.HeaderName.Date];
-			string headPublicKey = request.Headers[WebApiGlobal.HeaderName.PublicKey];
+			string headTimestamp = request.Headers[WebApiGlobal.Header.Date];
+			string headPublicKey = request.Headers[WebApiGlobal.Header.PublicKey];
 			string scheme = actionContext.Request.Headers.Authorization.Scheme;
 			string signatureConsumer = actionContext.Request.Headers.Authorization.Parameter;
 
@@ -191,8 +191,8 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				var response = HttpContext.Current.Response;
 
-				response.AddHeader(WebApiGlobal.HeaderName.MaxTop, WebApiGlobal.MaxTop.ToString());
-				response.AddHeader(WebApiGlobal.HeaderName.Date, now.ToString("o"));
+				response.AddHeader(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
+				response.AddHeader(WebApiGlobal.Header.Date, now.ToString("o"));
 
 				response.Cache.SetCacheability(HttpCacheability.NoCache);
 			}
@@ -205,10 +205,10 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				var scheme = _hmac.GetWwwAuthenticateScheme(actionContext.Request.Headers.Authorization.Scheme);
 				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));		// see RFC-2616
 
-				headers.Add(WebApiGlobal.HeaderName.MaxTop, WebApiGlobal.MaxTop.ToString());
-				headers.Add(WebApiGlobal.HeaderName.Date, now.ToString("o"));
-				headers.Add(WebApiGlobal.HeaderName.HmacResultId, ((int)result).ToString());
-				headers.Add(WebApiGlobal.HeaderName.HmacResultDescription, result.ToString());
+				headers.Add(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
+				headers.Add(WebApiGlobal.Header.Date, now.ToString("o"));
+				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
+				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
 				if (cacheControllingData.LogUnauthorized)
 					LogUnauthorized(actionContext, result, customer);

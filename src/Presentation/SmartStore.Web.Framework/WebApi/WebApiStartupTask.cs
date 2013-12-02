@@ -39,7 +39,7 @@ namespace SmartStore.Web.Framework.WebApi
 			};
 			config.EnableQuerySupport(queryAttribute);
 
-			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.HeaderName.CorsExposed);
+			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
 			config.EnableCors(corsAttribute);
 
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;

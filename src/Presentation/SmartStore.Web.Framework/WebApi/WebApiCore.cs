@@ -45,7 +45,7 @@ namespace SmartStore.Web.Framework.WebApi
 		public static string MostRecentOdataPath { get { return "odata/v1"; } }
 
 		/// <remarks>see http://tools.ietf.org/html/rfc6648 </remarks>
-		public static class HeaderName
+		public static class Header
 		{
 			private static string Prefix { get { return "SmartStore-Net-Api-"; } }
 
@@ -64,6 +64,15 @@ namespace SmartStore.Web.Framework.WebApi
 					return headers;
 				}
 			}
+		}
+
+		public static class Error
+		{
+			public static string PropertyNotFound { get { return "Entity does not own property '{0}'."; } }
+			public static string PropertyNotExpanded { get { return "Property path '{0}' is not expanded."; } }
+			public static string NoKeyFromPath { get { return "Cannot retrieve entity key from OData path."; } }
+			public static string EntityNotFound { get { return "Entity with key '{0}' could not be found."; } }
+			public static string NoDataToInsert { get { return "No data to be inserted."; } }
 		}
 
 		public static class QueryOption

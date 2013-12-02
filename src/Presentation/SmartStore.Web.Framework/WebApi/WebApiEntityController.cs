@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Web.Http.OData.Routing;
+using System.Reflection;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -22,16 +24,53 @@ namespace SmartStore.Web.Framework.WebApi
 		protected internal HttpResponseException ExceptionEntityNotFound<TKey>(TKey key)
 		{
 			var response = Request.CreateErrorResponse(HttpStatusCode.NotFound,
-				"Entity with key '{0}' could not be found.".FormatWith(key));
+				WebApiGlobal.Error.EntityNotFound.FormatWith(key));
 
 			return new HttpResponseException(response);
 		}
 		protected internal HttpResponseException ExceptionNotExpanded<TProperty>(Expression<Func<TEntity, TProperty>> path)
 		{
 			var response = Request.CreateErrorResponse(HttpStatusCode.NotImplemented,
-				"Property path '{0}' is not expanded.".FormatWith(path.ToString()));
+				WebApiGlobal.Error.PropertyNotExpanded.FormatWith(path.ToString()));
 
 			return new HttpResponseException(response);
+		}
+
+		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
+		{
+			if (Request.Method == HttpMethod.Get &&	(
+				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") || 
+				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property")))
+			{
+				return UnmappedGetProperty(odataPath);
+			}
+
+			return base.HandleUnmappedRequest(odataPath);
+		}
+		protected virtual internal HttpResponseMessage UnmappedGetProperty(ODataPath odataPath)
+		{
+			int key;
+
+			if (!odataPath.GetNormalizedKey(1, out key))
+				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoKeyFromPath);
+
+			var entity = GetEntityByKey(key);
+
+			if (entity == null)
+				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatWith(key));
+
+			PropertyInfo pi = null;
+			string propertyName = (odataPath.Segments.Last() as PropertyAccessPathSegment).PropertyName;
+
+			if (propertyName.HasValue())
+				pi = entity.GetType().GetProperty(propertyName);
+
+			if (pi == null)
+				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName ?? ""));
+
+			var propertyValue = pi.GetValue(entity, null);
+
+			return Request.CreateResponse(HttpStatusCode.OK, pi.PropertyType, propertyValue);
 		}
 
 		protected virtual IRepository<TEntity> CreateRepository()
@@ -152,7 +191,7 @@ namespace SmartStore.Web.Framework.WebApi
 				throw this.ExceptionInvalidModelState();
 
 			if (entity == null)
-				throw this.ExceptionBadRequest("No data to be inserted.");
+				throw this.ExceptionBadRequest(WebApiGlobal.Error.NoDataToInsert);
 
 			Insert(FulfillPropertiesOn(entity));
 
@@ -220,6 +259,25 @@ namespace SmartStore.Web.Framework.WebApi
 
 		protected internal virtual object FulfillPropertyOn(TEntity entity, string propertyName, string queryValue)
 		{
+			if (propertyName.IsCaseInsensitiveEqual("Country"))
+			{
+				if (queryValue.Length == 2)
+					return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoLetterIsoCode(queryValue);
+				else if (queryValue.Length == 3)
+					return EngineContext.Current.Resolve<ICountryService>().GetCountryByThreeLetterIsoCode(queryValue);
+			}
+			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
+			{
+				return EngineContext.Current.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
+			}
+			else if (propertyName.IsCaseInsensitiveEqual("Language"))
+			{
+				return EngineContext.Current.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
+			}
+			else if (propertyName.IsCaseInsensitiveEqual("Currency"))
+			{
+				return EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
+			}
 			return null;
 		}
 		protected internal virtual TEntity FulfillPropertiesOn(TEntity entity)
@@ -238,44 +296,20 @@ namespace SmartStore.Web.Framework.WebApi
 				{
 					string propertyName = key.Substring(WebApiGlobal.QueryOption.Fulfill.Length);
 					string queryValue = queries.Get(key);
-					object propertyValue = null;
 
 					if (propertyName.HasValue() && queryValue.HasValue())
 					{
 						var pi = entity.GetType().GetProperty(propertyName);
 						if (pi != null)
 						{
-							var property = pi.GetValue(entity, null);
-							if (property == null)
+							var propertyValue = pi.GetValue(entity, null);
+							if (propertyValue == null)
 							{
-								if (propertyName.IsCaseInsensitiveEqual("Country"))
-								{
-									if (queryValue.Length == 2)
-										propertyValue = EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoLetterIsoCode(queryValue);
-									else if (queryValue.Length == 3)
-										propertyValue = EngineContext.Current.Resolve<ICountryService>().GetCountryByThreeLetterIsoCode(queryValue);
-								}
-								else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
-								{
-									propertyValue = EngineContext.Current.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
-								}
-								else if (propertyName.IsCaseInsensitiveEqual("Language"))
-								{
-									propertyValue = EngineContext.Current.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
-								}
-								else if (propertyName.IsCaseInsensitiveEqual("Currency"))
-								{
-									propertyValue = EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
-								}
+								object value = FulfillPropertyOn(entity, propertyName, queryValue);
 
-								if (propertyValue == null)
+								if (value != null)		// there's no requirement to set a property value of null
 								{
-									propertyValue = FulfillPropertyOn(entity, propertyName, queryValue);
-								}
-
-								if (propertyValue != null)
-								{
-									pi.SetValue(entity, propertyValue);
+									pi.SetValue(entity, value);
 								}
 							}
 						}

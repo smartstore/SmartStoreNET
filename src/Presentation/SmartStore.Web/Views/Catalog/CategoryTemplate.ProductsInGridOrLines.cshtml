@@ -34,15 +34,17 @@
     @*category breadcrumb*@
     @if (Model.DisplayCategoryBreadcrumb) {
         <ul id="breadcrumb" class="breadcrumb">
-            <li><a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="icon-home" style="text-decoration: none"></i></a> 
-            <span class="divider">/</span></li>
+            <li>
+                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="icon-home" style="text-decoration: none"></i></a> 
+                <span class="divider">/</span>
+            </li>
 
             @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++) {
 				var cat = Model.CategoryBreadcrumb[i];
 				var isLastCategory = cat.Id == Model.Id;
                 <li>
                     @if (isLastCategory) {
-                        <li>@cat.Name</li>
+                        @cat.Name
 					}
 					else {
                         <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" title="@cat.Name">@cat.Name</a>

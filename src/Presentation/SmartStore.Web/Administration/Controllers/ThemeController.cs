@@ -91,12 +91,6 @@ namespace SmartStore.Admin.Controllers
             model.AvailableBundleOptimizationValues.AddRange(commonListItems);
             model.AvailableBundleOptimizationValues.FirstOrDefault(x => int.Parse(x.Value) == model.BundleOptimizationEnabled).Selected = true;
 
-            model.AvailableCssCacheValues.AddRange(commonListItems);
-            model.AvailableCssCacheValues.FirstOrDefault(x => int.Parse(x.Value) == model.CssCacheEnabled).Selected = true;
-
-            model.AvailableCssMinifyValues.AddRange(commonListItems);
-            model.AvailableCssMinifyValues.FirstOrDefault(x => int.Parse(x.Value) == model.CssMinifyEnabled).Selected = true;
-
             // add theme configs
             model.DesktopThemes.AddRange(GetThemes(false, themeSettings));
             model.MobileThemes.AddRange(GetThemes(true, themeSettings));
@@ -147,10 +141,7 @@ namespace SmartStore.Admin.Controllers
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
-            bool showRestartNote = model.BundleOptimizationEnabled != themeSettings.BundleOptimizationEnabled 
-                                    || model.CssCacheEnabled != themeSettings.CssCacheEnabled
-                                    || model.CssMinifyEnabled != themeSettings.CssMinifyEnabled
-                                    || model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
+            bool showRestartNote = model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
 
             bool mobileThemeSwitched = false;
             bool themeSwitched = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);

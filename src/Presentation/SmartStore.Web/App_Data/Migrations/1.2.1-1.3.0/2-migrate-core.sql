@@ -21,3 +21,17 @@ BEGIN
 	END	
 END
 GO
+
+IF EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'themesettings.csscacheenabled')
+BEGIN
+	DELETE FROM [Setting] WHERE [name] = N'themesettings.csscacheenabled'
+END
+GO
+
+IF EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'themesettings.cssminifyenabled')
+BEGIN
+	DELETE FROM [Setting] WHERE [Name] = N'themesettings.cssminifyenabled'
+END
+GO
+
+

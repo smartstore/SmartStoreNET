@@ -14,25 +14,15 @@ namespace SmartStore.Admin.Models.Themes
         public ThemeListModel()
         {
             this.AvailableBundleOptimizationValues = new List<SelectListItem>();
-            this.AvailableCssCacheValues = new List<SelectListItem>();
-            this.AvailableCssMinifyValues = new List<SelectListItem>();
             this.DesktopThemes = new List<ThemeManifestModel>();
             this.MobileThemes = new List<ThemeManifestModel>();
 			this.AvailableStores = new List<SelectListItem>();
         }
 
         public IList<SelectListItem> AvailableBundleOptimizationValues { get; set; }
-        public IList<SelectListItem> AvailableCssCacheValues { get; set; }
-        public IList<SelectListItem> AvailableCssMinifyValues { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Themes.Option.BundleOptimizationEnabled")]
         public int BundleOptimizationEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Themes.Option.CssCacheEnabled")]
-        public int CssCacheEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Themes.Option.CssMinifyEnabled")]
-        public int CssMinifyEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Themes.Option.DefaultDesktopTheme")]
         public string DefaultDesktopTheme { get; set; }

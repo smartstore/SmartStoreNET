@@ -4645,8 +4645,6 @@ namespace SmartStore.Services.Installation
                 new ThemeSettings()
                 {
                     BundleOptimizationEnabled = 0,
-                    CssCacheEnabled = 0,
-                    CssMinifyEnabled = 0,
                     DefaultDesktopTheme = "Alpha",
                     DefaultMobileTheme = "Mobile",
                     AllowCustomerToSelectTheme = true,

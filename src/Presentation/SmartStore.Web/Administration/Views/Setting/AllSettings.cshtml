@@ -12,12 +12,12 @@
         @T("Admin.Configuration.Settings.AllSettings")
     </div>
 </div>
+
+<div class="alert alert-info">
+    @T("Admin.Configuration.Settings.AllSettings.Description")
+</div>
+
 <table class="adminContent">
-    <tr>
-        <td>
-            @T("Admin.Configuration.Settings.AllSettings.Description")
-        </td>
-    </tr>
     <tr>
         <td>
             @(Html.Telerik().Grid<SettingModel>()

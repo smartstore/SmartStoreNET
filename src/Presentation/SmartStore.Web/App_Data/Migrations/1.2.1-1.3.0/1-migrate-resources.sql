@@ -82,6 +82,17 @@ SET @resources='
 		<Value>Unauthorized API request ({0})</Value>
 		<Value lang="de">Unauthorisierte API-Anfrage ({0})</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Themes.Options"><Value></Value></LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Options.Info"><Value></Value></LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Options.Info">
+		<Value>Disable resource bundling and caching in order to test and debug theme changes more easily.</Value>
+		<Value lang="de">Deaktivieren Sie Ressourcen-Bundling und -Caching, um Theme-Änderungen optimal testen und debuggen zu können.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.CssCacheEnabled"><Value></Value></LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.CssCacheEnabled.Hint"><Value></Value></LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.CssMinifyEnabled"><Value></Value></LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.CssMinifyEnabled.Hint"><Value></Value></LocaleResource>
 
 </Language>
 '

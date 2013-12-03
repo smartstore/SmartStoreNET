@@ -683,8 +683,6 @@ namespace SmartStore.Admin.Infrastructure
             // codehint: sm-add
             Mapper.CreateMap<ThemeSettings, ThemeListModel>()
                 .ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableCssCacheValues, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableCssMinifyValues, mo => mo.Ignore())
                 .ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
                 .ForMember(dest => dest.MobileThemes, mo => mo.Ignore());
             Mapper.CreateMap<ThemeListModel, ThemeSettings>()

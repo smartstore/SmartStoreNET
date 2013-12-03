@@ -168,23 +168,5 @@
                 @Html.ValidationMessageFor(model => model.BundleOptimizationEnabled)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CssCacheEnabled)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.CssCacheEnabled, Model.AvailableCssCacheValues)
-                @Html.ValidationMessageFor(model => model.CssCacheEnabled)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CssMinifyEnabled)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.CssMinifyEnabled, Model.AvailableCssMinifyValues)
-                @Html.ValidationMessageFor(model => model.CssMinifyEnabled)
-            </td>
-        </tr>
     </table> 
 }

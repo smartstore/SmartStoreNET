@@ -135,7 +135,8 @@ namespace SmartStore.Web.Framework
 
         internal static string BuildThemeVarsCacheKey(string themeName, int storeId)
         {
-            return THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
+            var cacheKey = THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
+            return cacheKey;
         }
 
         #endregion

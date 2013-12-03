@@ -648,6 +648,15 @@ namespace SmartStore.Services.Orders
             taxRates = new SortedDictionary<decimal, decimal>();
 
             var customer = cart.GetCustomer();
+
+            //// (VATFIX)
+            if (_taxService.IsVatExempt(null, customer))
+            {
+                taxRates.Add(decimal.Zero, decimal.Zero);
+                return decimal.Zero;
+            }
+            //// (VATFIX)
+
             string paymentMethodSystemName = "";
             if (customer != null)
 			{
@@ -851,16 +860,16 @@ namespace SmartStore.Services.Orders
             }
             resultTemp += paymentMethodAdditionalFeeWithoutTax;
 
-            //// (VATFIX)
-            //resultTemp += shoppingCartTax;
-            if (_taxService.IsVatExempt(null, customer))
-            {
-                // add nothing to total
-            }
-            else
-            {
+            ////// (VATFIX)
+            ////resultTemp += shoppingCartTax;
+            //if (_taxService.IsVatExempt(null, customer))
+            //{
+            //    // add nothing to total
+            //}
+            //else
+            //{
                 resultTemp += shoppingCartTax;
-            }
+            //}
 
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 resultTemp = Math.Round(resultTemp, 2);

@@ -133,7 +133,9 @@ namespace SmartStore.Services.Customers
 
             string fullName = "";
             if (!String.IsNullOrWhiteSpace(firstName) && !String.IsNullOrWhiteSpace(lastName))
+            {
                 fullName = string.Format("{0} {1}", firstName, lastName);
+            }
             else
             {
                 if (!String.IsNullOrWhiteSpace(firstName))
@@ -141,6 +143,13 @@ namespace SmartStore.Services.Customers
 
                 if (!String.IsNullOrWhiteSpace(lastName))
                     fullName = lastName;
+
+                if (String.IsNullOrWhiteSpace(firstName) && String.IsNullOrWhiteSpace(lastName))
+                {
+                    var address = customer.Addresses.FirstOrDefault();
+                    if (address != null)
+                        fullName = string.Format("{0} {1}", address.FirstName, address.LastName);
+                }
             }
             return fullName;
         }

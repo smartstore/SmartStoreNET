@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 
@@ -151,5 +154,6 @@ namespace SmartStore.Web.Framework.Themes
                 return _currentTheme;
             }
         }
+
     }
 }

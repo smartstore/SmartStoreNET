@@ -265,15 +265,6 @@ namespace SmartStore.Web.Framework.UI
 
             var parts = _cssParts[location];
 
-            //// themes are store dependent: append store-id so that browser cache holds one less file for each store (and not one for all stores).
-            //foreach (var part in parts)
-            //{
-            //    if (part.Part.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        part.Part = "{0}?storeId={1}".FormatWith(part.Part, _storeContext.CurrentStore.Id);
-            //    }
-            //}
-
             var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
             var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
 

@@ -232,7 +232,7 @@
                         @if (defaultProductVariant.HasSampleDownload)
                         {
                         <div>
-                            <a href="@Url.RouteUrl("GetSampleDownload", new { productvariantid = Model.Id })">
+                            <a href="@Url.RouteUrl("GetSampleDownload", new { productvariantid = defaultProductVariant.Id })">
                                 <i class="icon-download-alt"></i>
                                 @T("Products.DownloadSample")
                             </a>

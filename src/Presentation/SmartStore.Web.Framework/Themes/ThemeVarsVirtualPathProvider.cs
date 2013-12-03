@@ -20,68 +20,40 @@ namespace SmartStore.Web.Framework.Themes
             _previous = previous;
         }
 
-        private bool IsThemeVars(string virtualPath)
-        {
-            if (string.IsNullOrEmpty(virtualPath))
-                return false;
-
-            return virtualPath.ToLower().EndsWith("/.db/themevars.less");
-        }
-
         public override bool FileExists(string virtualPath)
         {
-            return (IsThemeVars(virtualPath) || _previous.FileExists(virtualPath));
+            return (ThemeHelper.PathIsThemeVars(virtualPath) || _previous.FileExists(virtualPath));
         }
-        
-
+         
         public override VirtualFile GetFile(string virtualPath)
         {
-            if (IsThemeVars(virtualPath))
+            if (ThemeHelper.PathIsThemeVars(virtualPath))
             {
                 string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
                 int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-                //virtualPath = ToStoreSpecificPath(virtualPath, storeId);
                 return new ThemeVarsVirtualFile(virtualPath, themeName, storeId);
             }
 
             return _previous.GetFile(virtualPath);
         }
-
-        //public override string GetCacheKey(string virtualPath)
-        //{
-        //    if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        return Guid.NewGuid().ToString();
-        //    }
-        //    return _previous.GetCacheKey(virtualPath);
-        //}
-
-        //public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
-        //{
-        //    if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        //return virtualPath;
-        //        return Guid.NewGuid().ToString();
-        //    }
-        //    return _previous.GetFileHash(virtualPath, virtualPathDependencies);
-        //}
         
         public override CacheDependency GetCacheDependency(
             string virtualPath,
             IEnumerable virtualPathDependencies,
             DateTime utcStart)
         {
-            //if (virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    return null;
-            //}
-            //return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 
             bool isLess;
             if (IsStyleSheet(virtualPath, out isLess))
             {
-                if (!isLess)
+                if (isLess)
                 {
+                    // the LESS HTTP handler made the call
+                    // [...]
+                }
+                else
+                {
+                    // the Bundler made the call
                     var bundle = BundleTable.Bundles.GetBundleFor(virtualPath);
                     if (bundle == null)
                     {
@@ -92,7 +64,7 @@ namespace SmartStore.Web.Framework.Themes
                 var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
                 // determine the virtual themevars.less import reference
-                var themeVarsFile = arrPathDependencies.Where(x => IsThemeVars(x)).FirstOrDefault();
+                var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
 
                 if (themeVarsFile.IsEmpty())
                 {
@@ -106,19 +78,11 @@ namespace SmartStore.Web.Framework.Themes
 
                 if (arrPathDependencies.Any())
                 {
-                    string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
                     int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+                    string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
                     // invalidate the cache when variables change
                     string cacheKey = AspNetCache.BuildKey(FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId));
-                    
-                    //var cacheDependency = new CacheDependency(fileDependencies.ToArray(), new string[] { cacheKey }, utcStart);
                     var cacheDependency = new CacheDependency(fileDependencies.Select(x => HostingEnvironment.MapPath(x)).ToArray(), new string[] { cacheKey }, utcStart);
-                    //var fileDep = _previous.GetCacheDependency(virtualPath, fileDependencies, utcStart);
-
-                    //var aggDep = new AggregateCacheDependency();
-                    //aggDep.Add(themeVarsDep, fileDep);
-                    //return aggDep;
-
                     return cacheDependency;
                 }
 
@@ -137,14 +101,5 @@ namespace SmartStore.Web.Framework.Themes
             return isLess || isCss;
         }
 
-        private string ToStoreSpecificPath(string virtualPath, int storeId)
-        {
-            //return virtualPath; // TODO: Temp
-
-            if (VirtualPathUtility.IsAbsolute(virtualPath)) {
-                return virtualPath;
-            }
-            return "/{0}{1}".FormatInvariant(storeId, virtualPath.TrimStart('~'));
-        }
     }
 }

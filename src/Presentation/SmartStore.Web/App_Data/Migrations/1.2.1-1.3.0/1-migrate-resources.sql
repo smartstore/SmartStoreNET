@@ -20,6 +20,69 @@ SET @resources='
 	<LocaleResource Name="products.callforprice">
 		<Value lang="de">Preis auf Anfrage</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.WebApi.AuthResult.Success">
+		<Value>Successfully authenticated.</Value>
+		<Value lang="de">Erfolgreiche Authentifizierung.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.FailedForUnknownReason">
+		<Value>Authentication failed for unknown reason.</Value>
+		<Value lang="de">Authentifizierung aus unbekanntem Grund fehlgeschlagen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.ApiUnavailable">
+		<Value>API not available.</Value>
+		<Value lang="de">API ist nicht erreichbar.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.InvalidAuthorizationHeader">
+		<Value>Request contains an invalid authorization header.</Value>
+		<Value lang="de">Anfrage enthält einen ungültigen Authorisierungs-Header.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.InvalidSignature">
+		<Value>The sent HMAC signature does not match the signature calculated by the server.</Value>
+		<Value lang="de">Die gesendete HMAC-Signatur stimmt nicht mit der durch den Server berechneten Signatur überein.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.InvalidTimestamp">
+		<Value>The send timestamp is missing or has an invalid format.</Value>
+		<Value lang="de">Der gesendete Zeitstempel fehlt oder besitzt ein ungültiges Format.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.TimestampOutOfPeriod">
+		<Value>The sent timestamp deviates too much from the server time.</Value>
+		<Value lang="de">Der gesendete Zeitstempel weicht zu weit von der Server-Zeit ab.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.TimestampOlderThanLastRequest">
+		<Value>The sent timestamp is older than the last request of the user.</Value>
+		<Value lang="de">Der gesendete Zeitstempel ist älter als die letzte Anfrage des Nutzers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.MissingMessageRepresentationParameter">
+		<Value>There is at least one message parameter missing which is required for security purpose.</Value>
+		<Value lang="de">Es fehlt mindestens ein aus Sicherheitsgründen zu übermittelnder Nachrichten-Parameter.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.ContentMd5NotMatching">
+		<Value>The sent content MD5 hash does not match the hash calculated by the server.</Value>
+		<Value lang="de">Der gesendete MD5-Inhalts-Hash stimmt nicht mit dem durch den Server berechneten Hash überein.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.UserUnknown">
+		<Value>The user is unknown or has no access rights for the API.</Value>
+		<Value lang="de">Der Benutzer ist unbekannt oder besitzt keine Zugriffberechtigung für die API.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.UserDisabled">
+		<Value>The user is disabled for accessing the API.</Value>
+		<Value lang="de">Der Benutzer ist für den API-Zugriff gesperrt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.UserInvalid">
+		<Value>The User-ID is missing or invalid.</Value>
+		<Value lang="de">Die Benutzer-ID wurde nicht übermittelt oder ist ungültig.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.WebApi.AuthResult.UserHasNoPermission">
+		<Value>The user does not have enough rights for his request.</Value>
+		<Value lang="de">Der Benutzer besitzt nicht genügend Rechte für seine Anfrage.</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Admin.WebApi.UnauthorizedRequest">
+		<Value>Unauthorized API request ({0})</Value>
+		<Value lang="de">Unauthorisierte API-Anfrage ({0})</Value>
+	</LocaleResource>
+
 </Language>
 '
 

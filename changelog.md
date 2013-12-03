@@ -6,6 +6,7 @@
 
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
 * #175: IPayment plugin: Implement deactivation of specific credit card types
+* #112 Implement 'WebApi'
 
 ###Bugfixes###
 

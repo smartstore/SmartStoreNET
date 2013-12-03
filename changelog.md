@@ -21,7 +21,7 @@
 * #188 Token Order.CustomerFullName doesn't get replaced when ordering as a guest
 * #194 Installation fails when installing products
 * #196 Samples cannot be downloaded
-
+* Product filter included deleted manufacturers
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

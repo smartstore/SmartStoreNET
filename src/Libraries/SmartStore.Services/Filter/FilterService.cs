@@ -180,14 +180,15 @@ namespace SmartStore.Services.Filter
 			result.ForEach(c => c.IsInactive = true);
 			return result;
 		}
-		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false) {
+		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
+		{
 			bool includeFeatured = IncludeFeatured;
 			var query = ProductFilter(context);
 
 			var manus =
 				from p in query
 				from pm in p.ProductManufacturers
-				where pm.IsFeaturedProduct == includeFeatured
+				where pm.IsFeaturedProduct == includeFeatured && !pm.Manufacturer.Deleted
 				select pm.Manufacturer;
 
 			var grouped =
@@ -195,7 +196,8 @@ namespace SmartStore.Services.Filter
 				orderby m.DisplayOrder
 				group m by m.Id into grp
 				orderby grp.Key
-				select new FilterCriteria {
+				select new FilterCriteria
+				{
 					MatchCount = grp.Count(),
 					Value = grp.FirstOrDefault().Name
 				};
@@ -207,52 +209,14 @@ namespace SmartStore.Services.Filter
 
 			var lst = grouped.ToList();
 
-			lst.ForEach(c => {
+			lst.ForEach(c =>
+			{
 				c.Name = "Name";
 				c.Entity = "Manufacturer";
 				c.IsInactive = true;
 			});
 
 			return lst;
-
-
-			//bool includeFeatured = IncludeFeatured;
-			//var products = ProductFilter(context).Select(p => p.Id);
-			//var manus = EngineContext.Current.Resolve<IRepository<Manufacturer>>();
-			//var productToManus = EngineContext.Current.Resolve<IRepository<ProductManufacturer>>();
-
-			//var query =
-			//	from m in manus.Table
-			//	join pm in productToManus.Table on m.Id equals pm.ManufacturerId
-			//	where pm.IsFeaturedProduct == includeFeatured && products.Contains(pm.ProductId)
-			//	select new {
-			//		Id = m.Id,
-			//		Name = m.Name
-			//	};
-
-			//var grouped =
-			//	from m in query
-			//	group m by m.Id into grp
-			//	orderby grp.Key
-			//	select new FilterCriteria {
-			//		MatchCount = grp.Count(),
-			//		Value = grp.FirstOrDefault().Name
-			//	};
-
-			//grouped = grouped.OrderByDescending(m => m.MatchCount);
-
-			//if (!getAll)
-			//	grouped = grouped.Take(MaxDisplayCriteria);
-
-			//var lst = grouped.ToList();
-
-			//lst.ForEach(c => {
-			//	c.Name = "Name";
-			//	c.Entity = "Manufacturer";
-			//	c.IsInactive = true;
-			//});
-
-			//return lst;
 		}
 		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null) {
 			var query = ProductFilter(context);
@@ -410,7 +374,7 @@ namespace SmartStore.Services.Filter
 				var pmq = (
 					from p in query
 					from pm in p.ProductManufacturers
-					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct)
+					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct) && !pm.Manufacturer.Deleted
 					select pm).Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 
 				query = pmq.Select(pm => pm.Product);

@@ -26,6 +26,8 @@ namespace SmartStore.Core.Domain.Shipping
         /// </summary>
         public int DisplayOrder { get; set; }
 
+		public bool IgnoreCharges { get; set; }
+
         /// <summary>
         /// Gets or sets the restricted countries
         /// </summary>

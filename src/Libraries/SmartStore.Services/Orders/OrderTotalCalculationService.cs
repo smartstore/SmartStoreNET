@@ -421,8 +421,8 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-        public virtual decimal AdjustShippingRate(decimal shippingRate,
-            IList<ShoppingCartItem> cart, out Discount appliedDiscount)
+        public virtual decimal AdjustShippingRate(decimal shippingRate,	IList<ShoppingCartItem> cart, 
+			string shippingMethodName, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount)
         {
             appliedDiscount = null;
 
@@ -430,9 +430,22 @@ namespace SmartStore.Services.Orders
             if (IsFreeShipping(cart))
                 return decimal.Zero;
 
+			var adjustedRate = shippingRate;
+			bool ignoreAdditionalShippingCharge = false;
+			ShippingMethod shippingMethod;
+
+			if (shippingMethodName.HasValue() && shippingMethods != null &&
+				(shippingMethod = shippingMethods.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(shippingMethodName))) != null)
+			{
+				ignoreAdditionalShippingCharge = shippingMethod.IgnoreCharges;
+			}
+
             //additional shipping charges
-            decimal additionalShippingCharge = GetShoppingCartAdditionalShippingCharge(cart);
-            var adjustedRate = shippingRate + additionalShippingCharge;
+			if (!ignoreAdditionalShippingCharge)
+			{
+				decimal additionalShippingCharge = GetShoppingCartAdditionalShippingCharge(cart);
+				adjustedRate += additionalShippingCharge;
+			}
 
             //discount
             var customer = cart.GetCustomer();
@@ -525,7 +538,8 @@ namespace SmartStore.Services.Orders
                 //use last shipping option (get from cache)
 
                 //adjust shipping rate
-                shippingTotal = AdjustShippingRate(shippingOption.Rate, cart, out appliedDiscount);
+				var shippingMethods = _shippingService.GetAllShippingMethods();
+				shippingTotal = AdjustShippingRate(shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
             }
             else
             {
@@ -547,7 +561,7 @@ namespace SmartStore.Services.Orders
                     if (fixedRate.HasValue)
                     {
                         //adjust shipping rate
-                        shippingTotal = AdjustShippingRate(fixedRate.Value, cart, out appliedDiscount);
+						shippingTotal = AdjustShippingRate(fixedRate.Value, cart, null, null, out appliedDiscount);
                     }
                 }
             }

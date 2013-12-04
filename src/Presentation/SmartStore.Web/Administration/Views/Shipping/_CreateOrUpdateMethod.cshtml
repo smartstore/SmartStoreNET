@@ -60,4 +60,13 @@
             @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IgnoreCharges)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.IgnoreCharges)
+            @Html.ValidationMessageFor(model => model.IgnoreCharges)
+        </td>
+    </tr>
 </table>

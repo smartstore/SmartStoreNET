@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.Orders
 {
@@ -73,8 +74,8 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-        decimal AdjustShippingRate(decimal shippingRate,
-            IList<ShoppingCartItem> cart, out Discount appliedDiscount);
+		decimal AdjustShippingRate(decimal shippingRate, IList<ShoppingCartItem> cart, 
+			string shippingMethodName, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
 
         /// <summary>
         /// Gets shopping cart additional shipping charge

@@ -34,4 +34,8 @@ BEGIN
 END
 GO
 
-
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShippingMethod]') and NAME='IgnoreCharges')
+BEGIN
+	ALTER TABLE ShippingMethod ADD IgnoreCharges bit NOT NULL DEFAULT 0
+END
+GO

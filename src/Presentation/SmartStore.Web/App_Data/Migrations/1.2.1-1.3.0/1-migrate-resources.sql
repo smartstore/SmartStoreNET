@@ -93,6 +93,15 @@ SET @resources='
 	<LocaleResource Name="Admin.Configuration.Themes.Option.CssCacheEnabled.Hint"><Value></Value></LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.CssMinifyEnabled"><Value></Value></LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.CssMinifyEnabled.Hint"><Value></Value></LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges">
+		<Value>No additional charges</Value>
+		<Value lang="de">Keine zusätzlichen Kosten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges.Hint">
+		<Value>No additional charges are to be calculated when selecting this shipping method.</Value>
+		<Value lang="de">Bei Auswahl dieser Versandmethode sollen keine zusätzlichen Kosten berechnet werden.</Value>
+	</LocaleResource>
 
 </Language>
 '

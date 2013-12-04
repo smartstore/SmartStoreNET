@@ -27,7 +27,7 @@
 ###Improvements###
 * #171: select2 Dropdown too short in OPC
 * Product filtering by price now supports decimal places
-
+* Excel Import: Field _CreatedOnUtc_ is optional now
 
 ##SmartStore.NET 1.2.1.0#
 

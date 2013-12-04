@@ -305,8 +305,15 @@ namespace SmartStore.Services.ExportImport
 
                     DateTime createdOnUtc = new DateTime();
                     var createdOnUtcExcel = GetValue<double>(worksheet, iRow, "CreatedOnUtc");
-                    if (createdOnUtcExcel != 0)
-                        createdOnUtc = DateTime.FromOADate(Convert.ToDouble(createdOnUtcExcel));
+                    createdOnUtc = createdOnUtcExcel == 0 ? DateTime.UtcNow : DateTime.FromOADate(createdOnUtcExcel);
+                    if (createdOnUtcExcel == 0)
+                    {
+                        createdOnUtc = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        createdOnUtc = DateTime.FromOADate(createdOnUtcExcel);
+                    }
                     
                     //DateTime createdOnUtc = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[iRow, GetColumnIndex(properties, "CreatedOnUtc")].Value));
 

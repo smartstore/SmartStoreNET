@@ -98,12 +98,13 @@
 
     @*This is used so that themes can inject content into the header*@
     @Html.Partial("Head")
-    @Html.Widget("head_html_tag")
 
     @Html.Partial("_ClientRes")
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
+
+    @Html.Widget("head_html_tag")
 
     @Html.CanonicalUrls()
     @Html.Action("RssHeaderLink", "News")

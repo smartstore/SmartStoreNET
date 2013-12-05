@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<EmailAccountModel, EmailAccount>();
             //message template
             Mapper.CreateMap<MessageTemplate, MessageTemplateModel>()
-                .ForMember(dest => dest.AllowedTokens, mo => mo.Ignore())
+                .ForMember(dest => dest.TokensTree, mo => mo.Ignore())
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableEmailAccounts, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())

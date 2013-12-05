@@ -1,5 +1,6 @@
 ﻿@model MessageTemplateModel
 
+@using SmartStore.Collections;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
 @using Telerik.Web.Mvc.UI;
@@ -15,15 +16,57 @@
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
-@helper TabInfo()
+
+@helper TokenSelector(TreeNode<string> root) 
 {
-    <table class="adminContent">
+    if (root.HasChildren)
+    {
+        <div class="btn-group message-token-selector">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                @T("Admin.Common.ChooseToken")
+                <span class="caret"></span>
+            </a>
+            @TokenList(root)
+        </div>       
+    }
+}
+
+@helper TokenList(TreeNode<string> node)
+{
+    <ul class="dropdown-menu">
+        @foreach (var child in node.Children) 
+        {
+            if (child.IsLeaf)
+            {
+                List<string> tokens = new List<string>();
+                var curNode = child;
+                while (!curNode.IsRoot)
+                {
+                    tokens.Insert(0, curNode.Value);
+                    curNode = curNode.Parent;
+                }
+                <li><a tabindex="-1" href="#" class="message-token" @Html.Attr("data-token", String.Join(".", tokens), tokens.Count > 0)>@child.Value</a></li>
+            }
+            else
+            {
+                <li class="dropdown-submenu">
+                    <a tabindex="-1" href="#" class="message-token">@child.Value</a>
+                    @TokenList(child)
+                </li>
+            }
+        }
+    </ul>
+}
+
+@helper TabInfo()
+{  
+    <table class="adminContent" style="margin-bottom: 8px">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowedTokens)
+                @Html.SmartLabelFor(model => model.TokensTree)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.AllowedTokens)
+                @TokenSelector(Model.TokensTree)
             </td>
         </tr>
         <tr>
@@ -66,21 +109,21 @@
             </td>
         </tr>
         <tr>
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
+             </td>
+             <td class="adminData">
+                 @Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
+                 @Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
+             </td>
+         </tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => Model.Locales[item].Body, "RichEditor")
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
-                @Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
             </td>
         </tr>
         <tr>
@@ -110,21 +153,21 @@
             </td>
         </tr>
         <tr>
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.EmailAccountId)
+             </td>
+             <td class="adminData">
+                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
+                 @Html.ValidationMessageFor(model => model.EmailAccountId)
+             </td>
+        </tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.Body, "RichEditor")
                 @Html.ValidationMessageFor(model => model.Body)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EmailAccountId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
-                @Html.ValidationMessageFor(model => model.EmailAccountId)
             </td>
         </tr>
     </table>
@@ -135,6 +178,32 @@
 {
     <script type="text/javascript">
         $(document).ready(function () {
+
+            $('.message-token-selector').on('click', '.message-token', function (e) {
+                e.preventDefault();
+
+                var el = $(this);
+                var token = el.data("token");
+
+                if (!token)
+                    return false;
+               
+
+                if (navigator.isIE) {
+                    // MSIE
+                    var editorId = $('.mceEditor:visible').prev().attr('id');
+                    var editor = tinymce.editors[editorId];
+                    if (editor) {
+                        editor.execCommand('mceInsertContent', false, '%{0}%'.format(token));
+                    }
+                }
+                else {
+                    tinyMCE.execCommand('mceInsertContent', false, '%{0}%'.format(token));
+                }
+                
+
+                return false;
+            });         
 
             $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
 

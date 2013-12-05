@@ -102,6 +102,11 @@ SET @resources='
 		<Value>No additional charges are to be calculated when selecting this shipping method.</Value>
 		<Value lang="de">Bei Auswahl dieser Versandmethode sollen keine zusätzlichen Kosten berechnet werden.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Common.ChooseToken">
+		<Value>Choose token</Value>
+		<Value lang="de">Platzhalter auswählen</Value>
+	</LocaleResource>
 
 </Language>
 '

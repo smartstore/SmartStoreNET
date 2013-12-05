@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
@@ -52,18 +54,34 @@ namespace SmartStore.Admin.Controllers
             this._emailAccountSettings = emailAccountSettings;
         }
 
-        private string FormatTokens(string[] tokens)
+        private void FillTokensTree(TreeNode<string> root, string[] tokens)
         {
-            var sb = new StringBuilder();
+            root.Clear();
+
+            //Array.Sort(tokens);
+
             for (int i = 0; i < tokens.Length; i++)
             {
-                string token = tokens[i];
-                sb.Append(token);
-                if (i != tokens.Length - 1)
-                    sb.Append(", ");
-            }
+                // remove '%' from '%Order.ID%''
+                string token = tokens[i].Trim('%');
+                // split 'Order.ID' to [ Order, ID ] parts
+                var parts = token.Split('.');
 
-            return sb.ToString();
+                var node = root;
+                // iterate parts
+                foreach (var part in parts)
+                {
+                    var found = node.Find(part);
+                    if (found == null)
+                    {
+                        node = node.Append(part);
+                    }
+                    else
+                    {
+                        node = found;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -197,7 +215,9 @@ namespace SmartStore.Admin.Controllers
 
 
             var model = messageTemplate.ToModel();
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfAllowedTokens());
+
+            FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
+
             //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
@@ -244,7 +264,7 @@ namespace SmartStore.Admin.Controllers
 
 
             //If we got this far, something failed, redisplay form
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfAllowedTokens());
+            FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
             //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());

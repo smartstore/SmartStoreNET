@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
@@ -13,11 +10,12 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Filter
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public static class FilterExtensions
 	{
-		private static string FormatPrice(string value) {
-			if (value.HasValue()) {
+		private static string FormatPrice(string value)
+		{
+			if (value.HasValue())
+			{
 				decimal d = 0;
 				if (StringToPrice(value, out d))
 					return EngineContext.Current.Resolve<IPriceFormatter>().FormatPrice(d, true, false);
@@ -25,13 +23,15 @@ namespace SmartStore.Services.Filter
 			return value;
 		}
 
-		public static string ToDescription(this FilterCriteria criteria) {
+		public static string ToDescription(this FilterCriteria criteria)
+		{
 			var localize = EngineContext.Current.Resolve<ILocalizationService>();
 
 			if (criteria == null || criteria.Value.IsNullOrEmpty())
 				return localize.GetResource("Common.Unspecified");
 
-			if (criteria.Operator == FilterOperator.RangeGreaterEqualLessEqual || criteria.Operator == FilterOperator.RangeGreaterEqualLess) {
+			if (criteria.Operator == FilterOperator.RangeGreaterEqualLessEqual || criteria.Operator == FilterOperator.RangeGreaterEqualLess)
+			{
 				string valueLeft, valueRight;
 				criteria.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
@@ -67,75 +67,88 @@ namespace SmartStore.Services.Filter
 		}
 
 		public static FilterCriteria ParsePriceString(this string priceRange) {
-			try {
-				if (priceRange.HasValue()) {
+			try
+			{
+				if (priceRange.HasValue())
+				{
 					priceRange = priceRange.Trim();
-					if (priceRange.HasValue()) {
+
+					if (priceRange.HasValue())
+					{
 						decimal from, to;
 						string[] range = priceRange.Split(new char[] { '-' });
-						bool HasFrom = range.StringToPrice(0, out from);
-						bool HasTo = range.StringToPrice(1, out to);
+						bool hasFrom = range.StringToPrice(0, out from);
+						bool hasTo = range.StringToPrice(1, out to);
 
-						FilterCriteria criteria = new FilterCriteria {
+						var criteria = new FilterCriteria
+						{
 							Name = "Price",
 							Entity = FilterService.ShortcutPrice
 						};
 
 						// avoid overlapping
-						if (HasFrom && HasTo) {
+						if (hasFrom && hasTo)
+						{
 							//criteria.Operator = FilterOperator.RangeGreaterEqualLess;
 							criteria.Operator = FilterOperator.RangeGreaterEqualLessEqual;
-							criteria.Value = "{0}~{1}".FormatWith(from, to);
+							criteria.Value = from.ToString(CultureInfo.InvariantCulture) + "~" + to.ToString(CultureInfo.InvariantCulture);
 						}
-						else if (HasFrom) {
+						else if (hasFrom)
+						{
 							//criteria.Operator = FilterOperator.GreaterEqual;
 							criteria.Operator = FilterOperator.Greater;
-							criteria.Value = from.ToString();
+							criteria.Value = from.ToString(CultureInfo.InvariantCulture);
 						}
-						else if (HasTo) {
+						else if (hasTo)
+						{
 							//criteria.Operator = FilterOperator.LessEqual;
 							criteria.Operator = FilterOperator.Less;
-							criteria.Value = to.ToString();
+							criteria.Value = to.ToString(CultureInfo.InvariantCulture);
 						}
-						else {
+						else
+						{
 							return null;
 						}
 						return criteria;
 					}
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return null;
 		}
-		public static bool StringToPrice(string value, out decimal result) {
+		public static bool StringToPrice(string value, out decimal result)
+		{
 			result = 0;
-			return (value.HasValue() && decimal.TryParse(value, NumberStyles.Number, new CultureInfo("en-US"), out result));
+			return (value.HasValue() && decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
 		}
-		public static bool StringToPrice(this string[] range, int index, out decimal result) {
+		public static bool StringToPrice(this string[] range, int index, out decimal result)
+		{
 			result = 0;
-			if (range != null && index < range.Length) {
+			if (range != null && index < range.Length)
+			{
 				string value = range[index].Trim();
 				return StringToPrice(value, out result);
 			}
 			return false;
 		}
 
-		public static string GetUrl(this FilterProductContext context, FilterCriteria criteriaAdd = null, FilterCriteria criteriaRemove = null) {
-			string url = "{0}?pagesize={1}&viewmode={2}".FormatWith(
-				context.Path,
-				context.PageSize,
-				context.ViewMode
-			);
+		public static string GetUrl(this FilterProductContext context, FilterCriteria criteriaAdd = null, FilterCriteria criteriaRemove = null)
+		{
+			string url = "{0}?pagesize={1}&viewmode={2}".FormatWith(context.Path, context.PageSize, context.ViewMode);
 
-			if (context.OrderBy.HasValue) {
+			if (context.OrderBy.HasValue)
+			{
 				url = "{0}&orderby={1}".FormatWith(url, context.OrderBy.Value);
 			}
 
-			try {
-				if (criteriaAdd != null || criteriaRemove != null) {
-					List<FilterCriteria> criterias = new List<FilterCriteria>();
+			try
+			{
+				if (criteriaAdd != null || criteriaRemove != null)
+				{
+					var criterias = new List<FilterCriteria>();
 
 					if (context.Criteria != null && context.Criteria.Count > 0)
 						criterias.AddRange(context.Criteria.Where(c => !c.IsInactive));
@@ -149,24 +162,28 @@ namespace SmartStore.Services.Filter
 						url = "{0}&filter={1}".FormatWith(url, HttpUtility.UrlEncode(JsonConvert.SerializeObject(criterias)));
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 
 			return url;
 		}
-		public static bool IsActive(this FilterProductContext context, FilterCriteria criteria) {
-			if (criteria != null && context.Criteria != null) {
+		public static bool IsActive(this FilterProductContext context, FilterCriteria criteria)
+		{
+			if (criteria != null && context.Criteria != null)
+			{
 				return (context.Criteria.FirstOrDefault(c => c.Entity == criteria.Entity && c.Name == criteria.Name && c.Value == criteria.Value && !c.IsInactive) != null);
 			}
 			return false;
 		}
 
-		public static bool IsShowAllText(this IEnumerable<FilterCriteria> criteriaGroup) {
+		public static bool IsShowAllText(this IEnumerable<FilterCriteria> criteriaGroup)
+		{
 			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
 				return false;
 
 			return (criteriaGroup.Count() >= FilterService.MaxDisplayCriteria || criteriaGroup.Any(c => !c.IsInactive));
 		}
-	}	// class
+	}
 }

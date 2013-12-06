@@ -506,7 +506,14 @@ namespace SmartStore.Services.Localization
 		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
-		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
+		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor,
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
+		{
+			ImportPluginResourcesFromXml(pluginDescriptor, null, forceToList, updateTouchedResources);
+		}
+
+		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, IList<Language> filterLanguages, 
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
 		{
 			string pluginDir = pluginDescriptor.OriginalAssemblyFile.Directory.FullName;
 			string localizationDir = Path.Combine(pluginDir, "Localization");
@@ -519,20 +526,25 @@ namespace SmartStore.Services.Localization
 
 			var languages = _languageService.GetAllLanguages(true);
 			var doc = new XmlDocument();
-            
+
 			foreach (var filePath in System.IO.Directory.EnumerateFiles(localizationDir, "*.xml"))
 			{
 				Match match = Regex.Match(Path.GetFileName(filePath), Regex.Escape("resources.") + "(.*?)" + Regex.Escape(".xml"));
 				string languageCode = match.Groups[1].Value;
 
 				Language language = languages.Where(l => l.LanguageCulture.IsCaseInsensitiveEqual(languageCode)).FirstOrDefault();
-                if (language != null)
-                {
-                    language = _languageService.GetLanguageById(language.Id);
-                }
+				if (language != null)
+				{
+					language = _languageService.GetLanguageById(language.Id);
+				}
 
 				if (languageCode.HasValue() && language != null)
 				{
+					if (filterLanguages != null && !filterLanguages.Exists(x => x.Id == language.Id))
+					{
+						continue;
+					}
+
 					doc.Load(filePath);
 
 					if (forceToList == null)
@@ -550,7 +562,7 @@ namespace SmartStore.Services.Localization
 								ResourceName = node.Attributes["Name"].InnerText.Trim(),
 								ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
 								LanguageId = language.Id,
-                                IsFromPlugin = true
+								IsFromPlugin = true
 							};
 
 							if (res.ResourceName.HasValue())

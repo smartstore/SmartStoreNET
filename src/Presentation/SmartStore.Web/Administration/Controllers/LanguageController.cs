@@ -7,6 +7,7 @@ using SmartStore.Admin.Models.Localization;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Plugins;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
@@ -16,6 +17,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -31,6 +33,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IPluginFinder _pluginFinder;
 
         #endregion
 
@@ -42,7 +45,8 @@ namespace SmartStore.Admin.Controllers
 			IStoreMappingService storeMappingService,
             IPermissionService permissionService,
             IWebHelper webHelper,
-            AdminAreaSettings adminAreaSettings)
+            AdminAreaSettings adminAreaSettings,
+			IPluginFinder pluginFinder)
         {
             this._localizationService = localizationService;
             this._languageService = languageService;
@@ -51,6 +55,7 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
             this._webHelper = webHelper;
             this._adminAreaSettings = adminAreaSettings;
+			this._pluginFinder = pluginFinder;
         }
 
         #endregion 
@@ -183,6 +188,14 @@ namespace SmartStore.Admin.Controllers
 
 				//Stores
 				SaveStoreMappings(language, model);
+
+				var plugins = _pluginFinder.GetPluginDescriptors(true);
+				var filterLanguages = new List<Language>() { language };
+
+				foreach (var plugin in plugins)
+				{
+					_localizationService.ImportPluginResourcesFromXml(plugin, filterLanguages);
+				}
 
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");

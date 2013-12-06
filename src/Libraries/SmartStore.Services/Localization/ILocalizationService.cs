@@ -132,7 +132,11 @@ namespace SmartStore.Services.Localization
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
 		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
-		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true);
+		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, 
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true);
+		
+		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, IList<Language> filterLanguages, 
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true);
 
         /// <summary>
         /// Flattens all nested <c>LocaleResource</c> child nodes into a new document

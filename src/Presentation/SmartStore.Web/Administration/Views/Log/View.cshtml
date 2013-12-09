@@ -21,6 +21,14 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Frequency)
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.Frequency)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LogLevel)
             </td>
             <td class="adminData">
@@ -33,6 +41,14 @@
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.ShortMessage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ContentHash)
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.ContentHash)
             </td>
         </tr>
         @if (Model.FullMessage.HasValue()) {
@@ -88,6 +104,14 @@
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.CreatedOn)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UpdatedOn)
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.UpdatedOn)
             </td>
         </tr>
     </table>

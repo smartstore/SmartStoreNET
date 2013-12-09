@@ -107,6 +107,39 @@ SET @resources='
 		<Value>Choose token</Value>
 		<Value lang="de">Platzhalter auswählen</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.System.Log.Fields.UpdatedOn">
+		<Value>Updated on</Value>
+		<Value lang="de">Aktualisiert am</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.Fields.UpdatedOn.Hint">
+		<Value>Date of the last update.</Value>
+		<Value lang="de">Datum der letzten Aktualisierung.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.Fields.Frequency">
+		<Value>Frequency</Value>
+		<Value lang="de">Häufigkeit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.Fields.Frequency.Hint">
+		<Value>Number of occurrences of this event.</Value>
+		<Value lang="de">Anzahl des Auftretens dieses Ereignisses.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.List.MinFrequency">
+		<Value>Frequency minimum</Value>
+		<Value lang="de">Häufigkeit Minimum</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.List.MinFrequency.Hint">
+		<Value>How often an event minimum must have occurred.</Value>
+		<Value lang="de">Wie oft ein Ereigniss minimal aufgetreten sein muss.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.Fields.ContentHash">
+		<Value>Content hash</Value>
+		<Value lang="de">Inhalts-Hash</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Log.Fields.ContentHash.Hint">
+		<Value>Represents the log content. Is required for the frequency count.</Value>
+		<Value lang="de">Repräsentiert den Ereignissinhalt. Wird für die Häufigkeitszählung benötigt.</Value>
+	</LocaleResource>
 
 </Language>
 '

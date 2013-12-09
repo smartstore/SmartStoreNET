@@ -3,7 +3,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.System.Log").Text;
 }
 @using (Html.BeginForm())
@@ -14,11 +13,15 @@
             @T("Admin.System.Log")
         </div>
         <div class="options">
-            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")</button>
-            <button type="submit" name="clearall" value="clearall" class="btn">@T("Admin.System.Log.ClearLog")</button>
+            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
+                <i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")
+            </button>
+            <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
+                <i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.Log.ClearLog")
+            </button>
         </div>
     </div>
-    <table width="100%">
+    <table style="width: 100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CreatedOnFrom)
@@ -52,6 +55,14 @@
             </td>
         </tr>
         <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MinFrequency)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.MinFrequency)
+            </td>
+        </tr>
+        <tr>
             <td colspan="2">
                 <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
@@ -66,21 +77,23 @@
                         .Columns(columns =>
                         {
                             columns.Bound(x => x.Id)
-                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
-
-                            columns.Bound(x => x.LogLevel);
-                            columns.Bound(x => x.ShortMessage);
-                            columns.Bound(x => x.CreatedOn);
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "View", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"View/<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
+                                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                                .Title("<input id='mastercheckbox' type='checkbox'/>")
                                 .Width(50)
+                                .HtmlAttributes(new { style = "text-align:center" })
+                                .HeaderHtmlAttributes(new { style = "text-align:center" });
+
+                            columns.Bound(x => x.Frequency)
                                 .Centered()
-                                .Title(T("Admin.Common.View").Text);
+                                .Width(50);
+                            columns.Bound(x => x.LogLevel);
+                            columns.Bound(x => x.ShortMessage)
+                                .Template(x => Html.ActionLink(x.ShortMessage, "View", new { id = x.Id }))
+                                .ClientTemplate("<a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+                            columns.Bound(x => x.CreatedOn)
+                                .Width(150);
+                            columns.Bound(x => x.UpdatedOn)
+                                .Width(150);
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
@@ -177,7 +190,8 @@
                 CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
                 CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val(),
                 Message: $('#@Html.FieldIdFor(model => model.Message)').val(),
-                LogLevelId: $('#@Html.FieldIdFor(model => model.LogLevelId)').val()
+                LogLevelId: $('#@Html.FieldIdFor(model => model.LogLevelId)').val(),
+                MinFrequency: $('#@Html.FieldIdFor(model => model.MinFrequency)').val()
             };
             e.data = searchModel;
         }

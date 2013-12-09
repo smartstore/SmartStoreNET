@@ -37,5 +37,14 @@ namespace SmartStore.Admin.Models.Logging
 
         [SmartResourceDisplayName("Admin.System.Log.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.Log.Fields.UpdatedOn")]
+		public DateTime? UpdatedOn { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.Log.Fields.Frequency")]
+		public int Frequency { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.Log.Fields.ContentHash")]
+		public string ContentHash { get; set; }
     }
 }

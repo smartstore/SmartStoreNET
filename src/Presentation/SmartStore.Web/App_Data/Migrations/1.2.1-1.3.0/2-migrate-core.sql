@@ -39,3 +39,27 @@ BEGIN
 	ALTER TABLE ShippingMethod ADD IgnoreCharges bit NOT NULL DEFAULT 0
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Log]') and NAME='UpdatedOnUtc')
+BEGIN
+	ALTER TABLE [Log] ADD [UpdatedOnUtc] datetime NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Log]') and NAME='Frequency')
+BEGIN
+	ALTER TABLE [Log] ADD [Frequency] int NOT NULL DEFAULT 1
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Log]') and NAME='ContentHash')
+BEGIN
+	ALTER TABLE [Log] ADD [ContentHash] nvarchar(40) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Log_ContentHash' and object_id=object_id(N'[Log]'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_Log_ContentHash] ON [Log] ([ContentHash] ASC)
+END
+GO

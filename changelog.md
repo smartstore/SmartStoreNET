@@ -30,6 +30,7 @@
 * Excel Import: Field _CreatedOnUtc_ is optional now
 * Enhanced Admin UI for _Message Templates_
 * #140 Import all plugin resources after adding a language
+* #45 Smarter logging. Save same log notifications only once including its frequency.
 
 ##SmartStore.NET 1.2.1.0#
 

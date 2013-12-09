@@ -503,17 +503,12 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Import plugin resources from xml files in plugin's localization directory.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
+		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
+		/// <param name="filterLanguages">Import only files for particular languages</param>
 		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor,
-			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
-		{
-			ImportPluginResourcesFromXml(pluginDescriptor, null, forceToList, updateTouchedResources);
-		}
-
-		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, IList<Language> filterLanguages, 
-			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true, IList<Language> filterLanguages = null)
 		{
 			string pluginDir = pluginDescriptor.OriginalAssemblyFile.Directory.FullName;
 			string localizationDir = Path.Combine(pluginDir, "Localization");

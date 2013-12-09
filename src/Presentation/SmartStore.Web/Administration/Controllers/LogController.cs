@@ -68,12 +68,13 @@ namespace SmartStore.Admin.Controllers
 
 
             var logItems = _logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
-                logLevel, command.Page - 1, command.PageSize);
+                logLevel, command.Page - 1, command.PageSize, model.MinFrequency);
+
             var gridModel = new GridModel<LogModel>
             {
                 Data = logItems.Select(x =>
                 {
-                    return new LogModel()
+                    var logModel = new LogModel()
                     {
                         Id = x.Id,
                         LogLevel = x.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
@@ -84,8 +85,15 @@ namespace SmartStore.Admin.Controllers
                         CustomerEmail = x.Customer != null ? x.Customer.Email : null,
                         PageUrl = x.PageUrl,
                         ReferrerUrl = x.ReferrerUrl,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						Frequency = x.Frequency,
+						ContentHash = x.ContentHash
                     };
+
+					if (x.UpdatedOnUtc.HasValue)
+						logModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc.Value, DateTimeKind.Utc);
+
+					return logModel;
                 }),
                 Total = logItems.TotalCount
             };
@@ -129,8 +137,13 @@ namespace SmartStore.Admin.Controllers
                 CustomerEmail = log.Customer != null ? log.Customer.Email : null,
                 PageUrl = log.PageUrl,
                 ReferrerUrl = log.ReferrerUrl,
-                CreatedOn = _dateTimeHelper.ConvertToUserTime(log.CreatedOnUtc, DateTimeKind.Utc)
+                CreatedOn = _dateTimeHelper.ConvertToUserTime(log.CreatedOnUtc, DateTimeKind.Utc),
+				Frequency = log.Frequency,
+				ContentHash = log.ContentHash
             };
+
+			if (log.UpdatedOnUtc.HasValue)
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(log.UpdatedOnUtc.Value, DateTimeKind.Utc);
 
             return View(model);
         }

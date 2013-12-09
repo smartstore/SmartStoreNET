@@ -111,7 +111,7 @@ namespace SmartStore.Services.Logging
         /// <param name="pageSize">Page size</param>
         /// <returns>Log item collection</returns>
         public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc,
-            string message, LogLevel? logLevel, int pageIndex, int pageSize)
+			string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
         {
             var query = _logRepository.Table;
             if (fromUtc.HasValue)
@@ -126,6 +126,9 @@ namespace SmartStore.Services.Logging
             if (!String.IsNullOrEmpty(message))
                 query = query.Where(l => l.ShortMessage.Contains(message) || l.FullMessage.Contains(message));
             query = query.OrderByDescending(l => l.CreatedOnUtc);
+
+			if (minFrequency > 0)
+				query = query.Where(l => l.Frequency >= minFrequency);
 
             var log = new PagedList<Log>(query, pageIndex, pageSize);
             return log;
@@ -180,21 +183,59 @@ namespace SmartStore.Services.Logging
         /// <returns>A log item</returns>
         public virtual Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
         {
-            var log = new Log()
-            {
-                LogLevel = logLevel,
-                ShortMessage = shortMessage,
-                FullMessage = fullMessage,
-                IpAddress = _webHelper.GetCurrentIpAddress(),
-                Customer = customer,
-                PageUrl = _webHelper.GetThisPageUrl(true),
-                ReferrerUrl = _webHelper.GetUrlReferrer(),
-                CreatedOnUtc = DateTime.UtcNow
-            };
+			if (shortMessage.IsNullOrEmpty() && fullMessage.IsNullOrEmpty())
+				return null;
 
-            _logRepository.Insert(log);
+			Log log = null;
 
-            return log;
+			try
+			{
+				shortMessage = shortMessage.NaIfEmpty();
+				fullMessage = fullMessage.EmptyNull();
+
+				string contentHash = (shortMessage + fullMessage).Hash(true, true);
+
+				log = _logRepository.Table.OrderByDescending(x => x.CreatedOnUtc).FirstOrDefault(x => x.ContentHash == contentHash);
+
+				if (log == null)
+				{
+					log = new Log()
+					{
+						Frequency = 1,
+						LogLevel = logLevel,
+						ShortMessage = shortMessage,
+						FullMessage = fullMessage,
+						IpAddress = _webHelper.GetCurrentIpAddress(),
+						Customer = customer,
+						PageUrl = _webHelper.GetThisPageUrl(true),
+						ReferrerUrl = _webHelper.GetUrlReferrer(),
+						CreatedOnUtc = DateTime.UtcNow,
+						ContentHash = contentHash
+					};
+
+					_logRepository.Insert(log);
+				}
+				else
+				{
+					if (log.Frequency < 2147483647)
+						log.Frequency = log.Frequency + 1;
+
+					log.LogLevel = logLevel;
+					log.IpAddress = _webHelper.GetCurrentIpAddress();
+					log.Customer = customer;
+					log.PageUrl = _webHelper.GetThisPageUrl(true);
+					log.ReferrerUrl = _webHelper.GetUrlReferrer();
+					log.UpdatedOnUtc = DateTime.UtcNow;
+
+					_logRepository.Update(log);
+				}
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+
+			return log;
         }
 
         #endregion

@@ -2079,12 +2079,12 @@
     <Content Include="Themes\Mobile\Content\images\icons-36-white.png" />
     <Content Include="Themes\Mobile\Content\images\star-x-active.gif" />
     <Content Include="Themes\Mobile\Content\images\star-x-inactive.gif" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile-1.1.1.min.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.1.1.min.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.1.1.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile-1.3.2.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.3.2.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.min.css" />
     <Content Include="Themes\Mobile\Content\styles.css" />
     <Content Include="Themes\Mobile\preview.png" />
     <Content Include="Themes\print.css" />
@@ -2294,6 +2294,7 @@
     <Content Include="Views\Catalog\ProductAskQuestionButton.Mobile.cshtml" />
     <Content Include="Views\Topic\TopicWidget.cshtml" />
     <Content Include="Views\Shared\_ClientRes.cshtml" />
+    <Content Include="Views\Shared\Header.Mobile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

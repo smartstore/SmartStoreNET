@@ -3,6 +3,11 @@
 }
 @Html.Widget("mobile_body_start_html_tag_after")
 <div data-role="page" data-theme="b" id="mainpage">
+
+    <div data-role="header" data-position="inline" style="text-align:center">
+        @Html.Action("Header", "Common")
+    </div>
+
     <div data-role="header" data-position="inline">
         @*do not use @Html.Partial("Header")
             use sections right here so they can be overriden in the views*@
@@ -14,6 +19,7 @@
         {
             <a href="@Url.RouteUrl("HomePage")" data-icon="home">@T("Common.Home")</a>
         }
+
         @*title*@
         <h1>@Html.SmartTitle(false)</h1>
         @if (IsSectionDefined("top-right-button"))

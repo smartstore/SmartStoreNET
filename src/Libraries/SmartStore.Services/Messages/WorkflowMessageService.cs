@@ -795,6 +795,11 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddProductTokens(tokens, product);
+            var variant = product.ProductVariants.FirstOrDefault();
+            if (variant != null)
+            {
+                _messageTokenProvider.AddProductVariantTokens(tokens, variant);
+            }
             tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
             tokens.Add(new Token("ProductQuestion.SenderName", senderName));

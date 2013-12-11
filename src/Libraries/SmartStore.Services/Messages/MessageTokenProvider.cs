@@ -910,6 +910,7 @@ namespace SmartStore.Services.Messages
         public virtual void AddProductVariantTokens(IList<Token> tokens, ProductVariant productVariant)
         {
             tokens.Add(new Token("ProductVariant.ID", productVariant.Id.ToString()));
+            tokens.Add(new Token("ProductVariant.Sku", productVariant.Sku.EmptyNull()));
             tokens.Add(new Token("ProductVariant.FullProductName", productVariant.FullProductName));
             tokens.Add(new Token("ProductVariant.StockQuantity", productVariant.StockQuantity.ToString()));
 
@@ -1070,7 +1071,8 @@ namespace SmartStore.Services.Messages
                 "%Product.Name%",
                 "%Product.ShortDescription%", 
                 "%Product.ProductURLForCustomer%",
-                "%ProductVariant.ID%", 
+                "%ProductVariant.ID%",
+                "%ProductVariant.Sku%",
                 "%ProductVariant.FullProductName%", 
                 "%ProductVariant.StockQuantity%", 
                 "%Forums.TopicURL%",

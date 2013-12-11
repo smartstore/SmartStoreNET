@@ -482,7 +482,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public ActionResult UpdateStringResources(string systemName)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
@@ -500,8 +499,31 @@ namespace SmartStore.Admin.Controllers
 			{
 				_localizationService.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));				
+				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
+			return RedirectToAction("List");
+		}
+
+		public ActionResult UpdateAllStringResources()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var pluginDescriptors = _pluginFinder.GetPluginDescriptors(false);
+
+			foreach (var plugin in pluginDescriptors)
+			{
+				if (plugin.Installed)
+				{
+					_localizationService.ImportPluginResourcesFromXml(plugin, null, false);
+				}
+				else
+				{
+					_localizationService.DeleteLocaleStringResources(plugin.ResourceRootKey);
+				}
+			}
+
+			SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			return RedirectToAction("List");
 		}
 

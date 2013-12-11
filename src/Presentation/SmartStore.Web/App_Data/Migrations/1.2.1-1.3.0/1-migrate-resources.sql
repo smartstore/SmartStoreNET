@@ -141,6 +141,15 @@ SET @resources='
 		<Value lang="de">Repräsentiert den Ereignissinhalt. Wird für die Häufigkeitszählung benötigt.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateAll">
+		<Value>Update language resources of all plugins</Value>
+		<Value lang="de">Sprachressourcen aller Plugins aktualisieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.Resources.UpdateAllConfirm">
+		<Value>Do you like to update the language resources of all plugins?</Value>
+		<Value lang="de">Möchten Sie die Sprachressourcen aller Plugins aktualisieren?</Value>
+	</LocaleResource>
+
 </Language>
 '
 

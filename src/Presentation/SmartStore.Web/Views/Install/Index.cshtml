@@ -7,57 +7,6 @@
     // we do not use standard smnet localization because database is not installed yet
     // locale resources fpr installation process are stored into \App_Data\Localization\Installation directory
     var ILS = EngineContext.Current.Resolve<IInstallationLocalizationService>();
-
-    // Install styles
-    Html.AppendCssFileParts(true, "~/Content/install/install.less");
-    
-    // add js assets (Head)
-    Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/modernizr-{version}.js",
-        "~/Scripts/jquery-{version}.js");
-
-    var bootstrapJsRoot = "~/Content/bootstrap/js/";
-    Html.AppendScriptParts(ResourceLocation.Foot,
-        // jQuery UI Core
-        "~/Scripts/jquery-ui/jquery.ui.core.js",
-        "~/Scripts/jquery-ui/jquery.ui.widget.js",
-        "~/Scripts/jquery-ui/jquery.effects.core.js",
-        "~/Scripts/jquery-ui/jquery.ui.position.js",
-        // jQuery Validation
-        "~/Scripts/jquery.unobtrusive-ajax.js",
-        "~/Scripts/jquery.validate.js",
-        "~/Scripts/jquery.validate.unobtrusive.js",
-        // SmartStore system
-        "~/Scripts/smartstore.system.js",
-        "~/Scripts/underscore.js",
-        "~/Scripts/underscore.string.js",
-        "~/Scripts/underscore.mixins.js",
-        "~/Scripts/smartstore.jquery.utils.js",
-        "~/Scripts/jquery.transit.js",
-        "~/Scripts/smartstore.doAjax.js",
-        "~/Scripts/jquery.addeasing.js",
-        "~/Scripts/smartstore.eventbroker.js",
-        "~/Scripts/smartstore.hacks.js",
-        // Bootstrap
-        bootstrapJsRoot + "bootstrap-transition.js",
-        bootstrapJsRoot + "bootstrap-alert.js",
-        bootstrapJsRoot + "bootstrap-button.js",
-        bootstrapJsRoot + "bootstrap-collapse.js",
-        bootstrapJsRoot + "bootstrap-dropdown.js",
-        bootstrapJsRoot + "bootstrap-modal.js",
-        bootstrapJsRoot + "bootstrap-tooltip.js",
-        bootstrapJsRoot + "bootstrap-popover.js",
-        bootstrapJsRoot + "bootstrap-tab.js",
-        // Shared UI
-        "~/Scripts/smartstore.placeholder.js",
-        "~/Scripts/select2.js",
-        "~/Scripts/smartstore.selectwrapper.js",
-        "~/Scripts/smartstore.throbber.js",
-        "~/Scripts/jquery.pnotify.js",
-        "~/Scripts/jquery.scrollTo.js",
-        "~/Scripts/jquery.serialScroll.js",
-        // Install
-        "~/Scripts/public.common.js");
 }
 <!DOCTYPE html>
 <html>
@@ -73,8 +22,12 @@
 
     @Html.Partial("ConditionalComments")
 
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Head, false)
-    @Html.SmartScripts(this.Url, ResourceLocation.Head, false)
+    @* styles *@ 
+    <link href='~/Content/install/install.less' type='text/css' rel='stylesheet' />
+
+    @* scripts (head) *@
+    <script src='~/Scripts/modernizr-2.6.2.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery-1.8.3.min.js' type='text/javascript'></script>
 
 </head>
 <body class="container-main">
@@ -368,8 +321,26 @@
         </div>
     }
 
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Foot, false)
-    @Html.SmartScripts(this.Url, ResourceLocation.Foot, false)
+    @* scripts (foot) *@
+    <script src='~/Scripts/jquery-ui/jquery.ui.core.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery-ui/jquery.effects.core.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.unobtrusive-ajax.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.validate.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.validate.unobtrusive.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/smartstore.system.js' type='text/javascript'></script>
+
+    <script src='~/Scripts/underscore.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/underscore.string.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/underscore.mixins.js' type='text/javascript'></script>
+
+    <script src='~/Scripts/jquery.transit.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.addeasing.js' type='text/javascript'></script>
+    <script src='~/Scripts/select2.min.js' type='text/javascript'></script>
+    <script src='~/Scripts/smartstore.selectwrapper.js' type='text/javascript'></script>
+    <script src='~/Scripts/smartstore.throbber.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.scrollTo.js' type='text/javascript'></script>
+    <script src='~/Scripts/jquery.serialScroll.js' type='text/javascript'></script>
+    <script src='~/Scripts/public.common.js' type='text/javascript'></script>
 
     <script>
         var Installation = (function () {

@@ -61,7 +61,7 @@
         <tr>
             <td>
     
-                @foreach (var g in Model.Groups)
+                @foreach (var g in Model.Groups.OrderBy(x => x.Key))
                 {
                     <div class="plugins-group">
                         <h3 class="group-title">

@@ -75,7 +75,7 @@
             </div>
         }
 
-        @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+        @(Html.SmartStore().Pager(Model.PagingFilteringContext).WithRenderer<MobilePagerRenderer>().Name("pagination-bottom").QueryParam("pagenumber"))
 
         @Html.Widget("mobile_categorydetails_bottom")
     </div>

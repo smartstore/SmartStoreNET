@@ -194,7 +194,7 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var plugin in plugins)
 				{
-					_localizationService.ImportPluginResourcesFromXml(plugin, null, true, filterLanguages);
+					_localizationService.ImportPluginResourcesFromXml(plugin, null, false, filterLanguages);
 				}
 
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Added"));

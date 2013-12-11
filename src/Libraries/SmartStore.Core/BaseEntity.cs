@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -15,7 +16,7 @@ namespace SmartStore.Core
         /// <summary>
         /// Gets or sets the entity identifier
         /// </summary>
-        [DataMember]
+		[DataMember, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public override bool Equals(object obj)

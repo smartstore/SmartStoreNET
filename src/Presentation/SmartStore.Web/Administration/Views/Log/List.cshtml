@@ -63,12 +63,18 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <button type="submit" id="btnSearch" class="btn">
+                    <i class="icon-search"></i>
+                    @T("Admin.Common.Search")
+                </button>
             </td>
         </tr>
     </table>
-    <table class="adminContent">
+    <table class="adminContent" style="margin-top: 12px">
         <tr>
             <td>
                 @(Html.Telerik().Grid<LogModel>()
@@ -82,14 +88,11 @@
                                 .Width(50)
                                 .HtmlAttributes(new { style = "text-align:center" })
                                 .HeaderHtmlAttributes(new { style = "text-align:center" });
-
                             columns.Bound(x => x.Frequency)
                                 .Centered()
                                 .Width(50);
-                            columns.Bound(x => x.LogLevel);
                             columns.Bound(x => x.ShortMessage)
-                                .Template(x => Html.ActionLink(x.ShortMessage, "View", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+                                .ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
                             columns.Bound(x => x.CreatedOn)
                                 .Width(150);
                             columns.Bound(x => x.UpdatedOn)

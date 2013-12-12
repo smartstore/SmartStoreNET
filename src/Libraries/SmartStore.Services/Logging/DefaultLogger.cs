@@ -114,6 +114,7 @@ namespace SmartStore.Services.Logging
 			string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
         {
             var query = _logRepository.Table;
+            
             if (fromUtc.HasValue)
                 query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc);
             if (toUtc.HasValue)
@@ -129,6 +130,8 @@ namespace SmartStore.Services.Logging
 
 			if (minFrequency > 0)
 				query = query.Where(l => l.Frequency >= minFrequency);
+
+            query = _logRepository.Expand(query, x => x.Customer);
 
             var log = new PagedList<Log>(query, pageIndex, pageSize);
             return log;

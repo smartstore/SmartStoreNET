@@ -221,6 +221,7 @@
     <Compile Include="Installation\InstallDataContext.cs" />
     <Compile Include="Installation\InvariantInstallationData.cs" />
     <Compile Include="Localization\LocalizedEntityPostDeleteHook.cs" />
+    <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
     <Compile Include="Media\IImageResizerService.cs" />

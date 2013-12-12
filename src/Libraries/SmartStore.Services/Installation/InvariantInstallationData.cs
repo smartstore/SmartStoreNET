@@ -5161,6 +5161,14 @@ namespace SmartStore.Services.Installation
                 },
                 new ScheduleTask()
                 {
+                    Name = "Delete logs",
+                    Seconds = 86400, // 1 day
+                    Type = "SmartStore.Services.Logging.DeleteLogsTask, SmartStore.Services",
+                    Enabled = true,
+                    StopOnError = false,
+                },
+                new ScheduleTask()
+                {
                     Name = "Clear cache",
                     Seconds = 600,
                     Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",

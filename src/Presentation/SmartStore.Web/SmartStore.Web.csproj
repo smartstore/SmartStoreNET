@@ -661,6 +661,7 @@
     <Content Include="Media\default-image.jpg" />
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Media\Uploaded\placeholder.txt" />
+    <Content Include="Scripts\smartstore.globalize.adapter.js" />
     <Content Include="Scripts\jquery-1.8.3.js" />
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.backgroundpos.js" />
@@ -713,7 +714,6 @@
     <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
     <Content Include="Content\bootstrap\custom\images\select2x2.png" />
     <Content Include="Content\bootstrap\custom\images\spinner.gif" />
-    <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.global.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.js" />
     <Content Include="Content\bootstrap\custom\navbar.less" />
     <Content Include="Content\bootstrap\font\fontawesome-webfont.svg" />

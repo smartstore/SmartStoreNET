@@ -44,13 +44,16 @@
     // add js assets (Head)
     Html.AppendScriptParts(ResourceLocation.Head,
         "~/Scripts/modernizr-{version}.js",
-        "~/Scripts/jquery-{version}.js");
+        "~/Scripts/jquery-{version}.js",
+        "~/Scripts/jquery.globalize/globalize.js");
+        
+    Html.AddScriptParts(ResourceLocation.Head, true,
+        "~/Scripts/jquery.globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
+        "~/Scripts/smartstore.globalize.adapter.js");
 
     // add js assets (Foot)
     var bootstrapJsRoot = "~/Content/bootstrap/js/";
     Html.AppendScriptParts(ResourceLocation.Foot,
-        // Globalize
-        "~/Scripts/jquery.globalize/globalize.js",
         // jQuery UI Core
         "~/Scripts/jquery-ui/jquery.ui.core.js",
         "~/Scripts/jquery-ui/jquery.ui.widget.js",
@@ -107,9 +110,6 @@
         // Admin
         "~/Administration/Scripts/admin.common.js",
         "~/Administration/Scripts/admin.globalinit.js");
-
-        Html.AddScriptParts(ResourceLocation.Foot, true,
-            "~/Scripts/jquery.globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
 }
 <!DOCTYPE html>
 <html class="no-js not-ready loading">

@@ -65,6 +65,7 @@ namespace SmartStore.Services.Messages
         private readonly BankConnectionSettings _bankConnectionSettings;
         private readonly ContactDataSettings _contactDataSettings;
         private readonly ITopicService _topicService;
+        private readonly ShoppingCartSettings _shoppingCartSettings;
         //codehint: sm-add end
 
         #endregion
@@ -76,7 +77,7 @@ namespace SmartStore.Services.Messages
             IEmailAccountService emailAccountService,
             IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
             IWorkContext workContext, IStoreContext storeContext,
-			IDownloadService downloadService,
+			IDownloadService downloadService, ShoppingCartSettings shoppingCartSettings,
             IOrderService orderService, IPaymentService paymentService,
             IProductAttributeParser productAttributeParser,
             StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
@@ -111,6 +112,7 @@ namespace SmartStore.Services.Messages
             this._bankConnectionSettings = bankConnectionSettings;
             this._contactDataSettings = contactDataSettings;
             this._topicService = topicService;
+            this._shoppingCartSettings = shoppingCartSettings;
         }
 
         #endregion
@@ -168,6 +170,19 @@ namespace SmartStore.Services.Messages
                     sb.AppendLine(downloadLink);
                     sb.AppendLine(")");
                 }
+
+                //deliverytime
+                if (_shoppingCartSettings.ShowDeliveryTimes && opv.ProductVariant.DeliveryTime != null && opv.ProductVariant.IsShipEnabled)
+                {
+                    sb.AppendLine("<br />");
+
+                    sb.AppendLine("<div class=\"delivery-time\">");
+                    sb.AppendLine("<span class=\"delivery-time-label\">" + _localizationService.GetResource("Products.DeliveryTime") + "</span>");
+                    sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + opv.ProductVariant.DeliveryTime.ColorHexValue + " title=\"" + opv.ProductVariant.DeliveryTime.Name + "\"></span>");
+                    sb.AppendLine("<span class=\"delivery-time-value\">" + opv.ProductVariant.DeliveryTime.Name + "</span>");
+                    sb.AppendLine("</div>");
+                }
+
                 //attributes
                 if (!String.IsNullOrEmpty(opv.AttributeDescription))
                 {

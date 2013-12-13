@@ -196,5 +196,14 @@
                 @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDeliveryTimes)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDeliveryTimes)
+                @Html.ValidationMessageFor(model => model.ShowDeliveryTimes)
+            </td>
+        </tr>
     </table>
 }

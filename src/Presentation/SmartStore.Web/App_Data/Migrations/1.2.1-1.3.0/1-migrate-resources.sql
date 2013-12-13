@@ -149,7 +149,15 @@ SET @resources='
 		<Value>Do you like to update the language resources of all plugins?</Value>
 		<Value lang="de">Möchten Sie die Sprachressourcen aller Plugins aktualisieren?</Value>
 	</LocaleResource>
-
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes">
+		<Value>Display delivery times</Value>
+		<Value lang="de">Lieferzeiten anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes.Hint">
+		<Value>Determines whether delivery times should be displayed in shopping cart</Value>
+		<Value lang="de">Bestimmt ob Lieferzeiten im Warenkorb angezeigt wird.</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

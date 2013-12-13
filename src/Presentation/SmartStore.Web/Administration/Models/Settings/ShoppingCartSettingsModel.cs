@@ -52,5 +52,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes")]
+        public bool ShowDeliveryTimes { get; set; }
+
     }
 }

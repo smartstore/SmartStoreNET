@@ -82,6 +82,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IDeliveryTimeService _deliveryTimeService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
@@ -112,7 +113,7 @@ namespace SmartStore.Web.Controllers
             IOrderTotalCalculationService orderTotalCalculationService,
             ICheckoutAttributeService checkoutAttributeService, IPaymentService paymentService,
             IWorkflowMessageService workflowMessageService,
-            IPermissionService permissionService, 
+            IPermissionService permissionService, IDeliveryTimeService deliveryTimeService,
             IDownloadService downloadService, ICacheManager cacheManager,
             IWebHelper webHelper, ICustomerActivityService customerActivityService,
 			IGenericAttributeService genericAttributeService,
@@ -153,6 +154,7 @@ namespace SmartStore.Web.Controllers
             this._webHelper = webHelper;
             this._customerActivityService = customerActivityService;
 			this._genericAttributeService = genericAttributeService;
+            this._deliveryTimeService = deliveryTimeService;
             
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -240,7 +242,8 @@ namespace SmartStore.Web.Controllers
 
             //codehint:sm-add
             model.MediaDimensions = _mediaSettings.CartThumbPictureSize;
-
+            //TODO: add setting
+            model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
             model.IsEditable = isEditable;
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
             model.ShowSku = _catalogSettings.ShowProductSku;
@@ -438,6 +441,8 @@ namespace SmartStore.Web.Controllers
                     ProductSeName = sci.ProductVariant.Product.GetSeName(),
                     Quantity = sci.Quantity,
                     AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.ProductVariant, sci.AttributesXml),
+                    IsShipEnabled = sci.ProductVariant.IsShipEnabled,
+                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.ProductVariant.DeliveryTimeId.GetValueOrDefault())
                 };
 
                 //allowed quantities

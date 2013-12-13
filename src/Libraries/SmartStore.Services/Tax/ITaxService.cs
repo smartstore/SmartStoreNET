@@ -71,7 +71,7 @@ namespace SmartStore.Services.Tax
         /// <param name="price">Price</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(ProductVariant product, decimal price,
+        decimal GetProductPrice(Product product, decimal price,
             out decimal taxRate);
 
         /// <summary>

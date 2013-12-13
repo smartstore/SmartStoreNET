@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
@@ -14,13 +16,33 @@ namespace SmartStore.Core.Domain.Catalog
     [DataContract]
 	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
     {
-        private ICollection<ProductVariant> _productVariants;
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
         private ICollection<ProductReview> _productReviews;
         private ICollection<ProductSpecificationAttribute> _productSpecificationAttributes;
         private ICollection<ProductTag> _productTags;
+		private ICollection<ProductVariantAttribute> _productVariantAttributes;
+		private ICollection<ProductVariantAttributeCombination> _productVariantAttributeCombinations;
+		private ICollection<TierPrice> _tierPrices;
+		private ICollection<Discount> _appliedDiscounts;
+
+        public Product()
+        {
+            this.BasePrice = new BasePriceQuotation();
+        }
+
+		/// <summary>
+		/// Gets or sets the product type identifier
+		/// </summary>
+		[DataMember]
+		public int ProductTypeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the parent product identifier. It's used only with grouped products
+		/// </summary>
+		[DataMember]
+		public int ParentProductId { get; set; }
 
         /// <summary>
         /// Gets or sets the name
@@ -118,6 +140,374 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public bool LimitedToStores { get; set; }
 
+		/// <summary>
+		/// Gets or sets the SKU
+		/// </summary>
+		[DataMember]
+		public string Sku { get; set; }
+
+		/// <summary>
+		/// Gets or sets the manufacturer part number
+		/// </summary>
+		[DataMember]
+		public string ManufacturerPartNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Global Trade Item Number (GTIN). These identifiers include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
+		/// </summary>
+		[DataMember]
+		public string Gtin { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product is gift card
+		/// </summary>
+		[DataMember]
+		public bool IsGiftCard { get; set; }
+
+		/// <summary>
+		/// Gets or sets the gift card type identifier
+		/// </summary>
+		[DataMember]
+		public int GiftCardTypeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product requires that other product variants are added to the cart (Product X requires Product Y)
+		/// </summary>
+		[DataMember]
+		public bool RequireOtherProducts { get; set; }
+
+		/// <summary>
+		/// Gets or sets a required product identifiers (comma separated)
+		/// </summary>
+		[DataMember]
+		public string RequiredProductIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether required products are automatically added to the cart
+		/// </summary>
+		[DataMember]
+		public bool AutomaticallyAddRequiredProducts { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product is download
+		/// </summary>
+		[DataMember]
+		public bool IsDownload { get; set; }
+
+		/// <summary>
+		/// Gets or sets the download identifier
+		/// </summary>
+		[DataMember]
+		public int DownloadId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this downloadable product can be downloaded unlimited number of times
+		/// </summary>
+		[DataMember]
+		public bool UnlimitedDownloads { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum number of downloads
+		/// </summary>
+		[DataMember]
+		public int MaxNumberOfDownloads { get; set; }
+
+		/// <summary>
+		/// Gets or sets the number of days during customers keeps access to the file.
+		/// </summary>
+		[DataMember]
+		public int? DownloadExpirationDays { get; set; }
+
+		/// <summary>
+		/// Gets or sets the download activation type
+		/// </summary>
+		[DataMember]
+		public int DownloadActivationTypeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product has a sample download file
+		/// </summary>
+		[DataMember]
+		public bool HasSampleDownload { get; set; }
+
+		/// <summary>
+		/// Gets or sets the sample download identifier
+		/// </summary>
+		[DataMember]
+		public int SampleDownloadId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product has user agreement
+		/// </summary>
+		[DataMember]
+		public bool HasUserAgreement { get; set; }
+
+		/// <summary>
+		/// Gets or sets the text of license agreement
+		/// </summary>
+		[DataMember]
+		public string UserAgreementText { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product is recurring
+		/// </summary>
+		[DataMember]
+		public bool IsRecurring { get; set; }
+
+		/// <summary>
+		/// Gets or sets the cycle length
+		/// </summary>
+		[DataMember]
+		public int RecurringCycleLength { get; set; }
+
+		/// <summary>
+		/// Gets or sets the cycle period
+		/// </summary>
+		[DataMember]
+		public int RecurringCyclePeriodId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the total cycles
+		/// </summary>
+		[DataMember]
+		public int RecurringTotalCycles { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is ship enabled
+		/// </summary>
+		[DataMember]
+		public bool IsShipEnabled { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is free shipping
+		/// </summary>
+		[DataMember]
+		public bool IsFreeShipping { get; set; }
+
+		/// <summary>
+		/// Gets or sets the additional shipping charge
+		/// </summary>
+		[DataMember]
+		public decimal AdditionalShippingCharge { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product is marked as tax exempt
+		/// </summary>
+		[DataMember]
+		public bool IsTaxExempt { get; set; }
+
+		/// <summary>
+		/// Gets or sets the tax category identifier
+		/// </summary>
+		[DataMember]
+		public int TaxCategoryId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating how to manage inventory
+		/// </summary>
+		[DataMember]
+		public int ManageInventoryMethodId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the stock quantity
+		/// </summary>
+		[DataMember]
+		public int StockQuantity { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to display stock availability
+		/// </summary>
+		[DataMember]
+		public bool DisplayStockAvailability { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to display stock quantity
+		/// </summary>
+		[DataMember]
+		public bool DisplayStockQuantity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the minimum stock quantity
+		/// </summary>
+		[DataMember]
+		public int MinStockQuantity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the low stock activity identifier
+		/// </summary>
+		[DataMember]
+		public int LowStockActivityId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the quantity when admin should be notified
+		/// </summary>
+		[DataMember]
+		public int NotifyAdminForQuantityBelow { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value backorder mode identifier
+		/// </summary>
+		[DataMember]
+		public int BackorderModeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to back in stock subscriptions are allowed
+		/// </summary>
+		[DataMember]
+		public bool AllowBackInStockSubscriptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the order minimum quantity
+		/// </summary>
+		[DataMember]
+		public int OrderMinimumQuantity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the order maximum quantity
+		/// </summary>
+		[DataMember]
+		public int OrderMaximumQuantity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the comma seperated list of allowed quantities. null or empty if any quantity is allowed
+		/// </summary>
+		[DataMember]
+		public string AllowedQuantities { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to disable buy (Add to cart) button
+		/// </summary>
+		[DataMember]
+		public bool DisableBuyButton { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to disable "Add to wishlist" button
+		/// </summary>
+		[DataMember]
+		public bool DisableWishlistButton { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this item is available for Pre-Order
+		/// </summary>
+		[DataMember]
+		public bool AvailableForPreOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show "Call for Pricing" or "Call for quote" instead of price
+		/// </summary>
+		[DataMember]
+		public bool CallForPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the price
+		/// </summary>
+		[DataMember]
+		public decimal Price { get; set; }
+
+		/// <summary>
+		/// Gets or sets the old price
+		/// </summary>
+		[DataMember]
+		public decimal OldPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product cost
+		/// </summary>
+		[DataMember]
+		public decimal ProductCost { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product special price
+		/// </summary>
+		[DataMember]
+		public decimal? SpecialPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the start date and time of the special price
+		/// </summary>
+		[DataMember]
+		public DateTime? SpecialPriceStartDateTimeUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the end date and time of the special price
+		/// </summary>
+		[DataMember]
+		public DateTime? SpecialPriceEndDateTimeUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a customer enters price
+		/// </summary>
+		[DataMember]
+		public bool CustomerEntersPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the minimum price entered by a customer
+		/// </summary>
+		[DataMember]
+		public decimal MinimumCustomerEnteredPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum price entered by a customer
+		/// </summary>
+		[DataMember]
+		public decimal MaximumCustomerEnteredPrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this product has tier prices configured
+		/// <remarks>The same as if we run variant.TierPrices.Count > 0
+		/// We use this property for performance optimization:
+		/// if this property is set to false, then we do not need to load tier prices navifation property
+		/// </remarks>
+		/// </summary>
+		[DataMember]
+		public bool HasTierPrices { get; set; }
+		
+		/// <summary>
+		/// Gets or sets a value indicating whether this product has discounts applied
+		/// <remarks>The same as if we run variant.AppliedDiscounts.Count > 0
+		/// We use this property for performance optimization:
+		/// if this property is set to false, then we do not need to load Applied Discounts navifation property
+		/// </remarks>
+		/// </summary>
+		[DataMember]
+		public bool HasDiscountsApplied { get; set; }
+
+		/// <summary>
+		/// Gets or sets the weight
+		/// </summary>
+		[DataMember]
+		public decimal Weight { get; set; }
+
+		/// <summary>
+		/// Gets or sets the length
+		/// </summary>
+		[DataMember]
+		public decimal Length { get; set; }
+
+		/// <summary>
+		/// Gets or sets the width
+		/// </summary>
+		[DataMember]
+		public decimal Width { get; set; }
+
+		/// <summary>
+		/// Gets or sets the height
+		/// </summary>
+		[DataMember]
+		public decimal Height { get; set; }
+
+		/// <summary>
+		/// Gets or sets the available start date and time
+		/// </summary>
+		[DataMember]
+		public DateTime? AvailableStartDateTimeUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the available end date and time
+		/// </summary>
+		[DataMember]
+		public DateTime? AvailableEndDateTimeUtc { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
@@ -141,15 +531,134 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the product variants
-        /// </summary>
-        public virtual ICollection<ProductVariant> ProductVariants
-        {
-            get { return _productVariants ?? (_productVariants = new List<ProductVariant>()); }
-            protected set { _productVariants = value; }
-        }
-        /// <summary>
+		/// <summary>
+		/// Gets or sets the delivery time identifier
+		/// </summary>
+		[DataMember]
+		public int? DeliveryTimeId { get; set; }
+
+		[DataMember]
+		public virtual DeliveryTime DeliveryTime { get; set; }
+
+		/// <summary>
+		/// Gets or sets the base price quotation complex type (PAnGV)
+		/// </summary>
+		[DataMember]
+		public virtual BasePriceQuotation BasePrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product type
+		/// </summary>
+		[DataMember]
+		public ProductType ProductType
+		{
+			get
+			{
+				return (ProductType)this.ProductTypeId;
+			}
+			set
+			{
+				this.ProductTypeId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the backorder mode
+		/// </summary>
+		[DataMember]
+		public BackorderMode BackorderMode
+		{
+			get
+			{
+				return (BackorderMode)this.BackorderModeId;
+			}
+			set
+			{
+				this.BackorderModeId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the download activation type
+		/// </summary>
+		[DataMember]
+		public DownloadActivationType DownloadActivationType
+		{
+			get
+			{
+				return (DownloadActivationType)this.DownloadActivationTypeId;
+			}
+			set
+			{
+				this.DownloadActivationTypeId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the gift card type
+		/// </summary>
+		[DataMember]
+		public GiftCardType GiftCardType
+		{
+			get
+			{
+				return (GiftCardType)this.GiftCardTypeId;
+			}
+			set
+			{
+				this.GiftCardTypeId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the low stock activity
+		/// </summary>
+		[DataMember]
+		public LowStockActivity LowStockActivity
+		{
+			get
+			{
+				return (LowStockActivity)this.LowStockActivityId;
+			}
+			set
+			{
+				this.LowStockActivityId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the value indicating how to manage inventory
+		/// </summary>
+		[DataMember]
+		public ManageInventoryMethod ManageInventoryMethod
+		{
+			get
+			{
+				return (ManageInventoryMethod)this.ManageInventoryMethodId;
+			}
+			set
+			{
+				this.ManageInventoryMethodId = (int)value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the cycle period for recurring products
+		/// </summary>
+		[DataMember]
+		public RecurringProductCyclePeriod RecurringCyclePeriod
+		{
+			get
+			{
+				return (RecurringProductCyclePeriod)this.RecurringCyclePeriodId;
+			}
+			set
+			{
+				this.RecurringCyclePeriodId = (int)value;
+			}
+		}
+
+		/// <summary>
         /// Gets or sets the collection of ProductCategory
         /// </summary>
         [DataMember]
@@ -208,5 +717,40 @@ namespace SmartStore.Core.Domain.Catalog
             protected set { _productTags = value; }
         }
 
+		/// <summary>
+		/// Gets or sets the product attributes
+		/// </summary>
+		public virtual ICollection<ProductVariantAttribute> ProductVariantAttributes
+		{
+			get { return _productVariantAttributes ?? (_productVariantAttributes = new List<ProductVariantAttribute>()); }
+			protected set { _productVariantAttributes = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the product attribute combinations
+		/// </summary>
+		public virtual ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations
+		{
+			get { return _productVariantAttributeCombinations ?? (_productVariantAttributeCombinations = new List<ProductVariantAttributeCombination>()); }
+			protected set { _productVariantAttributeCombinations = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the tier prices
+		/// </summary>
+		public virtual ICollection<TierPrice> TierPrices
+		{
+			get { return _tierPrices ?? (_tierPrices = new List<TierPrice>()); }
+			protected set { _tierPrices = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the collection of applied discounts
+		/// </summary>
+		public virtual ICollection<Discount> AppliedDiscounts
+		{
+			get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }
+			protected set { _appliedDiscounts = value; }
+		}
     }
 }

@@ -893,7 +893,8 @@ namespace SmartStore.Admin.Controllers
             var copyModel = model.CopyProductModel;
             try
             {
-                var newProduct = _copyProductService.CopyProduct(copyModel.Id, copyModel.Name, copyModel.Published, copyModel.CopyImages);
+				var product = _productService.GetProductById(copyModel.Id);
+                var newProduct = _copyProductService.CopyProduct(product, copyModel.Name, copyModel.Published, copyModel.CopyImages);
                 SuccessNotification("The product is copied");
                 return RedirectToAction("Edit", new { id = newProduct.Id });
             }

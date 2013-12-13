@@ -163,3 +163,6 @@ GO
 -- codehint: sm-add
 CREATE NONCLUSTERED INDEX [IX_LocalizedProperty_Key] ON [LocalizedProperty] ([Id])	INCLUDE ([EntityId], [LocaleKeyGroup], [LocaleKey])
 GO
+
+CREATE NONCLUSTERED INDEX [IX_Log_ContentHash] ON [Log] ([ContentHash] ASC)
+GO

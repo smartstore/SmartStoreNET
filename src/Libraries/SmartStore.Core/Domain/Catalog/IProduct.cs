@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-    
     /// <summary>
     /// Interface for shared product variant data between
     /// variants and variant combinations
     /// </summary>
-    public interface IProductVariant
+    public interface IProduct
     {
         int Id { get; }
         string Sku { get; set; }
@@ -25,5 +22,4 @@ namespace SmartStore.Core.Domain.Catalog
 
         ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations { get; }
     }
-
 }

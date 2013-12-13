@@ -10,7 +10,6 @@ namespace SmartStore.Data.Mapping.Catalog
             this.ToTable("ProductVariantAttributeCombination");
             this.HasKey(pvac => pvac.Id);
 
-            // codehint: sm-add
             this.Property(pv => pv.Sku).HasMaxLength(400);
             this.Property(pv => pv.ManufacturerPartNumber).HasMaxLength(400);
             this.Property(pv => pv.Gtin).HasMaxLength(400);
@@ -20,9 +19,9 @@ namespace SmartStore.Data.Mapping.Catalog
             this.Property(pv => pv.Height).HasPrecision(18, 4);
             this.Property(pv => pv.BasePriceAmount).HasPrecision(18, 4);
 
-            this.HasRequired(pvac => pvac.ProductVariant)
+            this.HasRequired(pvac => pvac.Product)
                 .WithMany(pv => pv.ProductVariantAttributeCombinations)
-                .HasForeignKey(pvac => pvac.ProductVariantId);
+                .HasForeignKey(pvac => pvac.ProductId);
 
             this.HasOptional(pv => pv.DeliveryTime)
                 .WithMany()

@@ -130,21 +130,21 @@ namespace SmartStore.Services.Media
             if (order.OrderStatus == OrderStatus.Cancelled)
                 return false;
 
-            var productVariant = orderProductVariant.ProductVariant;
-            if (productVariant == null || !productVariant.IsDownload)
+            var product = orderProductVariant.Product;
+            if (product == null || !product.IsDownload)
                 return false;
 
             //payment status
-            switch (productVariant.DownloadActivationType)
+            switch (product.DownloadActivationType)
             {
                 case DownloadActivationType.WhenOrderIsPaid:
                     {
                         if (order.PaymentStatus == PaymentStatus.Paid && order.PaidDateUtc.HasValue)
                         {
                             //expiration date
-                            if (productVariant.DownloadExpirationDays.HasValue)
+                            if (product.DownloadExpirationDays.HasValue)
                             {
-                                if (order.PaidDateUtc.Value.AddDays(productVariant.DownloadExpirationDays.Value) > DateTime.UtcNow)
+                                if (order.PaidDateUtc.Value.AddDays(product.DownloadExpirationDays.Value) > DateTime.UtcNow)
                                 {
                                     return true;
                                 }
@@ -161,9 +161,9 @@ namespace SmartStore.Services.Media
                         if (orderProductVariant.IsDownloadActivated)
                         {
                             //expiration date
-                            if (productVariant.DownloadExpirationDays.HasValue)
+                            if (product.DownloadExpirationDays.HasValue)
                             {
-                                if (order.CreatedOnUtc.AddDays(productVariant.DownloadExpirationDays.Value) > DateTime.UtcNow)
+                                if (order.CreatedOnUtc.AddDays(product.DownloadExpirationDays.Value) > DateTime.UtcNow)
                                 {
                                     return true;
                                 }

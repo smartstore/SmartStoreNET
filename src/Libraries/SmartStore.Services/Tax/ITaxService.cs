@@ -38,10 +38,10 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets tax rate
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
         /// <returns>Tax rate</returns>
-        decimal GetTaxRate(ProductVariant productVariant, Customer customer);
+        decimal GetTaxRate(Product product, Customer customer);
 
         /// <summary>
         /// Gets tax rate
@@ -54,11 +54,11 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets tax rate
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="customer">Customer</param>
         /// <returns>Tax rate</returns>
-        decimal GetTaxRate(ProductVariant productVariant, int taxCategoryId, 
+        decimal GetTaxRate(Product product, int taxCategoryId, 
             Customer customer);
         
 
@@ -67,40 +67,40 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        decimal GetProductPrice(ProductVariant product, decimal price,
             out decimal taxRate);
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        decimal GetProductPrice(Product product, decimal price,
             Customer customer, out decimal taxRate);
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        decimal GetProductPrice(Product product, decimal price,
             bool includingTax, Customer customer, out decimal taxRate);
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="price">Price</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Tax
         /// <param name="priceIncludesTax">A value indicating whether price already includes tax</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(ProductVariant productVariant, int taxCategoryId, decimal price,
+        decimal GetProductPrice(Product product, int taxCategoryId, decimal price,
             bool includingTax, Customer customer,
             bool priceIncludesTax, out decimal taxRate);
 
@@ -274,10 +274,10 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets a value indicating whether tax exempt
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
-        /// <returns>A value indicating whether tax exempt</returns>
-        bool IsTaxExempt(ProductVariant productVariant, Customer customer);
+		/// <returns>A value indicating whether a product is tax exempt</returns>
+        bool IsTaxExempt(Product product, Customer customer);
 
         /// <summary>
         /// Gets a value indicating whether EU VAT exempt (the European Union Value Added Tax)

@@ -2769,7 +2769,7 @@ namespace SmartStore.Web.Controllers
                 () =>
                     //group by products (not product variants)
                     _orderReportService
-					.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage, groupBy: 2));
+					.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage));
 
             //load products
             var products = _productService.GetProductsByIds(report.Select(x => x.EntityId).ToArray());

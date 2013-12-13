@@ -166,7 +166,6 @@ namespace SmartStore.Services.Orders
         }
 
 
-
         /// <summary>
         /// Gets a value indicating whether an order has items to be added to a shipment
         /// </summary>
@@ -180,7 +179,7 @@ namespace SmartStore.Services.Orders
             foreach (var opv in order.OrderProductVariants)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!opv.Product.IsShipEnabled)
                     continue;
 
                 var totalNumberOfItemsCanBeAddedToShipment = opv.GetTotalNumberOfItemsCanBeAddedToShipment();
@@ -205,7 +204,7 @@ namespace SmartStore.Services.Orders
             foreach (var opv in order.OrderProductVariants)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!opv.Product.IsShipEnabled)
                     continue;
 
                 var totalNumberOfNotYetShippedItems = opv.GetTotalNumberOfNotYetShippedItems();
@@ -230,7 +229,7 @@ namespace SmartStore.Services.Orders
             foreach (var opv in order.OrderProductVariants)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!opv.Product.IsShipEnabled)
                     continue;
 
                 var totalNumberOfShippedItems = opv.GetTotalNumberOfShippedItems();

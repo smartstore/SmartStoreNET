@@ -11,9 +11,9 @@ namespace SmartStore.Data.Mapping.Catalog
             this.HasKey(tp => tp.Id);
             this.Property(tp => tp.Price).HasPrecision(18, 4);
 
-            this.HasRequired(tp => tp.ProductVariant)
+            this.HasRequired(tp => tp.Product)
                 .WithMany(pv => pv.TierPrices)
-                .HasForeignKey(tp => tp.ProductVariantId);
+                .HasForeignKey(tp => tp.ProductId);
 
             this.HasOptional(tp => tp.CustomerRole)
                 .WithMany()

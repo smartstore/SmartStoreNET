@@ -139,7 +139,8 @@
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Domain\Catalog\BasePriceQuotation.cs" />
-    <Compile Include="Domain\Catalog\IProductVariant.cs" />
+    <Compile Include="Domain\Catalog\IProduct.cs" />
+    <Compile Include="Domain\Catalog\ProductType.cs" />
     <Compile Include="Domain\Cms\ContentSliderSettings.cs" />
     <Compile Include="Domain\Common\CompanyInformationSettings.cs" />
     <Compile Include="Domain\Common\ContactDataSettings.cs" />
@@ -197,7 +198,6 @@
     <Compile Include="Data\DataSettingsHelper.cs" />
     <Compile Include="Data\DataSettingsManager.cs" />
     <Compile Include="Domain\Blogs\BlogExtensions.cs" />
-    <Compile Include="Domain\Catalog\ProductVariantExtensions.cs" />
     <Compile Include="Domain\Catalog\ManufacturerTemplate.cs" />
     <Compile Include="Domain\Catalog\CategoryTemplate.cs" />
     <Compile Include="Domain\Catalog\ProductTemplate.cs" />

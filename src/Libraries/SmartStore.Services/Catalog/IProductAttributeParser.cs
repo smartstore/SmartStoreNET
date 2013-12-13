@@ -67,14 +67,14 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Finds a product variant attribute combination by attributes stored in XML 
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="attributesXml">Attributes in XML format</param>
         /// <returns>Found product variant attribute combination</returns>
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(ProductVariant productVariant, string attributesXml, bool showHidden = false);
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productVariantId, string attributesXml, bool showHidden = false);
+		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml);
+		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
 		List<List<int>> DeserializeQueryData(string jsonData);
-		string SerializeQueryData(int productVariantId, string attributesXml, bool urlEncode = true);
+		string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true);
 
         #endregion
 

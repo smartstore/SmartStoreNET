@@ -39,8 +39,6 @@ namespace SmartStore.Services.Messages
 
         void AddProductTokens(IList<Token> tokens, Product product);
 
-        void AddProductVariantTokens(IList<Token> tokens, ProductVariant productVariant);
-
         void AddForumTokens(IList<Token> tokens, Forum forum);
 
         void AddForumTopicTokens(IList<Token> tokens, ForumTopic forumTopic,

@@ -22,7 +22,7 @@ namespace SmartStore.Services.Orders
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<OrderProductVariant> _opvRepository;
         private readonly IRepository<OrderNote> _orderNoteRepository;
-        private readonly IRepository<ProductVariant> _pvRepository;
+		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RecurringPayment> _recurringPaymentRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<ReturnRequest> _returnRequestRepository;
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Orders
         /// <param name="orderRepository">Order repository</param>
         /// <param name="opvRepository">Order product variant repository</param>
         /// <param name="orderNoteRepository">Order note repository</param>
-        /// <param name="pvRepository">Product variant repository</param>
+		/// <param name="productRepository">Product repository</param>
         /// <param name="recurringPaymentRepository">Recurring payment repository</param>
         /// <param name="customerRepository">Customer repository</param>
         /// <param name="returnRequestRepository">Return request repository</param>
@@ -46,7 +46,7 @@ namespace SmartStore.Services.Orders
         public OrderService(IRepository<Order> orderRepository,
             IRepository<OrderProductVariant> opvRepository,
             IRepository<OrderNote> orderNoteRepository,
-            IRepository<ProductVariant> pvRepository,
+			IRepository<Product> productRepository,
             IRepository<RecurringPayment> recurringPaymentRepository,
             IRepository<Customer> customerRepository, 
             IRepository<ReturnRequest> returnRequestRepository,
@@ -55,7 +55,7 @@ namespace SmartStore.Services.Orders
             _orderRepository = orderRepository;
             _opvRepository = opvRepository;
             _orderNoteRepository = orderNoteRepository;
-            _pvRepository = pvRepository;
+			_productRepository = productRepository;
             _recurringPaymentRepository = recurringPaymentRepository;
             _customerRepository = customerRepository;
             _returnRequestRepository = returnRequestRepository;
@@ -400,7 +400,7 @@ namespace SmartStore.Services.Orders
 
             var query = from opv in _opvRepository.Table
                         join o in _orderRepository.Table on opv.OrderId equals o.Id
-                        join pv in _pvRepository.Table on opv.ProductVariantId equals pv.Id
+						join p in _productRepository.Table on opv.ProductId equals p.Id
                         where (!orderId.HasValue || orderId.Value == 0 || orderId == o.Id) &&
                         (!customerId.HasValue || customerId.Value == 0 || customerId == o.CustomerId) &&
                         (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
@@ -408,7 +408,7 @@ namespace SmartStore.Services.Orders
                         (!orderStatusId.HasValue || orderStatusId == o.OrderStatusId) &&
                         (!paymentStatusId.HasValue || paymentStatusId.Value == o.PaymentStatusId) &&
                         (!shippingStatusId.HasValue || shippingStatusId.Value == o.ShippingStatusId) &&
-                        (!loadDownloableProductsOnly || pv.IsDownload) &&
+                        (!loadDownloableProductsOnly || p.IsDownload) &&
                         !o.Deleted
                         orderby o.CreatedOnUtc descending, opv.Id
                         select opv;

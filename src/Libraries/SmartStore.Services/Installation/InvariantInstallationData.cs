@@ -6767,11 +6767,6 @@ namespace SmartStore.Services.Installation
 
             #endregion definitions
 
-            //categoryRepository
-            //_categoryRepository
-
-            //products
-
             #region category Gift Cards
 
             #region product5GiftCard
@@ -6788,25 +6783,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "$5 Virtual Gift Card"
+                MetaTitle = "$5 Virtual Gift Card",
+				Price = 5M,
+				IsGiftCard = true,
+				GiftCardType = GiftCardType.Virtual,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false
             };
-
-            product5GiftCard.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 5M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-            });
 
 
             //var productTag = _productTagRepository.Table.Where(pt => pt.Name == "gift").FirstOrDefault();
@@ -6842,27 +6829,19 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "$25 Virtual Gift Card"
+                MetaTitle = "$25 Virtual Gift Card",
+				Price = 25M,
+				IsGiftCard = true,
+				GiftCardType = GiftCardType.Virtual,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false
             };
 
-            product25GiftCard.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 25M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-            });
-
-            //product25GiftCard.ProductCategories.Add(new ProductCategory()
+			//product25GiftCard.ProductCategories.Add(new ProductCategory()
             //{
             //    Category = this._categoryRepository.Table.Where(c => c.Name == "Gift Cards").Single(),
             //    DisplayOrder = 1,
@@ -6890,25 +6869,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "$50 Virtual Gift Card"
+                MetaTitle = "$50 Virtual Gift Card",
+				Price = 50M,
+				IsGiftCard = true,
+				GiftCardType = GiftCardType.Virtual,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false
             };
-
-            product50GiftCard.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 50M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-            });
 
             //product50GiftCard.ProductCategories.Add(new ProductCategory()
             //{
@@ -6937,50 +6908,27 @@ namespace SmartStore.Services.Installation
                 FullDescription = "<p>From idiots to riches - and back ... Ever since it with my Greek financial advisors were no more delicious cookies to meetings, I should have known something. Was the last cookie it when I bought a Romanian forest funds and leveraged discount certificates on lean hogs - which is sort of a more stringent bet that the price of lean hogs will remain stable, and that's nothing special because it is also available for cattle and cotton and fat pig. Again and again and I joked Kosmas Nikiforos Sarantakos. About all the part-time seer who tremblingly put for fear the euro crisis gold coins under the salami slices of their frozen pizzas And then came the day that revealed to me in almost Sarantakos fraudulent casualness that my plan had not worked out really. 'Why all of a sudden> my plan', 'I heard myself asking yet, but it was in the garage I realized what that really meant minus 211.2 percent in my portfolio report: personal bankruptcy, gutter and Drug Addiction with subsequent loss of the incisors . Not even the study of my friend, I would still be able to finance. The only way out was to me as quickly as secretly again to draw from this unspeakable Greek shit - I had to be Überman! By far the bekloppteste story about 'idiot' Simon Peter! »Tommy Jaud – Deutschlands witzigste Seite.« Alex Dengler, Bild am Sonntag</p>",
                 ProductTemplateId = productTemplateSingleVariant.Id,
 
-                //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Überman: The novel"
+                MetaTitle = "Überman: The novel",
+				Price = 16.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true
             };
 
-            productBooksUberMan.ProductVariants.Add(new ProductVariant()
-             {
-                 Price = 16.99M,
-
-                 //DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single(),
-                 //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                 OrderMinimumQuantity = 1,
-                 OrderMaximumQuantity = 10000,
-                 StockQuantity = 10000,
-                 NotifyAdminForQuantityBelow = 1,
-                 AllowBackInStockSubscriptions = false,
-                 Published = true,
-                 DisplayOrder = 1,
-                 CreatedOnUtc = DateTime.UtcNow,
-                 UpdatedOnUtc = DateTime.UtcNow,
-                 IsShipEnabled = true,
-                 //DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-             });
-
-            //categories
-           // productBooksUberMan.ProductCategories.Add(new ProductCategory()
-           //{
-           //    Category = this._categoryRepository.Table.Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
-           //    DisplayOrder = 1,
-           //});
-
-            //pictures
-
-            //var productImageUberMan = pictureService.InsertPicture(File.ReadAllBytes(sampleImagesPath + "0000899_htc.png"), "image/png", pictureService.GetPictureSeName(productBooksUberMan.Name), true,false);
-
-            productBooksUberMan.ProductPictures.Add(new ProductPicture()
-           {
-               Picture = pictureService.InsertPicture(File.ReadAllBytes(sampleImagesPath + "0000932_uberman-der-roman.jpeg"), "image/jpeg", pictureService.GetPictureSeName(productBooksUberMan.Name), true, false),
-               DisplayOrder = 1,
-           });
+			//pictures
+			productBooksUberMan.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = pictureService.InsertPicture(File.ReadAllBytes(sampleImagesPath + "0000932_uberman-der-roman.jpeg"), "image/jpeg", pictureService.GetPictureSeName(productBooksUberMan.Name), true, false),
+				DisplayOrder = 1,
+			});
 
             //attributes
             productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute ()
@@ -7018,39 +6966,21 @@ namespace SmartStore.Services.Installation
                 FullDescription = "<p>By Shadow of the Wind and The Angel's Game, the new large-Barcelona novel by Carlos Ruiz Zafón. - Barcelona, Christmas 1957th The bookseller Daniel Sempere and his friend Fermín be drawn again into a great adventure. In the continuation of his international success with Carlos Ruiz Zafón takes the reader on a fascinating journey into his Barcelona. Creepy and fascinating, with incredible suction power and humor, the novel, the story of Fermin, who 'rose from the dead, and the key to the future is.' Fermin's life story linking the threads of The Shadow of the Wind with those from The Angel's Game. A masterful puzzle that keeps the reader around the world in thrall. </p> <p> Product Hardcover: 416 pages Publisher: S. Fischer Verlag; 1 edition (October 25, 2012) Language: German ISBN-10: 3,100,954,025 ISBN-13: 978-3100954022 Original title: El prisionero del cielo Size and / or weight: 21.4 x 13.6 cm x 4.4 </p>",
                 ProductTemplateId = productTemplateSingleVariant.Id,
 
-                //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "The Prisoner of Heaven: A Novel"
+                MetaTitle = "The Prisoner of Heaven: A Novel",
+				Price = 22.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            productBooksGefangeneDesHimmels.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 22.99M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-
-            //categories
-            //productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksGefangeneDesHimmels.ProductPictures.Add(new ProductPicture()
@@ -7101,34 +7031,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Best Grilling Recipes"
+                MetaTitle = "Best Grilling Recipes",
+				Price = 27.00M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            productBooksBestGrillingRecipes.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 27.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-
-            //categories
-            //productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Cook and enjoy").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksBestGrillingRecipes.ProductPictures.Add(new ProductPicture()
@@ -7174,39 +7087,21 @@ namespace SmartStore.Services.Installation
                 FullDescription = "<p>In Cooking for Two, the test kitchen's goal was to take traditional recipes and cut them down to size to serve just twowith tailored cooking techniques and smart shopping tips that will cut down on wasted food and wasted money. Great lasagna starts to lose its luster when you're eating the leftovers for the fourth day in a row. While it may seem obvious that a recipe for four can simply be halved to work, our testing has proved that this is not always the case; cooking with smaller amounts of ingredients often requires different preparation techniques, cooking time, temperature, and the proportion of ingredients. This was especially true as we worked on scaled-down desserts; baking is an unforgiving science in which any changes in recipe amounts often called for changes in baking times and temperatures. </p> <p> Hardcover: 352 pages<br> Publisher: America's Test Kitchen (May 2009)<br> Language: English<br> ISBN-10: 1933615435<br> ISBN-13: 978-1933615431<br> </p>",
                 ProductTemplateId = productTemplateSingleVariant.Id,
 
-                //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Cooking for Two"
+                MetaTitle = "Cooking for Two",
+				Price = 27.00M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 1).Single()
             };
-
-            productBooksCookingForTwo.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 27.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 1).Single()
-            });
-
-            //categories
-            //productBooksCookingForTwo.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Cook and enjoy").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksCookingForTwo.ProductPictures.Add(new ProductPicture()
@@ -7255,34 +7150,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Car of superlatives"
+                MetaTitle = "Car of superlatives",
+				Price = 14.95M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 2).Single()
             };
-
-            productBooksAutosDerSuperlative.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 14.95M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 2).Single()
-            });
-
-            //categories
-            //productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Books").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksAutosDerSuperlative.ProductPictures.Add(new ProductPicture()
@@ -7332,34 +7210,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Picture Atlas Motorcycles"
+                MetaTitle = "Picture Atlas Motorcycles",
+				Price = 14.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            productBooksBildatlasMotorraeder.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 14.99M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-
-            //categories
-            //productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Books").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksBildatlasMotorraeder.ProductPictures.Add(new ProductPicture()
@@ -7408,34 +7269,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "The Car Book"
+                MetaTitle = "The Car Book",
+				Price = 29.95M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            productBooksAutoBuch.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 29.95M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-
-            //categories
-            //productBooksAutoBuch.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Books").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksAutoBuch.ProductPictures.Add(new ProductPicture()
@@ -7485,34 +7329,17 @@ namespace SmartStore.Services.Installation
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 MetaTitle = "Fast Cars",
-                ShowOnHomePage = true
+                ShowOnHomePage = true,
+				Price = 16.95M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            productBooksFastCars.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 16.95M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-
-            //categories
-            //productBooksFastCars.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Books").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksFastCars.ProductPictures.Add(new ProductPicture()
@@ -7561,34 +7388,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Motorcycle Adventures"
+                MetaTitle = "Motorcycle Adventures",
+				Price = 24.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 1).Single()
             };
-
-            productBooksMotorradAbenteuer.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 24.90M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Books").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 1).Single()
-            });
-
-            //categories
-            //productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Books").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             //pictures
             productBooksMotorradAbenteuer.ProductPictures.Add(new ProductPicture()
@@ -7641,38 +7451,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Dell Inspiron One 23"
+                MetaTitle = "Dell Inspiron One 23",
+				Price = 589.00M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            #region variants
-            productComputerDellInspiron23.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 589.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
 
             #region pictures
 
@@ -7764,38 +7553,17 @@ namespace SmartStore.Services.Installation
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Dell Optiplex 3010 DT Base"
+                MetaTitle = "Dell Optiplex 3010 DT Base",
+				Price = 419.00M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            #region variants
-            productComputerDellOptiplex3010.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 419.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                IsShipEnabled = true,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
 
             #region pictures
 
@@ -7882,45 +7650,29 @@ namespace SmartStore.Services.Installation
                 ShortDescription = "Acer Aspire One 8.9\" Mini-Notebook and 6 Cell Battery model (AOA150-1447)",
                 FullDescription = "<p>Acer Aspire One 8.9&quot; Memory Foam Pouch is the perfect fit for Acer Aspire One 8.9&quot;. This pouch is made out of premium quality shock absorbing memory form and it provides extra protection even though case is very light and slim. This pouch is water resistant and has internal supporting bands for Acer Aspire One 8.9&quot;. Made In Korea.</p>",
                 ProductTemplateId = productTemplateSingleVariant.Id,
-                //SeName = "acer-aspire-one-89-mini-notebook-case-black",
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 MetaTitle = "Acer Aspire One 8.9",
                 ShowOnHomePage = true,
+				Price = 210.6M,
+				IsShipEnabled = true,
+				Weight = 2,
+				Length = 2,
+				Width = 2,
+				Height = 3,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				DisplayStockAvailability = true,
+				LowStockActivity = LowStockActivity.DisableBuyButton,
+				BackorderMode = BackorderMode.NoBackorders,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
             };
-
-            #region productTags
-            
-            #endregion productTags
-
-            #region variants
-            productComputerAcerAspireOne.ProductVariants.Add(new ProductVariant()
-            {
-                Price = 210.6M,
-                IsShipEnabled = true,
-                Weight = 2,
-                Length = 2,
-                Width = 2,
-                Height = 3,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                DisplayStockAvailability = true,
-                LowStockActivity = LowStockActivity.DisableBuyButton,
-                BackorderMode = BackorderMode.NoBackorders,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 0).Single()
-            });
-            #endregion variants
 
             #region manufacturer
 
@@ -7934,29 +7686,23 @@ namespace SmartStore.Services.Installation
             #endregion manufacturer
 
             #region tierPrieces
-            productComputerAcerAspireOne.ProductVariants.FirstOrDefault().TierPrices.Add(new TierPrice()
+            productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
             {
                 Quantity = 2,
                 Price = 205
             });
-            productComputerAcerAspireOne.ProductVariants.FirstOrDefault().TierPrices.Add(new TierPrice()
+            productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
             {
                 Quantity = 5,
                 Price = 189
             });
-            productComputerAcerAspireOne.ProductVariants.FirstOrDefault().TierPrices.Add(new TierPrice()
+            productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
             {
                 Quantity = 10,
                 Price = 155
             });
-            productComputerAcerAspireOne.ProductVariants.FirstOrDefault().HasTierPrices = true;
+            productComputerAcerAspireOne.HasTierPrices = true;
             #endregion tierPrieces
-
-            //productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = _categoryRepository.Table.Where(c => c.Name == "Notebooks").Single(),
-            //    DisplayOrder = 1,
-            //});
 
             #region pictures
             productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
@@ -7996,39 +7742,17 @@ namespace SmartStore.Services.Installation
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 MetaTitle = "Apple iPhone 5 32 GB",
-                ShowOnHomePage = true
-                
-            };
-
-            #region variants
-            productSmartPhonesAppleIphone5.ProductVariants.Add(new ProductVariant()
-            {
+                ShowOnHomePage = true,
                 Price = 579.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
                 IsShipEnabled = true,
                 DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 2).Single()
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
+            };
 
             #region pictures
 
@@ -8102,37 +7826,13 @@ namespace SmartStore.Services.Installation
             });
             #endregion SpecificationAttributes
 
-            #region ProductReviews
-            //productSmartPhonesAppleIphone5.ProductReviews.Add(new ProductReview()
-            //{
-            //    Rating = 5,
-            //    Title = "Best smartphone in the world!!!",
-            //    IsApproved = true,
-            //    ReviewText = "<p>this is really the best phone on the planet. i love it!</p>"
-            //});
-
-            #endregion ProductReviews
             #endregion productSmartPhonesAppleIphone5
-
 
             #endregion Smartphones
 
             #region Instant Download Music
 
             #region Antonio Vivaldi: then spring
-            var productInstantDownloadVivaldi = new Product()
-            {
-                Name = "Antonio Vivaldi: spring",
-                ShortDescription = "MP3, 320 kbit/s",
-                FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Antonio Vivaldi: spring",
-                ShowOnHomePage = true
-            };
 
             #region download
             var downloadVivaldi = new Download()
@@ -8147,36 +7847,29 @@ namespace SmartStore.Services.Installation
             _downloadService.InsertDownload(downloadVivaldi);
             #endregion download
 
-            #region variants
-            productInstantDownloadVivaldi.ProductVariants.Add(new ProductVariant()
+            var productInstantDownloadVivaldi = new Product()
             {
+                Name = "Antonio Vivaldi: spring",
+                ShortDescription = "MP3, 320 kbit/s",
+                FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
+                ProductTemplateId = productTemplateSingleVariant.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+                MetaTitle = "Antonio Vivaldi: spring",
+                ShowOnHomePage = true,
                 Price = 1.99M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
                 IsDownload = true,
                 HasSampleDownload = true,
-                SampleDownloadId = downloadVivaldi.Id,
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
+                SampleDownloadId = downloadVivaldi.Id
+            };
 
             #region pictures
 
@@ -8188,17 +7881,6 @@ namespace SmartStore.Services.Installation
             });
             
             #endregion pictures
-
-            #region manufacturer
-
-            //manufacturer
-            //productInstantDownloadVivaldi.ProductManufacturers.Add(new ProductManufacturer()
-            //{
-            //    Manufacturer = this._manufacturerRepository.Table.Where(c => c.Name == "Apple").Single(),
-            //    DisplayOrder = 1,
-            //});
-
-            #endregion manufacturer
 
             #region SpecificationAttributes
             //attributes
@@ -8223,21 +7905,7 @@ namespace SmartStore.Services.Installation
 
             #endregion Antonio Vivildi: then spring
 
-
             #region Beethoven für Elise
-            var productInstantDownloadBeethoven = new Product()
-            {
-                Name = "Ludwig van Beethoven: For Elise",
-                ShortDescription = "Ludwig van Beethoven's most popular compositions",
-                FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                MetaTitle = "Ludwig van Beethoven: Für Elise",
-                ShowOnHomePage = true
-            };
 
             #region download
             var downloadBeethoven = new Download()
@@ -8252,36 +7920,29 @@ namespace SmartStore.Services.Installation
             _downloadService.InsertDownload(downloadBeethoven);
             #endregion download
 
-            #region variants
-            productInstantDownloadBeethoven.ProductVariants.Add(new ProductVariant()
+            var productInstantDownloadBeethoven = new Product()
             {
+                Name = "Ludwig van Beethoven: For Elise",
+                ShortDescription = "Ludwig van Beethoven's most popular compositions",
+                FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
+                ProductTemplateId = productTemplateSingleVariant.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+                MetaTitle = "Ludwig van Beethoven: Für Elise",
+                ShowOnHomePage = true,
                 Price = 1.89M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
                 IsDownload = true,
                 HasSampleDownload = true,
-                SampleDownloadId = downloadVivaldi.Id,
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
+                SampleDownloadId = downloadVivaldi.Id
+            };
 
             #region pictures
 
@@ -8333,39 +7994,17 @@ namespace SmartStore.Services.Installation
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 MetaTitle = "Certina DS Podium Big Size",
-                ShowOnHomePage = true
-
-            };
-
-            #region variants
-            productWatchesCertinaDSPodiumBigSize.ProductVariants.Add(new ProductVariant()
-            {
+                ShowOnHomePage = true,
                 Price = 479.00M,
-                //TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Electronics & Software").Single().Id,
-                //DeliveryTime = _deliveryTimeRepository.Table
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                Published = true,
-                DisplayOrder = 1,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
                 IsShipEnabled = true,
                 DeliveryTime = _deliveryTimeRepository.Table.Where(sa => sa.DisplayOrder == 2).Single()
-            });
-            #endregion variants
-
-            #region categories
-            //categories
-            //productComputerDellInspiron23.ProductCategories.Add(new ProductCategory()
-            //{
-            //    Category = this._categoryRepository.Table.Where(c => c.Name == "Desktops").Single(),
-            //    DisplayOrder = 1,
-            //});
-            #endregion categories
+            };
 
             #region pictures
 
@@ -8425,29 +8064,16 @@ namespace SmartStore.Services.Installation
             });
             #endregion SpecificationAttributes
 
-            #region ProductReviews
-            //productSmartPhonesAppleIphone5.ProductReviews.Add(new ProductReview()
-            //{
-            //    Rating = 5,
-            //    Title = "Best smartphone in the world!!!",
-            //    IsApproved = true,
-            //    ReviewText = "<p>this is really the best phone on the planet. i love it!</p>"
-            //});
-
-            #endregion ProductReviews
             #endregion productWatchesCertinaDSPodiumBigSize
 
             #endregion watches
 
-
-            
-
             var entities = new List<Product>
             {
                 product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
-                productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder,productBooksAutoBuch ,productBooksFastCars,
+                productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
                 productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone5, 
-                productInstantDownloadVivaldi, productComputerAcerAspireOne,productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize
+                productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize
             };
 
             this.Alter(entities);

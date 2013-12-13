@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    // codehint: sm-add
-    internal class MergedProductVariant : IProductVariant
+    internal class MergedProduct : IProduct
     {
-        public MergedProductVariant()
+        public MergedProduct()
         {
             this.Id = -1;
             this.BasePrice = new BasePriceQuotation();
             this.ProductVariantAttributeCombinations = new List<ProductVariantAttributeCombination>();
         }
-        public MergedProductVariant(IProductVariant source)
+        public MergedProduct(IProduct source)
         {
             Guard.ArgumentNotNull(source, "source");
 
@@ -46,5 +43,4 @@ namespace SmartStore.Services.Catalog
 
         public ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations { get; private set; }
     }
-
 }

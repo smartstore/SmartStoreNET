@@ -25,9 +25,9 @@ namespace SmartStore.Data.Mapping.Discounts
                 .WithMany(c => c.AppliedDiscounts)
                 .Map(m => m.ToTable("Discount_AppliedToCategories"));
             
-            this.HasMany(dr => dr.AppliedToProductVariants)
+            this.HasMany(dr => dr.AppliedToProducts)
                 .WithMany(pv => pv.AppliedDiscounts)
-                .Map(m => m.ToTable("Discount_AppliedToProductVariants"));
+				.Map(m => m.ToTable("Discount_AppliedToProducts"));
         }
     }
 }

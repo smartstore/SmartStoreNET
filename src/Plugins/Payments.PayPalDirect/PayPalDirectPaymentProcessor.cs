@@ -7,7 +7,6 @@ using System.Text;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
@@ -15,14 +14,12 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Payments.PayPalDirect.Controllers;
 using SmartStore.Plugin.Payments.PayPalDirect.PayPalSvc;
-using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Plugin.Payments.PayPalDirect
@@ -126,7 +123,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			return "63";
 		}
 
-		protected ProcessPaymentResult AuthorizeOrSale(ProcessPaymentRequest processPaymentRequest, bool authorizeOnly) {
+		protected ProcessPaymentResult AuthorizeOrSale(ProcessPaymentRequest processPaymentRequest, bool authorizeOnly)
+		{
 			var result = new ProcessPaymentResult();
 
 			var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
@@ -178,8 +176,10 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			details.PaymentDetails.Custom = processPaymentRequest.OrderGuid.ToString();
 			details.PaymentDetails.ButtonSource = "smartstoreNETCart";
 			//shipping
-			if (customer.ShippingAddress != null) {
-				if (customer.ShippingAddress.StateProvince != null && customer.ShippingAddress.Country != null) {
+			if (customer.ShippingAddress != null)
+			{
+				if (customer.ShippingAddress.StateProvince != null && customer.ShippingAddress.Country != null)
+				{
 					var shippingAddress = new AddressType();
 					shippingAddress.Name = customer.ShippingAddress.FirstName + " " + customer.ShippingAddress.LastName;
 					shippingAddress.Street1 = customer.ShippingAddress.Address1;
@@ -193,7 +193,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			}
 
 			//send request
-			using (var service2 = new PayPalAPIAASoapBinding()) {
+			using (var service2 = new PayPalAPIAASoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service2.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -210,23 +211,27 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 				string error = "";
 				bool success = PaypalHelper.CheckSuccess(_helper, response, out error);
-				if (success) {
+				if (success)
+				{
 					result.AvsResult = response.AVSCode;
 					result.AuthorizationTransactionCode = response.CVV2Code;
-					if (authorizeOnly) {
+					if (authorizeOnly)
+					{
 						result.AuthorizationTransactionId = response.TransactionID;
 						result.AuthorizationTransactionResult = response.Ack.ToString();
 
 						result.NewPaymentStatus = PaymentStatus.Authorized;
 					}
-					else {
+					else
+					{
 						result.CaptureTransactionId = response.TransactionID;
 						result.CaptureTransactionResult = response.Ack.ToString();
 
 						result.NewPaymentStatus = PaymentStatus.Paid;
 					}
 				}
-				else {
+				else
+				{
 					result.AddError(error);
 				}
 			}
@@ -239,7 +244,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <param name="formString">Form string</param>
 		/// <param name="values">Values</param>
 		/// <returns>Result</returns>
-		public bool VerifyIPN(string formString, out Dictionary<string, string> values) {
+		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
+		{
 			var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
@@ -247,19 +253,22 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			string formContent = string.Format("{0}&cmd=_notify-validate", formString);
 			req.ContentLength = formContent.Length;
 
-			using (var sw = new StreamWriter(req.GetRequestStream(), Encoding.ASCII)) {
+			using (var sw = new StreamWriter(req.GetRequestStream(), Encoding.ASCII))
+			{
 				sw.Write(formContent);
 			}
 
 			string response = null;
-			using (var sr = new StreamReader(req.GetResponse().GetResponseStream())) {
+			using (var sr = new StreamReader(req.GetResponse().GetResponseStream()))
+			{
 				response = HttpUtility.UrlDecode(sr.ReadToEnd());
 			}
 			bool success = response.Trim().Equals("VERIFIED", StringComparison.OrdinalIgnoreCase);
 
 			values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			foreach (string l in formString.Split('&')) {
-				string line = HttpUtility.UrlDecode(l).Trim();		// codehint: sm-edit
+			foreach (string l in formString.Split('&'))
+			{
+				string line = HttpUtility.UrlDecode(l).Trim();
 				int equalPox = line.IndexOf('=');
 				if (equalPox >= 0)
 					values.Add(line.Substring(0, equalPox), line.Substring(equalPox + 1));
@@ -309,7 +318,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="capturePaymentRequest">Capture payment request</param>
 		/// <returns>Capture payment result</returns>
-		public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest) {
+		public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+		{
 			var result = new CapturePaymentResult();
 
 			string authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
@@ -322,7 +332,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			req.DoCaptureRequest.Amount.currencyID = PaypalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
 			req.DoCaptureRequest.CompleteType = CompleteCodeType.Complete;
 
-			using (var service2 = new PayPalAPIAASoapBinding()) {
+			using (var service2 = new PayPalAPIAASoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service2.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -339,12 +350,14 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 				string error = "";
 				bool success = PaypalHelper.CheckSuccess(_helper, response, out error);
-				if (success) {
+				if (success)
+				{
 					result.NewPaymentStatus = PaymentStatus.Paid;
 					result.CaptureTransactionId = response.DoCaptureResponseDetails.PaymentInfo.TransactionID;
 					result.CaptureTransactionResult = response.Ack.ToString();
 				}
-				else {
+				else
+				{
 					result.AddError(error);
 				}
 			}
@@ -356,7 +369,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="refundPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest) {
+		public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
+		{
 			var result = new RefundPaymentResult();
 
 			string transactionId = refundPaymentRequest.Order.CaptureTransactionId;
@@ -369,7 +383,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			req.RefundTransactionRequest.Version = GetApiVersion();
 			req.RefundTransactionRequest.TransactionID = transactionId;
 
-			using (var service1 = new PayPalAPISoapBinding()) {
+			using (var service1 = new PayPalAPISoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service1.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -386,11 +401,13 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 				string error = string.Empty;
 				bool Success = PaypalHelper.CheckSuccess(_helper, response, out error);
-				if (Success) {
+				if (Success)
+				{
 					result.NewPaymentStatus = PaymentStatus.Refunded;
 					//cancelPaymentResult.RefundTransactionID = response.RefundTransactionID;
 				}
-				else {
+				else
+				{
 					result.AddError(error);
 				}
 			}
@@ -403,7 +420,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="voidPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest) {
+		public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
+		{
 			var result = new VoidPaymentResult();
 
 			string transactionId = voidPaymentRequest.Order.AuthorizationTransactionId;
@@ -416,7 +434,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			req.DoVoidRequest.AuthorizationID = transactionId;
 
 
-			using (var service2 = new PayPalAPIAASoapBinding()) {
+			using (var service2 = new PayPalAPIAASoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service2.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -433,11 +452,13 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 				string error = "";
 				bool success = PaypalHelper.CheckSuccess(_helper, response, out error);
-				if (success) {
+				if (success)
+				{
 					result.NewPaymentStatus = PaymentStatus.Voided;
 					//result.VoidTransactionID = response.RefundTransactionID;
 				}
-				else {
+				else
+				{
 					result.AddError(error);
 				}
 			}
@@ -449,7 +470,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
 		/// <returns>Process payment result</returns>
-		public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest) {
+		public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
+		{
 			var result = new ProcessPaymentResult();
 
 			var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
@@ -501,7 +523,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			details.ScheduleDetails.PaymentPeriod.Amount.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
 			details.ScheduleDetails.PaymentPeriod.Amount.currencyID = PaypalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
 			details.ScheduleDetails.PaymentPeriod.BillingFrequency = processPaymentRequest.RecurringCycleLength;
-			switch (processPaymentRequest.RecurringCyclePeriod) {
+			switch (processPaymentRequest.RecurringCyclePeriod)
+			{
 				case RecurringProductCyclePeriod.Days:
 					details.ScheduleDetails.PaymentPeriod.BillingPeriod = BillingPeriodType.Day;
 					break;
@@ -515,14 +538,15 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 					details.ScheduleDetails.PaymentPeriod.BillingPeriod = BillingPeriodType.Year;
 					break;
 				default:
-					throw new SmartException(_helper.Resource("NotSupportedPeriod"));		// codehint: sm-edit
+					throw new SmartException(_helper.Resource("NotSupportedPeriod"));
 			}
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCycles = processPaymentRequest.RecurringTotalCycles;
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCyclesSpecified = true;
 
 
 
-			using (var service2 = new PayPalAPIAASoapBinding()) {
+			using (var service2 = new PayPalAPIAASoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service2.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -539,13 +563,16 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 
 				string error = "";
 				bool success = PaypalHelper.CheckSuccess(_helper, response, out error);
-				if (success) {
+				if (success)
+				{
 					result.NewPaymentStatus = PaymentStatus.Pending;
-					if (response.CreateRecurringPaymentsProfileResponseDetails != null) {
+					if (response.CreateRecurringPaymentsProfileResponseDetails != null)
+					{
 						result.SubscriptionTransactionId = response.CreateRecurringPaymentsProfileResponseDetails.ProfileID;
 					}
 				}
-				else {
+				else
+				{
 					result.AddError(error);
 				}
 			}
@@ -558,7 +585,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="cancelPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest) {
+		public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
+		{
 			var result = new CancelRecurringPaymentResult();
 			var order = cancelPaymentRequest.Order;
 
@@ -572,7 +600,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 			//Recurring payments profile ID returned in the CreateRecurringPaymentsProfile response
 			details.ProfileID = order.SubscriptionTransactionId;
 
-			using (var service2 = new PayPalAPIAASoapBinding()) {
+			using (var service2 = new PayPalAPIAASoapBinding())
+			{
 				if (!_paypalDirectPaymentSettings.UseSandbox)
 					service2.Url = "https://api-3t.paypal.com/2.0/";
 				else
@@ -588,7 +617,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 				var response = service2.ManageRecurringPaymentsProfileStatus(req);
 
 				string error = "";
-				if (!PaypalHelper.CheckSuccess(_helper, response, out error)) {
+				if (!PaypalHelper.CheckSuccess(_helper, response, out error))
+				{
 					result.AddError(error);
 				}
 			}

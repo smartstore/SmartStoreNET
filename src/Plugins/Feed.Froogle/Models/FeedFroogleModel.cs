@@ -26,7 +26,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
         [SmartResourceDisplayName("Plugins.Feed.Froogle.DefaultGoogleCategory")]
         public string DefaultGoogleCategory { get; set; }
         
-		// codehint: sm-edit
 		public string[] AvailableGoogleCategories { get; set; }
 		public string AvailableGoogleCategoriesAsJson {
 			get {
@@ -46,7 +45,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
         [SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
         public int GenerateStaticFileEachMinutes { get; set; }
 
-		// codehint: sm-add (begin)
 		public PluginHelperFeed Helper { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.BuildDescription")]
@@ -119,8 +117,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		}
 
 
-		public void Copy(FroogleSettings settings, bool fromSettings) {
-			if (fromSettings) {
+		public void Copy(FroogleSettings settings, bool fromSettings)
+		{
+			if (fromSettings)
+			{
 				AppendDescriptionText1 = settings.AppendDescriptionText1;
 				AppendDescriptionText2 = settings.AppendDescriptionText2;
 				AppendDescriptionText3 = settings.AppendDescriptionText3;
@@ -146,7 +146,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				DescriptionToPlainText = settings.DescriptionToPlainText;
 				StoreId = settings.StoreId;
 			}
-			else {
+			else
+			{
 				settings.AppendDescriptionText1 = AppendDescriptionText1;
 				settings.AppendDescriptionText2 = AppendDescriptionText2;
 				settings.AppendDescriptionText3 = AppendDescriptionText3;
@@ -173,21 +174,20 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.StoreId = StoreId;
 			}
 		}
-		// codehint: sm-add (end)
-    }	// class
+    }
 
 
 	public class GoogleProductModel : ModelBase
 	{
 		//this attribute is required to disable editing
 		[ScaffoldColumn(false)]
-		public int ProductVariantId { get; set; }
+		public int ProductId { get; set; }
 
 		//this attribute is required to disable editing
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]
-		public string FullProductVariantName { get; set; }
+		public string ProductName { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
 		public string GoogleCategory { get; set; }
@@ -204,10 +204,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Size")]
 		public string GoogleSize { get; set; }
 
-		// codehint: sm-add (begin)
 		public string GenderLocalize { get; set; }
 		public string AgeGroupLocalize { get; set; }
-		// codehint: sm-add (end)
-	}	// class
-
+	}
 }

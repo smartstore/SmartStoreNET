@@ -37,7 +37,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts.Controllers
             var model = new RequirementModel();
             model.RequirementId = discountRequirementId.HasValue ? discountRequirementId.Value : 0;
             model.DiscountId = discountId;
-            model.ProductVariants = discountRequirement != null ? discountRequirement.RestrictedProductVariantIds : "";
+            model.ProductVariants = discountRequirement != null ? discountRequirement.RestrictedProductIds : "";
 
             //add a prefix
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesHasAllProducts{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
@@ -59,7 +59,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts.Controllers
             if (discountRequirement != null)
             {
                 //update existing rule
-                discountRequirement.RestrictedProductVariantIds = variantIds;
+                discountRequirement.RestrictedProductIds = variantIds;
                 _discountService.UpdateDiscount(discount);
             }
             else
@@ -68,7 +68,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts.Controllers
                 discountRequirement = new DiscountRequirement()
                 {
                     DiscountRequirementRuleSystemName = "DiscountRequirement.HasAllProducts",
-                    RestrictedProductVariantIds = variantIds,
+                    RestrictedProductIds = variantIds,
                 };
                 discount.DiscountRequirements.Add(discountRequirement);
                 _discountService.UpdateDiscount(discount);

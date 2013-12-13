@@ -45,7 +45,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
             if (!ModelState.IsValid)
 				return Configure();
 
-			// codehint: sm-edit
 			model.Copy(_googleService.Settings, false);
 			_settingService.SaveSetting(_googleService.Settings);
 
@@ -73,7 +72,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
             }
             catch (Exception exc)
 			{
-				//model.GenerateFeedResult = exc.Message;	// codehint: sm-edit
 				ErrorNotification(exc.Message, true);
                 _logger.Error(exc.Message, exc);
             }
@@ -83,7 +81,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		[HttpPost]
 		public ActionResult GoogleProductEdit(int pk, string name, string value) {
 			_googleService.UpdateInsert(pk, name, value);
@@ -98,5 +95,5 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
                 Data = _googleService.GetGridModel(command, searchProductName)
             };
         }
-    }	// class
+    }
 }

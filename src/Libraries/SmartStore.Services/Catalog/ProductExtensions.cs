@@ -18,7 +18,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="selectedAttributes">The selected attributes (XML), for which a <see cref="ProductVariantAttributeCombination"/> should be resolved</param>
         /// <param name="productAttributeParser">Service, which handles resolving of combinations</param>
         /// <returns>A new product instance</returns>
-        public static IProduct GetMergedVariant(this IProduct source, string selectedAttributes, IProductAttributeParser productAttributeParser)
+        public static IMergedProduct GetMergedVariant(this IMergedProduct source, string selectedAttributes, IProductAttributeParser productAttributeParser)
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="source">The source</param>
         /// <param name="mergeWith">The variant attributes combination to be applied to the variant</param>
         /// <returns>A new product instance</returns>
-        public static IProduct GetMergedVariant(this IProduct source, ProductVariantAttributeCombination mergeWith)
+        public static IMergedProduct GetMergedVariant(this IMergedProduct source, ProductVariantAttributeCombination mergeWith)
         {
             var merged = new MergedProduct(source);
             merged.MergeWithCombination(mergeWith);
@@ -52,12 +52,12 @@ namespace SmartStore.Services.Catalog
             return merged;
         }
 
-		public static ProductVariantAttributeCombination MergeWithCombination(this IProduct product, string selectedAttributes)
+		public static ProductVariantAttributeCombination MergeWithCombination(this IMergedProduct product, string selectedAttributes)
         {
             return product.MergeWithCombination(selectedAttributes, EngineContext.Current.Resolve<IProductAttributeParser>());
         }
 
-		public static ProductVariantAttributeCombination MergeWithCombination(this IProduct product, string selectedAttributes, IProductAttributeParser productAttributeParser)
+		public static ProductVariantAttributeCombination MergeWithCombination(this IMergedProduct product, string selectedAttributes, IProductAttributeParser productAttributeParser)
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
@@ -77,7 +77,7 @@ namespace SmartStore.Services.Catalog
 			return combination;
         }
 
-        public static void MergeWithCombination(this IProduct product, ProductVariantAttributeCombination combination)
+        public static void MergeWithCombination(this IMergedProduct product, ProductVariantAttributeCombination combination)
         {
             Guard.ArgumentNotNull(product, "product");
 

@@ -49,7 +49,7 @@ namespace SmartStore.Web.Models.Catalog
         public string StockAvailablity { get; set; }
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
-		public int DefaultProductVariantId { get; set; }
+		public int ProductMinPriceId { get; set; }
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
         //codehint: sm-add end

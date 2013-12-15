@@ -40,10 +40,10 @@ namespace SmartStore.Services.Catalog
         /// Gets all subscriptions
         /// </summary>
         /// <param name="customerId">Customer id</param>
-        /// <param name="productVariantId">Product variant identifier</param>
+		/// <param name="productId">Product identifier</param>
 		/// <param name="storeId">Store identifier</param>
         /// <returns>Subscriptions</returns>
-		BackInStockSubscription FindSubscription(int customerId, int productVariantId, int storeId);
+		BackInStockSubscription FindSubscription(int customerId, int productId, int storeId);
 
         /// <summary>
         /// Gets a subscription

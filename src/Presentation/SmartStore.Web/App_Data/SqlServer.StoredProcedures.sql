@@ -194,29 +194,17 @@ BEGIN
 			SET @sql = @sql + 'PATINDEX(@Keywords, p.[Name]) > 0 '
 
 
-		--product variant name
-		SET @sql = @sql + '
-		UNION
-		SELECT pv.ProductId
-		FROM ProductVariant pv with (NOLOCK)
-		WHERE '
-		IF @UseFullTextSearch = 1
-			SET @sql = @sql + 'CONTAINS(pv.[Name], @Keywords) '
-		ELSE
-			SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Name]) > 0 '
-
-
 		--SKU
         SET @sql = @sql + '
         UNION
-        SELECT pv.ProductId
-        FROM ProductVariant pv with (NOLOCK)
-        LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
+        SELECT p.ProductId
+        FROM Product p with (NOLOCK)
+        LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductId = p.Id
         WHERE '
         IF @UseFullTextSearch = 1
-            SET @sql = @sql + 'CONTAINS((pv.[Sku], pvac.[Sku]), @Keywords) '
+            SET @sql = @sql + 'CONTAINS((p.[Sku], pvac.[Sku]), @Keywords) '
         ELSE
-            SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Sku]) > 0 OR PATINDEX(@Keywords, pvac.[Sku]) > 0 '
+            SET @sql = @sql + 'PATINDEX(@Keywords, p.[Sku]) > 0 OR PATINDEX(@Keywords, pvac.[Sku]) > 0 '
 
 
 		--localized product name
@@ -259,17 +247,6 @@ BEGIN
 			ELSE
 				SET @sql = @sql + 'PATINDEX(@Keywords, p.[FullDescription]) > 0 '
 
-
-			--product variant description
-			SET @sql = @sql + '
-			UNION
-			SELECT pv.ProductId
-			FROM ProductVariant pv with (NOLOCK)
-			WHERE '
-			IF @UseFullTextSearch = 1
-				SET @sql = @sql + 'CONTAINS(pv.[Description], @Keywords) '
-			ELSE
-				SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Description]) > 0 '
 
 
 			--localized product short description
@@ -412,18 +389,7 @@ BEGIN
 		LEFT JOIN Product_ProductTag_Mapping pptm with (NOLOCK)
 			ON p.Id = pptm.Product_Id'
 	END
-	
-	IF @ShowHidden = 0
-	OR @PriceMin > 0
-	OR @PriceMax > 0
-	OR @OrderBy = 10 /* Price: Low to High */
-	OR @OrderBy = 11 /* Price: High to Low */
-	BEGIN
-		SET @sql = @sql + '
-		LEFT JOIN ProductVariant pv with (NOLOCK)
-			ON p.Id = pv.ProductId'
-	END
-	
+		
 	--searching by keywords
 	IF @SearchKeywords = 1
 	BEGIN
@@ -474,9 +440,7 @@ BEGIN
 	BEGIN
 		SET @sql = @sql + '
 		AND p.Published = 1
-		AND pv.Published = 1
-		AND pv.Deleted = 0
-		AND (getutcdate() BETWEEN ISNULL(pv.AvailableStartDateTimeUtc, ''1/1/1900'') and ISNULL(pv.AvailableEndDateTimeUtc, ''1/1/2999''))'
+		AND (getutcdate() BETWEEN ISNULL(p.AvailableStartDateTimeUtc, ''1/1/1900'') and ISNULL(p.AvailableEndDateTimeUtc, ''1/1/2999''))'
 	END
 	
 	--min price
@@ -486,16 +450,16 @@ BEGIN
 		AND (
 				(
 					--special price (specified price and valid date range)
-					(pv.SpecialPrice IS NOT NULL AND (getutcdate() BETWEEN isnull(pv.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(pv.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
+					(p.SpecialPrice IS NOT NULL AND (getutcdate() BETWEEN isnull(p.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(p.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
 					AND
-					(pv.SpecialPrice >= ' + CAST(@PriceMin AS nvarchar(max)) + ')
+					(p.SpecialPrice >= ' + CAST(@PriceMin AS nvarchar(max)) + ')
 				)
 				OR 
 				(
 					--regular price (price isnt specified or date range isnt valid)
-					(pv.SpecialPrice IS NULL OR (getutcdate() NOT BETWEEN isnull(pv.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(pv.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
+					(p.SpecialPrice IS NULL OR (getutcdate() NOT BETWEEN isnull(p.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(p.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
 					AND
-					(pv.Price >= ' + CAST(@PriceMin AS nvarchar(max)) + ')
+					(p.Price >= ' + CAST(@PriceMin AS nvarchar(max)) + ')
 				)
 			)'
 	END
@@ -507,16 +471,16 @@ BEGIN
 		AND (
 				(
 					--special price (specified price and valid date range)
-					(pv.SpecialPrice IS NOT NULL AND (getutcdate() BETWEEN isnull(pv.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(pv.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
+					(p.SpecialPrice IS NOT NULL AND (getutcdate() BETWEEN isnull(p.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(p.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
 					AND
-					(pv.SpecialPrice <= ' + CAST(@PriceMax AS nvarchar(max)) + ')
+					(p.SpecialPrice <= ' + CAST(@PriceMax AS nvarchar(max)) + ')
 				)
 				OR 
 				(
 					--regular price (price isnt specified or date range isnt valid)
-					(pv.SpecialPrice IS NULL OR (getutcdate() NOT BETWEEN isnull(pv.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(pv.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
+					(p.SpecialPrice IS NULL OR (getutcdate() NOT BETWEEN isnull(p.SpecialPriceStartDateTimeUtc, ''1/1/1900'') AND isnull(p.SpecialPriceEndDateTimeUtc, ''1/1/2999'')))
 					AND
-					(pv.Price <= ' + CAST(@PriceMax AS nvarchar(max)) + ')
+					(p.Price <= ' + CAST(@PriceMax AS nvarchar(max)) + ')
 				)
 			)'
 	END
@@ -568,9 +532,9 @@ BEGIN
 	ELSE IF @OrderBy = 6 /* Name: Z to A */
 		SET @sql_orderby = ' p.[Name] DESC'
 	ELSE IF @OrderBy = 10 /* Price: Low to High */
-		SET @sql_orderby = ' pv.[Price] ASC'
+		SET @sql_orderby = ' p.[Price] ASC'
 	ELSE IF @OrderBy = 11 /* Price: High to Low */
-		SET @sql_orderby = ' pv.[Price] DESC'
+		SET @sql_orderby = ' p.[Price] DESC'
 	ELSE IF @OrderBy = 15 /* creation date */
 		SET @sql_orderby = ' p.[CreatedOnUtc] DESC'
 	ELSE /* default sorting, 0 (position) */
@@ -708,14 +672,8 @@ BEGIN
 	DECLARE @create_index_text nvarchar(4000)
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
-		CREATE FULLTEXT INDEX ON [Product]([Name], [ShortDescription], [FullDescription])
+		CREATE FULLTEXT INDEX ON [Product]([Name], [ShortDescription], [FullDescription], [Sku])
 		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('Product') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
-	EXEC(@create_index_text)
-	
-	SET @create_index_text = '
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariant]''))
-		CREATE FULLTEXT INDEX ON [ProductVariant]([Name], [Description], [SKU])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('ProductVariant') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 
 	SET @create_index_text = '
@@ -741,11 +699,6 @@ BEGIN
 	--drop indexes
 	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
 		DROP FULLTEXT INDEX ON [Product]
-	')
-
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariant]''))
-		DROP FULLTEXT INDEX ON [ProductVariant]
 	')
 
 	EXEC('

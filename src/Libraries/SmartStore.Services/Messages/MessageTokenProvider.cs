@@ -172,7 +172,7 @@ namespace SmartStore.Services.Messages
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    ((IProduct)opv.Product).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
+                    ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
 
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
@@ -473,7 +473,7 @@ namespace SmartStore.Services.Messages
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    ((IProduct)product).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
+                    ((IMergedProduct)product).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
 
                     if (!String.IsNullOrEmpty(product.Sku))
                     {

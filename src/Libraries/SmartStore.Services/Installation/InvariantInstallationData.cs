@@ -5084,14 +5084,14 @@ namespace SmartStore.Services.Installation
                                {
                                     new ProductTemplate
                                     {
-                                        Name = "Single Product Variant",
-                                        ViewPath = "ProductTemplate.SingleVariant",
+                                        Name = "Simple product",
+                                        ViewPath = "ProductTemplate.Simple",
                                         DisplayOrder = 1
                                     },
                                     new ProductTemplate
                                     {
-                                        Name = "Variants in Grid",
-                                        ViewPath = "ProductTemplate.VariantsInGrid",
+                                        Name = "Grouped product",
+                                        ViewPath = "ProductTemplate.Grouped",
                                         DisplayOrder = 2
                                     }
                                };

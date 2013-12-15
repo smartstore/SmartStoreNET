@@ -1,4 +1,4 @@
-﻿@model ProductDetailsModel.ProductVariantModel
+﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 @if (Model.DisplayBackInStockSubscription)
 {
@@ -12,7 +12,7 @@
             <script type="text/javascript">
                 $(document).ready(function () {
                     $(".subscribe-for-back-in-stock").click(function () {
-                        $("#back-in-stock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.RouteUrl("BackInStockSubscribePopup", new { productVariantId = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
+                        $("#back-in-stock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.RouteUrl("BackInStockSubscribePopup", new { productId = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
                     });
                 });
             </script>
@@ -27,7 +27,6 @@
         }
         else
         {
-            //codehint: sm-edit
             <a href='@Url.RouteUrl("Login")'>@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
         }
     </div>

@@ -32,9 +32,6 @@
         Html.AddCanonicalUrlParts(productUrl);
     }
 }
-@{
-    var defaultProductVariant = Model.ProductVariantModels.Count > 0 ? Model.ProductVariantModels[0] : null;
-}
 
 @Html.Partial("BsImageDialog")
 
@@ -80,11 +77,11 @@
                         <!-- attributes -->
                         <table class="attributes">
 
-                            @if (defaultProductVariant.ShowSku)
+                            @if (Model.ShowSku)
                             {
-                            <tr valign="top" class="attr-sku @(String.IsNullOrWhiteSpace(defaultProductVariant.Sku) ? "hide fade" : "")">
+                            <tr valign="top" class="attr-sku @(String.IsNullOrWhiteSpace(Model.Sku) ? "hide fade" : "")">
                                 <td class="caption bold">@T("Products.Sku")</td>
-                                <td class="value">@defaultProductVariant.Sku</td> 
+                                <td class="value">@Model.Sku</td> 
                             </tr>
                             }
 
@@ -108,59 +105,59 @@
                             </tr>
                             }
 
-                            @if (defaultProductVariant.ShowManufacturerPartNumber)
+                            @if (Model.ShowManufacturerPartNumber)
                             {
-                            <tr valign="top" class="attr-mpn @(String.IsNullOrWhiteSpace(defaultProductVariant.ManufacturerPartNumber) ? "hide fade" : "")">
+                            <tr valign="top" class="attr-mpn @(String.IsNullOrWhiteSpace(Model.ManufacturerPartNumber) ? "hide fade" : "")">
                                 <td class="caption bold">@T("Products.ManufacturerPartNumber")</td>
-                                <td class="value">@defaultProductVariant.ManufacturerPartNumber</td>
+                                <td class="value">@Model.ManufacturerPartNumber</td>
                             </tr>
                             }
 
-                            @if (defaultProductVariant.ShowGtin)
+                            @if (Model.ShowGtin)
                             {
-                            <tr valign="top" class="attr-gtin @(String.IsNullOrWhiteSpace(defaultProductVariant.Gtin) ? "hide fade" : "")">
+                            <tr valign="top" class="attr-gtin @(String.IsNullOrWhiteSpace(Model.Gtin) ? "hide fade" : "")">
                                 <td class="caption bold">@T("Products.GTIN")</td>
-                                <td class="value">@defaultProductVariant.Gtin</td>
+                                <td class="value">@Model.Gtin</td>
                             </tr>
                             }
 
-                            @if (defaultProductVariant.ShowWeight)
+                            @if (Model.ShowWeight)
                             {
-                            <tr valign="top" class="attr-weight @(String.IsNullOrWhiteSpace(defaultProductVariant.Weight) ? "hide fade" : "")">
+                            <tr valign="top" class="attr-weight @(String.IsNullOrWhiteSpace(Model.Weight) ? "hide fade" : "")">
                                 <td class="caption bold">@T("Products.Weight")</td>
-                                <td class="value">@defaultProductVariant.Weight</td>
+                                <td class="value">@Model.Weight</td>
                             </tr>
                             }
 
-                            @if (defaultProductVariant.ShowDimensions)
+                            @if (Model.ShowDimensions)
                             {
-                                <tr valign="top" class="attr-length @(String.IsNullOrWhiteSpace(defaultProductVariant.Length) ? "hide fade" : "")">
+                                <tr valign="top" class="attr-length @(String.IsNullOrWhiteSpace(Model.Length) ? "hide fade" : "")">
                                     <td class="caption bold">@T("Products.Length")</td>
-                                    <td class="value">@defaultProductVariant.Length</td>
+                                    <td class="value">@Model.Length</td>
                                 </tr>
-                                <tr valign="top" class="attr-width @(String.IsNullOrWhiteSpace(defaultProductVariant.Width) ? "hide fade" : "")">
+                                <tr valign="top" class="attr-width @(String.IsNullOrWhiteSpace(Model.Width) ? "hide fade" : "")">
                                     <td class="caption bold">@T("Products.Width")</td>
-                                    <td class="value">@defaultProductVariant.Width</td>
+                                    <td class="value">@Model.Width</td>
                                 </tr>
-                                <tr valign="top" class="attr-height @(String.IsNullOrWhiteSpace(defaultProductVariant.Height) ? "hide fade" : "")">
+                                <tr valign="top" class="attr-height @(String.IsNullOrWhiteSpace(Model.Height) ? "hide fade" : "")">
                                     <td class="caption bold">@T("Products.Height")</td>
-                                    <td class="value">@defaultProductVariant.Height</td>
+                                    <td class="value">@Model.Height</td>
                                 </tr>
                             }
 
-                            <tr valign="top" class="attr-stock @(String.IsNullOrWhiteSpace(defaultProductVariant.StockAvailablity) ? "hide fade" : "")">
+                            <tr valign="top" class="attr-stock @(String.IsNullOrWhiteSpace(Model.StockAvailability) ? "hide fade" : "")">
                                 <td class="caption bold">@T("Products.Availability")</td>
                                 <td class="value">
-                                    @defaultProductVariant.StockAvailablity
+                                    @Model.StockAvailability
                                 </td>
                             </tr>
 
-                            @if(defaultProductVariant.DisplayBackInStockSubscription)
+                            @if (Model.DisplayBackInStockSubscription)
                             {
                             <tr valign="top">
                                 <td>&nbsp;</td>
                                 <td>
-                                    @Html.Partial("_ProductVariantBackInStockSubscription", defaultProductVariant)
+                                    @Html.Partial("_ProductVariantBackInStockSubscription", Model)
                                 </td>
                             </tr>
                             }
@@ -198,12 +195,12 @@
                         <!-- product attributes -->
                         @{
                             var dataDictAttributes = new ViewDataDictionary();
-                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", defaultProductVariant.Id);
+                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
-                            if (defaultProductVariant.ProductVariantAttributes.Count > 0)
+                            if (Model.ProductVariantAttributes.Count > 0)
                             { 
                                 <div class="product-attributes line">
-                                    @Html.Partial("_ProductAttributes", defaultProductVariant.ProductVariantAttributes, dataDictAttributes)                  
+                                    @Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
                                 </div>
                             }
                         }
@@ -211,10 +208,11 @@
                         <!-- giftcard infos -->                    
                         @{
                             var dataDictGiftCard = new ViewDataDictionary();
-                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", defaultProductVariant.Id);
-                            if (defaultProductVariant.GiftCard.IsGiftCard) {
+                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
+                            if (Model.GiftCard.IsGiftCard)
+                            {
                                 <div class="giftcard-infos line">
-                                    @Html.Partial("_GiftCardInfo", defaultProductVariant.GiftCard, dataDictGiftCard)
+                                    @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
                                 </div>
                             }
                         }
@@ -222,17 +220,17 @@
                         <!-- addd to cart -->
                         @{       
                             var dataDictAddToCart = new ViewDataDictionary();
-                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", defaultProductVariant.Id);                
-                            @Html.Partial("_ProductVariantAddToCart", defaultProductVariant, dataDictAddToCart)                    
+                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);                
+                            @Html.Partial("_ProductVariantAddToCart", Model, dataDictAddToCart)                    
                         }
 
                     <!-- quick links -->
                     <!-- TODO: _DownloadSample.cshtml ist jetzt eigentlich obsolete -->
                     <div class="quick-links line">
-                        @if (defaultProductVariant.HasSampleDownload)
+                        @if (Model.HasSampleDownload)
                         {
                         <div>
-                            <a href="@Url.RouteUrl("GetSampleDownload", new { productvariantid = defaultProductVariant.Id })">
+                            <a href="@Url.RouteUrl("GetSampleDownload", new { productid = Model.Id })">
                                 <i class="icon-download-alt"></i>
                                 @T("Products.DownloadSample")
                             </a>
@@ -241,10 +239,10 @@
                         @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
                         @Html.Action("ProductAskQuestionButton", "Catalog", new { productId = Model.Id })
                         @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
-                        @if (!defaultProductVariant.AddToCart.DisableWishlistButton)
+                        @if (!Model.AddToCart.DisableWishlistButton)
                         {
                         <div>
-                            <a data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = defaultProductVariant.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            <a data-href='@Url.RouteUrl("AddProductVariantToCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                                 href="#"
                                 class="ajax-cart-link" 
                                 data-form-selector="#product-details-form"
@@ -261,7 +259,7 @@
                     @Html.Action("ShareButton", "Catalog")
 
                     <!-- tier prices -->
-                    @Html.Action("ProductTierPrices", "Catalog", new { productVariantId = defaultProductVariant.Id })
+                    @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
                 
                     </div>
                         
@@ -378,7 +376,7 @@
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
             zoomType: '@Model.DetailsPictureModel.PictureZoomType', // window, inner, lens
-            updateUrl: '@Html.Raw(Url.Action("UpdateProductDetails", "Catalog", new { productId = Model.Id, productVariantId = defaultProductVariant.Id }))'
+            updateUrl: '@Html.Raw(Url.Action("UpdateProductDetails", "Catalog", new { productId = Model.Id }))'
         };
 
         $('#product-details-form').productDetail(settings);

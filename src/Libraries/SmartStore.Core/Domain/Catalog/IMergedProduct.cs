@@ -3,10 +3,9 @@
 namespace SmartStore.Core.Domain.Catalog
 {
     /// <summary>
-    /// Interface for shared product variant data between
-    /// variants and variant combinations
+    /// Interface for shared product data between products and variant combinations
     /// </summary>
-    public interface IProduct
+    public interface IMergedProduct
     {
         int Id { get; }
         string Sku { get; set; }

@@ -394,7 +394,7 @@ namespace SmartStore.Services.Common
                     //SKU
                     if (_catalogSettings.ShowProductSku)
                     {
-						((IProduct)p).MergeWithCombination(orderProductVariant.AttributesXml, _productAttributeParser);
+						((IMergedProduct)p).MergeWithCombination(orderProductVariant.AttributesXml, _productAttributeParser);
                         cell = new PdfPCell(new Phrase(p.Sku ?? String.Empty, font));
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);
@@ -830,7 +830,7 @@ namespace SmartStore.Services.Common
                         productsTable.AddCell(cell);
 
                         //SKU
-                        ((IProduct)p).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
+                        ((IMergedProduct)p).MergeWithCombination(opv.AttributesXml, _productAttributeParser);
                         cell = new PdfPCell(new Phrase(p.Sku ?? String.Empty, font));
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);

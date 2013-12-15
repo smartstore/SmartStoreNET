@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// <summary>
     /// Represents a product variant
     /// </summary>
-    public partial class ProductVariant : BaseEntity, IProduct, ILocalizedEntity
+    public partial class ProductVariant : BaseEntity, IMergedProduct, ILocalizedEntity
     {
         private ICollection<ProductVariantAttribute> _productVariantAttributes;
         private ICollection<ProductVariantAttributeCombination> _productVariantAttributeCombinations;

@@ -1,4 +1,4 @@
-﻿@model ProductDetailsModel.ProductVariantModel
+﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Orders;
 @using System.Globalization;
@@ -20,34 +20,34 @@
     {
         <div class="price-details line well" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 
-            @if(!Model.ProductVariantPrice.CallForPrice) 
+            @if(!Model.ProductPrice.CallForPrice) 
             {
                 <div class="clearfix">
 
                     <div class="pull-right" style="text-align:right;padding: 5px 0 6px 0">
-                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.OldPrice))
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
                         {
                             @T("Products.Price.OldPrice")<text>:</text>
-                            <span class="old-product-price">@Html.Raw(Model.ProductVariantPrice.OldPrice)</span>
+                            <span class="old-product-price">@Html.Raw(Model.ProductPrice.OldPrice)</span>
                             <br />
                         }
         
-                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.OldPrice) ||
-                            !String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice) ||
+                            !String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
                         {
                             @T("Products.Price")<text>:</text>
                         }
 
                         <span 
-                        @if (String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
                         {
                             <text>class="product-price current text-success"</text>
                         }
                         >
                             <span class="product-price-without-discount" itemprop="price">
-                            @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.Price))
+                            @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
                             {
-                                @Html.Raw(Model.ProductVariantPrice.Price)
+                                @Html.Raw(Model.ProductPrice.Price)
                             }
                             </span>
                         </span>
@@ -56,9 +56,9 @@
                 
                     <div class="product-price with-discount current pull-left">
                         <span class="product-price-with-discount" itemprop="price">
-                        @if (!String.IsNullOrWhiteSpace(Model.ProductVariantPrice.PriceWithDiscount))
+                        @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
                         {
-                            @Html.Raw(Model.ProductVariantPrice.PriceWithDiscount)
+                            @Html.Raw(Model.ProductPrice.PriceWithDiscount)
                         }
                         </span>
                     </div>
@@ -83,13 +83,15 @@
                     {
                         <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
                     
-                        if(Model.DisplayDeliveryTimeAccordingToStock) {
+                        if (Model.DisplayDeliveryTimeAccordingToStock)
+                        {
                             <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
                             <span class="delivery-time-value">@Model.DeliveryTime.Name</span>
                         } 
-                        else {
-                            <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
-                            <span class="delivery-time-value">@Model.StockAvailablity</span>
+                        else
+                        {
+                            <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailability"></span>
+                            <span class="delivery-time-value">@Model.StockAvailability</span>
                         }
                     }
                 </div>
@@ -118,7 +120,7 @@
                 {
                     <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
                         href="#"
-                        data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.AddToCart.ProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 
+                        data-href='@Url.RouteUrl("AddProductVariantToCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 
                         data-form-selector="#product-details-form"
                         data-type="cart"
                         data-action="add">

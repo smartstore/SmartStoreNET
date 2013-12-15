@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    internal class MergedProduct : IProduct
+    internal class MergedProduct : IMergedProduct
     {
         public MergedProduct()
         {
@@ -11,7 +11,7 @@ namespace SmartStore.Services.Catalog
             this.BasePrice = new BasePriceQuotation();
             this.ProductVariantAttributeCombinations = new List<ProductVariantAttributeCombination>();
         }
-        public MergedProduct(IProduct source)
+        public MergedProduct(IMergedProduct source)
         {
             Guard.ArgumentNotNull(source, "source");
 

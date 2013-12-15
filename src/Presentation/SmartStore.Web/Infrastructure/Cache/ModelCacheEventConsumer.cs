@@ -51,10 +51,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityInserted<Product>>,
         IConsumer<EntityUpdated<Product>>,
         IConsumer<EntityDeleted<Product>>,
-        //product variants
-        IConsumer<EntityInserted<ProductVariant>>,
-        IConsumer<EntityUpdated<ProductVariant>>,
-        IConsumer<EntityDeleted<ProductVariant>>,
         //product tags
         IConsumer<EntityInserted<ProductTag>>,
         IConsumer<EntityUpdated<ProductTag>>,
@@ -330,7 +326,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for cart picture caching
         /// </summary>
         /// <remarks>
-        /// {0} : product variant id
+		/// {0} : product id
 		/// {1} : product attribute combination id
         /// {2} : picture size
         /// {3} : value indicating whether a default picture is displayed in case if no real picture exists
@@ -592,25 +588,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
-        }
-
-        //product variants
-        public void HandleEvent(EntityInserted<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityUpdated<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityDeleted<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }

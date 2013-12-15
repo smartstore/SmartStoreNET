@@ -28,16 +28,16 @@ namespace SmartStore.Web.Controllers
             this._customerSettings = customerSettings;
         }
         
-        public ActionResult Sample(int productVariantId)
+        public ActionResult Sample(int productId)
         {
-            var productVariant = _productService.GetProductVariantById(productVariantId);
-            if (productVariant == null)
+            var product = _productService.GetProductById(productId);
+            if (product == null)
                 return RedirectToRoute("HomePage");
 
-            if (!productVariant.HasSampleDownload)
+            if (!product.HasSampleDownload)
                 return Content("Product variant doesn't have a sample download.");
 
-            var download = _downloadService.GetDownloadById(productVariant.SampleDownloadId);
+            var download = _downloadService.GetDownloadById(product.SampleDownloadId);
             if (download == null)
                 return Content("Sample download is not available any more.");
 
@@ -50,7 +50,7 @@ namespace SmartStore.Web.Controllers
                 if (download.DownloadBinary == null)
                     return Content("Download data is not available any more.");
 
-                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : productVariant.Id.ToString();
+                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : product.Id.ToString();
                 string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
                 return new FileContentResult(download.DownloadBinary, contentType) { FileDownloadName = fileName + download.Extension };
             }
@@ -63,7 +63,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("HomePage");
 
             var order = orderProductVariant.Order;
-            var productVariant = orderProductVariant.ProductVariant;
+            var product = orderProductVariant.Product;
             if (!_downloadService.IsDownloadAllowed(orderProductVariant))
                 return Content("Downloads are not allowed");
 
@@ -76,19 +76,19 @@ namespace SmartStore.Web.Controllers
                     return Content("This is not your order");
             }
 
-            var download = _downloadService.GetDownloadById(productVariant.DownloadId);
+            var download = _downloadService.GetDownloadById(product.DownloadId);
             if (download == null)
                 return Content("Download is not available any more.");
 
-            if (productVariant.HasUserAgreement)
+            if (product.HasUserAgreement)
             {
                 if (!agree)
                     return RedirectToRoute("DownloadUserAgreement", new { opvid = opvId });
             }
 
 
-            if (!productVariant.UnlimitedDownloads && orderProductVariant.DownloadCount >= productVariant.MaxNumberOfDownloads)
-                return Content(string.Format("You have reached maximum number of downloads {0}", productVariant.MaxNumberOfDownloads));
+            if (!product.UnlimitedDownloads && orderProductVariant.DownloadCount >= product.MaxNumberOfDownloads)
+                return Content(string.Format("You have reached maximum number of downloads {0}", product.MaxNumberOfDownloads));
             
 
             if (download.UseDownloadUrl)
@@ -110,7 +110,7 @@ namespace SmartStore.Web.Controllers
                 _orderService.UpdateOrder(order);
 
                 //return result
-                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : productVariant.Id.ToString();
+                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : product.Id.ToString();
                 string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
                 return new FileContentResult(download.DownloadBinary, contentType) { FileDownloadName = fileName + download.Extension };
             }
@@ -123,7 +123,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("HomePage");
 
             var order = orderProductVariant.Order;
-            var productVariant = orderProductVariant.ProductVariant;
+            var product = orderProductVariant.Product;
             if (!_downloadService.IsLicenseDownloadAllowed(orderProductVariant))
                 return Content("Downloads are not allowed");
 
@@ -151,7 +151,7 @@ namespace SmartStore.Web.Controllers
                     return Content("Download data is not available any more.");
                 
                 //return result
-                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : productVariant.Id.ToString();
+                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : product.Id.ToString();
                 string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
                 return new FileContentResult(download.DownloadBinary, contentType) { FileDownloadName = fileName + download.Extension };
             }

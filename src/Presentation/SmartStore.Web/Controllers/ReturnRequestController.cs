@@ -106,18 +106,12 @@ namespace SmartStore.Web.Controllers
                 var opvModel = new SubmitReturnRequestModel.OrderProductVariantModel()
                 {
                     Id = opv.Id,
-                    ProductId = opv.ProductVariant.ProductId,
-                    ProductSeName = opv.ProductVariant.Product.GetSeName(),
+                    ProductId = opv.Product.Id,
+					ProductName = opv.Product.GetLocalized(x => x.Name),
+                    ProductSeName = opv.Product.GetSeName(),
                     AttributeInfo = opv.AttributeDescription,
                     Quantity = opv.Quantity
                 };
-
-                //product name
-                if (!String.IsNullOrEmpty(opv.ProductVariant.GetLocalized(x => x.Name)))
-                    opvModel.ProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.GetLocalized(x => x.Name), opv.ProductVariant.GetLocalized(x => x.Name));
-                else
-                    opvModel.ProductName = opv.ProductVariant.Product.GetLocalized(x => x.Name);
-                model.Items.Add(opvModel);
 
                 //unit price
                 switch (order.CustomerTaxDisplayType)

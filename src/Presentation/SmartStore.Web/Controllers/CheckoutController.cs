@@ -420,7 +420,7 @@ namespace SmartStore.Web.Controllers
             {
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
                     sci.ShoppingCartType,
-                    sci.ProductVariant,
+                    sci.Product,
 					sci.StoreId,
                     sci.AttributesXml,
                     sci.CustomerEnteredPrice,

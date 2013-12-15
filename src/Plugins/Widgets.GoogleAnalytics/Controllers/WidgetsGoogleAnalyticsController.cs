@@ -219,7 +219,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                         categ = defaultProductCategory.Category.Name;
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
                     //The SKU code is a required parameter for every item that is added to the transaction
-                    ((IProduct)item.Product).MergeWithCombination(item.AttributesXml);
+                    ((IMergedProduct)item.Product).MergeWithCombination(item.AttributesXml);
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categ));

@@ -76,9 +76,9 @@ namespace SmartStore.Web.Infrastructure
                             new[] { "SmartStore.Web.Controllers" });
             //downloads
             routes.MapRoute("GetSampleDownload",
-                            "download/sample/{productvariantid}",
+							"download/sample/{productid}",
                             new { controller = "Download", action = "Sample"},
-                            new { productvariantid = @"\d+" },
+							new { productid = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapRoute("GetDownload",
                             "download/getdownload/{opvid}/{agree}",
@@ -108,9 +108,9 @@ namespace SmartStore.Web.Infrastructure
 
             //back in stock notifications
             routes.MapLocalizedRoute("BackInStockSubscribePopup",
-                            "backinstocksubscribe/{productVariantId}",
+							"backinstocksubscribe/{productId}",
                             new { controller = "Catalog", action = "BackInStockSubscribePopup" },
-                            new { productVariantId = @"\d+" },
+							new { productId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("DeleteBackInStockSubscription",
                             "backinstocksubscribe/delete/{subscriptionId}",
@@ -167,15 +167,15 @@ namespace SmartStore.Web.Infrastructure
                             new[] { "SmartStore.Web.Controllers" });
             //add product variant to cart (with attributes and options)
             routes.MapLocalizedRoute("AddProductVariantToCart",
-                            "addproductvarianttocart/{productVariantId}/{shoppingCartTypeId}",
+							"addproductvarianttocart/{productId}/{shoppingCartTypeId}",
                             new { controller = "ShoppingCart", action = "AddProductVariantToCart" },
-                            new { productVariantId = @"\d+", shoppingCartTypeId = @"\d+" },
+							new { productId = @"\d+", shoppingCartTypeId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             //product attributes with "upload file" type
             routes.MapLocalizedRoute("UploadFileProductAttribute",
-                            "uploadfileproductattribute/{productVariantId}/{productAttributeId}",
+							"uploadfileproductattribute/{productId}/{productAttributeId}",
                             new { controller = "ShoppingCart", action = "UploadFileProductAttribute" },
-                            new { productVariantId = @"\d+", productAttributeId = @"\d+" },
+							new { productId = @"\d+", productAttributeId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             
             //checkout

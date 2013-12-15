@@ -287,22 +287,17 @@ namespace SmartStore.Web.Controllers
             var orderProductVariants = _orderService.GetAllOrderProductVariants(order.Id, null, null, null, null, null, null);
             foreach (var opv in orderProductVariants)
             {
-                opv.ProductVariant.MergeWithCombination(opv.AttributesXml);
+                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
                 var opvModel = new OrderDetailsModel.OrderProductVariantModel()
                 {
                     Id = opv.Id,
-                    Sku = opv.ProductVariant.Sku,
-                    ProductId = opv.ProductVariant.ProductId,
-                    ProductSeName = opv.ProductVariant.Product.GetSeName(),
+                    Sku = opv.Product.Sku,
+                    ProductId = opv.Product.Id,
+					ProductName = opv.Product.GetLocalized(x => x.Name),
+                    ProductSeName = opv.Product.GetSeName(),
                     Quantity = opv.Quantity,
-                    AttributeInfo = opv.AttributeDescription,
+                    AttributeInfo = opv.AttributeDescription
                 };
-
-                //product name
-                if (!String.IsNullOrEmpty(opv.ProductVariant.GetLocalized(x => x.Name)))
-                    opvModel.ProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.GetLocalized(x => x.Name), opv.ProductVariant.GetLocalized(x => x.Name));
-                else
-                    opvModel.ProductName = opv.ProductVariant.Product.GetLocalized(x => x.Name);
                 model.Items.Add(opvModel);
 
                 //unit price, subtotal
@@ -388,23 +383,18 @@ namespace SmartStore.Web.Controllers
                 if (opv == null)
                     continue;
 
-                opv.ProductVariant.MergeWithCombination(opv.AttributesXml);
+                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
                 var sopvModel = new ShipmentDetailsModel.ShipmentOrderProductVariantModel()
                 {
                     Id = sopv.Id,
-                    Sku = opv.ProductVariant.Sku,
-                    ProductId = opv.ProductVariant.ProductId,
-                    ProductSeName = opv.ProductVariant.Product.GetSeName(),
+                    Sku = opv.Product.Sku,
+                    ProductId = opv.Product.Id,
+					ProductName = opv.Product.GetLocalized(x => x.Name),
+                    ProductSeName = opv.Product.GetSeName(),
                     AttributeInfo = opv.AttributeDescription,
                     QuantityOrdered = opv.Quantity,
                     QuantityShipped = sopv.Quantity,
                 };
-
-                //product name//product name
-                if (!String.IsNullOrEmpty(opv.ProductVariant.GetLocalized(x => x.Name)))
-                    sopvModel.ProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.GetLocalized(x => x.Name), opv.ProductVariant.GetLocalized(x => x.Name));
-                else
-                    sopvModel.ProductName = opv.ProductVariant.Product.GetLocalized(x => x.Name);
                 model.Items.Add(sopvModel);
             }
 

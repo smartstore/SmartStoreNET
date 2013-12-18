@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[nop_splitstring_to_table]
+﻿CREATE FUNCTION [dbo].[sm_splitstring_to_table]
 (
     @string NVARCHAR(MAX),
     @delimiter CHAR(1)
@@ -25,7 +25,7 @@ GO
 
 
 
-CREATE FUNCTION [dbo].[nop_getnotnullnotempty]
+CREATE FUNCTION [dbo].[sm_getnotnullnotempty]
 (
     @p1 nvarchar(max) = null, 
     @p2 nvarchar(max) = null
@@ -44,7 +44,7 @@ GO
 
 
 
-CREATE FUNCTION [dbo].[nop_getprimarykey_indexname]
+CREATE FUNCTION [dbo].[sm_getprimarykey_indexname]
 (
     @table_name nvarchar(1000) = null
 )
@@ -214,9 +214,9 @@ BEGIN
         LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
         WHERE '
         IF @UseFullTextSearch = 1
-            SET @sql = @sql + 'CONTAINS((pv.[Sku], pvac.[Sku]), @Keywords) '
+            SET @sql = @sql + '(CONTAINS(pvac.[Sku], @Keywords) OR CONTAINS(pv.[Sku], @Keywords)) '
         ELSE
-            SET @sql = @sql + 'PATINDEX(@Keywords, pv.[Sku]) > 0 OR PATINDEX(@Keywords, pvac.[Sku]) > 0 '
+            SET @sql = @sql + 'PATINDEX(@Keywords, pvac.[Sku]) > 0 OR PATINDEX(@Keywords, pv.[Sku]) > 0 '
 
 
 		--localized product name
@@ -348,7 +348,7 @@ BEGIN
 		CategoryId int not null
 	)
 	INSERT INTO #FilteredCategoryIds (CategoryId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@CategoryIds, ',')	
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@CategoryIds, ',')	
 	DECLARE @CategoryIdsCount int	
 	SET @CategoryIdsCount = (SELECT COUNT(1) FROM #FilteredCategoryIds)
 
@@ -359,7 +359,7 @@ BEGIN
 		SpecificationAttributeOptionId int not null
 	)
 	INSERT INTO #FilteredSpecs (SpecificationAttributeOptionId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@FilteredSpecs, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@FilteredSpecs, ',')
 	DECLARE @SpecAttributesCount int	
 	SET @SpecAttributesCount = (SELECT COUNT(1) FROM #FilteredSpecs)
 
@@ -370,7 +370,7 @@ BEGIN
 		CustomerRoleId int not null
 	)
 	INSERT INTO #FilteredCustomerRoleIds (CustomerRoleId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@AllowedCustomerRoleIds, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@AllowedCustomerRoleIds, ',')
 	
 	--paging
 	DECLARE @PageLowerBound int
@@ -701,33 +701,39 @@ AS
 BEGIN
 	--create catalog
 	EXEC('
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''nopCommerceFullTextCatalog'')
-		CREATE FULLTEXT CATALOG [nopCommerceFullTextCatalog] AS DEFAULT')
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''SmartStoreNETFullTextCatalog'')
+		CREATE FULLTEXT CATALOG [SmartStoreNETFullTextCatalog] AS DEFAULT')
 	
 	--create indexes
 	DECLARE @create_index_text nvarchar(4000)
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
 		CREATE FULLTEXT INDEX ON [Product]([Name], [ShortDescription], [FullDescription])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('Product') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('Product') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 	
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariant]''))
 		CREATE FULLTEXT INDEX ON [ProductVariant]([Name], [Description], [SKU])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('ProductVariant') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('ProductVariant') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+	EXEC(@create_index_text)
+
+	SET @create_index_text = '
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+		CREATE FULLTEXT INDEX ON [ProductVariantAttributeCombination]([SKU])
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('ProductVariantAttributeCombination') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
 		CREATE FULLTEXT INDEX ON [LocalizedProperty]([LocaleValue])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('LocalizedProperty') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('LocalizedProperty') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
 		CREATE FULLTEXT INDEX ON [ProductTag]([Name])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('ProductTag') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('ProductTag') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 END
 GO
@@ -747,6 +753,11 @@ BEGIN
 	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariant]''))
 		DROP FULLTEXT INDEX ON [ProductVariant]
 	')
+	
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+		DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
+	')
 
 	EXEC('
 	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
@@ -760,8 +771,8 @@ BEGIN
 
 	--drop catalog
 	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''nopCommerceFullTextCatalog'')
-		DROP FULLTEXT CATALOG [nopCommerceFullTextCatalog]
+	IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''SmartStoreNETFullTextCatalog'')
+		DROP FULLTEXT CATALOG [SmartStoreNETFullTextCatalog]
 	')
 END
 GO

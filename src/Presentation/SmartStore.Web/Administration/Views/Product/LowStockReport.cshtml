@@ -1,6 +1,7 @@
-﻿@model Telerik.Web.Mvc.GridModel<ProductVariantModel>
+﻿@model Telerik.Web.Mvc.GridModel<ProductModel>
 
 @using Telerik.Web.Mvc.UI
+@using SmartStore.Web.Framework.UI;
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
@@ -22,7 +23,7 @@
     <table class="adminContent">
         <tr>
             <td>
-                @(Html.Telerik().Grid<ProductVariantModel>(Model.Data)
+                @(Html.Telerik().Grid<ProductModel>(Model.Data)
                     .Name("productvariants-grid")
                     .Columns(columns =>
                     {
@@ -35,15 +36,15 @@
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
                             .Centered();
-                                columns.Bound(x => x.Id)
-                                    .Width(50)
-                                    .Centered()
-                                    .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                                    .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                                    .Title(T("Admin.Common.Edit").Text);
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
                     })
                     .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "ProductVariant"))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
                     .EnableCustomBinding(true))
             </td>
         </tr>

@@ -96,8 +96,8 @@ namespace SmartStore.Data.Tests.Orders
 
 
             fromDb.PurchasedWithOrderProductVariant.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.ProductVariant.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.ProductVariant.Name.ShouldEqual("Product variant name 1");
+            fromDb.PurchasedWithOrderProductVariant.Product.ShouldNotBeNull();
+            fromDb.PurchasedWithOrderProductVariant.Product.Name.ShouldEqual("Product name 1");
         }
 
         protected Customer GetTestCustomer()
@@ -118,27 +118,19 @@ namespace SmartStore.Data.Tests.Orders
             return new OrderProductVariant()
             {
                 Order = GetTestOrder(),
-                ProductVariant = GetTestProductVariant(),
+				Product = GetTestProduct()
             };
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
 
         protected Order GetTestOrder()
         {

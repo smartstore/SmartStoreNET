@@ -18,7 +18,7 @@ namespace SmartStore.Admin.Models.Orders
         {
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
-            Items = new List<OrderProductVariantModel>();
+            Items = new List<OrderItemModel>();
         }
 
         //identifiers
@@ -213,7 +213,7 @@ namespace SmartStore.Admin.Models.Orders
 
         //items
         public bool HasDownloadableProducts { get; set; }
-        public IList<OrderProductVariantModel> Items { get; set; }
+        public IList<OrderItemModel> Items { get; set; }
 
         //creation date
         [SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
@@ -257,16 +257,15 @@ namespace SmartStore.Admin.Models.Orders
 
         #region Nested Classes
 
-        public class OrderProductVariantModel : EntityModelBase
+        public class OrderItemModel : EntityModelBase
         {
-            public OrderProductVariantModel()
+            public OrderItemModel()
             {
                 ReturnRequestIds = new List<int>();
                 PurchasedGiftCardIds = new List<int>();
             }
-            public int ProductVariantId { get; set; }
-
-            public string FullProductName { get; set; }
+			public int ProductId { get; set; }
+			public string ProductName { get; set; }
             public string Sku { get; set; }
 
             public string UnitPriceInclTax { get; set; }
@@ -340,9 +339,8 @@ namespace SmartStore.Admin.Models.Orders
                 AvailableCategories = new List<SelectListItem>();
                 AvailableManufacturers = new List<SelectListItem>();
             }
-            public GridModel<ProductVariantModel> ProductVariants { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
             [AllowHtml]
             public string SearchProductName { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
@@ -377,7 +375,7 @@ namespace SmartStore.Admin.Models.Orders
                     Warnings = new List<string>();
                 }
 
-                public int ProductVariantId { get; set; }
+                public int ProductId { get; set; }
 
                 public int OrderId { get; set; }
 

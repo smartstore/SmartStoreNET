@@ -73,12 +73,8 @@ namespace SmartStore.Admin.Controllers
                 return false;
 
             model.Id = returnRequest.Id;
-            model.ProductVariantId = opv.ProductVariantId;
-            //product name
-            if (!String.IsNullOrEmpty(opv.ProductVariant.Name))
-                model.ProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.Name, opv.ProductVariant.Name);
-            else
-                model.ProductName = opv.ProductVariant.Product.Name;
+            model.ProductId = opv.ProductId;
+			model.ProductName = opv.Product.Name;
             model.OrderId = opv.OrderId;
             model.CustomerId = returnRequest.CustomerId;
 			model.CustomerFullName = returnRequest.Customer.GetFullName();

@@ -73,7 +73,7 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #region Product variants
+        #region Products
         
         /// <summary>
         /// Get low stock products

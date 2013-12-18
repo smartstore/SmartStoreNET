@@ -19,7 +19,7 @@ namespace SmartStore.Data.Tests.Orders
             var opv = new OrderProductVariant()
             {
                 Order = GetTestOrder(),
-                ProductVariant = GetTestProductVariant(),
+				Product = GetTestProduct(),
                 Quantity = 1, 
                 UnitPriceInclTax= 1.1M,
                 UnitPriceExclTax = 2.1M,
@@ -38,7 +38,7 @@ namespace SmartStore.Data.Tests.Orders
             var fromDb = SaveAndLoadEntity(opv);
             fromDb.ShouldNotBeNull();
             fromDb.Order.ShouldNotBeNull();
-            fromDb.ProductVariant.ShouldNotBeNull();
+			fromDb.Product.ShouldNotBeNull();
             fromDb.UnitPriceInclTax.ShouldEqual(1.1M);
             fromDb.UnitPriceExclTax.ShouldEqual(2.1M);
             fromDb.PriceInclTax.ShouldEqual(3.1M);
@@ -61,7 +61,7 @@ namespace SmartStore.Data.Tests.Orders
             var opv = new OrderProductVariant()
             {
                 Order = GetTestOrder(),
-                ProductVariant = GetTestProductVariant(),
+				Product = GetTestProduct()
             };
             opv.AssociatedGiftCards.Add(GetTestGiftCard());
 
@@ -82,23 +82,15 @@ namespace SmartStore.Data.Tests.Orders
             };
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
 
         protected Customer GetTestCustomer()
         {

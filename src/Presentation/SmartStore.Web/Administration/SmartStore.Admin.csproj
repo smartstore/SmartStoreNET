@@ -164,7 +164,6 @@
     <Compile Include="Controllers\ProductAttributeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProductReviewController.cs" />
-    <Compile Include="Controllers\ProductVariantController.cs" />
     <Compile Include="Controllers\QueuedEmailController.cs" />
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
@@ -302,7 +301,6 @@
     <Compile Include="Models\Localization\LanguageResourceModel.cs" />
     <Compile Include="Models\Logging\LogModel.cs" />
     <Compile Include="Models\Catalog\ProductModel.cs" />
-    <Compile Include="Models\Catalog\ProductVariantModel.cs" />
     <Compile Include="Models\Messages\QueuedEmailModel.cs" />
     <Compile Include="Models\Settings\TaxSettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -342,7 +340,6 @@
     <Compile Include="Validators\Catalog\SpecificationAttributeOptionValidator.cs" />
     <Compile Include="Validators\Catalog\SpecificationAttributeValidator.cs" />
     <Compile Include="Validators\Catalog\ProductAttributeValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductVariantValidator.cs" />
     <Compile Include="Validators\Customers\CustomerRoleValidator.cs" />
     <Compile Include="Validators\Customers\CustomerValidator.cs" />
     <Compile Include="Validators\Forums\ForumGroupValidator.cs" />
@@ -502,12 +499,6 @@
     <Content Include="Views\Product\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\QueuedEmail\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -650,28 +641,22 @@
     <Content Include="Views\Category\ProductAddPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\Create.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\TierPriceCustomer.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceCustomer.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\ProductAttribute.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\ProductAttribute.cshtml" />
+    <Content Include="Views\Product\EditAttributeValues.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\AttributeControlType.cshtml" />
+    <Content Include="Views\Product\ProductAttributeValueCreatePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditAttributeValues.cshtml" />
+    <Content Include="Views\Product\ProductAttributeValueEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\ProductAttributeValueCreatePopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\ProductAttributeValueEditPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdateProductAttributeValue.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdateProductAttributeValue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
@@ -680,9 +665,6 @@
     <Content Include="Views\Shared\EditorTemplates\Decimal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_ProductVariantInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
@@ -896,7 +878,7 @@
     <Content Include="Views\Product\ProductTags.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\LowStockReport.cshtml" />
+    <Content Include="Views\Product\LowStockReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\BestsellersReport.cshtml" />
@@ -944,10 +926,10 @@
     <Content Include="Views\Common\LanguageSelector.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\_ProductAttributes.cshtml" />
+    <Content Include="Views\Product\_ProductAttributes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Security\Permissions.cshtml" />
@@ -1007,7 +989,7 @@
     <Content Include="Views\ShoppingCart\CurrentWishlists.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\BulkEdit.cshtml" />
+    <Content Include="Views\Product\BulkEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Country\StateEditPopup.cshtml" />
@@ -1110,10 +1092,10 @@
     <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\AttributeCombinationCreatePopup.cshtml" />
+    <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\AttributeCombinationEditPopup.cshtml" />
+    <Content Include="Views\Product\AttributeCombinationEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Theme\List.cshtml" />
@@ -1146,13 +1128,16 @@
     <Content Include="Views\Setting\StoreScopeConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceStore.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\TierPriceStore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\WidgetZone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\GenericAttributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

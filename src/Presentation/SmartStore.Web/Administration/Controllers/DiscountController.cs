@@ -106,22 +106,17 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
 
-                //applied to product variants
-                foreach (var pv in discount.AppliedToProductVariants)
+                //applied to products
+                foreach (var product in discount.AppliedToProducts)
                 {
-                    if (pv != null && !pv.Deleted)
+                    if (product != null && !product.Deleted)
                     {
-                        var appliedToProductVariantModel = new DiscountModel.AppliedToProductVariantModel()
+                        var appliedToProductVariantModel = new DiscountModel.AppliedToProductModel()
                         {
-                            ProductVariantId = pv.Id,
+                            ProductId = product.Id,
+							ProductName = product.Name
                         };
-                        //full product name
-                        if (!String.IsNullOrEmpty(pv.Name))
-                            appliedToProductVariantModel.FullProductName = string.Format("{0} ({1})", pv.Product.Name, pv.Name);
-                        else
-                            appliedToProductVariantModel.FullProductName = pv.Product.Name;
-
-                        model.AppliedToProductVariantModels.Add(appliedToProductVariantModel);
+                        model.AppliedToProductModels.Add(appliedToProductVariantModel);
                     }
                 }
 
@@ -269,12 +264,12 @@ namespace SmartStore.Admin.Controllers
                     && discount.DiscountType != DiscountType.AssignedToSkus)
                 {
                     //applied to product variants
-                    var productVariants = discount.AppliedToProductVariants.ToList();
-                    discount.AppliedToProductVariants.Clear();
+                    var products = discount.AppliedToProducts.ToList();
+                    discount.AppliedToProducts.Clear();
                     _discountService.UpdateDiscount(discount);
                     //update "HasDiscountsApplied" property
-                    foreach (var pv in productVariants)
-                        _productService.UpdateHasDiscountsApplied(pv);
+                    foreach (var product in products)
+                        _productService.UpdateHasDiscountsApplied(product);
                 }
 
                 //activity log
@@ -304,15 +299,15 @@ namespace SmartStore.Admin.Controllers
             //applied to categories
             var categories = discount.AppliedToCategories.ToList();
             //applied to product variants
-            var productVariants = discount.AppliedToProductVariants.ToList();
+            var products = discount.AppliedToProducts.ToList();
 
             _discountService.DeleteDiscount(discount);
             
             //update "HasDiscountsApplied" properties
             foreach (var category in categories)
                 _categoryService.UpdateHasDiscountsApplied(category);
-            foreach (var pv in productVariants)
-                _productService.UpdateHasDiscountsApplied(pv);
+            foreach (var product in products)
+                _productService.UpdateHasDiscountsApplied(product);
 
             //activity log
             _customerActivityService.InsertActivity("DeleteDiscount", _localizationService.GetResource("ActivityLog.DeleteDiscount"), discount.Name);

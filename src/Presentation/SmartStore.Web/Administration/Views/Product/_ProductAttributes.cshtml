@@ -1,0 +1,76 @@
+﻿@model IList<ProductVariantAttributeCombinationModel.ProductVariantAttributeModel>
+@using SmartStore.Web.Framework;
+@using SmartStore.Core.Domain.Catalog;
+
+@if (Model.Count > 0)
+{
+<div class="attributes clearfix form-horizontal">
+	@foreach (var attribute in Model)
+    {
+    string controlId = string.Format("product_attribute_{0}_{1}", attribute.ProductAttributeId, attribute.Id);
+	<div class="control-group">
+		<label class="control-label" for="@controlId">
+			@if (attribute.IsRequired)
+            {
+			<span>*</span>
+			}
+			<span style="font-weight: bold;">@(attribute.TextPrompt.HasValue() ? attribute.TextPrompt : attribute.Name)</span>
+		</label>
+		<div class="controls">
+			@if (attribute.AttributeControlType == AttributeControlType.Checkboxes || attribute.AttributeControlType == AttributeControlType.RadioList || attribute.AttributeControlType == AttributeControlType.ColorSquares)
+            {
+				@ControlsCheckboxesAndRadios(attribute, controlId, attribute.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio")
+			}
+			else
+            {
+				@ControlsOthers(attribute, controlId)
+			}
+		</div>
+	</div>
+	}
+</div>
+}
+
+@helper ControlsCheckboxesAndRadios(ProductVariantAttributeCombinationModel.ProductVariantAttributeModel attribute, string controlId, string type)
+{
+	foreach (var pvaValue in attribute.Values)
+    {
+		<label class="@type">
+			<input type="@type" name="@controlId" value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
+			@pvaValue.Name
+		</label>
+	}
+}
+
+@helper ControlsOthers(ProductVariantAttributeCombinationModel.ProductVariantAttributeModel attribute, string controlId)
+{
+	if(attribute.AttributeControlType == AttributeControlType.DropdownList)
+    {
+		<select name="@controlId" id="@controlId">
+			@if (!attribute.IsRequired)
+            {
+			<option value="0">---</option>
+			}
+			@foreach (var pvaValue in attribute.Values)
+            {
+			<option @(pvaValue.IsPreSelected ? Html.Raw(" selected=\"selected\"") : null) value="@pvaValue.Id">@pvaValue.Name</option>
+			}
+		</select>
+	}
+	else if(attribute.AttributeControlType == AttributeControlType.TextBox)
+    {
+		<input type="text" id="@controlId" name="@controlId" />
+	}
+	else if (attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
+    {
+		<textarea id="@controlId" name="@controlId" rows="2"></textarea>
+	}
+	else if (attribute.AttributeControlType == AttributeControlType.Datepicker)
+    {
+		@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1)
+	}
+	else if (attribute.AttributeControlType == AttributeControlType.FileUpload)
+    {
+		<input type="file" id="@controlId" name="@controlId" />
+	}
+}

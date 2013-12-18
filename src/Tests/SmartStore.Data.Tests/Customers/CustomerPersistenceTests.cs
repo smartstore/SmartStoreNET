@@ -176,7 +176,7 @@ namespace SmartStore.Data.Tests.Customers
         public void Can_save_and_load_customer_with_shopping_cart()
         {
             var customer = GetTestCustomer();
-            var productVariant = GetTestProductVariant();
+			var product = GetTestProduct();
 			var store = GetTestStore();
 
             customer.ShoppingCartItems.Add
@@ -189,7 +189,7 @@ namespace SmartStore.Data.Tests.Customers
                     Quantity = 2,
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                     UpdatedOnUtc = new DateTime(2010, 01, 02),
-                    ProductVariant = productVariant
+					Product = product
                 }
             );
 
@@ -292,23 +292,15 @@ namespace SmartStore.Data.Tests.Customers
             };
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    Published = true,
-                    Deleted = false,
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
 
         protected Country GetTestCountry()
         {

@@ -80,7 +80,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public IList<string> Warnings { get; set; }
 
-        public int ProductVariantId { get; set; }
+        public int ProductId { get; set; }
 
         #region Nested classes
 

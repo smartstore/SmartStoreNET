@@ -34,8 +34,8 @@ namespace SmartStore.Admin.Models.Orders
         public class ShipmentOrderProductVariantModel : EntityModelBase
         {
             public int OrderProductVariantId { get; set; }
-            public int ProductVariantId { get; set; }
-            public string FullProductName { get; set; }
+            public int ProductId { get; set; }
+            public string ProductName { get; set; }
             public string Sku { get; set; }
             public string AttributeInfo { get; set; }
 

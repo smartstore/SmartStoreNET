@@ -22,7 +22,7 @@
                 {
                     <tr>
                         <td>
-                            @Html.ActionLink(@x.ProductVariantFullName, "Edit", "ProductVariant", new { id = x.ProductVariantId }, new { })
+                            @Html.ActionLink(@x.ProductName, "Edit", "Product", new { id = x.ProductId }, new { })
                         </td>
                         <td>@x.TotalQuantity</td>
                         <td>@x.TotalAmount</td>

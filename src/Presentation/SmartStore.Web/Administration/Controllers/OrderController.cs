@@ -404,35 +404,28 @@ namespace SmartStore.Admin.Controllers
             #endregion
 
             #region Products
-            //codehint: sm-edit
             model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription));
             //model.CheckoutAttributeInfo = order.CheckoutAttributeDescription;
             //model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
             bool hasDownloadableItems = false;
             foreach (var opv in order.OrderProductVariants)
             {
-                if (opv.ProductVariant != null && opv.ProductVariant.IsDownload)
+                if (opv.Product.IsDownload)
                     hasDownloadableItems = true;
 
-                opv.ProductVariant.MergeWithCombination(opv.AttributesXml);
-                var opvModel = new OrderModel.OrderProductVariantModel()
+                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                var opvModel = new OrderModel.OrderItemModel()
                 {
                     Id = opv.Id,
-                    ProductVariantId = opv.ProductVariantId,
-                    Sku = opv.ProductVariant.Sku,
+					ProductId = opv.ProductId,
+                    Sku = opv.Product.Sku,
                     Quantity = opv.Quantity,
-                    IsDownload = opv.ProductVariant.IsDownload,
+                    IsDownload = opv.Product.IsDownload,
                     DownloadCount = opv.DownloadCount,
-                    DownloadActivationType = opv.ProductVariant.DownloadActivationType,
+                    DownloadActivationType = opv.Product.DownloadActivationType,
                     IsDownloadActivated = opv.IsDownloadActivated,
                     LicenseDownloadId = opv.LicenseDownloadId
                 };
-
-                //product name
-                if (!String.IsNullOrEmpty(opv.ProductVariant.Name))
-                    opvModel.FullProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.Name, opv.ProductVariant.Name);
-                else
-                    opvModel.FullProductName = opv.ProductVariant.Product.Name;
 
                 //unit price
                 opvModel.UnitPriceInclTaxValue = opv.UnitPriceInclTax;
@@ -451,8 +444,11 @@ namespace SmartStore.Admin.Controllers
                 opvModel.SubTotalExclTax = _priceFormatter.FormatPrice(opv.PriceExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, true);
 
                 opvModel.AttributeInfo = opv.AttributeDescription;
-                if (opv.ProductVariant.IsRecurring)
-                    opvModel.RecurringInfo = string.Format(_localizationService.GetResource("Admin.Orders.Products.RecurringPeriod"), opv.ProductVariant.RecurringCycleLength, opv.ProductVariant.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
+				if (opv.Product.IsRecurring)
+				{
+					opvModel.RecurringInfo = string.Format(_localizationService.GetResource("Admin.Orders.Products.RecurringPeriod"), 
+						opv.Product.RecurringCycleLength, opv.Product.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
+				}
 
                 //return requests
                 opvModel.ReturnRequestIds = _orderService.SearchReturnRequests(0, 0, opv.Id, null)
@@ -471,12 +467,12 @@ namespace SmartStore.Admin.Controllers
         protected OrderModel.AddOrderProductModel.ProductDetailsModel PrepareAddProductToOrderModel(int orderId, int productVariantId)
         {
 
-            var productVariant = _productService.GetProductVariantById(productVariantId);
+            var product = _productService.GetProductById(productVariantId);
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
             {
-                ProductVariantId = productVariantId,
+                ProductId = productVariantId,
                 OrderId = orderId,
-                Name = productVariant.FullProductName,
+                Name = product.Name,
                 UnitPriceExclTax = decimal.Zero,
                 UnitPriceInclTax = decimal.Zero,
                 Quantity = 1,
@@ -485,7 +481,7 @@ namespace SmartStore.Admin.Controllers
             };
 
             //attributes
-            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductVariantId(productVariant.Id);
+            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
             foreach (var attribute in productVariantAttributes)
             {
                 var pvaModel = new OrderModel.AddOrderProductModel.ProductVariantAttributeModel()
@@ -517,10 +513,10 @@ namespace SmartStore.Admin.Controllers
                 model.ProductVariantAttributes.Add(pvaModel);
             }
             //gift card
-            model.GiftCard.IsGiftCard = productVariant.IsGiftCard;
+            model.GiftCard.IsGiftCard = product.IsGiftCard;
             if (model.GiftCard.IsGiftCard)
             {
-                model.GiftCard.GiftCardType = productVariant.GiftCardType;
+                model.GiftCard.GiftCardType = product.GiftCardType;
             }
             return model;
         }
@@ -561,28 +557,23 @@ namespace SmartStore.Admin.Controllers
                     var qtyOrdered = opv.Quantity;
                     var qtyInAllShipments = opv.GetTotalNumberOfItemsInAllShipment();
 
-                    opv.ProductVariant.MergeWithCombination(opv.AttributesXml);
+                    ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
                     var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
                     {
                         Id = sopv.Id,
                         OrderProductVariantId = opv.Id,
-                        ProductVariantId = opv.ProductVariantId,
-                        Sku = opv.ProductVariant.Sku,
+                        ProductId = opv.ProductId,
+						ProductName = opv.Product.Name,
+                        Sku = opv.Product.Sku,
                         AttributeInfo = opv.AttributeDescription,
                         ItemWeight = opv.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", opv.ItemWeight, baseWeightIn) : "",
-                        ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", opv.ProductVariant.Length, opv.ProductVariant.Width, opv.ProductVariant.Height, baseDimensionIn),
+                        ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", opv.Product.Length, opv.Product.Width, opv.Product.Height, baseDimensionIn),
                         QuantityOrdered = qtyOrdered,
                         QuantityInThisShipment = qtyInThisShipment,
                         QuantityInAllShipments = qtyInAllShipments,
                         QuantityToAdd = maxQtyToAdd,
                     };
 
-                    //product name
-                    if (!String.IsNullOrEmpty(opv.ProductVariant.Name))
-                        sopvModel.FullProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.Name,
-                                                                  opv.ProductVariant.Name);
-                    else
-                        sopvModel.FullProductName = opv.ProductVariant.Product.Name;
                     model.Products.Add(sopvModel);
                 }
             }
@@ -1414,8 +1405,8 @@ namespace SmartStore.Admin.Controllers
             if (orderProductVariant == null)
                 throw new ArgumentException("No order product variant found with the specified id");
 
-            if (!orderProductVariant.ProductVariant.IsDownload)
-                throw new ArgumentException("Product variant is not downloadable");
+            if (!orderProductVariant.Product.IsDownload)
+                throw new ArgumentException("Product is not downloadable");
 
             var model = new OrderModel.UploadLicenseModel()
             {
@@ -1514,44 +1505,52 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var gridModel = new GridModel();
-            var productVariants = _productService.SearchProductVariants(model.SearchCategoryId,
-                model.SearchManufacturerId, model.SearchProductName, false,
-                command.Page - 1, command.PageSize, true);
-            gridModel.Data = productVariants.Select(x =>
+			var searchContext = new ProductSearchContext()
+			{
+				CategoryIds = new List<int>() { model.SearchCategoryId },
+				ManufacturerId = model.SearchManufacturerId,
+				Keywords = model.SearchProductName,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				ShowHidden = true
+			};
+
+            var products = _productService.SearchProducts(searchContext);
+            gridModel.Data = products.Select(x =>
             {
                 var productVariantModel = new OrderModel.AddOrderProductModel.ProductVariantLineModel()
                 {
                     Id = x.Id,
-                    Name =  x.FullProductName,
+                    Name =  x.Name,
                     Sku = x.Sku,
                 };
 
                 return productVariantModel;
             });
-            gridModel.Total = productVariants.TotalCount;
+            gridModel.Total = products.TotalCount;
             return new JsonResult
             {
                 Data = gridModel
             };
         }
 
-        public ActionResult AddProductToOrderDetails(int orderId, int productVariantId)
+        public ActionResult AddProductToOrderDetails(int orderId, int productId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var model = PrepareAddProductToOrderModel(orderId, productVariantId);
+            var model = PrepareAddProductToOrderModel(orderId, productId);
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult AddProductToOrderDetails(int orderId, int productVariantId, FormCollection form)
+        public ActionResult AddProductToOrderDetails(int orderId, int productId, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
             var order = _orderService.GetOrderById(orderId);
-            var productVariant = _productService.GetProductVariantById(productVariantId);
+            var product = _productService.GetProductById(productId);
             //save order item
 
             //basic properties
@@ -1573,7 +1572,7 @@ namespace SmartStore.Admin.Controllers
 
             #region Product attributes
             string selectedAttributes = string.Empty;
-            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductVariantId(productVariant.Id);
+            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
             foreach (var attribute in productVariantAttributes)
             {
                 string controlId = string.Format("product_attribute_{0}_{1}", attribute.ProductAttributeId, attribute.Id);
@@ -1685,7 +1684,7 @@ namespace SmartStore.Admin.Controllers
             string senderName = "";
             string senderEmail = "";
             string giftCardMessage = "";
-            if (productVariant.IsGiftCard)
+            if (product.IsGiftCard)
             {
                 foreach (string formKey in form.AllKeys)
                 {
@@ -1723,21 +1722,21 @@ namespace SmartStore.Admin.Controllers
             #endregion
 
             //warnings
-            warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, productVariant, attributes));
-            warnings.AddRange(_shoppingCartService.GetShoppingCartItemGiftCardWarnings(ShoppingCartType.ShoppingCart, productVariant, attributes));
+            warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, product, attributes));
+            warnings.AddRange(_shoppingCartService.GetShoppingCartItemGiftCardWarnings(ShoppingCartType.ShoppingCart, product, attributes));
             if (warnings.Count == 0)
             {
                 //no errors
 
                 //attributes
-                string attributeDescription = _productAttributeFormatter.FormatAttributes(productVariant, attributes, order.Customer);
+                string attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
 
                 //save item
                 var opv = new OrderProductVariant()
                 {
                     OrderProductVariantGuid = Guid.NewGuid(),
                     Order = order,
-                    ProductVariantId = productVariant.Id,
+					ProductId = product.Id,
                     UnitPriceInclTax = unitPriceInclTax,
                     UnitPriceExclTax = unitPriceExclTax,
                     PriceInclTax = priceInclTax,
@@ -1755,13 +1754,13 @@ namespace SmartStore.Admin.Controllers
                 _orderService.UpdateOrder(order);
 
                 //gift cards
-                if (productVariant.IsGiftCard)
+                if (product.IsGiftCard)
                 {
                     for (int i = 0; i < opv.Quantity; i++)
                     {
                         var gc = new GiftCard()
                         {
-                            GiftCardType = productVariant.GiftCardType,
+                            GiftCardType = product.GiftCardType,
                             PurchasedWithOrderProductVariant = opv,
                             Amount = unitPriceExclTax,
                             IsGiftCardActivated = false,
@@ -1784,7 +1783,7 @@ namespace SmartStore.Admin.Controllers
             else
             {
                 //errors
-                var model = PrepareAddProductToOrderModel(order.Id, productVariant.Id);
+                var model = PrepareAddProductToOrderModel(order.Id, product.Id);
                 model.Warnings.AddRange(warnings);
                 return View(model);
             }
@@ -2010,7 +2009,7 @@ namespace SmartStore.Admin.Controllers
             foreach (var opv in order.OrderProductVariants)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!opv.Product.IsShipEnabled)
                     continue;
 
                 //quantities
@@ -2023,26 +2022,22 @@ namespace SmartStore.Admin.Controllers
                 if (maxQtyToAdd <= 0)
                     continue;
 
-                opv.ProductVariant.MergeWithCombination(opv.AttributesXml);
+                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
                 var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
                 {
                     OrderProductVariantId = opv.Id,
-                    ProductVariantId = opv.ProductVariantId,
-                    Sku = opv.ProductVariant.Sku,
+					ProductId = opv.ProductId,
+					ProductName = opv.Product.Name,
+                    Sku = opv.Product.Sku,
                     AttributeInfo = opv.AttributeDescription,
                     ItemWeight = opv.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", opv.ItemWeight, baseWeightIn) : "",
-                    ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", opv.ProductVariant.Length, opv.ProductVariant.Width, opv.ProductVariant.Height, baseDimensionIn),
+                    ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", opv.Product.Length, opv.Product.Width, opv.Product.Height, baseDimensionIn),
                     QuantityOrdered = qtyOrdered,
                     QuantityInThisShipment = qtyInThisShipment,
                     QuantityInAllShipments = qtyInAllShipments,
-                    QuantityToAdd = maxQtyToAdd,
+                    QuantityToAdd = maxQtyToAdd
                 };
 
-                //product name
-                if (!String.IsNullOrEmpty(opv.ProductVariant.Name))
-                    sopvModel.FullProductName = string.Format("{0} ({1})", opv.ProductVariant.Product.Name, opv.ProductVariant.Name);
-                else
-                    sopvModel.FullProductName = opv.ProductVariant.Product.Name;
                 model.Products.Add(sopvModel);
             }
 
@@ -2067,7 +2062,7 @@ namespace SmartStore.Admin.Controllers
             foreach (var opv in order.OrderProductVariants)
             {
                 //is shippable
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!opv.Product.IsShipEnabled)
                     continue;
 
                 //ensure that this product variant can be shipped (have at least one item to ship)
@@ -2401,21 +2396,21 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
-            //group by product variants (not products)
+            //group by products
 			var report = _orderReportService.BestSellersReport(0, null, null,
-                null, null, null, 0, recordsToReturn, orderBy, 1, true);
+                null, null, null, 0, recordsToReturn, orderBy, true);
 
             var model = report.Select(x =>
             {
                 var m = new BestsellersReportLineModel()
                 {
-                    ProductVariantId = x.EntityId,
+                    ProductId = x.EntityId,
                     TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
                     TotalQuantity = x.TotalQuantity,
                 };
-                var productVariant = _productService.GetProductVariantById(x.EntityId);
-                if (productVariant != null)
-                    m.ProductVariantFullName = productVariant.Product.Name + " " + productVariant.Name;
+                var product = _productService.GetProductById(x.EntityId);
+                if (product != null)
+                    m.ProductName = product.Name;
                 return m;
             }).ToList();
 
@@ -2501,20 +2496,20 @@ namespace SmartStore.Admin.Controllers
 
             //group by product variants (not products)
 			var items = _orderReportService.BestSellersReport(0, startDateValue, endDateValue,
-                orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, 1, true);
+                orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, true);
             var gridModel = new GridModel<BestsellersReportLineModel>
             {
                 Data = items.Select(x =>
                 {
                     var m = new BestsellersReportLineModel()
                     {
-                        ProductVariantId = x.EntityId,
+                        ProductId = x.EntityId,
                         TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
-                        TotalQuantity = x.TotalQuantity,
+                        TotalQuantity = x.TotalQuantity
                     };
-                    var productVariant = _productService.GetProductVariantById(x.EntityId);
-                    if (productVariant != null)
-                        m.ProductVariantFullName = productVariant.Product.Name + " " + productVariant.Name;
+                    var product = _productService.GetProductById(x.EntityId);
+                    if (product != null)
+						m.ProductName = product.Name;
                     return m;
                 }),
                 Total = items.Count
@@ -2548,8 +2543,8 @@ namespace SmartStore.Admin.Controllers
                 Data = items.Select(x =>
                     new NeverSoldReportLineModel()
                     {
-                        ProductVariantId = x.Id,
-                        ProductVariantFullName = x.Product.Name + " " + x.Name,
+                        ProductId = x.Id,
+						ProductName = x.Name
                     }),
                 Total = items.TotalCount
             };
@@ -2559,12 +2554,12 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        /// <![CDATA[ codehint: sm-add ]]>
         [HttpPost]
         public ActionResult PendingTodayReport()
         {
             var report = _orderReportService.OrderAverageReport(0, OrderStatus.Pending);
-            var data = new { 
+            var data = new
+			{ 
                 Count = report.CountTodayOrders, 
                 Amount = _priceFormatter.FormatPrice(report.SumTodayOrders, true, false)
             };

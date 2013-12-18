@@ -274,7 +274,7 @@ namespace SmartStore.Data.Tests.Orders
                 (
                     new OrderProductVariant()
                     {
-                        ProductVariant = GetTestProductVariant(),
+						Product = GetTestProduct(),
                         Quantity = 1
                     }
                 );
@@ -314,23 +314,15 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.Shipments.First().TrackingNumber.ShouldEqual("TrackingNumber 1");
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
         
         protected Affiliate GetTestAffiliate()
         {

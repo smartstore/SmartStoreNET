@@ -197,7 +197,7 @@
 			note.empty();
 			container.closest('form').doAjax({
 				smallIcon: note,
-				url: '@Url.Action("CombinationExistenceNote", "ProductVariant", new { productVariantId = Model.ProductVariantId })',
+				url: '@Url.Action("CombinationExistenceNote", "Product", new { productVariantId = Model.ProductId })',
 				callbackSuccess: function (resp) {
 					var cls = (resp.HasWarning ? 'error' : 'success'),
 						ico = (resp.HasWarning ? 'warning-sign' : 'ok-sign');

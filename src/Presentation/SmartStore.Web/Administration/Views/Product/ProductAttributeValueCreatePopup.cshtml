@@ -1,16 +1,16 @@
 ﻿@{
     Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
 }
-@model ProductVariantModel.ProductVariantAttributeValueModel
+@model ProductModel.ProductVariantAttributeValueModel
 @{    
     //page title
-    ViewBag.Title = T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.EditValueDetails").Text;
+    ViewBag.Title = T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.AddNew").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.EditValueDetails")
+            @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.AddNew")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">

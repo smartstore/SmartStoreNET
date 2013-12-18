@@ -1381,7 +1381,7 @@
                             <tr>
                                 <td style="width: 25%;">
                                     <div>
-                                        <a href="@Url.Action("Edit", "ProductVariant", new { id = item.ProductVariantId })">@item.FullProductName</a>
+                                        <a href="@Url.Action("Edit", "Product", new { id = item.ProductId })">@item.ProductName</a>
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
                                             <br />

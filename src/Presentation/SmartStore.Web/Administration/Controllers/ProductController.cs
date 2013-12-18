@@ -209,80 +209,29 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[NonAction]
+		private void UpdateLocales(ProductTag productTag, ProductTagModel model)
+		{
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(productTag, x => x.Name, localized.Name, localized.LanguageId);
+			}
+		}
+
+		[NonAction]
+		private void UpdateLocales(ProductVariantAttributeValue pvav, ProductModel.ProductVariantAttributeValueModel model)
+		{
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(pvav, x => x.Name, localized.Name, localized.LanguageId);
+			}
+		}
+
         [NonAction]
         private void UpdatePictureSeoNames(Product product)
         {
             foreach (var pp in product.ProductPictures)
                 _pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
-        }
-
-        [NonAction]
-        private void PrepareTemplatesModel(ProductModel model)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            var templates = _productTemplateService.GetAllProductTemplates();
-            foreach (var template in templates)
-            {
-                model.AvailableProductTemplates.Add(new SelectListItem()
-                {
-                    Text = template.Name,
-                    Value = template.Id.ToString()
-                });
-            }
-        }
-
-        [NonAction]
-        private void PrepareAddSpecificationAttributeModel(ProductModel model)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            if (model.AddSpecificationAttributeModel == null)
-                model.AddSpecificationAttributeModel = new ProductModel.AddProductSpecificationAttributeModel();
-
-            //attributes
-            var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes();
-            for (int i = 0; i < specificationAttributes.Count; i++)
-            {
-                var sa = specificationAttributes[i];
-                model.AddSpecificationAttributeModel.AvailableAttributes.Add(new SelectListItem() { Text = sa.Name, Value = sa.Id.ToString() });
-                if (i == 0)
-                {
-                    //attribute options
-                    foreach (var sao in _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(sa.Id))
-                        model.AddSpecificationAttributeModel.AvailableOptions.Add(new SelectListItem() { Text = sao.Name, Value = sao.Id.ToString() });
-                }
-            }
-        }
-
-        [NonAction]
-        private void PrepareAddProductPictureModel(ProductModel model)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            if (model.AddPictureModel == null)
-                model.AddPictureModel = new ProductModel.ProductPictureModel();
-        }
-
-        [NonAction]
-        private void PrepareCategoryMapping(ProductModel model)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            model.NumberOfAvailableCategories = _categoryService.GetAllCategories(showHidden: true).Count;
-        }
-
-        [NonAction]
-        private void PrepareManufacturerMapping(ProductModel model)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            model.NumberOfAvailableManufacturers = _manufacturerService.GetAllManufacturers(true).Count;
         }
 
         [NonAction]
@@ -378,19 +327,59 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		protected void UpdateAttributeValueLocales(ProductVariantAttributeValue pvav, ProductModel.ProductVariantAttributeValueModel model)
+		protected void PrepareProductModel(ProductModel model, Product product, bool setPredefinedValues, bool excludeProperties)
 		{
-			foreach (var localized in model.Locales)
-			{
-				_localizedEntityService.SaveLocalizedValue(pvav, x => x.Name, localized.Name, localized.LanguageId);
-			}
-		}
+			if (model == null)
+				throw new ArgumentNullException("model");
 
-        [NonAction]
-		protected void PrepareProductModel(ProductModel model, Product product, bool setPredefinedValues)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
+			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+
+			model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes().Count;
+			model.NumberOfAvailableManufacturers = _manufacturerService.GetAllManufacturers("",	pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
+			model.NumberOfAvailableCategories = _categoryService.GetAllCategories(pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
+
+			//copy product
+			if (product != null)
+			{
+				model.CopyProductModel.Id = product.Id;
+				model.CopyProductModel.Name = "Copy of " + product.Name;
+				model.CopyProductModel.Published = true;
+				model.CopyProductModel.CopyImages = true;
+			}
+
+			//templates
+			var templates = _productTemplateService.GetAllProductTemplates();
+			foreach (var template in templates)
+			{
+				model.AvailableProductTemplates.Add(new SelectListItem()
+				{
+					Text = template.Name,
+					Value = template.Id.ToString()
+				});
+			}
+
+			//product tags
+			var allTags = _productTagService.GetAllProductTagNames();
+			foreach (var tag in allTags)
+			{
+				model.AvailableProductTags.Add(new SelectListItem() { Text = tag, Value = tag });
+			}
+
+			if (product != null)
+			{
+				var result = new StringBuilder();
+				var tags = product.ProductTags.ToList();
+				for (int i = 0; i < product.ProductTags.Count; i++)
+				{
+					var pt = tags[i];
+					result.Append(pt.Name);
+					if (i != product.ProductTags.Count - 1)
+						result.Append(", ");
+				}
+				model.ProductTags = result.ToString();
+			}
 
 			//tax categories
 			var taxCategories = _taxCategoryService.GetAllTaxCategories();
@@ -400,11 +389,11 @@ namespace SmartStore.Admin.Controllers
 				{
 					Text = tc.Name,
 					Value = tc.Id.ToString(),
-					Selected = !setPredefinedValues && tc.Id == product.TaxCategoryId
+					Selected = product != null && !setPredefinedValues && tc.Id == product.TaxCategoryId
 				});
 			}
 
-			// codehint: sm-add (delivery times)
+			// delivery times
 			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
 			{
@@ -412,16 +401,16 @@ namespace SmartStore.Admin.Controllers
 				{
 					Text = dt.Name,
 					Value = dt.Id.ToString(),
-					Selected = !setPredefinedValues && dt.Id == product.DeliveryTimeId.GetValueOrDefault()
+					Selected = product != null && !setPredefinedValues && dt.Id == product.DeliveryTimeId.GetValueOrDefault()
 				});
 			}
 
-			// codehint: sm-add (BasePrice aka PAnGV)
+			// BasePrice aka PAnGV
 			var measureUnits = _measureService.GetAllMeasureWeights()
 				.Select(x => x.SystemKeyword).Concat(_measureService.GetAllMeasureDimensions().Select(x => x.SystemKeyword)).ToList();
 
 			// don't forget biz import!
-			if (!setPredefinedValues && product.BasePrice.MeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePrice.MeasureUnit)))
+			if (product != null && !setPredefinedValues && product.BasePrice.MeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePrice.MeasureUnit)))
 			{
 				measureUnits.Add(product.BasePrice.MeasureUnit);
 			}
@@ -432,14 +421,35 @@ namespace SmartStore.Admin.Controllers
 				{
 					Text = mu,
 					Value = mu,
-					Selected = !setPredefinedValues && mu.Equals(product.BasePrice.MeasureUnit, StringComparison.OrdinalIgnoreCase)
+					Selected = product != null && !setPredefinedValues && mu.Equals(product.BasePrice.MeasureUnit, StringComparison.OrdinalIgnoreCase)
 				});
 			}
 
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
-			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+			//specification attributes
+			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes();
+			for (int i = 0; i < specificationAttributes.Count; i++)
+			{
+				var sa = specificationAttributes[i];
+				model.AddSpecificationAttributeModel.AvailableAttributes.Add(new SelectListItem() { Text = sa.Name, Value = sa.Id.ToString() });
+				if (i == 0)
+				{
+					//attribute options
+					foreach (var sao in _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(sa.Id))
+						model.AddSpecificationAttributeModel.AvailableOptions.Add(new SelectListItem() { Text = sao.Name, Value = sao.Id.ToString() });
+				}
+			}
+			//default specs values
+			model.AddSpecificationAttributeModel.ShowOnProductPage = true;
 
+			//discounts
+			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
+			model.AvailableDiscounts = discounts.ToList();
+			if (product != null && !excludeProperties)
+			{
+				model.SelectedDiscountIds = product.AppliedDiscounts.Select(d => d.Id).ToArray();
+			}
+
+			//default values
 			if (setPredefinedValues)
 			{
 				model.MaximumCustomerEnteredPrice = 1000;
@@ -453,32 +463,9 @@ namespace SmartStore.Admin.Controllers
 
 				model.UnlimitedDownloads = true;
 				model.IsShipEnabled = true;
+				model.AllowCustomerReviews = true;
 				model.Published = true;
 			}
-		}
-
-		[NonAction]
-		protected void PrepareDiscountModel(ProductModel model, Product product, bool excludeProperties)
-		{
-			if (model == null)
-				throw new ArgumentNullException("model");
-
-			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-			model.AvailableDiscounts = discounts.ToList();
-
-			if (!excludeProperties)
-			{
-				model.SelectedDiscountIds = product.AppliedDiscounts.Select(d => d.Id).ToArray();
-			}
-		}
-
-		[NonAction]
-		protected void PrepareProductAttributesMapping(ProductModel model, Product product)
-		{
-			if (model == null)
-				throw new ArgumentNullException("model");
-
-			model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes().Count;
 		}
 
         [NonAction]
@@ -487,59 +474,11 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
-            if (product != null)
+            if (product != null && _adminAreaSettings.DisplayProductPictures)
             {
-                if (_adminAreaSettings.DisplayProductPictures)
-                {
-                    var defaultProductPicture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
-                    model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, 75, true);
-                    model.NoThumb = defaultProductPicture == null;
-                }
-            }
-        }
-
-        [NonAction]
-        private void PrepareCopyProductModel(ProductModel model, Product product)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            if (product != null)
-            {
-                model.CopyProductModel.Id = product.Id;
-                model.CopyProductModel.Name = "Copy of " + product.Name;
-                model.CopyProductModel.Published = true;
-                model.CopyProductModel.CopyImages = true;
-            }
-        }
-
-        [NonAction]
-        private void PrepareTags(ProductModel model, Product product)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-			
-            var allTags = _productTagService.GetAllProductTagNames();
-            foreach (var tag in allTags)
-            {
-                model.AvailableProductTags.Add(new SelectListItem { 
-                    Text = tag,
-                    Value = tag
-                });
-            }
-
-            if (product != null)
-            {
-                var result = new StringBuilder();
-                var tags = product.ProductTags.ToList();
-                for (int i = 0; i < product.ProductTags.Count; i++)
-                {
-                    var pt = tags[i];
-                    result.Append(pt.Name);
-                    if (i != product.ProductTags.Count - 1)
-                        result.Append(", ");
-                }
-                model.ProductTags = result.ToString();
+                var defaultProductPicture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+                model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, 75, true);
+                model.NoThumb = defaultProductPicture == null;
             }
         }
 
@@ -731,7 +670,7 @@ namespace SmartStore.Admin.Controllers
             gridModel.Data = products.Select(x =>
             {
                 var productModel = x.ToModel();
-                PrepareProductPictureThumbnailModel(productModel, x);
+				PrepareProductPictureThumbnailModel(productModel, x);
                 return productModel;
             });
             gridModel.Total = products.TotalCount;
@@ -761,23 +700,12 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ProductModel();
-			PrepareProductModel(model, null, true);
+			PrepareProductModel(model, null, true, true);
 
             //product
             AddLocales(_languageService, model.Locales);
-            PrepareTemplatesModel(model);
-            PrepareAddSpecificationAttributeModel(model);
-            PrepareAddProductPictureModel(model);
-            PrepareCategoryMapping(model);
-            PrepareManufacturerMapping(model);
             PrepareAclModel(model, null, false);
 			PrepareStoresMappingModel(model, null, false);
-			PrepareProductAttributesMapping(model, null);
-			PrepareDiscountModel(model, null, true);
-
-            //default values
-            model.Published = true;
-            model.AllowCustomerReviews = true;
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
@@ -825,16 +753,9 @@ namespace SmartStore.Admin.Controllers
             }
 
             //If we got this far, something failed, redisplay form
-			PrepareProductModel(model, null, false);
-            PrepareTemplatesModel(model);
-            PrepareAddSpecificationAttributeModel(model);
-            PrepareAddProductPictureModel(model);
-            PrepareCategoryMapping(model);
-            PrepareManufacturerMapping(model);
+			PrepareProductModel(model, null, false, true);
             PrepareAclModel(model, null, true);
 			PrepareStoresMappingModel(model, null, true);
-			PrepareProductAttributesMapping(model, null);
-			PrepareDiscountModel(model, null, true);
             return View(model);
         }
 
@@ -847,34 +768,25 @@ namespace SmartStore.Admin.Controllers
             var product = _productService.GetProductById(id);
             
             if (product == null || product.Deleted)
-                //No product found with the specified id
                 return RedirectToAction("List");
 
             var model = product.ToModel();
-			PrepareProductModel(model, product, false);
+			PrepareProductModel(model, product, false, false);
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
-                {
-                    locale.Name = product.GetLocalized(x => x.Name, languageId, false, false);
-                    locale.ShortDescription = product.GetLocalized(x => x.ShortDescription, languageId, false, false);
-                    locale.FullDescription = product.GetLocalized(x => x.FullDescription, languageId, false, false);
-                    locale.MetaKeywords = product.GetLocalized(x => x.MetaKeywords, languageId, false, false);
-                    locale.MetaDescription = product.GetLocalized(x => x.MetaDescription, languageId, false, false);
-                    locale.MetaTitle = product.GetLocalized(x => x.MetaTitle, languageId, false, false);
-                    locale.SeName = product.GetSeName(languageId, false, false);
-                });
+            {
+                locale.Name = product.GetLocalized(x => x.Name, languageId, false, false);
+                locale.ShortDescription = product.GetLocalized(x => x.ShortDescription, languageId, false, false);
+                locale.FullDescription = product.GetLocalized(x => x.FullDescription, languageId, false, false);
+                locale.MetaKeywords = product.GetLocalized(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaDescription = product.GetLocalized(x => x.MetaDescription, languageId, false, false);
+                locale.MetaTitle = product.GetLocalized(x => x.MetaTitle, languageId, false, false);
+                locale.SeName = product.GetSeName(languageId, false, false);
+            });
 
             PrepareProductPictureThumbnailModel(model, product);
-            PrepareTags(model, product);
-            PrepareCopyProductModel(model, product);
-            PrepareTemplatesModel(model);
-            PrepareAddSpecificationAttributeModel(model);
-            PrepareAddProductPictureModel(model);
-            PrepareCategoryMapping(model);
-            PrepareManufacturerMapping(model);
             PrepareAclModel(model, product, false);
 			PrepareStoresMappingModel(model, product, false);
-			PrepareProductAttributesMapping(model, product);
-			PrepareDiscountModel(model, product, false);
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);
@@ -954,18 +866,11 @@ namespace SmartStore.Admin.Controllers
             }
 
             //If we got this far, something failed, redisplay form
+			PrepareProductModel(model, product, false, true);
             PrepareProductPictureThumbnailModel(model, product);
-            PrepareTags(model, product);
-            PrepareCopyProductModel(model, product);
-            PrepareTemplatesModel(model);
-            PrepareAddSpecificationAttributeModel(model);
-            PrepareAddProductPictureModel(model);
-            PrepareCategoryMapping(model);
-            PrepareManufacturerMapping(model);
             PrepareAclModel(model, product, true);
 			PrepareStoresMappingModel(model, product, true);
-			PrepareProductAttributesMapping(model, product);
-			PrepareDiscountModel(model, product, true);
+
             return View(model);
         }
 
@@ -2524,7 +2429,7 @@ namespace SmartStore.Admin.Controllers
 				};
 
 				_productAttributeService.InsertProductVariantAttributeValue(pvav);
-				UpdateAttributeValueLocales(pvav, model);
+				UpdateLocales(pvav, model);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;
@@ -2602,7 +2507,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.DisplayOrder = model.DisplayOrder;
 				_productAttributeService.UpdateProductVariantAttributeValue(pvav);
 
-				UpdateAttributeValueLocales(pvav, model);
+				UpdateLocales(pvav, model);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;

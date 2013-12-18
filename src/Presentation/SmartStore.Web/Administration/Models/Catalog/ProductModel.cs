@@ -27,6 +27,8 @@ namespace SmartStore.Admin.Models.Catalog
 			AvailableTaxCategories = new List<SelectListItem>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
 			AvailableMeasureUnits = new List<SelectListItem>();
+			AddPictureModel = new ProductPictureModel();
+			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
         }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ID")]

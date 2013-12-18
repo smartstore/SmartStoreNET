@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    public class BulkEditProductVariantModel : EntityModelBase
+    public class BulkEditProductModel : EntityModelBase
     {
         [SmartResourceDisplayName("Admin.Catalog.BulkEdit.Fields.Name")]
         [AllowHtml]

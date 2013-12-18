@@ -183,7 +183,7 @@
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
-    <Compile Include="Models\Catalog\BulkEditProductVariantModel.cs" />
+    <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
     <Compile Include="Models\Catalog\BulkEditListModel.cs" />
     <Compile Include="Models\Catalog\CategoryListModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerListModel.cs" />

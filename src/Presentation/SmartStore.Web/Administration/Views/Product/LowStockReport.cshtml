@@ -24,7 +24,7 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<ProductModel>(Model.Data)
-                    .Name("productvariants-grid")
+                    .Name("products-grid")
                     .Columns(columns =>
                     {
                         columns.Bound(pv => pv.Name);

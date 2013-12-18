@@ -355,7 +355,7 @@ namespace SmartStore.Admin.Models.Orders
 
             #region Nested classes
             
-            public class ProductVariantLineModel : EntityModelBase
+            public class ProductModel : EntityModelBase
             {
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.Name")]
                 [AllowHtml]

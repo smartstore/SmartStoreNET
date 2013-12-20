@@ -18,6 +18,7 @@ namespace SmartStore.Services.Stores
 		#region Constants
 		private const string STORES_ALL_KEY = "SmartStore.stores.all";
 		private const string STORES_PATTERN_KEY = "SmartStore.stores.";
+        private const string STORES_BY_ID_KEY = "SmartStore.stores.id-{0}";
 		#endregion
 
 		#region Fields
@@ -97,7 +98,11 @@ namespace SmartStore.Services.Stores
 			if (storeId == 0)
 				return null;
 
-            return _storeRepository.GetById(storeId);
+            string key = string.Format(STORES_BY_ID_KEY, storeId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _storeRepository.GetById(storeId); 
+            });
 		}
 
 		/// <summary>

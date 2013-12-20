@@ -18,7 +18,10 @@ namespace SmartStore.Services.Catalog
         #region Constants
         private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
         private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}-{2}";
+        private const string MANUFACTURERS_PATTERN_KEY = "SmartStore.manufacturer.";
+        private const string MANUFACTURERS_BY_ID_KEY = "SmartStore.manufacturer.id-{0}";
         private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "SmartStore.productmanufacturer.";
+
         #endregion
 
         #region Fields
@@ -158,7 +161,10 @@ namespace SmartStore.Services.Catalog
             if (manufacturerId == 0)
                 return null;
 
-            return _manufacturerRepository.GetById(manufacturerId);
+            string key = string.Format(MANUFACTURERS_BY_ID_KEY, manufacturerId);
+            return _cacheManager.Get(key, () => { 
+                return _manufacturerRepository.GetById(manufacturerId); 
+            });
         }
 
         /// <summary>
@@ -173,6 +179,7 @@ namespace SmartStore.Services.Catalog
             _manufacturerRepository.Insert(manufacturer);
 
             //cache
+            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
@@ -191,6 +198,7 @@ namespace SmartStore.Services.Catalog
             _manufacturerRepository.Update(manufacturer);
 
             //cache
+            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
@@ -209,6 +217,7 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Delete(productManufacturer);
 
             //cache
+            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
@@ -359,6 +368,7 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Insert(productManufacturer);
 
             //cache
+            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
@@ -377,6 +387,7 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Update(productManufacturer);
 
             //cache
+            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification

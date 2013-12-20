@@ -18,58 +18,54 @@ namespace SmartStore.Admin.Models.Catalog
             Warnings = new List<string>();
         }
         
-        [SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
         public int StockQuantity { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
         public bool AllowOutOfStockOrders { get; set; }
 
         // codehint: sm-add
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Sku")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		public string Sku { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Gtin")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Gtin")]
 		public string Gtin { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ManufacturerPartNumber")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManufacturerPartNumber")]
 		public string ManufacturerPartNumber { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DeliveryTime")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
         public int? DeliveryTimeId { get; set; }
 
 		public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.Pictures")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Pictures")]
         public int[] AssignedPictureIds { get; set; }
 
         public IList<PictureSelectItemModel> AssignablePictures { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Length")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Length")]
         public decimal? Length { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Width")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Width")]
         public decimal? Width { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Height")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Height")]
         public decimal? Height { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MUAmount")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceAmount")]
         public decimal? BasePriceAmount { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MUBase")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceBaseAmount")]
         public int? BasePriceBaseAmount { get; set; }
 
 		[SmartResourceDisplayName("Common.IsActive")]
-		public bool IsActive { get; set; }
-
-        //[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.IsDefaultCombination")]
-		//public bool IsDefaultCombination { get; set; }
-		
+		public bool IsActive { get; set; }		
 
         public IList<ProductVariantAttributeModel> ProductVariantAttributes { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.Attributes")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Attributes")]
         [AllowHtml]
         public string AttributesXml { get; set; }
 

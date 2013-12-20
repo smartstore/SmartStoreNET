@@ -5,14 +5,14 @@
 
 @{    
     //page title
-    ViewBag.Title = string.Format(T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName);
+    ViewBag.Title = string.Format(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName);
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "productvariantattribute-form" }))
 {
 <div class="section-header">
     <div class="title">
-        @string.Format(T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName)
-        @Html.ActionLink("(" + T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.BackToProductVariant") + ")", "Edit", "Product", new { Id = Model.ProductId }, null)
+        @string.Format(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName)
+        @Html.ActionLink("(" + T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.BackToProductVariant") + ")", "Edit", "Product", new { Id = Model.ProductId }, null)
     </div>
     <div class="options">
     </div>
@@ -95,7 +95,7 @@
         <td style="padding-top: 12px">
             <button class="btn btn-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 800, 350, true); return false;">
                 <i class="icon-plus"></i>
-                @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.AddNew")
+                @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")
             </button>
             <button type="submit" id="btnRefresh" name="btnRefresh" value="btnRefresh" class="hide" />
             <script type="text/javascript">

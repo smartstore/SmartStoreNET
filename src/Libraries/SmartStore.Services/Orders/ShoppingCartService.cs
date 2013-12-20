@@ -223,7 +223,7 @@ namespace SmartStore.Services.Orders
                             //add to cart (if possible)
                             if (automaticallyAddRequiredProductsIfEnabled)
                             {
-                                //pass 'false' for 'automaticallyAddRequiredProductVariantsIfEnabled' to prevent circular references
+                                //pass 'false' for 'automaticallyAddRequiredProducsIfEnabled' to prevent circular references
 								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false);
                                 if (addToCartWarnings.Count > 0)
                                 {

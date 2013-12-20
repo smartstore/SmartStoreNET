@@ -581,7 +581,7 @@ namespace SmartStore.Admin.Controllers
 				string basePriceFormatted = _priceFormatter.FormatPrice(basePriceValue, false, false);
 				string unit = "{0} {1}".FormatWith(basePriceBaseAmount, basePriceMeasureUnit);
 
-				basePrice = _localizationService.GetResource("Admin.Catalog.Products.Variants.Fields.BasePriceInfo").FormatWith(
+				basePrice = _localizationService.GetResource("Admin.Catalog.Products.Fields.BasePriceInfo").FormatWith(
 					basePriceAmount.ToString("G29") + " " + basePriceMeasureUnit, basePriceFormatted, unit);
 			}
 
@@ -2081,7 +2081,7 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						Store = storeName,
 						CustomerRole = x.CustomerRoleId.HasValue ? _customerService.GetCustomerRoleById(x.CustomerRoleId.Value).Name : 
-							_localizationService.GetResource("Admin.Catalog.Products.Variants.TierPrices.Fields.CustomerRole.AllRoles"),
+							_localizationService.GetResource("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles"),
 						ProductId = x.ProductId,
 						CustomerRoleId = x.CustomerRoleId.HasValue ? x.CustomerRoleId.Value : 0,
 						Quantity = x.Quantity,
@@ -2205,7 +2205,7 @@ namespace SmartStore.Admin.Controllers
 					if (x.ShouldHaveValues())
 					{
 						pvaModel.ViewEditUrl = Url.Action("EditAttributeValues", "Product", new { productVariantAttributeId = x.Id });
-						pvaModel.ViewEditText = string.Format(_localizationService.GetResource("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.ViewLink"), x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0);
+						pvaModel.ViewEditText = string.Format(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink"), x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0);
 					}
 					return pvaModel;
 				})
@@ -2736,7 +2736,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (null != _productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml))
 			{
-				warnings.Add(_localizationService.GetResource("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CombiExists"));
+				warnings.Add(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists"));
 			}
 
 			if (warnings.Count == 0)
@@ -2863,7 +2863,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				Data = new
 				{
-					Message = _localizationService.GetResource("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.{0}".FormatWith(
+					Message = _localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.{0}".FormatWith(
 						exists ? "CombiExists" : "CombiNotExists")),
 					HasWarning = exists
 				}

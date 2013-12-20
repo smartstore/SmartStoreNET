@@ -1,11 +1,11 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
   <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasAllProducts" AppendRootKey="false">
-    <Value>Der Kunde hat folgende Produktvarianten in seinem Warenkorb</Value>
+    <Value>Der Kunde hat folgende Produkte in seinem Warenkorb</Value>
   </LocaleResource>
-  <LocaleResource Name="Fields.ProductVariants">
-    <Value>Produktvarianten</Value>
+  <LocaleResource Name="Fields.Products">
+    <Value>Produkte</Value>
   </LocaleResource>
-  <LocaleResource Name="Fields.ProductVariants.Hint">
-    <Value>Kommagetrennte Liste von Produktvariant-IDs (z.B. 77, 123, 156). Die ID eines Produktvarianten findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produktvariant-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produktvarian-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
+  <LocaleResource Name="Fields.Products.Hint">
+    <Value>Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produkts findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produkt-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produkt-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
   </LocaleResource>
 </Language>

@@ -31,7 +31,7 @@ namespace SmartStore.Admin.Models.Catalog
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
         }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ID")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]
 		public override int Id { get; set; }
 
         //picture thumbnail
@@ -86,189 +86,189 @@ namespace SmartStore.Admin.Models.Catalog
         public string ProductTags { get; set; }
         public IList<SelectListItem> AvailableProductTags { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Sku")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		[AllowHtml]
 		public string Sku { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ManufacturerPartNumber")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManufacturerPartNumber")]
 		[AllowHtml]
 		public string ManufacturerPartNumber { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.GTIN")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GTIN")]
 		[AllowHtml]
 		public virtual string Gtin { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsGiftCard")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsGiftCard")]
 		public bool IsGiftCard { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.GiftCardType")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GiftCardType")]
 		public int GiftCardTypeId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.RequireOtherProducts")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RequireOtherProducts")]
 		public bool RequireOtherProducts { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.RequiredProductVariantIds")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RequiredProductIds")]
 		public string RequiredProductIds { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AutomaticallyAddRequiredProductVariants")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProductVariants")]
 		public bool AutomaticallyAddRequiredProducts { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsDownload")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsDownload")]
 		public bool IsDownload { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Download")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Download")]
 		[UIHint("Download")]
 		public int DownloadId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.UnlimitedDownloads")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.UnlimitedDownloads")]
 		public bool UnlimitedDownloads { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MaxNumberOfDownloads")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.MaxNumberOfDownloads")]
 		public int MaxNumberOfDownloads { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DownloadExpirationDays")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DownloadExpirationDays")]
 		public int? DownloadExpirationDays { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DownloadActivationType")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DownloadActivationType")]
 		public int DownloadActivationTypeId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.HasSampleDownload")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasSampleDownload")]
 		public bool HasSampleDownload { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.SampleDownload")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SampleDownload")]
 		[UIHint("Download")]
 		public int SampleDownloadId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.HasUserAgreement")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasUserAgreement")]
 		public bool HasUserAgreement { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.UserAgreementText")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.UserAgreementText")]
 		[AllowHtml]
 		public string UserAgreementText { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsRecurring")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsRecurring")]
 		public bool IsRecurring { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.RecurringCycleLength")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RecurringCycleLength")]
 		public int RecurringCycleLength { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.RecurringCyclePeriod")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RecurringCyclePeriod")]
 		public int RecurringCyclePeriodId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.RecurringTotalCycles")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RecurringTotalCycles")]
 		public int RecurringTotalCycles { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsShipEnabled")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsShipEnabled")]
 		public bool IsShipEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsFreeShipping")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsFreeShipping")]
 		public bool IsFreeShipping { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AdditionalShippingCharge")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AdditionalShippingCharge")]
 		public decimal AdditionalShippingCharge { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.IsTaxExempt")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsTaxExempt")]
 		public bool IsTaxExempt { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.TaxCategory")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.TaxCategory")]
 		public int TaxCategoryId { get; set; }
 		public IList<SelectListItem> AvailableTaxCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ManageInventoryMethod")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManageInventoryMethod")]
 		public int ManageInventoryMethodId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.StockQuantity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.StockQuantity")]
 		public int StockQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DisplayStockAvailability")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisplayStockAvailability")]
 		public bool DisplayStockAvailability { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DisplayStockQuantity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisplayStockQuantity")]
 		public bool DisplayStockQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MinStockQuantity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.MinStockQuantity")]
 		public int MinStockQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.LowStockActivity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.LowStockActivity")]
 		public int LowStockActivityId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.NotifyAdminForQuantityBelow")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.NotifyAdminForQuantityBelow")]
 		public int NotifyAdminForQuantityBelow { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.BackorderMode")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BackorderMode")]
 		public int BackorderModeId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AllowBackInStockSubscriptions")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowBackInStockSubscriptions")]
 		public bool AllowBackInStockSubscriptions { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.OrderMinimumQuantity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OrderMinimumQuantity")]
 		public int OrderMinimumQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.OrderMaximumQuantity")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OrderMaximumQuantity")]
 		public int OrderMaximumQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AllowedQuantities")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
 		public string AllowedQuantities { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DisableBuyButton")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisableBuyButton")]
 		public bool DisableBuyButton { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DisableWishlistButton")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisableWishlistButton")]
 		public bool DisableWishlistButton { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AvailableForPreOrder")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableForPreOrder")]
 		public bool AvailableForPreOrder { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.CallForPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CallForPrice")]
 		public bool CallForPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Price")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Price")]
 		public decimal Price { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.OldPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OldPrice")]
 		public decimal OldPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.ProductCost")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductCost")]
 		public decimal ProductCost { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.SpecialPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPrice")]
 		[UIHint("DecimalNullable")]
 		public decimal? SpecialPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.SpecialPriceStartDateTimeUtc")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPriceStartDateTimeUtc")]
 		[UIHint("DateTimeNullable")]
 		public DateTime? SpecialPriceStartDateTimeUtc { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.SpecialPriceEndDateTimeUtc")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPriceEndDateTimeUtc")]
 		[UIHint("DateTimeNullable")]
 		public DateTime? SpecialPriceEndDateTimeUtc { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.CustomerEntersPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CustomerEntersPrice")]
 		public bool CustomerEntersPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MinimumCustomerEnteredPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.MinimumCustomerEnteredPrice")]
 		public decimal MinimumCustomerEnteredPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.MaximumCustomerEnteredPrice")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.MaximumCustomerEnteredPrice")]
 		public decimal MaximumCustomerEnteredPrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Weight")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Weight")]
 		public decimal Weight { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Length")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Length")]
 		public decimal Length { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Width")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Width")]
 		public decimal Width { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.Height")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Height")]
 		public decimal Height { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AvailableStartDateTime")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableStartDateTime")]
 		[UIHint("DateTimeNullable")]
 		public DateTime? AvailableStartDateTimeUtc { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.AvailableEndDateTime")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableEndDateTime")]
 		[UIHint("DateTimeNullable")]
 		public DateTime? AvailableEndDateTimeUtc { get; set; }
 
@@ -321,21 +321,21 @@ namespace SmartStore.Admin.Models.Catalog
         public CopyProductModel CopyProductModel { get; set; }
 
 		//BasePrice
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.BasePriceEnabled")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceEnabled")]
 		public bool BasePriceEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.BasePriceMeasureUnit")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceMeasureUnit")]
 		public string BasePriceMeasureUnit { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.BasePriceAmount")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceAmount")]
 		public decimal? BasePriceAmount { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.BasePriceBaseAmount")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceBaseAmount")]
 		public int? BasePriceBaseAmount { get; set; }
 
 		public IList<SelectListItem> AvailableMeasureUnits { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Variants.Fields.DeliveryTime")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
 		public int? DeliveryTimeId { get; set; }
 		public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
         
@@ -501,20 +501,20 @@ namespace SmartStore.Admin.Models.Catalog
 			public int ProductId { get; set; }
 
 			public int CustomerRoleId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.TierPrices.Fields.CustomerRole")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.CustomerRole")]
 			[UIHint("TierPriceCustomer")]
 			public string CustomerRole { get; set; }
 
 
 			public int StoreId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.TierPrices.Fields.Store")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.Store")]
 			[UIHint("TierPriceStore")]
 			public string Store { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.TierPrices.Fields.Quantity")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.Quantity")]
 			public int Quantity { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.TierPrices.Fields.Price")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.Price")]
 			//we don't name it Price because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's productVariant.Price1
@@ -526,23 +526,24 @@ namespace SmartStore.Admin.Models.Catalog
 			public int ProductId { get; set; }
 
 			public int ProductAttributeId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.Attribute")]
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.Attribute")]
 			[UIHint("ProductAttribute")]
 			public string ProductAttribute { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.TextPrompt")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.TextPrompt")]
 			[AllowHtml]
 			public string TextPrompt { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.IsRequired")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.IsRequired")]
 			public bool IsRequired { get; set; }
 
 			public int AttributeControlTypeId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.AttributeControlType")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType")]
 			[UIHint("AttributeControlType")]
 			public string AttributeControlType { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
 			//we don't name it DisplayOrder because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's category.DisplayOrder
@@ -573,28 +574,28 @@ namespace SmartStore.Admin.Models.Catalog
 
 			public int ProductVariantAttributeId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
 			public string Alias { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.Name")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]
 			public string Name { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
 			[AllowHtml, UIHint("Color")]
 			public string ColorSquaresRgb { get; set; }
 			public bool DisplayColorSquaresRgb { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public decimal PriceAdjustment { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.WeightAdjustment")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.WeightAdjustment")]
 			public decimal WeightAdjustment { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.IsPreSelected")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.IsPreSelected")]
 			public bool IsPreSelected { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder")]
 			public int DisplayOrder { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
@@ -604,7 +605,7 @@ namespace SmartStore.Admin.Models.Catalog
 		{
 			public int LanguageId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values.Fields.Name")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]
 			public string Name { get; set; }
 		}
@@ -613,38 +614,38 @@ namespace SmartStore.Admin.Models.Catalog
 		//{
 		//	public int ProductId { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.Attributes")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Attributes")]
 		//	[AllowHtml]
 		//	public string AttributesXml { get; set; }
 
 		//	[AllowHtml]
 		//	public string Warnings { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
 		//	//we don't name it StockQuantity because Telerik has a small bug 
 		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
 		//	//in our case it's productVariant.StockQuantity1
 		//	public int StockQuantity1 { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
 		//	//we don't name it AllowOutOfStockOrders because Telerik has a small bug 
 		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
 		//	//in our case it's productVariant.AllowOutOfStockOrders1
 		//	public bool AllowOutOfStockOrders1 { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.Sku")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		//	//we don't name it StockQuantity because Telerik has a small bug 
 		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
 		//	//in our case it's productVariant.Sku1
 		//	public string Sku1 { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.ManufacturerPartNumber")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManufacturerPartNumber")]
 		//	//we don't name it StockQuantity because Telerik has a small bug 
 		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
 		//	//in our case it's productVariant.ManufacturerPartNumber1
 		//	public string ManufacturerPartNumber1 { get; set; }
 
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Fields.Gtin")]
+		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GTIN")]
 		//	//we don't name it StockQuantity because Telerik has a small bug 
 		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
 		//	//in our case it's productVariant.Gtin1

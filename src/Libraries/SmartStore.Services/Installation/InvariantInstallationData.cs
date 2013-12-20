@@ -4718,12 +4718,6 @@ namespace SmartStore.Services.Installation
                                               },
                                           new ActivityLogType
                                               {
-                                                  SystemKeyword = "AddNewProductVariant",
-                                                  Enabled = true,
-                                                  Name = "Add a new product variant"
-                                              },
-                                          new ActivityLogType
-                                              {
                                                   SystemKeyword = "AddNewSetting",
                                                   Enabled = true,
                                                   Name = "Add a new setting"
@@ -4793,12 +4787,6 @@ namespace SmartStore.Services.Installation
                                                   SystemKeyword = "DeleteProductAttribute",
                                                   Enabled = true,
                                                   Name = "Delete a product attribute"
-                                              },
-                                          new ActivityLogType
-                                              {
-                                                  SystemKeyword = "DeleteProductVariant",
-                                                  Enabled = true,
-                                                  Name = "Delete a product variant"
                                               },
                                           new ActivityLogType
                                               {
@@ -4877,12 +4865,6 @@ namespace SmartStore.Services.Installation
                                                   SystemKeyword = "EditProductAttribute",
                                                   Enabled = true,
                                                   Name = "Edit a product attribute"
-                                              },
-                                          new ActivityLogType
-                                              {
-                                                  SystemKeyword = "EditProductVariant",
-                                                  Enabled = true,
-                                                  Name = "Edit a product variant"
                                               },
                                           new ActivityLogType
                                               {

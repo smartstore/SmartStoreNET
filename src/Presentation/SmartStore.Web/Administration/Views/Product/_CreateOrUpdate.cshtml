@@ -39,16 +39,16 @@
     x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
         .Icon("icon-picture")
         .Content(TabPictures());
-    x.Add().Text(T("Admin.Catalog.Products.Variants.TierPrices").Text)
+    x.Add().Text(T("Admin.Catalog.Products.TierPrices").Text)
         .Content(TabTierPrices());
-    x.Add().Text(T("Admin.Catalog.Products.Variants.Discounts").Text)
+    x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
         .Content(TabDiscounts());    
     x.Add().Text(T("Admin.Catalog.Products.SpecificationAttributes").Text)
         .Icon("icon-reorder")
         .Content(TabSpecificationAttributes());
-    x.Add().Text(T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes").Text)
+    x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
         .Content(TabAttributes());
-    x.Add().Text(T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations").Text)
+    x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations").Text)
         .Content(TabAttributeCombinations());    
     x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
         .Icon("icon-group")
@@ -667,7 +667,7 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.BasePriceAmount, new { small = true })
-                <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Variants.Fields.BasePriceInfo")*@</span>
+                <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
 
@@ -1828,7 +1828,7 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.Variants.TierPrices.SaveBeforeEdit")
+        @T("Admin.Catalog.Products.TierPrices.SaveBeforeEdit")
     }
 }
 
@@ -1846,7 +1846,7 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.Variants.Discounts.NoDiscounts")
+        @T("Admin.Catalog.Products.Discounts.NoDiscounts")
     }
 }
 
@@ -1894,7 +1894,7 @@
                     .Width(200)
                     .ClientTemplate("<a href=\"<#= ViewEditUrl #>\"><#= ViewEditText #></a>")
                     .ReadOnly()
-                    .Title(T("Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Values").Text);
+                    .Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
                 columns.Command(commands =>
                 {
                     commands.Edit().Localize(T);
@@ -1917,12 +1917,12 @@
         }
         else
         {
-            @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.NoAttributesAvailable")
+            @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
         }
     }
     else
     {
-        @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.SaveBeforeEdit")
+        @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
     }
 }
 
@@ -1934,19 +1934,19 @@
         {
 
             <div style="margin: 10px 0px 10px 0px;" class="muted">
-                @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.Description")
+                @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
             <div style="margin: 10px 0">
                 <button class="btn btn-warning add-new-combination">
                     <i class="icon-plus"></i>
-                    @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.AddNew")
+                    @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
 
                 <button type="button" id="btnCreateAllCombinations" class="btn"
                         data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'>
                     <i class="icon-tasks"></i>
-                    @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")
+                    @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")
                 </button>
 
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="hide" />
@@ -1971,7 +1971,7 @@
 
 	                    $('#btnCreateAllCombinations').click(function () {
 	                        $(this).doAjax({
-	                        	ask: '@T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")',
+	                        	ask: '@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")',
 	                            callbackSuccess: function (resp) {
 	                                $('#btnRefreshCombinations').click();
 	                            }
@@ -2047,17 +2047,17 @@
 
             <button class="btn btn-warning add-new-combination" style="margin-top: 10px">
                 <i class="icon-plus"></i>
-                @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.AddNew")
+                @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
             </button>
 
         }
         else
         {
-            @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.NoAttributesAvailable")
+            @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
         }
     }
     else
     {
-        @T("Admin.Catalog.Products.Variants.ProductVariantAttributes.SaveBeforeEdit")
+        @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
     }
 }

@@ -193,6 +193,58 @@ namespace SmartStore.Web.Controllers
 
         #region Utilities
 
+		/// <summary>
+		/// Gets a product with minimal price. If it's a simple product, then the same product will be returned. If it's a grouped product, then all associated products will be a evaluated
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
+		/// <param name="quantity">Quantity</param>
+		/// <param name="minPrice">Calcualted minimal price</param>
+		/// <returns>A product with minimal price</returns>
+		public virtual Product GetProductWithMinimalPrice(Product product,
+			bool includeDiscounts, int quantity, out decimal? minPrice)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			minPrice = null;
+
+			switch (product.ProductType)
+			{
+				case ProductType.GroupedProduct:
+					{
+						Product minPriceProduct = null;
+						var searchContext = new ProductSearchContext()
+						{
+							StoreId = _storeContext.CurrentStore.Id,
+							ParentProductId = product.Id
+						};
+
+						var childProducts = _productService.SearchProducts(searchContext);
+
+						foreach (var childProduct in childProducts)
+						{
+							var finalPrice = _priceCalculationService.GetFinalPrice(childProduct,
+								_workContext.CurrentCustomer, decimal.Zero, includeDiscounts, quantity);
+							if (!minPrice.HasValue || finalPrice < minPrice.Value)
+							{
+								minPriceProduct = childProduct;
+								minPrice = finalPrice;
+							}
+						}
+						return minPriceProduct;
+					}
+
+				case ProductType.SimpleProduct:
+				default:
+					{
+						minPrice = _priceCalculationService.GetFinalPrice(product,
+							_workContext.CurrentCustomer, decimal.Zero, includeDiscounts, quantity);
+						return product;
+					}
+			}
+		}
+
         [NonAction]
         protected List<int> GetChildCategoryIds(int parentCategoryId, bool showHidden = false)
         {
@@ -303,7 +355,7 @@ namespace SmartStore.Web.Controllers
                 decimal? minimalPrice = null;
 				string additionalShippingCosts = "";
 
-				var productMinPrice = _priceCalculationService.GetProductWithMinimalPrice(product, _workContext.CurrentCustomer, true, int.MaxValue, out minimalPrice);
+				var productMinPrice = GetProductWithMinimalPrice(product, true, int.MaxValue, out minimalPrice);
 
                 string weight = (productMinPrice.Weight > 0) ? 
 					"{0} {1}".FormatCurrent(productMinPrice.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : "";
@@ -885,7 +937,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, string attributes = null)
+        protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct, string attributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -958,6 +1010,25 @@ namespace SmartStore.Web.Controllers
             // pictures
             var pictures = _pictureService.GetPicturesByProductId(product.Id);
             PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationImageIds, combination);
+
+			if (product.ProductType == ProductType.GroupedProduct)
+			{
+				//ensure no circular references
+				if (!isAssociatedProduct)
+				{
+					var searchContext = new ProductSearchContext()
+					{
+						StoreId = _storeContext.CurrentStore.Id,
+						OrderBy = ProductSortingEnum.NameAsc,
+						ParentProductId = product.Id
+					};
+
+					var associatedProducts = _productService.SearchProducts(searchContext);
+
+					foreach (var associatedProduct in associatedProducts)
+						model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
+				}
+			}
 
             return model;
         }
@@ -1936,7 +2007,7 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("HomePage");
             
             //prepare the model
-            var model = PrepareProductDetailsPageModel(product, attributes);
+            var model = PrepareProductDetailsPageModel(product, false, attributes);
 
             //save as recently viewed
             _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -2334,7 +2405,7 @@ namespace SmartStore.Web.Controllers
 		//					else
 		//					{
 		//						//redisplay the page with "Product has been added to the wishlist" notification message
-		//						var model = PrepareProductDetailsPageModel(product);
+		//						var model = PrepareProductDetailsPageModel(product, false);
 		//						this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist"), false);
 		//						//set already entered values (quantity, customer entered price, gift card attributes, product attributes)
 		//						setEnteredValues(model);
@@ -2356,7 +2427,7 @@ namespace SmartStore.Web.Controllers
 		//					else
 		//					{
 		//						//redisplay the page with "Product has been added to the cart" notification message
-		//						var model = PrepareProductDetailsPageModel(product);
+		//						var model = PrepareProductDetailsPageModel(product, false);
 		//						this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"), false);
 		//						//set already entered values (quantity, customer entered price, gift card attributes, product attributes)
 		//						setEnteredValues(model);
@@ -2376,7 +2447,7 @@ namespace SmartStore.Web.Controllers
 		//			ModelState.AddModelError("", error);
 
 		//		//If we got this far, something failed, redisplay form
-		//		var model = PrepareProductDetailsPageModel(product);
+		//		var model = PrepareProductDetailsPageModel(product, false);
 		//		//set already entered values (quantity, customer entered price, gift card attributes, product attributes
 		//		setEnteredValues(model);
 		//		return View(model.ProductTemplateViewPath, model);

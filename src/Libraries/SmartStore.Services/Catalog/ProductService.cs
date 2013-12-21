@@ -411,6 +411,11 @@ namespace SmartStore.Services.Catalog
 				pStoreId.Value = ctx.StoreId;
 				pStoreId.DbType = DbType.Int32;
 
+				var pParentProductId = _dataProvider.GetParameter();
+				pParentProductId.ParameterName = "ParentProductId";
+				pParentProductId.Value = ctx.ParentProductId;
+				pParentProductId.DbType = DbType.Int32;
+
                 var pProductTagId = _dataProvider.GetParameter();
                 pProductTagId.ParameterName = "ProductTagId";
                 pProductTagId.Value = ctx.ProductTagId;
@@ -513,6 +518,7 @@ namespace SmartStore.Services.Catalog
                     pCategoryIds,
                     pManufacturerId,
 					pStoreId,
+					pParentProductId,
                     pProductTagId,
                     pFeaturedProducts,
                     pPriceMin,
@@ -663,6 +669,11 @@ namespace SmartStore.Services.Catalog
             {
                 query = query.Where(p => p.Published);
             }
+
+			if (ctx.ParentProductId > 0)
+			{
+				query = query.Where(p => p.ParentProductId == ctx.ParentProductId);
+			}
 
 			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
 			//That's why we pass the date value

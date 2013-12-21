@@ -34,6 +34,7 @@ CREATE PROCEDURE [dbo].[ProductLoadAllPaged]
 	@CategoryIds		nvarchar(MAX) = null,	--a list of category IDs (comma-separated list). e.g. 1,2,3
 	@ManufacturerId		int = 0,
 	@StoreId			int = 0,
+	@ParentProductId	int = 0,
 	@ProductTagId		int = 0,
 	@FeaturedProducts	bit = null,	--0 featured only , 1 not featured only, null - load all products
 	@PriceMin			decimal(18, 4) = null,
@@ -164,14 +165,14 @@ BEGIN
 		--SKU
         SET @sql = @sql + '
         UNION
-        SELECT pv.ProductId
-        FROM ProductVariant pv with (NOLOCK)
-        LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductVariantId = pv.Id
+        SELECT p.Id
+        FROM Product p with (NOLOCK)
+        LEFT OUTER JOIN ProductVariantAttributeCombination pvac with(NOLOCK) ON pvac.ProductId = p.Id
         WHERE '
         IF @UseFullTextSearch = 1
-            SET @sql = @sql + '(CONTAINS(pvac.[Sku], @Keywords) OR CONTAINS(pv.[Sku], @Keywords)) '
+            SET @sql = @sql + '(CONTAINS(pvac.[Sku], @Keywords) OR CONTAINS(p.[Sku], @Keywords)) '
         ELSE
-            SET @sql = @sql + 'PATINDEX(@Keywords, pvac.[Sku]) > 0 OR PATINDEX(@Keywords, pv.[Sku]) > 0 '
+            SET @sql = @sql + 'PATINDEX(@Keywords, pvac.[Sku]) > 0 OR PATINDEX(@Keywords, p.[Sku]) > 0 '
 
 
 		--localized product name
@@ -393,6 +394,13 @@ BEGIN
 			SET @sql = @sql + '
 		AND pmm.IsFeaturedProduct = ' + CAST(@FeaturedProducts AS nvarchar(max))
 		END
+	END
+	
+	--filter by parent product identifer
+	IF @ParentProductId > 0
+	BEGIN
+		SET @sql = @sql + '
+		AND p.ParentProductId = ' + CAST(@ParentProductId AS nvarchar(max))
 	END
 	
 	--filter by product tag

@@ -103,5 +103,10 @@ namespace SmartStore.Services.Catalog
 		/// Store identifier; 0 to load all records
 		/// </summary>
 		public int StoreId { get; set; }
+
+		/// <summary>
+		/// Parent product identifier (used with grouped products); 0 to load all records
+		/// </summary>
+		public int ParentProductId { get; set; }
     }
 }

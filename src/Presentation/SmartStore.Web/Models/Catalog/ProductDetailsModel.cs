@@ -24,8 +24,18 @@ namespace SmartStore.Web.Models.Catalog
 			AddToCart = new AddToCartModel();
 			ProductVariantAttributes = new List<ProductVariantAttributeModel>();
 			Combinations = new List<ProductVariantAttributeCombination>();
-			//PictureModel = new PictureModel();
         }
+
+		//picture(s)
+		public ProductDetailsPictureModel DetailsPictureModel
+		{
+			get
+			{
+				if (_detailsPictureModel == null)
+					_detailsPictureModel = new ProductDetailsPictureModel();
+				return _detailsPictureModel;
+			}
+		}
 
         public string Name { get; set; }
         public string ShortDescription { get; set; }
@@ -83,22 +93,13 @@ namespace SmartStore.Web.Models.Catalog
 		public IList<ProductVariantAttributeCombination> Combinations { get; set; }
 		public ProductVariantAttributeCombination CombinationSelected { get; set; }
 
-        //picture(s)
-		public ProductDetailsPictureModel DetailsPictureModel
-		{
-			get
-			{
-				if (_detailsPictureModel == null)
-					_detailsPictureModel = new ProductDetailsPictureModel();
-				return _detailsPictureModel;
-			}
-		}
-		//public PictureModel PictureModel { get; set; }
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }
 
-        //specification attributes
         public IList<ProductSpecificationModel> SpecificationAttributeModels { get; set; }
+
+		//a list of associated products. For example, "Grouped" products could have several child "simple" products
+		public IList<ProductDetailsModel> AssociatedProducts { get; set; }
 
 		#region Nested Classes
 
@@ -256,10 +257,10 @@ namespace SmartStore.Web.Models.Catalog
 		#endregion
     }
 
-	/// <remarks>codehint: sm-add</remarks>
 	public partial class ProductDetailsPictureModel : ModelBase
 	{
-		public ProductDetailsPictureModel() {
+		public ProductDetailsPictureModel()
+		{
 			PictureModels = new List<PictureModel>();
 		}
 
@@ -271,5 +272,4 @@ namespace SmartStore.Web.Models.Catalog
 		public IList<PictureModel> PictureModels { get; set; }
 		public int GalleryStartIndex { get; set; }
 	}
-
 }

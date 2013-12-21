@@ -111,16 +111,15 @@
             </div>
                         
 			<div class="product-collateral clearfix">
-                <!--product variants-->
-                @*UNDONE revise product-variant logic*@
-                @*<div class="product-variant-list">
-                    @foreach (var variant in Model.ProductVariantModels)
+                <!-- associated products -->
+                <div class="product-variant-list">
+                    @foreach (var variant in Model.AssociatedProducts)
                     {
                         var dataDictVariant = new ViewDataDictionary();
                         dataDictVariant.TemplateInfo.HtmlFieldPrefix = string.Format("variant_{0}", variant.Id);
-                        @Html.Partial("_ProductVariantLine", variant, dataDictVariant)
+                        @Html.Partial("_ProductTemplate.Grouped.AssociatedProduct", variant, dataDictVariant)
                     }
-                </div>*@
+                </div>
             </div>
 
 			<div class="clear"></div>

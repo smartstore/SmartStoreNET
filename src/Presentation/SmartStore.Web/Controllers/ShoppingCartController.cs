@@ -935,20 +935,17 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//var productVariants = _productService.GetProductVariantsByProductId(productId);
-			//if (productVariants.Count != 1)
-			//{
-			//	//we can add a product to the cart only if it has exactly one product
-			//	return Json(new
-			//	{
-			//		redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
-			//	});
-			//}
+			//we can add a product to the cart only if it is a simple product
+			if (product.ProductType != ProductType.SimpleProduct)
+			{
+				//we can add a product to the cart only if it has exactly one child product
+				return Json(new
+				{
+					redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
+				});
+			}
 
-            //get default child product
-			//UNDONE revise product-variant logic
-            var defaultProductVariant = product;
-            if (defaultProductVariant.CustomerEntersPrice)
+            if (product.CustomerEntersPrice)
             {
                 //cannot be added to the cart (requires a customer to enter price)
                 return Json(new
@@ -958,10 +955,9 @@ namespace SmartStore.Web.Controllers
             }
 
             //quantity to add
-            var qtyToAdd = defaultProductVariant.OrderMinimumQuantity > 0 ? 
-                defaultProductVariant.OrderMinimumQuantity : 1;
+			var qtyToAdd = product.OrderMinimumQuantity > 0 ? product.OrderMinimumQuantity : 1;
 
-            var allowedQuantities = defaultProductVariant.ParseAllowedQuatities();
+			var allowedQuantities = product.ParseAllowedQuatities();
             if (allowedQuantities.Length > 0)
             {
                 //cannot be added to the cart (requires a customer to select a quantity from dropdownlist)
@@ -978,13 +974,13 @@ namespace SmartStore.Web.Controllers
 				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
 				 .ToList();
             var shoppingCartItem = _shoppingCartService
-                .FindShoppingCartItemInTheCart(cart, shoppingCartType, defaultProductVariant);
+				.FindShoppingCartItemInTheCart(cart, shoppingCartType, product);
             //if we already have the same product in the cart, then use the total quantity to validate
             var quantityToValidate = shoppingCartItem != null ?
                 shoppingCartItem.Quantity + qtyToAdd : qtyToAdd;
             var addToCartWarnings = _shoppingCartService
                 .GetShoppingCartItemWarnings(_workContext.CurrentCustomer, shoppingCartType,
-                defaultProductVariant, _storeContext.CurrentStore.Id, string.Empty, 
+				product, _storeContext.CurrentStore.Id, string.Empty, 
 				decimal.Zero, quantityToValidate, false, true, false, false, false);
             if (addToCartWarnings.Count > 0)
             {
@@ -999,7 +995,7 @@ namespace SmartStore.Web.Controllers
 
             //now let's try adding product to the cart (now including product attribute validation, etc)
             addToCartWarnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-				defaultProductVariant, shoppingCartType, _storeContext.CurrentStore.Id,
+				product, shoppingCartType, _storeContext.CurrentStore.Id,
                 string.Empty, decimal.Zero, qtyToAdd, true);
             if (addToCartWarnings.Count > 0)
             {
@@ -1014,7 +1010,7 @@ namespace SmartStore.Web.Controllers
             //now product is in the cart
 
             //activity log
-            _customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), defaultProductVariant.Name);
+			_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
 
             if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
             {

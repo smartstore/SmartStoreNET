@@ -193,7 +193,7 @@ namespace SmartStore.Services.Catalog
         /// Get product special price (is valid)
         /// </summary>
 		/// <param name="product">Product</param>
-        /// <returns>Product variant special price</returns>
+        /// <returns>Product special price</returns>
 		public virtual decimal? GetSpecialPrice(Product product)
         {
 			if (product == null)

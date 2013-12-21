@@ -1781,6 +1781,50 @@ SET @resources='
 		<Value lang="de">Shop</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Catalog.Products.Fields.ProductType">
+		<Value>Product type</Value>
+		<Value lang="de">Produkttyp</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.ProductType.Hint">
+		<Value>Choose your product type.</Value>
+		<Value lang="de">Legt den Produkttyp fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductType.Nop.Core.Domain.Catalog.ProductType.SimpleProduct">
+		<Value>Simple product</Value>
+		<Value lang="de">Einfaches Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductType.Nop.Core.Domain.Catalog.ProductType.GroupedProduct">
+		<Value>Grouped product</Value>
+		<Value lang="de">Gruppiertes Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.BulkEdit">
+		<Value>Bulk edit products</Value>
+		<Value lang="de">Produktmassenbearbeitung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.LowStockReport.Manage">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Products.AddNew.Note1">
+		<Value>Click on interested product</Value>
+		<Value lang="de">Klicken Sie auf das relevante Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.DiscountType.Hint">
+		<Value>The type of discount.</Value>
+		<Value lang="de">Der Rabatttyp.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.Nop.Core.Domain.Discounts.DiscountType.AssignedToSkus">
+		<Value>Assigned to products</Value>
+		<Value lang="de">Produkten zugewiesen</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.UnnamedProductVariant">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.ProductTemplate.Hint">
+		<Value>Choose a product template. This template defines how this product will be displayed in public store.</Value>
+		<Value lang="de">Wählen Sie eine Produktvorlage. Diese Vorlage definiert, wie dieses Produkt im Shop angezeigt wird.</Value>
+	</LocaleResource>
 
 </Language>
 '

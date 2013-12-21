@@ -23,10 +23,10 @@ namespace SmartStore.Services.Catalog
 			Customer customer, bool includeDiscounts, int quantity, out decimal? minPrice);
 
 		/// <summary>
-		/// Get product variant special price (is valid)
+		/// Get product special price (is valid)
 		/// </summary>
 		/// <param name="product">Product</param>
-		/// <returns>Product variant special price</returns>
+		/// <returns>Product special price</returns>
 		decimal? GetSpecialPrice(Product product);
 
 		/// <summary>

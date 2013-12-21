@@ -1244,7 +1244,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewData["selectedTab"] = "products";
 
-            //get order product variant identifier
+            //get order product identifier
             int opvId = 0;
             foreach (var formValue in form.AllKeys)
                 if (formValue.StartsWith("btnSaveOpv", StringComparison.InvariantCultureIgnoreCase))
@@ -1308,7 +1308,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewData["selectedTab"] = "products";
 
-            //get order product variant identifier
+            //get order product identifier
             int opvId = 0;
             foreach (var formValue in form.AllKeys)
                 if (formValue.StartsWith("btnDeleteOpv", StringComparison.InvariantCultureIgnoreCase))
@@ -1340,7 +1340,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewData["selectedTab"] = "products";
 
-            //get order product variant identifier
+            //get order product identifier
             int opvId = 0;
             foreach (var formValue in form.AllKeys)
                 if (formValue.StartsWith("btnResetDownloadCount", StringComparison.InvariantCultureIgnoreCase))
@@ -1373,7 +1373,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewData["selectedTab"] = "products";
 
-            //get order product variant identifier
+            //get order product identifier
             int opvId = 0;
             foreach (var formValue in form.AllKeys)
                 if (formValue.StartsWith("btnPvActivateDownload", StringComparison.InvariantCultureIgnoreCase))
@@ -2018,7 +2018,7 @@ namespace SmartStore.Admin.Controllers
                 var qtyOrdered = opv.Quantity;
                 var qtyInAllShipments = opv.GetTotalNumberOfItemsInAllShipment();
 
-                //ensure that this product variant can be added to a shipment
+                //ensure that this product can be added to a shipment
                 if (maxQtyToAdd <= 0)
                     continue;
 
@@ -2065,7 +2065,7 @@ namespace SmartStore.Admin.Controllers
                 if (!opv.Product.IsShipEnabled)
                     continue;
 
-                //ensure that this product variant can be shipped (have at least one item to ship)
+                //ensure that this product can be shipped (have at least one item to ship)
                 var maxQtyToAdd = opv.GetTotalNumberOfItemsCanBeAddedToShipment();
                 if (maxQtyToAdd <= 0)
                     continue;
@@ -2396,7 +2396,6 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
-            //group by products
 			var report = _orderReportService.BestSellersReport(0, null, null,
                 null, null, null, 0, recordsToReturn, orderBy, true);
 
@@ -2491,10 +2490,6 @@ namespace SmartStore.Admin.Controllers
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
 
-
-            //return first 100 records
-
-            //group by product variants (not products)
 			var items = _orderReportService.BestSellersReport(0, startDateValue, endDateValue,
                 orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, true);
             var gridModel = new GridModel<BestsellersReportLineModel>

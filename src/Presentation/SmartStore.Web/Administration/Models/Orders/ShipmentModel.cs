@@ -39,7 +39,7 @@ namespace SmartStore.Admin.Models.Orders
             public string Sku { get; set; }
             public string AttributeInfo { get; set; }
 
-            //weight of one item (product variant)
+            //weight of one item (product)
             public string ItemWeight { get; set; }
             public string ItemDimensions { get; set; }
 

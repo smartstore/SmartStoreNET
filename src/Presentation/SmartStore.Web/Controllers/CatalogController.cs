@@ -438,7 +438,7 @@ namespace SmartStore.Web.Controllers
 								{
 									//Actually it's not possible (we presume that minimalPrice always has a value)
 									//We never should get here
-									Debug.WriteLine(string.Format("Cannot calculate minPrice for product variant #{0}", productMinPrice.Id));
+									Debug.WriteLine(string.Format("Cannot calculate minPrice for product #{0}", productMinPrice.Id));
 								}
 							}
 						}
@@ -1327,7 +1327,7 @@ namespace SmartStore.Web.Controllers
 
             #endregion
 
-            #region Product variant price
+            #region Product price
             model.ProductPrice.ProductId = product.Id;
 
             if (displayPrices)
@@ -1947,7 +1947,7 @@ namespace SmartStore.Web.Controllers
             return View(model.ProductTemplateViewPath, model);
         }
 
-        //add product variant to cart using HTTP POST
+        //add product to cart using HTTP POST
         //currently we use this method only for mobile device version
         //desktop version uses AJAX version of this method (ShoppingCartController.AddProductVariantToCart)
 		//[HttpPost, ActionName("Product")]
@@ -2172,7 +2172,7 @@ namespace SmartStore.Web.Controllers
 
 		//	Action<ProductDetailsModel> setEnteredValues = (productModel) =>
 		//	{
-		//		//find product variant model
+		//		//find product model
 		//		var productVariantModel = productModel
 		//			.ProductVariantModels
 		//			.Where(x => x.Id == productVariant.Id)
@@ -2723,11 +2723,8 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             //load and cache report
-			var report = _cacheManager.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _storeContext.CurrentStore.Id), 
-                () =>
-                    //group by products (not product variants)
-                    _orderReportService
-					.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage));
+			var report = _cacheManager.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _storeContext.CurrentStore.Id), () =>
+				_orderReportService.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage));
 
             //load products
             var products = _productService.GetProductsByIds(report.Select(x => x.EntityId).ToArray());

@@ -333,8 +333,10 @@
         }
     }
 </script>
-@if (Model.Id > 0) {
+
 <table class="adminContent">
+@if (Model.Id > 0)
+{
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Id)
@@ -344,9 +346,17 @@
             @Html.ValidationMessageFor(model => model.Id)
         </td>
     </tr>
-</table>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ProductTypeId):
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ProductTypeId, ((ProductType)Model.ProductTypeId).ToSelectList())
+            @Html.ValidationMessageFor(model => model.ProductTypeId)
+        </td>
+    </tr>
 }
-
+</table>    
     @(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-info-localized",
                 @<table class="adminContent">
                     <tr>

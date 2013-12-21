@@ -1917,17 +1917,11 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var allVariants = _productService.GetLowStockProducts();
+			var allProducts = _productService.GetLowStockProducts();
 			var model = new GridModel<ProductModel>()
 			{
-				Data = allVariants.PagedForCommand(command).Select(x =>
-				{
-					var variantModel = x.ToModel();
-					//UNDONE revise product-variant logic
-					variantModel.Name = x.Name;
-					return variantModel;
-				}),
-				Total = allVariants.Count
+				Data = allProducts.PagedForCommand(command).Select(x => x.ToModel()),
+				Total = allProducts.Count
 			};
 			return new JsonResult
 			{

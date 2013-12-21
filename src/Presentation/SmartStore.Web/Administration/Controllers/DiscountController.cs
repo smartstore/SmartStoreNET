@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
                 if (prevDiscountType == DiscountType.AssignedToSkus
                     && discount.DiscountType != DiscountType.AssignedToSkus)
                 {
-                    //applied to product variants
+                    //applied to products
                     var products = discount.AppliedToProducts.ToList();
                     discount.AppliedToProducts.Clear();
                     _discountService.UpdateDiscount(discount);
@@ -298,7 +298,7 @@ namespace SmartStore.Admin.Controllers
 
             //applied to categories
             var categories = discount.AppliedToCategories.ToList();
-            //applied to product variants
+            //applied to products
             var products = discount.AppliedToProducts.ToList();
 
             _discountService.DeleteDiscount(discount);

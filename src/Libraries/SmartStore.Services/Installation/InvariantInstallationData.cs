@@ -6742,10 +6742,8 @@ namespace SmartStore.Services.Installation
             var sampleDownloadsPath = this._sampleDownloadsPath;
 
             //templates
-            var productTemplateInGrid =
-                this.ProductTemplates().Where(pt => pt.ViewPath == "ProductTemplate.VariantsInGrid").FirstOrDefault();
-            var productTemplateSingleVariant =
-                this.ProductTemplates().Where(pt => pt.ViewPath == "ProductTemplate.SingleVariant").FirstOrDefault();
+			var productTemplateSimple = this.ProductTemplates().FirstOrDefault(pt => pt.ViewPath == "ProductTemplate.Simple");
+			var productTemplateGrouped = this.ProductTemplates().FirstOrDefault(pt => pt.ViewPath == "ProductTemplate.Grouped");
 
             #endregion definitions
 
@@ -6758,7 +6756,7 @@ namespace SmartStore.Services.Installation
                 Name = "$5 Virtual Gift Card",
                 ShortDescription = "$5 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
                 FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
@@ -6804,7 +6802,7 @@ namespace SmartStore.Services.Installation
                 Name = "$25 Virtual Gift Card",
                 ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
                 FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
@@ -6844,7 +6842,7 @@ namespace SmartStore.Services.Installation
                 Name = "$50 Virtual Gift Card",
                 ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
                 FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
@@ -6888,7 +6886,7 @@ namespace SmartStore.Services.Installation
                 Name = "Überman: The novel",
                 ShortDescription = "(Hardcover)",
                 FullDescription = "<p>From idiots to riches - and back ... Ever since it with my Greek financial advisors were no more delicious cookies to meetings, I should have known something. Was the last cookie it when I bought a Romanian forest funds and leveraged discount certificates on lean hogs - which is sort of a more stringent bet that the price of lean hogs will remain stable, and that's nothing special because it is also available for cattle and cotton and fat pig. Again and again and I joked Kosmas Nikiforos Sarantakos. About all the part-time seer who tremblingly put for fear the euro crisis gold coins under the salami slices of their frozen pizzas And then came the day that revealed to me in almost Sarantakos fraudulent casualness that my plan had not worked out really. 'Why all of a sudden> my plan', 'I heard myself asking yet, but it was in the garage I realized what that really meant minus 211.2 percent in my portfolio report: personal bankruptcy, gutter and Drug Addiction with subsequent loss of the incisors . Not even the study of my friend, I would still be able to finance. The only way out was to me as quickly as secretly again to draw from this unspeakable Greek shit - I had to be Überman! By far the bekloppteste story about 'idiot' Simon Peter! »Tommy Jaud – Deutschlands witzigste Seite.« Alex Dengler, Bild am Sonntag</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 AllowCustomerReviews = true,
                 Published = true,
@@ -6946,7 +6944,7 @@ namespace SmartStore.Services.Installation
                 Name = "The Prisoner of Heaven: A Novel",
                 ShortDescription = "(Hardcover)",
                 FullDescription = "<p>By Shadow of the Wind and The Angel's Game, the new large-Barcelona novel by Carlos Ruiz Zafón. - Barcelona, Christmas 1957th The bookseller Daniel Sempere and his friend Fermín be drawn again into a great adventure. In the continuation of his international success with Carlos Ruiz Zafón takes the reader on a fascinating journey into his Barcelona. Creepy and fascinating, with incredible suction power and humor, the novel, the story of Fermin, who 'rose from the dead, and the key to the future is.' Fermin's life story linking the threads of The Shadow of the Wind with those from The Angel's Game. A masterful puzzle that keeps the reader around the world in thrall. </p> <p> Product Hardcover: 416 pages Publisher: S. Fischer Verlag; 1 edition (October 25, 2012) Language: German ISBN-10: 3,100,954,025 ISBN-13: 978-3100954022 Original title: El prisionero del cielo Size and / or weight: 21.4 x 13.6 cm x 4.4 </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 AllowCustomerReviews = true,
                 Published = true,
@@ -7006,7 +7004,7 @@ namespace SmartStore.Services.Installation
                 Name = "Best Grilling Recipes",
                 ShortDescription = "More Than 100 Regional Favorites Tested and Perfected for the Outdoor Cook (Hardcover)",
                 FullDescription = "<p> Take a winding cross-country trip and you'll discover barbecue shacks with offerings like tender-smoky Baltimore pit beef and saucy St. Louis pork steaks. To bring you the best of these hidden gems, along with all the classics, the editors of Cook's Country magazine scoured the country, then tested and perfected their favorites. HEre traditions large and small are brought into the backyard, from Hawaii's rotisserie favorite, the golden-hued Huli Huli Chicken, to fall-off-the-bone Chicago Barbecued Ribs. In Kansas City, they're all about the sauce, and for our saucy Kansas City Sticky Ribs, we found a surprise ingredient-root beer. We also tackle all the best sides. </p> <p> Not sure where or how to start? This cookbook kicks off with an easy-to-follow primer that will get newcomers all fired up. Whether you want to entertain a crowd or just want to learn to make perfect burgers, Best Grilling Recipes shows you the way. </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 //SeName = "5-virtual-gift-card",
                 AllowCustomerReviews = true,
@@ -7067,7 +7065,7 @@ namespace SmartStore.Services.Installation
                 Name = "Cooking for Two",
                 ShortDescription = "More Than 200 Foolproof Recipes for Weeknights and Special Occasions (Hardcover)",
                 FullDescription = "<p>In Cooking for Two, the test kitchen's goal was to take traditional recipes and cut them down to size to serve just twowith tailored cooking techniques and smart shopping tips that will cut down on wasted food and wasted money. Great lasagna starts to lose its luster when you're eating the leftovers for the fourth day in a row. While it may seem obvious that a recipe for four can simply be halved to work, our testing has proved that this is not always the case; cooking with smaller amounts of ingredients often requires different preparation techniques, cooking time, temperature, and the proportion of ingredients. This was especially true as we worked on scaled-down desserts; baking is an unforgiving science in which any changes in recipe amounts often called for changes in baking times and temperatures. </p> <p> Hardcover: 352 pages<br> Publisher: America's Test Kitchen (May 2009)<br> Language: English<br> ISBN-10: 1933615435<br> ISBN-13: 978-1933615431<br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
 
                 AllowCustomerReviews = true,
                 Published = true,
@@ -7127,7 +7125,7 @@ namespace SmartStore.Services.Installation
                 Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7187,7 +7185,7 @@ namespace SmartStore.Services.Installation
                 Name = "Picture Atlas Motorcycles: With more than 350 brilliant images",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Motorcycles are like no other means of transportation for the great dream of freedom and adventure. This richly illustrated atlas image portrayed in brilliant color photographs and informative text, the most famous bikes of the world's motorcycle history. From the primitive steam engine under the saddle of the late 19th Century up to the hugely powerful, equipped with the latest electronics and computer technology superbikes of today he is an impressive picture of the development and fabrication of noble and fast-paced motorcycles. The myth of the motorcycle is just as much investigated as a motorcycle as a modern lifestyle product of our time. Country-specific, company-historical background information and interesting stories and History about the people who preceded drove one of the seminal inventions of recent centuries and evolved, make this comprehensive illustrated book an incomparable reference for any motorcycle enthusiast and technology enthusiasts. </p> <p> • Extensive history of the legendary models of all major motorcycle manufacturers worldwide<br> • With more than 350 brilliant color photographs and fascinating background information relating<br> • With informative drawings, stunning detail shots and explanatory info-boxes<br> </p> <p> content • 1817 1913: The beginning of a success story<br> • 1914 1945: mass mobility<br> • 1946 1990: Battle for the World Market<br> • In 1991: The modern motorcycle<br> • motorcycle cult object: From Transportation to Lifestyle<br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7246,7 +7244,7 @@ namespace SmartStore.Services.Installation
                 Name = "The Car Book. The great history with over 1200 models",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Makes, models, milestones<br> The car - for some, a utensil for other expression of lifestyle, cult object and passion. Few inventions have changed their lives as well as the good of the automobile 125 years ago - one more reason for this extensive chronicle. The car-book brings the history of the automobile to life. It presents more than 1200 important models - Karl Benz 'Motorwagen about legendary cult car to advanced hybrid vehicles. It explains the milestones in engine technology and portrays the big brands and their designers. Characteristics from small cars to limousines and send racing each era invite you to browse and discover. The most comprehensive and bestbebildert illustrated book on the market - it would be any car lover! </p> <p> Hardcover: 360 pages<br> Publisher: Dorling Kindersley Publishing (September 27, 2012)<br> Language: German<br> ISBN-10: 3,831,022,062<br> ISBN-13: 978-3831022069<br> Size and / or weight: 30.6 x 25.8 x 2.8 cm<br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7305,7 +7303,7 @@ namespace SmartStore.Services.Installation
                 Name = "Fast Cars, Image Calendar 2013",
                 ShortDescription = "spiral bound",
                 FullDescription = "<p> Large Size: 48.5 x 34 cm.<br> This impressive picture calendar with silver ring binding thrilled with impressive photographs of exclusive sports cars. Who understands cars not only as a pure commercial vehicles, will find the most sought-after status symbols at all: fast cars are effectively set to the razor sharp and vivid photos in scene and convey freedom, speed, strength and the highest technical perfection. Starting with the 450-horsepower Maserati GranTurismo MC Stradale on the stylish, luxurious Aston Martin Virage Volante accompany up to the produced only in small numbers Mosler Photon MT900S the fast racer with style and elegance through the months. </p> <p> Besides the calendar draws another picture to look at interesting details. There are the essential information on any sports car in the English language. After this year, the high-quality photos are framed an eye-catcher on the wall of every lover of fast cars. Even as a gift this beautiful years companion is wonderfully suited. 12 calendar pages, neutral and discreet held calendar. Printed on paper from sustainable forests. For lovers of luxury vintage cars also available in ALPHA EDITION: the large format image Classic Cars Calendar 2013: ISBN 9,783,840,733,376th </p> <p> Spiral-bound: 14 pages<br> Publisher: Alpha Edition (June 1, 2012)<br> Language: German<br> ISBN-10: 3,840,733,383<br> ISBN-13: 978-3840733383<br> Size and / or weight: 48.8 x 34.2 x 0.6 cm<br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7365,7 +7363,7 @@ namespace SmartStore.Services.Installation
                 Name = "Motorcycle Adventures: Riding for travel enduros",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Modern travel enduro bikes are ideal for adventure travel. Their technique is complex, their weight considerably. The driving behavior changes depending on the load and distance. </p> <p> Before the tour starts, you should definitely attend a training course. This superbly illustrated book presents practical means of many informative series photos the right off-road driving in mud and sand, gravel and rock with and without luggage. In addition to the driving course full of information and tips on choosing the right motorcycle for travel planning and practical issues may be on the way. </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7428,7 +7426,7 @@ namespace SmartStore.Services.Installation
                 Name = "Dell Inspiron One 23",
                 ShortDescription = "This 58 cm (23'')-All-in-One PC with Full HD, Windows 8 and powerful Intel ® Core ™ processor third generation allows practical interaction with a touch screen.",
                 FullDescription = "<p> Ultra high performance all-in-one i7 PC with Windows 8, Intel ® Core ™ processor, huge 2TB hard drive and Blu-Ray drive. </p> <p> Intel® Core™ i7-3770S Processor ( 3,1 GHz, 6 MB Cache)<br> Windows 8 64bit , english<br> 8 GB1 DDR3 SDRAM at 1600 MHz<br> 2 TB-Serial ATA-Harddisk (7.200 rot/min)<br> 1GB AMD Radeon HD 7650<br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7530,7 +7528,7 @@ namespace SmartStore.Services.Installation
                 Name = "Dell Optiplex 3010 DT Base",
                 ShortDescription = "SPECIAL OFFER: Extra 50 € discount on all Dell OptiPlex desktops from a value of € 549. Online Coupon:? W8DWQ0ZRKTM1, valid until 04/12/2013.",
                 FullDescription = "<p>Also included in this system include To change these selections, the</p> <p> 1 Year Basic Service - On-Site NBD - No Upgrade Selected<br> No asset tag required </p> <p> The following options are default selections included with your order. <br> German (QWERTY) Dell KB212-B Multimedia USB Keyboard Black<br> X11301001<br> WINDOWS LIVE <br> OptiPlex ™ order - Germany  <br> OptiPlex ™ Intel ® Core ™ i3 sticker <br> Optical software is not required, operating system software sufficiently   <br> </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7631,7 +7629,7 @@ namespace SmartStore.Services.Installation
                 Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Black)",
                 ShortDescription = "Acer Aspire One 8.9\" Mini-Notebook and 6 Cell Battery model (AOA150-1447)",
                 FullDescription = "<p>Acer Aspire One 8.9&quot; Memory Foam Pouch is the perfect fit for Acer Aspire One 8.9&quot;. This pouch is made out of premium quality shock absorbing memory form and it provides extra protection even though case is very light and slim. This pouch is water resistant and has internal supporting bands for Acer Aspire One 8.9&quot;. Made In Korea.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7718,7 +7716,7 @@ namespace SmartStore.Services.Installation
                 Name = "Apple iPhone 5 32 GB",
                 ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
                 FullDescription = "<p> The iPhone 5 at a glance. New design. </p> <p> With 7.6 mm and 112 g3 the iPhone 5 has a remarkably thin and light design. It is made of anodized aluminum. The beveled edges are precision cut with a diamond. <br> Brilliant 4 \"Retina Display.<br> Now you can see everything more vivid and detailed. And although the screen is bigger, it has the same width as the iPhone 4S and is therefore just as easily operated with one hand. Powerful A6 chip. Compared with the A5 chip, he has up to twice the CPU and graphics performance. And despite its speed, the iPhone 5 has a fantastic battery life. Ultra-fast mobile data. The iPhone 5 supports the latest wireless technologies and can be even more so with the world verbinden.4Und networks and Wi-Fi is faster. </p> <p> Delivery 6 Apple iPhone 5 with iOS EarPods with Remote and Mic to USB Cable Lightning USB Power Adapter (Power Supply) Choose the iPhone that suits you. 16 GB, 32 GB or 64 GB capacity? The iPhone is available in three capacities: 16, 32 and 64 GB. \"GB\" stands for gigabytes. The more gigabytes your iPhone, the more space you have. For content such as apps, games, photos, HD videos, music, movies and more In a large music or photo library, or if you frequently invite HD movies to an iPhone recommends using a larger capacity. If your music or photo library is small or you do or buy rare films, ranging from an iPhone with a smaller memory size for you. With time comes along Some of content on your iPhone. Therefore, you should consider your growing storage needs of the iPhone purchase. The unlocked iPhone The unlocked iPhone is not dependent on any cellular network, which means that you can decide for any supported GSM network worldwide. Buy an iPhone without a contract at the Apple Online Store, then look for a tariff for the iPhone, which covers only the SIM card. Or contact your current provider if you want to keep your current rate. </p> <p> PrePaid<br> If you want a contract, you can choose one of the \"prepaid\" starter packs of available network operators in the Apple Online Store. With \"prepaid\" you get your iPhone and ready. Compatible with a SIM card A credit check is not required. You pay online just for what you use, and can switch the network provider at any time. \"Prepaid\" is a good option if you want to use when traveling abroad prefer a local supplier. Which SIM card do I need? It does not matter if you are a new contract, further Lead your existing contract or \"prepaid\" choose - you will need a compatible SIM card. For the iPhone 5, it takes a nano-SIM card for the iPhone 4S and the iPhone 4 is a micro-SIM card. For more details you get with your wireless carrier. Cellular networks and Wi-Fi </p> <p> A1428 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Band 4 and 17) <br> Model A1429 * CDMA: CDMA EV-DO Rev. A and Rev. B (800, 1900, 2100 MHz), UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900 , 1800, 1900 MHz), LTE band (1, 3, 5, 13, 25) <br> * A1429 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Volume 1, 3, 5) <br> 802.11a/b/g/n Wi-Fi (802.11n 2.4 GHz and 5 GHz) <br> Bluetooth 4.0 <br> Display Retina Display 4 \"widescreen Multi-Touch display (10.16 cm diagonal) 1136 x 640 pixels at 326 ppi Typical contrast ratio: 500 cd/m2 simultaneously resistant oleophobic coating on the front support for display of multiple languages ​​and characters: 800:1 Maximum brightness typical Camera, photos and videos 8-megapixel iSight camera Panorama Video recording, HD (1080p) up to 30 frames per second with audio FaceTime HD camera with 1.2-megapixel still images and HD video (720p) for up to 30 frames per second Autofocus Tap to focus video photos and facial recognition in video and photos LED flash Improved video stabilization for geotagging photos and videos Audio Support for AirPlay Mirroring to Apple TV with 720p AirPlay video streaming to Apple TV (3rd generation) up to 1080p and Apple TV (2nd generation) up to 720p Video formats supported: H.264 video up to 1080p, 30 frames per second, High Profile level 4.1 with AAC-LC audio up to 160 kbit / s, 48kHz, stereo audio in m4v, mp4 and mov... , MPEG-4 video, up to 2.5 Mbit / s, 640 x 480 pixels, 30 frames per second, Simple Profile with AAC-LC audio up to 160 Kbps m4v / s, 48 ​​kHz, stereo audio in. , mp4 and mov file formats Motion JPEG (M-JPEG)... up to 35 Mbit / s, 1280 x 720 pixels, 30 frames per second, audio in ulaw, PCM stereo audio in avi format </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7834,7 +7832,7 @@ namespace SmartStore.Services.Installation
                 Name = "Antonio Vivaldi: spring",
                 ShortDescription = "MP3, 320 kbit/s",
                 FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7907,7 +7905,7 @@ namespace SmartStore.Services.Installation
                 Name = "Ludwig van Beethoven: For Elise",
                 ShortDescription = "Ludwig van Beethoven's most popular compositions",
                 FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -7970,7 +7968,7 @@ namespace SmartStore.Services.Installation
                 Name = "Certina DS Podium Big Size ",
                 ShortDescription = "C001.617.26.037.00",
                 FullDescription = "<p> The iPhone 5 at a glance. New design. </p> <p> With 7.6 mm and 112 g3 the iPhone 5 has a remarkably thin and light design. It is made of anodized aluminum. The beveled edges are precision cut with a diamond. <br> Brilliant 4 \"Retina Display.<br> Now you can see everything more vivid and detailed. And although the screen is bigger, it has the same width as the iPhone 4S and is therefore just as easily operated with one hand. Powerful A6 chip. Compared with the A5 chip, he has up to twice the CPU and graphics performance. And despite its speed, the iPhone 5 has a fantastic battery life. Ultra-fast mobile data. The iPhone 5 supports the latest wireless technologies and can be even more so with the world verbinden.4Und networks and Wi-Fi is faster. </p> <p> Delivery 6 Apple iPhone 5 with iOS EarPods with Remote and Mic to USB Cable Lightning USB Power Adapter (Power Supply) Choose the iPhone that suits you. 16 GB, 32 GB or 64 GB capacity? The iPhone is available in three capacities: 16, 32 and 64 GB. \"GB\" stands for gigabytes. The more gigabytes your iPhone, the more space you have. For content such as apps, games, photos, HD videos, music, movies and more In a large music or photo library, or if you frequently invite HD movies to an iPhone recommends using a larger capacity. If your music or photo library is small or you do or buy rare films, ranging from an iPhone with a smaller memory size for you. With time comes along Some of content on your iPhone. Therefore, you should consider your growing storage needs of the iPhone purchase. The unlocked iPhone The unlocked iPhone is not dependent on any cellular network, which means that you can decide for any supported GSM network worldwide. Buy an iPhone without a contract at the Apple Online Store, then look for a tariff for the iPhone, which covers only the SIM card. Or contact your current provider if you want to keep your current rate. </p> <p> PrePaid<br> If you want a contract, you can choose one of the \"prepaid\" starter packs of available network operators in the Apple Online Store. With \"prepaid\" you get your iPhone and ready. Compatible with a SIM card A credit check is not required. You pay online just for what you use, and can switch the network provider at any time. \"Prepaid\" is a good option if you want to use when traveling abroad prefer a local supplier. Which SIM card do I need? It does not matter if you are a new contract, further Lead your existing contract or \"prepaid\" choose - you will need a compatible SIM card. For the iPhone 5, it takes a nano-SIM card for the iPhone 4S and the iPhone 4 is a micro-SIM card. For more details you get with your wireless carrier. Cellular networks and Wi-Fi </p> <p> A1428 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Band 4 and 17) <br> Model A1429 * CDMA: CDMA EV-DO Rev. A and Rev. B (800, 1900, 2100 MHz), UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900 , 1800, 1900 MHz), LTE band (1, 3, 5, 13, 25) <br> * A1429 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Volume 1, 3, 5) <br> 802.11a/b/g/n Wi-Fi (802.11n 2.4 GHz and 5 GHz) <br> Bluetooth 4.0 <br> Display Retina Display 4 \"widescreen Multi-Touch display (10.16 cm diagonal) 1136 x 640 pixels at 326 ppi Typical contrast ratio: 500 cd/m2 simultaneously resistant oleophobic coating on the front support for display of multiple languages ​​and characters: 800:1 Maximum brightness typical Camera, photos and videos 8-megapixel iSight camera Panorama Video recording, HD (1080p) up to 30 frames per second with audio FaceTime HD camera with 1.2-megapixel still images and HD video (720p) for up to 30 frames per second Autofocus Tap to focus video photos and facial recognition in video and photos LED flash Improved video stabilization for geotagging photos and videos Audio Support for AirPlay Mirroring to Apple TV with 720p AirPlay video streaming to Apple TV (3rd generation) up to 1080p and Apple TV (2nd generation) up to 720p Video formats supported: H.264 video up to 1080p, 30 frames per second, High Profile level 4.1 with AAC-LC audio up to 160 kbit / s, 48kHz, stereo audio in m4v, mp4 and mov... , MPEG-4 video, up to 2.5 Mbit / s, 640 x 480 pixels, 30 frames per second, Simple Profile with AAC-LC audio up to 160 Kbps m4v / s, 48 ​​kHz, stereo audio in. , mp4 and mov file formats Motion JPEG (M-JPEG)... up to 35 Mbit / s, 1280 x 720 pixels, 30 frames per second, audio in ulaw, PCM stereo audio in avi format </p>",
-                ProductTemplateId = productTemplateSingleVariant.Id,
+                ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,

@@ -216,8 +216,6 @@ namespace SmartStore.Services.Orders
                     //not in the cart
                     if (!alreadyInTheCart)
                     {
-						string fullProductName = rp.GetLocalized(x => x.Name);
-
                         if (product.AutomaticallyAddRequiredProducts)
                         {
                             //add to cart (if possible)
@@ -231,17 +229,17 @@ namespace SmartStore.Services.Orders
 
                                     //don't display specific errors from 'addToCartWarnings' variable
                                     //display only generic error
-                                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), fullProductName));
+									warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
                                 }
                             }
                             else
                             {
-                                warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), fullProductName));
+								warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
                             }
                         }
                         else
                         {
-                            warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), fullProductName));
+							warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
                         }
                     }
                 }
@@ -555,17 +553,17 @@ namespace SmartStore.Services.Orders
         /// <param name="customerEnteredPrice">Customer entered price</param>
         /// <param name="quantity">Quantity</param>
 		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
-        /// <param name="getStandardWarnings">A value indicating whether we should validate a product variant for standard properties</param>
+        /// <param name="getStandardWarnings">A value indicating whether we should validate a product for standard properties</param>
         /// <param name="getAttributesWarnings">A value indicating whether we should validate product attributes</param>
         /// <param name="getGiftCardWarnings">A value indicating whether we should validate gift card properties</param>
-        /// <param name="getRequiredProductVariantWarnings">A value indicating whether we should validate required product variants (product variants which require other variant to be added to the cart)</param>
+        /// <param name="getRequiredWarnings">A value indicating whether we should validate required products (products which require other products to be added to the cart)</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetShoppingCartItemWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, int storeId, 
 			string selectedAttributes, decimal customerEnteredPrice,
 			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
             bool getStandardWarnings = true, bool getAttributesWarnings = true, 
-            bool getGiftCardWarnings = true, bool getRequiredProductVariantWarnings = true)
+            bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -584,8 +582,8 @@ namespace SmartStore.Services.Orders
             if (getGiftCardWarnings)
                 warnings.AddRange(GetShoppingCartItemGiftCardWarnings(shoppingCartType, product, selectedAttributes));
 
-            //required product variants
-            if (getRequiredProductVariantWarnings)
+            //required products
+            if (getRequiredProductWarnings)
 				warnings.AddRange(GetRequiredProductWarnings(customer, shoppingCartType, product, storeId, automaticallyAddRequiredProductsIfEnabled));
             
             return warnings;

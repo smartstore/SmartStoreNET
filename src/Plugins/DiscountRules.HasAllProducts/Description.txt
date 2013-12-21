@@ -1,4 +1,4 @@
-﻿FriendlyName: Customer has all of these product variants in the cart
+﻿FriendlyName: Customer has all of these products in the cart
 SystemName: DiscountRequirement.HasAllProducts
 Version: 1.2
 MinAppVersion: 1.2.1

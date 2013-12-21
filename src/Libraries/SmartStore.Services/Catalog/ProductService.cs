@@ -24,8 +24,6 @@ namespace SmartStore.Services.Catalog
     public partial class ProductService : IProductService
     {
         #region Constants
-        private const string PRODUCTVARIANTS_ALL_KEY = "SmartStore.productvariant.all-{0}-{1}";
-        private const string PRODUCTVARIANTS_PATTERN_KEY = "SmartStore.productvariant.";
         private const string TIERPRICES_PATTERN_KEY = "SmartStore.tierprice.";
         #endregion
 
@@ -277,7 +275,6 @@ namespace SmartStore.Services.Catalog
             _productRepository.Insert(product);
 
             //clear cache
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
             
             //event notification
@@ -297,7 +294,6 @@ namespace SmartStore.Services.Catalog
             _productRepository.Update(product);
 
             //cache
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification
@@ -860,7 +856,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
         public virtual IList<Product> GetLowStockProductVariants()
         {
-			//Track inventory for product variant
+			//Track inventory for product
 			var query1 = from p in _productRepository.Table
 						 orderby p.MinStockQuantity
 						 where !p.Deleted &&
@@ -869,7 +865,7 @@ namespace SmartStore.Services.Catalog
 						 select p;
 			var products1 = query1.ToList();
 
-			//Track inventory for product variant by product attributes
+			//Track inventory for product by product attributes
 			var query2 = from p in _productRepository.Table
 						 from pvac in p.ProductVariantAttributeCombinations
 						 where !p.Deleted &&
@@ -1283,7 +1279,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification
@@ -1315,7 +1310,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification
@@ -1333,7 +1327,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification

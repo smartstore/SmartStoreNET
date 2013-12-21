@@ -39,6 +39,9 @@ namespace SmartStore.Admin.Models.Catalog
         public string PictureThumbnailUrl { get; set; }
         public bool NoThumb { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+		public int ProductTypeId { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }

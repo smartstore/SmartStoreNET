@@ -3036,13 +3036,13 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.ViewPath)
-                .Alter("ProductTemplate.SingleVariant", x =>
+				.Alter("ProductTemplate.Simple", x =>
                 {
-                    x.Name = "Single Product Variant";
+					x.Name = "Simple product";
                 })
-                .Alter("ProductTemplate.VariantsInGrid", x =>
+				.Alter("ProductTemplate.Grouped", x =>
                 {
-                    x.Name = "Variants in Grid";
+					x.Name = "Grouped product";
                 });
         }
 

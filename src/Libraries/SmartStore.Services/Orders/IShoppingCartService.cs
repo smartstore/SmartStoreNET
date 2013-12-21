@@ -85,17 +85,17 @@ namespace SmartStore.Services.Orders
         /// <param name="customerEnteredPrice">Customer entered price</param>
         /// <param name="quantity">Quantity</param>
 		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
-        /// <param name="getStandardWarnings">A value indicating whether we should validate a product variant for standard properties</param>
+        /// <param name="getStandardWarnings">A value indicating whether we should validate a product for standard properties</param>
         /// <param name="getAttributesWarnings">A value indicating whether we should validate product attributes</param>
         /// <param name="getGiftCardWarnings">A value indicating whether we should validate gift card properties</param>
-        /// <param name="getRequiredProductVariantWarnings">A value indicating whether we should validate required product variants (product variants which require other variant to be added to the cart)</param>
+        /// <param name="getRequiredWarnings">A value indicating whether we should validate required products (products which require other products to be added to the cart)</param>
         /// <returns>Warnings</returns>
         IList<string> GetShoppingCartItemWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, int storeId, 
 			string selectedAttributes, decimal customerEnteredPrice,
 			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
             bool getStandardWarnings = true, bool getAttributesWarnings = true,
-            bool getGiftCardWarnings = true, bool getRequiredProductVariantWarnings = true);
+            bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true);
 
         /// <summary>
         /// Validates whether this shopping cart is valid

@@ -70,10 +70,6 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="product">Product</param>
         void UpdateProductReviewTotals(Product product);
-
-        #endregion
-
-        #region Products
         
         /// <summary>
         /// Get low stock products

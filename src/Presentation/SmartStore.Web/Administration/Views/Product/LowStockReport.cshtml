@@ -5,16 +5,15 @@
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
-    ViewBag.Title = T("Admin.Catalog.LowStockReport.Manage").Text;
+
+    ViewBag.Title = T("Admin.Catalog.LowStockReport").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
             <i class="icon icon-bar-chart"></i>
-            @T("Admin.Catalog.LowStockReport.Manage")
+            @T("Admin.Catalog.LowStockReport")
         </div>
         <div class="options">
         </div>
@@ -27,11 +26,11 @@
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(pv => pv.Name);
-                        columns.Bound(pv => pv.Sku).Width(100);
-                        columns.Bound(pv => pv.Price).Width(100);
-                        columns.Bound(pv => pv.StockQuantity).Width(100);
-                        columns.Bound(pv => pv.Published)
+                        columns.Bound(p => p.Name);
+                        columns.Bound(p => p.Sku).Width(100);
+                        columns.Bound(p => p.Price).Width(100);
+                        columns.Bound(p => p.StockQuantity).Width(100);
+                        columns.Bound(p => p.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))

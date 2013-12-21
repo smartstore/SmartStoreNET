@@ -56,9 +56,9 @@
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(pv => pv.Id).Width(70);
-                        columns.Bound(pv => pv.Name).Width(400);
-                        columns.Bound(pv => pv.Sku).Width(100);
+                        columns.Bound(p => p.Id).Width(70);
+                        columns.Bound(p => p.Name).Width(400);
+                        columns.Bound(p => p.Sku).Width(100);
                     })
                     .Selectable()
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))

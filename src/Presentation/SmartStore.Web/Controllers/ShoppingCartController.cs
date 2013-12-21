@@ -938,14 +938,14 @@ namespace SmartStore.Web.Controllers
 			//var productVariants = _productService.GetProductVariantsByProductId(productId);
 			//if (productVariants.Count != 1)
 			//{
-			//	//we can add a product to the cart only if it has exactly one product variant
+			//	//we can add a product to the cart only if it has exactly one product
 			//	return Json(new
 			//	{
 			//		redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
 			//	});
 			//}
 
-            //get default product variant
+            //get default child product
 			//UNDONE revise product-variant logic
             var defaultProductVariant = product;
             if (defaultProductVariant.CustomerEntersPrice)
@@ -979,7 +979,7 @@ namespace SmartStore.Web.Controllers
 				 .ToList();
             var shoppingCartItem = _shoppingCartService
                 .FindShoppingCartItemInTheCart(cart, shoppingCartType, defaultProductVariant);
-            //if we already have the same product variant in the cart, then use the total quantity to validate
+            //if we already have the same product in the cart, then use the total quantity to validate
             var quantityToValidate = shoppingCartItem != null ?
                 shoppingCartItem.Quantity + qtyToAdd : qtyToAdd;
             var addToCartWarnings = _shoppingCartService
@@ -1033,7 +1033,7 @@ namespace SmartStore.Web.Controllers
 
         }
 
-        //add product variant to cart using AJAX
+        //add product to cart using AJAX
         //currently we use this method only for desktop version
         //mobile version uses HTTP POST version of this method (CatalogController.AddProductVariantToCart)
         [HttpPost]

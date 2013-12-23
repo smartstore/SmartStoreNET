@@ -1,0 +1,18 @@
+﻿@model ProductModel
+
+@if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0)
+{
+    foreach (var discount in Model.AvailableDiscounts)
+    {
+        <label class="checkbox">
+        <input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
+                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text>   } />@discount.Name
+        </label>
+    }
+}
+else
+{
+    @T("Admin.Catalog.Products.Discounts.NoDiscounts")
+}
+
+

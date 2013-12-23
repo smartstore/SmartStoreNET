@@ -1,0 +1,74 @@
+﻿@model ProductModel
+
+@using Telerik.Web.Mvc.UI;
+
+@if (Model.Id > 0)
+{
+    if (Model.NumberOfAvailableProductAttributes > 0)
+    {
+        @(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
+            .Name("productvariantattributes-grid")
+            .DataKeys(keys =>
+            {
+                keys.Add(x => x.Id);
+            })
+            .DataBinding(dataBinding =>
+            {
+                dataBinding.Ajax()
+                    .Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
+                    .Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
+                    .Update("ProductVariantAttributeUpdate", "Product") // codehint: sm-edit
+                    .Delete("ProductVariantAttributeDelete", "Product");
+            })
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.ProductAttribute)
+                    .Width(150)
+                    .Centered();
+                columns.Bound(x => x.TextPrompt)
+                    .Width(150)
+                    .Centered();
+                columns.Bound(x => x.IsRequired)
+                    .Width(100)
+                    .Template(item => @Html.SymbolForBool(item.IsRequired))
+                    .ClientTemplate(@Html.SymbolForBool("IsRequired"))
+                    .Centered();
+                columns.Bound(x => x.AttributeControlType)
+                    .Width(150)
+                    .Centered();
+                columns.Bound(x => x.DisplayOrder1)
+                    .Width(150)
+                    .Centered();
+                columns.Bound(x => x.ViewEditUrl)
+                    .Width(200)
+                    .ClientTemplate("<a href=\"<#= ViewEditUrl #>\"><#= ViewEditText #></a>")
+                    .ReadOnly()
+                    .Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
+                columns.Command(commands =>
+                {
+                    commands.Edit().Localize(T);
+                    commands.Delete().Localize(T);
+                })
+                .Width(180);
+            })
+            .ToolBar(commands => commands.Insert())
+            .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
+            .EnableCustomBinding(true))
+
+        <script type="text/javascript">
+            function onProductVariantAttributeEdit(e) {
+                // codehint: sm-edit
+                $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+                $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+            }
+        </script>
+    }
+    else
+    {
+        @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
+    }
+}
+else
+{
+    @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
+}

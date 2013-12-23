@@ -300,5 +300,6 @@ namespace SmartStore.Web.Framework
 			}
 			return lst;
 		}
+
     }
 }

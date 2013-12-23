@@ -236,9 +236,8 @@ namespace SmartStore.Web.Controllers
 
         // codehint: sm-add
         [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
+        protected IList<Category> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId, IDictionary<int, Category> mappedCategories = null)
         {
-
             Category currentCategory = null;
             if (currentCategoryId > 0)
                 currentCategory = _categoryService.GetCategoryById(currentCategoryId);
@@ -252,14 +251,14 @@ namespace SmartStore.Web.Controllers
 
             if (currentCategory != null)
             {
-                return GetCategoryBreadCrumb(currentCategory);
+                return GetCategoryBreadCrumb(currentCategory, mappedCategories);
             }
 
             return new List<Category>();
         }
 
         [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(Category category)
+        protected IList<Category> GetCategoryBreadCrumb(Category category, IDictionary<int, Category> mappedCategories = null)
         {
             if (category == null)
                 throw new ArgumentNullException("category");
@@ -273,8 +272,17 @@ namespace SmartStore.Web.Controllers
 				_storeMappingService.Authorize(category)) //Store mapping
             {
                 breadCrumb.Add(category);
-                category = _categoryService.GetCategoryById(category.ParentCategoryId);
+                var parentId = category.ParentCategoryId;
+                if (mappedCategories == null)
+                {
+                    category = _categoryService.GetCategoryById(parentId);
+                }
+                else
+                {
+                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : _categoryService.GetCategoryById(parentId);
+                }
             }
+
             breadCrumb.Reverse();
             return breadCrumb;
         }
@@ -3676,6 +3684,8 @@ namespace SmartStore.Web.Controllers
             model.Q = model.Q.Trim();
 
             var categories = _categoryService.GetAllCategories();
+            // Perf!
+            var mappedCatgories = categories.ToDictionary(x => x.Id);
             if (categories.Count > 0)
             {
                 //first empty entry
@@ -3689,7 +3699,7 @@ namespace SmartStore.Web.Controllers
                 {
                     //generate full category name (breadcrumb)
                     string fullCategoryBreadcrumbName = "";
-                    var breadcrumb = GetCategoryBreadCrumb(c);
+                    var breadcrumb = GetCategoryBreadCrumb(c, mappedCatgories);
                     for (int i = 0; i <= breadcrumb.Count - 1; i++)
                     {
                         fullCategoryBreadcrumbName += breadcrumb[i].GetLocalized(x => x.Name);

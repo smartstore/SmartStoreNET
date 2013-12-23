@@ -69,23 +69,35 @@ namespace SmartStore.Services.Catalog
 			return null;
 		}
 
-        public static string GetCategoryNameWithPrefix(this Category category, ICategoryService categoryService)
+        public static string GetCategoryNameWithPrefix(this Category category, ICategoryService categoryService, IDictionary<int, Category> mappedCategories = null)
         {
             string result = string.Empty;
 
             while (category != null)
             {
                 if (String.IsNullOrEmpty(result))
+                {
                     result = category.GetFullCategoryName();
+                }
                 else
+                {
                     result = "--" + result;
+                }
 
-                category = categoryService.GetCategoryById(category.ParentCategoryId);
+                int parentId = category.ParentCategoryId;
+                if (mappedCategories == null)
+                {
+                    category = categoryService.GetCategoryById(parentId);
+                }
+                else
+                {
+                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
+                }
             }
             return result;
         }
 
-        public static string GetCategoryBreadCrumb(this Category category, ICategoryService categoryService)
+        public static string GetCategoryBreadCrumb(this Category category, ICategoryService categoryService, IDictionary<int, Category> mappedCategories = null)
         {
             string result = string.Empty;
 
@@ -93,11 +105,23 @@ namespace SmartStore.Services.Catalog
             {
 				// codehint: sm-edit
                 if (String.IsNullOrEmpty(result))
+                {
                     result = category.GetFullCategoryName();
+                }
                 else
-					result = category.GetFullCategoryName() + " >> " + result;
+                {
+                    result = category.GetFullCategoryName() + " >> " + result;
+                }
 
-                category = categoryService.GetCategoryById(category.ParentCategoryId);
+                int parentId = category.ParentCategoryId;
+                if (mappedCategories == null)
+                {
+                    category = categoryService.GetCategoryById(parentId);
+                }
+                else
+                {
+                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
+                }
             }
             return result;
         }

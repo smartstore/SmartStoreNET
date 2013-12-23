@@ -10,7 +10,7 @@
 <div class="product-variant-line" data-productid="@Model.Id">
     <div class="clearfix">
         @if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
-{
+        {
             <div class="variant-picture equalized-column" data-equalized-column-name="pd">
                 <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
                      title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
@@ -130,16 +130,16 @@
             <div class="left-content equalized-column span12" data-equalized-column-name="vlb">
                 <div style="margin-right:20px">
                 @{
-            var dataDictAttributes = new ViewDataDictionary();
-            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+                    var dataDictAttributes = new ViewDataDictionary();
+                    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
                     <div class="product-attributes">
                         @Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
                     </div>
                 }
 
                 @{
-            var dataDictGiftCard = new ViewDataDictionary();
-            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
+                    var dataDictGiftCard = new ViewDataDictionary();
+                    dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
                     @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
                 }
                 </div>
@@ -189,15 +189,7 @@
                             @T("BackInStockSubscriptions.NotifyMeWhenAvailable")
                             <i class="icon-phone"></i>
                         </a>
-                    }
-                    
-                    @*
-                    <div>
-                        <a href="javascript: void(0);" id="back-in-stock-subscribe-@Model.Id">
-                            @T("BackInStockSubscriptions.NotifyMeWhenAvailable")
-                            <i class="icon-phone"></i>
-                        </a>
-                    </div>*@
+                    }                    
                 }
             </div>
 

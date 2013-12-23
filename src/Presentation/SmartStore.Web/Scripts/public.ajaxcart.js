@@ -41,7 +41,7 @@ var AjaxCart = (function ($, window, document, undefined) {
             str = $(el.data("form-selector")).serialize();
             
             // HACK (MC)!
-            // we changed the ModelType of the _ProductVariantAddToCart
+            // we changed the ModelType of the _AddToCart
             // from ...ProductVariantModel.AddToCart to .ProductVariantModel.
             // Therefore input names are not in the form anymore as the ShoppingCartController 
             // expects them. Hacking here ist much easier than refactoring the controller method.

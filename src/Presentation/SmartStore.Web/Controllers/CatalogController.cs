@@ -2194,7 +2194,6 @@ namespace SmartStore.Web.Controllers
                 .GetRelatedProductsByProductId1(productId);
             foreach (var product in _productService.GetProductsByIds(relatedProducts.Select(x => x.ProductId2).ToArray()))
             {
-				//UNDONE revise product-variant logic
                 //var variants = _productService.GetProductVariantsByProductId(product.Id);
                 //ensure that a product has at least one available variant
 				//and has ACL permission and appropriate store mapping

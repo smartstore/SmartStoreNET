@@ -355,130 +355,84 @@
             @Html.ValidationMessageFor(model => model.ProductTypeId)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ProductTemplateId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ProductTemplateId, Model.AvailableProductTemplates)
+            @Html.ValidationMessageFor(model => model.ProductTemplateId)
+        </td>
+    </tr>
 }
 </table>    
-    @(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-info-localized",
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(model => model.Locales[item].ShortDescription)
-                            @Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].FullDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Locales[item].FullDescription, "RichEditor")
-                            @Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-                ,
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.ShortDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(x => x.ShortDescription)
-                            @Html.ValidationMessageFor(model => model.ShortDescription)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.FullDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(x => x.FullDescription, "RichEditor")
-                            @Html.ValidationMessageFor(model => model.FullDescription)
-                        </td>
-                    </tr>
-                </table>
-            ))
+@(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-info-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].Name)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].Name)
+                @Html.ValidationMessageFor(model => model.Locales[item].Name)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.Locales[item].ShortDescription)
+                @Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].FullDescription)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Locales[item].FullDescription, "RichEditor")
+                @Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Name)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShortDescription)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(x => x.ShortDescription)
+                @Html.ValidationMessageFor(model => model.ShortDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.FullDescription)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.FullDescription, "RichEditor")
+                @Html.ValidationMessageFor(model => model.FullDescription)
+            </td>
+        </tr>
+    </table>
+))
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductTags)
-            </td>
-            <td class="adminData">
-                @Html.HiddenFor(model => model.ProductTags, new { @class = "tag-chooser" })
-                @Html.ValidationMessageFor(model => model.ProductTags)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductTemplateId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.ProductTemplateId, Model.AvailableProductTemplates)
-                @Html.ValidationMessageFor(model => model.ProductTemplateId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowOnHomePage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ShowOnHomePage)
-                @Html.ValidationMessageFor(model => model.ShowOnHomePage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Published)
-                @Html.ValidationMessageFor(model => model.Published)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowCustomerReviews)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AllowCustomerReviews)
-                @Html.ValidationMessageFor(model => model.AllowCustomerReviews)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AdminComment)
-            </td>
-            <td class="adminData">
-                @Html.TextAreaFor(model => model.AdminComment)
-                @Html.ValidationMessageFor(model => model.AdminComment)
-            </td>
-        </tr>
-
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Sku)
@@ -504,6 +458,24 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.Gtin)
                 @Html.ValidationMessageFor(model => model.Gtin)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductTags)
+            </td>
+            <td class="adminData">
+                @Html.HiddenFor(model => model.ProductTags, new { @class = "tag-chooser" })
+                @Html.ValidationMessageFor(model => model.ProductTags)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdminComment)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.AdminComment)
+                @Html.ValidationMessageFor(model => model.AdminComment)
             </td>
         </tr>
         <tr class="adminSeparator">
@@ -567,6 +539,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowOnHomePage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ShowOnHomePage)
+                @Html.ValidationMessageFor(model => model.ShowOnHomePage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisableBuyButton)
             </td>
             <td class="adminData">
@@ -599,6 +589,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.CallForPrice)
                 @Html.ValidationMessageFor(model => model.CallForPrice)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomerReviews)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AllowCustomerReviews)
+                @Html.ValidationMessageFor(model => model.AllowCustomerReviews)
             </td>
         </tr>
         <tr>
@@ -651,7 +650,6 @@
                 <hr />
             </td>
         </tr>
-
         <!-- PAnGV -->
         <tr>
             <td class="adminTitle">
@@ -680,7 +678,6 @@
                 <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
-
         <tr class="adminSeparator">
             <td colspan="2">
                 <hr />

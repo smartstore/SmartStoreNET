@@ -15,7 +15,6 @@ namespace SmartStore.Web.Models.Catalog
 
         public ProductDetailsModel()
         {
-            SpecificationAttributeModels = new List<ProductSpecificationModel>();
             //codehint: sm-edit
             //Manufacturers = new List<ProductManufacturer>();
             Manufacturers = new List<ManufacturerOverviewModel>();
@@ -95,8 +94,6 @@ namespace SmartStore.Web.Models.Catalog
 
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }
-
-        public IList<ProductSpecificationModel> SpecificationAttributeModels { get; set; }
 
 		//a list of associated products. For example, "Grouped" products could have several child "simple" products
 		public IList<ProductDetailsModel> AssociatedProducts { get; set; }

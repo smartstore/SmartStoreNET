@@ -277,6 +277,12 @@ namespace SmartStore.Services.Orders
                 return warnings;
             }
 
+			//we can add only simple products
+			if (product.ProductType != ProductType.SimpleProduct)
+			{
+				warnings.Add("This is not simple product");
+			}
+
             //published?
             if (!product.Published)
             {

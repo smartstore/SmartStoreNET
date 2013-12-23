@@ -160,15 +160,15 @@ namespace SmartStore.Web.Infrastructure
                             new { controller = "ShoppingCart", action = "EmailWishlist" },
                             new[] { "SmartStore.Web.Controllers" });
 			//add product to cart (without any attributes and options). used on catalog pages.
-            routes.MapLocalizedRoute("AddProductToCart",
-                            "addproducttocart/{productId}",
-                            new { controller = "ShoppingCart", action = "AddProductToCart" },
+			routes.MapLocalizedRoute("AddProductToCart-Catalog",
+							"addproducttocart/catalog/{productId}",
+							new { controller = "ShoppingCart", action = "AddProductToCart_Catalog" },
                             new { productId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             //add product to cart (with attributes and options). used on the product details pages.
-            routes.MapLocalizedRoute("AddProductVariantToCart",
-							"addproductvarianttocart/{productId}/{shoppingCartTypeId}",
-                            new { controller = "ShoppingCart", action = "AddProductVariantToCart" },
+			routes.MapLocalizedRoute("AddProductToCart-Details",
+							"addproducttocart/details/{productId}/{shoppingCartTypeId}",
+							new { controller = "ShoppingCart", action = "AddProductToCart_Details" },
 							new { productId = @"\d+", shoppingCartTypeId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             //product attributes with "upload file" type

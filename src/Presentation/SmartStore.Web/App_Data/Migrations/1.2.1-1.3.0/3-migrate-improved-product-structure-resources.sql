@@ -1826,6 +1826,23 @@ SET @resources='
 		<Value lang="de">Wählen Sie eine Produktvorlage. Diese Vorlage definiert, wie dieses Produkt im Shop angezeigt wird.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductVariantPictureSize">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductVariantPictureSize.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize">
+		<Value>Associated product image size</Value>
+		<Value lang="de">Bildgröße Gruppenprodukt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize.Hint">
+		<Value>The default size (pixels) for associated product images (part of "grouped" products).</Value>
+		<Value lang="de">Die Standardbildgröße (in Pixel) der zur Produktgruppe gehörender Produkte.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

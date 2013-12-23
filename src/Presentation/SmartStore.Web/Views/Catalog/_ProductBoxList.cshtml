@@ -6,11 +6,11 @@
     string addtocartlink = "";
     if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
     {
-        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
     }
     else
     {
-        addtocartlink = Url.RouteUrl("AddProductToCart", new { productId = Model.Id });
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id });
     }
 
     //codehint: sm-add begin
@@ -213,7 +213,7 @@
                     @if (!Model.ProductPrice.DisableWishListButton)
                     {
                         <a class="ajax-cart-link" 
-                            data-href='@Url.RouteUrl("AddProductVariantToCart", new { productVariantId = Model.DefaultProductVariantId, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                             href="#"
                             data-form-selector="#product-details-form"
                             data-type="wishlist"

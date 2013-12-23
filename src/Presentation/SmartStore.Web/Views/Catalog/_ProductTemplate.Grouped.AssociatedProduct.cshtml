@@ -2,21 +2,20 @@
 @using SmartStore.Web.Models.Catalog;
 @{
     string leftContentWidth = (Model.ThumbDimensions + 20).ToString() + "px";
-    //if (String.IsNullOrWhiteSpace(Model.PictureModel.ImageUrl))
+    //if (String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
     //{
     //    leftContentWidth = "0";
     //}
 }
 <div class="product-variant-line" data-productid="@Model.Id">
     <div class="clearfix">
-    @*UNDONE revise product-variant logic*@
-
-    @*@if (!String.IsNullOrWhiteSpace(Model.PictureModel.ImageUrl))
-    {
-        <div class="variant-picture equalized-column" data-equalized-column-name="pd">
-            <img alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl" title="@Model.PictureModel.Title" />
-        </div>
-    }*@
+        @if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
+{
+            <div class="variant-picture equalized-column" data-equalized-column-name="pd">
+                <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+                     title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+            </div>
+        }
 
         <div class="variant-data equalized-column" data-equalized-column-name="pd" style="margin-left: @leftContentWidth">
             @if (!String.IsNullOrWhiteSpace(Model.Name))

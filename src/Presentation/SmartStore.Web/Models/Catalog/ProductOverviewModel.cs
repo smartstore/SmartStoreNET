@@ -13,11 +13,11 @@ namespace SmartStore.Web.Models.Catalog
             ProductPrice = new ProductPriceModel();
             DefaultPictureModel = new PictureModel();
             SpecificationAttributeModels = new List<ProductSpecificationModel>();
-            //codehint: sm-add begin
             Manufacturers = new List<ManufacturerOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
             ColorAttributes = new List<ColorAttributeModel>();
-            //codehint: sm-add end
+			Weight = "";
+			TransportSurcharge = "";
         }
 
         public string Name { get; set; }

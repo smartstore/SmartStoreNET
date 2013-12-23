@@ -23,6 +23,16 @@ GO
 --END
 --GO
 
+DELETE FROM [Setting] WHERE [name] = N'MediaSettings.ProductVariantPictureSize'
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'mediasettings.associatedproductpicturesize')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.associatedproductpicturesize', N'125', 0)
+END
+GO
+
+
 IF EXISTS (
 		SELECT *
 		FROM sys.objects

@@ -1,14 +1,13 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 <div class="product-variant-line" data-productid="@Model.Id">
-    @*UNDONE revise product-variant logic*@
-    @*@if (!String.IsNullOrWhiteSpace(Model.PictureModel.ImageUrl))
+    @if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
     {
         <div class="variant-picture">
-            <img alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl"
-                                    title="@Model.PictureModel.Title" />
+            <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl" 
+                 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
         </div>
-    }*@
+    }
     @if (!String.IsNullOrWhiteSpace(Model.Name))
     {
         <div class="variant-name">

@@ -919,7 +919,7 @@ namespace SmartStore.Web.Controllers
         //add product to cart using AJAX
         //currently we use this method on catalog pages (category/manufacturer/etc)
         [HttpPost]
-        public ActionResult AddProductToCart(int productId, bool forceredirection = false)
+        public ActionResult AddProductToCart_Catalog(int productId, bool forceredirection = false)
         {
             //current we support only ShoppingCartType.ShoppingCart
             const ShoppingCartType shoppingCartType = ShoppingCartType.ShoppingCart;
@@ -935,10 +935,9 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//we can add a product to the cart only if it is a simple product
+			//we can add only simple products
 			if (product.ProductType != ProductType.SimpleProduct)
 			{
-				//we can add a product to the cart only if it has exactly one child product
 				return Json(new
 				{
 					redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
@@ -1030,11 +1029,10 @@ namespace SmartStore.Web.Controllers
         }
 
         //add product to cart using AJAX
-        //currently we use this method only for desktop version
-        //mobile version uses HTTP POST version of this method (CatalogController.AddProductVariantToCart)
+		//currently we use this method on the product details pages
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult AddProductVariantToCart(int productId, int shoppingCartTypeId, FormCollection form)
+        public ActionResult AddProductToCart_Details(int productId, int shoppingCartTypeId, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
             if (product == null)
@@ -1044,6 +1042,16 @@ namespace SmartStore.Web.Controllers
                     redirect = Url.RouteUrl("HomePage"),
                 });
             }
+
+			//we can add only simple products
+			if (product.ProductType != ProductType.SimpleProduct)
+			{
+				return Json(new
+				{
+					success = false,
+					message = "Only simple products could be added to the cart"
+				});
+			}
 
             #region Customer entered price
             decimal customerEnteredPriceConverted = decimal.Zero;

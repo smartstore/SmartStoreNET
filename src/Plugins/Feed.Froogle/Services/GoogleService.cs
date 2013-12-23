@@ -439,6 +439,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 				foreach (var product in products)
 				{
+					if (product.ProductType != ProductType.SimpleProduct)
+						continue;
+
 					writer.WriteStartElement("item");
 
 					try

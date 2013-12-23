@@ -39,13 +39,6 @@
                     @foreach (var variant in Model.AssociatedProducts)
                     {
                         <div class="product-variant-line" data-productid="@Model.Id">
-                            @if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
-                            {
-                                <div class="variant-picture">
-                                    <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
-                                         title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
-                                </div>
-                            }
                             @Html.Partial("_DownloadSample", Model)
                             @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
                             @{

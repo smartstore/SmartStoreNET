@@ -263,7 +263,7 @@ namespace SmartStore.Services.Orders
             {
                 var reportLine = new BestsellersReportLine()
                 {
-                    EntityId = x.EntityId,
+                    ProductId = x.EntityId,
                     TotalAmount = x.TotalAmount,
                     TotalQuantity = x.TotalQuantity
                 };

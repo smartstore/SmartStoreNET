@@ -2373,7 +2373,7 @@ namespace SmartStore.Web.Controllers
 				_orderReportService.BestSellersReport(_storeContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage));
 
             //load products
-            var products = _productService.GetProductsByIds(report.Select(x => x.EntityId).ToArray());
+            var products = _productService.GetProductsByIds(report.Select(x => x.ProductId).ToArray());
 			//ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 			//prepare model

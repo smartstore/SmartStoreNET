@@ -4042,8 +4042,8 @@ namespace SmartStore.Services.Installation
                 new MessageTemplate
                     {
                         Name = "QuantityBelow.StoreOwnerNotification",
-                        Subject = "%Store.Name%. Quantity below notification. %ProductVariant.FullProductName%",
-                        Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%ProductVariant.FullProductName% (<b>ID:</b> %ProductVariant.ID%) low quantity. <br /><br /><b>Quantity:</b> %ProductVariant.StockQuantity%<br /></p>" + templateFooter,
+                        Subject = "%Store.Name%. Quantity below notification. %Product.Name%",
+                        Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Product.Name% (<b>ID:</b> %Product.ID%) low quantity. <br /><br /><b>Quantity:</b> %Product.StockQuantity%<br /></p>" + templateFooter,
                         IsActive = true,
                         EmailAccountId = eaGeneral.Id,
                     },
@@ -4091,7 +4091,7 @@ namespace SmartStore.Services.Installation
                     {
                         Name = "Product.AskQuestion",
                         Subject = "%Store.Name% - Question concerning '%Product.Name%' from %ProductQuestion.SenderName%",
-                        Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %ProductVariant.ID%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
+                        Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.ID%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
                         IsActive = true,
                         EmailAccountId = eaGeneral.Id,
                     },

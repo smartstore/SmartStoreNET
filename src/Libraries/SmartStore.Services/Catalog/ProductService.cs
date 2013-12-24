@@ -337,6 +337,8 @@ namespace SmartStore.Services.Catalog
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
 
+            _eventPublisher.Publish(new ProductsSearchingEvent(ctx));
+
 			//search by keyword
             bool searchLocalizedValue = false;
             if (ctx.LanguageId > 0)
@@ -778,10 +780,21 @@ namespace SmartStore.Services.Catalog
             if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
             {
                 //search in subcategories
-                query = from p in query
-                        from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-                        where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                        select p;
+                if (ctx.MatchAllcategories)
+                {
+                    query = from p in query
+                                where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+                            from pc in p.ProductCategories
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
+                else
+                {
+                    query = from p in query
+                            from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
             }
 
             // manufacturer filtering

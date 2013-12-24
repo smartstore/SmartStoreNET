@@ -1,0 +1,74 @@
+﻿@model ProductModel
+
+@using Telerik.Web.Mvc.UI;
+
+@if (Model.Id > 0)
+{
+    <div style="margin: 10px 0px 10px 0px;" class="muted">
+        <div>
+            @T("Admin.Catalog.Products.AssociatedProducts.Note1")
+        </div>
+        <div>
+            @T("Admin.Catalog.Products.AssociatedProducts.Note2")
+        </div>
+    </div>
+    
+    <div style="margin: 10px 0">    
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
+                        .Name("associatedproducts-grid")
+                        .DataKeys(keys =>
+                        {
+                            keys.Add(x => x.Id);
+                        })
+                        .DataBinding(dataBinding =>
+                        {
+                            dataBinding.Ajax()
+                                .Select("AssociatedProductList", "Product", new { productId = Model.Id })
+                                .Delete("AssociatedProductDelete", "Product");
+                        })
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.Id)
+                                .ReadOnly();
+                            columns.Bound(x => x.ProductName)
+                                .ReadOnly();
+                            columns.Command(commands =>
+                            {
+                                commands.Delete().Localize(T);
+                            })
+                            .Width(180);
+                        })
+                        .EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <input type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" value="@T("Admin.Catalog.Products.AssociatedProducts.AddNew")" 
+                        onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 800, 800, true); return false;" class="btn" />
+
+                    <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
+
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefreshAssociatedProducts').click(function () {
+                                //refresh grid
+                                var optionsGrid = $("#associatedproducts-grid");
+                                optionsGrid.data('tGrid').ajaxRequest();
+
+                                //return false to don't reload a page
+                                return false;
+                            });
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+else
+{
+    @T("Admin.Catalog.Products.AssociatedProducts.SaveBeforeEdit")
+}

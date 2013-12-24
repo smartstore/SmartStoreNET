@@ -462,6 +462,41 @@ namespace SmartStore.Admin.Models.Catalog
             public int[] SelectedProductIds { get; set; }
         }
 
+		public partial class AssociatedProductModel : EntityModelBase
+		{
+			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.Product")]
+			public string ProductName { get; set; }
+		}
+		public partial class AddAssociatedProductModel : ModelBase
+		{
+			public AddAssociatedProductModel()
+			{
+				AvailableCategories = new List<SelectListItem>();
+				AvailableManufacturers = new List<SelectListItem>();
+				AvailableStores = new List<SelectListItem>();
+				AvailableVendors = new List<SelectListItem>();
+			}
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
+			[AllowHtml]
+			public string SearchProductName { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
+			public int SearchCategoryId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
+			public int SearchManufacturerId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+			public int SearchStoreId { get; set; }
+
+			public IList<SelectListItem> AvailableCategories { get; set; }
+			public IList<SelectListItem> AvailableManufacturers { get; set; }
+			public IList<SelectListItem> AvailableStores { get; set; }
+			public IList<SelectListItem> AvailableVendors { get; set; }
+
+			public int ProductId { get; set; }
+
+			public int[] SelectedProductIds { get; set; }
+		}
+
         public class CrossSellProductModel : EntityModelBase
         {
             public int ProductId1 { get; set; }

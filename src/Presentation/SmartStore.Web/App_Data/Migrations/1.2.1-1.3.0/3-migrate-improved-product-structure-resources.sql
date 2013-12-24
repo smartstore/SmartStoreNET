@@ -1836,11 +1836,36 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize">
 		<Value>Associated product image size</Value>
-		<Value lang="de">Bildgröße Gruppenprodukt</Value>
+		<Value lang="de">Bildgröße angegliedertes Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize.Hint">
 		<Value>The default size (pixels) for associated product images (part of "grouped" products).</Value>
-		<Value lang="de">Die Standardbildgröße (in Pixel) der zur Produktgruppe gehörender Produkte.</Value>
+		<Value lang="de">Die Standardbildgröße (in Pixel) der angegliederten Produkte.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts">
+		<Value>Associated products</Value>
+		<Value lang="de">Angegliederte Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.AddNew">
+		<Value>Add new associated product</Value>
+		<Value lang="de">Angegliedertes Produkt hinzufügen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Fields.Product">
+		<Value>Product</Value>
+		<Value lang="de">Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note1">
+		<Value>Associated products are used only with "grouped" products.</Value>
+		<Value lang="de">Angegliederte Produkte gibt es ausschließlich bei gruppierten Produkten.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note2">
+		<Value>A product could be associated to only one "grouped" product.</Value>
+		<Value lang="de">Ein Produkt kann nur einem gruppiertem Produkt angegliedert werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.SaveBeforeEdit">
+		<Value>You need to save the product before you can add associated products for this product page.</Value>
+		<Value lang="de">Das Produkt muss gespeichert werden, bevor angegliederte Produkte hinzugefügt werden können.</Value>
 	</LocaleResource>
 
 </Language>

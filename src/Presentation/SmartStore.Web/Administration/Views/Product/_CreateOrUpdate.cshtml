@@ -15,21 +15,15 @@
     x.Add().Text(T("Admin.Common.SEO").Text)
         .Icon("icon-signal")
         .Content(TabSeo());
+    x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
+        .Icon("icon-picture")
+        .Content(TabPictures());
     x.Add().Text(T("Admin.Catalog.Products.Categories").Text)
         .Icon("icon-sitemap")
         .Content(TabCategories());
     x.Add().Text(T("Admin.Catalog.Products.Manufacturers").Text)
         .Icon("icon-truck")
         .Content(TabManufacturers());
-    x.Add().Text(T("Admin.Catalog.Products.RelatedProducts").Text)
-        .Icon("icon-link")
-        .Content(TabRelatedProducts());
-    x.Add().Text(T("Admin.Catalog.Products.CrossSells").Text)
-        .Icon("icon-bullhorn")
-        .Content(TabCrossSells());
-    x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
-        .Icon("icon-picture")
-        .Content(TabPictures());
     x.Add().Text(T("Admin.Catalog.Products.TierPrices").Text)
         .Content(TabTierPrices());
     x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
@@ -47,6 +41,14 @@
 	x.Add().Text(T("Admin.Common.Stores").Text)
         .Icon("icon-globe")    
         .Content(TabStores());
+    x.Add().Text(T("Admin.Catalog.Products.RelatedProducts").Text)
+        .Icon("icon-link")
+        .Content(TabRelatedProducts());
+    x.Add().Text(T("Admin.Catalog.Products.CrossSells").Text)
+        .Icon("icon-bullhorn")
+        .Content(TabCrossSells());
+    x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text).
+        Content(TabAssociatedProducts());
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));
@@ -59,6 +61,10 @@
 {
     @Html.Partial("_CreateOrUpdate.SEO", Model)
 }
+@helper TabPictures()
+{
+    @Html.Partial("_CreateOrUpdate.Pictures", Model)
+}
 @helper TabCategories()
 {
     @Html.Partial("_CreateOrUpdate.Categories", Model)
@@ -66,18 +72,6 @@
 @helper TabManufacturers()
 {
     @Html.Partial("_CreateOrUpdate.Manufacturers", Model)
-}
-@helper TabRelatedProducts()
-{
-    @Html.Partial("_CreateOrUpdate.RelatedProducts", Model)
-}
-@helper TabCrossSells()
-{
-    @Html.Partial("_CreateOrUpdate.CrossSells", Model)
-}
-@helper TabPictures()
-{
-    @Html.Partial("_CreateOrUpdate.Pictures", Model)
 }
 @helper TabTierPrices()
 {
@@ -106,4 +100,16 @@
 @helper TabStores()
 {
     @Html.Partial("_CreateOrUpdate.Stores", Model)
+}
+@helper TabRelatedProducts()
+{
+    @Html.Partial("_CreateOrUpdate.RelatedProducts", Model)
+}
+@helper TabCrossSells()
+{
+    @Html.Partial("_CreateOrUpdate.CrossSells", Model)
+}
+@helper TabAssociatedProducts()
+{
+    @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
 }

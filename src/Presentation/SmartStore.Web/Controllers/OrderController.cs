@@ -284,41 +284,41 @@ namespace SmartStore.Web.Controllers
 
             //purchased products
             model.ShowSku = _catalogSettings.ShowProductSku;
-            var orderProductVariants = _orderService.GetAllOrderProductVariants(order.Id, null, null, null, null, null, null);
-            foreach (var opv in orderProductVariants)
+            var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+            foreach (var orderItem in orderItems)
             {
-                opv.Product.MergeWithCombination(opv.AttributesXml);
-                var opvModel = new OrderDetailsModel.OrderProductVariantModel()
+                orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
+                var orderItemModel = new OrderDetailsModel.OrderItemModel()
                 {
-                    Id = opv.Id,
-                    Sku = opv.Product.Sku,
-                    ProductId = opv.Product.Id,
-					ProductName = opv.Product.GetLocalized(x => x.Name),
-                    ProductSeName = opv.Product.GetSeName(),
-                    Quantity = opv.Quantity,
-                    AttributeInfo = opv.AttributeDescription
+                    Id = orderItem.Id,
+                    Sku = orderItem.Product.Sku,
+                    ProductId = orderItem.Product.Id,
+					ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                    ProductSeName = orderItem.Product.GetSeName(),
+                    Quantity = orderItem.Quantity,
+                    AttributeInfo = orderItem.AttributeDescription
                 };
-                model.Items.Add(opvModel);
+                model.Items.Add(orderItemModel);
 
                 //unit price, subtotal
                 switch (order.CustomerTaxDisplayType)
                 {
                     case TaxDisplayType.ExcludingTax:
                         {
-                            var opvUnitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.UnitPriceExclTax, order.CurrencyRate);
-                            opvModel.UnitPrice = _priceFormatter.FormatPrice(opvUnitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+                            var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
+                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
 
-                            var opvPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.PriceExclTax, order.CurrencyRate);
-                            opvModel.SubTotal = _priceFormatter.FormatPrice(opvPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+                            var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
+                            orderItemModel.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
                         }
                         break;
                     case TaxDisplayType.IncludingTax:
                         {
-                            var opvUnitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.UnitPriceInclTax, order.CurrencyRate);
-                            opvModel.UnitPrice = _priceFormatter.FormatPrice(opvUnitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+                            var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
+                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
 
-                            var opvPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.PriceInclTax, order.CurrencyRate);
-                            opvModel.SubTotal = _priceFormatter.FormatPrice(opvPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+                            var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
+                            orderItemModel.SubTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
                         }
                         break;
                 }
@@ -379,20 +379,20 @@ namespace SmartStore.Web.Controllers
             model.ShowSku = _catalogSettings.ShowProductSku;
             foreach (var shipmentItem in shipment.ShipmentItems)
             {
-                var opv = _orderService.GetOrderProductVariantById(shipmentItem.OrderProductVariantId);
-                if (opv == null)
+                var orderItem = _orderService.GetOrderItemById(shipmentItem.OrderItemId);
+                if (orderItem == null)
                     continue;
 
-                opv.Product.MergeWithCombination(opv.AttributesXml);
+                orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
                 var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel()
                 {
                     Id = shipmentItem.Id,
-                    Sku = opv.Product.Sku,
-                    ProductId = opv.Product.Id,
-					ProductName = opv.Product.GetLocalized(x => x.Name),
-                    ProductSeName = opv.Product.GetSeName(),
-                    AttributeInfo = opv.AttributeDescription,
-                    QuantityOrdered = opv.Quantity,
+                    Sku = orderItem.Product.Sku,
+                    ProductId = orderItem.Product.Id,
+					ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                    ProductSeName = orderItem.Product.GetSeName(),
+                    AttributeInfo = orderItem.AttributeDescription,
+                    QuantityOrdered = orderItem.Quantity,
                     QuantityShipped = shipmentItem.Quantity,
                 };
                 model.Items.Add(shipmentItemModel);

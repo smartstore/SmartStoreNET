@@ -23,7 +23,7 @@ namespace SmartStore.Services.Messages
 
         void AddRecurringPaymentTokens(IList<Token> tokens, RecurringPayment recurringPayment);
 
-        void AddReturnRequestTokens(IList<Token> tokens, ReturnRequest returnRequest, OrderProductVariant opv);
+        void AddReturnRequestTokens(IList<Token> tokens, ReturnRequest returnRequest, OrderItem orderItem);
 
         void AddGiftCardTokens(IList<Token> tokens, GiftCard giftCard);
 

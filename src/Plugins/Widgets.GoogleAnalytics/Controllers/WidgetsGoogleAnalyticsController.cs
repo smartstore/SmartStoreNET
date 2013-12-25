@@ -209,7 +209,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
 
                 var sb = new StringBuilder();
-                foreach (var item in order.OrderProductVariants)
+                foreach (var item in order.OrderItems)
                 {
                     string analyticsEcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
                     //get category

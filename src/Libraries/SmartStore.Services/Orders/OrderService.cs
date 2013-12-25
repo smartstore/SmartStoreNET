@@ -20,7 +20,7 @@ namespace SmartStore.Services.Orders
         #region Fields
 
         private readonly IRepository<Order> _orderRepository;
-        private readonly IRepository<OrderProductVariant> _opvRepository;
+        private readonly IRepository<OrderItem> _orderItemRepository;
         private readonly IRepository<OrderNote> _orderNoteRepository;
 		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RecurringPayment> _recurringPaymentRepository;
@@ -36,7 +36,7 @@ namespace SmartStore.Services.Orders
         /// Ctor
         /// </summary>
         /// <param name="orderRepository">Order repository</param>
-        /// <param name="opvRepository">Order product variant repository</param>
+        /// <param name="orderItemRepository">Order item repository</param>
         /// <param name="orderNoteRepository">Order note repository</param>
 		/// <param name="productRepository">Product repository</param>
         /// <param name="recurringPaymentRepository">Recurring payment repository</param>
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Orders
         /// <param name="returnRequestRepository">Return request repository</param>
         /// <param name="eventPublisher">Event published</param>
         public OrderService(IRepository<Order> orderRepository,
-            IRepository<OrderProductVariant> opvRepository,
+            IRepository<OrderItem> orderItemRepository,
             IRepository<OrderNote> orderNoteRepository,
 			IRepository<Product> productRepository,
             IRepository<RecurringPayment> recurringPaymentRepository,
@@ -53,7 +53,7 @@ namespace SmartStore.Services.Orders
             IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
-            _opvRepository = opvRepository;
+            _orderItemRepository = orderItemRepository;
             _orderNoteRepository = orderNoteRepository;
 			_productRepository = productRepository;
             _recurringPaymentRepository = recurringPaymentRepository;
@@ -339,37 +339,37 @@ namespace SmartStore.Services.Orders
         #region Orders product variants
 
         /// <summary>
-        /// Gets an order product variant
+        /// Gets an Order item
         /// </summary>
-        /// <param name="orderProductVariantId">Order product variant identifier</param>
-        /// <returns>Order product variant</returns>
-        public virtual OrderProductVariant GetOrderProductVariantById(int orderProductVariantId)
+        /// <param name="orderItemId">Order item identifier</param>
+        /// <returns>Order item</returns>
+        public virtual OrderItem GetOrderItemById(int orderItemId)
         {
-            if (orderProductVariantId == 0)
+            if (orderItemId == 0)
                 return null;
 
-            return _opvRepository.GetById(orderProductVariantId);
+            return _orderItemRepository.GetById(orderItemId);
         }
 
         /// <summary>
-        /// Gets an order product variant
+        /// Gets an Order item
         /// </summary>
-        /// <param name="orderProductVariantGuid">Order product variant identifier</param>
-        /// <returns>Order product variant</returns>
-        public virtual OrderProductVariant GetOrderProductVariantByGuid(Guid orderProductVariantGuid)
+        /// <param name="orderItemGuid">Order item identifier</param>
+        /// <returns>Order item</returns>
+        public virtual OrderItem GetOrderItemByGuid(Guid orderItemGuid)
         {
-            if (orderProductVariantGuid == Guid.Empty)
+            if (orderItemGuid == Guid.Empty)
                 return null;
             
-            var query = from opv in _opvRepository.Table
-                        where opv.OrderProductVariantGuid == orderProductVariantGuid
-                        select opv;
-            var orderProductVariant = query.FirstOrDefault();
-            return orderProductVariant;
+            var query = from orderItem in _orderItemRepository.Table
+                        where orderItem.OrderItemGuid == orderItemGuid
+                        select orderItem;
+            var orderItem = query.FirstOrDefault();
+            return orderItem;
         }
         
         /// <summary>
-        /// Gets all order product variants
+        /// Gets all Order items
         /// </summary>
         /// <param name="orderId">Order identifier; null to load all records</param>
         /// <param name="customerId">Customer identifier; null to load all records</param>
@@ -380,7 +380,7 @@ namespace SmartStore.Services.Orders
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="loadDownloableProductsOnly">Value indicating whether to load downloadable products only</param>
         /// <returns>Order collection</returns>
-        public virtual IList<OrderProductVariant> GetAllOrderProductVariants(int? orderId,
+        public virtual IList<OrderItem> GetAllOrderItems(int? orderId,
             int? customerId, DateTime? startTime, DateTime? endTime,
             OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
             bool loadDownloableProductsOnly)
@@ -398,9 +398,9 @@ namespace SmartStore.Services.Orders
                 shippingStatusId = (int)ss.Value;
             
 
-            var query = from opv in _opvRepository.Table
-                        join o in _orderRepository.Table on opv.OrderId equals o.Id
-						join p in _productRepository.Table on opv.ProductId equals p.Id
+            var query = from orderItem in _orderItemRepository.Table
+                        join o in _orderRepository.Table on orderItem.OrderId equals o.Id
+						join p in _productRepository.Table on orderItem.ProductId equals p.Id
                         where (!orderId.HasValue || orderId.Value == 0 || orderId == o.Id) &&
                         (!customerId.HasValue || customerId.Value == 0 || customerId == o.CustomerId) &&
                         (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
@@ -410,26 +410,26 @@ namespace SmartStore.Services.Orders
                         (!shippingStatusId.HasValue || shippingStatusId.Value == o.ShippingStatusId) &&
                         (!loadDownloableProductsOnly || p.IsDownload) &&
                         !o.Deleted
-                        orderby o.CreatedOnUtc descending, opv.Id
-                        select opv;
+                        orderby o.CreatedOnUtc descending, orderItem.Id
+                        select orderItem;
 
-            var orderProductVariants = query.ToList();
-            return orderProductVariants;
+            var orderItems = query.ToList();
+            return orderItems;
         }
 
         /// <summary>
-        /// Delete an order product variant
+        /// Delete an Order item
         /// </summary>
-        /// <param name="orderProductVariant">The order product variant</param>
-        public virtual void DeleteOrderProductVariant(OrderProductVariant orderProductVariant)
+        /// <param name="orderItem">The Order item</param>
+        public virtual void DeleteOrderItem(OrderItem orderItem)
         {
-            if (orderProductVariant == null)
-                throw new ArgumentNullException("orderProductVariant");
+            if (orderItem == null)
+                throw new ArgumentNullException("orderItem");
 
-            _opvRepository.Delete(orderProductVariant);
+            _orderItemRepository.Delete(orderItem);
 
             //event notification
-            _eventPublisher.EntityDeleted(orderProductVariant);
+            _eventPublisher.EntityDeleted(orderItem);
         }
 
         #endregion
@@ -568,11 +568,11 @@ namespace SmartStore.Services.Orders
         /// </summary>
 		/// <param name="storeId">Store identifier; 0 to load all entries</param>
         /// <param name="customerId">Customer identifier; null to load all entries</param>
-        /// <param name="orderProductVariantId">Order product variant identifier; null to load all entries</param>
+        /// <param name="orderItemId">Order item identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
         /// <returns>Return requests</returns>
 		public virtual IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
-            int orderProductVariantId, ReturnRequestStatus? rs)
+            int orderItemId, ReturnRequestStatus? rs)
         {
             var query = _returnRequestRepository.Table;
 			if (storeId > 0)
@@ -584,8 +584,8 @@ namespace SmartStore.Services.Orders
                 int returnStatusId = (int)rs.Value;
                 query = query.Where(rr => rr.ReturnRequestStatusId == returnStatusId);
             }
-            if (orderProductVariantId > 0)
-                query = query.Where(rr => rr.OrderProductVariantId == orderProductVariantId);
+            if (orderItemId > 0)
+                query = query.Where(rr => rr.OrderItemId == orderItemId);
 
             query = query.OrderByDescending(rr => rr.CreatedOnUtc).ThenByDescending(rr=>rr.Id);
             

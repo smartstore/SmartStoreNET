@@ -1294,10 +1294,10 @@ namespace SmartStore.Web.Controllers
 			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null);
             foreach (var returnRequest in returnRequests)
             {
-                var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);
-                if (opv != null)
+                var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+                if (orderItem != null)
                 {
-                    var product = opv.Product;
+                    var product = orderItem.Product;
 
                     var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel()
                     {
@@ -1334,13 +1334,13 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerDownloadableProductsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.DownloadableProducts;
-            var items = _orderService.GetAllOrderProductVariants(null, customer.Id, null, null,
+            var items = _orderService.GetAllOrderItems(null, customer.Id, null, null,
                 null, null, null, true);
             foreach (var item in items)
             {
                 var itemModel = new CustomerDownloadableProductsModel.DownloadableProductsModel()
                 {
-                    OrderProductVariantGuid = item.OrderProductVariantGuid,
+                    OrderItemGuid = item.OrderItemGuid,
                     OrderId = item.OrderId,
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(item.Order.CreatedOnUtc, DateTimeKind.Utc),
 					ProductName = item.Product.GetLocalized(x => x.Name),
@@ -1360,19 +1360,19 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        public ActionResult UserAgreement(Guid opvId)
+        public ActionResult UserAgreement(Guid orderItemId)
         {
-            var opv = _orderService.GetOrderProductVariantByGuid(opvId);
-            if (opv == null)
+            var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
+            if (orderItem == null)
                 return RedirectToRoute("HomePage");
 
-            var product = opv.Product;
+            var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
                 return RedirectToRoute("HomePage");
 
             var model = new UserAgreementModel();
             model.UserAgreementText = product.UserAgreementText;
-            model.OrderProductVariantGuid = opvId;
+            model.OrderItemGuid = orderItemId;
             
             return View(model);
         }

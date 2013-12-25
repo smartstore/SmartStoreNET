@@ -325,7 +325,7 @@ namespace SmartStore.Admin.Models.Orders
         {
             public int OrderId { get; set; }
 
-            public int OrderProductVariantId { get; set; }
+            public int OrderItemId { get; set; }
 
             [UIHint("Download")]
             public int LicenseDownloadId { get; set; }

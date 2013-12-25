@@ -17,10 +17,10 @@ namespace SmartStore.Core.Domain.Orders
 		public int StoreId { get; set; }
 
         /// <summary>
-        /// Gets or sets the order product variant identifier
+        /// Gets or sets the order item identifier
         /// </summary>
 		[DataMember]
-		public int OrderProductVariantId { get; set; }
+		public int OrderItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer identifier

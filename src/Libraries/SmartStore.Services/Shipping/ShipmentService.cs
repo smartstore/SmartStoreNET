@@ -181,8 +181,8 @@ namespace SmartStore.Services.Shipping
             if (shipmentItemId == 0)
                 return null;
 
-            var sopv = _siRepository.GetById(shipmentItemId);
-            return sopv;
+            var si = _siRepository.GetById(shipmentItemId);
+            return si;
         }
         
         /// <summary>

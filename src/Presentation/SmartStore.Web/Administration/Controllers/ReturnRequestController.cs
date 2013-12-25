@@ -68,14 +68,14 @@ namespace SmartStore.Admin.Controllers
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-            var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);
-            if (opv == null)
+            var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+            if (orderItem == null)
                 return false;
 
             model.Id = returnRequest.Id;
-            model.ProductId = opv.ProductId;
-			model.ProductName = opv.Product.Name;
-            model.OrderId = opv.OrderId;
+            model.ProductId = orderItem.ProductId;
+			model.ProductName = orderItem.Product.Name;
+            model.OrderId = orderItem.OrderId;
             model.CustomerId = returnRequest.CustomerId;
 			model.CustomerFullName = returnRequest.Customer.GetFullName();
             model.Quantity = returnRequest.Quantity;
@@ -200,8 +200,8 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             //var customer = returnRequest.Customer;
-            var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);
-            int queuedEmailId = _workflowMessageService.SendReturnRequestStatusChangedCustomerNotification(returnRequest, opv, _localizationSettings.DefaultAdminLanguageId);
+            var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+            int queuedEmailId = _workflowMessageService.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
             if (queuedEmailId > 0)
                 SuccessNotification(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
             return RedirectToAction("Edit", returnRequest.Id);

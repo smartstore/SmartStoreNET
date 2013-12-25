@@ -862,15 +862,15 @@ namespace SmartStore.Services.Messages
         /// Sends 'New Return Request' message to a store owner
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId)
+        public virtual int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId)
         {
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _storeContext.CurrentStore;
+			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId, store.Id);
@@ -881,7 +881,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
-			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, orderItem);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -902,15 +902,15 @@ namespace SmartStore.Services.Messages
         /// Sends 'Return Request status changed' message to a customer
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId)
+        public virtual int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId)
         {
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _storeContext.CurrentStore;
+			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId, store.Id);
@@ -921,7 +921,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
-			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, orderItem);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);

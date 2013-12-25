@@ -17,7 +17,7 @@ namespace SmartStore.Web.Models.Customer
         #region Nested classes
         public partial class DownloadableProductsModel : ModelBase
         {
-            public Guid OrderProductVariantGuid { get; set; }
+            public Guid OrderItemGuid { get; set; }
 
             public int OrderId { get; set; }
 
@@ -36,7 +36,7 @@ namespace SmartStore.Web.Models.Customer
 
     public partial class UserAgreementModel : ModelBase
     {
-        public Guid OrderProductVariantGuid { get; set; }
+        public Guid OrderItemGuid { get; set; }
         public string UserAgreementText { get; set; }
     }
 }

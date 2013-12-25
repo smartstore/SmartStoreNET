@@ -31,6 +31,55 @@ BEGIN
 END
 GO
 
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[OrderProductVariant]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	EXEC sp_rename 'OrderProductVariant', 'OrderItem';
+END
+GO
+
+IF EXISTS (SELECT 1
+           FROM sys.objects
+           WHERE name = 'OrderProductVariant_Order'
+           AND parent_object_id = Object_id('OrderItem')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	EXEC sp_rename 'OrderProductVariant_Order', 'OrderItem_Order';
+END
+GO
+
+IF EXISTS (SELECT 1
+           FROM sys.objects
+           WHERE name = 'OrderProductVariant_ProductVariant'
+           AND parent_object_id = Object_id('OrderItem')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	EXEC sp_rename 'OrderProductVariant_ProductVariant', 'OrderItem_ProductVariant';
+END
+GO
+
+IF EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_OrderProductVariant_OrderId' and object_id=object_id(N'[OrderItem]'))
+BEGIN
+	EXEC sp_rename 'OrderItem.IX_OrderProductVariant_OrderId', 'IX_OrderItem_OrderId', 'INDEX';
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ReturnRequest]') and NAME='OrderProductVariantId')
+BEGIN
+	EXEC sp_rename 'ReturnRequest.OrderProductVariantId', 'OrderItemId', 'COLUMN';
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShipmentItem]') and NAME='OrderProductVariantId')
+BEGIN
+	EXEC sp_rename 'ShipmentItem.OrderProductVariantId', 'OrderItemId', 'COLUMN';
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[OrderItem]') and NAME='OrderProductVariantGuid')
+BEGIN
+	EXEC sp_rename 'OrderItem.OrderProductVariantGuid', 'OrderItemGuid', 'COLUMN';
+END
+GO
 
 
 DELETE FROM [ActivityLogType] WHERE [SystemKeyword] = N'AddNewProductVariant'

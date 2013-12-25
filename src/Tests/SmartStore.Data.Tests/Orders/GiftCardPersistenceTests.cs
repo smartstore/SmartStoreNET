@@ -82,13 +82,13 @@ namespace SmartStore.Data.Tests.Orders
         }
         
         [Test]
-        public void Can_save_and_load_giftCard_with_associatedOrderProductVariant()
+        public void Can_save_and_load_giftCard_with_associatedOrderItem()
         {
             var giftCard = new GiftCard()
             {
                 GiftCardType = GiftCardType.Physical,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-                PurchasedWithOrderItem = GetTestOrderProductVariant()
+                PurchasedWithOrderItem = GetTestOrderItem()
             };
 
             var fromDb = SaveAndLoadEntity(giftCard);
@@ -113,9 +113,9 @@ namespace SmartStore.Data.Tests.Orders
             };
         }
 
-        protected OrderProductVariant GetTestOrderProductVariant()
+        protected OrderItem GetTestOrderItem()
         {
-            return new OrderProductVariant()
+            return new OrderItem()
             {
                 Order = GetTestOrder(),
 				Product = GetTestProduct()

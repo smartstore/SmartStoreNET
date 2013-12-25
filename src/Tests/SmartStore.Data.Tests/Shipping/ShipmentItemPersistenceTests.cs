@@ -15,17 +15,17 @@ namespace SmartStore.Data.Tests.Shipping
         [Test]
         public void Can_save_and_load_shipmentItem()
         {
-            var sopv = new ShipmentItem()
+            var shipmentItem = new ShipmentItem()
             {
                 Shipment = GetTestShipment(),
-                OrderProductVariantId = 2,
+                OrderItemId = 2,
                 Quantity = 3, 
             };
 
-            var fromDb = SaveAndLoadEntity(sopv);
+            var fromDb = SaveAndLoadEntity(shipmentItem);
             fromDb.ShouldNotBeNull();
             fromDb.Shipment.ShouldNotBeNull();
-            fromDb.OrderProductVariantId.ShouldEqual(2);
+            fromDb.OrderItemId.ShouldEqual(2);
             fromDb.Quantity.ShouldEqual(3);
         }
 

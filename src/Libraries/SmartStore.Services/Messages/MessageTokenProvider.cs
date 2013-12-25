@@ -140,11 +140,11 @@ namespace SmartStore.Services.Messages
             sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Total", languageId)));
             sb.AppendLine("</tr>");
 
-            var table = order.OrderProductVariants.ToList();
+            var table = order.OrderItems.ToList();
             for (int i = 0; i <= table.Count - 1; i++)
             {
-                var opv = table[i];
-                var product = opv.Product;
+                var orderItem = table[i];
+                var product = orderItem.Product;
                 if (product == null)
                     continue;
 
@@ -154,25 +154,25 @@ namespace SmartStore.Services.Messages
 
                 sb.AppendLine("<td style=\"padding: 0.6em 0.4em;text-align: left;\">" + HttpUtility.HtmlEncode(productName));
                 //add download link
-                if (_downloadService.IsDownloadAllowed(opv))
+                if (_downloadService.IsDownloadAllowed(orderItem))
                 {
                     //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                    string downloadUrl = string.Format("{0}download/getdownload/{1}", _webHelper.GetStoreLocation(false), opv.OrderProductVariantGuid);
+                    string downloadUrl = string.Format("{0}download/getdownload/{1}", _webHelper.GetStoreLocation(false), orderItem.OrderItemGuid);
                     string downloadLink = string.Format("<a class=\"link\" href=\"{0}\">{1}</a>", downloadUrl, _localizationService.GetResource("Messages.Order.Product(s).Download", languageId));
                     sb.AppendLine("&nbsp;&nbsp;(");
                     sb.AppendLine(downloadLink);
                     sb.AppendLine(")");
                 }
                 //attributes
-                if (!String.IsNullOrEmpty(opv.AttributeDescription))
+                if (!String.IsNullOrEmpty(orderItem.AttributeDescription))
                 {
                     sb.AppendLine("<br />");
-                    sb.AppendLine(opv.AttributeDescription);
+                    sb.AppendLine(orderItem.AttributeDescription);
                 }
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    opv.Product.MergeWithCombination(opv.AttributesXml, _productAttributeParser);
+                    orderItem.Product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
 
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
@@ -187,34 +187,34 @@ namespace SmartStore.Services.Messages
                 {
                     case TaxDisplayType.ExcludingTax:
                         {
-                            var opvUnitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.UnitPriceExclTax, order.CurrencyRate);
-                            unitPriceStr = _priceFormatter.FormatPrice(opvUnitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false);
+                            var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
+                            unitPriceStr = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false);
                         }
                         break;
                     case TaxDisplayType.IncludingTax:
                         {
-                            var opvUnitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.UnitPriceInclTax, order.CurrencyRate);
-                            unitPriceStr = _priceFormatter.FormatPrice(opvUnitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true);
+                            var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
+                            unitPriceStr = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true);
                         }
                         break;
                 }
                 sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: right;\">{0}</td>", unitPriceStr));
 
-                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0}</td>", opv.Quantity));
+                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0}</td>", orderItem.Quantity));
 
                 string priceStr = string.Empty;
                 switch (order.CustomerTaxDisplayType)
                 {
                     case TaxDisplayType.ExcludingTax:
                         {
-                            var opvPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.PriceExclTax, order.CurrencyRate);
-                            priceStr = _priceFormatter.FormatPrice(opvPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false);
+                            var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
+                            priceStr = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false);
                         }
                         break;
                     case TaxDisplayType.IncludingTax:
                         {
-                            var opvPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(opv.PriceInclTax, order.CurrencyRate);
-                            priceStr = _priceFormatter.FormatPrice(opvPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true);
+                            var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
+                            priceStr = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true);
                         }
                         break;
                 }
@@ -451,11 +451,11 @@ namespace SmartStore.Services.Messages
             for (int i = 0; i <= table.Count - 1; i++)
             {
                 var si = table[i];
-                var opv = _orderService.GetOrderProductVariantById(si.OrderProductVariantId);
-                if (opv == null)
+                var orderItem = _orderService.GetOrderItemById(si.OrderItemId);
+                if (orderItem == null)
                     continue;
 
-                var product = opv.Product;
+                var product = orderItem.Product;
                 if (product == null)
                     continue;
 
@@ -465,15 +465,15 @@ namespace SmartStore.Services.Messages
 
                 sb.AppendLine("<td style=\"padding: 0.6em 0.4em;text-align: left;\">" + HttpUtility.HtmlEncode(productName));
                 //attributes
-                if (!String.IsNullOrEmpty(opv.AttributeDescription))
+                if (!String.IsNullOrEmpty(orderItem.AttributeDescription))
                 {
                     sb.AppendLine("<br />");
-                    sb.AppendLine(opv.AttributeDescription);
+                    sb.AppendLine(orderItem.AttributeDescription);
                 }
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    product.MergeWithCombination(opv.AttributesXml, _productAttributeParser);
+                    product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
 
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
@@ -784,11 +784,11 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityTokensAdded(recurringPayment, tokens);
         }
 
-        public virtual void AddReturnRequestTokens(IList<Token> tokens, ReturnRequest returnRequest, OrderProductVariant opv)
+        public virtual void AddReturnRequestTokens(IList<Token> tokens, ReturnRequest returnRequest, OrderItem orderItem)
         {
             tokens.Add(new Token("ReturnRequest.ID", returnRequest.Id.ToString()));
             tokens.Add(new Token("ReturnRequest.Product.Quantity", returnRequest.Quantity.ToString()));
-            tokens.Add(new Token("ReturnRequest.Product.Name", opv.Product.Name));
+            tokens.Add(new Token("ReturnRequest.Product.Name", orderItem.Product.Name));
             tokens.Add(new Token("ReturnRequest.Reason", returnRequest.ReasonForReturn));
             tokens.Add(new Token("ReturnRequest.RequestedAction", returnRequest.RequestedAction));
             tokens.Add(new Token("ReturnRequest.CustomerComment", HtmlUtils.FormatText(returnRequest.CustomerComments, false, true, false, false, false, false), true));

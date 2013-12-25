@@ -98,7 +98,7 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the associated order item
         /// </summary>
-        public virtual OrderProductVariant PurchasedWithOrderItem { get; set; }
+        public virtual OrderItem PurchasedWithOrderItem { get; set; }
 
         #region Methods
 

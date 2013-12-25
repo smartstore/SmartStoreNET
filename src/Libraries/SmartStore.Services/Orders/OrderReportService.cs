@@ -21,7 +21,7 @@ namespace SmartStore.Services.Orders
         #region Fields
 
         private readonly IRepository<Order> _orderRepository;
-        private readonly IRepository<OrderProductVariant> _opvRepository;
+        private readonly IRepository<OrderItem> _orderItemRepository;
         private readonly IRepository<Product> _productRepository;
 
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -35,18 +35,18 @@ namespace SmartStore.Services.Orders
         /// Ctor
         /// </summary>
         /// <param name="orderRepository">Order repository</param>
-        /// <param name="opvRepository">Order product variant repository</param>
+        /// <param name="orderItemRepository">Order item repository</param>
         /// <param name="productRepository">Product repository</param>
         /// <param name="productVariantRepository">Product variant repository</param>
         /// <param name="dateTimeHelper">Datetime helper</param>
         /// <param name="productService">Product service</param>
         public OrderReportService(IRepository<Order> orderRepository,
-            IRepository<OrderProductVariant> opvRepository,
+            IRepository<OrderItem> orderItemRepository,
             IRepository<Product> productRepository,
             IDateTimeHelper dateTimeHelper, IProductService productService)
         {
             this._orderRepository = orderRepository;
-            this._opvRepository = opvRepository;
+            this._orderItemRepository = orderItemRepository;
             this._productRepository = productRepository;
             this._dateTimeHelper = dateTimeHelper;
             this._productService = productService;
@@ -214,9 +214,9 @@ namespace SmartStore.Services.Orders
                 shippingStatusId = (int)ss.Value;
 
 
-            var query1 = from opv in _opvRepository.Table
-                         join o in _orderRepository.Table on opv.OrderId equals o.Id
-                         join p in _productRepository.Table on opv.ProductId equals p.Id
+            var query1 = from orderItem in _orderItemRepository.Table
+                         join o in _orderRepository.Table on orderItem.OrderId equals o.Id
+                         join p in _productRepository.Table on orderItem.ProductId equals p.Id
 						 where (storeId == 0 || storeId == o.StoreId) &&
 						 (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
                          (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
@@ -227,12 +227,12 @@ namespace SmartStore.Services.Orders
                          (!p.Deleted) &&
                          (billingCountryId == 0 || o.BillingAddress.CountryId == billingCountryId) &&
                          (showHidden || p.Published)
-                         select opv;
+                         select orderItem;
 
             var query2 = 
                 //group by products
-                from opv in query1
-                group opv by opv.ProductId into g
+                from orderItem in query1
+                group orderItem by orderItem.ProductId into g
                 select new
                 {
                     EntityId = g.Key,
@@ -288,28 +288,28 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentException("Product ID is not specified");
 
             //this inner query should retrieve all orders that have contained the productID
-            var query1 = (from opv in _opvRepository.Table
-                          join p in _productRepository.Table on opv.ProductId equals p.Id
+            var query1 = (from orderItem in _orderItemRepository.Table
+                          join p in _productRepository.Table on orderItem.ProductId equals p.Id
                           where p.Id == productId
-                          select opv.OrderId).Distinct();
+                          select orderItem.OrderId).Distinct();
 
-            var query2 = from opv in _opvRepository.Table
-                         join p in _productRepository.Table on opv.ProductId equals p.Id
-                         where (query1.Contains(opv.OrderId)) &&
+            var query2 = from orderItem in _orderItemRepository.Table
+                         join p in _productRepository.Table on orderItem.ProductId equals p.Id
+                         where (query1.Contains(orderItem.OrderId)) &&
                          (p.Id != productId) &&
                          (showHidden || p.Published) &&
-						 (!opv.Order.Deleted) &&
-						 (storeId == 0 || opv.Order.StoreId == storeId) &&
+						 (!orderItem.Order.Deleted) &&
+						 (storeId == 0 || orderItem.Order.StoreId == storeId) &&
                          (!p.Deleted) &&
                          (showHidden || p.Published)
-                         select new { opv, p };
+                         select new { orderItem = orderItem, p };
 
-            var query3 = from opv_p in query2
-                         group opv_p by opv_p.p.Id into g
+            var query3 = from orderItem_p in query2
+                         group orderItem_p by orderItem_p.p.Id into g
                          select new
                          {
                              ProductId = g.Key,
-                             ProductsPurchased = g.Sum(x => x.opv.Quantity),
+                             ProductsPurchased = g.Sum(x => x.orderItem.Quantity),
                          };
             query3 = query3.OrderByDescending(x => x.ProductsPurchased);
 
@@ -337,12 +337,12 @@ namespace SmartStore.Services.Orders
             DateTime? endTime, int pageIndex, int pageSize, bool showHidden = false)
         {
             //this inner query should retrieve all purchased order product varint identifiers
-            var query1 = (from opv in _opvRepository.Table
-                          join o in _orderRepository.Table on opv.OrderId equals o.Id
+            var query1 = (from orderItem in _orderItemRepository.Table
+                          join o in _orderRepository.Table on orderItem.OrderId equals o.Id
                           where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
                                 (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
                                 (!o.Deleted)
-                          select opv.ProductId).Distinct();
+                          select orderItem.ProductId).Distinct();
 
             var query2 = from p in _productRepository.Table
 						 orderby p.Name
@@ -384,9 +384,9 @@ namespace SmartStore.Services.Orders
                 shippingStatusId = (int)ss.Value;
             //We cannot use String.IsNullOrEmpty(billingEmail) in SQL Compact
             bool dontSearchEmail = String.IsNullOrEmpty(billingEmail);
-            var query = from opv in _opvRepository.Table
-                        join o in _orderRepository.Table on opv.OrderId equals o.Id
-                        join p in _productRepository.Table on opv.ProductId equals p.Id
+            var query = from orderItem in _orderItemRepository.Table
+                        join o in _orderRepository.Table on orderItem.OrderId equals o.Id
+                        join p in _productRepository.Table on orderItem.ProductId equals p.Id
 						where (storeId == 0 || storeId == o.StoreId) &&
 							  (!startTimeUtc.HasValue || startTimeUtc.Value <= o.CreatedOnUtc) &&
                               (!endTimeUtc.HasValue || endTimeUtc.Value >= o.CreatedOnUtc) &&
@@ -396,9 +396,9 @@ namespace SmartStore.Services.Orders
                               (!o.Deleted) &&
                               (!p.Deleted) &&
                               (dontSearchEmail || (o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail)))
-                        select new { opv, p };
+                        select new { orderItem = orderItem, p };
             
-			var productCost = Convert.ToDecimal(query.Sum(o => (decimal?)o.p.ProductCost * o.opv.Quantity));
+			var productCost = Convert.ToDecimal(query.Sum(o => (decimal?)o.p.ProductCost * o.orderItem.Quantity));
 
 			var reportSummary = GetOrderAverageReportLine(storeId, os, ps, ss, startTimeUtc, endTimeUtc, billingEmail);
 			var profit = reportSummary.SumOrders - reportSummary.SumTax - productCost;

@@ -419,7 +419,6 @@
     <Compile Include="Domain\Catalog\ProductManufacturer.cs" />
     <Compile Include="Domain\Catalog\ProductPicture.cs" />
     <Compile Include="Domain\Catalog\ProductSpecificationAttribute.cs" />
-    <Compile Include="Domain\Catalog\ProductVariant.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttribute.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttributeCombination.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttributeValue.cs" />

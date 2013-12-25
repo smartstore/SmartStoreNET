@@ -1056,7 +1056,7 @@ namespace SmartStore.Services.Catalog
 		public virtual void UpdateHasDiscountsApplied(Product product)
         {
 			if (product == null)
-				throw new ArgumentNullException("productVariant");
+				throw new ArgumentNullException("product");
 
 			product.HasDiscountsApplied = product.AppliedDiscounts.Count > 0;
 			UpdateProduct(product);

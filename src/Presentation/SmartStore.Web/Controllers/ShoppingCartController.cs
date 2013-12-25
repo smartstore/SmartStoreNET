@@ -172,7 +172,7 @@ namespace SmartStore.Web.Controllers
         protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, bool showDefaultPicture, string productName, string attributesXml)
         {
             if (product == null)
-                throw new ArgumentNullException("productVariant");
+                throw new ArgumentNullException("product");
 
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 

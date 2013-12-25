@@ -82,7 +82,7 @@ namespace SmartStore.Services.Orders
         {
             var query = _giftCardRepository.Table;
             if (purchasedWithOrderId.HasValue)
-                query = query.Where(gc => gc.PurchasedWithOrderProductVariant != null && gc.PurchasedWithOrderProductVariant.OrderId == purchasedWithOrderId.Value);
+                query = query.Where(gc => gc.PurchasedWithOrderItem != null && gc.PurchasedWithOrderItem.OrderId == purchasedWithOrderId.Value);
             if (startTime.HasValue)
                 query = query.Where(gc => startTime.Value <= gc.CreatedOnUtc);
             if (endTime.HasValue)
@@ -128,17 +128,17 @@ namespace SmartStore.Services.Orders
         }
 
         /// <summary>
-        /// Gets gift cards by 'PurchasedWithOrderProductVariantId'
+        /// Gets gift cards by 'PurchasedWithOrderItemId'
         /// </summary>
-        /// <param name="purchasedWithOrderProductVariantId">Purchased with order product variant identifier</param>
+        /// <param name="purchasedWithOrderItemId">Purchased with order item identifier</param>
         /// <returns>Gift card entries</returns>
-        public virtual IList<GiftCard> GetGiftCardsByPurchasedWithOrderProductVariantId(int purchasedWithOrderProductVariantId)
+        public virtual IList<GiftCard> GetGiftCardsByPurchasedWithOrderItemId(int purchasedWithOrderItemId)
         {
-            if (purchasedWithOrderProductVariantId == 0)
+            if (purchasedWithOrderItemId == 0)
                 return new List<GiftCard>();
 
             var query = _giftCardRepository.Table;
-            query = query.Where(gc => gc.PurchasedWithOrderProductVariantId.HasValue && gc.PurchasedWithOrderProductVariantId.Value == purchasedWithOrderProductVariantId);
+            query = query.Where(gc => gc.PurchasedWithOrderItemId.HasValue && gc.PurchasedWithOrderItemId.Value == purchasedWithOrderItemId);
             query = query.OrderBy(gc => gc.Id);
 
             var giftCards = query.ToList();

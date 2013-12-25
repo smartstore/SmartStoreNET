@@ -1102,7 +1102,7 @@ namespace SmartStore.Services.Orders
                                         var gc = new GiftCard()
                                         {
                                             GiftCardType = sc.Product.GiftCardType,
-                                            PurchasedWithOrderProductVariant = opv,
+                                            PurchasedWithOrderItem = opv,
                                             Amount = scUnitPriceExclTax,
                                             IsGiftCardActivated = false,
                                             GiftCardCouponCode = _giftCardService.GenerateGiftCardCode(),
@@ -1168,7 +1168,7 @@ namespace SmartStore.Services.Orders
                                         var gc = new GiftCard()
                                         {
                                             GiftCardType = opv.Product.GiftCardType,
-                                            PurchasedWithOrderProductVariant = newOpv,
+                                            PurchasedWithOrderItem = newOpv,
                                             Amount = opv.UnitPriceExclTax,
                                             IsGiftCardActivated = false,
                                             GiftCardCouponCode = _giftCardService.GenerateGiftCardCode(),

@@ -88,16 +88,16 @@ namespace SmartStore.Data.Tests.Orders
             {
                 GiftCardType = GiftCardType.Physical,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-                PurchasedWithOrderProductVariant = GetTestOrderProductVariant()
+                PurchasedWithOrderItem = GetTestOrderProductVariant()
             };
 
             var fromDb = SaveAndLoadEntity(giftCard);
             fromDb.ShouldNotBeNull();
 
 
-            fromDb.PurchasedWithOrderProductVariant.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.Product.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.Product.Name.ShouldEqual("Product name 1");
+            fromDb.PurchasedWithOrderItem.ShouldNotBeNull();
+            fromDb.PurchasedWithOrderItem.Product.ShouldNotBeNull();
+            fromDb.PurchasedWithOrderItem.Product.Name.ShouldEqual("Product name 1");
         }
 
         protected Customer GetTestCustomer()

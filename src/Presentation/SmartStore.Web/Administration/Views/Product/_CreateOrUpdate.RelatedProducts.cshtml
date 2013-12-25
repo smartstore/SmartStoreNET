@@ -23,10 +23,8 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Product2Name)
-                            .Width(500)
                             .ReadOnly();
                         columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
                             .Centered();
                         columns.Command(commands =>
                         {

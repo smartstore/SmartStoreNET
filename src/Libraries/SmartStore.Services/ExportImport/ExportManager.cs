@@ -219,6 +219,8 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteStartElement("Product");
 
                 xmlWriter.WriteElementString("ProductId", null, product.Id.ToString());
+				xmlWriter.WriteElementString("ProductTypeId", null, product.ProductTypeId.ToString());
+				xmlWriter.WriteElementString("ParentProductId", null, product.ParentProductId.ToString());
                 xmlWriter.WriteElementString("Name", null, product.Name);
                 xmlWriter.WriteElementString("ShortDescription", null, product.ShortDescription);
                 xmlWriter.WriteElementString("FullDescription", null, product.FullDescription.RemoveInvalidXmlChars());
@@ -480,6 +482,8 @@ namespace SmartStore.Services.ExportImport
                 //Create Headers and format them 
                 var properties = new string[]
                 {
+                    "ProductTypeId",
+                    "ParentProductId",
                     "Name",
                     "ShortDescription",
                     "FullDescription",
@@ -570,6 +574,12 @@ namespace SmartStore.Services.ExportImport
                 foreach (var p in products)
                 {
                     int col = 1;
+
+					worksheet.Cells[row, col].Value = p.ProductTypeId;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.ParentProductId;
+					col++;
 
                     worksheet.Cells[row, col].Value = p.Name;
                     col++;
@@ -940,7 +950,7 @@ namespace SmartStore.Services.ExportImport
                     {
                         xmlWriter.WriteStartElement("OrderProductVariant");
                         xmlWriter.WriteElementString("OrderProductVariantId", null, orderProductVariant.Id.ToString());
-                        xmlWriter.WriteElementString("ProductVariantId", null, orderProductVariant.ProductId.ToString());
+                        xmlWriter.WriteElementString("ProductId", null, orderProductVariant.ProductId.ToString());
 
 						xmlWriter.WriteElementString("ProductName", null, orderProductVariant.Product.Name);
                         xmlWriter.WriteElementString("UnitPriceInclTax", null, orderProductVariant.UnitPriceInclTax.ToString());

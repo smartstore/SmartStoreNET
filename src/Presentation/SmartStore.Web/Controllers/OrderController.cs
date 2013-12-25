@@ -287,7 +287,7 @@ namespace SmartStore.Web.Controllers
             var orderProductVariants = _orderService.GetAllOrderProductVariants(order.Id, null, null, null, null, null, null);
             foreach (var opv in orderProductVariants)
             {
-                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                opv.Product.MergeWithCombination(opv.AttributesXml);
                 var opvModel = new OrderDetailsModel.OrderProductVariantModel()
                 {
                     Id = opv.Id,
@@ -383,7 +383,7 @@ namespace SmartStore.Web.Controllers
                 if (opv == null)
                     continue;
 
-                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                opv.Product.MergeWithCombination(opv.AttributesXml);
                 var sopvModel = new ShipmentDetailsModel.ShipmentOrderProductVariantModel()
                 {
                     Id = sopv.Id,

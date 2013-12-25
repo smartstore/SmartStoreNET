@@ -425,7 +425,7 @@ namespace SmartStore.Web.Controllers
 
             foreach (var sci in cart)
             {
-                ((IMergedProduct)sci.Product).MergeWithCombination(sci.AttributesXml);
+                sci.Product.MergeWithCombination(sci.AttributesXml);
                 var cartItemModel = new ShoppingCartModel.ShoppingCartItemModel()
                 {
                     Id = sci.Id,
@@ -607,7 +607,7 @@ namespace SmartStore.Web.Controllers
 
             foreach (var sci in cart)
             {
-                ((IMergedProduct)sci.Product).MergeWithCombination(sci.AttributesXml);
+                sci.Product.MergeWithCombination(sci.AttributesXml);
                 var cartItemModel = new WishlistModel.ShoppingCartItemModel()
                 {
                     Id = sci.Id,

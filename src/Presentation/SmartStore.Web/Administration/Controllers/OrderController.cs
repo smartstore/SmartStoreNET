@@ -413,7 +413,7 @@ namespace SmartStore.Admin.Controllers
                 if (opv.Product.IsDownload)
                     hasDownloadableItems = true;
 
-                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                opv.Product.MergeWithCombination(opv.AttributesXml);
                 var opvModel = new OrderModel.OrderItemModel()
                 {
                     Id = opv.Id,
@@ -464,13 +464,15 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected OrderModel.AddOrderProductModel.ProductDetailsModel PrepareAddProductToOrderModel(int orderId, int productVariantId)
+        protected OrderModel.AddOrderProductModel.ProductDetailsModel PrepareAddProductToOrderModel(int orderId, int productId)
         {
+            var product = _productService.GetProductById(productId);
+			if (product == null)
+				throw new ArgumentException("No product found with the specified id");
 
-            var product = _productService.GetProductById(productVariantId);
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
             {
-                ProductId = productVariantId,
+                ProductId = productId,
                 OrderId = orderId,
                 Name = product.Name,
                 UnitPriceExclTax = decimal.Zero,
@@ -557,7 +559,7 @@ namespace SmartStore.Admin.Controllers
                     var qtyOrdered = opv.Quantity;
                     var qtyInAllShipments = opv.GetTotalNumberOfItemsInAllShipment();
 
-                    ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                    opv.Product.MergeWithCombination(opv.AttributesXml);
                     var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
                     {
                         Id = sopv.Id,
@@ -2022,7 +2024,7 @@ namespace SmartStore.Admin.Controllers
                 if (maxQtyToAdd <= 0)
                     continue;
 
-                ((IMergedProduct)opv.Product).MergeWithCombination(opv.AttributesXml);
+                opv.Product.MergeWithCombination(opv.AttributesXml);
                 var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
                 {
                     OrderProductVariantId = opv.Id,

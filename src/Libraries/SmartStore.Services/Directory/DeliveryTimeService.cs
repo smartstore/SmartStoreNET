@@ -25,7 +25,7 @@ namespace SmartStore.Services.Directory
         #region Fields
 
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
-        private readonly IRepository<ProductVariant> _productVariantRepository;
+        private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttrCombinationRepository;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerService _customerService;
@@ -48,7 +48,7 @@ namespace SmartStore.Services.Directory
         /// <param name="eventPublisher">Event published</param>
         public DeliveryTimeService(ICacheManager cacheManager,
             IRepository<DeliveryTime> deliveryTimeRepository,
-            IRepository<ProductVariant> productVariantRepository,
+            IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttrCombinationRepository,
             ICustomerService customerService,
             IPluginFinder pluginFinder,
@@ -60,7 +60,7 @@ namespace SmartStore.Services.Directory
             //this._currencySettings = currencySettings;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
-            this._productVariantRepository = productVariantRepository;
+            this._productRepository = productRepository;
             this._productVariantAttrCombinationRepository = productVariantAttrCombinationRepository;
         }
 
@@ -93,9 +93,10 @@ namespace SmartStore.Services.Directory
             if (deliveryTimeId == 0)
                 return false;
 
-            var query = from v in _productVariantRepository.Table
-                        where v.DeliveryTimeId == deliveryTimeId || v.ProductVariantAttributeCombinations.Any(c => c.DeliveryTimeId == deliveryTimeId)
-                        select v.Id;
+            var query = 
+				from p in _productRepository.Table
+				where p.DeliveryTimeId == deliveryTimeId || p.ProductVariantAttributeCombinations.Any(c => c.DeliveryTimeId == deliveryTimeId)
+				select p.Id;
 
             return query.Count() > 0;
         }

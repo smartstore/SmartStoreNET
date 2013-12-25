@@ -25,6 +25,8 @@ namespace SmartStore.Services.ExportImport
         //the columns
         private readonly static string[] s_properties = new string[]
         {
+            "ProductTypeId",
+            "ParentProductId",
             "Name",
             "ShortDescription",
             "FullDescription",
@@ -214,6 +216,8 @@ namespace SmartStore.Services.ExportImport
                     if (allColumnsAreEmpty)
                         break;
 
+					int productTypeId = GetValue<int>(worksheet, iRow, "ProductTypeId");
+					int parentProductId = GetValue<int>(worksheet, iRow, "ParentProductId");
                     string name = GetValue<string>(worksheet, iRow, "Name");
                     string shortDescription = GetValue<string>(worksheet, iRow, "ShortDescription");
                     string fullDescription = GetValue<string>(worksheet, iRow, "FullDescription");
@@ -340,6 +344,8 @@ namespace SmartStore.Services.ExportImport
 						newProduct = true;
 					}
 
+					product.ProductTypeId = productTypeId;
+					product.ParentProductId = parentProductId;
 					product.Name = name;
 					product.ShortDescription = shortDescription;
 					product.FullDescription = fullDescription;

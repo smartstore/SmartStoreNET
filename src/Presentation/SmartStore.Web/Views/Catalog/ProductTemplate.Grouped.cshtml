@@ -113,11 +113,11 @@
 			<div class="product-collateral clearfix">
                 <!-- associated products -->
                 <div class="product-variant-list">
-                    @foreach (var variant in Model.AssociatedProducts)
+                    @foreach (var product in Model.AssociatedProducts)
                     {
-                        var dataDictVariant = new ViewDataDictionary();
-                        dataDictVariant.TemplateInfo.HtmlFieldPrefix = string.Format("variant_{0}", variant.Id);
-                        @Html.Partial("_ProductTemplate.Grouped.AssociatedProduct", variant, dataDictVariant)
+                        var dataDictProduct = new ViewDataDictionary();
+                        dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+                        @Html.Partial("_ProductTemplate.Grouped.AssociatedProduct", product, dataDictProduct)
                     }
                 </div>
             </div>

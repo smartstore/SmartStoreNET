@@ -344,7 +344,7 @@ namespace SmartStore.Admin.Models.Catalog
         
         #region Nested classes
         
-        public class AddProductSpecificationAttributeModel : EntityModelBase
+        public class AddProductSpecificationAttributeModel : ModelBase
         {
             public AddProductSpecificationAttributeModel()
             {
@@ -424,8 +424,6 @@ namespace SmartStore.Admin.Models.Catalog
 
         public class RelatedProductModel : EntityModelBase
         {
-            public int ProductId1 { get; set; }
-
             public int ProductId2 { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.RelatedProducts.Fields.Product")]
@@ -499,8 +497,6 @@ namespace SmartStore.Admin.Models.Catalog
 
         public class CrossSellProductModel : EntityModelBase
         {
-            public int ProductId1 { get; set; }
-
             public int ProductId2 { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.CrossSells.Fields.Product")]

@@ -14,7 +14,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product
     /// </summary>
     [DataContract]
-	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
+	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedProduct
     {
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
@@ -39,7 +39,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public int ProductTypeId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the parent product identifier. It's used only with grouped products
+		/// Gets or sets the parent product identifier. It's used to identify associated products (only with "grouped" products)
 		/// </summary>
 		[DataMember]
 		public int ParentProductId { get; set; }
@@ -454,7 +454,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this product has tier prices configured
-		/// <remarks>The same as if we run variant.TierPrices.Count > 0
+		/// <remarks>The same as if we run this.TierPrices.Count > 0
 		/// We use this property for performance optimization:
 		/// if this property is set to false, then we do not need to load tier prices navifation property
 		/// </remarks>
@@ -464,7 +464,7 @@ namespace SmartStore.Core.Domain.Catalog
 		
 		/// <summary>
 		/// Gets or sets a value indicating whether this product has discounts applied
-		/// <remarks>The same as if we run variant.AppliedDiscounts.Count > 0
+		/// <remarks>The same as if we run this.AppliedDiscounts.Count > 0
 		/// We use this property for performance optimization:
 		/// if this property is set to false, then we do not need to load Applied Discounts navifation property
 		/// </remarks>

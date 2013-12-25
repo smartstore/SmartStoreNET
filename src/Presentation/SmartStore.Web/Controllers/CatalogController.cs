@@ -1306,7 +1306,7 @@ namespace SmartStore.Web.Controllers
 
                 model.IsUnavailable = (model.CombinationSelected != null && model.CombinationSelected.IsActive == false);
 
-                ((IMergedProduct)product).MergeWithCombination(model.CombinationSelected);
+                product.MergeWithCombination(model.CombinationSelected);
 
                 // mark explicitly selected as pre-selected
                 foreach (var attribute in model.ProductVariantAttributes)
@@ -2176,7 +2176,6 @@ namespace SmartStore.Web.Controllers
                     };
                     decimal taxRate = decimal.Zero;
                     decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, decimal.Zero, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity), out taxRate);
-                    //_taxService.GetProductPrice(variant, tierPrice.Price, out taxRate);
                     decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _workContext.WorkingCurrency);
                     m.Price = _priceFormatter.FormatPrice(price, false, false);
                     return m;
@@ -2194,9 +2193,7 @@ namespace SmartStore.Web.Controllers
                 .GetRelatedProductsByProductId1(productId);
             foreach (var product in _productService.GetProductsByIds(relatedProducts.Select(x => x.ProductId2).ToArray()))
             {
-                //var variants = _productService.GetProductVariantsByProductId(product.Id);
-                //ensure that a product has at least one available variant
-				//and has ACL permission and appropriate store mapping
+				//ensure has ACL permission and appropriate store mapping
 				if (_aclService.Authorize(product) && _storeMappingService.Authorize(product))
                     products.Add(product);
             }

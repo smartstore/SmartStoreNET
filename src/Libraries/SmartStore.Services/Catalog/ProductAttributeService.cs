@@ -377,19 +377,6 @@ namespace SmartStore.Services.Catalog
         #endregion
 
         #region Product variant attribute combinations (ProductVariantAttributeCombination)
-
-		//private void EnsureSingleDefaultVariant(ProductVariantAttributeCombination combination) {
-		//	// the current combination should be the default one, so reset the prior default combination.
-		//	var query = from c in _productVariantAttributeCombinationRepository.Table
-		//				where c.IsDefaultCombination && c.ProductVariantId == combination.ProductVariantId             
-		//				select c;
-
-		//	foreach (var comb in query.ToList())
-		//	{
-		//		comb.IsDefaultCombination = false;
-		//		_productVariantAttributeCombinationRepository.Update(comb);
-		//	}
-		//}
         
 		private void CombineAll(List<List<ProductVariantAttributeValue>> toCombine, List<List<ProductVariantAttributeValue>> result, int y, List<ProductVariantAttributeValue> tmp)
 		{

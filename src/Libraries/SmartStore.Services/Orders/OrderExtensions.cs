@@ -41,12 +41,12 @@ namespace SmartStore.Services.Orders
             for (int i = 0; i < shipments.Count; i++)
             {
                 var shipment = shipments[i];
-                var sopv = shipment.ShipmentOrderProductVariants
+                var si = shipment.ShipmentItems
                     .Where(x => x.OrderProductVariantId == opv.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    totalInShipments += sopv.Quantity;
+                    totalInShipments += si.Quantity;
                 }
             }
             return totalInShipments;
@@ -91,12 +91,12 @@ namespace SmartStore.Services.Orders
                     //already shipped
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
+                var si = shipment.ShipmentItems
                     .Where(x => x.OrderProductVariantId == opv.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
 
@@ -122,12 +122,12 @@ namespace SmartStore.Services.Orders
                     //not shipped yet
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
+                var si = shipment.ShipmentItems
                     .Where(x => x.OrderProductVariantId == opv.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
             
@@ -153,12 +153,12 @@ namespace SmartStore.Services.Orders
                     //not delivered yet
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
+                var si = shipment.ShipmentItems
                     .Where(x => x.OrderProductVariantId == opv.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
 

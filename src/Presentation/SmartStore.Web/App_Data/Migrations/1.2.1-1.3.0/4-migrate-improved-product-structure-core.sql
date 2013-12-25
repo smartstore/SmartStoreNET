@@ -1,27 +1,28 @@
+--rename ShipmentOrderProductVariant to ShipmentItem
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[Shipment_OrderProductVariant]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	EXEC sp_rename 'Shipment_OrderProductVariant', 'ShipmentItem';
+END
+GO
+
+IF EXISTS (SELECT 1
+           FROM sys.objects
+           WHERE name = 'ShipmentOrderProductVariant_Shipment'
+           AND parent_object_id = Object_id('ShipmentItem')
+           AND Objectproperty(object_id,N'IsForeignKey') = 1)
+BEGIN
+	EXEC sp_rename 'ShipmentOrderProductVariant_Shipment', 'ShipmentItem_Shipment';
+END
+GO
+
+
+
 DELETE FROM [ActivityLogType] WHERE [SystemKeyword] = N'AddNewProductVariant'
 GO
 DELETE FROM [ActivityLogType] WHERE [SystemKeyword] = N'DeleteProductVariant'
 GO
 DELETE FROM [ActivityLogType] WHERE [SystemKeyword] = N'EditProductVariant'
 GO
-
-IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_ProductVariantAttributeCombination_SKU' and object_id=object_id(N'[ProductVariantAttributeCombination]'))
-BEGIN
-    CREATE NONCLUSTERED INDEX [IX_ProductVariantAttributeCombination_SKU] ON [ProductVariantAttributeCombination] ([SKU] ASC)
-END
-GO
-
-IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_Name' and object_id=object_id(N'[Product]'))
-BEGIN
-    CREATE NONCLUSTERED INDEX [IX_Product_Name] ON [Product] ([Name] ASC)
-END
-GO
-
---IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_Sku' and object_id=object_id(N'[Product]'))
---BEGIN
---    CREATE NONCLUSTERED INDEX [IX_Product_Sku] ON [Product] ([Sku] ASC)
---END
---GO
 
 --remove obsolete setting
 DELETE FROM [Setting] WHERE [name] = N'MediaSettings.ProductVariantPictureSize'
@@ -47,6 +48,30 @@ GO
 UPDATE [MessageTemplate]
 SET [Subject] = REPLACE([Subject], 'ProductVariant.StockQuantity', 'Product.StockQuantity'),
 [Body] = REPLACE([Body], 'ProductVariant.StockQuantity', 'Product.StockQuantity')
+GO
+
+
+
+
+
+
+
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_ProductVariantAttributeCombination_SKU' and object_id=object_id(N'[ProductVariantAttributeCombination]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_ProductVariantAttributeCombination_SKU] ON [ProductVariantAttributeCombination] ([SKU] ASC)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_Name' and object_id=object_id(N'[Product]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Product_Name] ON [Product] ([Name] ASC)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_Sku' and object_id=object_id(N'[Product]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Product_Sku] ON [Product] ([Sku] ASC)
+END
 GO
 
 

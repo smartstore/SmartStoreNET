@@ -11,7 +11,7 @@ namespace SmartStore.Core.Domain.Shipping
 	[DataContract]
 	public partial class Shipment : BaseEntity
     {
-        private ICollection<ShipmentOrderProductVariant> _shipmentOrderProductVariants;
+        private ICollection<ShipmentItem> _shipmentItems;
 
         /// <summary>
         /// Gets or sets the order identifier
@@ -57,12 +57,12 @@ namespace SmartStore.Core.Domain.Shipping
 		public virtual Order Order { get; set; }
 
         /// <summary>
-        /// Gets or sets the shipment order product variants
+		/// Gets or sets the shipment items
         /// </summary>
-        public virtual ICollection<ShipmentOrderProductVariant> ShipmentOrderProductVariants
+        public virtual ICollection<ShipmentItem> ShipmentItems
         {
-            get { return _shipmentOrderProductVariants ?? (_shipmentOrderProductVariants = new List<ShipmentOrderProductVariant>()); }
-            protected set { _shipmentOrderProductVariants = value; }
+            get { return _shipmentItems ?? (_shipmentItems = new List<ShipmentItem>()); }
+            protected set { _shipmentItems = value; }
         }
     }
 }

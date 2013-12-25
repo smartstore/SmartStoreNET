@@ -547,22 +547,22 @@ namespace SmartStore.Admin.Controllers
 
             if (prepareProducts)
             {
-                foreach (var sopv in shipment.ShipmentOrderProductVariants)
+                foreach (var shipmentItem in shipment.ShipmentItems)
                 {
-                    var opv = _orderService.GetOrderProductVariantById(sopv.OrderProductVariantId);
+                    var opv = _orderService.GetOrderProductVariantById(shipmentItem.OrderProductVariantId);
                     if (opv == null)
                         continue;
 
                     //quantities
-                    var qtyInThisShipment = sopv.Quantity;
+                    var qtyInThisShipment = shipmentItem.Quantity;
                     var maxQtyToAdd = opv.GetTotalNumberOfItemsCanBeAddedToShipment();
                     var qtyOrdered = opv.Quantity;
                     var qtyInAllShipments = opv.GetTotalNumberOfItemsInAllShipment();
 
                     opv.Product.MergeWithCombination(opv.AttributesXml);
-                    var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
+                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
                     {
-                        Id = sopv.Id,
+                        Id = shipmentItem.Id,
                         OrderProductVariantId = opv.Id,
                         ProductId = opv.ProductId,
 						ProductName = opv.Product.Name,
@@ -576,7 +576,7 @@ namespace SmartStore.Admin.Controllers
                         QuantityToAdd = maxQtyToAdd,
                     };
 
-                    model.Products.Add(sopvModel);
+                    model.Items.Add(shipmentItemModel);
                 }
             }
             return model;
@@ -2025,7 +2025,7 @@ namespace SmartStore.Admin.Controllers
                     continue;
 
                 opv.Product.MergeWithCombination(opv.AttributesXml);
-                var sopvModel = new ShipmentModel.ShipmentOrderProductVariantModel()
+                var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
                 {
                     OrderProductVariantId = opv.Id,
 					ProductId = opv.ProductId,
@@ -2040,7 +2040,7 @@ namespace SmartStore.Admin.Controllers
                     QuantityToAdd = maxQtyToAdd
                 };
 
-                model.Products.Add(sopvModel);
+                model.Items.Add(shipmentItemModel);
             }
 
             return View(model);
@@ -2108,17 +2108,17 @@ namespace SmartStore.Admin.Controllers
                         CreatedOnUtc = DateTime.UtcNow,
                     };
                 }
-                //create a shipment order product variant
-                var sopv = new ShipmentOrderProductVariant()
+                //create a shipment item
+                var shipmentItem = new ShipmentItem()
                 {
                     OrderProductVariantId = opv.Id,
                     Quantity = qtyToAdd,
                 };
-                shipment.ShipmentOrderProductVariants.Add(sopv);
+                shipment.ShipmentItems.Add(shipmentItem);
             }
 
             //if we have at least one item in the shipment, then save it
-            if (shipment != null && shipment.ShipmentOrderProductVariants.Count > 0)
+            if (shipment != null && shipment.ShipmentItems.Count > 0)
             {
                 shipment.TotalWeight = totalWeight;
                 _shipmentService.InsertShipment(shipment);

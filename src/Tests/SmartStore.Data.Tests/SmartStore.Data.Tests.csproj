@@ -86,7 +86,7 @@
     <Compile Include="Catalog\ProductTagPersistenceTests.cs" />
     <Compile Include="Polls\PollPersistenceTests.cs" />
     <Compile Include="Security\AclRecordPersistenceTests.cs" />
-    <Compile Include="Shipping\ShipmentOrderProductVariantPersistenceTests.cs" />
+    <Compile Include="Shipping\ShipmentItemPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
     <Compile Include="Stores\StoreMappingPersistenceTests.cs" />
     <Compile Include="Stores\StorePersistenceTests.cs" />

@@ -377,25 +377,25 @@ namespace SmartStore.Web.Controllers
             
             //products in this shipment
             model.ShowSku = _catalogSettings.ShowProductSku;
-            foreach (var sopv in shipment.ShipmentOrderProductVariants)
+            foreach (var shipmentItem in shipment.ShipmentItems)
             {
-                var opv = _orderService.GetOrderProductVariantById(sopv.OrderProductVariantId);
+                var opv = _orderService.GetOrderProductVariantById(shipmentItem.OrderProductVariantId);
                 if (opv == null)
                     continue;
 
                 opv.Product.MergeWithCombination(opv.AttributesXml);
-                var sopvModel = new ShipmentDetailsModel.ShipmentOrderProductVariantModel()
+                var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel()
                 {
-                    Id = sopv.Id,
+                    Id = shipmentItem.Id,
                     Sku = opv.Product.Sku,
                     ProductId = opv.Product.Id,
 					ProductName = opv.Product.GetLocalized(x => x.Name),
                     ProductSeName = opv.Product.GetSeName(),
                     AttributeInfo = opv.AttributeDescription,
                     QuantityOrdered = opv.Quantity,
-                    QuantityShipped = sopv.Quantity,
+                    QuantityShipped = shipmentItem.Quantity,
                 };
-                model.Items.Add(sopvModel);
+                model.Items.Add(shipmentItemModel);
             }
 
             //order details model

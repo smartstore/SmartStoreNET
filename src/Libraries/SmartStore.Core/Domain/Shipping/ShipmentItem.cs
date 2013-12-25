@@ -4,7 +4,7 @@ namespace SmartStore.Core.Domain.Shipping
     /// <summary>
     /// Represents a shipment order product variant
     /// </summary>
-    public partial class ShipmentOrderProductVariant : BaseEntity
+    public partial class ShipmentItem : BaseEntity
     {
         /// <summary>
         /// Gets or sets the shipment identifier

@@ -10,12 +10,12 @@ using NUnit.Framework;
 namespace SmartStore.Data.Tests.Shipping
 {
     [TestFixture]
-    public class ShipmentOrderProductVariantPersistenceTests : PersistenceTest
+    public class ShipmentItemPersistenceTests : PersistenceTest
     {
         [Test]
-        public void Can_save_and_load_shipmentOrderProductVariant()
+        public void Can_save_and_load_shipmentItem()
         {
-            var sopv = new ShipmentOrderProductVariant()
+            var sopv = new ShipmentItem()
             {
                 Shipment = GetTestShipment(),
                 OrderProductVariantId = 2,

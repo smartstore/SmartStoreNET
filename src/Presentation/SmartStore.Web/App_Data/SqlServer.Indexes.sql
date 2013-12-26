@@ -118,6 +118,9 @@ GO
 CREATE NONCLUSTERED INDEX [IX_Product_ShowOnHomepage] ON [Product] ([ShowOnHomepage] ASC)
 GO
 
+CREATE NONCLUSTERED INDEX [IX_Product_ParentProductId] ON [Product] ([ParentProductId] ASC)
+GO
+
 CREATE NONCLUSTERED INDEX [IX_PCM_Product_and_Category] ON [Product_Category_Mapping] ([CategoryId] ASC, [ProductId] ASC)
 GO
 
@@ -159,4 +162,13 @@ CREATE NONCLUSTERED INDEX [IX_LocalizedProperty_Key] ON [LocalizedProperty] ([Id
 GO
 
 CREATE NONCLUSTERED INDEX [IX_Log_ContentHash] ON [Log] ([ContentHash] ASC)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ProductVariantAttributeCombination_SKU] ON [ProductVariantAttributeCombination] ([SKU] ASC)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_Product_Name] ON [Product] ([Name] ASC)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_Product_Sku] ON [Product] ([Sku] ASC)
 GO

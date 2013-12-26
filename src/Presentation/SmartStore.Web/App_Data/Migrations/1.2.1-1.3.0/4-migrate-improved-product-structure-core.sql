@@ -139,7 +139,14 @@ BEGIN
 END
 GO
 
---move records from Product to ProductVariant
+--delete products without variants
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ProductVariant]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	DELETE FROM [Product] WHERE [Id] NOT IN (SELECT [ProductId] FROM [ProductVariant])
+END
+GO
+
+--move records from ProductVariant to Product
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='ProductTypeId')
 BEGIN
 	ALTER TABLE [Product]
@@ -837,6 +844,8 @@ BEGIN
 		SET @Width = null -- clear cache (variable scope)
 		DECLARE @Height decimal(18, 4)
 		SET @Height = null -- clear cache (variable scope)
+		DECLARE @PictureId int
+		SET @PictureId = null -- clear cache (variable scope)
 		DECLARE @AvailableStartDateTimeUtc datetime
 		SET @AvailableStartDateTimeUtc = null -- clear cache (variable scope)
 		DECLARE @AvailableEndDateTimeUtc datetime
@@ -925,6 +934,7 @@ BEGIN
 		@Length = [Length],
 		@Width = [Width],
 		@Height = [Height],
+		@PictureId = [PictureId],
 		@AvailableStartDateTimeUtc = [AvailableStartDateTimeUtc],
 		@AvailableEndDateTimeUtc = [AvailableEndDateTimeUtc],
 		@Published = [Published],
@@ -1002,6 +1012,7 @@ BEGIN
 		@Length decimal(18, 4) OUTPUT,
 		@Width decimal(18, 4) OUTPUT,
 		@Height decimal(18, 4) OUTPUT,
+		@PictureId int OUTPUT,
 		@AvailableStartDateTimeUtc datetime OUTPUT,
 		@AvailableEndDateTimeUtc datetime OUTPUT,
 		@Published bit OUTPUT,
@@ -1075,6 +1086,7 @@ BEGIN
 		@Length OUTPUT,
 		@Width OUTPUT,
 		@Height OUTPUT,
+		@PictureId OUTPUT,
 		@AvailableStartDateTimeUtc OUTPUT,
 		@AvailableEndDateTimeUtc OUTPUT,
 		@Published OUTPUT,
@@ -1354,6 +1366,13 @@ BEGIN
 			0 , @ProductId)
 			
 			SET @NewProductId = @@IDENTITY
+			
+			--product variant picture
+			IF (@PictureId > 0)
+			BEGIN
+				INSERT INTO [Product_Picture_Mapping] ([ProductId], [PictureId], [DisplayOrder])
+				VALUES (@NewProductId, @PictureId, 1)
+			END
 		END
 		
 		--back in stock subscriptions. move ProductVariantId to the new ProductId column

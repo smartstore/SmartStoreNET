@@ -56,6 +56,12 @@
                                     @Model.Name
                                 </div>
                             }
+                            @if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
+                            {
+                                <div class="variant-description">
+                                    @Html.Raw(Model.ShortDescription)
+                                </div>
+                            }
                             @Html.Partial("_DownloadSample", Model)
                             @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
                             @{

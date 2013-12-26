@@ -24,6 +24,12 @@
                     @Model.Name
                 </div>
             }
+            @if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <div class="variant-description">
+                    @Html.Raw(Model.ShortDescription)
+                </div>
+            }
 
             <div class="row-fluid">
                 <div class="equalized-column span12" data-equalized-column-name="vld">

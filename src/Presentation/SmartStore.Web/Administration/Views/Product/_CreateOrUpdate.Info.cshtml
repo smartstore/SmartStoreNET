@@ -19,7 +19,7 @@
 
     $(document).ready(function () {
 
-        $("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
+        $("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
         $("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
         $("#@Html.FieldIdFor(model => model.IsGiftCard)").click(toggleGiftCard);
         $("#@Html.FieldIdFor(model => model.CustomerEntersPrice)").click(toggleCustomerEntersPrice);
@@ -33,24 +33,20 @@
         $("#@Html.FieldIdFor(model => model.ManageInventoryMethodId)").change(toggleManageStock);
         $("#@Html.FieldIdFor(model => model.BackorderModeId)").change(toggleManageStock);
         $("#@Html.FieldIdFor(model => model.DisplayStockAvailability)").click(toggleManageStock);
+        $("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
 
         fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
         fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePriceAmount)");
         fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
 
         fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
-        //fieldBasePriceAmount.on("change keyup", getCurrentBasePrice);
-        //fieldBasePriceBaseAmount.on("change keyup", getCurrentBasePrice);
-
-        //fieldBasePriceAmount.siblings(".t-link").on("click", getCurrentBasePrice);
-    	//fieldBasePriceBaseAmount.siblings(".t-link").on("click", getCurrentBasePrice);
 
     	fieldBasePriceAmount.on("blur", getCurrentBasePrice);
     	fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
 
     	getCurrentBasePrice();
 
-        toggleBasePrice();
+    	toggleProductType();
         toggleRequireOtherProducts();
         toggleGiftCard();
         toggleCustomerEntersPrice();
@@ -59,6 +55,7 @@
         toggleShipping();
         toggleTax();
         toggleManageStock();
+        toggleBasePrice();
     });
 
     function getCurrentBasePrice() {
@@ -92,6 +89,31 @@
         else {
             $('#pnlBasePriceBaseAmount').hide();
             $('#pnlBasePriceAmount').hide();
+        }
+    }
+
+    function toggleProductType() {
+        var selectedProductTypeId = $("#@Html.FieldIdFor(model => model.ProductTypeId)").val();
+
+        if (selectedProductTypeId == @(((int)ProductType.SimpleProduct).ToString())) {
+            $('#group-prices').show();
+            $('#group-required-other-products').show();
+            $('#group-giftcard').show();
+            $('#group-downloads').show();
+            $('#group-recurring').show();
+            $('#group-shipping').show();
+            $('#group-tax').show();
+            $('#group-inventory').show();
+        }
+        else if (selectedProductTypeId == @(((int)ProductType.GroupedProduct).ToString())) {
+            $('#group-prices').hide();
+            $('#group-required-other-products').hide();
+            $('#group-giftcard').hide();
+            $('#group-downloads').hide();
+            $('#group-recurring').hide();
+            $('#group-shipping').hide();
+            $('#group-tax').hide();
+            $('#group-inventory').hide();
         }
     }
 
@@ -378,7 +400,17 @@
         </tr>
     </table>
 ))
+
 <table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AdminComment)
+        </td>
+        <td class="adminData">
+            @Html.TextAreaFor(model => model.AdminComment)
+            @Html.ValidationMessageFor(model => model.AdminComment)
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Sku)
@@ -417,13 +449,52 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AdminComment)
+            @Html.SmartLabelFor(model => model.AvailableStartDateTimeUtc)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.AdminComment)
-            @Html.ValidationMessageFor(model => model.AdminComment)
+            @Html.EditorFor(model => model.AvailableStartDateTimeUtc)
+            @Html.ValidationMessageFor(model => model.AvailableStartDateTimeUtc)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AvailableEndDateTimeUtc)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.AvailableEndDateTimeUtc)
+            @Html.ValidationMessageFor(model => model.AvailableEndDateTimeUtc)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AllowCustomerReviews)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.AllowCustomerReviews)
+            @Html.ValidationMessageFor(model => model.AllowCustomerReviews)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ShowOnHomePage)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ShowOnHomePage)
+            @Html.ValidationMessageFor(model => model.ShowOnHomePage)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Published)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Published)
+            @Html.ValidationMessageFor(model => model.Published)
+        </td>
+    </tr>
+</table>
+
+<table class="adminContent" id="group-prices">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -485,24 +556,6 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Published)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Published)
-            @Html.ValidationMessageFor(model => model.Published)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ShowOnHomePage)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ShowOnHomePage)
-            @Html.ValidationMessageFor(model => model.ShowOnHomePage)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisableBuyButton)
         </td>
         <td class="adminData">
@@ -539,15 +592,6 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AllowCustomerReviews)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.AllowCustomerReviews)
-            @Html.ValidationMessageFor(model => model.AllowCustomerReviews)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.CustomerEntersPrice)
         </td>
         <td class="adminData">
@@ -571,24 +615,6 @@
         <td class="adminData">
             @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
             @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AvailableStartDateTimeUtc)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.AvailableStartDateTimeUtc)
-            @Html.ValidationMessageFor(model => model.AvailableStartDateTimeUtc)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AvailableEndDateTimeUtc)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.AvailableEndDateTimeUtc)
-            @Html.ValidationMessageFor(model => model.AvailableEndDateTimeUtc)
         </td>
     </tr>
     <tr class="adminSeparator">
@@ -624,6 +650,9 @@
             <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-required-other-products">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -656,6 +685,9 @@
             @Html.ValidationMessageFor(model => model.AutomaticallyAddRequiredProducts)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-giftcard">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -679,6 +711,9 @@
             @Html.ValidationMessageFor(model => model.GiftCardTypeId)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-downloads">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -774,6 +809,9 @@
             @Html.ValidationMessageFor(model => model.SampleDownloadId)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-recurring">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -815,6 +853,9 @@
             @Html.ValidationMessageFor(model => model.RecurringTotalCycles)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-shipping">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -894,6 +935,9 @@
             @Html.ValidationMessageFor(model => model.Height)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-tax">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />
@@ -913,11 +957,13 @@
             @Html.SmartLabelFor(model => model.TaxCategoryId)
         </td>
         <td class="adminData">
-            @*@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, T("Common.PleaseSelect").Text)*@
             @Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
             @Html.ValidationMessageFor(model => model.TaxCategoryId)
         </td>
     </tr>
+</table>
+
+<table class="adminContent" id="group-inventory">
     <tr class="adminSeparator">
         <td colspan="2">
             <hr />

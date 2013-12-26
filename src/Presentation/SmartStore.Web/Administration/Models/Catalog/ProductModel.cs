@@ -44,6 +44,14 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
 		public string ProductTypeName { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.VisibleIndividually")]
+		public bool VisibleIndividually { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
+		[AllowHtml]
+		public int ProductTemplateId { get; set; }
+		public IList<SelectListItem> AvailableProductTemplates { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -59,11 +67,6 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AdminComment")]
         [AllowHtml]
         public string AdminComment { get; set; }
-
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
-        [AllowHtml]
-        public int ProductTemplateId { get; set; }
-        public IList<SelectListItem> AvailableProductTemplates { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }

@@ -365,10 +365,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				ShowHidden = true
 			};
 
-			//IPagedList<ProductVariant> SearchProductVariants(int categoryId, int manufacturerId, 
-			//	string keywords, bool searchDescriptions, int pageIndex, int pageSize, bool showHidden = false);
-			// _productService.SearchProducts(0, 0, searchProductName, false, command.Page - 1, command.PageSize, true);
-
 			var products = _productService.SearchProducts(searchContext);
 
 			var data = products.Select(x =>
@@ -432,7 +428,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				{
 					OrderBy = ProductSortingEnum.CreatedOn,
 					PageSize = int.MaxValue,
-					StoreId = store.Id
+					StoreId = store.Id,
+					VisibleIndividuallyOnly = true
 				};
 
 				var products = _productService.SearchProducts(searchContext);

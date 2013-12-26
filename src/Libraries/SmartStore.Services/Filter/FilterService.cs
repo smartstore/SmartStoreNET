@@ -157,7 +157,8 @@ namespace SmartStore.Services.Filter
 				var nowUtc = DateTime.UtcNow;
 
 				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured, _storeContext.CurrentStoreIdIfMultiStoreMode)
-					.Where(p => 
+					.Where(p =>
+						p.VisibleIndividually &&
 						(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value <= nowUtc) &&
 						(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc)
 				);

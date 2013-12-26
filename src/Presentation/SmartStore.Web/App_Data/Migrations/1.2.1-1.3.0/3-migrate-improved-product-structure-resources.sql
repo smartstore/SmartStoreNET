@@ -1867,6 +1867,15 @@ SET @resources='
 		<Value>You need to save the product before you can add associated products for this product page.</Value>
 		<Value lang="de">Das Produkt muss gespeichert werden, bevor angegliederte Produkte hinzugefügt werden können.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.Fields.VisibleIndividually">
+		<Value>Visible individually</Value>
+		<Value lang="de">Individuell sichtbar</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.VisibleIndividually.Hint">
+		<Value>Check it if you want this product to be visible in catalog or search results. You can use this field (just uncheck) to hide associated products from catalog and make them accessible only from a parent "grouped" product details page.</Value>
+		<Value lang="de">Legt fest, ob dieses Produkt im Katalog oder den Suchergebnissen angezeigt werden soll. Sie können dieses Feld verwenden (durch deaktivieren), um angegliederte Produkte nur über deren übergeordnete Produkt-Detailseite zugänglich zu machen.</Value>
+	</LocaleResource>
 
 </Language>
 '

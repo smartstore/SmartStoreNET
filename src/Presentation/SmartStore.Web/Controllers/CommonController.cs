@@ -814,6 +814,7 @@ namespace SmartStore.Web.Controllers
                 productSearchContext.PageSize = 200;
                 productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
 				productSearchContext.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+				productSearchContext.VisibleIndividuallyOnly = true;
 
                 var products = _productService.SearchProducts(productSearchContext);
 

@@ -416,6 +416,11 @@ namespace SmartStore.Services.Catalog
 				pParentProductId.Value = ctx.ParentProductId;
 				pParentProductId.DbType = DbType.Int32;
 
+				var pVisibleIndividuallyOnly = _dataProvider.GetParameter();
+				pVisibleIndividuallyOnly.ParameterName = "VisibleIndividuallyOnly";
+				pVisibleIndividuallyOnly.Value = ctx.VisibleIndividuallyOnly;
+				pVisibleIndividuallyOnly.DbType = DbType.Int32;
+
                 var pProductTagId = _dataProvider.GetParameter();
                 pProductTagId.ParameterName = "ProductTagId";
                 pProductTagId.Value = ctx.ProductTagId;
@@ -519,6 +524,7 @@ namespace SmartStore.Services.Catalog
                     pManufacturerId,
 					pStoreId,
 					pParentProductId,
+					pVisibleIndividuallyOnly,
                     pProductTagId,
                     pFeaturedProducts,
                     pPriceMin,
@@ -673,6 +679,11 @@ namespace SmartStore.Services.Catalog
 			if (ctx.ParentProductId > 0)
 			{
 				query = query.Where(p => p.ParentProductId == ctx.ParentProductId);
+			}
+
+			if (ctx.VisibleIndividuallyOnly)
+			{
+				query = query.Where(p => p.VisibleIndividually);
 			}
 
 			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 

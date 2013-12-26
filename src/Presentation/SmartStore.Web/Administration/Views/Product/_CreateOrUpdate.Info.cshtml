@@ -316,11 +316,20 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductTypeId):
+                @Html.SmartLabelFor(model => model.ProductTypeId)
             </td>
             <td class="adminData">
                 @Html.DropDownListFor(model => model.ProductTypeId, ((ProductType)Model.ProductTypeId).ToSelectList())
                 @Html.ValidationMessageFor(model => model.ProductTypeId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.VisibleIndividually)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.VisibleIndividually)
+                @Html.ValidationMessageFor(model => model.VisibleIndividually)
             </td>
         </tr>
         <tr>

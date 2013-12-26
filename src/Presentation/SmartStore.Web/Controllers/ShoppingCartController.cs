@@ -190,9 +190,15 @@ namespace SmartStore.Web.Controllers
 						picture = _pictureService.GetPictureById(picturesIds[0]);
 				}
 
-                // no product variant image and no attribute combination image, then load product picture
+                // no attribute combination image, then load product picture
 				if (picture == null)
 					picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+
+				if (picture == null && !product.VisibleIndividually && product.ParentProductId > 0)
+				{
+					//let's check whether this product has some parent "grouped" product
+					picture = _pictureService.GetPicturesByProductId(product.ParentProductId, 1).FirstOrDefault();
+				}
 
                 return new PictureModel()
                 {

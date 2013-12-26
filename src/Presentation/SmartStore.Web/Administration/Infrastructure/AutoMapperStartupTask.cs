@@ -196,6 +196,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore());
             //products
             Mapper.CreateMap<Product, ProductModel>()
+				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
                 .ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
                 .ForMember(dest => dest.NoThumb, mo => mo.Ignore())
@@ -222,9 +223,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
-                .ForMember(dest => dest.HideNameAndDescriptionProperties, mo => mo.Ignore())
-                .ForMember(dest => dest.HidePublishedProperty, mo => mo.Ignore())
-                .ForMember(dest => dest.HideDisplayOrderProperty, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
                 .AfterMap((src, dest) => {
@@ -237,6 +235,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.ParentProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductType, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
                 .ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())
                 .ForMember(dest => dest.NotApprovedRatingSum, mo => mo.Ignore())

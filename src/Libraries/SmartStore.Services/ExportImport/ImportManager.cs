@@ -27,6 +27,7 @@ namespace SmartStore.Services.ExportImport
         {
             "ProductTypeId",
             "ParentProductId",
+			"VisibleIndividually",
             "Name",
             "ShortDescription",
             "FullDescription",
@@ -218,6 +219,7 @@ namespace SmartStore.Services.ExportImport
 
 					int productTypeId = GetValue<int>(worksheet, iRow, "ProductTypeId");
 					int parentProductId = GetValue<int>(worksheet, iRow, "ParentProductId");
+					bool visibleIndividually = GetValue<bool>(worksheet, iRow, "VisibleIndividually");
                     string name = GetValue<string>(worksheet, iRow, "Name");
                     string shortDescription = GetValue<string>(worksheet, iRow, "ShortDescription");
                     string fullDescription = GetValue<string>(worksheet, iRow, "FullDescription");
@@ -346,6 +348,7 @@ namespace SmartStore.Services.ExportImport
 
 					product.ProductTypeId = productTypeId;
 					product.ParentProductId = parentProductId;
+					product.VisibleIndividually = visibleIndividually;
 					product.Name = name;
 					product.ShortDescription = shortDescription;
 					product.FullDescription = fullDescription;

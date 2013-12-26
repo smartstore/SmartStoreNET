@@ -221,6 +221,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("ProductId", null, product.Id.ToString());
 				xmlWriter.WriteElementString("ProductTypeId", null, product.ProductTypeId.ToString());
 				xmlWriter.WriteElementString("ParentProductId", null, product.ParentProductId.ToString());
+				xmlWriter.WriteElementString("VisibleIndividually", null, product.VisibleIndividually.ToString());
                 xmlWriter.WriteElementString("Name", null, product.Name);
                 xmlWriter.WriteElementString("ShortDescription", null, product.ShortDescription);
                 xmlWriter.WriteElementString("FullDescription", null, product.FullDescription.RemoveInvalidXmlChars());
@@ -484,6 +485,7 @@ namespace SmartStore.Services.ExportImport
                 {
                     "ProductTypeId",
                     "ParentProductId",
+					"VisibleIndividually",
                     "Name",
                     "ShortDescription",
                     "FullDescription",
@@ -579,6 +581,9 @@ namespace SmartStore.Services.ExportImport
 					col++;
 
 					worksheet.Cells[row, col].Value = p.ParentProductId;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.VisibleIndividually;
 					col++;
 
                     worksheet.Cells[row, col].Value = p.Name;

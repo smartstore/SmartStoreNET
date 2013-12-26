@@ -465,6 +465,7 @@ namespace SmartStore.Admin.Controllers
 				model.IsShipEnabled = true;
 				model.AllowCustomerReviews = true;
 				model.Published = true;
+				model.VisibleIndividually = true;
 			}
 		}
 

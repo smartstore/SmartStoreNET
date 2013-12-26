@@ -95,7 +95,8 @@ namespace SmartStore.Services.Seo
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
 				PageSize = int.MaxValue,
-				StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode
+				StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+				VisibleIndividuallyOnly = true
 			};
 
 			var products = _productService.SearchProducts(ctx);

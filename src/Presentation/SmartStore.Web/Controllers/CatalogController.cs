@@ -321,7 +321,8 @@ namespace SmartStore.Web.Controllers
 								var searchContext = new ProductSearchContext()
 								{
 									StoreId = _storeContext.CurrentStore.Id,
-									ParentProductId = product.Id
+									ParentProductId = product.Id,
+									VisibleIndividuallyOnly = false
 								};
 
 								var associatedProducts = _productService.SearchProducts(searchContext);
@@ -1041,7 +1042,8 @@ namespace SmartStore.Web.Controllers
 					{
 						StoreId = _storeContext.CurrentStore.Id,
 						OrderBy = ProductSortingEnum.NameAsc,
-						ParentProductId = product.Id
+						ParentProductId = product.Id,
+						VisibleIndividuallyOnly = false
 					};
 
 					var associatedProducts = _productService.SearchProducts(searchContext);
@@ -1678,6 +1680,7 @@ namespace SmartStore.Web.Controllers
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+				ctx.VisibleIndividuallyOnly = true;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1728,6 +1731,7 @@ namespace SmartStore.Web.Controllers
                 ctx2.PageSize = command.PageSize;
                 ctx2.LoadFilterableSpecificationAttributeOptionIds = true;
 				ctx2.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+				ctx2.VisibleIndividuallyOnly = true;
 
                 var products = _productService.SearchProducts(ctx2);
 
@@ -1875,6 +1879,7 @@ namespace SmartStore.Web.Controllers
                 ctx.OrderBy = ProductSortingEnum.Position;
                 ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+				ctx.VisibleIndividuallyOnly = true;
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1892,6 +1897,7 @@ namespace SmartStore.Web.Controllers
             ctx2.PageIndex = command.PageNumber - 1;
             ctx2.PageSize = command.PageSize;
 			ctx2.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+			ctx2.VisibleIndividuallyOnly = true;
 
             var products = _productService.SearchProducts(ctx2);
 
@@ -2019,6 +2025,21 @@ namespace SmartStore.Web.Controllers
 			//Store mapping
 			if (!_storeMappingService.Authorize(product))
 				return RedirectToRoute("HomePage");
+
+			//visible individually?
+			if (!product.VisibleIndividually)
+			{
+				//is this one an associated products?
+				var parentGroupedProduct = _productService.GetProductById(product.ParentProductId);
+				if (parentGroupedProduct != null)
+				{
+					return RedirectToRoute("Product", new { SeName = parentGroupedProduct.GetSeName() });
+				}
+				else
+				{
+					return RedirectToRoute("HomePage");
+				}
+			}
             
             //prepare the model
             var model = PrepareProductDetailsPageModel(product, false, attributes);
@@ -2315,6 +2336,7 @@ namespace SmartStore.Web.Controllers
                 //codehint: sm-edit end
                 ctx.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+				ctx.VisibleIndividuallyOnly = true;
 
                 var products = _productService.SearchProducts(ctx);
 
@@ -2347,6 +2369,7 @@ namespace SmartStore.Web.Controllers
             ctx.OrderBy = ProductSortingEnum.CreatedOn;
             ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
 			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+			ctx.VisibleIndividuallyOnly = true;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -2701,6 +2724,7 @@ namespace SmartStore.Web.Controllers
             ctx.PageIndex = command.PageNumber - 1;
             ctx.PageSize = command.PageSize;
 			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+			ctx.VisibleIndividuallyOnly = true;
 
             var products = _productService.SearchProducts(ctx);
 
@@ -3380,6 +3404,7 @@ namespace SmartStore.Web.Controllers
                     ctx.PageIndex = command.PageNumber - 1;
                     ctx.PageSize = command.PageSize;
 					ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+					ctx.VisibleIndividuallyOnly = true;
 
                     products = _productService.SearchProducts(ctx);
 
@@ -3420,6 +3445,7 @@ namespace SmartStore.Web.Controllers
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = productNumber;
 			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+			ctx.VisibleIndividuallyOnly = true;
 
             var products = _productService.SearchProducts(ctx);
 

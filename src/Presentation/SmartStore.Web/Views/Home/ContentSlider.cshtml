@@ -65,8 +65,6 @@
                         @if (slide.Button1.Published || slide.Button2.Published || slide.Button3.Published)
                         {
                             <div class="buttons">
-                                @*<a class="btn btn-danger" href="~/iphone-5">Jetzt kaufen</a>*@
-
                                 @if (slide.Button1.Published)
                                 {   
                                     <a class="btn @slide.Button1.Type" href="@slide.Button1.Url">@slide.Button1.Text</a>
@@ -105,6 +103,7 @@
                 pauseButton: true,
                 pauseOnHover: false,
                 animateStartingFrameIn: false,
+                fadeFrameWhenSkipped: false,
                 transitionThreshold: 500,
                 bgSlide: '@(GetThemeVariable("SliderBgSlide", "on"))', // off | on | opposite
                 bgSlideIncrement: 50

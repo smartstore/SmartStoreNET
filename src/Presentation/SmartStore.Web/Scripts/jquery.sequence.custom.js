@@ -19,6 +19,8 @@
                 }
             }
 
+            sequence.settings.fadeFrameWhenSkipped = false;
+
             var s = sequence.settings.bgSlide || "on";
 
             if (s === 'on' || s === 'opposite') {

@@ -1278,7 +1278,7 @@ namespace SmartStore.Web.Controllers
             #region Properties
 
             model.Id = productVariant.Id;
-            model.Name = productVariant.GetLocalized(x => x.Name);
+            model.Name = productVariant.GetLocalized(x => x.Name).NullEmpty() ?? productVariant.Product.GetLocalized(x => x.Name);
             model.ShowSku = _catalogSettings.ShowProductSku;
             model.Sku = productVariant.Sku;
             model.Description = productVariant.GetLocalized(x => x.Description);

@@ -234,6 +234,7 @@
     <Compile Include="Media\ImageResizerUtils.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
+    <Compile Include="Messages\GenericMessageContext.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
     <Compile Include="News\NewsService.cs" />
     <Compile Include="News\INewsService.cs" />

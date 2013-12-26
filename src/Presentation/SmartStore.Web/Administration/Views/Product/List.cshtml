@@ -130,6 +130,7 @@
                         columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Price);
                         columns.Bound(x => x.StockQuantity);
+                        columns.Bound(x => x.ProductTypeName);
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))

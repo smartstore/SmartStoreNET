@@ -41,6 +41,8 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
 		public int ProductTypeId { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+		public string ProductTypeName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Name")]
         [AllowHtml]

@@ -46,6 +46,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using StackExchange.Profiling;
 using System.Threading.Tasks;
+using SmartStore.Services.Events;
 // codehint: end sm-add
 
 namespace SmartStore.Web.Controllers
@@ -106,6 +107,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IDbContext _dbContext;
         private readonly ISettingService _settingService;
+        private readonly IEventPublisher _eventPublisher;
         //codehint: sm-edit end
 
         #endregion
@@ -137,8 +139,9 @@ namespace SmartStore.Web.Controllers
             LocalizationSettings localizationSettings, CustomerSettings customerSettings,
             CaptchaSettings captchaSettings,
             ICacheManager cacheManager,
-            IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,     /* codehint: sm-add */
-            IDeliveryTimeService deliveryTimeService, IDbContext dbContext, ISettingService settingService                              /* codehint: sm-add */
+            /* codehint: sm-add */
+            IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
+            IDeliveryTimeService deliveryTimeService, IDbContext dbContext, ISettingService settingService, IEventPublisher eventPublisher
             )
         {
             this._categoryService = categoryService;
@@ -183,6 +186,7 @@ namespace SmartStore.Web.Controllers
             this._deliveryTimeService = deliveryTimeService;
             this._dbContext = dbContext;
             this._settingService = settingService;
+            this._eventPublisher = eventPublisher;
             //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
@@ -708,7 +712,7 @@ namespace SmartStore.Web.Controllers
                 Name = "_ROOT_",
                 Level = -1 // important
             });
-
+            
             Category prevCat = null;
             int level = 0;
 
@@ -759,6 +763,9 @@ namespace SmartStore.Web.Controllers
             }
 
             var root = curParent.Root;
+
+            // event
+            _eventPublisher.Publish(new NavigationModelBuiltEvent(root));
 
             return root;
         }

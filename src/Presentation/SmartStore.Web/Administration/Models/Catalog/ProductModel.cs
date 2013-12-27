@@ -474,6 +474,9 @@ namespace SmartStore.Admin.Models.Catalog
 		{
 			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.Product")]
 			public string ProductName { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder")]
+			public int DisplayOrder { get; set; }
 		}
 		public partial class AddAssociatedProductModel : ModelBase
 		{

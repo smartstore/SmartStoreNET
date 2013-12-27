@@ -197,6 +197,7 @@ namespace SmartStore.Services.Catalog
 				Height = product.Height,
 				AvailableStartDateTimeUtc = product.AvailableStartDateTimeUtc,
 				AvailableEndDateTimeUtc = product.AvailableEndDateTimeUtc,
+				DisplayOrder = product.DisplayOrder,
                 Published = isPublished,
                 Deleted = product.Deleted,
                 CreatedOnUtc = DateTime.UtcNow,

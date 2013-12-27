@@ -1041,7 +1041,6 @@ namespace SmartStore.Web.Controllers
 					var searchContext = new ProductSearchContext()
 					{
 						StoreId = _storeContext.CurrentStore.Id,
-						OrderBy = ProductSortingEnum.NameAsc,
 						ParentProductId = product.Id,
 						VisibleIndividuallyOnly = false
 					};

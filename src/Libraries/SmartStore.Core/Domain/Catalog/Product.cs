@@ -516,6 +516,12 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public DateTime? AvailableEndDateTimeUtc { get; set; }
 
+		/// <summary>
+		/// Gets or sets a display order. This value is used when sorting associated products (used with "grouped" products)
+		/// </summary>
+		[DataMember]
+		public int DisplayOrder { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>

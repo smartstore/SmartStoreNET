@@ -605,18 +605,14 @@ namespace SmartStore.Services.Catalog
                     //manufacturer position
                     query = query.OrderBy(p => p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId).FirstOrDefault().DisplayOrder);
                 }
-                //else if (orderBy == ProductSortingEnum.Position && relatedToProductId > 0)
-                //{
-                //    //sort by related product display order
-                //    query = from p in query
-                //            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
-                //            where (relatedToProductId == rp.ProductId1)
-                //            orderby rp.DisplayOrder
-                //            select p;
-                //}
+				else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ParentProductId > 0)
+				{
+					//parent product specified (sort associated products)
+					query = query.OrderBy(p => p.DisplayOrder);
+				}
                 else if (ctx.OrderBy == ProductSortingEnum.Position)
                 {
-                    //sort by name (there's no any position if category or manufactur is not specified)
+					//otherwise sort by name
                     query = query.OrderBy(p => p.Name);
                 }
                 else if (ctx.OrderBy == ProductSortingEnum.NameAsc)

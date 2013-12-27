@@ -94,6 +94,7 @@ namespace SmartStore.Data.Tests.Catalog
 				RequireOtherProducts = true,
 				RequiredProductIds = "1,2,3",
 				AutomaticallyAddRequiredProducts = true,
+				DisplayOrder = 30,
                 Published = true,
                 Deleted = false,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
@@ -181,6 +182,7 @@ namespace SmartStore.Data.Tests.Catalog
 			fromDb.RequireOtherProducts.ShouldEqual(true);
 			fromDb.RequiredProductIds.ShouldEqual("1,2,3");
 			fromDb.AutomaticallyAddRequiredProducts.ShouldEqual(true);
+			fromDb.DisplayOrder.ShouldEqual(30);
             fromDb.Published.ShouldEqual(true);
             fromDb.Deleted.ShouldEqual(false);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));

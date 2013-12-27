@@ -1890,6 +1890,12 @@ SET @resources='
 		<Value>Search by a product type.</Value>
 		<Value lang="de">Nach einem Produkttyp suchen.</Value>
 	</LocaleResource>
+	
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder">
+		<Value>Display order</Value>
+		<Value lang="de">Reihenfolge</Value>
+	</LocaleResource>
 
 </Language>
 '

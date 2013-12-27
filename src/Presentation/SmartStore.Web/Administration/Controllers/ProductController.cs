@@ -1478,7 +1478,8 @@ namespace SmartStore.Admin.Controllers
 					return new ProductModel.AssociatedProductModel()
 					{
 						Id = x.Id,
-						ProductName = x.Name
+						ProductName = x.Name,
+						DisplayOrder = x.DisplayOrder
 					};
 				})
 				.ToList();
@@ -1493,6 +1494,22 @@ namespace SmartStore.Admin.Controllers
 			{
 				Data = model
 			};
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult AssociatedProductUpdate(GridCommand command, ProductModel.AssociatedProductModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var associatedProduct = _productService.GetProductById(model.Id);
+			if (associatedProduct == null)
+				throw new ArgumentException("No associated product found with the specified id");
+
+			associatedProduct.DisplayOrder = model.DisplayOrder;
+			_productService.UpdateProduct(associatedProduct);
+
+			return AssociatedProductList(command, associatedProduct.ParentProductId);
 		}
 
 		[GridAction(EnableCustomBinding = true)]

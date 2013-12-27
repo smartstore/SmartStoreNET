@@ -27,6 +27,7 @@
                         {
                             dataBinding.Ajax()
                                 .Select("AssociatedProductList", "Product", new { productId = Model.Id })
+                                .Update("AssociatedProductUpdate", "Product")
                                 .Delete("AssociatedProductDelete", "Product");
                         })
                         .Columns(columns =>
@@ -35,11 +36,14 @@
                                 .ReadOnly();
                             columns.Bound(x => x.ProductName)
                                 .ReadOnly();
+                            columns.Bound(x => x.DisplayOrder)
+                                .Centered();
                             columns.Command(commands =>
                             {
+                                commands.Edit().Localize(T);
                                 commands.Delete().Localize(T);
                             })
-                            .Width(90);
+                            .Width(180);
                         })
                         .EnableCustomBinding(true))
                 </td>

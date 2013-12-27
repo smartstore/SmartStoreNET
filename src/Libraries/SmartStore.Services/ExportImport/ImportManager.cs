@@ -26,7 +26,7 @@ namespace SmartStore.Services.ExportImport
         private readonly static string[] s_properties = new string[]
         {
             "ProductTypeId",
-            "ParentProductId",
+            "ParentGroupedProductId",
 			"VisibleIndividually",
             "Name",
             "ShortDescription",
@@ -218,7 +218,7 @@ namespace SmartStore.Services.ExportImport
                         break;
 
 					int productTypeId = GetValue<int>(worksheet, iRow, "ProductTypeId");
-					int parentProductId = GetValue<int>(worksheet, iRow, "ParentProductId");
+					int parentGroupedProductId = GetValue<int>(worksheet, iRow, "ParentGroupedProductId");
 					bool visibleIndividually = GetValue<bool>(worksheet, iRow, "VisibleIndividually");
                     string name = GetValue<string>(worksheet, iRow, "Name");
                     string shortDescription = GetValue<string>(worksheet, iRow, "ShortDescription");
@@ -347,7 +347,7 @@ namespace SmartStore.Services.ExportImport
 					}
 
 					product.ProductTypeId = productTypeId;
-					product.ParentProductId = parentProductId;
+					product.ParentGroupedProductId = parentGroupedProductId;
 					product.VisibleIndividually = visibleIndividually;
 					product.Name = name;
 					product.ShortDescription = shortDescription;

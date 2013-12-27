@@ -157,10 +157,6 @@ namespace SmartStore.Services.Catalog
             product.Deleted = true;
             //delete product
             UpdateProduct(product);
-
-            //delete product variants
-            foreach (var productVariant in product.ProductVariants)
-                DeleteProductVariant(productVariant);
         }
 
 		public virtual IQueryable<Product> GetAllProducts(ProductAllContext context)
@@ -422,10 +418,10 @@ namespace SmartStore.Services.Catalog
 				pStoreId.Value = ctx.StoreId;
 				pStoreId.DbType = DbType.Int32;
 
-				var pParentProductId = _dataProvider.GetParameter();
-				pParentProductId.ParameterName = "ParentProductId";
-				pParentProductId.Value = ctx.ParentProductId;
-				pParentProductId.DbType = DbType.Int32;
+				var pParentGroupedProductId = _dataProvider.GetParameter();
+				pParentGroupedProductId.ParameterName = "ParentGroupedProductId";
+				pParentGroupedProductId.Value = ctx.ParentGroupedProductId;
+				pParentGroupedProductId.DbType = DbType.Int32;
 
 				var pProductTypeId = _dataProvider.GetParameter();
 				pProductTypeId.ParameterName = "ProductTypeId";
@@ -539,7 +535,7 @@ namespace SmartStore.Services.Catalog
                     pCategoryIds,
                     pManufacturerId,
 					pStoreId,
-					pParentProductId,
+					pParentGroupedProductId,
 					pProductTypeId,
 					pVisibleIndividuallyOnly,
                     pProductTagId,
@@ -605,7 +601,7 @@ namespace SmartStore.Services.Catalog
                     //manufacturer position
                     query = query.OrderBy(p => p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId).FirstOrDefault().DisplayOrder);
                 }
-				else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ParentProductId > 0)
+				else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ParentGroupedProductId > 0)
 				{
 					//parent product specified (sort associated products)
 					query = query.OrderBy(p => p.DisplayOrder);
@@ -689,9 +685,9 @@ namespace SmartStore.Services.Catalog
                 query = query.Where(p => p.Published);
             }
 
-			if (ctx.ParentProductId > 0)
+			if (ctx.ParentGroupedProductId > 0)
 			{
-				query = query.Where(p => p.ParentProductId == ctx.ParentProductId);
+				query = query.Where(p => p.ParentGroupedProductId == ctx.ParentGroupedProductId);
 			}
 
 			if (ctx.VisibleIndividuallyOnly)
@@ -1035,7 +1031,7 @@ namespace SmartStore.Services.Catalog
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:
                     {
-                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(productVariant, attributesXml);
+                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
                         if (combination != null)
                         {
                             int newStockQuantity = 0;

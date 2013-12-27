@@ -321,7 +321,7 @@ namespace SmartStore.Web.Controllers
 								var searchContext = new ProductSearchContext()
 								{
 									StoreId = _storeContext.CurrentStore.Id,
-									ParentProductId = product.Id,
+									ParentGroupedProductId = product.Id,
 									VisibleIndividuallyOnly = false
 								};
 
@@ -1041,7 +1041,7 @@ namespace SmartStore.Web.Controllers
 					var searchContext = new ProductSearchContext()
 					{
 						StoreId = _storeContext.CurrentStore.Id,
-						ParentProductId = product.Id,
+						ParentGroupedProductId = product.Id,
 						VisibleIndividuallyOnly = false
 					};
 
@@ -2029,7 +2029,7 @@ namespace SmartStore.Web.Controllers
 			if (!product.VisibleIndividually)
 			{
 				//is this one an associated products?
-				var parentGroupedProduct = _productService.GetProductById(product.ParentProductId);
+				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
 				if (parentGroupedProduct != null)
 				{
 					return RedirectToRoute("Product", new { SeName = parentGroupedProduct.GetSeName() });

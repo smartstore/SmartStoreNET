@@ -153,10 +153,10 @@ BEGIN
 	ADD [ProductTypeId] int NULL
 END
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='ParentProductId')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='ParentGroupedProductId')
 BEGIN
 	ALTER TABLE [Product]
-	ADD [ParentProductId] int NULL
+	ADD [ParentGroupedProductId] int NULL
 END
 GO
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='SKU')
@@ -1122,7 +1122,7 @@ BEGIN
 			--simple product
 			UPDATE [Product] 
 			SET [ProductTypeId] = 5,
-			[ParentProductId] = 0,
+			[ParentGroupedProductId] = 0,
 			[Sku] = @Sku,
 			[ManufacturerPartNumber] = @ManufacturerPartNumber,
 			[Gtin] = @Gtin,
@@ -1223,7 +1223,7 @@ BEGIN
 			--grouped product
 			UPDATE [Product] 
 			SET [ProductTypeId] = 10,
-			[ParentProductId] = 0,
+			[ParentGroupedProductId] = 0,
 			[Sku] = null,
 			[ManufacturerPartNumber] = null,
 			[Gtin] = null,
@@ -1342,7 +1342,7 @@ BEGIN
 			HasDiscountsApplied, Weight, Length, Width, Height,
 			AvailableStartDateTimeUtc, AvailableEndDateTimeUtc,
 			DeliveryTimeId, BasePrice_Enabled, BasePrice_MeasureUnit, BasePrice_Amount, BasePrice_BaseAmount,			
-			ProductTypeId, ParentProductId) 
+			ProductTypeId, ParentGroupedProductId) 
 			VALUES (@AssociatedProductName, @Description, @SimpleProductTemplateId, 
 			0, 0, 0, 0, 
 			0, 0, 0, 0, @AssociatedProductPublished, 
@@ -1659,7 +1659,7 @@ GO
 
 --new Product columns. Set "NOT NULL" where required
 ALTER TABLE [Product]
-ALTER COLUMN [ParentProductId] int NOT NULL
+ALTER COLUMN [ParentGroupedProductId] int NOT NULL
 GO
 
 ALTER TABLE [Product]
@@ -1869,9 +1869,9 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_ParentProductId' and object_id=object_id(N'[Product]'))
+IF NOT EXISTS (SELECT 1 from sys.indexes WHERE [NAME]=N'IX_Product_ParentGroupedProductId' and object_id=object_id(N'[Product]'))
 BEGIN
-	CREATE NONCLUSTERED INDEX [IX_Product_ParentProductId] ON [Product] ([ParentProductId] ASC)
+	CREATE NONCLUSTERED INDEX [IX_Product_ParentGroupedProductId] ON [Product] ([ParentGroupedProductId] ASC)
 END
 GO
 
@@ -2065,14 +2065,14 @@ BEGIN
 END
 GO
 
---set search engine friendly name (UrlRecord) for associated products (new products added before in this upgrade script). [ParentProductId] > 0
+--set search engine friendly name (UrlRecord) for associated products (new products added before in this upgrade script). [ParentGroupedProductId] > 0
 IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[Product]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
 	DECLARE @sename_existing_entity_id int
 	DECLARE cur_sename_existing_entity CURSOR FOR
 	SELECT [Id]
 	FROM [Product]
-	WHERE [ParentProductId] > 0
+	WHERE [ParentGroupedProductId] > 0
 	OPEN cur_sename_existing_entity
 	FETCH NEXT FROM cur_sename_existing_entity INTO @sename_existing_entity_id
 	WHILE @@FETCH_STATUS = 0
@@ -2127,11 +2127,11 @@ GO
 
 UPDATE [Product]
 SET [VisibleIndividually] = 0
-WHERE [VisibleIndividually] IS NULL AND [ParentProductId] > 0
+WHERE [VisibleIndividually] IS NULL AND [ParentGroupedProductId] > 0
 GO
 UPDATE [Product]
 SET [VisibleIndividually] = 1
-WHERE [VisibleIndividually] IS NULL AND [ParentProductId] = 0
+WHERE [VisibleIndividually] IS NULL AND [ParentGroupedProductId] = 0
 GO
 
 ALTER TABLE [Product] ALTER COLUMN [VisibleIndividually] bit NOT NULL
@@ -2174,7 +2174,7 @@ CREATE PROCEDURE [dbo].[ProductLoadAllPaged]
 	@CategoryIds		nvarchar(MAX) = null,	--a list of category IDs (comma-separated list). e.g. 1,2,3
 	@ManufacturerId		int = 0,
 	@StoreId			int = 0,
-	@ParentProductId	int = 0,
+	@ParentGroupedProductId	int = 0,
 	@ProductTypeId		int = null, --product type identifier, null - load all products
 	@VisibleIndividuallyOnly bit = 0, 	--0 - load all products , 1 - "visible indivially" only
 	@ProductTagId		int = 0,
@@ -2538,11 +2538,11 @@ BEGIN
 		END
 	END
 	
-	--filter by parent product identifer
-	IF @ParentProductId > 0
+	--filter by parent grouped product identifer
+	IF @ParentGroupedProductId > 0
 	BEGIN
 		SET @sql = @sql + '
-		AND p.ParentProductId = ' + CAST(@ParentProductId AS nvarchar(max))
+		AND p.ParentGroupedProductId = ' + CAST(@ParentGroupedProductId AS nvarchar(max))
 	END
 	
 	--filter by product type
@@ -2681,8 +2681,8 @@ BEGIN
 			SET @sql_orderby = @sql_orderby + ' pmm.DisplayOrder ASC'
 		END
 		
-		--parent product specified (sort associated products)
-		IF @ParentProductId > 0
+		--parent grouped product specified (sort associated products)
+		IF @ParentGroupedProductId > 0
 		BEGIN
 			IF LEN(@sql_orderby) > 0 SET @sql_orderby = @sql_orderby + ', '
 			SET @sql_orderby = @sql_orderby + ' p.[DisplayOrder] ASC'

@@ -957,7 +957,7 @@ namespace SmartStore.Services.Common
 					int pvNum = 1;
 					var searchContext = new ProductSearchContext()
 					{
-						ParentProductId = product.Id,
+						ParentGroupedProductId = product.Id,
 						ShowHidden = true
 					};
 

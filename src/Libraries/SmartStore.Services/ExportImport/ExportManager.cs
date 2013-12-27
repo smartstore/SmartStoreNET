@@ -220,7 +220,7 @@ namespace SmartStore.Services.ExportImport
 
                 xmlWriter.WriteElementString("ProductId", null, product.Id.ToString());
 				xmlWriter.WriteElementString("ProductTypeId", null, product.ProductTypeId.ToString());
-				xmlWriter.WriteElementString("ParentProductId", null, product.ParentProductId.ToString());
+				xmlWriter.WriteElementString("ParentGroupedProductId", null, product.ParentGroupedProductId.ToString());
 				xmlWriter.WriteElementString("VisibleIndividually", null, product.VisibleIndividually.ToString());
                 xmlWriter.WriteElementString("Name", null, product.Name);
                 xmlWriter.WriteElementString("ShortDescription", null, product.ShortDescription);
@@ -484,7 +484,7 @@ namespace SmartStore.Services.ExportImport
                 var properties = new string[]
                 {
                     "ProductTypeId",
-                    "ParentProductId",
+                    "ParentGroupedProductId",
 					"VisibleIndividually",
                     "Name",
                     "ShortDescription",
@@ -580,7 +580,7 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = p.ProductTypeId;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.ParentProductId;
+					worksheet.Cells[row, col].Value = p.ParentGroupedProductId;
 					col++;
 
 					worksheet.Cells[row, col].Value = p.VisibleIndividually;

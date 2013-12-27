@@ -127,7 +127,7 @@ namespace SmartStore.Services.Catalog
             productCopy = new Product()
             {
 				ProductTypeId = product.ProductTypeId,
-				ParentProductId = product.ParentProductId,
+				ParentGroupedProductId = product.ParentGroupedProductId,
 				VisibleIndividually = product.VisibleIndividually,
                 Name = newName,
                 ShortDescription = product.ShortDescription,

@@ -1467,7 +1467,7 @@ namespace SmartStore.Admin.Controllers
 
 			var searchContext = new ProductSearchContext()
 			{
-				ParentProductId = productId,
+				ParentGroupedProductId = productId,
 				ShowHidden = true
 			};
 
@@ -1509,7 +1509,7 @@ namespace SmartStore.Admin.Controllers
 			associatedProduct.DisplayOrder = model.DisplayOrder;
 			_productService.UpdateProduct(associatedProduct);
 
-			return AssociatedProductList(command, associatedProduct.ParentProductId);
+			return AssociatedProductList(command, associatedProduct.ParentGroupedProductId);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
@@ -1522,12 +1522,12 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No associated product found with the specified id");
 
-			var originalParentProductId = product.ParentProductId;
+			var originalParentGroupedProductId = product.ParentGroupedProductId;
 
-			product.ParentProductId = 0;
+			product.ParentGroupedProductId = 0;
 			_productService.UpdateProduct(product);
 
-			return AssociatedProductList(command, originalParentProductId);
+			return AssociatedProductList(command, originalParentGroupedProductId);
 		}
 
 		public ActionResult AssociatedProductAddPopup(int productId)
@@ -1601,7 +1601,7 @@ namespace SmartStore.Admin.Controllers
 					var product = _productService.GetProductById(id);
 					if (product != null)
 					{
-						product.ParentProductId = model.ProductId;
+						product.ParentGroupedProductId = model.ProductId;
 						_productService.UpdateProduct(product);
 					}
 				}

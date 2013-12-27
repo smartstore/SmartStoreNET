@@ -232,10 +232,11 @@ namespace SmartStore.Admin.Infrastructure
                     dest.BasePriceMeasureUnit = src.BasePrice.MeasureUnit;
                 });
             Mapper.CreateMap<ProductModel, Product>()
+				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
-				.ForMember(dest => dest.ParentProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.ParentGroupedProductId, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductType, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
                 .ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())

@@ -475,6 +475,7 @@ namespace SmartStore.Admin.Controllers
                 ProductId = productId,
                 OrderId = orderId,
                 Name = product.Name,
+				ProductType = product.ProductType,
                 UnitPriceExclTax = decimal.Zero,
                 UnitPriceInclTax = decimal.Zero,
                 Quantity = 1,

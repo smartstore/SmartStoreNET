@@ -383,6 +383,8 @@ namespace SmartStore.Admin.Models.Orders
 
                 public int OrderId { get; set; }
 
+				public ProductType ProductType { get; set; }
+
                 public string Name { get; set; }
 
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceInclTax")]

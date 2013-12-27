@@ -13,6 +13,7 @@ namespace SmartStore.Admin.Models.Catalog
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();
 			AvailableStores = new List<SelectListItem>();
+			AvailableProductTypes = new List<SelectListItem>();
         }
         public GridModel<ProductModel> Products { get; set; }
 
@@ -29,6 +30,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
+		public int SearchProductTypeId { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.List.GoDirectlyToSku")]
         [AllowHtml]
         public string GoDirectlyToSku { get; set; }
@@ -36,10 +40,9 @@ namespace SmartStore.Admin.Models.Catalog
         public bool DisplayProductPictures { get; set; }
         public bool DisplayPdfDownloadCatalog { get; set; }
 
-
-
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }
 		public IList<SelectListItem> AvailableStores { get; set; }
+		public IList<SelectListItem> AvailableProductTypes { get; set; }
     }
 }

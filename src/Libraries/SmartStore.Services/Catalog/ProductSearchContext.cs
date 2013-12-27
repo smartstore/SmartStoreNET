@@ -113,5 +113,10 @@ namespace SmartStore.Services.Catalog
 		/// A values indicating whether to load only products marked as "visible individually"; "false" to load all records; "true" to load "visible individually" only
 		/// </summary>
 		public bool VisibleIndividuallyOnly { get; set; }
+
+		/// <summary>
+		/// Product type; 0 to load all records
+		/// </summary>
+		public ProductType? ProductType { get; set; }
     }
 }

@@ -6753,6 +6753,7 @@ namespace SmartStore.Services.Installation
 
             var product5GiftCard = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "$5 Virtual Gift Card",
                 ShortDescription = "$5 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -6800,6 +6801,7 @@ namespace SmartStore.Services.Installation
 
             var product25GiftCard = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "$25 Virtual Gift Card",
                 ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -6841,6 +6843,7 @@ namespace SmartStore.Services.Installation
 
             var product50GiftCard = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "$50 Virtual Gift Card",
                 ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -6886,6 +6889,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksUberMan = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Überman: The novel",
                 ShortDescription = "(Hardcover)",
@@ -6945,6 +6949,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksGefangeneDesHimmels = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "The Prisoner of Heaven: A Novel",
                 ShortDescription = "(Hardcover)",
@@ -7006,6 +7011,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksBestGrillingRecipes = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Best Grilling Recipes",
                 ShortDescription = "More Than 100 Regional Favorites Tested and Perfected for the Outdoor Cook (Hardcover)",
@@ -7068,6 +7074,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksCookingForTwo = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Cooking for Two",
                 ShortDescription = "More Than 200 Foolproof Recipes for Weeknights and Special Occasions (Hardcover)",
@@ -7129,6 +7136,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksAutosDerSuperlative = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
                 ShortDescription = "Hardcover",
@@ -7190,6 +7198,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksBildatlasMotorraeder = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Picture Atlas Motorcycles: With more than 350 brilliant images",
                 ShortDescription = "Hardcover",
@@ -7250,6 +7259,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksAutoBuch = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "The Car Book. The great history with over 1200 models",
                 ShortDescription = "Hardcover",
@@ -7310,6 +7320,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksFastCars = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Fast Cars, Image Calendar 2013",
                 ShortDescription = "spiral bound",
@@ -7371,6 +7382,7 @@ namespace SmartStore.Services.Installation
 
             var productBooksMotorradAbenteuer = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Motorcycle Adventures: Riding for travel enduros",
                 ShortDescription = "Hardcover",
@@ -7435,6 +7447,7 @@ namespace SmartStore.Services.Installation
 
             var productComputerDellInspiron23 = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Dell Inspiron One 23",
                 ShortDescription = "This 58 cm (23'')-All-in-One PC with Full HD, Windows 8 and powerful Intel ® Core ™ processor third generation allows practical interaction with a touch screen.",
@@ -7538,6 +7551,7 @@ namespace SmartStore.Services.Installation
 
             var productComputerDellOptiplex3010 = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Dell Optiplex 3010 DT Base",
                 ShortDescription = "SPECIAL OFFER: Extra 50 € discount on all Dell OptiPlex desktops from a value of € 549. Online Coupon:? W8DWQ0ZRKTM1, valid until 04/12/2013.",
@@ -7640,6 +7654,7 @@ namespace SmartStore.Services.Installation
             #region productComputerAcerAspireOne
             var productComputerAcerAspireOne = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Black)",
                 ShortDescription = "Acer Aspire One 8.9\" Mini-Notebook and 6 Cell Battery model (AOA150-1447)",
@@ -7728,6 +7743,7 @@ namespace SmartStore.Services.Installation
 
             var productSmartPhonesAppleIphone5 = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Apple iPhone 5 32 GB",
                 ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
@@ -7845,6 +7861,7 @@ namespace SmartStore.Services.Installation
 
             var productInstantDownloadVivaldi = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Antonio Vivaldi: spring",
                 ShortDescription = "MP3, 320 kbit/s",
@@ -7919,6 +7936,7 @@ namespace SmartStore.Services.Installation
 
             var productInstantDownloadBeethoven = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Ludwig van Beethoven: For Elise",
                 ShortDescription = "Ludwig van Beethoven's most popular compositions",
@@ -7983,6 +8001,7 @@ namespace SmartStore.Services.Installation
 
             var productWatchesCertinaDSPodiumBigSize  = new Product()
             {
+				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
                 Name = "Certina DS Podium Big Size ",
                 ShortDescription = "C001.617.26.037.00",

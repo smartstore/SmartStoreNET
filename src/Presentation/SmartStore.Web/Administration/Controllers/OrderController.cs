@@ -1497,6 +1497,10 @@ namespace SmartStore.Admin.Controllers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
 
+			//product types
+			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
             return View(model);
         }
 
@@ -1514,7 +1518,8 @@ namespace SmartStore.Admin.Controllers
 				Keywords = model.SearchProductName,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
-				ShowHidden = true
+				ShowHidden = true,
+				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
 			};
 
             var products = _productService.SearchProducts(searchContext);

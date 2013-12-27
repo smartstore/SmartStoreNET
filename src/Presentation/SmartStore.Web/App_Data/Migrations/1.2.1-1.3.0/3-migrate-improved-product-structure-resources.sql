@@ -1881,6 +1881,15 @@ SET @resources='
 		<Value>This product is sold out.</Value>
 		<Value lang="de">Dieses Produkt ist ausverkauft.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchProductType">
+		<Value>Product type</Value>
+		<Value lang="de">Produkttyp</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchProductType.Hint">
+		<Value>Search by a product type.</Value>
+		<Value lang="de">Nach einem Produkttyp suchen.</Value>
+	</LocaleResource>
 
 </Language>
 '

@@ -463,6 +463,11 @@ namespace SmartStore.Services.Catalog
                 pSearchDescriptions.Value = ctx.SearchDescriptions;
                 pSearchDescriptions.DbType = DbType.Boolean;
 
+				var pSearchSku = _dataProvider.GetParameter();
+				pSearchSku.ParameterName = "SearchSku";
+				pSearchSku.Value = ctx.SearchSku;
+				pSearchSku.DbType = DbType.Boolean;
+
                 var pSearchProductTags = _dataProvider.GetParameter();
                 pSearchProductTags.ParameterName = "SearchProductTags";
                 pSearchProductTags.Value = ctx.SearchDescriptions;
@@ -544,6 +549,7 @@ namespace SmartStore.Services.Catalog
                     pPriceMax,
                     pKeywords,
                     pSearchDescriptions,
+					pSearchSku,
                     pSearchProductTags,
                     pUseFullTextSearch,
                     pFullTextMode,

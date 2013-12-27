@@ -675,6 +675,7 @@ namespace SmartStore.Admin.Controllers
             ctx.ManufacturerId = model.SearchManufacturerId;
 			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
+			ctx.SearchSku = true;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageIndex = command.Page - 1;
@@ -2158,6 +2159,7 @@ namespace SmartStore.Admin.Controllers
 				CategoryIds = new List<int>() { model.SearchCategoryId },
 				ManufacturerId = model.SearchManufacturerId,
 				Keywords = model.SearchProductName,
+				SearchSku = true,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,

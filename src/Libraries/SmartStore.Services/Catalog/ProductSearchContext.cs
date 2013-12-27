@@ -118,5 +118,10 @@ namespace SmartStore.Services.Catalog
 		/// Product type; 0 to load all records
 		/// </summary>
 		public ProductType? ProductType { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to search by a specified "Keyword" in product SKU
+		/// </summary>
+		public bool SearchSku { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
 {
@@ -55,11 +56,12 @@ namespace SmartStore.Services.Orders
         /// Get a recurring cycle information
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
+		/// <param name="localizationService">Localization service</param>
         /// <param name="cycleLength">Cycle length</param>
         /// <param name="cyclePeriod">Cycle period</param>
         /// <param name="totalCycles">Total cycles</param>
         /// <returns>Error (if exists); otherwise, empty string</returns>
-        public static string GetRecurringCycleInfo(this IList<ShoppingCartItem> shoppingCart,
+		public static string GetRecurringCycleInfo(this IList<ShoppingCartItem> shoppingCart, ILocalizationService localizationService,
             out int cycleLength, out RecurringProductCyclePeriod cyclePeriod, out int totalCycles)
         {
             string error = "";
@@ -80,7 +82,7 @@ namespace SmartStore.Services.Orders
                     throw new SmartException(string.Format("Product (Id={0}) cannot be loaded", sci.ProductId));
                 }
 
-                string conflictError = "Your cart has auto-ship (recurring) items with conflicting shipment schedules. Only one auto-ship schedule is allowed per order.";
+				string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
                 if (product.IsRecurring)
                 {
                     //cycle length
@@ -118,11 +120,7 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            if (!_cycleLength.HasValue || !_cyclePeriod.HasValue || !_totalCycles.HasValue)
-            {
-                error = "No recurring products";
-            }
-            else
+			if (_cycleLength.HasValue && _cyclePeriod.HasValue && _totalCycles.HasValue)
             {
                 cycleLength = _cycleLength.Value;
                 cyclePeriod = _cyclePeriod.Value;

@@ -1915,6 +1915,11 @@ SET @resources='
 		<Value lang="de">Das übergeordnete Gruppenprodukt, dem dieses Produkt angegliedert ist.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="ShoppingCart.ConflictingShipmentSchedules">
+		<Value>Your cart has auto-ship (recurring) items with conflicting shipment schedules. Only one auto-ship schedule is allowed per order.</Value>
+		<Value lang="de">Ihr Warenkorb enthält Abonnement-Produkte mit widersprüchlichen Versand-Zeitplänen. Pro Bestellung ist nur ein Abonnement-Produkt-Plan möglich.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

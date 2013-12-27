@@ -163,17 +163,9 @@ namespace SmartStore.Services.Catalog
                 DeleteProductVariant(productVariant);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0)
+		public virtual IQueryable<Product> GetAllProducts(ProductAllContext context)
 		{
 			var allowedRoleIds = AllowedRoleIds;
-
-			//var query =
-			//	from p in _productRepository.Table
-			//	join acl in _aclRepository.Table on p.Id equals acl.EntityId into p_acl
-			//	from acl in p_acl.DefaultIfEmpty()
-			//	where p.Published && !p.Deleted && (!p.SubjectToAcl || (acl.EntityName == "Product" && allowedRoleIds.Contains(acl.CustomerRoleId)))
-			//	select p;
 
 			var query =
 				from p in _productRepository.Table
@@ -183,28 +175,47 @@ namespace SmartStore.Services.Catalog
 				where p.Published && !p.Deleted && (!p.SubjectToAcl || allowedRoleIds.Contains(acl.CustomerRoleId))
 				select p;
 
-			if (storeId > 0)
+			if (context.VisibleIndividually.HasValue)
 			{
-				query = 
+				query = query.Where(x => x.VisibleIndividually == context.VisibleIndividually.Value);
+			}
+
+			if (context.FilterByAvailableDate)
+			{
+				var nowUtc = DateTime.UtcNow;
+
+				query = query.Where(p =>
+					(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value <= nowUtc) &&
+					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc));
+			}
+
+			if (context.ProductIds != null && context.ProductIds.Count > 0)
+			{
+				query = query.Where(x => context.ProductIds.Contains(x.Id));
+			}
+
+			if (context.CategoryIds != null && context.CategoryIds.Count > 0)
+			{
+				query =
+					from p in query
+					from pc in p.ProductCategories.Where(pc => context.CategoryIds.Contains(pc.CategoryId))
+					where (!context.IncludeFeatured.HasValue || context.IncludeFeatured.Value == pc.IsFeaturedProduct)
+					select p;
+			}
+
+			if (context.StoreId > 0)
+			{
+				query =
 					from p in query
 					join sm in _storeMappingRepository.Table
 					on new { c1 = p.Id, c2 = "Product" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into p_sm
 					from sm in p_sm.DefaultIfEmpty()
-					where !p.LimitedToStores || storeId == sm.StoreId
+					where !p.LimitedToStores || context.StoreId == sm.StoreId
 					select p;
 			}
 
-			if (categoryIds != null && categoryIds.Count > 0)
-			{
-				query =
-					from p in query
-					from pc in p.ProductCategories.Where(pc => categoryIds.Contains(pc.CategoryId))
-					where (!includeFeatured.HasValue || includeFeatured.Value == pc.IsFeaturedProduct)
-					select p;
-			}
 			return query;
 		}
-
 
         /// <summary>
         /// Gets all products displayed on the home page

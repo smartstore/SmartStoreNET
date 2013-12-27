@@ -101,11 +101,12 @@ namespace SmartStore.Services.Catalog
 
         public virtual int GetComparedProductsCount()
         {
-            var products = new List<Product>();
+			var allContext = new ProductAllContext()
+			{
+				ProductIds = GetComparedProductIds()
+			};
             
-            var productIds = GetComparedProductIds();
-            var query = _productService.GetAllProducts(null, null)
-                .Where(x => productIds.Contains(x.Id));
+            var query = _productService.GetAllProducts(allContext);
 
             return query.Count();
         }

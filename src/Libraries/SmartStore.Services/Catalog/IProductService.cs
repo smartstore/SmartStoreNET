@@ -20,8 +20,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         void DeleteProduct(Product product);
 
-		/// <remarks>codehint: sm-add</remarks>
-		IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0);
+		IQueryable<Product> GetAllProducts(ProductAllContext context);
 
         /// <summary>
         /// Gets all products displayed on the home page

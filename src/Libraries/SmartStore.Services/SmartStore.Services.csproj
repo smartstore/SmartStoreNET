@@ -152,6 +152,7 @@
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
     <Compile Include="Catalog\MergedProduct.cs" />
+    <Compile Include="Catalog\ProductAllContext.cs" />
     <Compile Include="Catalog\ProductSearchContext.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />
     <Compile Include="Catalog\ManufacturerExtensions.cs" />

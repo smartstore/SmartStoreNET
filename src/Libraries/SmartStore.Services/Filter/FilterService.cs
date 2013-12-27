@@ -154,14 +154,16 @@ namespace SmartStore.Services.Filter
 		{
 			if (_products == null)
 			{
-				var nowUtc = DateTime.UtcNow;
+				var allContext = new ProductAllContext()
+				{
+					CategoryIds = categoryIds,
+					IncludeFeatured = IncludeFeatured,
+					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+					VisibleIndividually = true,
+					FilterByAvailableDate = true
+				};
 
-				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured, _storeContext.CurrentStoreIdIfMultiStoreMode)
-					.Where(p =>
-						p.VisibleIndividually &&
-						(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value <= nowUtc) &&
-						(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc)
-				);
+				_products = _productService.GetAllProducts(allContext);
 			}
 			return _products;
 		}

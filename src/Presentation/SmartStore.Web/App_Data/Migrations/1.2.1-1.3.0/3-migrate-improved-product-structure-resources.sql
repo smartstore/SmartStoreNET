@@ -1897,6 +1897,15 @@ SET @resources='
 		<Value lang="de">Reihenfolge</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Orders.Shipments.List.TrackingNumber">
+		<Value>Tracking number</Value>
+		<Value lang="de">Tracking-Nummer</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Shipments.List.TrackingNumber.Hint">
+		<Value>Search by a specific tracking number.</Value>
+		<Value lang="de">Nach einer Tracking\Fracht-Nummer suchen.</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

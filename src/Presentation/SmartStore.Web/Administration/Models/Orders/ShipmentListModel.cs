@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -12,6 +12,10 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.Orders.Shipments.List.EndDate")]
         public DateTime? EndDate { get; set; }
+
+		[SmartResourceDisplayName("Admin.Orders.Shipments.List.TrackingNumber")]
+		[AllowHtml]
+		public string TrackingNumber { get; set; }
 
         public bool DisplayPdfPackagingSlip { get; set; }
     }

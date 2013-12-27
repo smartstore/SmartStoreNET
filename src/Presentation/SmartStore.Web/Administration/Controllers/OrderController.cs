@@ -1951,7 +1951,7 @@ namespace SmartStore.Admin.Controllers
                             :(DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             //load shipments
-            var shipments = _shipmentService.GetAllShipments(startDateValue, endDateValue, 
+			var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, 
                 command.Page - 1, command.PageSize);
             var gridModel = new GridModel<ShipmentModel>
             {
@@ -2271,7 +2271,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var shipments = _shipmentService.GetAllShipments(null, null, 0, int.MaxValue);
+            var shipments = _shipmentService.GetAllShipments(null, null, null, 0, int.MaxValue);
             
             byte[] bytes = null;
             using (var stream = new MemoryStream())

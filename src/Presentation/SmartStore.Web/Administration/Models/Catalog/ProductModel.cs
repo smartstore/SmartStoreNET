@@ -44,6 +44,11 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
 		public string ProductTypeName { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
+		public int AssociatedToProductId { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
+		public string AssociatedToProductName { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.VisibleIndividually")]
 		public bool VisibleIndividually { get; set; }
 

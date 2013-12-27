@@ -1795,7 +1795,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductType.Nop.Core.Domain.Catalog.ProductType.GroupedProduct">
 		<Value>Grouped product</Value>
-		<Value lang="de">Gruppiertes Produkt</Value>
+		<Value lang="de">Gruppenprodukt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.BulkEdit">
 		<Value>Bulk edit products</Value>
@@ -1857,11 +1857,11 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note1">
 		<Value>Associated products are used only with "grouped" products.</Value>
-		<Value lang="de">Angegliederte Produkte gibt es ausschließlich bei gruppierten Produkten.</Value>
+		<Value lang="de">Angegliederte Produkte gibt es ausschließlich bei Gruppenprodukten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note2">
 		<Value>A product could be associated to only one "grouped" product.</Value>
-		<Value lang="de">Ein Produkt kann nur einem gruppiertem Produkt angegliedert werden.</Value>
+		<Value lang="de">Ein Produkt kann nur einem Gruppenprodukt angegliedert werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.SaveBeforeEdit">
 		<Value>You need to save the product before you can add associated products for this product page.</Value>
@@ -1905,7 +1905,16 @@ SET @resources='
 		<Value>Search by a specific tracking number.</Value>
 		<Value lang="de">Nach einer Tracking\Fracht-Nummer suchen.</Value>
 	</LocaleResource>
-	
+
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName">
+		<Value>Associated to product</Value>
+		<Value lang="de">Angegliedertes Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName.Hint">
+		<Value>A "grouped" parent product which this one is associated to.</Value>
+		<Value lang="de">Das übergeordnete Gruppenprodukt, dem dieses Produkt angegliedert ist.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

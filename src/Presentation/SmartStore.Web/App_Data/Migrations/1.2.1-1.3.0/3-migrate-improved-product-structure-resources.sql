@@ -1876,6 +1876,11 @@ SET @resources='
 		<Value>Check it if you want this product to be visible in catalog or search results. You can use this field (just uncheck) to hide associated products from catalog and make them accessible only from a parent "grouped" product details page.</Value>
 		<Value lang="de">Legt fest, ob dieses Produkt im Katalog oder den Suchergebnissen angezeigt werden soll. Sie können dieses Feld verwenden (durch deaktivieren), um angegliederte Produkte nur über deren übergeordnete Produkt-Detailseite zugänglich zu machen.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Products.NoAssociatedProducts">
+		<Value>This product is sold out.</Value>
+		<Value lang="de">Dieses Produkt ist ausverkauft.</Value>
+	</LocaleResource>
 
 </Language>
 '

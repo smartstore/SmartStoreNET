@@ -90,6 +90,12 @@
                             }
                         </div>
                     }
+                    @if (Model.AssociatedProducts.Count == 0)
+                    {
+                        <div class="no-associated-products">
+                            @T("Products.NoAssociatedProducts")
+                        </div>
+                    }
                 </div>
                 @Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id })
                 <div class="clear">

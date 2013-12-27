@@ -119,6 +119,12 @@
                         dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
                         @Html.Partial("_ProductTemplate.Grouped.AssociatedProduct", product, dataDictProduct)
                     }
+                    @if (Model.AssociatedProducts.Count == 0)
+                    {
+                        <div class="no-associated-products">
+                            @T("Products.NoAssociatedProducts")
+                        </div>
+                    }
                 </div>
             </div>
 

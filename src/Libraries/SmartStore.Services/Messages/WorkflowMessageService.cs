@@ -757,7 +757,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product);
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
 			tokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
 			tokens.Add(new Token("EmailAFriend.Email", customerEmail));
 
@@ -794,7 +794,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product);
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
             tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
             tokens.Add(new Token("ProductQuestion.SenderName", senderName));
@@ -1163,7 +1163,7 @@ namespace SmartStore.Services.Messages
 
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddProductTokens(tokens, product);
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);

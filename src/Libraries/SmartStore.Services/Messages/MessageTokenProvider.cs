@@ -884,10 +884,10 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityTokensAdded(newsComment, tokens);
         }
 
-        public virtual void AddProductTokens(IList<Token> tokens, Product product)
+		public virtual void AddProductTokens(IList<Token> tokens, Product product, int languageId)
         {
-            tokens.Add(new Token("Product.Name", product.Name));
-            tokens.Add(new Token("Product.ShortDescription", product.ShortDescription, true));
+			tokens.Add(new Token("Product.Name", product.GetLocalized(x => x.Name, languageId)));
+			tokens.Add(new Token("Product.ShortDescription", product.GetLocalized(x => x.ShortDescription, languageId), true));
 			tokens.Add(new Token("Product.StockQuantity", product.StockQuantity.ToString()));
 
             // TODO: add a method for getting URL (use routing because it handles all SEO friendly URLs)
@@ -1042,7 +1042,7 @@ namespace SmartStore.Services.Messages
                 "%Customer.PasswordRecoveryURL%", 
                 "%Customer.AccountActivationURL%", 
                 "%Wishlist.URLForCustomer%", 
-                "NewsLetterSubscription.Email%", 
+                "%NewsLetterSubscription.Email%", 
                 "%NewsLetterSubscription.ActivationUrl%",
                 "%NewsLetterSubscription.DeactivationUrl%", 
                 "%ProductReview.ProductName%", 

@@ -90,8 +90,8 @@ namespace SmartStore.Services.Catalog
             category.Deleted = true;
             UpdateCategory(category);
 
-            //set a ParentCategory property of the children to 0
-            var subcategories = GetAllCategoriesByParentCategoryId(category.Id);
+			//reset a "Parent category" property of all child subcategories
+            var subcategories = GetAllCategoriesByParentCategoryId(category.Id, true);
             foreach (var subcategory in subcategories)
             {
                 subcategory.ParentCategoryId = 0;

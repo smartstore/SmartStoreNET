@@ -1109,6 +1109,10 @@ namespace SmartStore.Web.Controllers
                             address.CountryId = null;
                         if (address.StateProvinceId == 0)
                             address.StateProvinceId = null;
+						if (address.CountryId.HasValue && address.CountryId.Value > 0)
+						{
+							address.Country = _countryService.GetCountryById(address.CountryId.Value);
+						}
                         _workContext.CurrentCustomer.Addresses.Add(address);
                     }
                     _workContext.CurrentCustomer.BillingAddress = address;

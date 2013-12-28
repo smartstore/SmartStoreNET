@@ -403,24 +403,7 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-			// codehint: sm-add
-            // pictures
-
-            //var wasDefault = combination.IsDefaultCombination;
-            //var prevId = combination.ProductVariantId;
-
             _productVariantAttributeCombinationRepository.Delete(combination);
-
-			//if (wasDefault)
-			//{
-			//	// we deleted the default combination, set another as default!
-			//	var newDefault = _productVariantAttributeCombinationRepository.Table.FirstOrDefault(x => x.ProductVariantId == prevId);
-			//	if (newDefault != null)
-			//	{
-			//		newDefault.IsDefaultCombination = true;
-			//		_productVariantAttributeCombinationRepository.Update(newDefault);
-			//	}
-			//}
 
             //event notification
             _eventPublisher.EntityDeleted(combination);

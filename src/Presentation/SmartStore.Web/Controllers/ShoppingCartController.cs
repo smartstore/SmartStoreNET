@@ -1088,13 +1088,6 @@ namespace SmartStore.Web.Controllers
 			else if (form.AllKeys.Contains(key2))
 				int.TryParse(form[key2], out quantity);
 
-			//foreach (string formKey in form.AllKeys)
-			//	if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productVariantId), StringComparison.InvariantCultureIgnoreCase))
-			//	{
-			//		int.TryParse(form[formKey], out quantity);
-			//		break;
-			//	}
-
             #endregion
 
             var addToCartWarnings = new List<string>();
@@ -2303,7 +2296,7 @@ namespace SmartStore.Web.Controllers
                 if (allIdsToAdd.Contains(sci.Id))
                 {
                     var warnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                        sci.ProductVariant, ShoppingCartType.ShoppingCart,
+                        sci.Product, ShoppingCartType.ShoppingCart,
 						_storeContext.CurrentStore.Id,
                         sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
                     if (warnings.Count == 0)
@@ -2372,7 +2365,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("Wishlist");
             }
             var warnings = _shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                sci.ProductVariant, ShoppingCartType.ShoppingCart,
+                sci.Product, ShoppingCartType.ShoppingCart,
 				_storeContext.CurrentStore.Id,
                 sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, true);
             if (_shoppingCartSettings.MoveItemsFromWishlistToCart && //settings enabled
@@ -2549,7 +2542,7 @@ namespace SmartStore.Web.Controllers
                 if (sci != null)
                 {
                     x.AttributeInfo = _productAttributeFormatter.FormatAttributes(
-                        sci.ProductVariant,
+                        sci.Product,
                         sci.AttributesXml,
                         null,
                         htmlEncode: false,

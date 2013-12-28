@@ -26,7 +26,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttrCombinationRepository;
+        private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerService _customerService;
         //private readonly CurrencySettings _currencySettings;
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Directory
         public DeliveryTimeService(ICacheManager cacheManager,
             IRepository<DeliveryTime> deliveryTimeRepository,
             IRepository<Product> productRepository,
-            IRepository<ProductVariantAttributeCombination> productVariantAttrCombinationRepository,
+            IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             ICustomerService customerService,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher)
@@ -61,7 +61,7 @@ namespace SmartStore.Services.Directory
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._productRepository = productRepository;
-            this._productVariantAttrCombinationRepository = productVariantAttrCombinationRepository;
+            this._attributeCombinationRepository = attributeCombinationRepository;
         }
 
         #endregion

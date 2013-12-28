@@ -39,7 +39,6 @@ namespace SmartStore.Services.ExportImport
             "SeName",
             "AllowCustomerReviews",
             "Published",
-            "ProductVariantName",
             "SKU",
             "ManufacturerPartNumber",
             "Gtin",
@@ -232,7 +231,6 @@ namespace SmartStore.Services.ExportImport
                     string seName = GetValue<string>(worksheet, iRow, "SeName");
                     bool allowCustomerReviews = GetValue<bool>(worksheet, iRow, "AllowCustomerReviews");
                     bool published = GetValue<bool>(worksheet, iRow, "Published");
-                    string productVariantName = GetValue<string>(worksheet, iRow, "ProductVariantName");
                     string sku = GetValue<string>(worksheet, iRow, "SKU");
                     string manufacturerPartNumber = GetValue<string>(worksheet, iRow, "ManufacturerPartNumber");
                     string gtin = GetValue<string>(worksheet, iRow, "Gtin");
@@ -363,7 +361,6 @@ namespace SmartStore.Services.ExportImport
 					product.Published = published;
 					product.CreatedOnUtc = createdOnUtc;
 					product.UpdatedOnUtc = DateTime.UtcNow;
-					product.Name = productVariantName;
 					product.Sku = sku;
 					product.ManufacturerPartNumber = manufacturerPartNumber;
 					product.Gtin = gtin;

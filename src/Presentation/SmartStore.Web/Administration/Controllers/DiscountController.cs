@@ -111,12 +111,12 @@ namespace SmartStore.Admin.Controllers
                 {
                     if (product != null && !product.Deleted)
                     {
-                        var appliedToProductVariantModel = new DiscountModel.AppliedToProductModel()
+                        var appliedToProductModel = new DiscountModel.AppliedToProductModel()
                         {
                             ProductId = product.Id,
 							ProductName = product.Name
                         };
-                        model.AppliedToProductModels.Add(appliedToProductVariantModel);
+                        model.AppliedToProductModels.Add(appliedToProductModel);
                     }
                 }
 

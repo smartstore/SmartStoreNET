@@ -64,7 +64,6 @@
                 {
                     dataBinding.Ajax()
                         .Select("ProductVariantAttributeCombinationList", "Product", new { productId = Model.Id })
-                        //.Update("ProductVariantAttrbiuteCombinationUpdate", "Product")
                         .Delete("ProductVariantAttributeCombinationDelete", "Product");
                 })
                 .Columns(columns =>

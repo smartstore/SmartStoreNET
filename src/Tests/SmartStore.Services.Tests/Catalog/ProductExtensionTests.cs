@@ -30,7 +30,7 @@ namespace SmartStore.Services.Tests.Catalog
         }
 
 		[Test]
-		public void Can_parse_required_productvariant_ids()
+		public void Can_parse_required_product_ids()
 		{
 			var product = new Product
 			{

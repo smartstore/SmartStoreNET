@@ -444,8 +444,8 @@ namespace SmartStore.Services.Catalog
 					Length = combination.Length,
 					Width = combination.Width,
 					Height = combination.Height,
-					BasePriceAmount = combination.BasePriceAmount,	// TODO: inheritance from productVariantCopy
-					BasePriceBaseAmount = combination.BasePriceBaseAmount,		// TODO: inheritance from productVariantCopy
+					BasePriceAmount = combination.BasePriceAmount,
+					BasePriceBaseAmount = combination.BasePriceBaseAmount,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};

@@ -60,7 +60,7 @@ namespace SmartStore.Admin.Models.Discounts
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToCategories")]
         public IList<AppliedToCategoryModel> AppliedToCategoryModels { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProductVariants")]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProducts")]
         public IList<AppliedToProductModel> AppliedToProductModels { get; set; }
 
 

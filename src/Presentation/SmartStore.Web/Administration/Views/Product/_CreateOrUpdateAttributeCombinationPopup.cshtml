@@ -20,7 +20,7 @@
 	</div>
 	}
 	else {
-	<div id="ProductVariantAtributeContainer">
+	<div id="ProductVariantAttributeContainer">
 		@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes)
 	</div>
 	}
@@ -188,7 +188,7 @@
 @*codehint: sm-add*@
 <script type="text/javascript">
 	$(document).ready(function () {
-		var container = $('#ProductVariantAtributeContainer'),
+		var container = $('#ProductVariantAttributeContainer'),
 			note = $('#CombinationExistenceNote');
 
 		container.find('select').selectWrapper();
@@ -197,7 +197,7 @@
 			note.empty();
 			container.closest('form').doAjax({
 				smallIcon: note,
-				url: '@Url.Action("CombinationExistenceNote", "Product", new { productVariantId = Model.ProductId })',
+				url: '@Url.Action("CombinationExistenceNote", "Product", new { productId = Model.ProductId })',
 				callbackSuccess: function (resp) {
 					var cls = (resp.HasWarning ? 'error' : 'success'),
 						ico = (resp.HasWarning ? 'warning-sign' : 'ok-sign');

@@ -42,7 +42,7 @@ var AjaxCart = (function ($, window, document, undefined) {
             
             // HACK (MC)!
             // we changed the ModelType of the _AddToCart
-            // from ...ProductVariantModel.AddToCart to .ProductVariantModel.
+            // from ...ProductModel.AddToCart to .ProductModel.
             // Therefore input names are not in the form anymore as the ShoppingCartController 
             // expects them. Hacking here ist much easier than refactoring the controller method.
             // But change this in future of couse.

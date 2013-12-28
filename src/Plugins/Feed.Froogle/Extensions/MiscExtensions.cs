@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
 			string skeleton =
 				"<a href=\"#\" title=\"<#= {0} #>\" class=\"edit-link-{1}\"" +
-				" data-pk=\"<#= ProductVariantId #>\" data-name=\"{0}\" data-value=\"<#= {0} #>\" data-inputclass=\"edit-{1}\" data-type=\"{2}\">" +
+				" data-pk=\"<#= ProductId #>\" data-name=\"{0}\" data-value=\"<#= {0} #>\" data-inputclass=\"edit-{1}\" data-type=\"{2}\">" +
 				"{3}</a>";
 
 			return skeleton.FormatWith(fieldName, fieldName.ToLower(), type, displayText);

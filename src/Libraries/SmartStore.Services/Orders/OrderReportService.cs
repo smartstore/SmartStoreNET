@@ -37,7 +37,6 @@ namespace SmartStore.Services.Orders
         /// <param name="orderRepository">Order repository</param>
         /// <param name="orderItemRepository">Order item repository</param>
         /// <param name="productRepository">Product repository</param>
-        /// <param name="productVariantRepository">Product variant repository</param>
         /// <param name="dateTimeHelper">Datetime helper</param>
         /// <param name="productService">Product service</param>
         public OrderReportService(IRepository<Order> orderRepository,

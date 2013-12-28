@@ -897,7 +897,7 @@ namespace SmartStore.Services.Catalog
         /// Get low stock products
         /// </summary>
         /// <returns>Result</returns>
-        public virtual IList<Product> GetLowStockProductVariants()
+        public virtual IList<Product> GetLowStockProducts()
         {
 			//Track inventory for product
 			var query1 = from p in _productRepository.Table

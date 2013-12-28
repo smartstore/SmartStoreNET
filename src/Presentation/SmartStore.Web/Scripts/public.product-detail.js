@@ -30,7 +30,7 @@
 		    		url = opts.updateUrl;
 
 		    	if (context[0])		// multiple variant template
-		    		url += '&productVariantId=' + context.attr('data-productvariantid');
+		    		url += '&productId=' + context.attr('data-productid');
 				else
 		    		context = el;
 

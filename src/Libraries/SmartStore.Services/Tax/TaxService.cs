@@ -276,12 +276,6 @@ namespace SmartStore.Services.Tax
 
         protected virtual decimal GetTaxRateCore(Product product, int taxCategoryId, Customer customer)
         {
-            ////tax exempt (VATFIX)
-            //if (IsTaxExempt(productVariant, customer))
-            //{
-            //    return decimal.Zero;
-            //}
-
             //tax request
             var calculateTaxRequest = CreateCalculateTaxRequest(product, taxCategoryId, customer);
 
@@ -380,17 +374,6 @@ namespace SmartStore.Services.Tax
             // Admin: GROSS prices
             if (priceIncludesTax)
             {
-                ////  (VATFIX)
-                //decimal originTaxRate = GetOriginTaxRate(productVariant);
-
-                //// resolve NET price from GROSS
-                //price = CalculatePrice(price, originTaxRate, false);
-                //if (includingTax && taxRate > 0)
-                //{
-                //    // new GROSS: add destination tax to NET price
-                //    price = CalculatePrice(price, taxRate, true);
-                //}
-
                 if (!includingTax)
                 {
                     price = CalculatePrice(price, taxRate, false);

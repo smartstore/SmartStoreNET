@@ -285,8 +285,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter("QuantityBelow.StoreOwnerNotification", x =>
                 {
-                    x.Subject = "%Store.Name% - Mindestlagerbestand unterschritten: %ProductVariant.FullProductName%";
-                    x.Body = templateHeader + "<p><a href=\"%Store.URL%\">%Store.Name%</a>&nbsp;</p> <p>Der Mindestlagerbestand f&uuml;r folgendes produkt wurde unterschritte;<br />%ProductVariant.FullProductName% (ID: %ProductVariant.ID%) &nbsp;<br /><br />Menge: %ProductVariant.StockQuantity%</p>" + templateFooter;
+                    x.Subject = "%Store.Name% - Mindestlagerbestand unterschritten: %Product.Name%";
+                    x.Body = templateHeader + "<p><a href=\"%Store.URL%\">%Store.Name%</a>&nbsp;</p> <p>Der Mindestlagerbestand f&uuml;r folgendes Produkt wurde unterschritte;<br />%Product.Name% (ID: %Product.ID%) &nbsp;<br /><br />Menge: %Product.StockQuantity%</p>" + templateFooter;
                 })
                 .Alter("ReturnRequestStatusChanged.CustomerNotification", x =>
                 {
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Product.AskQuestion", x =>
                 {
                     x.Subject = "%Store.Name% - Frage zu '%Product.Name%' von %ProductQuestion.SenderName%";
-                    x.Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>ID:</strong> %ProductVariant.ID%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Telefon: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter;
+                    x.Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>ID:</strong> %Product.ID%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Telefon: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter;
                 })
 
 
@@ -2357,10 +2357,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                     {
                         x.Name = "Neues Produktattribut hinzugefügt";
                     })
-                .Alter("AddNewProductVariant", x =>
-                    {
-                        x.Name = "Neue Produktvariante hinzugefügt";
-                    })
                 .Alter("AddNewSetting", x =>
                     {
                         x.Name = "Neue Einstellung hinzugefügt";
@@ -2408,10 +2404,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("DeleteProductAttribute", x =>
                     {
                         x.Name = "Produktattribut gelöscht";
-                    })
-                .Alter("DeleteProductVariant", x =>
-                    {
-                        x.Name = "Produktvariante gelöscht";
                     })
                 .Alter("DeleteReturnRequest", x =>
                     {
@@ -2464,10 +2456,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("EditProductAttribute", x =>
                     {
                         x.Name = "Produktattribut bearbeitet";
-                    })
-                .Alter("EditProductVariant", x =>
-                    {
-                        x.Name = "Produktvariante bearbeitet";
                     })
                 .Alter("EditPromotionProviders", x =>
                     {

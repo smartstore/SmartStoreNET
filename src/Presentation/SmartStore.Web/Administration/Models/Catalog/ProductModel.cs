@@ -123,7 +123,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RequiredProductIds")]
 		public string RequiredProductIds { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProductVariants")]
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProducts")]
 		public bool AutomaticallyAddRequiredProducts { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsDownload")]
@@ -576,7 +576,7 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.Price")]
 			//we don't name it Price because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
-			//in our case it's productVariant.Price1
+			//in our case it's product.Price1
 			public decimal Price1 { get; set; }
 		}
 
@@ -668,48 +668,6 @@ namespace SmartStore.Admin.Models.Catalog
 			[AllowHtml]
 			public string Name { get; set; }
 		}
-
-		//public class ProductVariantAttributeCombinationModel : EntityModelBase
-		//{
-		//	public int ProductId { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Attributes")]
-		//	[AllowHtml]
-		//	public string AttributesXml { get; set; }
-
-		//	[AllowHtml]
-		//	public string Warnings { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
-		//	//we don't name it StockQuantity because Telerik has a small bug 
-		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
-		//	//in our case it's productVariant.StockQuantity1
-		//	public int StockQuantity1 { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
-		//	//we don't name it AllowOutOfStockOrders because Telerik has a small bug 
-		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
-		//	//in our case it's productVariant.AllowOutOfStockOrders1
-		//	public bool AllowOutOfStockOrders1 { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
-		//	//we don't name it StockQuantity because Telerik has a small bug 
-		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
-		//	//in our case it's productVariant.Sku1
-		//	public string Sku1 { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManufacturerPartNumber")]
-		//	//we don't name it StockQuantity because Telerik has a small bug 
-		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
-		//	//in our case it's productVariant.ManufacturerPartNumber1
-		//	public string ManufacturerPartNumber1 { get; set; }
-
-		//	[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GTIN")]
-		//	//we don't name it StockQuantity because Telerik has a small bug 
-		//	//"if we have one more editor with the same name on a page, it doesn't allow editing"
-		//	//in our case it's productVariant.Gtin1
-		//	public string Gtin1 { get; set; }
-		//}
 
         #endregion
     }

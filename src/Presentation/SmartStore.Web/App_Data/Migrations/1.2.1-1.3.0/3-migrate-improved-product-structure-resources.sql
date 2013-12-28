@@ -14,7 +14,7 @@ SET @resources='
 		<Value lang="de">Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Plugins.DiscountRules.HasAllProducts.Fields.Products.Hint">
-		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its details page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
+		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its detail page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
 		<Value lang="de">Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produktes findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produkt-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produkt-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Plugins.DiscountRules.HasAllProducts.Fields.ProductVariants">
@@ -35,7 +35,7 @@ SET @resources='
 		<Value lang="de">Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Plugins.DiscountRules.HasOneProduct.Fields.Products.Hint">
-		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its details page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
+		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its detail page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
 		<Value lang="de">Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produktes findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produkt-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produkt-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Plugins.DiscountRules.HasOneProduct.Fields.ProductVariants">
@@ -47,6 +47,48 @@ SET @resources='
 		<Value lang="de"></Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.PurchasedAllProducts">
+		<Value>Customer had previously purchased all of these products</Value>
+		<Value lang="de">Der Kunde hat bereits folgende Produkte gekauft</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedAllProducts.Fields.Products">
+		<Value>Restricted products</Value>
+		<Value lang="de">Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedAllProducts.Fields.Products.Hint">
+		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its detail page.</Value>
+		<Value lang="de">Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produktes findet sich in seiner Detailansicht.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedAllProducts.Fields.ProductVariants">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedAllProducts.Fields.ProductVariants.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.PurchasedOneProduct">
+		<Value>Customer had previously purchased one of these products</Value>
+		<Value lang="de">Der Kunde hat bereits eines der folgenden Produkte gekauft</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedOneProduct.Fields.Products">
+		<Value>Restricted products</Value>
+		<Value lang="de">Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedOneProduct.Fields.Products.Hint">
+		<Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its detail page.</Value>
+		<Value lang="de">Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produktes findet sich in seiner Detailansicht.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedOneProduct.Fields.ProductVariants">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.DiscountRules.PurchasedOneProduct.Fields.ProductVariants.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+
 	<LocaleResource Name="ShoppingCart.CannotLoadProductVariant">
 		<Value></Value>
 		<Value lang="de"></Value>
@@ -63,7 +105,7 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
-	
+
 	<LocaleResource Name="Admin.Catalog.Products.Variants">
 		<Value></Value>
 		<Value lang="de"></Value>
@@ -100,6 +142,11 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Variants.EditProductVariantDetails">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	
 	<LocaleResource Name="Admin.Catalog.Products.Discounts.NoDiscounts">
 		<Value>No discounts available. Create at least one discount before mapping.</Value>
 		<Value lang="de">Keine Rabatte verfügbar. Erstellen Sie zunächst mindestens einen Rabatt, bevor Sie eine Zuordung vornehmen.</Value>
@@ -168,11 +215,11 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProductVariants">
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProducts">
 		<Value>Automatically add these products to the cart</Value>
 		<Value lang="de">Diese Produkte automatisch dem Warenkorb hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProductVariants.Hint">
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProducts.Hint">
 		<Value>Check to automatically add these products to the cart.</Value>
 		<Value lang="de">Markieren, um diese Produkte automatisch dem Warenkorb hinzuzufügen.</Value>
 	</LocaleResource>
@@ -1540,7 +1587,7 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.BackToProductVariant">
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.BackToProduct">
 		<Value>Back to product details</Value>
 		<Value lang="de">Zurück zu den Produkteigenschaften</Value>
 	</LocaleResource>
@@ -1923,6 +1970,31 @@ SET @resources='
 	<LocaleResource Name="Admin.Common.CopyOf">
 		<Value>Copy of</Value>
 		<Value lang="de">Kopie von</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProductVariants">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProductVariants.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProductVariants.NoRecords">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProducts">
+		<Value>Assigned to products</Value>
+		<Value lang="de">Produkten zugeordnet</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProducts.Hint">
+		<Value>A list of products to which the discount is to be applied. You can assign this discount on a product details page.</Value>
+		<Value lang="de">Eine Liste von Produkten, denen der Rabatt zugeordnet ist. Die Zuordnung kann auf der Produkt-Detailseite vorgenommen werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProducts.NoRecords">
+		<Value>No products selected</Value>
+		<Value lang="de">Keine Produkte ausgewählt</Value>
 	</LocaleResource>
 
 </Language>

@@ -202,8 +202,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return "";
 		}
-		private string WriteItem(XmlWriter writer, Store store, Product product, ProductManufacturer manu, Currency currency)
+		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
 		{
+			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
 			var mainImageUrl = Helper.MainProductImageUrl(store, product);
 			var googleProduct = GetByProductId(product.Id);
 			var category = ProductCategory(googleProduct);
@@ -436,23 +437,23 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 				foreach (var product in products)
 				{
-					if (product.ProductType != ProductType.SimpleProduct)
-						continue;
+					var qualifiedProducts = Helper.QualifiedProductsByProduct(_productService, product, store);
 
-					writer.WriteStartElement("item");
-
-					try
+					foreach (var qualifiedProduct in qualifiedProducts)
 					{
-						var manufacturer = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
+						writer.WriteStartElement("item");
 
-						breakingError = WriteItem(writer, store, product, manufacturer, currency);
-					}
-					catch (Exception exc)
-					{
-						exc.Dump();
-					}
+						try
+						{
+							breakingError = WriteItem(writer, store, qualifiedProduct, currency);
+						}
+						catch (Exception exc)
+						{
+							exc.Dump();
+						}
 
-					writer.WriteEndElement(); // item
+						writer.WriteEndElement(); // item
+					}
 
 					if (breakingError.HasValue())
 						break;

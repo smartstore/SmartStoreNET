@@ -333,6 +333,29 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return urls;
 		}
+		public List<Product> QualifiedProductsByProduct(IProductService productService, Product product, Store store)
+		{
+			var lst = new List<Product>();
+
+			if (product.ProductType == ProductType.SimpleProduct)
+			{
+				lst.Add(product);
+			}
+			else if (product.ProductType == ProductType.GroupedProduct)
+			{
+				var associatedSearchContext = new ProductSearchContext()
+				{
+					OrderBy = ProductSortingEnum.CreatedOn,
+					PageSize = int.MaxValue,
+					StoreId = store.Id,
+					VisibleIndividuallyOnly = false,
+					ParentGroupedProductId = product.Id
+				};
+
+				lst.AddRange(productService.SearchProducts(associatedSearchContext));
+			}
+			return lst;
+		}
 		public void ScheduleTaskUpdate(bool enabled, int seconds)
 		{
 			var task = ScheduledTask;

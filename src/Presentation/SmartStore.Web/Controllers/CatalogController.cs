@@ -262,14 +262,18 @@ namespace SmartStore.Web.Controllers
                 throw new ArgumentNullException("category");
 
             var breadCrumb = new List<Category>();
+			var alreadyProcessedCategoryIds = new List<int>();
 
             while (category != null && //category is not null
                 !category.Deleted && //category is not deleted
                 category.Published && //category is published
 				_aclService.Authorize(category) && //ACL
-				_storeMappingService.Authorize(category)) //Store mapping
+				_storeMappingService.Authorize(category) &&	//Store mapping
+				!alreadyProcessedCategoryIds.Contains(category.Id))
             {
                 breadCrumb.Add(category);
+				alreadyProcessedCategoryIds.Add(category.Id);
+
                 category = _categoryService.GetCategoryById(category.ParentCategoryId);
             }
             breadCrumb.Reverse();

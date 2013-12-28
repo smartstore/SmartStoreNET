@@ -487,6 +487,7 @@ namespace SmartStore.Services.Catalog
 		/// <remarks>codehint: sm-add</remarks>
 		public virtual string GetCategoryBreadCrumb(Product product)
 		{
+			var alreadyProcessedCategoryIds = new List<int>();
 			var categories = new List<string>();
 			string result = "";
 
@@ -497,12 +498,15 @@ namespace SmartStore.Services.Catalog
 				if (productCategory != null && productCategory.Category != null && !productCategory.Category.Deleted && productCategory.Category.Published)
 				{
 					categories.Add(productCategory.Category.Name);
+					alreadyProcessedCategoryIds.Add(productCategory.Category.Id);
 
 					var category = GetCategoryById(productCategory.Category.ParentCategoryId);
 
-					while (category != null && !category.Deleted && category.Published)
+					while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
 					{
 						categories.Add(category.Name);
+						alreadyProcessedCategoryIds.Add(category.Id);
+
 						category = GetCategoryById(category.ParentCategoryId);
 					}
 					categories.Reverse();

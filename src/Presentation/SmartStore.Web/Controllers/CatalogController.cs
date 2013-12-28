@@ -1975,6 +1975,9 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
+			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0)
+				return Content("");
+
 			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {

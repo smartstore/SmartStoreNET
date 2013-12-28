@@ -1329,6 +1329,7 @@ BEGIN
 			(Name, ShortDescription, ProductTemplateId, ShowOnHomePage,
 			AllowCustomerReviews, ApprovedRatingSum, NotApprovedRatingSum, ApprovedTotalReviews,
 			NotApprovedTotalReviews, SubjectToAcl, LimitedToStores, Published, Deleted, CreatedOnUtc, UpdatedOnUtc, 
+			Sku, ManufacturerPartNumber, Gtin,
 			IsGiftCard, GiftCardTypeId, RequireOtherProducts, AutomaticallyAddRequiredProducts, IsDownload, 
 			DownloadId, UnlimitedDownloads, MaxNumberOfDownloads, DownloadExpirationDays, DownloadActivationTypeId, HasSampleDownload,
 			SampleDownloadId, HasUserAgreement, UserAgreementText, 
@@ -1346,7 +1347,9 @@ BEGIN
 			VALUES (@AssociatedProductName, @Description, @SimpleProductTemplateId, 
 			0, 0, 0, 0, 
 			0, 0, 0, 0, @AssociatedProductPublished, 
-			@AssociatedProductDeleted, @CreatedOnUtc, @UpdatedOnUtc, @IsGiftCard, @GiftCardTypeId, @RequireOtherProducts, 
+			@AssociatedProductDeleted, @CreatedOnUtc, @UpdatedOnUtc, 
+			@Sku, @ManufacturerPartNumber, @Gtin,
+			@IsGiftCard, @GiftCardTypeId, @RequireOtherProducts, 
 			--a store owner should manually update [RequiredProductIds] property after upgrade
 			@AutomaticallyAddRequiredProducts, @IsDownload, @DownloadId, @UnlimitedDownloads, @MaxNumberOfDownloads, 
 			@DownloadExpirationDays, @DownloadActivationTypeId, @HasSampleDownload, @SampleDownloadId, 

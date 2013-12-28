@@ -277,6 +277,7 @@ namespace SmartStore.Services.ExportImport
 				xmlWriter.WriteElementString("AllowedQuantities", null, product.AllowedQuantities);
 				xmlWriter.WriteElementString("DisableBuyButton", null, product.DisableBuyButton.ToString());
 				xmlWriter.WriteElementString("DisableWishlistButton", null, product.DisableWishlistButton.ToString());
+				xmlWriter.WriteElementString("AvailableForPreOrder", null, product.AvailableForPreOrder.ToString());
 				xmlWriter.WriteElementString("CallForPrice", null, product.CallForPrice.ToString());
 				xmlWriter.WriteElementString("Price", null, product.Price.ToString());
 				xmlWriter.WriteElementString("OldPrice", null, product.OldPrice.ToString());
@@ -537,6 +538,7 @@ namespace SmartStore.Services.ExportImport
                     "AllowedQuantities",
                     "DisableBuyButton",
                     "DisableWishlistButton",
+					"AvailableForPreOrder",
                     "CallForPrice",
                     "Price",
                     "OldPrice",
@@ -738,6 +740,9 @@ namespace SmartStore.Services.ExportImport
 
                     worksheet.Cells[row, col].Value = p.DisableWishlistButton;
                     col++;
+
+					worksheet.Cells[row, col].Value = p.AvailableForPreOrder;
+					col++;
 
                     worksheet.Cells[row, col].Value = p.CallForPrice;
                     col++;

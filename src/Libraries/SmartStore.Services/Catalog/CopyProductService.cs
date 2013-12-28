@@ -185,6 +185,7 @@ namespace SmartStore.Services.Catalog
 				AllowedQuantities = product.AllowedQuantities,
 				DisableBuyButton = product.DisableBuyButton,
 				DisableWishlistButton = product.DisableWishlistButton,
+				AvailableForPreOrder = product.AvailableForPreOrder,
 				CallForPrice = product.CallForPrice,
 				Price = product.Price,
 				OldPrice = product.OldPrice,

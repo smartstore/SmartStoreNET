@@ -80,6 +80,7 @@ namespace SmartStore.Services.ExportImport
             "AllowedQuantities",
             "DisableBuyButton",
             "DisableWishlistButton",
+			"AvailableForPreOrder",
             "CallForPrice",
             "Price",
             "OldPrice",
@@ -272,6 +273,7 @@ namespace SmartStore.Services.ExportImport
                     string allowedQuantities = GetValue<string>(worksheet, iRow, "AllowedQuantities");
                     bool disableBuyButton = GetValue<bool>(worksheet, iRow, "DisableBuyButton");
                     bool disableWishlistButton = GetValue<bool>(worksheet, iRow, "DisableWishlistButton");
+					bool availableForPreOrder = GetValue<bool>(worksheet, iRow, "AvailableForPreOrder");
                     bool callForPrice = GetValue<bool>(worksheet, iRow, "CallForPrice");
                     decimal price = GetValue<decimal>(worksheet, iRow, "Price");
                     decimal oldPrice = GetValue<decimal>(worksheet, iRow, "OldPrice");
@@ -402,6 +404,7 @@ namespace SmartStore.Services.ExportImport
 					product.AllowedQuantities = allowedQuantities;
 					product.DisableBuyButton = disableBuyButton;
 					product.DisableWishlistButton = disableWishlistButton;
+					product.AvailableForPreOrder = availableForPreOrder;
 					product.CallForPrice = callForPrice;
 					product.Price = price;
 					product.OldPrice = oldPrice;

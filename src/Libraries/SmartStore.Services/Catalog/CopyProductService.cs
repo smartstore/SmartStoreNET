@@ -28,6 +28,7 @@ namespace SmartStore.Services.Catalog
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILocalizationService _localizationService;
 
         #endregion
 
@@ -39,7 +40,8 @@ namespace SmartStore.Services.Catalog
             ICategoryService categoryService, IManufacturerService manufacturerService,
             ISpecificationAttributeService specificationAttributeService, IDownloadService downloadService,
             IProductAttributeParser productAttributeParser, IUrlRecordService urlRecordService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+			ILocalizationService localizationService)
         {
             this._productService = productService;
             this._productAttributeService = productAttributeService;
@@ -53,6 +55,7 @@ namespace SmartStore.Services.Catalog
             this._productAttributeParser = productAttributeParser;
 			this._urlRecordService = urlRecordService;
 			this._storeMappingService = storeMappingService;
+			this._localizationService = localizationService;
         }
 
         #endregion
@@ -66,8 +69,9 @@ namespace SmartStore.Services.Catalog
         /// <param name="newName">The name of product duplicate</param>
         /// <param name="isPublished">A value indicating whether the product duplicate should be published</param>
         /// <param name="copyImages">A value indicating whether the product images should be copied</param>
+		/// <param name="copyAssociatedProducts">A value indicating whether the copy associated products</param>
         /// <returns>Product entity</returns>
-		public virtual Product CopyProduct(Product product, string newName, bool isPublished, bool copyImages)
+		public virtual Product CopyProduct(Product product, string newName, bool isPublished, bool copyImages, bool copyAssociatedProducts = true)
         {
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -381,6 +385,8 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 			}
+
+			// attribute combinations
 			foreach (var combination in _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id))
 			{
 				//generate new AttributesXml according to new value IDs
@@ -469,6 +475,27 @@ namespace SmartStore.Services.Catalog
 			// update "HasTierPrices" and "HasDiscountsApplied" properties
 			_productService.UpdateHasTierPricesProperty(productCopy);
 			_productService.UpdateHasDiscountsApplied(productCopy);
+
+			//associated products
+			if (copyAssociatedProducts)
+			{
+				var searchContext = new ProductSearchContext()
+				{
+					ParentGroupedProductId = product.Id,
+					ShowHidden = true
+				};
+
+				string copyOf = _localizationService.GetResource("Admin.Common.CopyOf");
+				var associatedProducts = _productService.SearchProducts(searchContext);
+
+				foreach (var associatedProduct in associatedProducts)
+				{
+					var associatedProductCopy = CopyProduct(associatedProduct, string.Format("{0} {1}", copyOf, associatedProduct.Name),
+						isPublished, copyImages, false);
+					associatedProductCopy.ParentGroupedProductId = productCopy.Id;
+					_productService.UpdateProduct(productCopy);
+				}
+			}
 
             return productCopy;
         }

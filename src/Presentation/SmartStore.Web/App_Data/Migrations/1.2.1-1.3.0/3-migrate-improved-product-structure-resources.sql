@@ -1919,6 +1919,11 @@ SET @resources='
 		<Value>Your cart has auto-ship (recurring) items with conflicting shipment schedules. Only one auto-ship schedule is allowed per order.</Value>
 		<Value lang="de">Ihr Warenkorb enthält Abonnement-Produkte mit widersprüchlichen Versand-Zeitplänen. Pro Bestellung ist nur ein Abonnement-Produkt-Plan möglich.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Common.CopyOf">
+		<Value>Copy of</Value>
+		<Value lang="de">Kopie von</Value>
+	</LocaleResource>
 
 </Language>
 '

@@ -3690,38 +3690,72 @@ namespace SmartStore.Web.Controllers
                 model.Q = "";
             model.Q = model.Q.Trim();
 
-            var categories = _categoryService.GetAllCategories();
-            // Perf!
-            var mappedCatgories = categories.ToDictionary(x => x.Id);
-            if (categories.Count > 0)
+            // Build AvailableCategories
+            // first empty entry
+            model.AvailableCategories.Add(new SelectListItem()
             {
-                //first empty entry
+                Value = "0",
+                Text = _localizationService.GetResource("Common.All")
+            });
+
+            var navModel = GetCategoryNavigationModel(0, 0);
+
+            navModel.Root.TraverseTree((node) => {
+                if (node.IsRoot)
+                    return;
+
+                int id = node.Value.Id;
+
+                var breadcrumb = new List<string>();
+                while (node != null && !node.IsRoot)
+                {
+                    breadcrumb.Add(node.Value.Name);
+                    node = node.Parent;
+                }
+                breadcrumb.Reverse();
+
                 model.AvailableCategories.Add(new SelectListItem()
                 {
-                    Value = "0",
-                    Text = _localizationService.GetResource("Common.All")
+                    Value = id.ToString(),
+                    Text = String.Join(" > ", breadcrumb),
+                    Selected = model.Cid == id
                 });
-                //all other categories
-                foreach (var c in categories)
-                {
-                    //generate full category name (breadcrumb)
-                    string fullCategoryBreadcrumbName = "";
-                    var breadcrumb = GetCategoryBreadCrumb(c, mappedCatgories);
-                    for (int i = 0; i <= breadcrumb.Count - 1; i++)
-                    {
-                        fullCategoryBreadcrumbName += breadcrumb[i].GetLocalized(x => x.Name);
-                        if (i != breadcrumb.Count - 1)
-                            fullCategoryBreadcrumbName += " >> ";
-                    }
+            });
 
-                    model.AvailableCategories.Add(new SelectListItem()
-                    {
-                        Value = c.Id.ToString(),
-                        Text = fullCategoryBreadcrumbName,
-                        Selected = model.Cid == c.Id
-                    });
-                }
-            }
+            #region Obsolete
+            //var categories = _categoryService.GetAllCategories();
+            //// Perf!
+            //var mappedCatgories = categories.ToDictionary(x => x.Id);
+            //if (categories.Count > 0)
+            //{
+            //    //first empty entry
+            //    model.AvailableCategories.Add(new SelectListItem()
+            //    {
+            //        Value = "0",
+            //        Text = _localizationService.GetResource("Common.All")
+            //    });
+            //    //all other categories
+            //    foreach (var c in categories)
+            //    {
+            //        //generate full category name (breadcrumb)
+            //        string fullCategoryBreadcrumbName = "";
+            //        var breadcrumb = GetCategoryBreadCrumb(c, mappedCatgories);
+            //        for (int i = 0; i <= breadcrumb.Count - 1; i++)
+            //        {
+            //            fullCategoryBreadcrumbName += breadcrumb[i].GetLocalized(x => x.Name);
+            //            if (i != breadcrumb.Count - 1)
+            //                fullCategoryBreadcrumbName += " >> ";
+            //        }
+
+            //        model.AvailableCategories.Add(new SelectListItem()
+            //        {
+            //            Value = c.Id.ToString(),
+            //            Text = fullCategoryBreadcrumbName,
+            //            Selected = model.Cid == c.Id
+            //        });
+            //    }
+            //}
+            #endregion
 
             var manufacturers = _manufacturerService.GetAllManufacturers();
             if (manufacturers.Count > 0)

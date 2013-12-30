@@ -31,12 +31,11 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(p => p.RequiredProductIds).HasMaxLength(1000);
 			this.Property(p => p.AllowedQuantities).HasMaxLength(1000);
 
-			this.HasOptional(pv => pv.DeliveryTime)
+			this.HasOptional(p => p.DeliveryTime)
 				.WithMany()
-				.HasForeignKey(pv => pv.DeliveryTimeId)
+				.HasForeignKey(p => p.DeliveryTimeId)
 				.WillCascadeOnDelete(false);
-
-
+			
 			this.Ignore(p => p.ProductType);
 			this.Ignore(p => p.BackorderMode);
 			this.Ignore(p => p.DownloadActivationType);

@@ -99,7 +99,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
 
             if (shippingByTotalRecord == null)
             {
-                if (!_shippingByTotalSettings.LimitMethodsToCreated)
+                if (_shippingByTotalSettings.LimitMethodsToCreated)
                 {
                     return null;
                 }

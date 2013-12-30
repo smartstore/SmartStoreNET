@@ -18,6 +18,7 @@ namespace SmartStore.Core.Infrastructure
     {
         #region Private Fields
 
+		private bool ignoreReflectionErrors = true;
         private bool loadAppDomainAssemblies = true;
 
         private string assemblySkipLoadingPattern = @"^System|^mscorlib|^Microsoft|^CppCodeProvider|^VJSharpCodeProvider|^WebDev|^Castle|^Iesi|^log4net|^Autofac|^AutoMapper|^dotless|^EntityFramework|^EPPlus|^Fasterflect|^FiftyOne|^nunit|^TestDriven|^MbUnit|^Rhino|^QuickGraph|^TestFu|^Telerik|^Antlr3|^Recaptcha|^FluentValidation|^ImageResizer|^itextsharp|^MiniProfiler|^Newtonsoft|^Pandora|^WebGrease|^Noesis|^DotNetOpenAuth|^Facebook|^LinqToTwitter|^PerceptiveMCAPI|^CookComputing|^GCheckout|^Mono\.Math|^Org\.Mentalis|^App_Web";
@@ -108,30 +109,45 @@ namespace SmartStore.Core.Infrastructure
             
             try
             {
-                foreach (var a in assemblies)
-                {
-                    foreach (var t in a.GetTypes())
-                    {
-                        if (assignTypeFrom.IsAssignableFrom(t) || (assignTypeFrom.IsGenericTypeDefinition && DoesTypeImplementOpenGeneric(t, assignTypeFrom)))
-                        {
-                            if (!t.IsInterface)
-                            {
-                                if (onlyConcreteClasses)
-                                {
-                                    if (t.IsClass && !t.IsAbstract)
-                                    {
-                                        result.Add(t);
-                                    }
-                                }
-                                else
-                                {
-                                    result.Add(t);
-                                }
-                            }
-                        }
-                    }
-
-                }
+				foreach (var a in assemblies)
+				{
+					Type[] types = null;
+					try
+					{
+						types = a.GetTypes();
+					}
+					catch
+					{
+						//Entity Framework 6 doesn't allow getting types (throws an exception)
+						if (!ignoreReflectionErrors)
+						{
+							throw;
+						}
+					}
+					if (types != null)
+					{
+						foreach (var t in types)
+						{
+							if (assignTypeFrom.IsAssignableFrom(t) || (assignTypeFrom.IsGenericTypeDefinition && DoesTypeImplementOpenGeneric(t, assignTypeFrom)))
+							{
+								if (!t.IsInterface)
+								{
+									if (onlyConcreteClasses)
+									{
+										if (t.IsClass && !t.IsAbstract)
+										{
+											result.Add(t);
+										}
+									}
+									else
+									{
+										result.Add(t);
+									}
+								}
+							}
+						}
+					}
+				}
             }
             catch (ReflectionTypeLoadException ex)
             {

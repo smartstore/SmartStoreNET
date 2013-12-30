@@ -13,6 +13,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Web.Framework.Plugins
 {

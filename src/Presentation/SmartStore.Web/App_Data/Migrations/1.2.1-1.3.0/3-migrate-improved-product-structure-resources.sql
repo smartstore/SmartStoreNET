@@ -1937,8 +1937,7 @@ SET @resources='
 		<Value>Search by a product type.</Value>
 		<Value lang="de">Nach einem Produkttyp suchen.</Value>
 	</LocaleResource>
-	
-	</LocaleResource>
+
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder">
 		<Value>Display order</Value>
 		<Value lang="de">Reihenfolge</Value>
@@ -1995,6 +1994,15 @@ SET @resources='
 	<LocaleResource Name="Admin.Promotions.Discounts.Fields.AppliedToProducts.NoRecords">
 		<Value>No products selected</Value>
 		<Value lang="de">Keine Produkte ausgewählt</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="ShoppingCart.IsNotSimpleProduct">
+		<Value>This is not a simple product.</Value>
+		<Value lang="de">Hierbei handelt es sich nicht um ein einfaches Produkt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.AddOnlySimpleProductsToCart">
+		<Value>Only simple products could be added to the cart.</Value>
+		<Value lang="de">Nur einfache Produkte können dem Warenkorb hinzugefügt werden.</Value>
 	</LocaleResource>
 
 </Language>

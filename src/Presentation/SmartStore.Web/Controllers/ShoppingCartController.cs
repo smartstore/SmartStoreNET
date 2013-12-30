@@ -1055,7 +1055,7 @@ namespace SmartStore.Web.Controllers
 				return Json(new
 				{
 					success = false,
-					message = "Only simple products could be added to the cart"
+					message = _localizationService.GetResource("ShoppingCart.AddOnlySimpleProductsToCart")
 				});
 			}
 

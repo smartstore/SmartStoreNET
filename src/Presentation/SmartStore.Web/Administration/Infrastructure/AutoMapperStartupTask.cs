@@ -154,12 +154,13 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CampaignModel, Campaign>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
             //topcis
-            Mapper.CreateMap<Topic, TopicModel>()
-                .ForMember(dest => dest.Url, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+			Mapper.CreateMap<Topic, TopicModel>()
+				.ForMember(dest => dest.Url, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore());
             Mapper.CreateMap<TopicModel, Topic>();
 
             //category
@@ -197,6 +198,8 @@ namespace SmartStore.Admin.Infrastructure
             //products
             Mapper.CreateMap<Product, ProductModel>()
 				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.AssociatedToProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.AssociatedToProductName, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
                 .ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
                 .ForMember(dest => dest.NoThumb, mo => mo.Ignore())
@@ -276,9 +279,11 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<LogModel, Log>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.LogLevelId, mo => mo.Ignore())
                 .ForMember(dest => dest.Customer, mo => mo.Ignore());
             //ActivityLogType
@@ -316,10 +321,12 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Id, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
-            
-            Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+
+			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore())
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.SlideIndex, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSlideModel, ContentSliderSlideSettings>();
 
             Mapper.CreateMap<ContentSliderButtonSettings, ContentSliderButtonModel>()
@@ -675,10 +682,12 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>();
 
             // codehint: sm-add
-            Mapper.CreateMap<ThemeSettings, ThemeListModel>()
-                .ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-                .ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
-                .ForMember(dest => dest.MobileThemes, mo => mo.Ignore());
+			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
+				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
+				.ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.MobileThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
             Mapper.CreateMap<ThemeListModel, ThemeSettings>()
                 .ForMember(dest => dest.EmulateMobileDevice, mo => mo.Ignore());
         }

@@ -364,8 +364,8 @@ namespace SmartStore.Services.Orders
             var query = from orderItem in _orderItemRepository.Table
                         where orderItem.OrderItemGuid == orderItemGuid
                         select orderItem;
-            var orderItem = query.FirstOrDefault();
-            return orderItem;
+            var item = query.FirstOrDefault();
+            return item;
         }
         
         /// <summary>

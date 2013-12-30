@@ -494,18 +494,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        private void UpdateLocales(ProductTag productTag, ProductTagModel model)
-        {
-            foreach (var localized in model.Locales)
-            {
-                _localizedEntityService.SaveLocalizedValue(productTag,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
-            }
-        }
-
-        [NonAction]
         private string[] ParseProductTags(string productTags)
         {
             var result = new List<string>();

@@ -23,10 +23,6 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductService : IProductService
     {
-        #region Constants
-        private const string TIERPRICES_PATTERN_KEY = "SmartStore.tierprice.";
-        #endregion
-
         #region Fields
 
         private readonly IRepository<Product> _productRepository;
@@ -280,9 +276,6 @@ namespace SmartStore.Services.Catalog
 
             //insert
             _productRepository.Insert(product);
-
-            //clear cache
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
             
             //event notification
             _eventPublisher.EntityInserted(product);
@@ -299,9 +292,6 @@ namespace SmartStore.Services.Catalog
 
             //update
             _productRepository.Update(product);
-
-            //cache
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(product);
@@ -1322,8 +1312,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(tierPrice);
         }
@@ -1353,8 +1341,6 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(tierPrice);
         }
@@ -1369,8 +1355,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("tierPrice");
 
             _tierPriceRepository.Update(tierPrice);
-
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(tierPrice);

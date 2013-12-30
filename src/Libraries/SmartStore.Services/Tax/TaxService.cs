@@ -198,7 +198,8 @@ namespace SmartStore.Services.Tax
         /// <returns>Found tax provider</returns>
         public virtual ITaxProvider LoadTaxProviderBySystemName(string systemName)
         {
-            Guard.ArgumentNotEmpty(() => systemName);
+			if (systemName.IsNullOrEmpty())
+				return null;
 
             ITaxProvider provider;
             if (!_taxProviders.TryGetValue(systemName, out provider))

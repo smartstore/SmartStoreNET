@@ -3115,57 +3115,57 @@ namespace SmartStore.Web.Infrastructure.Installation
 
             try
             {
-                entities.WithKey(x => x.MetaTitle)
-                # region category Gift Cards
-                .Alter("$5 Virtual Gift Card", x =>
-                {
-                    x.Name = "5 € Geschenkgutschein";
-                    x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
-                    x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+				entities.WithKey(x => x.MetaTitle)
+				# region category Gift Cards
+.Alter("$5 Virtual Gift Card", x =>
+				{
+					x.Name = "5 € Geschenkgutschein";
+					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
+					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                .Alter("$25 Virtual Gift Card", x =>
-                {
-                    x.Name = "25 € Geschenkgutschein";
-                    x.ShortDescription = "25 € Geschenkgutschein. Eine ideale Geschenkidee.";
-                    x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+				.Alter("$25 Virtual Gift Card", x =>
+				{
+					x.Name = "25 € Geschenkgutschein";
+					x.ShortDescription = "25 € Geschenkgutschein. Eine ideale Geschenkidee.";
+					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                .Alter("$50 Virtual Gift Card", x =>
-                {
-                    x.Name = "50 € Geschenkgutschein";
-                    x.ShortDescription = "50 € Geschenkgutschein. Eine ideale Geschenkidee.";
-                    x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+				.Alter("$50 Virtual Gift Card", x =>
+				{
+					x.Name = "50 € Geschenkgutschein";
+					x.ShortDescription = "50 € Geschenkgutschein. Eine ideale Geschenkidee.";
+					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                #endregion
+				#endregion
 
-                #region Bücher
+				#region Bücher
 
-                #region SPIEGEL-Bestseller
-                .Alter("Überman: The novel", x =>
-                {
-                    x.Name = "Überman: Der Roman";
-                    x.ShortDescription = "Gebundene Ausgabe";
-                    x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
+				#region SPIEGEL-Bestseller
+.Alter("Überman: The novel", x =>
+				{
+					x.Name = "Überman: Der Roman";
+					x.ShortDescription = "Gebundene Ausgabe";
+					x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 					x.Price = 16.99M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
@@ -3179,28 +3179,28 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-                    
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
 
-                #endregion SPIEGEL-Bestseller
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                #region Kochen & Genießen
+				#endregion SPIEGEL-Bestseller
 
-                .Alter("Best Grilling Recipes", x =>
-                {
-                    x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
-                        DisplayOrder = 1,
-                    });
+				#region Kochen & Genießen
+
+.Alter("Best Grilling Recipes", x =>
+				{
+					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
+						DisplayOrder = 1,
+					});
 					x.Price = 16.99M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
@@ -3214,13 +3214,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-                })
+				})
 
-                .Alter("Cooking for Two", x =>
-                {
-                    //x.Name = "Überman: Der Roman";
-                    //x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
-                    //x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
+				.Alter("Cooking for Two", x =>
+				{
+					//x.Name = "Überman: Der Roman";
+					//x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
+					//x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 
 					x.Price = 27.00M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
@@ -3236,22 +3236,22 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                #endregion Kochen & Genießen
+				#endregion Kochen & Genießen
 
-                #region Books : cars and motorcycles
-                .Alter("Car of superlatives", x =>
-                {
-                    x.Name = "Autos der Superlative: Die Stärksten, die Ersten, die Schönsten, Die Schnellsten";
-                    x.ShortDescription = "Gebundene Ausgabe";
-                    x.FullDescription = "<p> Für manche ist das Auto nur ein nützliches Fortbewegungsmittel.<br> Für alle anderen gibt es 'Autos - Das ultimative Handbuch' des Technik-Kenners Michael Dörflinger. Mit authentischen Bildern, allen wichtigen Daten und jeder Menge Infos präsentiert es die schnellsten, die innovativsten, die stärksten, die ungewöhnlichsten und die erfolgreichsten Exemplare der Automobilgeschichte. Ein umfassendes Handbuch zum gezielten Nachschlagen und ausgiebigen Schmökern. </p>";
+				#region Books : cars and motorcycles
+.Alter("Car of superlatives", x =>
+				{
+					x.Name = "Autos der Superlative: Die Stärksten, die Ersten, die Schönsten, Die Schnellsten";
+					x.ShortDescription = "Gebundene Ausgabe";
+					x.FullDescription = "<p> Für manche ist das Auto nur ein nützliches Fortbewegungsmittel.<br> Für alle anderen gibt es 'Autos - Das ultimative Handbuch' des Technik-Kenners Michael Dörflinger. Mit authentischen Bildern, allen wichtigen Daten und jeder Menge Infos präsentiert es die schnellsten, die innovativsten, die stärksten, die ungewöhnlichsten und die erfolgreichsten Exemplare der Automobilgeschichte. Ein umfassendes Handbuch zum gezielten Nachschlagen und ausgiebigen Schmökern. </p>";
 					x.Price = 14.95M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
@@ -3266,46 +3266,46 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                .Alter("Picture Atlas Motorcycles", x =>
-                {
-                    x.Name = "Bildatlas Motorräder: Mit mehr als 350 brillanten Abbildungen";
-                    x.ShortDescription = "Gebundene Ausgabe";
-                    x.FullDescription = "<p> Motorräder stehen wie kein anderes Fortbewegungsmittel für den großen Traum von Freiheit und Abenteuer. Dieser reich illustrierte Bildatlas porträtiert in brillanten Farbfotografien und informativen Texten die berühmtesten Zweiräder der Motorradgeschichte weltweit. Von der urtümlichen Dampfmaschine unter dem Fahrradsattel des ausgehenden 19. Jahrhunderts bis hin zu den kraftstrotzenden, mit modernster Elektronik und Computertechnik ausgestatteten Superbikes unserer Tage zeichnet er ein eindrucksvolles Bild der Entwicklung und Fabrikation edler und rasanter Motorräder. Dem Mythos des motorisierten Zweirads wird dabei ebenso nachgegangen wie dem Motorrad als modernem Lifestyle-Produkt unserer Zeit. Länderspezifische Besonderheiten, firmenhistorische Hintergrundinformationen sowie spannende Geschichten und Geschichtliches über die Menschen, die eine der wegweisendsten Erfindungen der letzten Jahrhunderte vorantrieben und weiterentwickelten, machen diesen umfangreichen Bildband zu einem unvergleichlichen Nachschlagewerk für jeden Motorradliebhaber und Technikbegeisterten. </p> <p> • Umfassende Geschichte der legendärsten Modelle aller bedeutenden Motorradhersteller weltweit<br> • Mit mehr als 350 brillanten Farbaufnahmen und fesselnden Hintergrundtexten<br> • Mit informativen Zeichnungen, beeindruckenden Detailaufnahmen und erläuternden Info-Kästen<br> </p> <p> Inhalt • 1817 1913: Die Anfänge einer Erfolgsgeschichte<br> • 1914 1945: Massenmobilität<br> • 1946 1990: Kampf um den Weltmarkt<br> • Ab 1991: Das moderne Motorrad<br> • Kultobjekt Motorrad: Von der Fortbewegung zum Lifestyle<br> </p>";
-                    x.Price = 14.99M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
+				.Alter("Picture Atlas Motorcycles", x =>
+				{
+					x.Name = "Bildatlas Motorräder: Mit mehr als 350 brillanten Abbildungen";
+					x.ShortDescription = "Gebundene Ausgabe";
+					x.FullDescription = "<p> Motorräder stehen wie kein anderes Fortbewegungsmittel für den großen Traum von Freiheit und Abenteuer. Dieser reich illustrierte Bildatlas porträtiert in brillanten Farbfotografien und informativen Texten die berühmtesten Zweiräder der Motorradgeschichte weltweit. Von der urtümlichen Dampfmaschine unter dem Fahrradsattel des ausgehenden 19. Jahrhunderts bis hin zu den kraftstrotzenden, mit modernster Elektronik und Computertechnik ausgestatteten Superbikes unserer Tage zeichnet er ein eindrucksvolles Bild der Entwicklung und Fabrikation edler und rasanter Motorräder. Dem Mythos des motorisierten Zweirads wird dabei ebenso nachgegangen wie dem Motorrad als modernem Lifestyle-Produkt unserer Zeit. Länderspezifische Besonderheiten, firmenhistorische Hintergrundinformationen sowie spannende Geschichten und Geschichtliches über die Menschen, die eine der wegweisendsten Erfindungen der letzten Jahrhunderte vorantrieben und weiterentwickelten, machen diesen umfangreichen Bildband zu einem unvergleichlichen Nachschlagewerk für jeden Motorradliebhaber und Technikbegeisterten. </p> <p> • Umfassende Geschichte der legendärsten Modelle aller bedeutenden Motorradhersteller weltweit<br> • Mit mehr als 350 brillanten Farbaufnahmen und fesselnden Hintergrundtexten<br> • Mit informativen Zeichnungen, beeindruckenden Detailaufnahmen und erläuternden Info-Kästen<br> </p> <p> Inhalt • 1817 1913: Die Anfänge einer Erfolgsgeschichte<br> • 1914 1945: Massenmobilität<br> • 1946 1990: Kampf um den Weltmarkt<br> • Ab 1991: Das moderne Motorrad<br> • Kultobjekt Motorrad: Von der Fortbewegung zum Lifestyle<br> </p>";
+					x.Price = 14.99M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                .Alter("The Car Book", x =>
-                {
-                    x.Name = "Das Auto-Buch. Die große Chronik mit über 1200 Modellen";
-                    x.ShortDescription = "Gebundene Ausgabe";
-                    x.FullDescription = "<p> Marken, Modelle, Meilensteine<br> Das Auto - für manche ein Gebrauchsgegenstand, für andere Ausdruck des Lebensstils, Kultobjekt und große Leidenschaft. Nur wenige Erfindungen haben das Leben so verändert wie die des Automobils vor gut 125 Jahren - ein Grund mehr für diese umfangreiche Chronik. Das Auto-Buch lässt die Geschichte des Automobils lebendig werden. Es stellt über 1200 wichtige Modelle vor - von Karl Benz' Motorwagen über legendäre Kultautos bis zu modernsten Hybridfahrzeugen. Es erklärt die Meilensteine der Motortechnik und porträtiert die großen Marken und ihre Konstrukteure. Steckbriefe vom Kleinwagen bis zur Limousine und schicken Rennwagen jeder Epoche laden zum Stöbern und Entdecken ein. Der umfassendste und bestbebildert Bildband auf dem Markt - darüber freut sich jeder Autoliebhaber! </p> <p> Gebundene Ausgabe: 360 Seiten<br> Verlag: Dorling Kindersley Verlag (27. September 2012)<br> Sprache: Deutsch<br> ISBN-10: 3831022062<br> ISBN-13: 978-3831022069<br> Größe und/oder Gewicht: 30,6 x 25,8 x 2,8 cm<br> </p>";
+				.Alter("The Car Book", x =>
+				{
+					x.Name = "Das Auto-Buch. Die große Chronik mit über 1200 Modellen";
+					x.ShortDescription = "Gebundene Ausgabe";
+					x.FullDescription = "<p> Marken, Modelle, Meilensteine<br> Das Auto - für manche ein Gebrauchsgegenstand, für andere Ausdruck des Lebensstils, Kultobjekt und große Leidenschaft. Nur wenige Erfindungen haben das Leben so verändert wie die des Automobils vor gut 125 Jahren - ein Grund mehr für diese umfangreiche Chronik. Das Auto-Buch lässt die Geschichte des Automobils lebendig werden. Es stellt über 1200 wichtige Modelle vor - von Karl Benz' Motorwagen über legendäre Kultautos bis zu modernsten Hybridfahrzeugen. Es erklärt die Meilensteine der Motortechnik und porträtiert die großen Marken und ihre Konstrukteure. Steckbriefe vom Kleinwagen bis zur Limousine und schicken Rennwagen jeder Epoche laden zum Stöbern und Entdecken ein. Der umfassendste und bestbebildert Bildband auf dem Markt - darüber freut sich jeder Autoliebhaber! </p> <p> Gebundene Ausgabe: 360 Seiten<br> Verlag: Dorling Kindersley Verlag (27. September 2012)<br> Sprache: Deutsch<br> ISBN-10: 3831022062<br> ISBN-13: 978-3831022069<br> Größe und/oder Gewicht: 30,6 x 25,8 x 2,8 cm<br> </p>";
 					x.Price = 29.95M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
@@ -3320,47 +3320,20 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                .Alter("Fast Cars", x =>
-                {
-                    x.Name = "Fast Cars, Bildkalender 2013";
-                    x.ShortDescription = "Spiralbindung";
-                    x.FullDescription = "<p> Großformat: 48,5 x 34 cm.<br> Dieser imposante Bildkalender mit silberner Ringbindung begeistert mit eindrucksvollen Aufnahmen von exklusiven Sportwagen. Wer Autos nicht nur als reine Nutzfahrzeuge begreift, findet hier die begehrtesten Statussymbole überhaupt: Die schnellen Fahrzeuge sind wirkungsvoll auf den gestochen scharfen, farbintensiven Fotos in Szene gesetzt und vermitteln Freiheit, Geschwindigkeit, Stärke und höchste technische Vollkommenheit. </p> <p> Angefangen vom 450 PS-starken Maserati GranTurismo MC Stradale über den stilvoll-luxuriösen Aston Martin Virage Volante bis zu dem nur in geringen Stückzahlen produzierten Mosler MT900S Photon begleiten die schnellen Flitzer mit Stil und Eleganz durch die Monate. Neben dem Kalendarium lenkt ein weiteres Foto den Blick auf sehenswerte Details. Dazu gibt es die wesentlichen Informationen zu jedem Sportwagen in englischer Sprache. Nach Ablauf des Jahres sind die hochwertigen Fotos eingerahmt ein absoluter Blickfang an der Wand eines jeden Liebhabers schneller Autos. Auch als Geschenk ist dieser schöne Jahresbegleiter wunderbar geeignet. 12 Kalenderblätter, neutrales und dezent gehaltenes Kalendarium. Gedruckt auf Papier aus nachhaltiger Forstwirtschaft. </p> <p> Für Freunde von luxuriösen Oldtimern ebenfalls bei ALPHA EDITION erhältlich: der großformatige Classic Cars Bildkalender 2013: ISBN 9783840733376. </p> <p> Produktinformation<br> Spiralbindung: 14 Seiten<br> Verlag: Alpha Edition (1. Juni 2012)<br> Sprache: Deutsch<br> ISBN-10: 3840733383<br> ISBN-13: 978-3840733383<br> Größe und/oder Gewicht: 48,8 x 34,2 x 0,6 cm<br> </p>";
-                    x.Price = 16.95M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
-					x.IsShipEnabled = true;
-
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
-
-                .Alter("Motorcycle Adventures", x =>
-                {
-                    x.Name = "Motorrad-Abenteuer: Fahrtechnik für Reise-Enduros";
-                    x.ShortDescription = "Gebundene Ausgabe";
-                    x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
-                    x.Price = 44.90M;
+				.Alter("Fast Cars", x =>
+				{
+					x.Name = "Fast Cars, Bildkalender 2013";
+					x.ShortDescription = "Spiralbindung";
+					x.FullDescription = "<p> Großformat: 48,5 x 34 cm.<br> Dieser imposante Bildkalender mit silberner Ringbindung begeistert mit eindrucksvollen Aufnahmen von exklusiven Sportwagen. Wer Autos nicht nur als reine Nutzfahrzeuge begreift, findet hier die begehrtesten Statussymbole überhaupt: Die schnellen Fahrzeuge sind wirkungsvoll auf den gestochen scharfen, farbintensiven Fotos in Szene gesetzt und vermitteln Freiheit, Geschwindigkeit, Stärke und höchste technische Vollkommenheit. </p> <p> Angefangen vom 450 PS-starken Maserati GranTurismo MC Stradale über den stilvoll-luxuriösen Aston Martin Virage Volante bis zu dem nur in geringen Stückzahlen produzierten Mosler MT900S Photon begleiten die schnellen Flitzer mit Stil und Eleganz durch die Monate. Neben dem Kalendarium lenkt ein weiteres Foto den Blick auf sehenswerte Details. Dazu gibt es die wesentlichen Informationen zu jedem Sportwagen in englischer Sprache. Nach Ablauf des Jahres sind die hochwertigen Fotos eingerahmt ein absoluter Blickfang an der Wand eines jeden Liebhabers schneller Autos. Auch als Geschenk ist dieser schöne Jahresbegleiter wunderbar geeignet. 12 Kalenderblätter, neutrales und dezent gehaltenes Kalendarium. Gedruckt auf Papier aus nachhaltiger Forstwirtschaft. </p> <p> Für Freunde von luxuriösen Oldtimern ebenfalls bei ALPHA EDITION erhältlich: der großformatige Classic Cars Bildkalender 2013: ISBN 9783840733376. </p> <p> Produktinformation<br> Spiralbindung: 14 Seiten<br> Verlag: Alpha Edition (1. Juni 2012)<br> Sprache: Deutsch<br> ISBN-10: 3840733383<br> ISBN-13: 978-3840733383<br> Größe und/oder Gewicht: 48,8 x 34,2 x 0,6 cm<br> </p>";
+					x.Price = 16.95M;
 					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
@@ -3374,240 +3347,267 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
-                #endregion Books : cars and motorcycles
-
-                #endregion Bücher
-
-                #region computer
-
-                #region computer-desktops
-
-                #region Dell Inspiron One 23
-                .Alter("Dell Inspiron One 23", x =>
-                {
-                    x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
-                    x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
-                    x.Price = 589.00M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
-					x.IsShipEnabled = true;
-
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
-                #endregion Dell Inspiron One 23
-
-                #region Dell Optiplex 3010 DT Base
-                .Alter("Dell Optiplex 3010 DT Base", x =>
-                {
-                    x.ShortDescription = "SONDERANGEBOT: Zusätzliche 50 € Rabatt auf alle Dell OptiPlex Desktops ab einem Wert von 549 €. Online-Coupon: W8DWQ0ZRKTM1, gültig bis 4.12.2013";
-                    x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
-                    x.Price = 419.00M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
-					x.IsShipEnabled = true;
-
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
-                #endregion Dell Optiplex 3010 DT Base
-
-
-                #endregion computer-desktops
-
-                #region Notebooks
-                #region Acer Aspire One 8.9
-                .Alter("Acer Aspire One 8.9", x =>
-                {
-                    x.Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Schwarz)";
-                    x.ShortDescription = "Acer definiert mit dem Aspire One mobile Konnektivität neu, dem revolutionären Spaß und Power Netbook in der zierlichen 8.9\" Größe. ";
-                    x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie        <br> Systemtyp: Netbook       <br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1                <br> Leere Steckplätze: 0, 1                <br> Display                                    <br> Typ: 22.6 cm ( 8.9\" )                          <br> Auflösung: 1024 x 600 ( WSVGA )                    <br> Breitwand: Ja                                          <br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite                                         <br> Batterie                                                                 <br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden                             <br> Kapazität: 2600 mAh, 2200 mAh                                                    <br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen           <br> Herstellergarantie                                                                       <br> Service & Support:                                                                           <br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr            <br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr                                                  <br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr                                                 <br> Reisegarantie - 1 Jahr                                                                                       <br> Navigation                                                                                                       <br> Empfänger: GPS                                                                                                       <br> </p>";
-                    
-                    x.Price = 210.60M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
+				.Alter("Motorcycle Adventures", x =>
+				{
+					x.Name = "Motorrad-Abenteuer: Fahrtechnik für Reise-Enduros";
+					x.ShortDescription = "Gebundene Ausgabe";
+					x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
+					x.Price = 44.90M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
 					x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Notebook").Single(),
-                        DisplayOrder = 1,
-                    });
-                })
-                #endregion Acer Aspire One 8.9
-                
-                #endregion Notebooks
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						DisplayOrder = 1,
+					});
+				})
 
+				#endregion Books : cars and motorcycles
 
-                #endregion computer
+				#endregion Bücher
 
-                #region SmartPhones
-                #region Apple iPhone 5 32 GB
-                .Alter("Apple iPhone 5 32 GB", x =>
-                {
-                    x.ShortDescription = "Apple iPhone 5 32 GB Simlock frei Neu Schwarz/Graphit";
-                    x.FullDescription = "<p> Neues Design.<br> Mit 7,6 mm und 112 g2 hat das iPhone 5 ein bemerkenswert dünnes und leichtes Design. Es ist aus eloxiertem Aluminium gefertigt. Die abgeschrägten Kanten wurden präzise mit einem Diamanten geschnitten.  </p>  <p>  Brillantes 4\" Retina Display.<br> Jetzt siehst du alles noch lebendiger und detailreicher. Und obwohl das Display größer ist, hat es die gleiche Breite wie das iPhone 4S und lässt sich daher ebenso leicht mit einer Hand bedienen.  </p>  <p>  Leistungsstarker A6 Chip.   <br> Verglichen mit dem A5 Chip hat er die bis zu doppelte CPU- und Grafikleistung. Und trotz seiner Geschwindigkeit hat das iPhone 5 eine fantastische Batterielaufzeit.  </p>";
-                    x.Price = 579.00M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
+				#region computer
+
+				#region computer-desktops
+
+				#region Dell Inspiron One 23
+.Alter("Dell Inspiron One 23", x =>
+				{
+					x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
+					x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
+					x.Price = 589.00M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
 					x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Smartphones").Single(),
-                        DisplayOrder = 1,
-                    });
-                    x.ProductReviews.Clear();
-                    //x.ProductReviews.Add(new ProductReview()
-                    //{
-                    //    Rating = 5,
-                    //    Title = "Das original ist immer noch das Beste!!!",
-                    //    IsApproved = true,
-                    //    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-                    //});
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
+						DisplayOrder = 1,
+					});
+				})
+				#endregion Dell Inspiron One 23
 
-                })
-                #endregion Apple iPhone 5 32 GB
-                #endregion SmartPhones
-
-                #region Instant Downloads
-                #region Antonio Vivildi: then spring
-                .Alter("Antonio Vivaldi: spring", x =>
-                {
-                    x.Name = "Antonio Vivaldi: Der Frühling";
-                    x.ShortDescription = "MP3, 320 kbit/s";
-                    x.FullDescription = "<p>Antonio Vivaldi: Der Fr&uuml;hling</p> <p><b>Antonio Lucio Vivaldi</b><span>&nbsp;(*&nbsp;</span>4. M&auml;rz<span>&nbsp;</span>1678<span>&nbsp;in&nbsp;</span>Venedig<span>; &dagger;&nbsp;</span>28. Juli<span>&nbsp;</span>1741<span>&nbsp;in&nbsp;</span>Wien<span>) war ein venezianischer&nbsp;</span>Komponist<span>&nbsp;und&nbsp;</span>Violinist<span>&nbsp;im&nbsp;</span>Barock<span>.</span></p> <p><b>Die vier Jahreszeiten</b>&nbsp;(italienisch&nbsp;<span lang=\"it\" class=\"lang\"><i>Le quattro stagioni</i></span>) hei&szlig;t das wohl bekannteste Werk&nbsp;Antonio Vivaldis. Es handelt sich um vier&nbsp;Violinkonzerte&nbsp;mit au&szlig;ermusikalischen&nbsp;Programmen; jedes Konzert portr&auml;tiert eine&nbsp;Jahreszeit. Dazu ist den einzelnen Konzerten jeweils ein &ndash; vermutlich von Vivaldi selbst geschriebenes &ndash;&nbsp;Sonett&nbsp;vorangestellt; fortlaufende Buchstaben vor den einzelnen Zeilen und an den entsprechenden Stellen in der&nbsp;Partitur&nbsp;ordnen die verbale Beschreibung der Musik zu.</p> <p>Vivaldi hatte bereits zuvor immer wieder mit au&szlig;ermusikalischen Programmen experimentiert, die sich h&auml;ufig in seinen Titeln niederschlagen; die genaue Ausdeutung von Einzelstellen der Partitur ist aber f&uuml;r ihn ungew&ouml;hnlich. Seine Erfahrung als virtuoser Geiger erlaubte ihm den Zugriff auf besonders wirkungsvolle Spieltechniken; als Opernkomponist hatte er einen starken Sinn f&uuml;r Effekte entwickelt; beides kam ihm hier zugute.</p> <p>Wie der Titel bereits nahelegt, werden vor allem Naturerscheinungen imitiert &ndash; sanfte Winde, heftige St&uuml;rme und Gewitter sind Elemente, die in allen vier Konzerten auftreten. Hinzu kommen verschiedene Vogelstimmen und sogar ein Hund, weiter menschliche Bet&auml;tigungen wie etwa die Jagd, ein Bauerntanz, das Schlittschuhlaufen einschlie&szlig;lich Stolpern und Hinfallen bis hin zum schweren Schlaf eines Betrunkenen.</p> <p>Das Werk stammt aus dem Jahre 1725 und ist in zwei Druckausgaben erhalten, die offenbar mehr oder weniger zeitgleich in Amsterdam und Paris erschienen.</p> <p><span><br /></span></p>";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
-                        DisplayOrder = 1,
-                    });
-                    x.ProductReviews.Clear();
-                    //x.ProductReviews.Add(new ProductReview()
-                    //{
-                    //    Rating = 5,
-                    //    Title = "Das original ist immer noch das Beste!!!",
-                    //    IsApproved = true,
-                    //    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-                    //});
-
-
-                })
-
-                #endregion Antonio Vivildi: then spring
-
-                #region Beethoven für Elise
-                .Alter("Ludwig van Beethoven: Für Elise", x =>
-                {
-                    x.Name = "Ludwig van Beethoven: Für Elise";
-                    x.ShortDescription = "Ludwig van Beethoven: Für Elise. Eine von Beethovens populärsten Kompositionen.";
-                    x.FullDescription = "<p> Die früheste, 1973 bekannt gewordene Fassung der „Kernmelodie“[5] notierte Beethoven 1808 in ein Skizzenbuch zur Pastorale. Einige aus dem Skizzenbuch herausgelöste Seiten bilden heute das Autograph Mus. ms. autograph. Beethoven Landsberg 10 der Staatsbibliothek Preußischer Kulturbesitz in Berlin. Die Melodie, die eindeutig als Kern des Klavierstückes WoO 59 zu erkennen ist,[2] befindet sich in den Zeilen 6 und 7 der Seite 149. Es handelt sich um eine einstimmige, sechzehntaktige Melodie, die sich besonders bei den Auftakten des Mittelteiles und bei den Schlusswendungen der Takte 7 und 15 sowie durch das Fehlen des zweitaktigen Orgelpunktes auf E von späteren Fassungen unterscheidet.[2] Diese Melodie nahm Beethoven 1810 wieder auf, modifizierte sie und fügte ihr weitere Teile hinzu. Das geschah in Beethovens Handschrift BH 116[6] und vermutlich auch in dem Autograph, das zu Babette Bredl gelangte und von Ludwig Nohl abgeschrieben und 1867 erstmals veröffentlicht wurde.[7][8] </p> <p> In BH 116 lassen sich drei Arbeitsphasen erkennen: eine erste Niederschrift im Jahre 1810, Korrekturen daran von 1810 und eine Bearbeitung aus dem Jahre 1822. Die Bearbeitung von 1822 hatte das Ziel, das Klavierstück in eine für eine Veröffentlichung taugliche Fassung zu bringen. Es sollte als No 12 den Schluss eines Zyklus von Bagatellen bilden. Dieser Plan wurde allerdings nicht ausgeführt.[9] 1822 überschrieb Beethoven das Klavierstück mit „molto grazioso“. Er verschob die Begleitfiguren des A-Teils in der linken Hand um ein Sechzehntel nach rechts und entlastete dabei den Taktanfang. Außerdem führte er die Begleitfigur teilweise in eine tiefere Lage und weitete damit den Klang aus.[10] Im Teil B kehrte Beethoven zu einer melodisch und rhythmisch komplizierteren, 1810 verworfenen Fassung zurück. Den vermutlichen Gesamtaufbau des Klavierstückes ließ er nicht völlig unangetastet und fügte vier bisher ungenutzte Takte als Überleitung zum Teil B ein. Vier 1822 notierte Einleitungstakte, die zum A-Teil passen, strich er dagegen wieder.[11] Bei der Anweisung für die Reprise des letztmals wiederkehrenden Teiles A schrieb er „una corda“ vor, was sich auf diesen Teil selbst beziehen kann oder nur auf den neu entworfenen, dreitaktigen, wahrscheinlich akkordisch gedachten, aber nur einstimmig notierten Schluss.[12] Eine vollständige Fassung als Resultat der Bearbeitung von 1822 stellte Beethoven nicht her.[13][14] </p>";
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
-                        DisplayOrder = 1,
-                    });
-                    x.ProductReviews.Clear();
-                    //x.ProductReviews.Add(new ProductReview()
-                    //{
-                    //    Rating = 5,
-                    //    Title = "Das original ist immer noch das Beste!!!",
-                    //    IsApproved = true,
-                    //    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-                    //});
-
-
-                })
-
-                #endregion Beethoven für Elise
-
-                #endregion Instant Downloads
-
-                #region watches
-                #region Certina DS Podium Big Size
-                .Alter("Certina DS Podium Big Size", x =>
-                {
-                    x.Name = "Certina DS Podium Big Size Herrenchronograph";
-                    x.ShortDescription = "C001.617.26.037.00";
-                    x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
-                    x.Price = 479.00M;
-                    x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
-                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
-                    x.OrderMinimumQuantity = 1;
-                    x.OrderMaximumQuantity = 10000;
-                    x.StockQuantity = 10000;
-                    x.NotifyAdminForQuantityBelow = 1;
-                    x.AllowBackInStockSubscriptions = false;
-                    x.Published = true;
-                    x.CreatedOnUtc = DateTime.UtcNow;
-                    x.UpdatedOnUtc = DateTime.UtcNow;
+				#region Dell Optiplex 3010 DT Base
+.Alter("Dell Optiplex 3010 DT Base", x =>
+				{
+					x.ShortDescription = "SONDERANGEBOT: Zusätzliche 50 € Rabatt auf alle Dell OptiPlex Desktops ab einem Wert von 549 €. Online-Coupon: W8DWQ0ZRKTM1, gültig bis 4.12.2013";
+					x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
+					x.Price = 419.00M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 
-                    x.ProductCategories.Clear();
-                    x.ProductCategories.Add(new ProductCategory()
-                    {
-                        Category = this._categoryRepository.Table.Where(c => c.Name == "Uhren").Single(),
-                        DisplayOrder = 1,
-                    });
-                    x.ProductReviews.Clear();
-                })
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
+						DisplayOrder = 1,
+					});
+				})
+				#endregion Dell Optiplex 3010 DT Base
+
+
+				#endregion computer-desktops
+
+				#region Notebooks
+				#region Acer Aspire One 8.9
+.Alter("Acer Aspire One 8.9", x =>
+				{
+					x.Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Schwarz)";
+					x.ShortDescription = "Acer definiert mit dem Aspire One mobile Konnektivität neu, dem revolutionären Spaß und Power Netbook in der zierlichen 8.9\" Größe. ";
+					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie        <br> Systemtyp: Netbook       <br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1                <br> Leere Steckplätze: 0, 1                <br> Display                                    <br> Typ: 22.6 cm ( 8.9\" )                          <br> Auflösung: 1024 x 600 ( WSVGA )                    <br> Breitwand: Ja                                          <br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite                                         <br> Batterie                                                                 <br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden                             <br> Kapazität: 2600 mAh, 2200 mAh                                                    <br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen           <br> Herstellergarantie                                                                       <br> Service & Support:                                                                           <br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr            <br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr                                                  <br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr                                                 <br> Reisegarantie - 1 Jahr                                                                                       <br> Navigation                                                                                                       <br> Empfänger: GPS                                                                                                       <br> </p>";
+
+					x.Price = 210.60M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
+					x.IsShipEnabled = true;
+
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Notebook").Single(),
+						DisplayOrder = 1,
+					});
+				})
+				#endregion Acer Aspire One 8.9
+
+				#endregion Notebooks
+
+
+				#endregion computer
+
+				#region SmartPhones
+				#region Apple iPhone 5 32 GB
+.Alter("Apple iPhone 5 32 GB", x =>
+				{
+					x.ShortDescription = "Apple iPhone 5 32 GB Simlock frei Neu Schwarz/Graphit";
+					x.FullDescription = "<p> Neues Design.<br> Mit 7,6 mm und 112 g2 hat das iPhone 5 ein bemerkenswert dünnes und leichtes Design. Es ist aus eloxiertem Aluminium gefertigt. Die abgeschrägten Kanten wurden präzise mit einem Diamanten geschnitten.  </p>  <p>  Brillantes 4\" Retina Display.<br> Jetzt siehst du alles noch lebendiger und detailreicher. Und obwohl das Display größer ist, hat es die gleiche Breite wie das iPhone 4S und lässt sich daher ebenso leicht mit einer Hand bedienen.  </p>  <p>  Leistungsstarker A6 Chip.   <br> Verglichen mit dem A5 Chip hat er die bis zu doppelte CPU- und Grafikleistung. Und trotz seiner Geschwindigkeit hat das iPhone 5 eine fantastische Batterielaufzeit.  </p>";
+					x.Price = 579.00M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
+					x.IsShipEnabled = true;
+
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Smartphones").Single(),
+						DisplayOrder = 1,
+					});
+					x.ProductReviews.Clear();
+					//x.ProductReviews.Add(new ProductReview()
+					//{
+					//    Rating = 5,
+					//    Title = "Das original ist immer noch das Beste!!!",
+					//    IsApproved = true,
+					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
+					//});
+
+				})
+				#endregion Apple iPhone 5 32 GB
+				#endregion SmartPhones
+
+				#region Instant Downloads
+				#region Antonio Vivildi: then spring
+.Alter("Antonio Vivaldi: spring", x =>
+				{
+					x.Name = "Antonio Vivaldi: Der Frühling";
+					x.ShortDescription = "MP3, 320 kbit/s";
+					x.FullDescription = "<p>Antonio Vivaldi: Der Fr&uuml;hling</p> <p><b>Antonio Lucio Vivaldi</b><span>&nbsp;(*&nbsp;</span>4. M&auml;rz<span>&nbsp;</span>1678<span>&nbsp;in&nbsp;</span>Venedig<span>; &dagger;&nbsp;</span>28. Juli<span>&nbsp;</span>1741<span>&nbsp;in&nbsp;</span>Wien<span>) war ein venezianischer&nbsp;</span>Komponist<span>&nbsp;und&nbsp;</span>Violinist<span>&nbsp;im&nbsp;</span>Barock<span>.</span></p> <p><b>Die vier Jahreszeiten</b>&nbsp;(italienisch&nbsp;<span lang=\"it\" class=\"lang\"><i>Le quattro stagioni</i></span>) hei&szlig;t das wohl bekannteste Werk&nbsp;Antonio Vivaldis. Es handelt sich um vier&nbsp;Violinkonzerte&nbsp;mit au&szlig;ermusikalischen&nbsp;Programmen; jedes Konzert portr&auml;tiert eine&nbsp;Jahreszeit. Dazu ist den einzelnen Konzerten jeweils ein &ndash; vermutlich von Vivaldi selbst geschriebenes &ndash;&nbsp;Sonett&nbsp;vorangestellt; fortlaufende Buchstaben vor den einzelnen Zeilen und an den entsprechenden Stellen in der&nbsp;Partitur&nbsp;ordnen die verbale Beschreibung der Musik zu.</p> <p>Vivaldi hatte bereits zuvor immer wieder mit au&szlig;ermusikalischen Programmen experimentiert, die sich h&auml;ufig in seinen Titeln niederschlagen; die genaue Ausdeutung von Einzelstellen der Partitur ist aber f&uuml;r ihn ungew&ouml;hnlich. Seine Erfahrung als virtuoser Geiger erlaubte ihm den Zugriff auf besonders wirkungsvolle Spieltechniken; als Opernkomponist hatte er einen starken Sinn f&uuml;r Effekte entwickelt; beides kam ihm hier zugute.</p> <p>Wie der Titel bereits nahelegt, werden vor allem Naturerscheinungen imitiert &ndash; sanfte Winde, heftige St&uuml;rme und Gewitter sind Elemente, die in allen vier Konzerten auftreten. Hinzu kommen verschiedene Vogelstimmen und sogar ein Hund, weiter menschliche Bet&auml;tigungen wie etwa die Jagd, ein Bauerntanz, das Schlittschuhlaufen einschlie&szlig;lich Stolpern und Hinfallen bis hin zum schweren Schlaf eines Betrunkenen.</p> <p>Das Werk stammt aus dem Jahre 1725 und ist in zwei Druckausgaben erhalten, die offenbar mehr oder weniger zeitgleich in Amsterdam und Paris erschienen.</p> <p><span><br /></span></p>";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
+						DisplayOrder = 1,
+					});
+					x.ProductReviews.Clear();
+					//x.ProductReviews.Add(new ProductReview()
+					//{
+					//    Rating = 5,
+					//    Title = "Das original ist immer noch das Beste!!!",
+					//    IsApproved = true,
+					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
+					//});
+
+
+				})
+
+				#endregion Antonio Vivildi: then spring
+
+				#region Beethoven für Elise
+.Alter("Ludwig van Beethoven: Für Elise", x =>
+				{
+					x.Name = "Ludwig van Beethoven: Für Elise";
+					x.ShortDescription = "Ludwig van Beethoven: Für Elise. Eine von Beethovens populärsten Kompositionen.";
+					x.FullDescription = "<p> Die früheste, 1973 bekannt gewordene Fassung der „Kernmelodie“[5] notierte Beethoven 1808 in ein Skizzenbuch zur Pastorale. Einige aus dem Skizzenbuch herausgelöste Seiten bilden heute das Autograph Mus. ms. autograph. Beethoven Landsberg 10 der Staatsbibliothek Preußischer Kulturbesitz in Berlin. Die Melodie, die eindeutig als Kern des Klavierstückes WoO 59 zu erkennen ist,[2] befindet sich in den Zeilen 6 und 7 der Seite 149. Es handelt sich um eine einstimmige, sechzehntaktige Melodie, die sich besonders bei den Auftakten des Mittelteiles und bei den Schlusswendungen der Takte 7 und 15 sowie durch das Fehlen des zweitaktigen Orgelpunktes auf E von späteren Fassungen unterscheidet.[2] Diese Melodie nahm Beethoven 1810 wieder auf, modifizierte sie und fügte ihr weitere Teile hinzu. Das geschah in Beethovens Handschrift BH 116[6] und vermutlich auch in dem Autograph, das zu Babette Bredl gelangte und von Ludwig Nohl abgeschrieben und 1867 erstmals veröffentlicht wurde.[7][8] </p> <p> In BH 116 lassen sich drei Arbeitsphasen erkennen: eine erste Niederschrift im Jahre 1810, Korrekturen daran von 1810 und eine Bearbeitung aus dem Jahre 1822. Die Bearbeitung von 1822 hatte das Ziel, das Klavierstück in eine für eine Veröffentlichung taugliche Fassung zu bringen. Es sollte als No 12 den Schluss eines Zyklus von Bagatellen bilden. Dieser Plan wurde allerdings nicht ausgeführt.[9] 1822 überschrieb Beethoven das Klavierstück mit „molto grazioso“. Er verschob die Begleitfiguren des A-Teils in der linken Hand um ein Sechzehntel nach rechts und entlastete dabei den Taktanfang. Außerdem führte er die Begleitfigur teilweise in eine tiefere Lage und weitete damit den Klang aus.[10] Im Teil B kehrte Beethoven zu einer melodisch und rhythmisch komplizierteren, 1810 verworfenen Fassung zurück. Den vermutlichen Gesamtaufbau des Klavierstückes ließ er nicht völlig unangetastet und fügte vier bisher ungenutzte Takte als Überleitung zum Teil B ein. Vier 1822 notierte Einleitungstakte, die zum A-Teil passen, strich er dagegen wieder.[11] Bei der Anweisung für die Reprise des letztmals wiederkehrenden Teiles A schrieb er „una corda“ vor, was sich auf diesen Teil selbst beziehen kann oder nur auf den neu entworfenen, dreitaktigen, wahrscheinlich akkordisch gedachten, aber nur einstimmig notierten Schluss.[12] Eine vollständige Fassung als Resultat der Bearbeitung von 1822 stellte Beethoven nicht her.[13][14] </p>";
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
+						DisplayOrder = 1,
+					});
+					x.ProductReviews.Clear();
+					//x.ProductReviews.Add(new ProductReview()
+					//{
+					//    Rating = 5,
+					//    Title = "Das original ist immer noch das Beste!!!",
+					//    IsApproved = true,
+					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
+					//});
+
+
+				})
+
+				#endregion Beethoven für Elise
+
+				#endregion Instant Downloads
+
+				#region watches
+				#region Certina DS Podium Big Size
+.Alter("Certina DS Podium Big Size", x =>
+				{
+					x.Name = "Certina DS Podium Big Size Herrenchronograph";
+					x.ShortDescription = "C001.617.26.037.00";
+					x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
+					x.Price = 479.00M;
+					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+					x.OrderMinimumQuantity = 1;
+					x.OrderMaximumQuantity = 10000;
+					x.StockQuantity = 10000;
+					x.NotifyAdminForQuantityBelow = 1;
+					x.AllowBackInStockSubscriptions = false;
+					x.Published = true;
+					x.CreatedOnUtc = DateTime.UtcNow;
+					x.UpdatedOnUtc = DateTime.UtcNow;
+					x.IsShipEnabled = true;
+
+					x.ProductCategories.Clear();
+					x.ProductCategories.Add(new ProductCategory()
+					{
+						Category = this._categoryRepository.Table.Where(c => c.Name == "Uhren").Single(),
+						DisplayOrder = 1,
+					});
+					x.ProductReviews.Clear();
+				});
 
                 #endregion Certina DS Podium Big Size
                 #endregion watches

@@ -179,6 +179,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDiscountSign")]
         public bool ShowDiscountSign { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
+		public bool SuppressSkuSearch { get; set; }
+
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
     }
 }

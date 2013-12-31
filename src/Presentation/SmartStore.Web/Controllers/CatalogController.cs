@@ -3404,7 +3404,7 @@ namespace SmartStore.Web.Controllers
                     ctx.PriceMax = maxPriceConverted;
                     ctx.Keywords = model.Q;
                     ctx.SearchDescriptions = searchInDescriptions;
-					ctx.SearchSku = true;
+					ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
                     ctx.SearchProductTags = searchInProductTags;
                     ctx.LanguageId = _workContext.WorkingLanguage.Id;
                     ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position; // codehint: sm-edit
@@ -3449,7 +3449,7 @@ namespace SmartStore.Web.Controllers
             var ctx = new ProductSearchContext();
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.Keywords = term;
-			ctx.SearchSku = true;
+			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageSize = productNumber;
 			ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;

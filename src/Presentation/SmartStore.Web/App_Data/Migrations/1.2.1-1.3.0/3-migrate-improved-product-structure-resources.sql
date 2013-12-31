@@ -2004,6 +2004,15 @@ SET @resources='
 		<Value>Only simple products could be added to the cart.</Value>
 		<Value lang="de">Nur einfache Produkte können dem Warenkorb hinzugefügt werden.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SuppressSkuSearch">
+		<Value>Suppress SKU search</Value>
+		<Value lang="de">SKU Suche unterdrücken</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SuppressSkuSearch.Hint">
+		<Value>Check to disable the searching of product SKUs. This setting can increase the performance of searching.</Value>
+		<Value lang="de">Legt fest, ob die Suche nach Produkt-SKUs unterbunden werden soll. Diese Einstellung kann die Performance der Suche erhöhen.</Value>
+	</LocaleResource>
 
 </Language>
 '

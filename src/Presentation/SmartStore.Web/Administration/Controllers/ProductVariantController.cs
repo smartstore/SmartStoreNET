@@ -614,7 +614,7 @@ namespace SmartStore.Admin.Controllers
 					if (x.StoreId > 0)
 					{
 						var store = _storeService.GetStoreById(x.StoreId);
-						storeName = store != null ? store.Name : "Deleted";
+						storeName = store != null ? store.Name : "[Deleted]";
 					}
 					else
 					{
@@ -623,6 +623,7 @@ namespace SmartStore.Admin.Controllers
                     return new ProductVariantModel.TierPriceModel()
                     {
                         Id = x.Id,
+                        StoreId = x.StoreId,
 						Store = storeName,
                         CustomerRole = x.CustomerRoleId.HasValue ? _customerService.GetCustomerRoleById(x.CustomerRoleId.Value).Name : _localizationService.GetResource("Admin.Catalog.Products.Variants.TierPrices.Fields.CustomerRole.AllRoles"),
                         ProductVariantId = x.ProductVariantId,
@@ -654,10 +655,11 @@ namespace SmartStore.Admin.Controllers
             var tierPrice = new TierPrice()
             {
                 ProductVariantId = model.ProductVariantId,
-				//use Store property (not Store propertyId) because appropriate property is stored in it
-				StoreId = Int32.Parse(model.Store),
+				// use Store property (not Store propertyId) because appropriate property is stored in it
+				StoreId = model.Store.ToInt(),
                 // codehint: sm-edit
-                CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null, //use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
+                // use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
+                CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null,
                 Quantity = model.Quantity,
                 Price = model.Price1
             };
@@ -681,7 +683,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("No tier price found with the specified id");
 
 			//use Store property (not Store propertyId) because appropriate property is stored in it
-			tierPrice.StoreId = Int32.Parse(model.Store);
+			tierPrice.StoreId = model.Store.ToInt();
             //use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
             // codehint: sm-edit
             tierPrice.CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null;

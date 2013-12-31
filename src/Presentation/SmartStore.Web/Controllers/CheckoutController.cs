@@ -993,6 +993,12 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("HomePage");
 			}
 
+			//disable "order completed" page?
+			if (_orderSettings.DisableOrderCompletedPage)
+			{
+				return RedirectToRoute("OrderDetails", new { orderId = order.Id });
+			}
+
 			model.OrderId = order.Id;
             model.OrderNumber = order.GetOrderNumber();
 

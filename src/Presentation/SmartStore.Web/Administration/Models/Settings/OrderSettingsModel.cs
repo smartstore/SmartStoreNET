@@ -34,6 +34,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OnePageCheckoutEnabled")]
         public bool OnePageCheckoutEnabled { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisableOrderCompletedPage")]
+		public bool DisableOrderCompletedPage { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestsEnabled")]
         public bool ReturnRequestsEnabled { get; set; }
 

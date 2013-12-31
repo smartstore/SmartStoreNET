@@ -2014,6 +2014,15 @@ SET @resources='
 		<Value lang="de">Legt fest, ob die Suche nach Produkt-SKUs unterbunden werden soll. Diese Einstellung kann die Performance der Suche erhöhen.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Configuration.Settings.Order.DisableOrderCompletedPage">
+		<Value>Disable "Order completed" page</Value>
+		<Value lang="de">"Auftrag abgeschlossen" Seite unterbinden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.DisableOrderCompletedPage.Hint">
+		<Value>When disabled, customers will be automatically redirected to the order details page.</Value>
+		<Value lang="de">Der Kunde wird direkt auf die Auftrags-Detail-Seite geleitet, falls diese Einstellung aktiviert ist.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

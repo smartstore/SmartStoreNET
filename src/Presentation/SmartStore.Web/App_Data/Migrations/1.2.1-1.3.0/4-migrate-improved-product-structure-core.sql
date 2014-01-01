@@ -92,6 +92,8 @@ GO
 --remove obsolete setting
 DELETE FROM [Setting] WHERE [name] = N'MediaSettings.ProductVariantPictureSize'
 GO
+DELETE FROM [Setting] WHERE [name] = N'ElmarShopinfoSettings.ExportSpecialPrice'
+GO
 
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'mediasettings.associatedproductpicturesize')
 BEGIN

@@ -2022,6 +2022,23 @@ SET @resources='
 		<Value>When disabled, customers will be automatically redirected to the order details page.</Value>
 		<Value lang="de">Der Kunde wird direkt auf die Auftrags-Detail-Seite geleitet, falls diese Einstellung aktiviert ist.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.ExportSpecialPrice">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.ExportSpecialPrice.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.SpecialPrice">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugins.Feed.ElmarShopinfo.SpecialPrice.Hint">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
 
 </Language>
 '

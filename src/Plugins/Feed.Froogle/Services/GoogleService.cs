@@ -269,7 +269,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			string specialPriceDate;
 			if (SpecialPrice(product, out specialPriceDate))
 			{
-				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(product.SpecialPrice.Value) + " " + currency.CurrencyCode);
+				decimal specialPrice = Helper.ConvertFromStoreCurrency(product.SpecialPrice.Value, currency);
+				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(specialPrice) + " " + currency.CurrencyCode);
 				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
 			}
 

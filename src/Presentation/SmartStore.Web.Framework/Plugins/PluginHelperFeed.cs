@@ -198,18 +198,6 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return "";
 		}
-		public string SpecialPrice(Product product, bool checkDate)
-		{
-			if (product.SpecialPrice.HasValue && product.SpecialPriceStartDateTimeUtc.HasValue && product.SpecialPriceEndDateTimeUtc.HasValue)
-			{
-				
-				if (checkDate && !(DateTime.UtcNow >= product.SpecialPriceStartDateTimeUtc && DateTime.UtcNow <= product.SpecialPriceEndDateTimeUtc))
-					return "";
-
-				return DecimalUsFormat(product.SpecialPrice.Value);
-			}
-			return "";
-		}
 		public string ProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));

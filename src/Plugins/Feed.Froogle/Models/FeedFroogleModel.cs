@@ -106,6 +106,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		public int StoreId { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExpirationDays")]
+		public int ExpirationDays { get; set; }
+
 		public string GridEditUrl {
 			get {
 				if (_gridEditUrl == null) {
@@ -145,6 +148,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				OnlineOnly = settings.OnlineOnly;
 				DescriptionToPlainText = settings.DescriptionToPlainText;
 				StoreId = settings.StoreId;
+				ExpirationDays = settings.ExpirationDays;
 			}
 			else
 			{
@@ -172,6 +176,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.OnlineOnly = OnlineOnly;
 				settings.DescriptionToPlainText = DescriptionToPlainText;
 				settings.StoreId = StoreId;
+				settings.ExpirationDays = ExpirationDays;
 			}
 		}
     }

@@ -334,6 +334,15 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExpirationDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExpirationDays)
+            @Html.ValidationMessageFor(m => m.ExpirationDays)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(m => m.UseOwnProductNo)
         </td>
         <td class="adminData">

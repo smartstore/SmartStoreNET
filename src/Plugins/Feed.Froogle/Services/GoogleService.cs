@@ -286,7 +286,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteCData("item_group_id", ItemGroupId(googleProduct), "g", _googleNamespace);
 
 			writer.WriteElementString("g", "online_only", _googleNamespace, Settings.OnlineOnly ? "y" : "n");
-			writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.Now.AddDays(28).ToString("yyyy-MM-dd"));
+
+			if (Settings.ExpirationDays > 0)
+			{
+				writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(Settings.ExpirationDays).ToString("yyyy-MM-dd"));
+			}
 
 			return null;
 		}

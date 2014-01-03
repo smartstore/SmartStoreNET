@@ -2039,6 +2039,19 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CombiNotExists">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Variants.TierPrices.Fields.Store.All">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
 
 </Language>
 '

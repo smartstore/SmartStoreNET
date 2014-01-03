@@ -422,10 +422,10 @@ namespace SmartStore.Services.ExportImport
 
 					// codehint: sm-add
 					product.DeliveryTimeId = deliveryTimeId;
-					product.BasePrice.Enabled = basePriceEnabled;
-					product.BasePrice.MeasureUnit = basePriceMeasureUnit;
-					product.BasePrice.Amount = basePriceAmount;
-					product.BasePrice.BaseAmount = basePriceBaseAmount;
+					product.BasePrice_Enabled = basePriceEnabled;
+					product.BasePrice_MeasureUnit = basePriceMeasureUnit;
+					product.BasePrice_Amount = basePriceAmount;
+					product.BasePrice_BaseAmount = basePriceBaseAmount;
 
 					if (newProduct)
 					{

@@ -8,7 +8,6 @@ namespace SmartStore.Services.Catalog
         public MergedProduct()
         {
             this.Id = -1;
-            this.BasePrice = new BasePriceQuotation();
             this.ProductVariantAttributeCombinations = new List<ProductVariantAttributeCombination>();
         }
         public MergedProduct(IMergedProduct source)
@@ -24,9 +23,13 @@ namespace SmartStore.Services.Catalog
             this.Length = source.Length;
             this.Width = source.Width;
             this.Height = source.Height;
-            this.BasePrice = source.BasePrice;
 			this.ManageInventoryMethodId = source.ManageInventoryMethodId;
             this.ProductVariantAttributeCombinations = source.ProductVariantAttributeCombinations;
+
+			this.BasePrice_Enabled = source.BasePrice_Enabled;
+			this.BasePrice_MeasureUnit = source.BasePrice_MeasureUnit;
+			this.BasePrice_Amount = source.BasePrice_Amount;
+			this.BasePrice_BaseAmount = source.BasePrice_BaseAmount;
         }
 
         public int Id { get; private set; }
@@ -38,8 +41,19 @@ namespace SmartStore.Services.Catalog
         public decimal Length { get; set; }
         public decimal Width { get; set; }
         public decimal Height { get; set; }
-        public BasePriceQuotation BasePrice { get; set; }
 		public int ManageInventoryMethodId { get; private set; }
+
+		public bool BasePrice_Enabled { get; set; }
+		public string BasePrice_MeasureUnit { get; set; }
+		public decimal? BasePrice_Amount { get; set; }
+		public int? BasePrice_BaseAmount { get; set; }
+		public bool BasePrice_HasValue
+		{
+			get
+			{
+				return BasePrice_Enabled && BasePrice_Amount.GetValueOrDefault() > 0 && BasePrice_BaseAmount.GetValueOrDefault() > 0 && BasePrice_MeasureUnit.HasValue();
+			}
+		}
 
         public ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations { get; private set; }
     }

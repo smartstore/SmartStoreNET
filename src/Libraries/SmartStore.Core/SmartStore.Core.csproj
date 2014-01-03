@@ -138,7 +138,6 @@
     <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
-    <Compile Include="Domain\Catalog\BasePriceQuotation.cs" />
     <Compile Include="Domain\Catalog\IMergedProduct.cs" />
     <Compile Include="Domain\Catalog\ProductType.cs" />
     <Compile Include="Domain\Cms\ContentSliderSettings.cs" />

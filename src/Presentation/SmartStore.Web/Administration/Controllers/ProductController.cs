@@ -420,9 +420,9 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => x.SystemKeyword).Concat(_measureService.GetAllMeasureDimensions().Select(x => x.SystemKeyword)).ToList();
 
 			// don't forget biz import!
-			if (product != null && !setPredefinedValues && product.BasePrice.MeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePrice.MeasureUnit)))
+			if (product != null && !setPredefinedValues && product.BasePrice_MeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePrice_MeasureUnit)))
 			{
-				measureUnits.Add(product.BasePrice.MeasureUnit);
+				measureUnits.Add(product.BasePrice_MeasureUnit);
 			}
 
 			foreach (var mu in measureUnits)
@@ -431,7 +431,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					Text = mu,
 					Value = mu,
-					Selected = product != null && !setPredefinedValues && mu.Equals(product.BasePrice.MeasureUnit, StringComparison.OrdinalIgnoreCase)
+					Selected = product != null && !setPredefinedValues && mu.Equals(product.BasePrice_MeasureUnit, StringComparison.OrdinalIgnoreCase)
 				});
 			}
 

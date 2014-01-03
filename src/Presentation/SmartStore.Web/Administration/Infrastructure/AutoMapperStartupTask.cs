@@ -228,29 +228,29 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-                .AfterMap((src, dest) => {
-                    dest.BasePriceEnabled = src.BasePrice.Enabled;
-                    dest.BasePriceBaseAmount = src.BasePrice.BaseAmount;
-                    dest.BasePriceAmount = src.BasePrice.Amount;
-                    dest.BasePriceMeasureUnit = src.BasePrice.MeasureUnit;
-                });
-            Mapper.CreateMap<ProductModel, Product>()
+				.AfterMap((src, dest) => {
+					dest.BasePriceEnabled = src.BasePrice_Enabled;
+					dest.BasePriceBaseAmount = src.BasePrice_BaseAmount;
+					dest.BasePriceAmount = src.BasePrice_Amount;
+					dest.BasePriceMeasureUnit = src.BasePrice_MeasureUnit;
+				});
+			Mapper.CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
-                .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.ParentGroupedProductId, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductType, mo => mo.Ignore())
-                .ForMember(dest => dest.Deleted, mo => mo.Ignore())
-                .ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())
-                .ForMember(dest => dest.NotApprovedRatingSum, mo => mo.Ignore())
-                .ForMember(dest => dest.ApprovedTotalReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.NotApprovedTotalReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductManufacturers, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductPictures, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore())
+				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())
+				.ForMember(dest => dest.NotApprovedRatingSum, mo => mo.Ignore())
+				.ForMember(dest => dest.ApprovedTotalReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.NotApprovedTotalReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductManufacturers, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductPictures, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.HasTierPrices, mo => mo.Ignore())
 				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
@@ -267,13 +267,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
-				.ForMember(dest => dest.BasePrice, mo => mo.Ignore())
 				.AfterMap((src, dest) =>
 				{
-					dest.BasePrice.Enabled = src.BasePriceEnabled;
-					dest.BasePrice.Amount = src.BasePriceAmount;
-					dest.BasePrice.BaseAmount = src.BasePriceBaseAmount;
-					dest.BasePrice.MeasureUnit = src.BasePriceMeasureUnit;
+					dest.BasePrice_Enabled = src.BasePriceEnabled;
+					dest.BasePrice_Amount = src.BasePriceAmount;
+					dest.BasePrice_BaseAmount = src.BasePriceBaseAmount;
+					dest.BasePrice_MeasureUnit = src.BasePriceMeasureUnit;
 				});
 			//logs
             Mapper.CreateMap<Log, LogModel>()

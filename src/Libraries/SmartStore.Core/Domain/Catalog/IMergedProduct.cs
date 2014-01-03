@@ -16,8 +16,13 @@ namespace SmartStore.Core.Domain.Catalog
         decimal Length { get; set; }
         decimal Width { get; set; }
         decimal Height { get; set; }
-        BasePriceQuotation BasePrice { get; set; }
 		int ManageInventoryMethodId { get; }
+
+		bool BasePrice_Enabled { get; set; }
+		string BasePrice_MeasureUnit { get; set; }
+		decimal? BasePrice_Amount { get; set; }
+		int? BasePrice_BaseAmount { get; set; }
+		bool BasePrice_HasValue { get; }
 
         ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations { get; }
     }

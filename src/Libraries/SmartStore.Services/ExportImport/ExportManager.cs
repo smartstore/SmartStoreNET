@@ -298,12 +298,12 @@ namespace SmartStore.Services.ExportImport
 
 				if (product.DeliveryTimeId.HasValue)
 					xmlWriter.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
-				xmlWriter.WriteElementString("BasePrice_Enabled", null, product.BasePrice.Enabled.ToString());
-				xmlWriter.WriteElementString("BasePrice_MeasureUnit", null, product.BasePrice.MeasureUnit);
-				if (product.BasePrice.Amount.HasValue)
-					xmlWriter.WriteElementString("BasePrice_Amount", null, product.BasePrice.Amount.Value.ToString());
-				if (product.BasePrice.BaseAmount.HasValue)
-					xmlWriter.WriteElementString("BasePrice_BaseAmount", null, product.BasePrice.BaseAmount.Value.ToString());
+				xmlWriter.WriteElementString("BasePrice_Enabled", null, product.BasePrice_Enabled.ToString());
+				xmlWriter.WriteElementString("BasePrice_MeasureUnit", null, product.BasePrice_MeasureUnit);
+				if (product.BasePrice_Amount.HasValue)
+					xmlWriter.WriteElementString("BasePrice_Amount", null, product.BasePrice_Amount.Value.ToString());
+				if (product.BasePrice_BaseAmount.HasValue)
+					xmlWriter.WriteElementString("BasePrice_BaseAmount", null, product.BasePrice_BaseAmount.Value.ToString());
 
 				xmlWriter.WriteStartElement("ProductDiscounts");
 				var discounts = product.AppliedDiscounts;
@@ -839,13 +839,13 @@ namespace SmartStore.Services.ExportImport
 
 					worksheet.Cells[row, col].Value = p.DeliveryTimeId;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice.Enabled;
+					worksheet.Cells[row, col].Value = p.BasePrice_Enabled;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice.MeasureUnit;
+					worksheet.Cells[row, col].Value = p.BasePrice_MeasureUnit;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice.Amount;
+					worksheet.Cells[row, col].Value = p.BasePrice_Amount;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice.BaseAmount;
+					worksheet.Cells[row, col].Value = p.BasePrice_BaseAmount;
 					col++;
 
                     row++;

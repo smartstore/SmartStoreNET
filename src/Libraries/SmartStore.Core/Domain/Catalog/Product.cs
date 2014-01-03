@@ -27,11 +27,6 @@ namespace SmartStore.Core.Domain.Catalog
 		private ICollection<TierPrice> _tierPrices;
 		private ICollection<Discount> _appliedDiscounts;
 
-        public Product()
-        {
-            this.BasePrice = new BasePriceQuotation();
-        }
-
 		/// <summary>
 		/// Gets or sets the product type identifier
 		/// </summary>
@@ -555,10 +550,39 @@ namespace SmartStore.Core.Domain.Catalog
 		public virtual DeliveryTime DeliveryTime { get; set; }
 
 		/// <summary>
-		/// Gets or sets the base price quotation complex type (PAnGV)
+		/// Gets or sets if base price quotation (PAnGV) is enabled
 		/// </summary>
 		[DataMember]
-		public virtual BasePriceQuotation BasePrice { get; set; }
+		public bool BasePrice_Enabled { get; set; }
+
+		/// <summary>
+		/// Measure unit for the base price (e.g. "kg", "g", "qm²" etc.)
+		/// </summary>
+		[DataMember]
+		public string BasePrice_MeasureUnit { get; set; }
+
+		/// <summary>
+		/// Amount of product per packing unit in the given measure unit 
+		/// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
+		/// </summary>
+		[DataMember]
+		public decimal? BasePrice_Amount { get; set; }
+
+		/// <summary>
+		/// Reference value for the given measure unit 
+		/// (e.g. "1" liter. Formula: [BaseAmount] [MeasureUnit] = [SellingPrice] / [Amount])
+		/// </summary>
+		[DataMember]
+		public int? BasePrice_BaseAmount { get; set; }
+
+		[DataMember]
+		public bool BasePrice_HasValue
+		{
+			get
+			{
+				return BasePrice_Enabled && BasePrice_Amount.GetValueOrDefault() > 0 && BasePrice_BaseAmount.GetValueOrDefault() > 0 && BasePrice_MeasureUnit.HasValue();
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the product type

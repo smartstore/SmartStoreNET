@@ -44,6 +44,10 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Ignore(p => p.ManageInventoryMethod);
 			this.Ignore(p => p.RecurringCyclePeriod);
 
+			this.Property(p => p.BasePrice_MeasureUnit).HasMaxLength(50);
+			this.Property(p => p.BasePrice_Amount).HasPrecision(18, 4).IsOptional();
+			this.Ignore(p => p.BasePrice_HasValue);
+
 			this.HasMany(p => p.ProductTags)
 				.WithMany(pt => pt.Products)
 				.Map(m => m.ToTable("Product_ProductTag_Mapping"));

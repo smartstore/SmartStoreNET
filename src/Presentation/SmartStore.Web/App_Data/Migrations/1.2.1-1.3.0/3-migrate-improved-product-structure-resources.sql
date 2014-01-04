@@ -1883,20 +1883,20 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize">
 		<Value>Associated product image size</Value>
-		<Value lang="de">Bildgröße angegliedertes Produkt</Value>
+		<Value lang="de">Bildgröße verknüpftes Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize.Hint">
 		<Value>The default size (pixels) for associated product images (part of "grouped" products).</Value>
-		<Value lang="de">Die Standardbildgröße (in Pixel) der angegliederten Produkte.</Value>
+		<Value lang="de">Die Standardbildgröße (in Pixel) der verknüpften Produkte.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts">
 		<Value>Associated products</Value>
-		<Value lang="de">Angegliederte Produkte</Value>
+		<Value lang="de">Verknüpfte Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.AddNew">
 		<Value>Add new associated product</Value>
-		<Value lang="de">Angegliedertes Produkt hinzufügen</Value>
+		<Value lang="de">Verknüpftes Produkt hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Fields.Product">
 		<Value>Product</Value>
@@ -1904,15 +1904,15 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note1">
 		<Value>Associated products are used only with "grouped" products.</Value>
-		<Value lang="de">Angegliederte Produkte gibt es ausschließlich bei Gruppenprodukten.</Value>
+		<Value lang="de">Verknüpfte Produkte gibt es ausschließlich bei Gruppenprodukten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.Note2">
 		<Value>A product could be associated to only one "grouped" product.</Value>
-		<Value lang="de">Ein Produkt kann nur einem Gruppenprodukt angegliedert werden.</Value>
+		<Value lang="de">Ein Produkt kann nur mit einem Gruppenprodukt verknüpft werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts.SaveBeforeEdit">
 		<Value>You need to save the product before you can add associated products for this product page.</Value>
-		<Value lang="de">Das Produkt muss gespeichert werden, bevor angegliederte Produkte hinzugefügt werden können.</Value>
+		<Value lang="de">Das Produkt muss gespeichert werden, bevor verknüpfte Produkte hinzugefügt werden können.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Admin.Catalog.Products.Fields.VisibleIndividually">
@@ -1921,7 +1921,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.VisibleIndividually.Hint">
 		<Value>Check it if you want this product to be visible in catalog or search results. You can use this field (just uncheck) to hide associated products from catalog and make them accessible only from a parent "grouped" product details page.</Value>
-		<Value lang="de">Legt fest, ob dieses Produkt im Katalog oder den Suchergebnissen angezeigt werden soll. Sie können dieses Feld verwenden (durch deaktivieren), um angegliederte Produkte nur über deren übergeordnete Produkt-Detailseite zugänglich zu machen.</Value>
+		<Value lang="de">Legt fest, ob dieses Produkt im Katalog oder den Suchergebnissen angezeigt werden soll. Sie können dieses Feld verwenden (durch deaktivieren), um verknüpfte Produkte nur über deren übergeordnete Produkt-Detailseite zugänglich zu machen.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Products.NoAssociatedProducts">
@@ -1954,11 +1954,11 @@ SET @resources='
 
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName">
 		<Value>Associated to product</Value>
-		<Value lang="de">Angegliedertes Produkt</Value>
+		<Value lang="de">Verknüpftes Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName.Hint">
 		<Value>A "grouped" parent product which this one is associated to.</Value>
-		<Value lang="de">Das übergeordnete Gruppenprodukt, dem dieses Produkt angegliedert ist.</Value>
+		<Value lang="de">Das übergeordnete Gruppenprodukt, mit dem dieses Produkt verknüpft ist.</Value>
 	</LocaleResource>
 
 	<LocaleResource Name="ShoppingCart.ConflictingShipmentSchedules">

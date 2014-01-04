@@ -181,7 +181,7 @@ namespace SmartStore.Services.Catalog
 					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc));
 			}
 
-			if (context.ProductIds != null && context.ProductIds.Count > 0)
+			if (context.ProductIds != null)
 			{
 				query = query.Where(x => context.ProductIds.Contains(x.Id));
 			}

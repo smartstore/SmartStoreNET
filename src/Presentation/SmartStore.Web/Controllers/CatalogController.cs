@@ -1224,6 +1224,7 @@ namespace SmartStore.Web.Controllers
                 var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
                 {
                     Id = attribute.Id,
+					ProductId = attribute.ProductId,
                     ProductAttributeId = attribute.ProductAttributeId,
                     Alias = attribute.ProductAttribute.Alias,
                     Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
@@ -1550,8 +1551,8 @@ namespace SmartStore.Web.Controllers
             #endregion
 
             // prevent saving merged data to database
-            var objectContext = ((IObjectContextAdapter)_dbContext).ObjectContext;
-            objectContext.Detach(product);
+            //var objectContext = ((IObjectContextAdapter)_dbContext).ObjectContext;
+            //objectContext.Detach(product);
 
             return model;
         }

@@ -489,6 +489,10 @@ namespace SmartStore.Data
                 ((IObjectContextAdapter)this).ObjectContext.Detach(entity);
             }
         }
+		public void Detach(object entity)
+		{
+			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+		}
 
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {

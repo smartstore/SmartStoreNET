@@ -1836,11 +1836,11 @@ SET @resources='
 		<Value>Choose your product type.</Value>
 		<Value lang="de">Legt den Produkttyp fest.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductType.Nop.Core.Domain.Catalog.ProductType.SimpleProduct">
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductType.SimpleProduct">
 		<Value>Simple product</Value>
 		<Value lang="de">Einfaches Produkt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductType.Nop.Core.Domain.Catalog.ProductType.GroupedProduct">
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductType.GroupedProduct">
 		<Value>Grouped product</Value>
 		<Value lang="de">Gruppenprodukt</Value>
 	</LocaleResource>
@@ -1860,7 +1860,7 @@ SET @resources='
 		<Value>The type of discount.</Value>
 		<Value lang="de">Der Rabatttyp.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.Nop.Core.Domain.Discounts.DiscountType.AssignedToSkus">
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToSkus">
 		<Value>Assigned to products</Value>
 		<Value lang="de">Produkten zugewiesen</Value>
 	</LocaleResource>

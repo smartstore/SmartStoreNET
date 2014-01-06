@@ -620,6 +620,9 @@ namespace SmartStore.Admin.Controllers
                 {
                     var productModel = x.ToModel();
                     PrepareProductPictureThumbnailModel(productModel, x);
+
+					productModel.ProductTypeName = x.ProductType.GetLocalizedEnum(_localizationService, _workContext);
+
                     return productModel;
                 }),
                 Total = products.TotalCount

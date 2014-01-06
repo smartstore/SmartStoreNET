@@ -394,8 +394,6 @@ namespace SmartStore.Services.ExportImport
 				}
 				xmlWriter.WriteEndElement(); // ProductVariantAttributeCombinations
 
-				xmlWriter.WriteEndElement();	// Product
-
                 xmlWriter.WriteStartElement("ProductPictures");
                 var productPictures = product.ProductPictures;
                 foreach (var productPicture in productPictures)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
@@ -18,7 +19,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="selectedAttributes">The selected attributes (XML), for which a <see cref="ProductVariantAttributeCombination"/> should be resolved</param>
         /// <param name="productAttributeParser">Service, which handles resolving of combinations</param>
         /// <returns>A new product instance</returns>
-        public static IMergedProduct GetMergedVariant(this IMergedProduct source, string selectedAttributes, IProductAttributeParser productAttributeParser)
+        public static IMergedProduct GetMergedProduct(this IMergedProduct source, string selectedAttributes, IProductAttributeParser productAttributeParser)
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
@@ -35,7 +36,7 @@ namespace SmartStore.Services.Catalog
             }
 
             // merge and return new instance
-            return source.GetMergedVariant(combination);
+            return source.GetMergedProduct(combination);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="source">The source</param>
         /// <param name="mergeWith">The variant attributes combination to be applied to the variant</param>
         /// <returns>A new product instance</returns>
-        public static IMergedProduct GetMergedVariant(this IMergedProduct source, ProductVariantAttributeCombination mergeWith)
+        public static IMergedProduct GetMergedProduct(this IMergedProduct source, ProductVariantAttributeCombination mergeWith)
         {
             var merged = new MergedProduct(source);
             merged.MergeWithCombination(mergeWith);
@@ -106,10 +107,10 @@ namespace SmartStore.Services.Catalog
 
 			if (combination.BasePriceAmount.HasValue)
 				product.BasePrice_Amount = combination.BasePriceAmount.Value;
-				//product.BasePrice.Amount = combination.BasePriceAmount.Value;
             if (combination.BasePriceBaseAmount.HasValue)
 				product.BasePrice_BaseAmount = combination.BasePriceBaseAmount.Value;
-				//product.BasePrice.BaseAmount = combination.BasePriceBaseAmount.Value;
+
+			EngineContext.Current.Resolve<IDbContext>().Detach(product);	// ! merging becomes an adventure without it
         }
 
 		public static void GetAllCombinationImageIds(this IList<ProductVariantAttributeCombination> combinations, List<int> imageIds)

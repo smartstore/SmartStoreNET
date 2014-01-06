@@ -81,6 +81,12 @@ BEGIN
 END
 GO
 
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[DiscountRequirement]') and NAME='RestrictedProductVariantIds')
+BEGIN
+	EXEC sp_rename 'DiscountRequirement.RestrictedProductVariantIds', 'RestrictedProductIds', 'COLUMN';
+END
+GO
+
 
 DELETE FROM [ActivityLogType] WHERE [SystemKeyword] = N'AddNewProductVariant'
 GO

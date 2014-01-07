@@ -1457,7 +1457,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
-
+            
             var settings = _settingService
                 .GetAllSettings()
 				.Select(x =>
@@ -1517,7 +1517,7 @@ namespace SmartStore.Admin.Controllers
 			if (setting == null)
 				return Content(_localizationService.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 
 			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) ||
 				setting.StoreId != storeId)
@@ -1551,7 +1551,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log

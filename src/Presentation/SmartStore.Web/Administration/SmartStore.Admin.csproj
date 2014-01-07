@@ -1077,7 +1077,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\PromotionFeeds\" />
-    <Folder Include="Views\Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />

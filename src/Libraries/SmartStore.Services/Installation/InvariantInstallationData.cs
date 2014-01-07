@@ -4489,7 +4489,7 @@ namespace SmartStore.Services.Installation
                     ShowProductImagesOnWishList = true,
                     ShowDiscountBox = true,
                     ShowGiftCardBox = true,
-                    CrossSellsNumber = 2,
+                    CrossSellsNumber = 8,
                     EmailWishlistEnabled = true,
                     AllowAnonymousUsersToEmailWishlist = false,
                     MiniShoppingCartEnabled = true,

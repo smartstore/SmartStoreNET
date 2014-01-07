@@ -660,6 +660,7 @@
     <Content Include="Content\install\variables.custom.less" />
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
+    <Content Include="Content\theme.common.less" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
     <Content Include="favicon.readme.txt" />
     <Content Include="Media\default-avatar.jpg" />
@@ -796,16 +797,6 @@
     <Content Include="Content\jquery-ui\base\jquery.ui.theme.css" />
     <Content Include="Content\jquery-ui\base\jquery.ui.theme.min.css" />
     <Content Include="Content\editors\BBEditor\ed.js" />
-    <Content Include="Content\editors\BBEditor\images\bold.gif" />
-    <Content Include="Content\editors\BBEditor\images\code.gif" />
-    <Content Include="Content\editors\BBEditor\images\italic.gif" />
-    <Content Include="Content\editors\BBEditor\images\link.gif" />
-    <Content Include="Content\editors\BBEditor\images\ordered.gif" />
-    <Content Include="Content\editors\BBEditor\images\picture.gif" />
-    <Content Include="Content\editors\BBEditor\images\quote.gif" />
-    <Content Include="Content\editors\BBEditor\images\underline.gif" />
-    <Content Include="Content\editors\BBEditor\images\unlink.gif" />
-    <Content Include="Content\editors\BBEditor\images\unordered.gif" />
     <Content Include="Content\editors\tinymce\jquery.tinymce.js" />
     <Content Include="Content\editors\tinymce\globalinit.js" />
     <Content Include="Content\editors\tinymce\langs\de.js" />

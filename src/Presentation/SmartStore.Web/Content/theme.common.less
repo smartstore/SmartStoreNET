@@ -1,0 +1,121 @@
+﻿.hr() {
+	border-top: 1px solid #ddd; 
+	&:first-child {
+		border-top: none;
+	}
+}
+
+select {
+	min-width: initial;
+}
+
+legend {
+	color: #acacac;
+}
+
+.ajax-loader-small {
+	display: inline-block;
+	position: relative;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 0;
+	background: transparent url('images/ajax_loader_small.gif') 50% 50% no-repeat;
+}
+
+// required for placeholder plugin (< IE10)
+input.placeholder {
+	color: @grayLight !important;
+}
+
+.control-group.buttons {
+	padding-top: 20px;
+}
+
+body.popup {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body.print {
+	background: #fff !important;
+}
+
+#popup-content {
+	margin: 20px;
+}
+
+.captcha-box {
+	margin-bottom:12px;
+}
+
+nav ul, nav li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; 
+}
+
+/* from smartstore.base.css */
+/* Hide only visually, but have it available for screenreaders: by Jon Neal. */
+.hidden-accessible 					{ border: 0; clip: rect(0,0,0,0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px }
+
+
+/* DATA LISTS */
+.data-list .thumbnail .caption { padding: 4px }
+.data-list { }
+.data-list-grid { }
+.data-list-grid .data-list-row,
+.data-list .data-list-item { margin-bottom: 12px; }
+
+.item-box {
+    position: relative;
+    .small();
+
+    &.no-border {
+        border-color: transparent;
+        .box-shadow(0 0 0 rgba(0,0,0,.0));
+    }
+}
+.item-box.product-compact {
+	.small();
+	text-align: center;
+}
+
+.item-box .name {
+    font-family: inherit;
+    font-weight: normal;
+    font-size: inherit;
+    line-height: inherit;
+    overflow: hidden;
+    margin-bottom: 0.3em;
+    margin-top: 0;
+}
+
+// Label 'IsNew' for products
+.item-box .name .label.label-isnew {
+    font-size: 10px;
+    line-height: 10px;
+    font-weight: normal;
+    text-shadow: none;
+    text-transform: uppercase;            
+}
+
+.item-box.details .name {
+    margin-top: 10px;
+}
+
+.item-box figure.picture {
+    position: relative;
+    z-index: 0;
+    padding: 4px;
+    text-align: center;
+    margin: 0;
+    min-height: 100px;
+
+    a { 
+        display: inline-block; 
+        position: relative;
+        z-index: 0; 
+    }
+}

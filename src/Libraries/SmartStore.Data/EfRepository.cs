@@ -36,6 +36,14 @@ namespace SmartStore.Data
             }
         }
 
+        public virtual IQueryable<T> TableUntracked
+        {
+            get
+            {
+                return this.Entities.AsNoTracking();
+            }
+        }
+
         public T Create()
         {
             return this.Entities.Create();

@@ -4,10 +4,11 @@
 
 ###New Features###
 
-* #175 IPayment plugin: Implement deactivation of specific credit card types
-* #112 Implement 'WebApi'
+* #175 IPayment plugin: Implemented deactivation of specific credit card types
+* #112 Implemented 'WebApi'
 * #137 Shipping method option to ignore additional shipping charges
 * #191 Implemented new scheduled task _Delete logs_
+* Added support for _SummerNote_ HTML editor (experimental)
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
 
 ###Bugfixes###

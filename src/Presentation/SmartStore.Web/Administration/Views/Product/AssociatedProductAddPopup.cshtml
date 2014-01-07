@@ -16,12 +16,6 @@
         <div class="title">
             @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
         </div>
-        <div class="options">
-            <button type="submit" id="save" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok"></i>
-                @T("Admin.Common.Save")
-            </button>
-        </div>
     </div>
 
     if (ViewBag.RefreshPage == true)
@@ -76,7 +70,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button type="submit" id="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -93,17 +87,10 @@
                         columns.Bound(x => x.Id)
                             .Template(x => string.Format("<input type='checkbox' name='SelectedProductIds' value='{0}' class='checkboxGroups'/>", x.Id))
                             .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
                             .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
-
-                        columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                            .HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(x => x.Name);
                         columns.Bound(x => x.Sku);
-                        columns.Bound(x => x.Price);
-                        columns.Bound(x => x.StockQuantity);
                         columns.Bound(x => x.Published)
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
@@ -112,24 +99,24 @@
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("AssociatedProductAddPopupList", "Product"))
-                    .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+                    .ClientEvents(events => events.OnDataBinding("associatedProducts_onDataBinding"))
                     .EnableCustomBinding(true))
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p></p>
+                <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
             </td>
         </tr>
     </table>
 
     <script type="text/javascript">
-        var selectedIds = [];
-
         $(document).ready(function () {
-
             $('#search-products').click(function () {
                 var grid = $('#products-grid').data('tGrid');
                 grid.currentPage = 1; //new search. Set page size to 1
                 grid.ajaxRequest();
-                //clear selected checkboxes
-                $('.checkboxGroups').attr('checked', false).change();
-                selectedIds = [];
                 return false;
             });
 
@@ -139,35 +126,9 @@
                     return false;
                 }
             });
-
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
-
-            //wire up checkboxes. 
-            $('#products-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                productsGrid_updateMasterCheckbox();
-            });
         });
 
-        function productsGrid_onDataBinding(e) {
+        function associatedProducts_onDataBinding(e) {
             var searchModel = {
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
@@ -176,23 +137,6 @@
                 SearchProductTypeId: $('#SearchProductTypeId').val()
             };
             e.data = searchModel;
-        }
-
-        function productsGrid_onDataBound(e) {
-            $('#products-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
-            });
-
-            productsGrid_updateMasterCheckbox();
-        }
-
-        function productsGrid_updateMasterCheckbox() {
-            var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
         }
     </script>
 }

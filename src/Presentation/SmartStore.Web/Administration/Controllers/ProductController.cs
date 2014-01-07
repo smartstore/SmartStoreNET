@@ -1143,13 +1143,16 @@ namespace SmartStore.Admin.Controllers
             var relatedProductsModel = relatedProducts
                 .Select(x =>
                 {
+					var product2 = _productService.GetProductById(x.ProductId2);
+
                     return new ProductModel.RelatedProductModel()
                     {
                         Id = x.Id,
-                        //ProductId1 = x.ProductId1,
                         ProductId2 = x.ProductId2,
-                        Product2Name = _productService.GetProductById(x.ProductId2).Name,
-                        DisplayOrder = x.DisplayOrder
+                        Product2Name = product2.Name,
+                        DisplayOrder = x.DisplayOrder,
+						Product2Sku = product2.Sku,
+						Product2Published = product2.Published
                     };
                 })
                 .ToList();
@@ -1228,6 +1231,11 @@ namespace SmartStore.Admin.Controllers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
 
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
 			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
@@ -1249,6 +1257,7 @@ namespace SmartStore.Admin.Controllers
                 ctx.CategoryIds.Add(model.SearchCategoryId);
 
             ctx.ManufacturerId = model.SearchManufacturerId;
+			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
@@ -1316,12 +1325,15 @@ namespace SmartStore.Admin.Controllers
             var crossSellProductsModel = crossSellProducts
                 .Select(x =>
                 {
+					var product2 = _productService.GetProductById(x.ProductId2);
+
                     return new ProductModel.CrossSellProductModel()
                     {
                         Id = x.Id,
-                        //ProductId1 = x.ProductId1,
                         ProductId2 = x.ProductId2,
-                        Product2Name = _productService.GetProductById(x.ProductId2).Name,
+						Product2Name = product2.Name,
+						Product2Sku = product2.Sku,
+						Product2Published = product2.Published
                     };
                 })
                 .ToList();
@@ -1384,6 +1396,11 @@ namespace SmartStore.Admin.Controllers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
 
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+
 			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
@@ -1404,6 +1421,7 @@ namespace SmartStore.Admin.Controllers
             if (model.SearchCategoryId > 0)
                 ctx.CategoryIds.Add(model.SearchCategoryId);
             ctx.ManufacturerId = model.SearchManufacturerId;
+			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
@@ -1481,7 +1499,9 @@ namespace SmartStore.Admin.Controllers
 					{
 						Id = x.Id,
 						ProductName = x.Name,
-						DisplayOrder = x.DisplayOrder
+						DisplayOrder = x.DisplayOrder,
+						Sku = x.Sku,
+						Published = x.Published
 					};
 				})
 				.ToList();

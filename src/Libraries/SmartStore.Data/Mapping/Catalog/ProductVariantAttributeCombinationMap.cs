@@ -10,22 +10,22 @@ namespace SmartStore.Data.Mapping.Catalog
             this.ToTable("ProductVariantAttributeCombination");
             this.HasKey(pvac => pvac.Id);
 
-            this.Property(pv => pv.Sku).HasMaxLength(400);
-            this.Property(pv => pv.ManufacturerPartNumber).HasMaxLength(400);
-            this.Property(pv => pv.Gtin).HasMaxLength(400);
-            this.Property(pv => pv.AssignedPictureIds).HasMaxLength(1000);
-            this.Property(pv => pv.Length).HasPrecision(18, 4);
-            this.Property(pv => pv.Width).HasPrecision(18, 4);
-            this.Property(pv => pv.Height).HasPrecision(18, 4);
-            this.Property(pv => pv.BasePriceAmount).HasPrecision(18, 4);
+            this.Property(pvac => pvac.Sku).HasMaxLength(400);
+            this.Property(pvac => pvac.ManufacturerPartNumber).HasMaxLength(400);
+            this.Property(pvac => pvac.Gtin).HasMaxLength(400);
+            this.Property(pvac => pvac.AssignedPictureIds).HasMaxLength(1000);
+            this.Property(pvac => pvac.Length).HasPrecision(18, 4);
+            this.Property(pvac => pvac.Width).HasPrecision(18, 4);
+            this.Property(pvac => pvac.Height).HasPrecision(18, 4);
+            this.Property(pvac => pvac.BasePriceAmount).HasPrecision(18, 4);
 
             this.HasRequired(pvac => pvac.Product)
-                .WithMany(pv => pv.ProductVariantAttributeCombinations)
+                .WithMany(pvac => pvac.ProductVariantAttributeCombinations)
                 .HasForeignKey(pvac => pvac.ProductId);
 
-            this.HasOptional(pv => pv.DeliveryTime)
+            this.HasOptional(pvac => pvac.DeliveryTime)
                 .WithMany()
-                .HasForeignKey(pv => pv.DeliveryTimeId)
+                .HasForeignKey(pvac => pvac.DeliveryTimeId)
                 .WillCascadeOnDelete(false);
         }
     }

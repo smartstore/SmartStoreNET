@@ -186,7 +186,7 @@
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
             zoomType: '@Model.DetailsPictureModel.PictureZoomType', // window, inner, lens
-            updateUrl: '@Url.Action("UpdateProductDetails", "Catalog", new { productId = Model.Id })'
+            updateUrl: '@Url.Action("UpdateProductDetails", "Catalog", new { productId = "__productid__" })'
         };
         $('#product-details-form').productDetail(settings);
 

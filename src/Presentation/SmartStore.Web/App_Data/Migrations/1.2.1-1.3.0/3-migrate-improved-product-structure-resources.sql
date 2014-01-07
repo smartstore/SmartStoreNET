@@ -411,10 +411,18 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.DeliveryTime">
+	<LocaleResource Name="Admin.Catalog.Products.Variants.Fields.DeliveryTime.Hint">
 		<Value></Value>
 		<Value lang="de"></Value>
-	</LocaleResource>	
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.DeliveryTime">
+		<Value>Delivery time</Value>
+		<Value lang="de">Lieferzeit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.DeliveryTime.Hint">
+		<Value>The amount of time it takes to prepare the order for shipping.</Value>
+		<Value lang="de">Die Zeitspanne, die es braucht, um die Bestellung für den Versand vorzubereiten.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.Fields.Description">
 		<Value></Value>
 		<Value lang="de"></Value>
@@ -1957,8 +1965,8 @@ SET @resources='
 		<Value lang="de">Verknüpftes Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName.Hint">
-		<Value>A "grouped" parent product which this one is associated to.</Value>
-		<Value lang="de">Das übergeordnete Gruppenprodukt, mit dem dieses Produkt verknüpft ist.</Value>
+		<Value>The parent product which this one is associated to.</Value>
+		<Value lang="de">Das übergeordnete Produkt, mit dem dieses Produkt verknüpft ist.</Value>
 	</LocaleResource>
 
 	<LocaleResource Name="ShoppingCart.ConflictingShipmentSchedules">

@@ -12,7 +12,7 @@ namespace SmartStore.Data.Mapping.Catalog
 	        this.Ignore(pva => pva.AttributeControlType);
 
             this.HasRequired(pva => pva.Product)
-                .WithMany(pv => pv.ProductVariantAttributes)
+                .WithMany(pva => pva.ProductVariantAttributes)
                 .HasForeignKey(pva => pva.ProductId);
             
             this.HasRequired(pva => pva.ProductAttribute)

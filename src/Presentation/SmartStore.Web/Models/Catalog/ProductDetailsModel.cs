@@ -23,6 +23,7 @@ namespace SmartStore.Web.Models.Catalog
 			AddToCart = new AddToCartModel();
 			ProductVariantAttributes = new List<ProductVariantAttributeModel>();
 			Combinations = new List<ProductVariantAttributeCombination>();
+			AssociatedProducts = new List<ProductDetailsModel>();
         }
 
 		//picture(s)

@@ -441,6 +441,12 @@ namespace SmartStore.Admin.Models.Catalog
             
             [SmartResourceDisplayName("Admin.Catalog.Products.RelatedProducts.Fields.DisplayOrder")]
             public int DisplayOrder { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Product2Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+			public bool Product2Published { get; set; }
         }
 
         public class AddRelatedProductModel : ModelBase
@@ -449,6 +455,7 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableCategories = new List<SelectListItem>();
                 AvailableManufacturers = new List<SelectListItem>();
+				AvailableStores = new List<SelectListItem>();
 				AvailableProductTypes = new List<SelectListItem>();
             }
             public GridModel<ProductModel> Products { get; set; }
@@ -463,11 +470,15 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
             public int SearchManufacturerId { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+			public int SearchStoreId { get; set; }
+
 			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 			public int SearchProductTypeId { get; set; }
 
             public IList<SelectListItem> AvailableCategories { get; set; }
             public IList<SelectListItem> AvailableManufacturers { get; set; }
+			public IList<SelectListItem> AvailableStores { get; set; }
 			public IList<SelectListItem> AvailableProductTypes { get; set; }
 
             public int ProductId { get; set; }
@@ -482,6 +493,12 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder")]
 			public int DisplayOrder { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+			public bool Published { get; set; }
 		}
 		public partial class AddAssociatedProductModel : ModelBase
 		{
@@ -521,6 +538,12 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Admin.Catalog.Products.CrossSells.Fields.Product")]
             public string Product2Name { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Product2Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+			public bool Product2Published { get; set; }
         }
 
         public class AddCrossSellProductModel : ModelBase
@@ -529,6 +552,7 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableCategories = new List<SelectListItem>();
                 AvailableManufacturers = new List<SelectListItem>();
+				AvailableStores = new List<SelectListItem>();
 				AvailableProductTypes = new List<SelectListItem>();
             }
             public GridModel<ProductModel> Products { get; set; }
@@ -543,11 +567,15 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
             public int SearchManufacturerId { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+			public int SearchStoreId { get; set; }
+
 			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 			public int SearchProductTypeId { get; set; }
 
             public IList<SelectListItem> AvailableCategories { get; set; }
             public IList<SelectListItem> AvailableManufacturers { get; set; }
+			public IList<SelectListItem> AvailableStores { get; set; }
 			public IList<SelectListItem> AvailableProductTypes { get; set; }
 
             public int ProductId { get; set; }

@@ -51,9 +51,13 @@
     x.Add().Text(T("Admin.Catalog.Products.RelatedProducts").Text)
         .Icon("icon-link")
         .Content(TabRelatedProducts());
-    x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
-        .Icon("icon-link")
-        .Content(TabAssociatedProducts());
+    
+    if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
+    {
+        x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
+            .Icon("icon-link")
+            .Content(TabAssociatedProducts());
+    }
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));
@@ -116,5 +120,8 @@
 }
 @helper TabAssociatedProducts()
 {
-    @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
+    if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
+    {
+        @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
+    }
 }

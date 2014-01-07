@@ -19,7 +19,6 @@
 			
 		    this.createGallery(opts.galleryStartIndex);
 			
-            //TODO: nur wenn varianten da sind
 		    $('#pd-gallery-container-outer').throbber({ white: false, small: false, show: false });
 
 		    $('#pd-manufacturer img').css({ 'max-width': opts.galleryWidth });
@@ -29,8 +28,8 @@
 		    	var context = $(this).closest('.product-variant-line'),
 		    		url = opts.updateUrl;
 
-		    	if (context[0])		// multiple variant template
-		    		url += '&productId=' + context.attr('data-productid');
+		    	if (context[0])		// grouped product template
+		    		url = url.replace('__productid__', context.attr('data-productid'));
 				else
 		    		context = el;
 

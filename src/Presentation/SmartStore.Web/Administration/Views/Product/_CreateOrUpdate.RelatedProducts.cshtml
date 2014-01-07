@@ -26,8 +26,17 @@
                             .ReadOnly()
                             .Template(x => Html.ActionLink(x.Product2Name, "Edit", "Product", new { id = x.ProductId2 }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId2 #>\"><#= Product2Name #></a>");
-                        columns.Bound(x => x.DisplayOrder)
+                        columns.Bound(x => x.Product2Sku)
+                            .ReadOnly();
+                        columns.Bound(x => x.Product2Published)
+                            .ReadOnly()
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Product2Published))
+                            .ClientTemplate(@Html.SymbolForBool("Product2Published"))
                             .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(100)
+                            .Centered();                        
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
@@ -40,7 +49,13 @@
         </tr>
         <tr>
             <td width="100%">
-                <input type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" value="@T("Admin.Catalog.Products.RelatedProducts.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 800, 700, true); return false;" class="btn" />
+                <p></p>
+                <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn"
+                    onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                    <i class="icon-plus"></i>
+                    @T("Admin.Catalog.Products.RelatedProducts.AddNew")
+                </button>
+
                 <input type="submit" id="btnRefreshRelatedProducts" name="btnRefreshRelatedProducts" style="display: none" />
                 <script type="text/javascript">
                     $(document).ready(function () {

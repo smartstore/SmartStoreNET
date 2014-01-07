@@ -18,8 +18,16 @@
                 {
                     columns.Bound(x => x.SpecificationAttributeName).Width(200).ReadOnly();
                     columns.Bound(x => x.SpecificationAttributeOptionName).Width(200).ReadOnly();
-                    columns.Bound(x => x.AllowFiltering).Width(100);
-                    columns.Bound(x => x.ShowOnProductPage).Width(100);
+                    columns.Bound(x => x.AllowFiltering)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.AllowFiltering))
+                        .ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
+                        .Centered();
+                    columns.Bound(x => x.ShowOnProductPage)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.ShowOnProductPage))
+                        .ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"))
+                        .Centered();
                     columns.Bound(x => x.DisplayOrder).Width(100);
                     columns.Command(commands =>
                     {

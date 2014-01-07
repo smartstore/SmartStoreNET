@@ -15,7 +15,7 @@ namespace SmartStore.Core.Html
         private static readonly Regex regexUnderLine = new Regex(@"\[u\](.+?)\[/u\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl1 = new Regex(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl2 = new Regex(@"\[url\](.+?)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex regexQuote = new Regex(@"\[quote=(.+?)\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex regexQuote = new Regex(@"\[quote\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         #endregion
 
         #region Methods
@@ -70,8 +70,7 @@ namespace SmartStore.Core.Html
 
             if (replaceQuote)
             {
-                while (regexQuote.IsMatch(text))
-                    text = regexQuote.Replace(text, "<b>$1 wrote:</b><div class=\"quote\">$2</div>");
+                text = regexQuote.Replace(text, "<blockquote class='muted'>$1</blockquote>");
             }
 
             if (replaceCode)

@@ -567,6 +567,10 @@
     <Content Include="Content\bootstrap\custom\images\saturation.png" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker-globalinit.js" />
+    <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
+    <Content Include="Content\editors\summernote\summernote.css" />
+    <Content Include="Content\editors\summernote\summernote.js" />
+    <Content Include="Content\editors\summernote\summernote.min.js" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\bootstrap.min.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font-awesome.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font\fontawesome-webfont.svg" />

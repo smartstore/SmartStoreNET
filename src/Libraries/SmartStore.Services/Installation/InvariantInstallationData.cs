@@ -4292,6 +4292,7 @@ namespace SmartStore.Services.Installation
                 {
                     GridPageSize = 15,
                     DisplayProductPictures = true,
+                    RichEditorFlavor = "RichEditor"
                 },
                 new CatalogSettings()
                 {

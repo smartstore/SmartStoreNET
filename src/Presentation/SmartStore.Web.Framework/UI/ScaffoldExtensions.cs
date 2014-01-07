@@ -11,7 +11,9 @@ using System.Web.Mvc.Html;
 using System.Web.WebPages;
 
 using Telerik.Web.Mvc.UI.Fluent;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -29,6 +31,11 @@ namespace SmartStore.Web.Framework.UI
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
             return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
+        }
+
+        public static string RichEditorFlavor(this HtmlHelper helper)
+        {
+            return EngineContext.Current.Resolve<AdminAreaSettings>().RichEditorFlavor.NullEmpty() ?? "RichEditor";
         }
 
         public static GridEditActionCommandBuilder Localize(this GridEditActionCommandBuilder builder, Localizer T)

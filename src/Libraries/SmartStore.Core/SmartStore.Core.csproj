@@ -122,6 +122,7 @@
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Configuration\ISettingService.cs" />
     <Compile Include="Configuration\JsonPersistAttribute.cs" />
+    <Compile Include="Data\DbContextScope.cs" />
     <Compile Include="Data\EntityState.cs" />
     <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
     <Compile Include="Data\Hooks\HookEntityMetadata.cs" />

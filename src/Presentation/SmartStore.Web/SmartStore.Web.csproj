@@ -687,12 +687,12 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
-    <Content Include="Themes\Alpha\Content\images\file-type-icons.png" />
+    <Content Include="Content\Images\file-type-icons.png" />
     <Content Include="Themes\Alpha\Content\images\gradient.png" />
-    <Content Include="Themes\Alpha\Content\images\star-off-12.png" />
-    <Content Include="Themes\Alpha\Content\images\star-off.png" />
-    <Content Include="Themes\Alpha\Content\images\star-on-12.png" />
-    <Content Include="Themes\Alpha\Content\images\star-on.png" />
+    <Content Include="Content\Images\star-off-12.png" />
+    <Content Include="Content\Images\star-off.png" />
+    <Content Include="Content\Images\star-on-12.png" />
+    <Content Include="Content\Images\star-on.png" />
     <Content Include="Themes\Alpha\Content\slider.less" />
     <Content Include="Content\bootstrap\custom\telerik\editor.png" />
     <Content Include="Content\bootstrap\custom\telerik\gradient.png" />

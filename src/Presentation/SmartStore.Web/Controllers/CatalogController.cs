@@ -1550,10 +1550,6 @@ namespace SmartStore.Web.Controllers
 
             #endregion
 
-            // prevent saving merged data to database
-            //var objectContext = ((IObjectContextAdapter)_dbContext).ObjectContext;
-            //objectContext.Detach(product);
-
             return model;
         }
 

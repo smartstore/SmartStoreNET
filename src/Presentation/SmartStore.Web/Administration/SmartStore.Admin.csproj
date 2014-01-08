@@ -1146,9 +1146,6 @@
     <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.CrossSells.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Discounts.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1164,9 +1161,6 @@
     <Content Include="Views\Product\_CreateOrUpdate.Attributes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.RelatedProducts.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.SEO.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1176,16 +1170,16 @@
     <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.TierPrices.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.AttributeCombinations.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\AssociatedProductAddPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Price.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Promotion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

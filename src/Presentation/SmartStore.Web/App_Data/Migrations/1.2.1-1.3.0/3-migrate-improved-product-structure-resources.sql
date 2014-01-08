@@ -2060,6 +2060,15 @@ SET @resources='
 		<Value></Value>
 		<Value lang="de"></Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.Price">
+		<Value>Price</Value>
+		<Value lang="de">Preis</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Promotion">
+		<Value>Promotion</Value>
+		<Value lang="de">Promotion</Value>
+	</LocaleResource>
 
 </Language>
 '

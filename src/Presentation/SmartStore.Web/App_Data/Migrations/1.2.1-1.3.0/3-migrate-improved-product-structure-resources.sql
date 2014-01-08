@@ -2069,6 +2069,11 @@ SET @resources='
 		<Value>Promotion</Value>
 		<Value lang="de">Promotion</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description">
+		<Value>Attribute combinations allow different product characteristics on the basis of specific combinations. Set a combination to inactive rather than deleting them, if it is no longer available.</Value>
+		<Value lang="de">Attribut-Kombinationen ermöglichen die Erfassung abweichender Produkt-Eigenschaften auf Basis von spezifischen Kombinationen. Setzen Sie eine Kombination auf inaktiv anstatt sie zu löschen, falls sie nicht mehr verfügbar ist.</Value>
+	</LocaleResource>
 
 </Language>
 '

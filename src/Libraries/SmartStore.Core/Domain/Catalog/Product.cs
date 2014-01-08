@@ -14,8 +14,10 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product
     /// </summary>
     [DataContract]
-	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedProduct
+	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
     {
+		private Dictionary<string, object> _mergedAttributeCombinationValues;
+
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
@@ -26,6 +28,27 @@ namespace SmartStore.Core.Domain.Catalog
 		private ICollection<ProductVariantAttributeCombination> _productVariantAttributeCombinations;
 		private ICollection<TierPrice> _tierPrices;
 		private ICollection<Discount> _appliedDiscounts;
+
+		private int _stockQuantity;
+		private string _sku;
+		private string _gtin;
+		private string _manufacturerPartNumber;
+		private int? _deliveryTimeId;
+		private decimal _length;
+		private decimal _width;
+		private decimal _height;
+		private decimal? _basePriceAmount;
+		private int? _basePriceBaseAmount;
+
+		public Dictionary<string, object> MergedAttributeCombinationValues
+		{
+			get
+			{
+				if (_mergedAttributeCombinationValues == null)
+					_mergedAttributeCombinationValues = new Dictionary<string, object>();
+				return _mergedAttributeCombinationValues;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the product type identifier
@@ -147,19 +170,64 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the SKU
 		/// </summary>
 		[DataMember]
-		public string Sku { get; set; }
+		public string Sku
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("Sku", out value))
+					return (string)value;
+
+				return _sku;
+			}
+			set
+			{
+				_sku = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the manufacturer part number
 		/// </summary>
 		[DataMember]
-		public string ManufacturerPartNumber { get; set; }
+		public string ManufacturerPartNumber
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("ManufacturerPartNumber", out value))
+					return (string)value;
+
+				return _manufacturerPartNumber;
+			}
+			set
+			{
+				_manufacturerPartNumber = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the Global Trade Item Number (GTIN). These identifiers include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
 		/// </summary>
 		[DataMember]
-		public string Gtin { get; set; }
+		public string Gtin
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("Gtin", out value))
+					return (string)value;
+
+				return _gtin;
+			}
+			set
+			{
+				_gtin = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the product is gift card
@@ -315,7 +383,22 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the stock quantity
 		/// </summary>
 		[DataMember]
-		public int StockQuantity { get; set; }
+		public int StockQuantity
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("StockQuantity", out value))
+					return (int)value;
+
+				return _stockQuantity;
+			}
+			set
+			{
+				_stockQuantity = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to display stock availability
@@ -485,19 +568,64 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the length
 		/// </summary>
 		[DataMember]
-		public decimal Length { get; set; }
+		public decimal Length
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("Length", out value))
+					return (decimal)value;
+
+				return _length;
+			}
+			set
+			{
+				_length = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the width
 		/// </summary>
 		[DataMember]
-		public decimal Width { get; set; }
+		public decimal Width
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("Width", out value))
+					return (decimal)value;
+
+				return _width;
+			}
+			set
+			{
+				_width = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the height
 		/// </summary>
 		[DataMember]
-		public decimal Height { get; set; }
+		public decimal Height
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("Height", out value))
+					return (decimal)value;
+
+				return _height;
+			}
+			set
+			{
+				_height = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the available start date and time
@@ -544,7 +672,22 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the delivery time identifier
 		/// </summary>
 		[DataMember]
-		public int? DeliveryTimeId { get; set; }
+		public int? DeliveryTimeId
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("DeliveryTimeId", out value))
+					return (int)value;
+
+				return _deliveryTimeId;
+			}
+			set
+			{
+				_deliveryTimeId = value;
+			}
+		}
 
 		[DataMember]
 		public virtual DeliveryTime DeliveryTime { get; set; }
@@ -566,14 +709,44 @@ namespace SmartStore.Core.Domain.Catalog
 		/// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
 		/// </summary>
 		[DataMember]
-		public decimal? BasePrice_Amount { get; set; }
+		public decimal? BasePrice_Amount
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("BasePrice_Amount", out value))
+					return (decimal)value;
+
+				return _basePriceAmount;
+			}
+			set
+			{
+				_basePriceAmount = value;
+			}
+		}
 
 		/// <summary>
 		/// Reference value for the given measure unit 
 		/// (e.g. "1" liter. Formula: [BaseAmount] [MeasureUnit] = [SellingPrice] / [Amount])
 		/// </summary>
 		[DataMember]
-		public int? BasePrice_BaseAmount { get; set; }
+		public int? BasePrice_BaseAmount
+		{
+			get
+			{
+				object value;
+
+				if (MergedAttributeCombinationValues.TryGetValue("BasePrice_BaseAmount", out value))
+					return (int)value;
+
+				return _basePriceBaseAmount;
+			}
+			set
+			{
+				_basePriceBaseAmount = value;
+			}
+		}
 
 		[DataMember]
 		public bool BasePrice_HasValue

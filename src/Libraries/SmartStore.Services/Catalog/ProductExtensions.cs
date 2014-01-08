@@ -12,53 +12,12 @@ namespace SmartStore.Services.Catalog
 {
     public static class ProductExtensions
     {
-        /// <summary>
-        /// Merges the shared properties of a product and the given attributes combination.
-        /// </summary>
-        /// <param name="source">The source</param>
-        /// <param name="selectedAttributes">The selected attributes (XML), for which a <see cref="ProductVariantAttributeCombination"/> should be resolved</param>
-        /// <param name="productAttributeParser">Service, which handles resolving of combinations</param>
-        /// <returns>A new product instance</returns>
-        public static IMergedProduct GetMergedProduct(this IMergedProduct source, string selectedAttributes, IProductAttributeParser productAttributeParser)
-        {
-            Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
-
-            // let's find appropriate record
-            var combination = source
-                .ProductVariantAttributeCombinations
-                .Where(x => x.IsActive == true)
-                .FirstOrDefault(x => productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
-
-            if (combination == null)
-            {
-                // nothing to merge: return the original "source"
-                return source;
-            }
-
-            // merge and return new instance
-            return source.GetMergedProduct(combination);
-        }
-
-        /// <summary>
-        /// Merges the shared properties of a product and the given attributes combination.
-        /// </summary>
-        /// <param name="source">The source</param>
-        /// <param name="mergeWith">The variant attributes combination to be applied to the variant</param>
-        /// <returns>A new product instance</returns>
-        public static IMergedProduct GetMergedProduct(this IMergedProduct source, ProductVariantAttributeCombination mergeWith)
-        {
-            var merged = new MergedProduct(source);
-            merged.MergeWithCombination(mergeWith);
-           
-            return merged;
-        }
-
-		public static ProductVariantAttributeCombination MergeWithCombination(this IMergedProduct product, string selectedAttributes)
+		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
             return product.MergeWithCombination(selectedAttributes, EngineContext.Current.Resolve<IProductAttributeParser>());
         }
 
-		public static ProductVariantAttributeCombination MergeWithCombination(this IMergedProduct product, string selectedAttributes, IProductAttributeParser productAttributeParser)
+		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes, IProductAttributeParser productAttributeParser)
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
@@ -78,40 +37,40 @@ namespace SmartStore.Services.Catalog
 			return combination;
         }
 
-        public static void MergeWithCombination(this IMergedProduct product, ProductVariantAttributeCombination combination)
-        {
-            Guard.ArgumentNotNull(product, "product");
+		public static void MergeWithCombination(this Product product, ProductVariantAttributeCombination combination)
+		{
+			Guard.ArgumentNotNull(product, "product");
 
-            if (combination == null)
-                return;
+			product.MergedAttributeCombinationValues.Clear();
+
+			if (combination == null)
+				return;
 
 			if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
-				product.StockQuantity = combination.StockQuantity;
+				product.MergedAttributeCombinationValues.Add("StockQuantity", combination.StockQuantity);
 
-            if (combination.Sku.HasValue())
-				product.Sku = combination.Sku;
-            if (combination.Gtin.HasValue())
-				product.Gtin = combination.Gtin;
-            if (combination.ManufacturerPartNumber.HasValue())
-				product.ManufacturerPartNumber = combination.ManufacturerPartNumber;
+			if (combination.Sku.HasValue())
+				product.MergedAttributeCombinationValues.Add("Sku", combination.Sku);
+			if (combination.Gtin.HasValue())
+				product.MergedAttributeCombinationValues.Add("Gtin", combination.Gtin);
+			if (combination.ManufacturerPartNumber.HasValue())
+				product.MergedAttributeCombinationValues.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
 
-            if (combination.DeliveryTimeId.GetValueOrDefault() > 0)
-				product.DeliveryTimeId = combination.DeliveryTimeId;
+			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
+				product.MergedAttributeCombinationValues.Add("DeliveryTimeId", combination.DeliveryTimeId.Value);
 
-            if (combination.Length.HasValue)
-				product.Length = combination.Length.Value;
-            if (combination.Width.HasValue)
-				product.Width = combination.Width.Value;
-            if (combination.Height.HasValue)
-				product.Height = combination.Height.Value;
+			if (combination.Length.HasValue)
+				product.MergedAttributeCombinationValues.Add("Length", combination.Length.Value);
+			if (combination.Width.HasValue)
+				product.MergedAttributeCombinationValues.Add("Width", combination.Width.Value);
+			if (combination.Height.HasValue)
+				product.MergedAttributeCombinationValues.Add("Height", combination.Height.Value);
 
 			if (combination.BasePriceAmount.HasValue)
-				product.BasePrice_Amount = combination.BasePriceAmount.Value;
-            if (combination.BasePriceBaseAmount.HasValue)
-				product.BasePrice_BaseAmount = combination.BasePriceBaseAmount.Value;
-
-			EngineContext.Current.Resolve<IDbContext>().Detach(product);	// ! merging becomes an adventure without it
-        }
+				product.MergedAttributeCombinationValues.Add("BasePrice_Amount", combination.BasePriceAmount.Value);
+			if (combination.BasePriceBaseAmount.HasValue)
+				product.MergedAttributeCombinationValues.Add("BasePrice_BaseAmount", combination.BasePriceBaseAmount.Value);
+		}
 
 		public static void GetAllCombinationImageIds(this IList<ProductVariantAttributeCombination> combinations, List<int> imageIds)
 		{

@@ -27,6 +27,10 @@
                     {
                         <a href="@Model.PinterestLink" target="_blank"><i class="icon-pinterest"></i></a>
                     }
+                    @if (!String.IsNullOrEmpty(Model.YoutubeLink))
+                    {
+                        <a href="@Model.YoutubeLink" target="_blank"><i class="icon-youtube-sign"></i></a>
+                    }
                 </div>
             </div>
             }

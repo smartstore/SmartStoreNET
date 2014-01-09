@@ -158,6 +158,15 @@ SET @resources='
 		<Value lang="de">Bestimmt ob Lieferzeiten im Warenkorb angezeigt wird.</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink">
+		<Value>Youtube Link</Value>
+		<Value lang="de">Youtube Link</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink.Hint">
+		<Value>Leave this field empty if the youtube link should not be shown</Value>
+		<Value lang="de">Lassen Sie dieses Feld leer, wenn der Youtube Link nicht angezeigt werden soll</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

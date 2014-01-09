@@ -813,6 +813,15 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
             </td>
         </tr>
+        <tr id="youtubeLink">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.YoutubeLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+        </tr>
     </table>
 }
 

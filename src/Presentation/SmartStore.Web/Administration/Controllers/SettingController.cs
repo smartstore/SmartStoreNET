@@ -1111,6 +1111,7 @@ namespace SmartStore.Admin.Controllers
 			model.SocialSettings.GooglePlusLink = socialSettings.GooglePlusLink;
 			model.SocialSettings.TwitterLink = socialSettings.TwitterLink;
 			model.SocialSettings.PinterestLink = socialSettings.PinterestLink;
+            model.SocialSettings.YoutubeLink = socialSettings.YoutubeLink;
 
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _settingService, false);
 
@@ -1279,6 +1280,7 @@ namespace SmartStore.Admin.Controllers
 			socialSettings.GooglePlusLink = model.SocialSettings.GooglePlusLink;
 			socialSettings.TwitterLink = model.SocialSettings.TwitterLink;
 			socialSettings.PinterestLink = model.SocialSettings.PinterestLink;
+            socialSettings.YoutubeLink = model.SocialSettings.YoutubeLink;
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _settingService);
 

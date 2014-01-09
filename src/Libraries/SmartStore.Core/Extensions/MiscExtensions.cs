@@ -8,10 +8,10 @@ using System.Data.OleDb;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Web.Mvc;
+using SmartStore.Core;
 
 namespace SmartStore
 {   
-	/// <remarks>codehint: sm-add</remarks>
     public static class MiscExtensions
     {
 		public static void Dump(this Exception exc) {
@@ -110,5 +110,22 @@ namespace SmartStore
 			}
 			return sb.ToString();
 		}
-    }	// class
+
+		public static T GetMergedDataValue<T>(this IMergedData mergedData, string key, T defaultValue)
+		{
+			try
+			{
+				if (!mergedData.MergedDataIgnore)
+				{
+					object value;
+
+					if (mergedData.MergedDataValues.TryGetValue(key, out value))
+						return (T)value;
+				}
+			}
+			catch (Exception) { }
+
+			return defaultValue;
+		}
+    }
 }

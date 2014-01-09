@@ -14,9 +14,9 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product
     /// </summary>
     [DataContract]
-	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
+	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
     {
-		private Dictionary<string, object> _mergedAttributeCombinationValues;
+		private Dictionary<string, object> _mergedDataValues;
 
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
@@ -40,13 +40,14 @@ namespace SmartStore.Core.Domain.Catalog
 		private decimal? _basePriceAmount;
 		private int? _basePriceBaseAmount;
 
-		public Dictionary<string, object> MergedAttributeCombinationValues
+		public bool MergedDataIgnore { get; set; }
+		public Dictionary<string, object> MergedDataValues
 		{
 			get
 			{
-				if (_mergedAttributeCombinationValues == null)
-					_mergedAttributeCombinationValues = new Dictionary<string, object>();
-				return _mergedAttributeCombinationValues;
+				if (_mergedDataValues == null)
+					_mergedDataValues = new Dictionary<string, object>();
+				return _mergedDataValues;
 			}
 		}
 
@@ -174,12 +175,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("Sku", out value))
-					return (string)value;
-
-				return _sku;
+				return this.GetMergedDataValue<string>("Sku", _sku);
 			}
 			set
 			{
@@ -195,12 +191,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("ManufacturerPartNumber", out value))
-					return (string)value;
-
-				return _manufacturerPartNumber;
+				return this.GetMergedDataValue<string>("ManufacturerPartNumber", _manufacturerPartNumber);
 			}
 			set
 			{
@@ -216,12 +207,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("Gtin", out value))
-					return (string)value;
-
-				return _gtin;
+				return this.GetMergedDataValue<string>("Gtin", _gtin);
 			}
 			set
 			{
@@ -387,12 +373,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("StockQuantity", out value))
-					return (int)value;
-
-				return _stockQuantity;
+				return this.GetMergedDataValue<int>("StockQuantity", _stockQuantity);
 			}
 			set
 			{
@@ -572,12 +553,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("Length", out value))
-					return (decimal)value;
-
-				return _length;
+				return this.GetMergedDataValue<decimal>("Length", _length);
 			}
 			set
 			{
@@ -593,12 +569,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("Width", out value))
-					return (decimal)value;
-
-				return _width;
+				return this.GetMergedDataValue<decimal>("Width", _width);
 			}
 			set
 			{
@@ -614,12 +585,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("Height", out value))
-					return (decimal)value;
-
-				return _height;
+				return this.GetMergedDataValue<decimal>("Height", _height);
 			}
 			set
 			{
@@ -676,12 +642,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("DeliveryTimeId", out value))
-					return (int)value;
-
-				return _deliveryTimeId;
+				return this.GetMergedDataValue<int?>("DeliveryTimeId", _deliveryTimeId);
 			}
 			set
 			{
@@ -713,12 +674,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("BasePrice_Amount", out value))
-					return (decimal)value;
-
-				return _basePriceAmount;
+				return this.GetMergedDataValue<decimal?>("BasePrice_Amount", _basePriceAmount);
 			}
 			set
 			{
@@ -735,12 +691,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				object value;
-
-				if (MergedAttributeCombinationValues.TryGetValue("BasePrice_BaseAmount", out value))
-					return (int)value;
-
-				return _basePriceBaseAmount;
+				return this.GetMergedDataValue<int?>("BasePrice_BaseAmount", _basePriceBaseAmount);
 			}
 			set
 			{

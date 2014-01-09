@@ -172,7 +172,7 @@ namespace SmartStore.Services.Messages
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    orderItem.Product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+                    product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
 
                     if (!String.IsNullOrEmpty(product.Sku))
                     {

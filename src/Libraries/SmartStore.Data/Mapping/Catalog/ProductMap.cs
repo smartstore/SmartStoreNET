@@ -43,7 +43,8 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Ignore(p => p.LowStockActivity);
 			this.Ignore(p => p.ManageInventoryMethod);
 			this.Ignore(p => p.RecurringCyclePeriod);
-			this.Ignore(p => p.MergedAttributeCombinationValues);
+			this.Ignore(p => p.MergedDataIgnore);
+			this.Ignore(p => p.MergedDataValues);
 
 			this.Property(p => p.BasePrice_MeasureUnit).HasMaxLength(50);
 			this.Property(p => p.BasePrice_Amount).HasPrecision(18, 4).IsOptional();

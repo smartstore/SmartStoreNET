@@ -41,35 +41,35 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.ArgumentNotNull(product, "product");
 
-			product.MergedAttributeCombinationValues.Clear();
+			product.MergedDataValues.Clear();
 
 			if (combination == null)
 				return;
 
 			if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
-				product.MergedAttributeCombinationValues.Add("StockQuantity", combination.StockQuantity);
+				product.MergedDataValues.Add("StockQuantity", combination.StockQuantity);
 
 			if (combination.Sku.HasValue())
-				product.MergedAttributeCombinationValues.Add("Sku", combination.Sku);
+				product.MergedDataValues.Add("Sku", combination.Sku);
 			if (combination.Gtin.HasValue())
-				product.MergedAttributeCombinationValues.Add("Gtin", combination.Gtin);
+				product.MergedDataValues.Add("Gtin", combination.Gtin);
 			if (combination.ManufacturerPartNumber.HasValue())
-				product.MergedAttributeCombinationValues.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
+				product.MergedDataValues.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
 
 			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
-				product.MergedAttributeCombinationValues.Add("DeliveryTimeId", combination.DeliveryTimeId.Value);
+				product.MergedDataValues.Add("DeliveryTimeId", combination.DeliveryTimeId);
 
 			if (combination.Length.HasValue)
-				product.MergedAttributeCombinationValues.Add("Length", combination.Length.Value);
+				product.MergedDataValues.Add("Length", combination.Length.Value);
 			if (combination.Width.HasValue)
-				product.MergedAttributeCombinationValues.Add("Width", combination.Width.Value);
+				product.MergedDataValues.Add("Width", combination.Width.Value);
 			if (combination.Height.HasValue)
-				product.MergedAttributeCombinationValues.Add("Height", combination.Height.Value);
+				product.MergedDataValues.Add("Height", combination.Height.Value);
 
 			if (combination.BasePriceAmount.HasValue)
-				product.MergedAttributeCombinationValues.Add("BasePrice_Amount", combination.BasePriceAmount.Value);
+				product.MergedDataValues.Add("BasePrice_Amount", combination.BasePriceAmount);
 			if (combination.BasePriceBaseAmount.HasValue)
-				product.MergedAttributeCombinationValues.Add("BasePrice_BaseAmount", combination.BasePriceBaseAmount.Value);
+				product.MergedDataValues.Add("BasePrice_BaseAmount", combination.BasePriceBaseAmount);
 		}
 
 		public static void GetAllCombinationImageIds(this IList<ProductVariantAttributeCombination> combinations, List<int> imageIds)

@@ -1420,7 +1420,7 @@ namespace SmartStore.Admin.Controllers
                     _fulltextService.DisableFullText();
 
                     commonSettings.UseFullTextSearch = false;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
                 }
@@ -1429,7 +1429,7 @@ namespace SmartStore.Admin.Controllers
                     _fulltextService.EnableFullText();
 
                     commonSettings.UseFullTextSearch = true;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
                 }

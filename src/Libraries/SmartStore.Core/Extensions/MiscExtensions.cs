@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using System.Data;
-using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Web.Mvc;
 using SmartStore.Core;
 
 namespace SmartStore
@@ -73,19 +69,6 @@ namespace SmartStore
 				return convertedObject.Equals(compareWith);
 
 			return false;
-		}
-
-		public static void SelectValue(this List<SelectListItem> lst, string value, string defaultValue = null) 
-        {
-			if (lst != null) {
-				var itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(value));
-
-				if (itm == null && defaultValue != null)
-					itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(defaultValue));
-
-				if (itm != null)
-					itm.Selected = true;
-			}
 		}
 
         public static bool IsNullOrDefault<T>(this T? value) where T : struct

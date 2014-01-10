@@ -1904,86 +1904,6 @@ BEGIN
 END
 GO
 
-IF EXISTS (
-		SELECT *
-		FROM sys.objects
-		WHERE object_id = OBJECT_ID(N'[FullText_Enable]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)
-DROP PROCEDURE [FullText_Enable]
-GO
-CREATE PROCEDURE [FullText_Enable]
-AS
-BEGIN
-	--create catalog
-	EXEC('
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''nopCommerceFullTextCatalog'')
-		CREATE FULLTEXT CATALOG [nopCommerceFullTextCatalog] AS DEFAULT')
-	
-	--create indexes
-	DECLARE @create_index_text nvarchar(4000)
-	SET @create_index_text = '
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
-		CREATE FULLTEXT INDEX ON [Product]([Name], [ShortDescription], [FullDescription], [Sku])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('Product') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
-	EXEC(@create_index_text)
-	
-	SET @create_index_text = '
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
-		CREATE FULLTEXT INDEX ON [ProductVariantAttributeCombination]([SKU])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('ProductVariantAttributeCombination') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
-	EXEC(@create_index_text)
-
-	SET @create_index_text = '
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
-		CREATE FULLTEXT INDEX ON [LocalizedProperty]([LocaleValue])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('LocalizedProperty') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
-	EXEC(@create_index_text)
-
-	SET @create_index_text = '
-	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
-		CREATE FULLTEXT INDEX ON [ProductTag]([Name])
-		KEY INDEX [' + dbo.[nop_getprimarykey_indexname] ('ProductTag') +  '] ON [nopCommerceFullTextCatalog] WITH CHANGE_TRACKING AUTO'
-	EXEC(@create_index_text)
-END
-GO
-
-IF EXISTS (
-		SELECT *
-		FROM sys.objects
-		WHERE object_id = OBJECT_ID(N'[FullText_Disable]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)
-DROP PROCEDURE [FullText_Disable]
-GO
-CREATE PROCEDURE [FullText_Disable]
-AS
-BEGIN
-	EXEC('
-	--drop indexes
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
-		DROP FULLTEXT INDEX ON [Product]
-	')
-	
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
-		DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
-	')
-
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
-		DROP FULLTEXT INDEX ON [LocalizedProperty]
-	')
-
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
-		DROP FULLTEXT INDEX ON [ProductTag]
-	')
-
-	--drop catalog
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''nopCommerceFullTextCatalog'')
-		DROP FULLTEXT CATALOG [nopCommerceFullTextCatalog]
-	')
-END
-GO
-
 --you have to manually re-configure "google products" (froogle) plugin
 IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[GoogleProduct]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
@@ -2170,6 +2090,219 @@ GO
 
 --updated product type values
 UPDATE [Product] SET [ProductTypeId]=5 WHERE [ProductTypeId]=0
+GO
+
+IF EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[nop_splitstring_to_table]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[nop_splitstring_to_table]
+GO
+
+IF EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[nop_getnotnullnotempty]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[nop_getnotnullnotempty]
+GO
+
+IF EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[nop_getprimarykey_indexname]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[nop_getprimarykey_indexname]
+GO
+
+IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE name = 'nopCommerceFullTextCatalog')
+BEGIN
+	EXEC('
+		UPDATE [Setting] SET [Value] = ''False'' WHERE [Name] = N''commonsettings.usefulltextsearch''
+	')
+	EXEC('
+		IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
+			DROP FULLTEXT INDEX ON [Product]	
+	')
+	EXEC('
+		IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+			DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
+	')
+	EXEC('
+		IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
+			DROP FULLTEXT INDEX ON [LocalizedProperty]
+	')
+	EXEC('
+		IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
+			DROP FULLTEXT INDEX ON [ProductTag]
+	')
+	EXEC('
+		IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''nopCommerceFullTextCatalog'')
+			DROP FULLTEXT CATALOG [nopCommerceFullTextCatalog]
+	')
+END
+GO
+
+IF NOT EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[sm_splitstring_to_table]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+BEGIN
+	EXEC('
+		CREATE FUNCTION [dbo].[sm_splitstring_to_table]
+		(
+			@string NVARCHAR(MAX),
+			@delimiter CHAR(1)
+		)
+		RETURNS @output TABLE(
+			data NVARCHAR(MAX)
+		)
+		BEGIN
+			DECLARE @start INT, @end INT
+			SELECT @start = 1, @end = CHARINDEX(@delimiter, @string)
+
+			WHILE @start < LEN(@string) + 1 BEGIN
+				IF @end = 0 
+					SET @end = LEN(@string) + 1
+
+				INSERT INTO @output (data) 
+				VALUES(SUBSTRING(@string, @start, @end - @start))
+				SET @start = @end + 1
+				SET @end = CHARINDEX(@delimiter, @string, @start)
+			END
+			RETURN
+		END
+	')
+END
+GO
+
+IF NOT EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[sm_getnotnullnotempty]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+BEGIN
+	EXEC('
+		CREATE FUNCTION [dbo].[sm_getnotnullnotempty]
+		(
+			@p1 nvarchar(max) = null, 
+			@p2 nvarchar(max) = null
+		)
+		RETURNS nvarchar(max)
+		AS
+		BEGIN
+			IF @p1 IS NULL
+				return @p2
+			IF @p1 =''''
+				return @p2
+
+			return @p1
+		END
+	')
+END
+GO
+
+IF NOT EXISTS (SELECT *
+           FROM   sys.objects
+           WHERE  object_id = OBJECT_ID(N'[dbo].[sm_getprimarykey_indexname]')
+                  AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+BEGIN
+	EXEC('
+		CREATE FUNCTION [dbo].[sm_getprimarykey_indexname]
+		(
+			@table_name nvarchar(1000) = null
+		)
+		RETURNS nvarchar(1000)
+		AS
+		BEGIN
+			DECLARE @index_name nvarchar(1000)
+
+			SELECT @index_name = i.name
+			FROM sys.tables AS tbl
+			INNER JOIN sys.indexes AS i ON (i.index_id > 0 and i.is_hypothetical = 0) AND (i.object_id=tbl.object_id)
+			WHERE (i.is_unique=1 and i.is_disabled=0) and (tbl.name=@table_name)
+
+			RETURN @index_name
+		END
+	')
+END
+GO
+
+IF EXISTS (
+		SELECT *
+		FROM sys.objects
+		WHERE object_id = OBJECT_ID(N'[FullText_Enable]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)
+DROP PROCEDURE [FullText_Enable]
+GO
+CREATE PROCEDURE [FullText_Enable]
+AS
+BEGIN
+	--create catalog
+	EXEC('
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''SmartStoreNETFullTextCatalog'')
+		CREATE FULLTEXT CATALOG [SmartStoreNETFullTextCatalog] AS DEFAULT')
+	
+	--create indexes
+	DECLARE @create_index_text nvarchar(4000)
+	SET @create_index_text = '
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
+		CREATE FULLTEXT INDEX ON [Product]([Name], [ShortDescription], [FullDescription], [Sku])
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('Product') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+	EXEC(@create_index_text)
+	
+	SET @create_index_text = '
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+		CREATE FULLTEXT INDEX ON [ProductVariantAttributeCombination]([SKU])
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('ProductVariantAttributeCombination') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+	EXEC(@create_index_text)
+
+	SET @create_index_text = '
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
+		CREATE FULLTEXT INDEX ON [LocalizedProperty]([LocaleValue])
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('LocalizedProperty') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+	EXEC(@create_index_text)
+
+	SET @create_index_text = '
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
+		CREATE FULLTEXT INDEX ON [ProductTag]([Name])
+		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('ProductTag') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
+	EXEC(@create_index_text)
+END
+GO
+
+IF EXISTS (
+		SELECT *
+		FROM sys.objects
+		WHERE object_id = OBJECT_ID(N'[FullText_Disable]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)
+DROP PROCEDURE [FullText_Disable]
+GO
+CREATE PROCEDURE [FullText_Disable]
+AS
+BEGIN
+	EXEC('
+	--drop indexes
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
+		DROP FULLTEXT INDEX ON [Product]
+	')
+	
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+		DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
+	')
+
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[LocalizedProperty]''))
+		DROP FULLTEXT INDEX ON [LocalizedProperty]
+	')
+
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductTag]''))
+		DROP FULLTEXT INDEX ON [ProductTag]
+	')
+
+	--drop catalog
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = ''SmartStoreNETFullTextCatalog'')
+		DROP FULLTEXT CATALOG [SmartStoreNETFullTextCatalog]
+	')
+END
 GO
 
 
@@ -2446,7 +2579,7 @@ BEGIN
 		CategoryId int not null
 	)
 	INSERT INTO #FilteredCategoryIds (CategoryId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@CategoryIds, ',')	
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@CategoryIds, ',')	
 	DECLARE @CategoryIdsCount int	
 	SET @CategoryIdsCount = (SELECT COUNT(1) FROM #FilteredCategoryIds)
 
@@ -2457,7 +2590,7 @@ BEGIN
 		SpecificationAttributeOptionId int not null
 	)
 	INSERT INTO #FilteredSpecs (SpecificationAttributeOptionId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@FilteredSpecs, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@FilteredSpecs, ',')
 	DECLARE @SpecAttributesCount int	
 	SET @SpecAttributesCount = (SELECT COUNT(1) FROM #FilteredSpecs)
 
@@ -2468,7 +2601,7 @@ BEGIN
 		CustomerRoleId int not null
 	)
 	INSERT INTO #FilteredCustomerRoleIds (CustomerRoleId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@AllowedCustomerRoleIds, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@AllowedCustomerRoleIds, ',')
 	
 	--paging
 	DECLARE @PageLowerBound int

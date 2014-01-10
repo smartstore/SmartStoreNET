@@ -709,7 +709,6 @@ BEGIN
 		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('Product') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 
-
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
 		CREATE FULLTEXT INDEX ON [ProductVariantAttributeCombination]([SKU])
@@ -739,11 +738,6 @@ BEGIN
 	--drop indexes
 	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
 		DROP FULLTEXT INDEX ON [Product]
-	')
-	
-	EXEC('
-	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
-		DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
 	')
 	
 	EXEC('

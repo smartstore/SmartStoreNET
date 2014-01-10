@@ -92,9 +92,9 @@
     @Html.Partial("_CreateOrUpdate.Promotion", Model)
 }
 
-@helper TabAssociatedProducts()
+@if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
 {
-    if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
+    @helper TabAssociatedProducts()
     {
         @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
     }

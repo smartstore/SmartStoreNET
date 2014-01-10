@@ -948,7 +948,7 @@ namespace SmartStore.Services.Catalog
 			sku = sku.Trim();
 
 			var query = from p in _productRepository.Table
-						orderby p.Id
+						orderby p.DisplayOrder, p.Id
 						where !p.Deleted &&
 						p.Sku == sku
 						select p;

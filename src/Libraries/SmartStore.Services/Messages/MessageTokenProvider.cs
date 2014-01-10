@@ -901,6 +901,8 @@ namespace SmartStore.Services.Messages
 
 		public virtual void AddProductTokens(IList<Token> tokens, Product product, int languageId)
         {
+			tokens.Add(new Token("Product.ID", product.Id.ToString()));
+			tokens.Add(new Token("Product.Sku", product.Sku));
 			tokens.Add(new Token("Product.Name", product.GetLocalized(x => x.Name, languageId)));
 			tokens.Add(new Token("Product.ShortDescription", product.GetLocalized(x => x.ShortDescription, languageId), true));
 			tokens.Add(new Token("Product.StockQuantity", product.StockQuantity.ToString()));
@@ -1064,10 +1066,11 @@ namespace SmartStore.Services.Messages
                 "%BlogComment.BlogPostTitle%", 
                 "%NewsComment.NewsTitle%",
 				"%Product.ID%",
+				"%Product.Sku%",
                 "%Product.Name%",
                 "%Product.ShortDescription%", 
                 "%Product.ProductURLForCustomer%",
-                "%Product.StockQuantity%", 
+                "%Product.StockQuantity%",
                 "%Forums.TopicURL%",
                 "%Forums.TopicName%", 
                 "%Forums.PostAuthor%",

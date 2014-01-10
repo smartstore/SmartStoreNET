@@ -2,14 +2,22 @@
 
 ##SmartStore.NET 1.3.0.0#
 
+###Highlights###
+
+* #112 Web-Api plugin
+* Improved product structure without product variant entity
+* Product types simple and grouped
+
 ###New Features###
 
 * #175 IPayment plugin: Implemented deactivation of specific credit card types
-* #112 Implemented 'WebApi'
 * #137 Shipping method option to ignore additional shipping charges
 * #191 Implemented new scheduled task _Delete logs_
 * Added support for _SummerNote_ HTML editor (experimental)
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
+* New setting to redirect to order detail page if an order completed
+* New setting to suppress the search of SKUs
+* Shipment list can be filtered by tracking number
 
 ###Bugfixes###
 
@@ -26,6 +34,7 @@
 * #196 Samples cannot be downloaded
 * Product filter included deleted manufacturers
 * Mobile: Paginator does not work
+* Product could be overwritten by attribute combination data
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC
@@ -38,6 +47,9 @@
 * Mobile: Only the first product pictures is now displayed in the product-detail-view the others are available by navigation or swiping
 * Mobile: Shop logo is now displayed at the top of the mobile page
 * Mobile: legal hints are shown in the footer
+* #217 GMC Feed Plugin: Make export of expiration_date configurable
+* #222 Feed Plugins: Take special price into consideration
+* Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 
 ##SmartStore.NET 1.2.1.0#
 

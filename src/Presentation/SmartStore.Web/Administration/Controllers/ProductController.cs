@@ -1575,17 +1575,25 @@ namespace SmartStore.Admin.Controllers
 			var model = new ProductModel.AddAssociatedProductModel();
 
 			//categories
-			foreach (var c in _categoryService.GetAllCategories(showHidden: true))
-				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService), Value = c.Id.ToString() });
+			var allCategories = _categoryService.GetAllCategories(showHidden: true);
+			var mappedCategories = allCategories.ToDictionary(x => x.Id);
+			foreach (var c in allCategories)
+			{
+				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+			}
 
 			//manufacturers
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))
+			{
 				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+			}
 
 			//stores
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
+			{
 				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
@@ -2153,15 +2161,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var model = new BulkEditListModel();
+
 			//categories
-			//model.AvailableCategories.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
-			foreach (var c in _categoryService.GetAllCategories(showHidden: true))
+			var allCategories = _categoryService.GetAllCategories(showHidden: true);
+			var mappedCategories = allCategories.ToDictionary(x => x.Id);
+			foreach (var c in allCategories)
 			{
-				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService), Value = c.Id.ToString() });
+				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
 			}
 
 			//manufacturers
-			//model.AvailableManufacturers.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))
 			{
 				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });

@@ -335,16 +335,16 @@ namespace SmartStore.Admin.Models.Catalog
 
 		//BasePrice
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceEnabled")]
-		public bool BasePriceEnabled { get; set; }
+		public bool BasePrice_Enabled { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceMeasureUnit")]
-		public string BasePriceMeasureUnit { get; set; }
+		public string BasePrice_MeasureUnit { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceAmount")]
-		public decimal? BasePriceAmount { get; set; }
+		public decimal? BasePrice_Amount { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceBaseAmount")]
-		public int? BasePriceBaseAmount { get; set; }
+		public int? BasePrice_BaseAmount { get; set; }
 
 		public IList<SelectListItem> AvailableMeasureUnits { get; set; }
 

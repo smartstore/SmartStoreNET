@@ -33,11 +33,11 @@
         $("#@Html.FieldIdFor(model => model.ManageInventoryMethodId)").change(toggleManageStock);
         $("#@Html.FieldIdFor(model => model.BackorderModeId)").change(toggleManageStock);
         $("#@Html.FieldIdFor(model => model.DisplayStockAvailability)").click(toggleManageStock);
-        $("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
+        $("#@Html.FieldIdFor(model => model.BasePrice_Enabled)").click(toggleBasePrice);
 
-        fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
-        fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePriceAmount)");
-        fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
+        fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePrice_MeasureUnit)");
+        fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePrice_Amount)");
+        fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePrice_BaseAmount)");
 
         fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
 
@@ -82,7 +82,7 @@
     }
 
     function toggleBasePrice() {
-        if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
+        if ($('#@Html.FieldIdFor(model => model.BasePrice_Enabled)').is(':checked')) {
             $('#pnlBasePriceBaseAmount').show();
             $('#pnlBasePriceAmount').show();
         }

@@ -196,25 +196,25 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore());
             //products
-            Mapper.CreateMap<Product, ProductModel>()
+			Mapper.CreateMap<Product, ProductModel>()
 				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
 				.ForMember(dest => dest.AssociatedToProductId, mo => mo.Ignore())
 				.ForMember(dest => dest.AssociatedToProductName, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
-                .ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
-                .ForMember(dest => dest.NoThumb, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
-                .ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
-                .ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
-                .ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
-                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
-                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.NoThumb, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
+				.ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
+				.ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
+				.ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
@@ -225,15 +225,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-				.AfterMap((src, dest) => {
-					dest.BasePriceEnabled = src.BasePrice_Enabled;
-					dest.BasePriceBaseAmount = src.BasePrice_BaseAmount;
-					dest.BasePriceAmount = src.BasePrice_Amount;
-					dest.BasePriceMeasureUnit = src.BasePrice_MeasureUnit;
-				});
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
@@ -267,13 +261,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
-				.AfterMap((src, dest) =>
-				{
-					dest.BasePrice_Enabled = src.BasePriceEnabled;
-					dest.BasePrice_Amount = src.BasePriceAmount;
-					dest.BasePrice_BaseAmount = src.BasePriceBaseAmount;
-					dest.BasePrice_MeasureUnit = src.BasePriceMeasureUnit;
-				});
+				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
+				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore());
 			//logs
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())

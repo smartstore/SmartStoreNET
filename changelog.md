@@ -10,6 +10,7 @@
 * #191 Implemented new scheduled task _Delete logs_
 * Added support for _SummerNote_ HTML editor (experimental)
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
+* Enabled fulltext search
 
 ###Bugfixes###
 
@@ -38,6 +39,8 @@
 * Mobile: Only the first product pictures is now displayed in the product-detail-view the others are available by navigation or swiping
 * Mobile: Shop logo is now displayed at the top of the mobile page
 * Mobile: legal hints are shown in the footer
+* #228 Added Youtube to social network settings
+* #180 Display delivery time in shopping cart and relevant mails
 
 ##SmartStore.NET 1.2.1.0#
 

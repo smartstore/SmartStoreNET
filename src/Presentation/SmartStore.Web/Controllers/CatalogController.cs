@@ -2745,11 +2745,11 @@ namespace SmartStore.Web.Controllers
         public ActionResult RecentlyAddedProductsRss()
         {
             var feed = new SyndicationFeed(
-									string.Format("{0}: Recently added products", _storeContext.CurrentStore.Name),
-                                    "Information about products",
-                                    new Uri(_webHelper.GetStoreLocation(false)),
-                                    "RecentlyAddedProductsRSS",
-                                    DateTime.UtcNow);
+                                string.Format("{0}: {1}", _storeContext.CurrentStore.Name, _localizationService.GetResource("RSS.RecentlyAddedProducts")),
+                                _localizationService.GetResource("RSS.InformationAboutProducts"),
+                                new Uri(_webHelper.GetStoreLocation(false)),
+                                "RecentlyAddedProductsRSS",
+                                DateTime.UtcNow);
 
             if (!_catalogSettings.RecentlyAddedProductsEnabled)
                 return new RssActionResult() { Feed = feed };
@@ -2767,7 +2767,10 @@ namespace SmartStore.Web.Controllers
             foreach (var product in products)
             {
                 string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
-                items.Add(new SyndicationItem(product.GetLocalized(x => x.Name), product.GetLocalized(x => x.ShortDescription), new Uri(productUrl), String.Format("RecentlyAddedProduct:{0}", product.Id), product.CreatedOnUtc));
+                if (!String.IsNullOrEmpty(productUrl))
+                { 
+                    items.Add(new SyndicationItem(product.GetLocalized(x => x.Name), product.GetLocalized(x => x.ShortDescription), new Uri(productUrl), String.Format("RecentlyAddedProduct:{0}", product.Id), product.CreatedOnUtc));
+                }
             }
             feed.Items = items;
             return new RssActionResult() { Feed = feed };

@@ -167,6 +167,16 @@ SET @resources='
 		<Value lang="de">Lassen Sie dieses Feld leer, wenn der Youtube Link nicht angezeigt werden soll</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="RSS.RecentlyAddedProducts">
+		<Value>Recently added products</Value>
+		<Value lang="de">Neu zugefügte Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="RSS.InformationAboutProducts">
+		<Value>Information about products</Value>
+		<Value lang="de">Produkt-Informationen</Value>
+	</LocaleResource>
+	
+	
 </Language>
 '
 

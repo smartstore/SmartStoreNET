@@ -4,10 +4,12 @@
 
 ###New Features###
 
-* (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
-* #175 IPayment plugin: Implement deactivation of specific credit card types
-* #112 Implement 'WebApi'
+* #175 IPayment plugin: Implemented deactivation of specific credit card types
+* #112 Implemented 'WebApi'
 * #137 Shipping method option to ignore additional shipping charges
+* #191 Implemented new scheduled task _Delete logs_
+* Added support for _SummerNote_ HTML editor (experimental)
+* (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
 
 ###Bugfixes###
 
@@ -23,6 +25,7 @@
 * #194 Installation fails when installing products
 * #196 Samples cannot be downloaded
 * Product filter included deleted manufacturers
+* Mobile: Paginator does not work
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC
@@ -31,6 +34,10 @@
 * Enhanced Admin UI for _Message Templates_
 * #140 Import all plugin resources after adding a language
 * #45 Smarter logging. Save same log notifications only once including its frequency.
+* jQuery Mobile is updated to 1.3.2
+* Mobile: Only the first product pictures is now displayed in the product-detail-view the others are available by navigation or swiping
+* Mobile: Shop logo is now displayed at the top of the mobile page
+* Mobile: legal hints are shown in the footer
 
 ##SmartStore.NET 1.2.1.0#
 

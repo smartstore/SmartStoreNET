@@ -41,6 +41,10 @@ using SmartStore.Services.Filter;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Data;
 using System.Data.Entity.Infrastructure;
+using StackExchange.Profiling;
+using System.Threading.Tasks;
+using SmartStore.Services.Events;
+// codehint: end sm-add
 
 namespace SmartStore.Web.Controllers
 {
@@ -101,6 +105,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IDbContext _dbContext;
         private readonly ISettingService _settingService;
+        private readonly IEventPublisher _eventPublisher;
         //codehint: sm-edit end
 
         #endregion
@@ -133,8 +138,9 @@ namespace SmartStore.Web.Controllers
 			CurrencySettings currencySettings,
             CaptchaSettings captchaSettings,
             ICacheManager cacheManager,
-            IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,     /* codehint: sm-add */
-            IDeliveryTimeService deliveryTimeService, IDbContext dbContext, ISettingService settingService                              /* codehint: sm-add */
+            /* codehint: sm-add */
+            IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
+            IDeliveryTimeService deliveryTimeService, IDbContext dbContext, ISettingService settingService, IEventPublisher eventPublisher
             )
         {
             this._categoryService = categoryService;
@@ -179,6 +185,7 @@ namespace SmartStore.Web.Controllers
             this._deliveryTimeService = deliveryTimeService;
             this._dbContext = dbContext;
             this._settingService = settingService;
+            this._eventPublisher = eventPublisher;
             //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
@@ -233,9 +240,8 @@ namespace SmartStore.Web.Controllers
 
         // codehint: sm-add
         [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
+        protected IList<Category> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId, IDictionary<int, Category> mappedCategories = null)
         {
-
             Category currentCategory = null;
             if (currentCategoryId > 0)
                 currentCategory = _categoryService.GetCategoryById(currentCategoryId);
@@ -249,14 +255,14 @@ namespace SmartStore.Web.Controllers
 
             if (currentCategory != null)
             {
-                return GetCategoryBreadCrumb(currentCategory);
+                return GetCategoryBreadCrumb(currentCategory, mappedCategories);
             }
 
             return new List<Category>();
         }
 
         [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(Category category)
+        protected IList<Category> GetCategoryBreadCrumb(Category category, IDictionary<int, Category> mappedCategories = null)
         {
             if (category == null)
                 throw new ArgumentNullException("category");
@@ -272,10 +278,17 @@ namespace SmartStore.Web.Controllers
 				!alreadyProcessedCategoryIds.Contains(category.Id))
             {
                 breadCrumb.Add(category);
-				alreadyProcessedCategoryIds.Add(category.Id);
-
-                category = _categoryService.GetCategoryById(category.ParentCategoryId);
+                var parentId = category.ParentCategoryId;
+                if (mappedCategories == null)
+                {
+                    category = _categoryService.GetCategoryById(parentId);
+                }
+                else
+                {
+                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : _categoryService.GetCategoryById(parentId);
+                }
             }
+
             breadCrumb.Reverse();
             return breadCrumb;
         }
@@ -731,7 +744,7 @@ namespace SmartStore.Web.Controllers
                 Name = "_ROOT_",
                 Level = -1 // important
             });
-
+            
             Category prevCat = null;
             int level = 0;
 
@@ -782,6 +795,9 @@ namespace SmartStore.Web.Controllers
             }
 
             var root = curParent.Root;
+
+            // event
+            _eventPublisher.Publish(new NavigationModelBuiltEvent(root));
 
             return root;
         }
@@ -3291,36 +3307,72 @@ namespace SmartStore.Web.Controllers
                 model.Q = "";
             model.Q = model.Q.Trim();
 
-            var categories = _categoryService.GetAllCategories();
-            if (categories.Count > 0)
+            // Build AvailableCategories
+            // first empty entry
+            model.AvailableCategories.Add(new SelectListItem()
             {
-                //first empty entry
+                Value = "0",
+                Text = _localizationService.GetResource("Common.All")
+            });
+
+            var navModel = GetCategoryNavigationModel(0, 0);
+
+            navModel.Root.TraverseTree((node) => {
+                if (node.IsRoot)
+                    return;
+
+                int id = node.Value.Id;
+
+                var breadcrumb = new List<string>();
+                while (node != null && !node.IsRoot)
+                {
+                    breadcrumb.Add(node.Value.Name);
+                    node = node.Parent;
+                }
+                breadcrumb.Reverse();
+
                 model.AvailableCategories.Add(new SelectListItem()
                 {
-                    Value = "0",
-                    Text = _localizationService.GetResource("Common.All")
+                    Value = id.ToString(),
+                    Text = String.Join(" > ", breadcrumb),
+                    Selected = model.Cid == id
                 });
-                //all other categories
-                foreach (var c in categories)
-                {
-                    //generate full category name (breadcrumb)
-                    string fullCategoryBreadcrumbName = "";
-                    var breadcrumb = GetCategoryBreadCrumb(c);
-                    for (int i = 0; i <= breadcrumb.Count - 1; i++)
-                    {
-                        fullCategoryBreadcrumbName += breadcrumb[i].GetLocalized(x => x.Name);
-                        if (i != breadcrumb.Count - 1)
-                            fullCategoryBreadcrumbName += " >> ";
-                    }
+            });
 
-                    model.AvailableCategories.Add(new SelectListItem()
-                    {
-                        Value = c.Id.ToString(),
-                        Text = fullCategoryBreadcrumbName,
-                        Selected = model.Cid == c.Id
-                    });
-                }
-            }
+            #region Obsolete
+            //var categories = _categoryService.GetAllCategories();
+            //// Perf!
+            //var mappedCatgories = categories.ToDictionary(x => x.Id);
+            //if (categories.Count > 0)
+            //{
+            //    //first empty entry
+            //    model.AvailableCategories.Add(new SelectListItem()
+            //    {
+            //        Value = "0",
+            //        Text = _localizationService.GetResource("Common.All")
+            //    });
+            //    //all other categories
+            //    foreach (var c in categories)
+            //    {
+            //        //generate full category name (breadcrumb)
+            //        string fullCategoryBreadcrumbName = "";
+            //        var breadcrumb = GetCategoryBreadCrumb(c, mappedCatgories);
+            //        for (int i = 0; i <= breadcrumb.Count - 1; i++)
+            //        {
+            //            fullCategoryBreadcrumbName += breadcrumb[i].GetLocalized(x => x.Name);
+            //            if (i != breadcrumb.Count - 1)
+            //                fullCategoryBreadcrumbName += " >> ";
+            //        }
+
+            //        model.AvailableCategories.Add(new SelectListItem()
+            //        {
+            //            Value = c.Id.ToString(),
+            //            Text = fullCategoryBreadcrumbName,
+            //            Selected = model.Cid == c.Id
+            //        });
+            //    }
+            //}
+            #endregion
 
             var manufacturers = _manufacturerService.GetAllManufacturers();
             if (manufacturers.Count > 0)

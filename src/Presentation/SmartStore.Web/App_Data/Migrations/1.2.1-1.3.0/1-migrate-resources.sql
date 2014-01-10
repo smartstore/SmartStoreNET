@@ -149,7 +149,24 @@ SET @resources='
 		<Value>Do you like to update the language resources of all plugins?</Value>
 		<Value lang="de">Möchten Sie die Sprachressourcen aller Plugins aktualisieren?</Value>
 	</LocaleResource>
-
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes">
+		<Value>Display delivery times</Value>
+		<Value lang="de">Lieferzeiten anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes.Hint">
+		<Value>Determines whether delivery times should be displayed in shopping cart</Value>
+		<Value lang="de">Bestimmt ob Lieferzeiten im Warenkorb angezeigt wird.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink">
+		<Value>Youtube Link</Value>
+		<Value lang="de">Youtube Link</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink.Hint">
+		<Value>Leave this field empty if the youtube link should not be shown</Value>
+		<Value lang="de">Lassen Sie dieses Feld leer, wenn der Youtube Link nicht angezeigt werden soll</Value>
+	</LocaleResource>
+	
 </Language>
 '
 

@@ -16,6 +16,7 @@ namespace SmartStore.Services.Tax
         #region Constants
         private const string TAXCATEGORIES_ALL_KEY = "SmartStore.taxcategory.all";
         private const string TAXCATEGORIES_PATTERN_KEY = "SmartStore.taxcategory.";
+        private const string TAXCATEGORIES_BY_ID_KEY = "SmartStore.taxcategory.id-{0}";
         #endregion
 
         #region Fields
@@ -91,7 +92,11 @@ namespace SmartStore.Services.Tax
             if (taxCategoryId == 0)
                 return null;
 
-            return _taxCategoryRepository.GetById(taxCategoryId);
+            string key = string.Format(TAXCATEGORIES_BY_ID_KEY, taxCategoryId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _taxCategoryRepository.GetById(taxCategoryId); 
+            });
         }
 
         /// <summary>

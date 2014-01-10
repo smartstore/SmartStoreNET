@@ -666,6 +666,7 @@ namespace SmartStore.Web.Controllers
             model.GooglePlusLink = socialSettings.GooglePlusLink;
             model.TwitterLink = socialSettings.TwitterLink;
             model.PinterestLink = socialSettings.PinterestLink;
+            model.YoutubeLink = socialSettings.YoutubeLink;
 
             return PartialView(model);
         }

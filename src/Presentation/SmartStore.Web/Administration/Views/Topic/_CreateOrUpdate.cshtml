@@ -168,7 +168,7 @@
                             @Html.SmartLabelFor(model => model.Locales[item].Body)
                         </td>
                         <td class="adminData">
-                            @Html.EditorFor(model => model.Locales[item].Body, "RichEditor")
+                            @Html.EditorFor(model => model.Locales[item].Body, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Locales[item].Body)
                         </td>
                     </tr>
@@ -194,7 +194,7 @@
                             @Html.SmartLabelFor(model => model.Body)
                         </td>
                         <td class="adminData">
-                            @Html.EditorFor(x => x.Body, "RichEditor")
+                            @Html.EditorFor(x => x.Body, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Body)
                         </td>
                     </tr>

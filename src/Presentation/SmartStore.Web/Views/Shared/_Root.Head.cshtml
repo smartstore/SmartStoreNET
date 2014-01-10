@@ -6,7 +6,8 @@
 
 @{
     var displayMiniProfiler = EngineContext.Current.Resolve<SmartStore.Core.Domain.StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
-
+    var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+    
     var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
     
     // add css assets
@@ -19,11 +20,15 @@
         jqueryCssRootPath + "jquery.ui.theme.css",
         "~/Content/jquery.pnotify.default.css",
         "~/Content/jquery.pnotify.default.icons.css");
-    
-    // add js assets
-    Html.AppendScriptParts(ResourceLocation.Head, 
+
+    Html.AppendScriptParts(ResourceLocation.Head,
         "~/Scripts/modernizr-{version}.js",
-        "~/Scripts/jquery-{version}.js");
+        "~/Scripts/jquery-{version}.js",
+        "~/Scripts/jquery.globalize/globalize.js");
+
+    Html.AddScriptParts(ResourceLocation.Head, true,
+        "~/Scripts/jquery.globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
+        "~/Scripts/smartstore.globalize.adapter.js");
 
     var bootstrapJsRoot = "~/Content/bootstrap/js/";
     Html.AppendScriptParts(ResourceLocation.Foot,

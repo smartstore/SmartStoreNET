@@ -147,12 +147,14 @@
     <Compile Include="Catalog\CompareProductsService.cs" />
     <Compile Include="Catalog\CategoryTemplateService.cs" />
     <Compile Include="Catalog\IBackInStockSubscriptionService.cs" />
+    <Compile Include="Catalog\ICategoryNavigationFilter.cs" />
     <Compile Include="Catalog\IManufacturerTemplateService.cs" />
     <Compile Include="Catalog\ManufacturerTemplateService.cs" />
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
     <Compile Include="Catalog\ProductAllContext.cs" />
     <Compile Include="Catalog\ProductSearchContext.cs" />
+    <Compile Include="Catalog\ProductsSearchingEvent.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />
     <Compile Include="Catalog\ManufacturerExtensions.cs" />
     <Compile Include="Catalog\ICopyProductService.cs" />
@@ -221,6 +223,7 @@
     <Compile Include="Installation\InstallDataContext.cs" />
     <Compile Include="Installation\InvariantInstallationData.cs" />
     <Compile Include="Localization\LocalizedEntityPostDeleteHook.cs" />
+    <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
     <Compile Include="Media\IImageResizerService.cs" />
@@ -231,6 +234,7 @@
     <Compile Include="Media\ImageResizerUtils.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
+    <Compile Include="Messages\GenericMessageContext.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
     <Compile Include="News\NewsService.cs" />
     <Compile Include="News\INewsService.cs" />

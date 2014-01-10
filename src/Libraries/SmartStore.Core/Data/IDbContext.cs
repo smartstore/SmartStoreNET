@@ -29,7 +29,7 @@ namespace SmartStore.Core.Data
         /// <param name="timeout">Timeout value, in seconds. A null value indicates that the default value of the underlying provider will be used</param>
         /// <param name="parameters">The parameters to apply to the command string.</param>
         /// <returns>The result returned by the database after executing the command.</returns>
-        int ExecuteSqlCommand(string sql, int? timeout = null, params object[] parameters);
+        int ExecuteSqlCommand(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters);
 
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		int ExecuteSqlThroughSmo(string sql);

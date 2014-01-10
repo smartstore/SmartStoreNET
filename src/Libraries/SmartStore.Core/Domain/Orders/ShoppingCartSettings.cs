@@ -94,5 +94,10 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show a legal hint in the order summary
         /// </summary>
         public bool ShowConfirmOrderLegalHint { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show delivery times in the order summary
+        /// </summary>
+        public bool ShowDeliveryTimes { get; set; }
     }
 }

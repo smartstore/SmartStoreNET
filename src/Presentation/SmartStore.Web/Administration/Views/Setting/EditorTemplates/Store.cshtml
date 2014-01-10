@@ -1,10 +1,10 @@
 ﻿@* codehint: sm-edit (see also AllSettings.cshtml grid_onStoreEdit)  *@
-<select name="Store" 
-        id="Store" 
-        class="autowidth" 
+<select name="Store"
+        id="Store"
+        class="autowidth"
         style="width: 95%"
-        data-select-url="@Url.Action("AllStores", "Store")">
-</select>
+        data-placeholder='@T("Admin.Common.StoresAll")'
+        data-select-url="@Url.Action("AllStores", "Store")"></select>
 
 <script>
     $(function () {

@@ -16,6 +16,12 @@ namespace SmartStore.Core.Data
         IQueryable<T> Table { get; }
 
         /// <summary>
+        /// Returns an untracked queryable entity set for the given type {T}.
+        /// The entities returned will not be cached in the object context thus increasing performance.
+        /// </summary>
+        IQueryable<T> TableUntracked { get; }
+
+        /// <summary>
         /// Creates a new instance of an entity of type {T}
         /// </summary>
         /// <returns>The new entity instance.</returns>

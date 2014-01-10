@@ -32,7 +32,7 @@
                 @Html.SmartLabelFor(model => model.LogLevel)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.LogLevel)
+                <span class='label label-@Model.LogLevelHint'>@Model.LogLevel</span>
             </td>
         </tr>
         <tr>

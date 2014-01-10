@@ -1059,7 +1059,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\PromotionFeeds\" />
-    <Folder Include="Views\Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />
@@ -1135,6 +1134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\GenericAttributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.SummerNote.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />

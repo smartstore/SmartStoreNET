@@ -151,7 +151,7 @@ namespace SmartStore.Web.Framework
         }
 
         // codehint: sm-edit
-        public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true)
+        public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true, object htmlAttributes = null)
         {
             var result = new StringBuilder();
             var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
@@ -189,15 +189,24 @@ namespace SmartStore.Web.Framework
                 labelText = metadata.PropertyName.SplitPascalCase();
             }
 
-            result.Append("<div class='ctl-label'>");
+            var label = helper.LabelFor(expression, labelText, htmlAttributes);
+
+            if (displayHint)
             {
-                result.Append(helper.LabelFor(expression, labelText));
-                if (hint.HasValue())
+                result.Append("<div class='ctl-label'>");
                 {
-                    result.Append(helper.Hint(hint).ToHtmlString());
+                    result.Append(label);
+                    if (hint.HasValue())
+                    {
+                        result.Append(helper.Hint(hint).ToHtmlString());
+                    }
                 }
+                result.Append("</div>");
             }
-            result.Append("</div>");
+            else
+            {
+                result.Append(label);
+            }
 
             return MvcHtmlString.Create(result.ToString());
         }

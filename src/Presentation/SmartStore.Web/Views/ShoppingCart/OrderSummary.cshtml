@@ -77,6 +77,20 @@
                         }
                         <td class="product">
                             <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+
+                            <!-- delivery time -->
+                            @if (Model.DisplayDeliveryTime)
+                            {
+                                <div class="delivery-time">
+                                    @if (item.DeliveryTime != null && item.IsShipEnabled)
+                                    {
+                                        <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+                                        <span class="delivery-time-color" style="background-color:@item.DeliveryTime.ColorHexValue" title="@item.DeliveryTime.Name"></span>
+                                        <span class="delivery-time-value">@item.DeliveryTime.Name</span>
+                                    }
+                                </div>
+                            }
+
                             @if (!String.IsNullOrEmpty(item.AttributeInfo))
                             {
                                 <div class="attributes muted">

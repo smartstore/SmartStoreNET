@@ -81,7 +81,7 @@
     <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-	<Reference Include="JavaScriptEngineSwitcher.Core">
+    <Reference Include="JavaScriptEngineSwitcher.Core">
       <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.0.9.2\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.OData, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -225,6 +225,7 @@
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Themes\ThemeVarsRepository.cs" />
     <Compile Include="UI\Components\ComponentRendererUtils.cs" />
+    <Compile Include="UI\Components\Pager\MobilePagerRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />

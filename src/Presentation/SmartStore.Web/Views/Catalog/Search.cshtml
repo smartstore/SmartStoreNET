@@ -81,7 +81,7 @@
                             <div class="control-group">
                                 @Html.LabelFor(model => model.Cid, new { @class="control-label" , @for="Q" })
                                 <div class="controls">
-                                    @Html.DropDownListFor(model => model.Cid, Model.AvailableCategories, new { @class = "noskin" })
+                                    @Html.DropDownListFor(model => model.Cid, Model.AvailableCategories, new { @class = "noskin", style = "max-width: 100%" })
                                 </div>
                             </div>
                             

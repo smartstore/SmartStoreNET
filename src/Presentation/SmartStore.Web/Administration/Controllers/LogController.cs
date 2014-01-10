@@ -24,6 +24,15 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IPermissionService _permissionService;
 
+        private static readonly Dictionary<LogLevel, string> s_logLevelHintMap = new Dictionary<LogLevel, string> 
+        { 
+            { LogLevel.Fatal, "inverse" },
+            { LogLevel.Error, "important" },
+            { LogLevel.Warning, "warning" },
+            { LogLevel.Information, "info" },
+            { LogLevel.Debug, "default" }
+        };
+
         public LogController(ILogger logger, IWorkContext workContext,
             ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
             IPermissionService permissionService)
@@ -77,6 +86,7 @@ namespace SmartStore.Admin.Controllers
                     var logModel = new LogModel()
                     {
                         Id = x.Id,
+                        LogLevelHint = s_logLevelHintMap[x.LogLevel],
                         LogLevel = x.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
                         ShortMessage = x.ShortMessage,
                         FullMessage = x.FullMessage,
@@ -129,6 +139,7 @@ namespace SmartStore.Admin.Controllers
             var model = new LogModel()
             {
                 Id = log.Id,
+                LogLevelHint = s_logLevelHintMap[log.LogLevel],
                 LogLevel = log.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
                 ShortMessage = log.ShortMessage,
                 FullMessage = log.FullMessage,
@@ -181,5 +192,6 @@ namespace SmartStore.Admin.Controllers
 
             return Json(new { Result = true});
         }
+
     }
 }

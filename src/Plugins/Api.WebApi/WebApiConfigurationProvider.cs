@@ -1,0 +1,134 @@
+﻿using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Configuration;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Web.Framework.WebApi.Configuration;
+using System.Web.Http.OData.Builder;
+
+namespace SmartStore.Plugin.Api.WebApi
+{
+	public partial class WebApiConfigurationProvider : IWebApiConfigurationProvider
+	{
+		//private void AddActionsToCustomer(EntityTypeConfiguration<Customer> customer)
+		//{
+		//	customer.Action(WebApiSatelliteNavigation.GenericAttributes)
+		//		.ReturnsCollection<GenericAttribute>();
+		//}
+		private void AddActionsToOrder(EntityTypeConfiguration<Order> order)
+		{
+			order.Action("PaymentPending")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+
+			order.Action("PaymentPaid")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
+				.Parameter<string>("PaymentMethodName");
+
+			order.Action("PaymentRefund")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
+				.Parameter<bool>("Online");
+
+			order.Action("Cancel")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+		}
+		//private void AddActionsToProducts(EntityTypeConfiguration<Product> product)
+		//{
+		//	product.Action(WebApiSatelliteNavigation.RelatedProducts)
+		//		.ReturnsCollection<RelatedProduct>();
+		//}
+
+		public void Configure(WebApiConfigurationBroadcaster configData)
+		{
+			var m = configData.ModelBuilder;
+
+			m.EntitySet<Address>(WebApiOdataEntitySet.Addresses);
+			m.EntitySet<Category>(WebApiOdataEntitySet.Categories);
+			m.EntitySet<Country>(WebApiOdataEntitySet.Countries);
+			m.EntitySet<Currency>(WebApiOdataEntitySet.Currencies);
+			m.EntitySet<Customer>(WebApiOdataEntitySet.Customers);
+			m.EntitySet<DeliveryTime>(WebApiOdataEntitySet.DeliveryTimes);
+			m.EntitySet<Discount>(WebApiOdataEntitySet.Discounts);
+			m.EntitySet<GenericAttribute>(WebApiOdataEntitySet.GenericAttributes);
+			m.EntitySet<Language>(WebApiOdataEntitySet.Languages);
+			m.EntitySet<Manufacturer>(WebApiOdataEntitySet.Manufacturers);
+			m.EntitySet<OrderNote>(WebApiOdataEntitySet.OrderNotes);
+			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
+			m.EntitySet<Picture>(WebApiOdataEntitySet.Pictures);
+			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
+			m.EntitySet<ProductCategory>(WebApiOdataEntitySet.ProductCategories);
+			m.EntitySet<ProductManufacturer>(WebApiOdataEntitySet.ProductManufacturers);
+			m.EntitySet<ProductPicture>(WebApiOdataEntitySet.ProductPictures);
+			m.EntitySet<ProductSpecificationAttribute>(WebApiOdataEntitySet.ProductSpecificationAttributes);
+			m.EntitySet<ProductTag>(WebApiOdataEntitySet.ProductTags);
+			m.EntitySet<Product>(WebApiOdataEntitySet.Products);
+			m.EntitySet<RelatedProduct>(WebApiOdataEntitySet.RelatedProducts);
+			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
+			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
+			m.EntitySet<Shipment>(WebApiOdataEntitySet.Shipments);
+			m.EntitySet<ShippingMethod>(WebApiOdataEntitySet.ShippingMethods);
+			m.EntitySet<SpecificationAttributeOption>(WebApiOdataEntitySet.SpecificationAttributeOptions);
+			m.EntitySet<SpecificationAttribute>(WebApiOdataEntitySet.SpecificationAttributes);
+			m.EntitySet<StateProvince>(WebApiOdataEntitySet.StateProvinces);
+			m.EntitySet<Store>(WebApiOdataEntitySet.Stores);
+			m.EntitySet<StoreMapping>(WebApiOdataEntitySet.StoreMappings);
+			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
+
+
+			//AddActionsToCustomer(m.Entity<Customer>());
+			AddActionsToOrder(m.Entity<Order>());
+			//AddActionsToProducts(m.Entity<Product>());
+		}
+
+		public int Priority { get { return 0; } }
+	}
+
+
+	public static class WebApiOdataEntitySet
+	{
+		public static string Addresses { get { return "Addresses"; } }
+		public static string Categories { get { return "Categories"; } }
+		public static string Countries { get { return "Countries"; } }
+		public static string Currencies { get { return "Currencies"; } }
+		public static string Customers { get { return "Customers"; } }
+		public static string DeliveryTimes { get { return "DeliveryTimes"; } }
+		public static string Discounts { get { return "Discounts"; } }
+		public static string GenericAttributes { get { return "GenericAttributes"; } }
+		public static string Languages { get { return "Languages"; } }
+		public static string Manufacturers { get { return "Manufacturers"; } }
+		public static string OrderNotes { get { return "OrderNotes"; } }
+		public static string Orders { get { return "Orders"; } }
+		public static string Pictures { get { return "Pictures"; } }
+		public static string ProductAttributes { get { return "ProductAttributes"; } }
+		public static string ProductCategories { get { return "ProductCategories"; } }
+		public static string ProductManufacturers { get { return "ProductManufacturers"; } }
+		public static string ProductPictures { get { return "ProductPictures"; } }
+		public static string ProductSpecificationAttributes { get { return "ProductSpecificationAttributes"; } }
+		public static string ProductTags { get { return "ProductTags"; } }
+		public static string Products { get { return "Products"; } }
+		public static string RelatedProducts { get { return "RelatedProducts"; } }
+		public static string ReturnRequests { get { return "ReturnRequests"; } }
+		public static string Settings { get { return "Settings"; } }
+		public static string Shipments { get { return "Shipments"; } }
+		public static string ShippingMethods { get { return "ShippingMethods"; } }
+		public static string SpecificationAttributeOptions { get { return "SpecificationAttributeOptions"; } }
+		public static string SpecificationAttributes { get { return "SpecificationAttributes"; } }
+		public static string StateProvinces { get { return "StateProvinces"; } }
+		public static string Stores { get { return "Stores"; } }
+		public static string StoreMappings { get { return "StoreMappings"; } }
+		public static string UrlRecords { get { return "UrlRecords"; } }
+	}
+
+
+	//public static class WebApiSatelliteNavigation
+	//{
+	//	public static string GenericAttributes { get { return "GenericAttributes"; } }
+	//	public static string RelatedProducts { get { return "RelatedProducts"; } }
+	//}
+}

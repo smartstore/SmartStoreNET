@@ -34,6 +34,7 @@ namespace SmartStore.Services.Messages
 
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
@@ -46,7 +47,8 @@ namespace SmartStore.Services.Messages
 			IStoreService storeService,
 			IStoreContext storeContext,
             EmailAccountSettings emailAccountSettings,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IWorkContext workContext)
         {
             this._messageTemplateService = messageTemplateService;
             this._queuedEmailService = queuedEmailService;
@@ -59,13 +61,14 @@ namespace SmartStore.Services.Messages
 
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
+            this._workContext = workContext;
         }
 
         #endregion
 
         #region Utilities
 
-        private int SendNotification(MessageTemplate messageTemplate,
+        protected int SendNotification(MessageTemplate messageTemplate,
             EmailAccount emailAccount, int languageId, IEnumerable<Token> tokens,
             string toEmailAddress, string toName)
         {
@@ -97,7 +100,7 @@ namespace SmartStore.Services.Messages
             return email.Id;
         }
 
-        private MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName,
+        protected MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName,
 			int languageId, int storeId)
         {
 			//TODO remove languageId parameter
@@ -115,7 +118,7 @@ namespace SmartStore.Services.Messages
             return messageTemplate;
         }
 
-        private EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)
+        protected EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)
         {
             var emailAccounId = messageTemplate.GetLocalized(mt => mt.EmailAccountId, languageId);
             var emailAccount = _emailAccountService.GetEmailAccountById(emailAccounId);
@@ -175,7 +178,7 @@ namespace SmartStore.Services.Messages
             return name ?? customer.Username.EmptyNull();
         }
 
-		private int EnsureLanguageIsActive(int languageId, int storeId)
+		protected int EnsureLanguageIsActive(int languageId, int storeId)
         {
 			//load language by specified ID
             var language = _languageService.GetLanguageById(languageId);
@@ -795,6 +798,11 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
+            var variant = product.ProductVariants.FirstOrDefault();
+            if (variant != null)
+            {
+                _messageTokenProvider.AddProductVariantTokens(tokens, variant);
+            }
             tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
             tokens.Add(new Token("ProductQuestion.SenderName", senderName));
@@ -1062,6 +1070,56 @@ namespace SmartStore.Services.Messages
         #endregion
 
         #region Misc
+
+        public virtual int SendGenericMessage(string messageTemplateName, Action<GenericMessageContext> cfg)
+        {
+            Guard.ArgumentNotNull(() => cfg);
+            Guard.ArgumentNotEmpty(() => messageTemplateName);
+
+            var ctx = new GenericMessageContext();
+            ctx.MessagenTokenProvider = _messageTokenProvider;
+
+            cfg(ctx);
+
+            if (!ctx.StoreId.HasValue)
+            {
+                ctx.StoreId = _storeContext.CurrentStore.Id;
+            }
+
+            if (!ctx.LanguageId.HasValue)
+            {
+                ctx.LanguageId = _workContext.WorkingLanguage.Id;
+            }
+
+            if (ctx.Customer == null)
+            {
+                ctx.Customer = _workContext.CurrentCustomer;
+            }
+
+            if (ctx.Customer.IsSystemAccount)
+                return 0;
+
+            _messageTokenProvider.AddCustomerTokens(ctx.Tokens, ctx.Customer);
+            _messageTokenProvider.AddStoreTokens(ctx.Tokens, _storeService.GetStoreById(ctx.StoreId.Value));
+
+            ctx.LanguageId = EnsureLanguageIsActive(ctx.LanguageId.Value, ctx.StoreId.Value);
+
+            var messageTemplate = GetLocalizedActiveMessageTemplate(messageTemplateName, ctx.LanguageId.Value, ctx.StoreId.Value);
+            if (messageTemplate == null)
+                return 0;
+
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, ctx.LanguageId.Value);
+            var toEmail = ctx.ToEmail.HasValue() ? ctx.ToEmail : emailAccount.Email;
+            var toName = ctx.ToName.HasValue() ? ctx.ToName : emailAccount.DisplayName;
+
+            if (ctx.SetCustomerAsSender)
+            {
+                // use customer email as sender/reply address
+                SetCustomerAsSender(emailAccount, ctx.Customer);
+            }
+
+            return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName);
+        }
 
         /// <summary>
         /// Sends a gift card notification

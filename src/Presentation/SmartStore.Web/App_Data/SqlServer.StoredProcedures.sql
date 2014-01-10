@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[nop_splitstring_to_table]
+﻿CREATE FUNCTION [dbo].[sm_splitstring_to_table]
 (
     @string NVARCHAR(MAX),
     @delimiter CHAR(1)
@@ -25,7 +25,7 @@ GO
 
 
 
-CREATE FUNCTION [dbo].[nop_getnotnullnotempty]
+CREATE FUNCTION [dbo].[sm_getnotnullnotempty]
 (
     @p1 nvarchar(max) = null, 
     @p2 nvarchar(max) = null
@@ -44,7 +44,7 @@ GO
 
 
 
-CREATE FUNCTION [dbo].[nop_getprimarykey_indexname]
+CREATE FUNCTION [dbo].[sm_getprimarykey_indexname]
 (
     @table_name nvarchar(1000) = null
 )
@@ -329,7 +329,7 @@ BEGIN
 		CategoryId int not null
 	)
 	INSERT INTO #FilteredCategoryIds (CategoryId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@CategoryIds, ',')	
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@CategoryIds, ',')	
 	DECLARE @CategoryIdsCount int	
 	SET @CategoryIdsCount = (SELECT COUNT(1) FROM #FilteredCategoryIds)
 
@@ -340,7 +340,7 @@ BEGIN
 		SpecificationAttributeOptionId int not null
 	)
 	INSERT INTO #FilteredSpecs (SpecificationAttributeOptionId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@FilteredSpecs, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@FilteredSpecs, ',')
 	DECLARE @SpecAttributesCount int	
 	SET @SpecAttributesCount = (SELECT COUNT(1) FROM #FilteredSpecs)
 
@@ -351,7 +351,7 @@ BEGIN
 		CustomerRoleId int not null
 	)
 	INSERT INTO #FilteredCustomerRoleIds (CustomerRoleId)
-	SELECT CAST(data as int) FROM [nop_splitstring_to_table](@AllowedCustomerRoleIds, ',')
+	SELECT CAST(data as int) FROM [sm_splitstring_to_table](@AllowedCustomerRoleIds, ',')
 	
 	--paging
 	DECLARE @PageLowerBound int
@@ -709,6 +709,7 @@ BEGIN
 		KEY INDEX [' + dbo.[sm_getprimarykey_indexname] ('Product') +  '] ON [SmartStoreNETFullTextCatalog] WITH CHANGE_TRACKING AUTO'
 	EXEC(@create_index_text)
 
+
 	SET @create_index_text = '
 	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
 		CREATE FULLTEXT INDEX ON [ProductVariantAttributeCombination]([SKU])
@@ -738,6 +739,11 @@ BEGIN
 	--drop indexes
 	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[Product]''))
 		DROP FULLTEXT INDEX ON [Product]
+	')
+	
+	EXEC('
+	IF EXISTS (SELECT 1 FROM sys.fulltext_indexes WHERE object_id = object_id(''[ProductVariantAttributeCombination]''))
+		DROP FULLTEXT INDEX ON [ProductVariantAttributeCombination]
 	')
 	
 	EXEC('

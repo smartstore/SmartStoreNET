@@ -21,6 +21,7 @@ namespace SmartStore.Services.Localization
         private const string LANGUAGES_BY_CULTURE_KEY = "SmartStore.language.culture-{0}";
         private const string LANGUAGES_BY_SEOCODE_KEY = "SmartStore.language.seocode-{0}";
         private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.";
+        private const string LANGUAGES_BY_ID_KEY = "SmartStore.language.id-{0}";
         #endregion
 
         #region Fields
@@ -161,7 +162,11 @@ namespace SmartStore.Services.Localization
             if (languageId == 0)
                 return null;
 
-            return _languageRepository.GetById(languageId);
+            string key = string.Format(LANGUAGES_BY_ID_KEY, languageId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _languageRepository.GetById(languageId); 
+            });
         }
 
         /// <summary>

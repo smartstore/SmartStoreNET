@@ -276,12 +276,13 @@ namespace SmartStore.Admin.Controllers
 
             var model = new CategoryListModel();
             var categories = _categoryService.GetAllCategories(null, 0, _adminAreaSettings.GridPageSize, true);
+            var mappedCategories = categories.ToDictionary(x => x.Id);
             model.Categories = new GridModel<CategoryModel>
             {
                 Data = categories.Select(x =>
                 {
                     var categoryModel = x.ToModel();
-                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService);
+                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
                     return categoryModel;
                 }),
                 Total = categories.TotalCount
@@ -295,14 +296,14 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, 
-                command.Page - 1, command.PageSize, true, model.SearchAlias);
+            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias);
+            var mappedCategories = categories.ToDictionary(x => x.Id);
             var gridModel = new GridModel<CategoryModel>
             {
                 Data = categories.Select(x =>
                 {
                     var categoryModel = x.ToModel();
-                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService);
+                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
                     return categoryModel;
                 }),
                 Total = categories.TotalCount
@@ -318,6 +319,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult AllCategories(string label, int selectedId)
         {
             var categories = _categoryService.GetAllCategories(showHidden: true);
+            var mappedCategories = categories.ToDictionary(x => x.Id);
             // codehint: sm-edit
             if (label.HasValue())
             {
@@ -327,8 +329,8 @@ namespace SmartStore.Admin.Controllers
             // codehint: sm-edit
             var list = from c in categories
                        select new { 
-                           id = c.Id.ToString(), 
-                           text = c.GetCategoryBreadCrumb(_categoryService), 
+                           id = c.Id.ToString(),
+                           text = c.GetCategoryBreadCrumb(_categoryService, mappedCategories), 
                            selected = c.Id == selectedId 
                        };
 
@@ -790,10 +792,13 @@ namespace SmartStore.Admin.Controllers
                 Data = products.Select(x => x.ToModel()),
                 Total = products.TotalCount
             };
-            //categories
-            // model.AvailableCategories.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete
-            foreach (var c in _categoryService.GetAllCategories(showHidden: true))
-                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService), Value = c.Id.ToString() });
+            // categories
+            var allCategories = _categoryService.GetAllCategories(showHidden: true);
+            var mappedCategories = allCategories.ToDictionary(x => x.Id);
+            foreach (var c in allCategories)
+            {
+                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+            }
 
             //manufacturers
             // model.AvailableManufacturers.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete

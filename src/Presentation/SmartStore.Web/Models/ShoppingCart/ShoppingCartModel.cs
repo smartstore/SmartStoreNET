@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
@@ -43,6 +44,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         //codehint: sm-add
         public int MediaDimensions { get; set; }
+        public bool DisplayDeliveryTime { get; set; }
+        
 
         public IList<string> ButtonPaymentMethodActionNames { get; set; }
         public IList<string> ButtonPaymentMethodControllerNames { get; set; }
@@ -82,6 +85,11 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string RecurringInfo { get; set; }
 
             public IList<string> Warnings { get; set; }
+
+            //codehint: BEGIN sm-add
+            public bool IsShipEnabled { get; set; }
+            public DeliveryTime DeliveryTime { get; set; }
+            //codehint: END sm-add
 
         }
 

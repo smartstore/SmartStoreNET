@@ -410,6 +410,7 @@
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CompareProductsModel.cs" />
+    <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\RecentlyAddedProductsModel.cs" />
     <Compile Include="Models\Catalog\PagingFilteringModel.cs" />
@@ -566,6 +567,10 @@
     <Content Include="Content\bootstrap\custom\images\saturation.png" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker-globalinit.js" />
+    <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
+    <Content Include="Content\editors\summernote\summernote.css" />
+    <Content Include="Content\editors\summernote\summernote.js" />
+    <Content Include="Content\editors\summernote\summernote.min.js" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\bootstrap.min.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font-awesome.css" />
     <Content Include="Content\editors\tinymce\themes\advanced\skins\smartstore\bootstrap\font\fontawesome-webfont.svg" />
@@ -655,12 +660,14 @@
     <Content Include="Content\install\variables.custom.less" />
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
+    <Content Include="Content\theme.common.less" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
     <Content Include="favicon.readme.txt" />
     <Content Include="Media\default-avatar.jpg" />
     <Content Include="Media\default-image.jpg" />
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Media\Uploaded\placeholder.txt" />
+    <Content Include="Scripts\smartstore.globalize.adapter.js" />
     <Content Include="Scripts\jquery-1.8.3.js" />
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.backgroundpos.js" />
@@ -680,12 +687,12 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
-    <Content Include="Themes\Alpha\Content\images\file-type-icons.png" />
+    <Content Include="Content\Images\file-type-icons.png" />
     <Content Include="Themes\Alpha\Content\images\gradient.png" />
-    <Content Include="Themes\Alpha\Content\images\star-off-12.png" />
-    <Content Include="Themes\Alpha\Content\images\star-off.png" />
-    <Content Include="Themes\Alpha\Content\images\star-on-12.png" />
-    <Content Include="Themes\Alpha\Content\images\star-on.png" />
+    <Content Include="Content\Images\star-off-12.png" />
+    <Content Include="Content\Images\star-off.png" />
+    <Content Include="Content\Images\star-on-12.png" />
+    <Content Include="Content\Images\star-on.png" />
     <Content Include="Themes\Alpha\Content\slider.less" />
     <Content Include="Content\bootstrap\custom\telerik\editor.png" />
     <Content Include="Content\bootstrap\custom\telerik\gradient.png" />
@@ -713,7 +720,6 @@
     <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
     <Content Include="Content\bootstrap\custom\images\select2x2.png" />
     <Content Include="Content\bootstrap\custom\images\spinner.gif" />
-    <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.global.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.js" />
     <Content Include="Content\bootstrap\custom\navbar.less" />
     <Content Include="Content\bootstrap\font\fontawesome-webfont.svg" />
@@ -791,16 +797,6 @@
     <Content Include="Content\jquery-ui\base\jquery.ui.theme.css" />
     <Content Include="Content\jquery-ui\base\jquery.ui.theme.min.css" />
     <Content Include="Content\editors\BBEditor\ed.js" />
-    <Content Include="Content\editors\BBEditor\images\bold.gif" />
-    <Content Include="Content\editors\BBEditor\images\code.gif" />
-    <Content Include="Content\editors\BBEditor\images\italic.gif" />
-    <Content Include="Content\editors\BBEditor\images\link.gif" />
-    <Content Include="Content\editors\BBEditor\images\ordered.gif" />
-    <Content Include="Content\editors\BBEditor\images\picture.gif" />
-    <Content Include="Content\editors\BBEditor\images\quote.gif" />
-    <Content Include="Content\editors\BBEditor\images\underline.gif" />
-    <Content Include="Content\editors\BBEditor\images\unlink.gif" />
-    <Content Include="Content\editors\BBEditor\images\unordered.gif" />
     <Content Include="Content\editors\tinymce\jquery.tinymce.js" />
     <Content Include="Content\editors\tinymce\globalinit.js" />
     <Content Include="Content\editors\tinymce\langs\de.js" />
@@ -2079,12 +2075,12 @@
     <Content Include="Themes\Mobile\Content\images\icons-36-white.png" />
     <Content Include="Themes\Mobile\Content\images\star-x-active.gif" />
     <Content Include="Themes\Mobile\Content\images\star-x-inactive.gif" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile-1.1.1.min.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.1.1.min.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.1.1.css" />
-    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.1.1.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile-1.3.2.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.structure-1.3.2.min.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.css" />
+    <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.min.css" />
     <Content Include="Themes\Mobile\Content\styles.css" />
     <Content Include="Themes\Mobile\preview.png" />
     <Content Include="Themes\print.css" />
@@ -2293,6 +2289,7 @@
     <Content Include="Views\Catalog\ProductAskQuestionButton.Mobile.cshtml" />
     <Content Include="Views\Topic\TopicWidget.cshtml" />
     <Content Include="Views\Shared\_ClientRes.cshtml" />
+    <Content Include="Views\Shared\Header.Mobile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

@@ -19,6 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @*This is used so that themes can inject content into the header*@
     @Html.Partial("Head")
+    @Html.Partial("_ClientRes")
     @Html.Widget("mobile_head_html_tag")
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)

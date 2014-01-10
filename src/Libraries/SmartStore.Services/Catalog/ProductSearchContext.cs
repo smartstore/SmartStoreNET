@@ -20,6 +20,12 @@ namespace SmartStore.Services.Catalog
         public IList<int> CategoryIds { get; set; }
 
         /// <summary>
+        /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)
+        /// </summary>
+        /// <remarks>Only works in LINQ mode at the moment</remarks>
+        public bool MatchAllcategories { get; set; }
+
+        /// <summary>
         /// Manufacturer identifier; 0 to load all records
         /// </summary>
         public int ManufacturerId { get; set; }

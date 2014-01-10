@@ -1111,6 +1111,7 @@ namespace SmartStore.Admin.Controllers
 			model.SocialSettings.GooglePlusLink = socialSettings.GooglePlusLink;
 			model.SocialSettings.TwitterLink = socialSettings.TwitterLink;
 			model.SocialSettings.PinterestLink = socialSettings.PinterestLink;
+            model.SocialSettings.YoutubeLink = socialSettings.YoutubeLink;
 
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _settingService, false);
 
@@ -1279,6 +1280,7 @@ namespace SmartStore.Admin.Controllers
 			socialSettings.GooglePlusLink = model.SocialSettings.GooglePlusLink;
 			socialSettings.TwitterLink = model.SocialSettings.TwitterLink;
 			socialSettings.PinterestLink = model.SocialSettings.PinterestLink;
+            socialSettings.YoutubeLink = model.SocialSettings.YoutubeLink;
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _settingService);
 
@@ -1420,7 +1422,7 @@ namespace SmartStore.Admin.Controllers
                     _fulltextService.DisableFullText();
 
                     commonSettings.UseFullTextSearch = false;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
                 }
@@ -1429,7 +1431,7 @@ namespace SmartStore.Admin.Controllers
                     _fulltextService.EnableFullText();
 
                     commonSettings.UseFullTextSearch = true;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
                     SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
                 }
@@ -1457,7 +1459,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
-
+            
             var settings = _settingService
                 .GetAllSettings()
 				.Select(x =>
@@ -1517,7 +1519,7 @@ namespace SmartStore.Admin.Controllers
 			if (setting == null)
 				return Content(_localizationService.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 
 			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) ||
 				setting.StoreId != storeId)
@@ -1551,7 +1553,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log

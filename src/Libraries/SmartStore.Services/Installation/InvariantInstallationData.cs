@@ -4304,6 +4304,7 @@ namespace SmartStore.Services.Installation
                 {
                     GridPageSize = 15,
                     DisplayProductPictures = true,
+                    RichEditorFlavor = "RichEditor"
                 },
                 new CatalogSettings()
                 {
@@ -4500,7 +4501,7 @@ namespace SmartStore.Services.Installation
                     ShowProductImagesOnWishList = true,
                     ShowDiscountBox = true,
                     ShowGiftCardBox = true,
-                    CrossSellsNumber = 2,
+                    CrossSellsNumber = 8,
                     EmailWishlistEnabled = true,
                     AllowAnonymousUsersToEmailWishlist = false,
                     MiniShoppingCartEnabled = true,
@@ -5150,6 +5151,14 @@ namespace SmartStore.Services.Installation
                     Name = "Delete guests",
                     Seconds = 600,
                     Type = "SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services",
+                    Enabled = true,
+                    StopOnError = false,
+                },
+                new ScheduleTask()
+                {
+                    Name = "Delete logs",
+                    Seconds = 86400, // 1 day
+                    Type = "SmartStore.Services.Logging.DeleteLogsTask, SmartStore.Services",
                     Enabled = true,
                     StopOnError = false,
                 },

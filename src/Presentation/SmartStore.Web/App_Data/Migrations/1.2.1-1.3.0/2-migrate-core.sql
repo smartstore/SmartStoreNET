@@ -63,3 +63,21 @@ BEGIN
 	CREATE NONCLUSTERED INDEX [IX_Log_ContentHash] ON [Log] ([ContentHash] ASC)
 END
 GO
+
+--'Delete logs' schedule task (enabled by default)
+IF NOT EXISTS (
+		SELECT 1
+		FROM [dbo].[ScheduleTask]
+		WHERE [Name] = N'Delete logs')
+BEGIN
+	INSERT [dbo].[ScheduleTask] ([Name], [Seconds], [Type], [Enabled], [StopOnError])
+	VALUES (N'Delete logs', 86400, N'SmartStore.Services.Logging.DeleteLogsTask, SmartStore.Services', 1, 0)
+END
+GO
+
+-- AdminAreaSettings.RichEditorFlavor
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [Name] = N'AdminAreaSettings.RichEditorFlavor')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'AdminAreaSettings.RichEditorFlavor', N'RichEditor', 0)
+END

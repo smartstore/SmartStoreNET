@@ -235,7 +235,11 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return null;
 
-            return _productRepository.GetById(productId);
+            string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
+            return _cacheManager.Get(key, () =>
+            { 
+                return _productRepository.GetById(productId); 
+            });
         }
 
         /// <summary>
@@ -316,6 +320,8 @@ namespace SmartStore.Services.Catalog
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
+
+            _eventPublisher.Publish(new ProductsSearchingEvent(ctx));
 
 			//search by keyword
             bool searchLocalizedValue = false;
@@ -804,10 +810,21 @@ namespace SmartStore.Services.Catalog
             if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
             {
                 //search in subcategories
-                query = from p in query
-                        from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-                        where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                        select p;
+                if (ctx.MatchAllcategories)
+                {
+                    query = from p in query
+                                where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+                            from pc in p.ProductCategories
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
+                else
+                {
+                    query = from p in query
+                            from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
             }
 
             // manufacturer filtering

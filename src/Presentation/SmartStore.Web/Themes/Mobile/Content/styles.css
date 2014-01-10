@@ -46,10 +46,13 @@
 .required{color:red;}
 
 /* PAGER */
-.pager{text-align:center;}
-.pager a{font-size:1em;}
-.pager a:link{text-align:center;}
-.pager span{font-size:1.2em;font-weight:700;}
+#pagination-bottom{text-align:center;zoom:1;}
+#pagination-bottom:after{content:".";display:block;clear:both;height:0;font-size:0;line-height:0;visibility:hidden;}
+#pagination-bottom ul{float:left;padding-left:0}
+#pagination-bottom li{float:left;list-style:none outside none;margin-left:5px;}
+#pagination-bottom a,.pager span{display:inline-block;text-align:center;font-size:1em;padding:0px 5px;}
+#pagination-bottom span,.pager a:active{}
+#pagination-bottom .active a {color: #464646;}
 
 /* NAVIGATION BLOCKS */
 .block{margin-bottom:15px;padding-bottom:5px;padding-left:0;color:#FFF;}
@@ -611,3 +614,42 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 .csharpcode .attr{color:red;}
 .csharpcode .alt{background-color:#f4f4f4;width:100%;margin:0;}
 .csharpcode .lnum{color:#606060;}
+
+
+.default-picture,
+.short-description {
+    text-align: center;
+}
+.full-description img {
+	max-width: 100%;
+}
+
+.full-description table[style],
+.full-description div[style],
+.full-description img[style] {
+	max-width: 100% !important;
+	width: 100% !important;
+}
+.full-description div[style],
+.full-description img[style] {
+	height: auto !important;
+}
+
+.header-logo {
+    text-align: center;
+    margin: auto;
+}
+.header-logo img {
+    max-height: 75px;
+    display: block;
+    margin: auto;
+}
+
+.legal-hints {
+    text-align: center;
+    background: black;
+    padding: 5px;
+}
+.legal-hints .footer-legal {
+    color: green;
+}

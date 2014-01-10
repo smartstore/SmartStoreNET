@@ -22,6 +22,7 @@ namespace SmartStore.Services.Catalog
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
         private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
         private const string PRODUCTCATEGORIES_PATTERN_KEY = "SmartStore.productcategory.";
+        private const string CATEGORIES_BY_ID_KEY = "SmartStore.category.id-{0}";
 
         #endregion
 
@@ -36,6 +37,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
+        private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
 
         #endregion
         
@@ -61,7 +63,8 @@ namespace SmartStore.Services.Catalog
 			IRepository<StoreMapping> storeMappingRepository,
             IWorkContext workContext,
 			IStoreContext storeContext,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters)
         {
             this._cacheManager = cacheManager;
             this._categoryRepository = categoryRepository;
@@ -71,7 +74,8 @@ namespace SmartStore.Services.Catalog
 			this._storeMappingRepository = storeMappingRepository;
             this._workContext = workContext;
 			this._storeContext = storeContext;
-            _eventPublisher = eventPublisher;
+            this._eventPublisher = eventPublisher;
+            this._navigationFilters = navigationFilters;
         }
 
         #endregion
@@ -107,9 +111,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
+        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
         /// <returns>Categories</returns>
 		/// <remarks>codehint: sm-edit</remarks>
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null)
+        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true)
         {
             var query = _categoryRepository.Table;
             if (!showHidden)
@@ -123,7 +128,7 @@ namespace SmartStore.Services.Catalog
             
             if (!showHidden)
             {
-                query = ApplyHiddenCategoriesFilter(query);
+                query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters);
 				query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
             }
 
@@ -156,7 +161,7 @@ namespace SmartStore.Services.Catalog
 
                 if (!showHidden)
                 {
-                    query = ApplyHiddenCategoriesFilter(query);
+                    query = ApplyHiddenCategoriesFilter(query, false);
 					query = query.OrderBy(c => c.DisplayOrder);
                 }
 
@@ -166,7 +171,7 @@ namespace SmartStore.Services.Catalog
 
         }
 
-		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query)
+        protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, bool applyNavigationFilters)
         {
             // ACL (access control list)
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
@@ -176,7 +181,7 @@ namespace SmartStore.Services.Catalog
 					join acl in _aclRepository.Table
 					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
 					from acl in c_acl.DefaultIfEmpty()
-					where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+					where  !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
 					select c;
 
 			//Store mapping
@@ -194,7 +199,25 @@ namespace SmartStore.Services.Catalog
                     orderby cGroup.Key
                     select cGroup.FirstOrDefault();
 
+            if (applyNavigationFilters)
+            {
+                var filters = _navigationFilters.Value;
+                if (filters.Any())
+                {
+                    filters.Each(x => {
+                        query = x.Apply(query);
+                    });
+                }
+            }
+
 			return query;
+        }
+
+        private void ApplyMisc(ref IQueryable<Category> query)
+        {
+            query = from c in query
+                    where c.Id != 56
+                    select c;
         }
         
         /// <summary>
@@ -224,7 +247,11 @@ namespace SmartStore.Services.Catalog
             if (categoryId == 0)
                 return null;
 
-            return _categoryRepository.GetById(categoryId);
+            string key = string.Format(CATEGORIES_BY_ID_KEY, categoryId);
+            return _cacheManager.Get(key, () =>
+            {
+                return  _categoryRepository.GetById(categoryId);
+            });
         }
 
         /// <summary>

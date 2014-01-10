@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Blogs;
+﻿using System;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -293,6 +294,14 @@ namespace SmartStore.Services.Messages
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
         int SendBackInStockNotification(BackInStockSubscription subscription, int languageId);
+
+        /// <summary>
+        /// Sends a generic message
+        /// </summary>
+        /// <param name="messageTemplateName">The name of the message template</param>
+        /// <param name="cfg">Configurator action for the message</param>
+        /// <returns>Queued email identifier</returns>
+        int SendGenericMessage(string messageTemplateName, Action<GenericMessageContext> cfg);
 
         #endregion
     }

@@ -7,6 +7,8 @@ namespace SmartStore.Admin.Models.Logging
 {
     public class LogModel : EntityModelBase
     {
+        public string LogLevelHint { get; set; }
+        
         [SmartResourceDisplayName("Admin.System.Log.Fields.LogLevel")]
         public string LogLevel { get; set; }
 

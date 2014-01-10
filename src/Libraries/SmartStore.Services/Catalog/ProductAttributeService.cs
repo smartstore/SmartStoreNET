@@ -26,6 +26,10 @@ namespace SmartStore.Services.Catalog
         private const string PRODUCTATTRIBUTES_PATTERN_KEY = "SmartStore.productattribute.";
         private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
         private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalue.";
+        private const string PRODUCTATTRIBUTES_BY_ID_KEY = "SmartStore.productattribute.id-{0}";
+        private const string PRODUCTVARIANTATTRIBUTES_BY_ID_KEY = "SmartStore.productvariantattribute.id-{0}";
+        private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.productvariantattributevalue.id-{0}";
+
         #endregion
 
         #region Fields
@@ -124,7 +128,10 @@ namespace SmartStore.Services.Catalog
             if (productAttributeId == 0)
                 return null;
 
-            return _productAttributeRepository.GetById(productAttributeId);
+            string key = string.Format(PRODUCTATTRIBUTES_BY_ID_KEY, productAttributeId);
+            return _cacheManager.Get(key, () => { 
+                return _productAttributeRepository.GetById(productAttributeId); 
+            });
         }
 
         /// <summary>
@@ -218,7 +225,10 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeId == 0)
                 return null;
 
-            return _productVariantAttributeRepository.GetById(productVariantAttributeId);
+            string key = string.Format(PRODUCTVARIANTATTRIBUTES_BY_ID_KEY, productVariantAttributeId);
+            return _cacheManager.Get(key, () => { 
+                return _productVariantAttributeRepository.GetById(productVariantAttributeId); 
+            });
         }
 
         // codehint: sm-add
@@ -333,7 +343,11 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeValueId == 0)
                 return null;
 
-            return _productVariantAttributeValueRepository.GetById(productVariantAttributeValueId);
+           string key = string.Format(PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY, productVariantAttributeValueId);
+           return _cacheManager.Get(key, () =>
+           {
+               return _productVariantAttributeValueRepository.GetById(productVariantAttributeValueId);
+           });
         }
 
         /// <summary>

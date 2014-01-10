@@ -28,7 +28,7 @@
     {
         infoMessages.AddRange(TempData[string.Format("sm.notifications.{0}", NotifyType.Info)] as IList<string>);
     }
-    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Error)] != null)
+    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Info)] != null)
     {
         infoMessages.AddRange(ViewData[string.Format("sm.notifications.{0}", NotifyType.Info)] as IList<string>);
     }

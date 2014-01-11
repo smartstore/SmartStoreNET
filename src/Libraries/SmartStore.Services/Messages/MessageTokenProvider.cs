@@ -167,14 +167,14 @@ namespace SmartStore.Services.Messages
                 }
 
                 //deliverytime
-                if (_shoppingCartSettings.ShowDeliveryTimes && opv.ProductVariant.DeliveryTime != null && opv.ProductVariant.IsShipEnabled)
+                if (_shoppingCartSettings.ShowDeliveryTimes && product.DeliveryTime != null && product.IsShipEnabled)
                 {
                     sb.AppendLine("<br />");
 
                     sb.AppendLine("<div class=\"delivery-time\">");
                     sb.AppendLine("<span class=\"delivery-time-label\">" + _localizationService.GetResource("Products.DeliveryTime") + "</span>");
-                    sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + opv.ProductVariant.DeliveryTime.ColorHexValue + " title=\"" + opv.ProductVariant.DeliveryTime.Name + "\"></span>");
-                    sb.AppendLine("<span class=\"delivery-time-value\">" + opv.ProductVariant.DeliveryTime.Name + "</span>");
+                    sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + product.DeliveryTime.ColorHexValue + " title=\"" + product.DeliveryTime.Name + "\"></span>");
+                    sb.AppendLine("<span class=\"delivery-time-value\">" + product.DeliveryTime.Name + "</span>");
                     sb.AppendLine("</div>");
                 }
 

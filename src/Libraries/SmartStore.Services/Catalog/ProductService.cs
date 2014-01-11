@@ -22,10 +22,17 @@ namespace SmartStore.Services.Catalog
     /// Product service
     /// </summary>
     public partial class ProductService : IProductService
-    {
-        #region Fields
+	{
+		#region Constants
 
-        private readonly IRepository<Product> _productRepository;
+		private const string PRODUCTS_BY_ID_KEY = "SmartStore.product.id-{0}";
+		private const string PRODUCTS_PATTERN_KEY = "SmartStore.product.";
+
+		#endregion
+
+		#region Fields
+
+		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
@@ -280,6 +287,9 @@ namespace SmartStore.Services.Catalog
 
             //insert
             _productRepository.Insert(product);
+
+			//clear cache
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
             _eventPublisher.EntityInserted(product);
@@ -296,6 +306,9 @@ namespace SmartStore.Services.Catalog
 
             //update
             _productRepository.Update(product);
+
+			//cache
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(product);
@@ -1329,6 +1342,8 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+
             //event notification
             _eventPublisher.EntityDeleted(tierPrice);
         }
@@ -1358,6 +1373,8 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+
             //event notification
             _eventPublisher.EntityInserted(tierPrice);
         }
@@ -1372,6 +1389,8 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("tierPrice");
 
             _tierPriceRepository.Update(tierPrice);
+
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(tierPrice);

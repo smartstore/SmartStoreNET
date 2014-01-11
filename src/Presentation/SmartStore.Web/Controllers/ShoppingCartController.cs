@@ -444,8 +444,8 @@ namespace SmartStore.Web.Controllers
                     ProductSeName = sci.Product.GetSeName(),
                     Quantity = sci.Quantity,
                     AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml),
-                    IsShipEnabled = sci.ProductVariant.IsShipEnabled,
-                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.ProductVariant.DeliveryTimeId.GetValueOrDefault())
+                    IsShipEnabled = sci.Product.IsShipEnabled,
+                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.Product.DeliveryTimeId.GetValueOrDefault())
                 };
 
                 //allowed quantities

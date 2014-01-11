@@ -69,10 +69,10 @@ namespace SmartStore.Services.Tax
 
         #region Utilities
 
-        internal TaxRateCacheKey CreateTaxRateCacheKey(ProductVariant variant, int taxCategoryId, Customer customer)
+        internal TaxRateCacheKey CreateTaxRateCacheKey(Product product, int taxCategoryId, Customer customer)
         {
             return new TaxRateCacheKey(
-                variant == null ? 0 : variant.Id,
+                product == null ? 0 : product.Id,
                 taxCategoryId,
                 customer == null ? 0 : customer.Id);
         }
@@ -80,11 +80,11 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Create request for tax calculation
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="customer">Customer</param>
         /// <returns>Package for tax calculation</returns>
-        protected CalculateTaxRequest CreateCalculateTaxRequest(ProductVariant productVariant,
+        protected CalculateTaxRequest CreateCalculateTaxRequest(Product product,
             int taxCategoryId, Customer customer)
         {
             var calculateTaxRequest = new CalculateTaxRequest();
@@ -95,8 +95,8 @@ namespace SmartStore.Services.Tax
             }
             else
             {
-                if (productVariant != null)
-                    calculateTaxRequest.TaxCategoryId = productVariant.TaxCategoryId;
+                if (product != null)
+                    calculateTaxRequest.TaxCategoryId = product.TaxCategoryId;
             }
 
             calculateTaxRequest.Address = this.GetTaxAddress(customer);
@@ -198,7 +198,8 @@ namespace SmartStore.Services.Tax
         /// <returns>Found tax provider</returns>
         public virtual ITaxProvider LoadTaxProviderBySystemName(string systemName)
         {
-            Guard.ArgumentNotEmpty(() => systemName);
+			if (systemName.IsNullOrEmpty())
+				return null;
 
             ITaxProvider provider;
             if (!_taxProviders.TryGetValue(systemName, out provider))
@@ -227,20 +228,20 @@ namespace SmartStore.Services.Tax
         }
 
 
-        private decimal GetOriginTaxRate(ProductVariant productVariant)
+        private decimal GetOriginTaxRate(Product product)
         {
-            return GetTaxRate(productVariant, 0, null);
+            return GetTaxRate(product, 0, null);
         }
 
         /// <summary>
         /// Gets tax rate
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
         /// <returns>Tax rate</returns>
-        public virtual decimal GetTaxRate(ProductVariant productVariant, Customer customer)
+        public virtual decimal GetTaxRate(Product product, Customer customer)
         {
-            return GetTaxRate(productVariant, 0, customer);
+            return GetTaxRate(product, 0, customer);
         }
 
         /// <summary>
@@ -257,33 +258,27 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets tax rate
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="customer">Customer</param>
         /// <returns>Tax rate</returns>
-        public virtual decimal GetTaxRate(ProductVariant productVariant, int taxCategoryId, Customer customer)
+        public virtual decimal GetTaxRate(Product product, int taxCategoryId, Customer customer)
         {
-            var cacheKey = this.CreateTaxRateCacheKey(productVariant, taxCategoryId, customer);
+            var cacheKey = this.CreateTaxRateCacheKey(product, taxCategoryId, customer);
             decimal result;
             if (!_cachedTaxRates.TryGetValue(cacheKey, out result))
             {
-                result = GetTaxRateCore(productVariant, taxCategoryId, customer);
+                result = GetTaxRateCore(product, taxCategoryId, customer);
                 _cachedTaxRates[cacheKey] = result;
             }
 
             return result;
         }
 
-        protected virtual decimal GetTaxRateCore(ProductVariant productVariant, int taxCategoryId, Customer customer)
+        protected virtual decimal GetTaxRateCore(Product product, int taxCategoryId, Customer customer)
         {
-            ////tax exempt (VATFIX)
-            //if (IsTaxExempt(productVariant, customer))
-            //{
-            //    return decimal.Zero;
-            //}
-
             //tax request
-            var calculateTaxRequest = CreateCalculateTaxRequest(productVariant, taxCategoryId, customer);
+            var calculateTaxRequest = CreateCalculateTaxRequest(product, taxCategoryId, customer);
 
             ////make EU VAT exempt validation (the European Union Value Added Tax) (VATFIX)
             //if (_taxSettings.EuVatEnabled && IsVatExempt(calculateTaxRequest.Address, calculateTaxRequest.Customer))
@@ -316,54 +311,54 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        public virtual decimal GetProductPrice(Product product, decimal price,
             out decimal taxRate)
         {
             var customer = _workContext.CurrentCustomer;
-            return GetProductPrice(productVariant, price, customer, out taxRate);
+            return GetProductPrice(product, price, customer, out taxRate);
         }
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        public virtual decimal GetProductPrice(Product product, decimal price,
             Customer customer, out decimal taxRate)
         {
             bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
-            return GetProductPrice(productVariant, price, includingTax, customer, out taxRate);
+            return GetProductPrice(product, price, includingTax, customer, out taxRate);
         }
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="price">Price</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(ProductVariant productVariant, decimal price,
+        public virtual decimal GetProductPrice(Product product, decimal price,
             bool includingTax, Customer customer, out decimal taxRate)
         {
             bool priceIncludesTax = _taxSettings.PricesIncludeTax;
-            int taxCategoryId = productVariant.TaxCategoryId; // 0; // (VATFIX)
-            return GetProductPrice(productVariant, taxCategoryId, price, includingTax,
+            int taxCategoryId = product.TaxCategoryId; // 0; // (VATFIX)
+            return GetProductPrice(product, taxCategoryId, price, includingTax,
                 customer, priceIncludesTax, out taxRate);
         }
 
         /// <summary>
         /// Gets price
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="price">Price</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
@@ -371,26 +366,15 @@ namespace SmartStore.Services.Tax
         /// <param name="priceIncludesTax">A value indicating whether price already includes tax</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(ProductVariant productVariant, int taxCategoryId,
+        public virtual decimal GetProductPrice(Product product, int taxCategoryId,
             decimal price, bool includingTax, Customer customer,
             bool priceIncludesTax, out decimal taxRate)
         {
-            taxRate = GetTaxRate(productVariant, taxCategoryId, customer);
+            taxRate = GetTaxRate(product, taxCategoryId, customer);
 
             // Admin: GROSS prices
             if (priceIncludesTax)
             {
-                ////  (VATFIX)
-                //decimal originTaxRate = GetOriginTaxRate(productVariant);
-
-                //// resolve NET price from GROSS
-                //price = CalculatePrice(price, originTaxRate, false);
-                //if (includingTax && taxRate > 0)
-                //{
-                //    // new GROSS: add destination tax to NET price
-                //    price = CalculatePrice(price, taxRate, true);
-                //}
-
                 if (!includingTax)
                 {
                     price = CalculatePrice(price, taxRate, false);
@@ -725,10 +709,10 @@ namespace SmartStore.Services.Tax
         /// <summary>
         /// Gets a value indicating whether tax exempt
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
-        /// <returns>A value indicating whether tax exempt</returns>
-        public virtual bool IsTaxExempt(ProductVariant productVariant, Customer customer)
+        /// <returns>A value indicating whether a product is tax exempt</returns>
+        public virtual bool IsTaxExempt(Product product, Customer customer)
         {
             if (customer != null)
             {
@@ -739,12 +723,12 @@ namespace SmartStore.Services.Tax
                     return true;
             }
 
-            if (productVariant == null)
+            if (product == null)
             {
                 return false;
             }
 
-            if (productVariant.IsTaxExempt)
+            if (product.IsTaxExempt)
             {
                 return true;
             }

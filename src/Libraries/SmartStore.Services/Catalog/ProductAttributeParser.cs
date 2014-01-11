@@ -277,8 +277,8 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Are attributes equal
         /// </summary>
-        /// <param name="attributes1">The attributes of the first product variant</param>
-        /// <param name="attributes2">The attributes of the second product variant</param>
+        /// <param name="attributes1">The attributes of the first product</param>
+        /// <param name="attributes2">The attributes of the second product</param>
         /// <returns>Result</returns>
         public virtual bool AreProductAttributesEqual(string attributes1, string attributes2)
         {
@@ -329,27 +329,28 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Finds a product variant attribute combination by attributes stored in XML 
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="attributesXml">Attributes in XML format</param>
         /// <returns>Found product variant attribute combination</returns>
-		/// /// <remarks>codehint: sm-edit</remarks>
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(ProductVariant productVariant, string attributesXml, bool showHidden = false)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml)
         {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+			if (product == null)
+				throw new ArgumentNullException("product");
 
-            return FindProductVariantAttributeCombination(productVariant.Id, attributesXml, showHidden);
+            return FindProductVariantAttributeCombination(product.Id, attributesXml);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productVariantId, string attributesXml, bool showHidden = false) {
-			if (attributesXml.HasValue()) {
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml)
+		{
+			if (attributesXml.HasValue())
+			{
 				//existing combinations
-				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productVariantId, showHidden);
+				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productId);
 				if (combinations.Count == 0)
 					return null;
 
-				foreach (var combination in combinations) {
+				foreach (var combination in combinations)
+				{
 					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml);
 					if (attributesEqual)
 						return combination;
@@ -358,8 +359,10 @@ namespace SmartStore.Services.Catalog
 			return null;
 		}
 
-		public virtual List<List<int>> DeserializeQueryData(string jsonData) {
-			if (jsonData.HasValue()) {
+		public virtual List<List<int>> DeserializeQueryData(string jsonData)
+		{
+			if (jsonData.HasValue())
+			{
 				if (jsonData.StartsWith("["))
 					return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
 
@@ -367,21 +370,26 @@ namespace SmartStore.Services.Catalog
 			}
 			return new List<List<int>>();
 		}
-		public virtual string SerializeQueryData(int productVariantId, string attributesXml, bool urlEncode = true) {
-			if (attributesXml.HasValue() && productVariantId != 0) {
+		public virtual string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true)
+		{
+			if (attributesXml.HasValue() && productId != 0)
+			{
 				var data = new List<List<int>>();
 				var attributeValues = ParseProductVariantAttributeValues(attributesXml).ToList();
 
-				foreach (var value in attributeValues) {
-					data.Add(new List<int> {
-						productVariantId,
+				foreach (var value in attributeValues)
+				{
+					data.Add(new List<int>
+					{
+						productId,
 						value.ProductVariantAttribute.ProductAttributeId,
 						value.ProductVariantAttributeId,
 						value.Id
 					});
 				}
 
-				if (data.Count > 0) {
+				if (data.Count > 0)
+				{
 					string result = JsonConvert.SerializeObject(data);
 					return (urlEncode ? HttpUtility.UrlEncode(result) : result);
 				}

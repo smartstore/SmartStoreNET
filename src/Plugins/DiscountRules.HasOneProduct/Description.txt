@@ -1,6 +1,6 @@
-﻿FriendlyName: Customer has one of these product variants in the cart
+﻿FriendlyName: Customer has one of these products in the cart
 SystemName: DiscountRequirement.HasOneProduct
-Version: 1.12
+Version: 1.2
 MinAppVersion: 1.2.1
 DisplayOrder: 1
 FileName: SmartStore.Plugin.DiscountRules.HasOneProduct.dll

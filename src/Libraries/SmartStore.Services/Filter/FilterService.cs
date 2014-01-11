@@ -123,14 +123,16 @@ namespace SmartStore.Services.Filter
 			}
 			return true;
 		}
-		private void FilterParentheses(List<FilterCriteria> criteria) {
+		private void FilterParentheses(List<FilterCriteria> criteria)
+		{
 			// Logical or combine all criteria with same name.
 			//
 			// "The order of precedence for the logical operators is NOT (highest), followed by AND, followed by OR.
 			// The order of evaluation at the same precedence level is from left to right."
 			// http://www.databasedev.co.uk/sql-multiple-conditions.html
 
-			if (criteria.Count > 0) {
+			if (criteria.Count > 0)
+			{
 				criteria.Sort();
 				criteria.ForEach(c => { c.Open = null; c.Or = false; });
 
@@ -139,7 +141,8 @@ namespace SmartStore.Services.Filter
 					group c by c.Entity).Where(g => g.Count() > 1);
 					//group c by c.Name).Where(g => g.Count() > 1);
 
-				foreach (var grp in data) {
+				foreach (var grp in data)
+				{
 					grp.ToList().ForEach(f => f.Or = true);
 					grp.First().Or = false;
 					grp.First().Open = true;
@@ -150,7 +153,18 @@ namespace SmartStore.Services.Filter
 		private IQueryable<Product> AllProducts(List<int> categoryIds)
 		{
 			if (_products == null)
-				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured, _storeContext.CurrentStoreIdIfMultiStoreMode);
+			{
+				var allContext = new ProductAllContext()
+				{
+					CategoryIds = categoryIds,
+					IncludeFeatured = IncludeFeatured,
+					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+					VisibleIndividually = true,
+					FilterByAvailableDate = true
+				};
+
+				_products = _productService.GetAllProducts(allContext);
+			}
 			return _products;
 		}
 
@@ -378,23 +392,6 @@ namespace SmartStore.Services.Filter
 			var sql = new FilterSql();
 			var query = AllProducts(context.CategoryIds);
 
-			// product variant (default filter entity)
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "ProductVariant" || c.Entity == ShortcutPrice)))
-			{
-				var variantRepository = EngineContext.Current.Resolve<IRepository<ProductVariant>>();
-
-				var pvq = variantRepository.Table
-					.Where(pv => pv.Published && !pv.Deleted && 
-						(!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value <= nowUtc) && 
-						(!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value >= nowUtc))
-					.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
-
-				query =
-					from p in query
-					join pv in pvq on p.Id equals pv.ProductId
-					select p;
-			}
-
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
@@ -446,10 +443,10 @@ namespace SmartStore.Services.Filter
 					query = query.OrderByDescending(p => p.Name);
 					break;
 				case ProductSortingEnum.PriceAsc:
-					query = query.OrderBy(p => p.ProductVariants.FirstOrDefault().Price);
+					query = query.OrderBy(p => p.Price);
 					break;
 				case ProductSortingEnum.PriceDesc:
-					query = query.OrderByDescending(p => p.ProductVariants.FirstOrDefault().Price);
+					query = query.OrderByDescending(p => p.Price);
 					break;
 				case ProductSortingEnum.CreatedOn:
 					query = query.OrderByDescending(p => p.CreatedOnUtc);

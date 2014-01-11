@@ -57,5 +57,6 @@ namespace SmartStore.Core.Data
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to detach</param>
         void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+		void Detach(object entity);
     }
 }

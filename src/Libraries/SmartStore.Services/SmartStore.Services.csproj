@@ -152,7 +152,7 @@
     <Compile Include="Catalog\ManufacturerTemplateService.cs" />
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
-    <Compile Include="Catalog\MergedProductVariant.cs" />
+    <Compile Include="Catalog\ProductAllContext.cs" />
     <Compile Include="Catalog\ProductSearchContext.cs" />
     <Compile Include="Catalog\ProductsSearchingEvent.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />

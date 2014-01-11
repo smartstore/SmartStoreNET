@@ -760,7 +760,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product);
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
 			tokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
 			tokens.Add(new Token("EmailAFriend.Email", customerEmail));
 
@@ -797,13 +797,9 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product);
-            var variant = product.ProductVariants.FirstOrDefault();
-            if (variant != null)
-            {
-                _messageTokenProvider.AddProductVariantTokens(tokens, variant);
-            }
-            tokens.Add(new Token("ProductQuestion.Message", question, true));
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
+
+			tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
             tokens.Add(new Token("ProductQuestion.SenderName", senderName));
             tokens.Add(new Token("ProductQuestion.SenderPhone", senderPhone));
@@ -870,15 +866,15 @@ namespace SmartStore.Services.Messages
         /// Sends 'New Return Request' message to a store owner
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId)
+        public virtual int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId)
         {
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _storeContext.CurrentStore;
+			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId, store.Id);
@@ -889,7 +885,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
-			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, orderItem);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -910,15 +906,15 @@ namespace SmartStore.Services.Messages
         /// Sends 'Return Request status changed' message to a customer
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId)
+        public virtual int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId)
         {
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
-			var store = _storeService.GetStoreById(opv.Order.StoreId) ?? _storeContext.CurrentStore;
+			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId, store.Id);
@@ -929,7 +925,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, returnRequest.Customer);
-			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, opv);
+			_messageTokenProvider.AddReturnRequestTokens(tokens, returnRequest, orderItem);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -1133,8 +1129,8 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("giftCard");
 
 			Store store = null;
-			var order = giftCard.PurchasedWithOrderProductVariant != null ?
-				giftCard.PurchasedWithOrderProductVariant.Order :
+			var order = giftCard.PurchasedWithOrderItem != null ?
+				giftCard.PurchasedWithOrderItem.Order :
 				null;
 			if (order != null)
 				store = _storeService.GetStoreById(order.StoreId);
@@ -1204,13 +1200,13 @@ namespace SmartStore.Services.Messages
         /// <summary>
         /// Sends a "quantity below" notification to a store owner
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendQuantityBelowStoreOwnerNotification(ProductVariant productVariant, int languageId)
+		public virtual int SendQuantityBelowStoreOwnerNotification(Product product, int languageId)
         {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+            if (product == null)
+                throw new ArgumentNullException("product");
 
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
@@ -1221,7 +1217,7 @@ namespace SmartStore.Services.Messages
 
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddProductVariantTokens(tokens, productVariant);
+			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);

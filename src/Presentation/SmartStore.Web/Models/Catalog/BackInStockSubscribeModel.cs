@@ -8,7 +8,6 @@ namespace SmartStore.Web.Models.Catalog
         public string ProductName { get; set; }
         public string ProductSeName { get; set; }
 
-        public int ProductVariantId { get; set; }
         public bool IsCurrentCustomerRegistered { get; set; }
         public bool SubscriptionAllowed { get; set; }
         public bool AlreadySubscribed { get; set; }

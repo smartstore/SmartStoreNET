@@ -51,10 +51,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityInserted<Product>>,
         IConsumer<EntityUpdated<Product>>,
         IConsumer<EntityDeleted<Product>>,
-        //product variants
-        IConsumer<EntityInserted<ProductVariant>>,
-        IConsumer<EntityUpdated<ProductVariant>>,
-        IConsumer<EntityDeleted<ProductVariant>>,
         //product tags
         IConsumer<EntityInserted<ProductTag>>,
         IConsumer<EntityUpdated<ProductTag>>,
@@ -92,9 +88,9 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityUpdated<Order>>,
         IConsumer<EntityDeleted<Order>>,
         //Order product variants
-        IConsumer<EntityInserted<OrderProductVariant>>,
-        IConsumer<EntityUpdated<OrderProductVariant>>,
-        IConsumer<EntityDeleted<OrderProductVariant>>,
+        IConsumer<EntityInserted<OrderItem>>,
+        IConsumer<EntityUpdated<OrderItem>>,
+        IConsumer<EntityDeleted<OrderItem>>,
         //Pictures
         IConsumer<EntityInserted<Picture>>,
         IConsumer<EntityUpdated<Picture>>,
@@ -330,7 +326,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for cart picture caching
         /// </summary>
         /// <remarks>
-        /// {0} : product variant id
+		/// {0} : product id
 		/// {1} : product attribute combination id
         /// {2} : picture size
         /// {3} : value indicating whether a default picture is displayed in case if no real picture exists
@@ -596,25 +592,6 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
 
-        //product variants
-        public void HandleEvent(EntityInserted<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityUpdated<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityDeleted<ProductVariant> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
-        }
-
         //product tags
         public void HandleEvent(EntityInserted<ProductTag> eventMessage)
         {
@@ -748,17 +725,17 @@ namespace SmartStore.Web.Infrastructure.Cache
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
         //Order product variants
-        public void HandleEvent(EntityInserted<OrderProductVariant> eventMessage)
+        public void HandleEvent(EntityInserted<OrderItem> eventMessage)
         {
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
-        public void HandleEvent(EntityUpdated<OrderProductVariant> eventMessage)
+        public void HandleEvent(EntityUpdated<OrderItem> eventMessage)
         {
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
-        public void HandleEvent(EntityDeleted<OrderProductVariant> eventMessage)
+        public void HandleEvent(EntityDeleted<OrderItem> eventMessage)
         {
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);

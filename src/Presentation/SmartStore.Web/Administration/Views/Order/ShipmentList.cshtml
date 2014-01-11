@@ -4,7 +4,6 @@
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    var hideProfitReport = false;
     
     //page title
     ViewBag.Title = T("Admin.Orders.Shipments.List").Text;
@@ -40,6 +39,14 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => Model.EndDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.TrackingNumber)
             </td>
         </tr>
         <tr>
@@ -143,9 +150,10 @@
 
         function onDataBinding(e) {
             var searchModel = {
-                    StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
-                    EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
-                    };
+                StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+                EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
+                TrackingNumber: $('#@Html.FieldIdFor(model => model.TrackingNumber)').val()
+            };
             e.data = searchModel;
         }
     

@@ -86,7 +86,7 @@
     <Compile Include="Catalog\ProductTagPersistenceTests.cs" />
     <Compile Include="Polls\PollPersistenceTests.cs" />
     <Compile Include="Security\AclRecordPersistenceTests.cs" />
-    <Compile Include="Shipping\ShipmentOrderProductVariantPersistenceTests.cs" />
+    <Compile Include="Shipping\ShipmentItemPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
     <Compile Include="Stores\StoreMappingPersistenceTests.cs" />
     <Compile Include="Stores\StorePersistenceTests.cs" />
@@ -103,7 +103,7 @@
     <Compile Include="Orders\ReturnRequestPersistenceTests.cs" />
     <Compile Include="Orders\RecurringPaymentHistoryPersistenceTests.cs" />
     <Compile Include="Orders\RecurringPaymentPersistenceTests.cs" />
-    <Compile Include="Orders\OrderProductVariantPersistenceTests.cs" />
+    <Compile Include="Orders\OrderItemPersistenceTests.cs" />
     <Compile Include="Orders\OrderNotePersistenceTests.cs" />
     <Compile Include="Media\DownloadPersistenceTests.cs" />
     <Compile Include="Messages\EmailAccountPersistenceTests.cs" />
@@ -140,7 +140,6 @@
     <Compile Include="Catalog\ProductPicturePersistenceTests.cs" />
     <Compile Include="Catalog\ProductManufacturerPersistenceTests.cs" />
     <Compile Include="Catalog\ProductCategoryPersistenceTests.cs" />
-    <Compile Include="Catalog\ProductVariantPersistenceTests.cs" />
     <Compile Include="Catalog\ProductPersistenceTests.cs" />
     <Compile Include="Media\PicturePersistenceTests.cs" />
     <Compile Include="Catalog\ManufacturerPersistenceTests.cs" />

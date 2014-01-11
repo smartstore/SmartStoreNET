@@ -990,6 +990,14 @@ namespace SmartStore.Admin.Controllers
                 //No customer found with the specified id
                 return RedirectToAction("List");
 
+			//ensure that a non-admin user cannot impersonate as an administrator
+			//otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
+			if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
+			{
+				ErrorNotification("A non-admin user cannot impersonate as an administrator");
+				return RedirectToAction("Edit", customer.Id);
+			}
+
             _genericAttributeService.SaveAttribute<int?>(_workContext.CurrentCustomer,
                 SystemCustomerAttributeNames.ImpersonatedCustomerId, customer.Id);
 
@@ -1621,13 +1629,11 @@ namespace SmartStore.Admin.Controllers
                     {
                         Id = sci.Id,
 						Store = store != null ? store.Name : "Unknown",
-                        ProductVariantId = sci.ProductVariantId,
+						ProductId = sci.ProductId,
                         Quantity = sci.Quantity,
-                        FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?
-                            string.Format("{0} ({1})", sci.ProductVariant.Product.Name, sci.ProductVariant.Name) :
-                            sci.ProductVariant.Product.Name,
-                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
-                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
+						ProductName = sci.Product.Name,
+                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
+                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
                         UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.UpdatedOnUtc, DateTimeKind.Utc)
                     };
                     return sciModel;

@@ -6,7 +6,6 @@ namespace SmartStore.Admin.Models.Catalog
 {
     public class CopyProductModel : EntityModelBase
     {
-
         [SmartResourceDisplayName("Admin.Catalog.Products.Copy.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -16,6 +15,5 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Copy.Published")]
         public bool Published { get; set; }
-
     }
 }

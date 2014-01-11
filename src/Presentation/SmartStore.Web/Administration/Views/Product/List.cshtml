@@ -82,6 +82,14 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.GoDirectlyToSku)
             </td>
             <td class="adminData">
@@ -91,7 +99,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button type="submit" id="search-products" value="search-products" class="t-button">@T("Admin.Common.Search")</button>
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -105,13 +113,13 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id)
-                        .Filterable(false)
-                        .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-                        .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                        .Title("<input id='mastercheckbox' type='checkbox'/>")
-                        .Width(50)
-                        .HtmlAttributes(new { style = "text-align:center" })
-                        .HeaderHtmlAttributes(new { style = "text-align:center" });
+                            .Filterable(false)
+                            .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                            .Title("<input id='mastercheckbox' type='checkbox'/>")
+                            .Width(50)
+                            .HtmlAttributes(new { style = "text-align:center" })
+                            .HeaderHtmlAttributes(new { style = "text-align:center" });
 
                         if (Model.DisplayProductPictures)
                         {
@@ -127,6 +135,10 @@
                         columns.Bound(x => x.Name)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.Sku);
+                        columns.Bound(x => x.Price);
+                        columns.Bound(x => x.ProductTypeName);                        
+                        columns.Bound(x => x.StockQuantity);
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))
@@ -139,60 +151,10 @@
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                             .Title(T("Admin.Common.Edit").Text);
                     })
-                    .DetailView(details => details.ClientTemplate(
-                            Html.Telerik().Grid<ProductVariantModel>()
-                            .Name("variants-grid-<#= Id #>")
-                            .Columns(columns =>
-                            {
-                                columns.Bound(pv => pv.Name)
-                                .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
-                                columns.Bound(pv => pv.Sku).Width(100);
-                                columns.Bound(pv => pv.Price).Width(100);
-                                columns.Bound(pv => pv.StockQuantity).Width(100);
-                                columns.Bound(pv => pv.Published)
-                                    .Width(100)
-                                    .Template(item => @Html.SymbolForBool(item.Published))
-                                    .ClientTemplate(@Html.SymbolForBool("Published"))
-                                    .Centered();
-                            })
-                            .DataBinding(dataBinding => dataBinding.Ajax()
-                                .Select("GetVariants", "Product", new
-                                {
-                                    productId =
-                                        "<#= Id #>"
-                                }))
-                            .ToHtmlString()
-                        )
-                        .Template(
-
-
-                            @<text>
-                            @(Html.Telerik().Grid(item.ProductVariantModels)
-                                                .Name("variants-grid-" + item.Id)
-                                                .Columns(columns =>
-                                                {
-                                                    columns.Bound(pv => pv.Name)
-                                                    .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
-                                                    .ClientTemplate("<a href=\""+ @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
-                                                    columns.Bound(pv => pv.Sku).Width(100);
-                                                    columns.Bound(pv => pv.Price).Width(100);
-                                                    columns.Bound(pv => pv.StockQuantity).Width(100);
-                                                    columns.Bound(pv => pv.Published)
-                                                    .Width(100)
-                                                    .Template(pv => pv.Published.ToString().ToLower())
-                                                    .Centered();
-                                                })
-                                        )
-                            </text>
-
-
-                                            )
-                                            )
-                                            .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                                            .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
-                                            .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-                                            .EnableCustomBinding(true))
+                    .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+                    .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+                    .EnableCustomBinding(true))
             </td>
         </tr>
     </table>
@@ -286,7 +248,8 @@
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
                 SearchManufacturerId: $('#SearchManufacturerId').val(),
-                SearchStoreId: $('#SearchStoreId').val()
+                SearchStoreId: $('#SearchStoreId').val(),
+                SearchProductTypeId: $('#SearchProductTypeId').val()
             };
             e.data = searchModel;
         }

@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
 {
@@ -44,8 +45,8 @@ namespace SmartStore.Services.Orders
         {
             foreach (ShoppingCartItem sci in shoppingCart)
             {
-                var productVariant = sci.ProductVariant;
-                if (productVariant != null && productVariant.IsRecurring)
+                var product = sci.Product;
+                if (product != null && product.IsRecurring)
                     return true;
             }
             return false;
@@ -55,11 +56,12 @@ namespace SmartStore.Services.Orders
         /// Get a recurring cycle information
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
+		/// <param name="localizationService">Localization service</param>
         /// <param name="cycleLength">Cycle length</param>
         /// <param name="cyclePeriod">Cycle period</param>
         /// <param name="totalCycles">Total cycles</param>
         /// <returns>Error (if exists); otherwise, empty string</returns>
-        public static string GetRecurringCycleInfo(this IList<ShoppingCartItem> shoppingCart,
+		public static string GetRecurringCycleInfo(this IList<ShoppingCartItem> shoppingCart, ILocalizationService localizationService,
             out int cycleLength, out RecurringProductCyclePeriod cyclePeriod, out int totalCycles)
         {
             string error = "";
@@ -74,55 +76,51 @@ namespace SmartStore.Services.Orders
 
             foreach (var sci in shoppingCart)
             {
-                var productVariant = sci.ProductVariant;
-                if (productVariant == null)
+                var product = sci.Product;
+                if (product == null)
                 {
-                    throw new SmartException(string.Format("Product variant (Id={0}) cannot be loaded", sci.ProductVariantId));
+                    throw new SmartException(string.Format("Product (Id={0}) cannot be loaded", sci.ProductId));
                 }
 
-                string conflictError = "Your cart has auto-ship (recurring) items with conflicting shipment schedules. Only one auto-ship schedule is allowed per order.";
-                if (productVariant.IsRecurring)
+				string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
+                if (product.IsRecurring)
                 {
                     //cycle length
-                    if (_cycleLength.HasValue && _cycleLength.Value != productVariant.RecurringCycleLength)
+                    if (_cycleLength.HasValue && _cycleLength.Value != product.RecurringCycleLength)
                     {
                         error = conflictError;
                         return error;
                     }
                     else
                     {
-                        _cycleLength = productVariant.RecurringCycleLength;
+                        _cycleLength = product.RecurringCycleLength;
                     }
 
                     //cycle period
-                    if (_cyclePeriod.HasValue && _cyclePeriod.Value != productVariant.RecurringCyclePeriod)
+                    if (_cyclePeriod.HasValue && _cyclePeriod.Value != product.RecurringCyclePeriod)
                     {
                         error = conflictError;
                         return error;
                     }
                     else
                     {
-                        _cyclePeriod = productVariant.RecurringCyclePeriod;
+                        _cyclePeriod = product.RecurringCyclePeriod;
                     }
 
                     //total cycles
-                    if (_totalCycles.HasValue && _totalCycles.Value != productVariant.RecurringTotalCycles)
+                    if (_totalCycles.HasValue && _totalCycles.Value != product.RecurringTotalCycles)
                     {
                         error = conflictError;
                         return error;
                     }
                     else
                     {
-                        _totalCycles = productVariant.RecurringTotalCycles;
+                        _totalCycles = product.RecurringTotalCycles;
                     }
                 }
             }
 
-            if (!_cycleLength.HasValue || !_cyclePeriod.HasValue || !_totalCycles.HasValue)
-            {
-                error = "No recurring products";
-            }
-            else
+			if (_cycleLength.HasValue && _cyclePeriod.HasValue && _totalCycles.HasValue)
             {
                 cycleLength = _cycleLength.Value;
                 cyclePeriod = _cyclePeriod.Value;

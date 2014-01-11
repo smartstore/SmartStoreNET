@@ -11,7 +11,7 @@ namespace SmartStore.Web.Models.Order
         {
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
-            Items = new List<OrderProductVariantModel>();
+            Items = new List<OrderItemModel>();
             OrderNotes = new List<OrderNote>();
             Shipments = new List<ShipmentBriefModel>();
 
@@ -63,13 +63,13 @@ namespace SmartStore.Web.Models.Order
         public IList<GiftCard> GiftCards { get; set; }
 
         public bool ShowSku { get; set; }
-        public IList<OrderProductVariantModel> Items { get; set; }
+        public IList<OrderItemModel> Items { get; set; }
 
         public IList<OrderNote> OrderNotes { get; set; }
 
         #region Nested Classes
 
-        public partial class OrderProductVariantModel : EntityModelBase
+        public partial class OrderItemModel : EntityModelBase
         {
             public string Sku { get; set; }
             public int ProductId { get; set; }

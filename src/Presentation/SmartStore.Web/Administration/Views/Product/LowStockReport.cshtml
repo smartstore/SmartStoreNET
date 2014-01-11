@@ -1,0 +1,51 @@
+﻿@model Telerik.Web.Mvc.GridModel<ProductModel>
+
+@using Telerik.Web.Mvc.UI
+@using SmartStore.Web.Framework.UI;
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+
+    ViewBag.Title = T("Admin.Catalog.LowStockReport").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-bar-chart"></i>
+            @T("Admin.Catalog.LowStockReport")
+        </div>
+        <div class="options">
+        </div>
+    </div>
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel>(Model.Data)
+                    .Name("products-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.Name);
+                        columns.Bound(p => p.Sku).Width(100);
+                        columns.Bound(p => p.Price).Width(100);
+                        columns.Bound(p => p.StockQuantity).Width(100);
+                        columns.Bound(p => p.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Width(50)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+}

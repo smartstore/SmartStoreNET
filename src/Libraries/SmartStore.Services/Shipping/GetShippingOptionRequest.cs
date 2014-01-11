@@ -57,9 +57,9 @@ namespace SmartStore.Services.Shipping
             decimal totalWidth = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var productVariant = shoppingCartItem.ProductVariant;
-                if (productVariant != null)
-                    totalWidth += productVariant.Width * shoppingCartItem.Quantity;
+                var product = shoppingCartItem.Product;
+                if (product != null)
+                    totalWidth += product.Width * shoppingCartItem.Quantity;
             }
             return totalWidth;
         }
@@ -73,9 +73,9 @@ namespace SmartStore.Services.Shipping
             decimal totalLength = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var productVariant = shoppingCartItem.ProductVariant;
-                if (productVariant != null)
-                    totalLength += productVariant.Length * shoppingCartItem.Quantity;
+                var product = shoppingCartItem.Product;
+                if (product != null)
+                    totalLength += product.Length * shoppingCartItem.Quantity;
             }
             return totalLength;
         }
@@ -89,9 +89,9 @@ namespace SmartStore.Services.Shipping
             decimal totalHeight = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var productVariant = shoppingCartItem.ProductVariant;
-                if (productVariant != null)
-                    totalHeight += productVariant.Height * shoppingCartItem.Quantity;
+                var product = shoppingCartItem.Product;
+                if (product != null)
+                    totalHeight += product.Height * shoppingCartItem.Quantity;
             }
             return totalHeight;
         }

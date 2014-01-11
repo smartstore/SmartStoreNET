@@ -301,5 +301,18 @@ namespace SmartStore.Web.Framework
 			return lst;
 		}
 
+		public static void SelectValue(this List<SelectListItem> lst, string value, string defaultValue = null)
+		{
+			if (lst != null)
+			{
+				var itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(value));
+
+				if (itm == null && defaultValue != null)
+					itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(defaultValue));
+
+				if (itm != null)
+					itm.Selected = true;
+			}
+		}
     }
 }

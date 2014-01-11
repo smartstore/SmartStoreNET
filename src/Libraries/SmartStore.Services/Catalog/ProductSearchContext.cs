@@ -109,5 +109,25 @@ namespace SmartStore.Services.Catalog
 		/// Store identifier; 0 to load all records
 		/// </summary>
 		public int StoreId { get; set; }
+
+		/// <summary>
+		/// Parent product identifier (used with grouped products); 0 to load all records
+		/// </summary>
+		public int ParentGroupedProductId { get; set; }
+
+		/// <summary>
+		/// A values indicating whether to load only products marked as "visible individually"; "false" to load all records; "true" to load "visible individually" only
+		/// </summary>
+		public bool VisibleIndividuallyOnly { get; set; }
+
+		/// <summary>
+		/// Product type; 0 to load all records
+		/// </summary>
+		public ProductType? ProductType { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to search by a specified "Keyword" in product SKU
+		/// </summary>
+		public bool SearchSku { get; set; }
     }
 }

@@ -9,14 +9,14 @@ namespace SmartStore.Web.Models.Order
     {
         public SubmitReturnRequestModel()
         {
-            Items = new List<OrderProductVariantModel>();
+            Items = new List<OrderItemModel>();
             AvailableReturnReasons = new List<SelectListItem>();
             AvailableReturnActions= new List<SelectListItem>();
         }
 
         public int OrderId { get; set; }
         
-        public IList<OrderProductVariantModel> Items { get; set; }
+        public IList<OrderItemModel> Items { get; set; }
         
         [AllowHtml]
         [SmartResourceDisplayName("ReturnRequests.ReturnReason")]
@@ -36,7 +36,7 @@ namespace SmartStore.Web.Models.Order
         
         #region Nested classes
 
-        public partial class OrderProductVariantModel : EntityModelBase
+        public partial class OrderItemModel : EntityModelBase
         {
             public int ProductId { get; set; }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Plugin.Widgets.GoogleAnalytics.Models;
 using SmartStore.Services.Catalog;
@@ -208,19 +209,19 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
 
                 var sb = new StringBuilder();
-                foreach (var item in order.OrderProductVariants)
+                foreach (var item in order.OrderItems)
                 {
                     string analyticsEcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
                     //get category
                     string categ = "";
-                    var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductVariant.ProductId).FirstOrDefault();
+                    var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductId).FirstOrDefault();
                     if (defaultProductCategory != null)
                         categ = defaultProductCategory.Category.Name;
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
                     //The SKU code is a required parameter for every item that is added to the transaction
-                    item.ProductVariant.MergeWithCombination(item.AttributesXml);
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.ProductVariant.Sku));
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.ProductVariant.FullProductName));
+                    item.Product.MergeWithCombination(item.AttributesXml);
+                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
+                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categ));
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{UNITPRICE}", item.UnitPriceInclTax.ToString("0.00", usCulture));
                     analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{QUANTITY}", item.Quantity.ToString());

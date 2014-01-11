@@ -1,0 +1,116 @@
+﻿@model ProductModel.ProductVariantAttributeValueListModel
+
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Web.Framework.UI;
+
+@{    
+    //page title
+    ViewBag.Title = string.Format(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName);
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "productvariantattribute-form" }))
+{
+<div class="section-header">
+    <div class="title">
+        @string.Format(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails").Text, Model.ProductVariantAttributeName, Model.ProductName)
+        @Html.ActionLink("(" + T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.BackToProduct") + ")", "Edit", "Product", new { Id = Model.ProductId }, null)
+    </div>
+    <div class="options">
+    </div>
+</div>
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<ProductModel.ProductVariantAttributeValueModel>()
+                            .Name("pvav-grid")
+                            .DataKeys(x =>
+                            {
+                                x.Add(y => y.Id).RouteKey("pvavId");
+                                x.Add(y => y.ProductVariantAttributeId).RouteKey("productVariantAttributeId");
+                            })
+                            .Columns(columns =>
+                            {
+                                //columns.Bound(x => x.Name)
+                                //    .Width(300);
+                                columns
+                                    .Bound(x => x.Name)
+                                    .Template(@<text>
+                                        @if(!String.IsNullOrEmpty(item.ColorSquaresRgb)){
+                                            <div><span class="color-container"><span class="color" style="background:@item.ColorSquaresRgb">&nbsp;</span></span><span class="color-label">@item.Name</span></div>
+                                        } 
+                                        else 
+                                        {
+                                            <div>@item.Name</div>
+                                        }
+                                    </text>)
+                                    .ClientTemplate(
+                                        "<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
+                                        "<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" + 
+                                        "<span class=\"color-label\"><#= Name #></span>" +
+                                        "<# } else { #>" +
+                                        "<span class=\"color-label\"><#= Name #></span>" +
+                                        "<# } #>"
+                                        )
+                                        
+                                    .Width(300);
+
+                                //TODO display localized values here
+                                columns.Bound(x => x.Alias)
+                                    .Width(200);
+                                columns.Bound(x => x.PriceAdjustment)
+                                    .Width(100)
+                                    .Format("{0:G29}")
+                                    .Centered();
+                                columns.Bound(x => x.WeightAdjustment)
+                                    .Width(100)
+                                    .Format("{0:G29}")
+                                    .Centered();
+                                columns.Bound(x => x.IsPreSelected)
+                                    .Width(100)
+                                    .Template(item => @Html.SymbolForBool(item.IsPreSelected))
+                                    .ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
+                                    .Centered();
+                                columns.Bound(x => x.DisplayOrder)
+                                    .Width(100)
+                                    .Centered();
+                                columns.Bound(x => x.Id)
+                                    .Width(50)
+                                    .Centered()
+                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productvariantattribute-form', 800, 350, true); return false;\" class='t-button' />")
+                                    .Title(T("Admin.Common.Edit").Text);
+                                columns.Command(commands =>
+                                {
+                                    commands.Delete().Localize(T);
+                                })
+                                .Width(50)
+                                .Title(T("Admin.Common.Delete").Text);
+                            })
+                            .DataBinding(dataBinding =>
+                                dataBinding.Ajax()
+                                .Select("ProductAttributeValueList", "Product", new { productVariantAttributeId = Model.ProductVariantAttributeId })
+                                .Delete("ProductAttributeValueDelete", "Product"))
+                            .EnableCustomBinding(true))
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-top: 12px">
+            <button class="btn btn-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 800, 350, true); return false;">
+                <i class="icon-plus"></i>
+                @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")
+            </button>
+            <button type="submit" id="btnRefresh" name="btnRefresh" value="btnRefresh" class="hide" />
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#btnRefresh').click(function () {
+                        //refresh grid
+                        var optionsGrid = $("#pvav-grid");
+                        optionsGrid.data('tGrid').ajaxRequest();
+
+                        //return false to don't reload a page
+                        return false;
+                    });
+                });
+            </script>
+        </td>
+    </tr>
+</table>
+}

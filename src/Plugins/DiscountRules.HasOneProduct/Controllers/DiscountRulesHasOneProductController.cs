@@ -37,7 +37,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Controllers
             var model = new RequirementModel();
             model.RequirementId = discountRequirementId.HasValue ? discountRequirementId.Value : 0;
             model.DiscountId = discountId;
-            model.ProductVariants = discountRequirement != null ? discountRequirement.RestrictedProductVariantIds : "";
+            model.Products = discountRequirement != null ? discountRequirement.RestrictedProductIds : "";
 
             //add a prefix
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesHasOneProduct{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
@@ -46,7 +46,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Controllers
         }
 
         [HttpPost]
-        public ActionResult Configure(int discountId, int? discountRequirementId, string variantIds)
+        public ActionResult Configure(int discountId, int? discountRequirementId, string productIds)
         {
             var discount = _discountService.GetDiscountById(discountId);
             if (discount == null)
@@ -59,7 +59,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Controllers
             if (discountRequirement != null)
             {
                 //update existing rule
-                discountRequirement.RestrictedProductVariantIds = variantIds;
+                discountRequirement.RestrictedProductIds = productIds;
                 _discountService.UpdateDiscount(discount);
             }
             else
@@ -68,7 +68,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Controllers
                 discountRequirement = new DiscountRequirement()
                 {
                     DiscountRequirementRuleSystemName = "DiscountRequirement.HasOneProduct",
-                    RestrictedProductVariantIds = variantIds,
+                    RestrictedProductIds = productIds,
                 };
                 discount.DiscountRequirements.Add(discountRequirement);
                 _discountService.UpdateDiscount(discount);

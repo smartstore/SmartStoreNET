@@ -334,6 +334,15 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExpirationDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExpirationDays)
+            @Html.ValidationMessageFor(m => m.ExpirationDays)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(m => m.UseOwnProductNo)
         </td>
         <td class="adminData">
@@ -419,11 +428,11 @@
             @(Html.Telerik().Grid<GoogleProductModel>()
 				.Name("froogleproducts-grid")
 				.DataKeys(keys => {
-					keys.Add(x => x.ProductVariantId).RouteKey("ProductVariantId");
+					keys.Add(x => x.ProductId).RouteKey("ProductId");
 				})
 				.Columns(c => {
-					c.Bound(x => x.ProductVariantId).ReadOnly().Visible(false);
-					c.Bound(x => x.FullProductVariantName).ReadOnly().Visible(true).Width(440);
+					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
+					c.Bound(x => x.ProductName).ReadOnly().Visible(true).Width(440);
 					c.Bound(x => x.GoogleCategory).ClientTemplate(Html.XEditableLink("GoogleCategory", "typeahead"));
 					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
 					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);

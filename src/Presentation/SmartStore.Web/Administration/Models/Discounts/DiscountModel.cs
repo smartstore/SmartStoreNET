@@ -15,7 +15,7 @@ namespace SmartStore.Admin.Models.Discounts
         public DiscountModel()
         {
             AppliedToCategoryModels = new List<AppliedToCategoryModel>();
-            AppliedToProductVariantModels = new List<AppliedToProductVariantModel>();
+            AppliedToProductModels = new List<AppliedToProductModel>();
             AvailableDiscountRequirementRules = new List<SelectListItem>();
             DiscountRequirementMetaInfos = new List<DiscountRequirementMetaInfo>();
         }
@@ -60,8 +60,8 @@ namespace SmartStore.Admin.Models.Discounts
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToCategories")]
         public IList<AppliedToCategoryModel> AppliedToCategoryModels { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProductVariants")]
-        public IList<AppliedToProductVariantModel> AppliedToProductVariantModels { get; set; }
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProducts")]
+        public IList<AppliedToProductModel> AppliedToProductModels { get; set; }
 
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements.DiscountRequirementType")]
@@ -99,11 +99,11 @@ namespace SmartStore.Admin.Models.Discounts
             public string Name { get; set; }
         }
 
-        public class AppliedToProductVariantModel : ModelBase
+        public class AppliedToProductModel : ModelBase
         {
-            public int ProductVariantId { get; set; }
+            public int ProductId { get; set; }
 
-            public string FullProductName { get; set; }
+            public string ProductName { get; set; }
         }
         #endregion
     }

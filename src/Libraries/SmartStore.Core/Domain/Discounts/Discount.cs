@@ -13,7 +13,7 @@ namespace SmartStore.Core.Domain.Discounts
     {
         private ICollection<DiscountRequirement> _discountRequirements;
         private ICollection<Category> _appliedToCategories;
-        private ICollection<ProductVariant> _appliedToProductVariants;
+		private ICollection<Product> _appliedToProducts;
 
         /// <summary>
         /// Gets or sets the name
@@ -132,13 +132,13 @@ namespace SmartStore.Core.Domain.Discounts
             protected set { _appliedToCategories = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the product variants 
-        /// </summary>
-        public virtual ICollection<ProductVariant> AppliedToProductVariants
-        {
-            get { return _appliedToProductVariants ?? (_appliedToProductVariants = new List<ProductVariant>()); }
-            protected set { _appliedToProductVariants = value; }
-        }
+		/// <summary>
+		/// Gets or sets the products 
+		/// </summary>
+		public virtual ICollection<Product> AppliedToProducts
+		{
+			get { return _appliedToProducts ?? (_appliedToProducts = new List<Product>()); }
+			protected set { _appliedToProducts = value; }
+		}
     }
 }

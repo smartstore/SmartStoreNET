@@ -47,10 +47,10 @@ namespace SmartStore.Admin.Controllers
 		{
 			var stores = _storeService.GetAllStores();
 
-            if (label.HasValue())
-            {
-                stores.Insert(0, new Store { Name = label, Id = 0 });
-            }
+			if (label.HasValue())
+			{
+				stores.Insert(0, new Store { Name = label, Id = 0 });
+			}
 
 			var list = 
 				from m in stores

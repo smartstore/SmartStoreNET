@@ -23,7 +23,7 @@ namespace SmartStore.Core.Domain.Orders
         private ICollection<DiscountUsageHistory> _discountUsageHistory;
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
         private ICollection<OrderNote> _orderNotes;
-        private ICollection<OrderProductVariant> _orderProductVariant;
+        private ICollection<OrderItem> _orderItems;
         private ICollection<Shipment> _shipments;
 
         #region Utilities
@@ -477,12 +477,12 @@ namespace SmartStore.Core.Domain.Orders
         }
 
         /// <summary>
-        /// Gets or sets order product variants
+        /// Gets or sets order items
         /// </summary>
-        public virtual ICollection<OrderProductVariant> OrderProductVariants
+        public virtual ICollection<OrderItem> OrderItems
         {
-            get { return _orderProductVariant ?? (_orderProductVariant = new List<OrderProductVariant>()); }
-            protected set { _orderProductVariant = value; }
+            get { return _orderItems ?? (_orderItems = new List<OrderItem>()); }
+            protected set { _orderItems = value; }
         }
 
         /// <summary>

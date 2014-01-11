@@ -338,7 +338,7 @@ namespace SmartStore.Services.Common
                 doc.Add(new Paragraph(" "));
 
 
-                var orderProductVariants = _orderService.GetAllOrderProductVariants(order.Id, null, null, null, null, null, null);
+                var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
 
                 var productsTable = new PdfPTable(_catalogSettings.ShowProductSku ? 5 : 4);
                 productsTable.WidthPercentage = 100f;
@@ -377,29 +377,25 @@ namespace SmartStore.Services.Common
                 cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 productsTable.AddCell(cell);
 
-                for (int i = 0; i < orderProductVariants.Count; i++)
+                for (int i = 0; i < orderItems.Count; i++)
                 {
-                    var orderProductVariant = orderProductVariants[i];
-                    var pv = orderProductVariant.ProductVariant;
+                    var orderItem = orderItems[i];
+                    var p = orderItem.Product;
 
                     //product name
-                    string name = "";
-                    if (!String.IsNullOrEmpty(pv.GetLocalized(x => x.Name, lang.Id)))
-                        name = string.Format("{0} ({1})", pv.Product.GetLocalized(x => x.Name, lang.Id), pv.GetLocalized(x => x.Name, lang.Id));
-                    else
-                        name = pv.Product.GetLocalized(x => x.Name, lang.Id);
+					string name = p.GetLocalized(x => x.Name, lang.Id);
                     cell = new PdfPCell();
                     cell.AddElement(new Paragraph(name, font));
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderProductVariant.AttributeDescription, true, true), attributesFont);
+                    var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderItem.AttributeDescription, true, true), attributesFont);
                     cell.AddElement(attributesParagraph);
                     productsTable.AddCell(cell);
 
                     //SKU
                     if (_catalogSettings.ShowProductSku)
                     {
-                        pv.MergeWithCombination(orderProductVariant.AttributesXml, _productAttributeParser);
-                        cell = new PdfPCell(new Phrase(pv.Sku ?? String.Empty, font));
+						p.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+                        cell = new PdfPCell(new Phrase(p.Sku ?? String.Empty, font));
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);
                     }
@@ -410,14 +406,14 @@ namespace SmartStore.Services.Common
                     {
                         case TaxDisplayType.ExcludingTax:
                             {
-                                var opvUnitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderProductVariant.UnitPriceExclTax, order.CurrencyRate);
-                                unitPrice = _priceFormatter.FormatPrice(opvUnitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, false);
+                                var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
+                                unitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, false);
                             }
                             break;
                         case TaxDisplayType.IncludingTax:
                             {
-                                var opvUnitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderProductVariant.UnitPriceInclTax, order.CurrencyRate);
-                                unitPrice = _priceFormatter.FormatPrice(opvUnitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, true);
+                                var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
+                                unitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, true);
                             }
                             break;
                     }
@@ -426,7 +422,7 @@ namespace SmartStore.Services.Common
                     productsTable.AddCell(cell);
 
                     //qty
-                    cell = new PdfPCell(new Phrase(orderProductVariant.Quantity.ToString(), font));
+                    cell = new PdfPCell(new Phrase(orderItem.Quantity.ToString(), font));
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     productsTable.AddCell(cell);
 
@@ -436,14 +432,14 @@ namespace SmartStore.Services.Common
                     {
                         case TaxDisplayType.ExcludingTax:
                             {
-                                var opvPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderProductVariant.PriceExclTax, order.CurrencyRate);
-                                subTotal = _priceFormatter.FormatPrice(opvPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, false);
+                                var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
+                                subTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, false);
                             }
                             break;
                         case TaxDisplayType.IncludingTax:
                             {
-                                var opvPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderProductVariant.PriceInclTax, order.CurrencyRate);
-                                subTotal = _priceFormatter.FormatPrice(opvPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, true);
+                                var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
+                                subTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, lang, true);
                             }
                             break;
                     }
@@ -817,34 +813,30 @@ namespace SmartStore.Services.Common
                     cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     productsTable.AddCell(cell);
 
-                    foreach (var sopv in shipment.ShipmentOrderProductVariants)
+                    foreach (var si in shipment.ShipmentItems)
                     {
                         //product name
-                        var opv = _orderService.GetOrderProductVariantById(sopv.OrderProductVariantId);
-                        if (opv == null)
+                        var orderItem = _orderService.GetOrderItemById(si.OrderItemId);
+                        if (orderItem == null)
                             continue;
 
-                        var pv = opv.ProductVariant;
-                        string name = "";
-                        if (!String.IsNullOrEmpty(pv.GetLocalized(x => x.Name, lang.Id)))
-                            name = string.Format("{0} ({1})", pv.Product.GetLocalized(x => x.Name, lang.Id), pv.GetLocalized(x => x.Name, lang.Id));
-                        else
-                            name = pv.Product.GetLocalized(x => x.Name, lang.Id);
+                        var p = orderItem.Product;
+						string name = p.GetLocalized(x => x.Name, lang.Id);
                         cell = new PdfPCell();
                         cell.AddElement(new Paragraph(name, font));
                         cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(opv.AttributeDescription, true, true), attributesFont);
+                        var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderItem.AttributeDescription, true, true), attributesFont);
                         cell.AddElement(attributesParagraph);
                         productsTable.AddCell(cell);
 
                         //SKU
-                        pv.MergeWithCombination(opv.AttributesXml, _productAttributeParser);
-                        cell = new PdfPCell(new Phrase(pv.Sku ?? String.Empty, font));
+                        p.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+                        cell = new PdfPCell(new Phrase(p.Sku ?? String.Empty, font));
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);
 
                         //qty
-                        cell = new PdfPCell(new Phrase(sopv.Quantity.ToString(), font));
+                        cell = new PdfPCell(new Phrase(si.Quantity.ToString(), font));
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);
                     }
@@ -909,6 +901,20 @@ namespace SmartStore.Services.Common
                 doc.Add(new Paragraph(HtmlUtils.StripTags(HtmlUtils.ConvertHtmlToPlainText(productFullDescription)), font));
                 doc.Add(new Paragraph(" "));
 
+				if (product.ProductType == ProductType.SimpleProduct)
+				{
+					doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Price", lang.Id), product.Price.ToString("0.00"), _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode), font));
+					doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id), product.Sku), font));
+
+					if (product.IsShipEnabled && product.Weight > Decimal.Zero)
+						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id), product.Weight.ToString("0.00"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name), font));
+
+					if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+						doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id), product.StockQuantity), font));
+
+					doc.Add(new Paragraph(" "));
+				}
+
                 var pictures = _pictureService.GetPicturesByProductId(product.Id);
                 if (pictures.Count > 0)
                 {
@@ -945,47 +951,55 @@ namespace SmartStore.Services.Common
                     doc.Add(new Paragraph(" "));
                 }
 
-                int pvNum = 1;
+				if (product.ProductType == ProductType.GroupedProduct)
+				{
+					//grouped product. render its associated products
+					int pvNum = 1;
+					var searchContext = new ProductSearchContext()
+					{
+						ParentGroupedProductId = product.Id,
+						ShowHidden = true
+					};
 
-                foreach (var productVariant in _productService.GetProductVariantsByProductId(product.Id, true))
-                {
-                    string pvName = String.IsNullOrEmpty(productVariant.GetLocalized(x => x.Name, lang.Id)) ? _localizationService.GetResource("PDFProductCatalog.UnnamedProductVariant", lang.Id) : productVariant.GetLocalized(x => x.Name, lang.Id);
+					foreach (var associatedProduct in _productService.SearchProducts(searchContext))
+					{
+						doc.Add(new Paragraph(String.Format("{0}-{1}. {2}", productNumber, pvNum, associatedProduct.GetLocalized(x => x.Name, lang.Id)), font));
+						doc.Add(new Paragraph(" "));
 
-                    doc.Add(new Paragraph(String.Format("{0}.{1}. {2}", productNumber, pvNum, pvName), font));
-                    doc.Add(new Paragraph(" "));
+						//uncomment to render associated product description
+						//string apDescription = associatedProduct.GetLocalized(x => x.ShortDescription, lang.Id);
+						//if (!String.IsNullOrEmpty(apDescription))
+						//{
+						//    doc.Add(new Paragraph(HtmlHelper.StripTags(HtmlHelper.ConvertHtmlToPlainText(apDescription)), font));
+						//    doc.Add(new Paragraph(" "));
+						//}
 
-                    string productVariantDescription = productVariant.GetLocalized(x => x.Description, lang.Id);
-                    if (!String.IsNullOrEmpty(productVariantDescription))
-                    {
-                        doc.Add(new Paragraph(HtmlUtils.StripTags(HtmlUtils.ConvertHtmlToPlainText(productVariantDescription)), font));
-                        doc.Add(new Paragraph(" "));
-                    }
+						//uncomment to render associated product picture
+						//var apPicture = _pictureService.GetPicturesByProductId(associatedProduct.Id).FirstOrDefault();
+						//if (apPicture != null)
+						//{
+						//    var picBinary = _pictureService.LoadPictureBinary(apPicture);
+						//    if (picBinary != null && picBinary.Length > 0)
+						//    {
+						//        var pictureLocalPath = _pictureService.GetThumbLocalPath(apPicture, 200, false);
+						//        doc.Add(Image.GetInstance(pictureLocalPath));
+						//    }
+						//}
 
-                    var pic = _pictureService.GetPictureById(productVariant.PictureId);
-                    if (pic != null)
-                    {
-                        var picBinary = _pictureService.LoadPictureBinary(pic);
-                        if (picBinary != null && picBinary.Length > 0)
-                        {
-                            var pictureLocalPath = _pictureService.GetThumbLocalPath(pic, 200, false);
-							if (pictureLocalPath.HasValue())
-								doc.Add(Image.GetInstance(pictureLocalPath));
-                        }
-                    }
+						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Price", lang.Id), associatedProduct.Price.ToString("0.00"), _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id), associatedProduct.Sku), font));
 
-                    doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Price", lang.Id), productVariant.Price.ToString("0.00"), _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode), font));
-                    doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id), productVariant.Sku), font));
+						if (associatedProduct.IsShipEnabled && associatedProduct.Weight > Decimal.Zero)
+							doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id), associatedProduct.Weight.ToString("0.00"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name), font));
 
-                    if (productVariant.IsShipEnabled && productVariant.Weight > Decimal.Zero)
-                        doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id), productVariant.Weight.ToString("0.00"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name), font));
+						if (associatedProduct.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+							doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id), associatedProduct.StockQuantity), font));
 
-                    if (productVariant.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-                        doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id), productVariant.StockQuantity), font));
+						doc.Add(new Paragraph(" "));
 
-                    doc.Add(new Paragraph(" "));
-
-                    pvNum++;
-                }
+						pvNum++;
+					}
+				}
 
                 productNumber++;
 

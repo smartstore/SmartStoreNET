@@ -89,6 +89,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisableOrderCompletedPage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DisableOrderCompletedPage)
+                @Html.ValidationMessageFor(model => model.DisableOrderCompletedPage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.GiftCards_Activated_OrderStatusId)
             </td>
             <td class="adminData">

@@ -659,6 +659,15 @@
                 @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SuppressSkuSearch)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SuppressSkuSearch)
+                @Html.ValidationMessageFor(model => model.SuppressSkuSearch)
+            </td>
+        </tr>
     </table>
 } 
     <table>

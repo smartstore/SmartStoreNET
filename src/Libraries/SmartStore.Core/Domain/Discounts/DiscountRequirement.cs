@@ -37,9 +37,9 @@
         public int? RestrictedToCustomerRoleId { get; set; }
 
         /// <summary>
-        /// Gets or sets the restricted product variant identifiers (comma separated)
+        /// Gets or sets the restricted product identifiers (comma separated)
         /// </summary>
-        public string RestrictedProductVariantIds { get; set; }
+        public string RestrictedProductIds { get; set; }
 
 		/// <summary>
 		/// Gets or sets the restricted payment methods (comma separated)

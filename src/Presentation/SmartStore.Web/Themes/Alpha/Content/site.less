@@ -1,4 +1,12 @@
 ﻿
+.checkbox input[type="checkbox"] {
+    margin-top: 4px;
+}
+
+// required for placeholder plugin (< IE10)
+input.placeholder {
+	color: @grayLight !important;
+}
 
 .control-group.buttons {
 	border-top: 1px solid #ddd;
@@ -1993,6 +2001,10 @@ table.cart .cart-item-row .qty-input {
 }
 .product-variant-line .variant-description {
 	margin: 5px 0;
+    clear: both;
+}
+.product-details-page .no-associated-products {
+    font-weight: bold;
 }
 .control-label.required {
 	color: inherit;

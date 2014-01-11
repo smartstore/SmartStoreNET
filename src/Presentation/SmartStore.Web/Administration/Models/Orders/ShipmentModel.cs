@@ -8,7 +8,7 @@ namespace SmartStore.Admin.Models.Orders
     {
         public ShipmentModel()
         {
-            this.Products = new List<ShipmentOrderProductVariantModel>();
+            this.Items = new List<ShipmentItemModel>();
         }
         [SmartResourceDisplayName("Admin.Orders.Shipments.ID")]
         public override int Id { get; set; }
@@ -25,21 +25,21 @@ namespace SmartStore.Admin.Models.Orders
         public string DeliveryDate { get; set; }
         public bool CanDeliver { get; set; }
 
-        public List<ShipmentOrderProductVariantModel> Products { get; set; }
+        public List<ShipmentItemModel> Items { get; set; }
 
         public bool DisplayPdfPackagingSlip { get; set; }
 
         #region Nested classes
 
-        public class ShipmentOrderProductVariantModel : EntityModelBase
+        public class ShipmentItemModel : EntityModelBase
         {
-            public int OrderProductVariantId { get; set; }
-            public int ProductVariantId { get; set; }
-            public string FullProductName { get; set; }
+            public int OrderItemId { get; set; }
+            public int ProductId { get; set; }
+            public string ProductName { get; set; }
             public string Sku { get; set; }
             public string AttributeInfo { get; set; }
 
-            //weight of one item (product variant)
+            //weight of one item (product)
             public string ItemWeight { get; set; }
             public string ItemDimensions { get; set; }
 

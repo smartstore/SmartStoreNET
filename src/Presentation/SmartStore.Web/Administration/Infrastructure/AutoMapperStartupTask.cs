@@ -154,12 +154,13 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CampaignModel, Campaign>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
             //topcis
-            Mapper.CreateMap<Topic, TopicModel>()
-                .ForMember(dest => dest.Url, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+			Mapper.CreateMap<Topic, TopicModel>()
+				.ForMember(dest => dest.Url, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore());
             Mapper.CreateMap<TopicModel, Topic>();
 
             //category
@@ -195,96 +196,82 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore());
             //products
-            Mapper.CreateMap<Product, ProductModel>()
-                .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
-                .ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
-                .ForMember(dest => dest.NoThumb, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductVariantModels, mo => mo.Ignore())
-                .ForMember(dest => dest.FirstProductVariantModel, mo => mo.Ignore())
-                .ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
-                .ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
-                .ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
-                .ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
-                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
-                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
+			Mapper.CreateMap<Product, ProductModel>()
+				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.AssociatedToProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.AssociatedToProductName, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.NoThumb, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
+				.ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
+				.ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
+				.ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
-            Mapper.CreateMap<ProductModel, Product>()
-                .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
-                .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.Deleted, mo => mo.Ignore())
-                .ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())
-                .ForMember(dest => dest.NotApprovedRatingSum, mo => mo.Ignore())
-                .ForMember(dest => dest.ApprovedTotalReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.NotApprovedTotalReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductVariants, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductManufacturers, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductPictures, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductReviews, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore());
-            //product variants
-            Mapper.CreateMap<ProductVariant, ProductVariantModel>()
-                .ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
-                .ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
-                .ForMember(dest => dest.BaseWeightIn, mo => mo.Ignore())
-                .ForMember(dest => dest.NumberOfAvailableProductAttributes, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
-                .ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-                .ForMember(dest => dest.HideNameAndDescriptionProperties, mo => mo.Ignore())
-                .ForMember(dest => dest.HidePublishedProperty, mo => mo.Ignore())
-                .ForMember(dest => dest.HideDisplayOrderProperty, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
-                .AfterMap((src, dest) => {
-                    dest.BasePriceEnabled = src.BasePrice.Enabled;
-                    dest.BasePriceBaseAmount = src.BasePrice.BaseAmount;
-                    dest.BasePriceAmount = src.BasePrice.Amount;
-                    dest.BasePriceMeasureUnit = src.BasePrice.MeasureUnit;
-                });
-            Mapper.CreateMap<ProductVariantModel, ProductVariant>()
-                .ForMember(dest => dest.HasTierPrices, mo => mo.Ignore())
-                .ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
-                .ForMember(dest => dest.BackorderMode, mo => mo.Ignore())
-                .ForMember(dest => dest.DownloadActivationType, mo => mo.Ignore())
-                .ForMember(dest => dest.GiftCardType, mo => mo.Ignore())
-                .ForMember(dest => dest.LowStockActivity, mo => mo.Ignore())
-                .ForMember(dest => dest.ManageInventoryMethod, mo => mo.Ignore())
-                .ForMember(dest => dest.RecurringCyclePeriod, mo => mo.Ignore())
-                .ForMember(dest => dest.Product, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductVariantAttributes, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductVariantAttributeCombinations, mo => mo.Ignore())
-                .ForMember(dest => dest.TierPrices, mo => mo.Ignore())
-                .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
-                .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.Deleted, mo => mo.Ignore())
-                .ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
-                .ForMember(dest => dest.BasePrice, mo => mo.Ignore())
-                .AfterMap((src, dest) => {
-                    dest.BasePrice.Enabled = src.BasePriceEnabled;
-                    dest.BasePrice.Amount = src.BasePriceAmount;
-                    dest.BasePrice.BaseAmount = src.BasePriceBaseAmount;
-                    dest.BasePrice.MeasureUnit = src.BasePriceMeasureUnit;
-                });
-            //logs
+				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
+				.ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
+				.ForMember(dest => dest.BaseWeightIn, mo => mo.Ignore())
+				.ForMember(dest => dest.NumberOfAvailableProductAttributes, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
+			Mapper.CreateMap<ProductModel, Product>()
+				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.ParentGroupedProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductType, mo => mo.Ignore())
+				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.ApprovedRatingSum, mo => mo.Ignore())
+				.ForMember(dest => dest.NotApprovedRatingSum, mo => mo.Ignore())
+				.ForMember(dest => dest.ApprovedTotalReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.NotApprovedTotalReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductManufacturers, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductPictures, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductReviews, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore())
+				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
+				.ForMember(dest => dest.HasTierPrices, mo => mo.Ignore())
+				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
+				.ForMember(dest => dest.BackorderMode, mo => mo.Ignore())
+				.ForMember(dest => dest.DownloadActivationType, mo => mo.Ignore())
+				.ForMember(dest => dest.GiftCardType, mo => mo.Ignore())
+				.ForMember(dest => dest.LowStockActivity, mo => mo.Ignore())
+				.ForMember(dest => dest.ManageInventoryMethod, mo => mo.Ignore())
+				.ForMember(dest => dest.RecurringCyclePeriod, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductVariantAttributes, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductVariantAttributeCombinations, mo => mo.Ignore())
+				.ForMember(dest => dest.TierPrices, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
+				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
+				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore());
+			//logs
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<LogModel, Log>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.LogLevelId, mo => mo.Ignore())
                 .ForMember(dest => dest.Customer, mo => mo.Ignore());
             //ActivityLogType
@@ -322,10 +309,12 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Id, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
-            
-            Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+
+			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore())
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.SlideIndex, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSlideModel, ContentSliderSlideSettings>();
 
             Mapper.CreateMap<ContentSliderButtonSettings, ContentSliderButtonModel>()
@@ -346,7 +335,7 @@ namespace SmartStore.Admin.Infrastructure
                 .AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
             Mapper.CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
                 .ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductVariant, mo => mo.Ignore())
+                .ForMember(dest => dest.Product, mo => mo.Ignore())
                 .ForMember(dest => dest.AssignedPictureIds, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));
 
@@ -557,14 +546,14 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.AvailableDiscountRequirementRules, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountRequirementMetaInfos, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
-                .ForMember(dest => dest.AppliedToProductVariantModels, mo => mo.Ignore())
+                .ForMember(dest => dest.AppliedToProductModels, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<DiscountModel, Discount>()
                 .ForMember(dest => dest.DiscountType, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountLimitation, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountRequirements, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedToCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.AppliedToProductVariants, mo => mo.Ignore());
+				.ForMember(dest => dest.AppliedToProducts, mo => mo.Ignore());
             //gift cards
             Mapper.CreateMap<GiftCard, GiftCardModel>()
                 .ForMember(dest => dest.PurchasedWithOrderId, mo => mo.Ignore())
@@ -574,10 +563,10 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             Mapper.CreateMap<GiftCardModel, GiftCard>()
-                .ForMember(dest => dest.PurchasedWithOrderProductVariantId, mo => mo.Ignore())
+                .ForMember(dest => dest.PurchasedWithOrderItemId, mo => mo.Ignore())
                 .ForMember(dest => dest.GiftCardType, mo => mo.Ignore())
                 .ForMember(dest => dest.GiftCardUsageHistory, mo => mo.Ignore())
-                .ForMember(dest => dest.PurchasedWithOrderProductVariant, mo => mo.Ignore())
+                .ForMember(dest => dest.PurchasedWithOrderItem, mo => mo.Ignore())
                 .ForMember(dest => dest.IsRecipientNotified, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//stores
@@ -681,10 +670,12 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>();
 
             // codehint: sm-add
-            Mapper.CreateMap<ThemeSettings, ThemeListModel>()
-                .ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-                .ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
-                .ForMember(dest => dest.MobileThemes, mo => mo.Ignore());
+			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
+				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
+				.ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.MobileThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
             Mapper.CreateMap<ThemeListModel, ThemeSettings>()
                 .ForMember(dest => dest.EmulateMobileDevice, mo => mo.Ignore());
         }

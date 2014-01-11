@@ -112,7 +112,7 @@
     <Compile Include="Mapping\Security\AclRecordMap.cs" />
     <Compile Include="Mapping\Seo\UrlRecordMap.cs" />
     <Compile Include="Mapping\Shipping\ShipmentMap.cs" />
-    <Compile Include="Mapping\Shipping\ShipmentOrderProductVariantMap.cs" />
+    <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
@@ -152,7 +152,7 @@
     <Compile Include="Mapping\Orders\ReturnRequestMap.cs" />
     <Compile Include="Mapping\Orders\RecurringPaymentHistoryMap.cs" />
     <Compile Include="Mapping\Orders\RecurringPaymentMap.cs" />
-    <Compile Include="Mapping\Orders\OrderProductVariantMap.cs" />
+    <Compile Include="Mapping\Orders\OrderItemMap.cs" />
     <Compile Include="Mapping\Orders\OrderNoteMap.cs" />
     <Compile Include="Mapping\Orders\GiftCardMap.cs" />
     <Compile Include="Mapping\Orders\GiftCardUsageHistoryMap.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Mapping\Catalog\ProductCategoryMap.cs" />
     <Compile Include="Mapping\Catalog\CategoryMap.cs" />
     <Compile Include="Mapping\Catalog\ProductMap.cs" />
-    <Compile Include="Mapping\Catalog\ProductVariantMap.cs" />
     <Compile Include="Mapping\Customers\CustomerMap.cs" />
     <Compile Include="Mapping\Logging\LogMap.cs" />
     <Compile Include="Mapping\Localization\LanguageMap.cs" />

@@ -7,6 +7,7 @@ using SmartStore.Web.Framework.WebApi.Configuration;
 using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Web.Framework.WebApi.OData;
 using System.Web.Http.Cors;
+using System;
 
 namespace SmartStore.Web.Framework.WebApi
 {   
@@ -50,12 +51,25 @@ namespace SmartStore.Web.Framework.WebApi
 			//config.Services.Insert(typeof(ModelBinderProvider), 0,
 			//	new SimpleModelBinderProvider(typeof(Address), new AddressModelBinder()));
 
+			try
+			{
+				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultApi))
+				{
+					config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",
+						new { version = "v1", controller = "Home", id = RouteParameter.Optional });
+				}
+			}
+			catch (Exception) { }
 
-			config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",
-				new { version = "v1", controller = "Home", id = RouteParameter.Optional });
-
-			config.Routes.MapODataRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
-				configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
+			try
+			{
+				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
+				{
+					config.Routes.MapODataRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
+						configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
+				}
+			}
+			catch (Exception) { }
         }
 
         public int Order

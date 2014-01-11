@@ -39,6 +39,14 @@
         </td>
     </tr>
     <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchProductTypeId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+        </td>
+    </tr>
+    <tr>
         <td colspan="2">
             <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
         </td>
@@ -52,13 +60,13 @@
     </tr>
     <tr>
         <td>
-            @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductVariantLineModel>()
+            @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(pv => pv.Id).Width(70);
-                        columns.Bound(pv => pv.Name).Width(400);
-                        columns.Bound(pv => pv.Sku).Width(100);
+                        columns.Bound(p => p.Id).Width(70);
+                        columns.Bound(p => p.Name).Width(400);
+                        columns.Bound(p => p.Sku).Width(100);
                     })
                     .Selectable()
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
@@ -68,7 +76,7 @@
         </td>
     </tr>
 </table>
-<div id="productvariantdetails">
+<div id="productdetails">
 </div>
 @Html.HiddenFor(model => Model.OrderId)
 <script type="text/javascript">
@@ -92,16 +100,17 @@
         var searchModel = {
             SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
             SearchCategoryId: $('#SearchCategoryId').val(),
-            SearchManufacturerId: $('#SearchManufacturerId').val()
+            SearchManufacturerId: $('#SearchManufacturerId').val(),
+            SearchProductTypeId: $('#SearchProductTypeId').val()
         };
         e.data = searchModel;
     }
 
     function onRowSelected(e) {
-        productVariantID = e.row.cells[0].innerHTML;
-        //load "product variant details page" block
-        var productDetailsActionUrl = '@Html.Raw(Url.Action("AddProductToOrderDetails", "Order", new { orderId = Model.OrderId, productVariantId = "productvariantidplaceholder" }))';
-        productDetailsActionUrl = productDetailsActionUrl.replace("productvariantidplaceholder", productVariantID);
+        productID = e.row.cells[0].innerHTML;
+        //load "product details page" block
+        var productDetailsActionUrl = '@Html.Raw(Url.Action("AddProductToOrderDetails", "Order", new { orderId = Model.OrderId, productId = "productidplaceholder" }))';
+        productDetailsActionUrl = productDetailsActionUrl.replace("productidplaceholder", productID);
         setLocation(productDetailsActionUrl);
     }
 </script>

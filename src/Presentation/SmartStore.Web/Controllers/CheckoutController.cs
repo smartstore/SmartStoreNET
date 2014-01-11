@@ -420,7 +420,7 @@ namespace SmartStore.Web.Controllers
             {
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
                     sci.ShoppingCartType,
-                    sci.ProductVariant,
+                    sci.Product,
 					sci.StoreId,
                     sci.AttributesXml,
                     sci.CustomerEnteredPrice,
@@ -993,6 +993,12 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("HomePage");
 			}
 
+			//disable "order completed" page?
+			if (_orderSettings.DisableOrderCompletedPage)
+			{
+				return RedirectToRoute("OrderDetails", new { orderId = order.Id });
+			}
+
 			model.OrderId = order.Id;
             model.OrderNumber = order.GetOrderNumber();
 
@@ -1109,6 +1115,10 @@ namespace SmartStore.Web.Controllers
                             address.CountryId = null;
                         if (address.StateProvinceId == 0)
                             address.StateProvinceId = null;
+						if (address.CountryId.HasValue && address.CountryId.Value > 0)
+						{
+							address.Country = _countryService.GetCountryById(address.CountryId.Value);
+						}
                         _workContext.CurrentCustomer.Addresses.Add(address);
                     }
                     _workContext.CurrentCustomer.BillingAddress = address;

@@ -13,11 +13,11 @@ namespace SmartStore.Web.Models.Catalog
             ProductPrice = new ProductPriceModel();
             DefaultPictureModel = new PictureModel();
             SpecificationAttributeModels = new List<ProductSpecificationModel>();
-            //codehint: sm-add begin
             Manufacturers = new List<ManufacturerOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
             ColorAttributes = new List<ColorAttributeModel>();
-            //codehint: sm-add end
+			Weight = "";
+			TransportSurcharge = "";
         }
 
         public string Name { get; set; }
@@ -49,7 +49,7 @@ namespace SmartStore.Web.Models.Catalog
         public string StockAvailablity { get; set; }
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
-		public int DefaultProductVariantId { get; set; }
+		public int ProductMinPriceId { get; set; }
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
         //codehint: sm-add end

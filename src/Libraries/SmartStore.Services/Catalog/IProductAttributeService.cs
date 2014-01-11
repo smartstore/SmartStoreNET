@@ -55,9 +55,9 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets product variant attribute mappings by product identifier
         /// </summary>
-        /// <param name="productVariantId">The product variant identifier</param>
+		/// <param name="productId">The product identifier</param>
         /// <returns>Product variant attribute mapping collection</returns>
-        IList<ProductVariantAttribute> GetProductVariantAttributesByProductVariantId(int productVariantId);
+		IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId);
 
         /// <summary>
         /// Gets a product variant attribute mapping
@@ -143,9 +143,9 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets all product variant attribute combinations
         /// </summary>
-        /// <param name="productVariantId">Product variant identifier</param>
+		/// <param name="productId">Product identifier</param>
         /// <returns>Product variant attribute combination collection</returns>
-        IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productVariantId, bool showHidden = false);
+        IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId);
 
         /// <summary>
         /// Gets a product variant attribute combination
@@ -169,13 +169,12 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Creates all variant attributes combinations
 		/// </summary>
-		void CreateAllProductVariantAttributeCombinations(ProductVariant variant);
+		void CreateAllProductVariantAttributeCombinations(Product product);
 
         /// <summary>
-        /// Gets a value indicating the existence of any attribute combination in a product variant
+        /// Gets a value indicating the existence of any attribute combination for a product
         /// </summary>
-        // codehint: sm-add
-        bool VariantHasAttributeCombinations(int productVariantId, bool showHidden = false);
+        bool VariantHasAttributeCombinations(int productId);
 
         #endregion
     }

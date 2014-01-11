@@ -323,13 +323,15 @@ namespace SmartStore.Data
         // codehint: sm-edit (added Hooks)
         public override int SaveChanges()
         {
-            HookedEntityEntry[] modifiedEntries = null;
+            HookedEntityEntry[] modifiedHookEntries = null;
             bool hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
+
+			var modifiedEntries = this.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached);
             
             if (hooksEnabled)
             {
-                modifiedEntries = this.ChangeTracker.Entries()
-                                .Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+				modifiedHookEntries = modifiedEntries
                                 .Select(x => new HookedEntityEntry()
                                 {
                                     Entity = x.Entity,
@@ -340,7 +342,7 @@ namespace SmartStore.Data
                 if (_preHooks.Count > 0)
                 {
                     // Regardless of validation (possible fixing validation errors too)
-                    ExecutePreActionHooks(modifiedEntries, false);
+                    ExecutePreActionHooks(modifiedHookEntries, false);
                 }
             }
 
@@ -363,8 +365,10 @@ namespace SmartStore.Data
 
             if (hooksEnabled && _preHooks.Count > 0)
             {
-                ExecutePreActionHooks(modifiedEntries, true);
+                ExecutePreActionHooks(modifiedHookEntries, true);
             }
+
+			IgnoreMergedData(modifiedEntries, true);
 
             bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
             
@@ -373,9 +377,11 @@ namespace SmartStore.Data
             int result = this.Commit();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
+			IgnoreMergedData(modifiedEntries, false);
+
             if (hooksEnabled && _postHooks.Count > 0)
             {
-                ExecutePostActionHooks(modifiedEntries);
+                ExecutePostActionHooks(modifiedHookEntries);
             }
 
             return result;
@@ -492,6 +498,10 @@ namespace SmartStore.Data
                 ((IObjectContextAdapter)this).ObjectContext.Detach(entity);
             }
         }
+		public void Detach(object entity)
+		{
+			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+		}
 
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
@@ -516,6 +526,21 @@ namespace SmartStore.Data
 
             return sb.ToString();
         }
+
+		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
+		{
+			try
+			{
+				foreach (var entry in entries)
+				{
+					var entityWithPossibleMergedData = entry.Entity as IMergedData;
+
+					if (entityWithPossibleMergedData != null)
+						entityWithPossibleMergedData.MergedDataIgnore = ignore;
+				}
+			}
+			catch (Exception) { }
+		}
 
         #endregion
 

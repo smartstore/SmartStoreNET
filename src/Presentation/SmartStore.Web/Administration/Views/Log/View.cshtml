@@ -51,18 +51,6 @@
                 @Html.DisplayFor(model => model.ContentHash)
             </td>
         </tr>
-        @if (Model.FullMessage.HasValue()) {
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.FullMessage)
-            </td>
-            <td class="adminData">
-                <pre>
-                    @Html.DisplayFor(model => model.FullMessage)
-                </pre>
-            </td>
-        </tr>
-        }
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IpAddress)
@@ -114,6 +102,19 @@
                 @Html.DisplayFor(model => model.UpdatedOn)
             </td>
         </tr>
+        @if (Model.FullMessage.HasValue())
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.FullMessage)
+                </td>
+                <td class="adminData">
+                    <pre>
+                        @Html.DisplayFor(model => model.FullMessage)
+                    </pre>
+                </td>
+            </tr>
+        }
     </table>
 }
 @Html.DeleteConfirmation("log-delete")

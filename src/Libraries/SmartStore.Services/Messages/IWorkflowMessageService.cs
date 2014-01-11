@@ -176,20 +176,20 @@ namespace SmartStore.Services.Messages
         /// Sends 'New Return Request' message to a store owner
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId);
+        int SendNewReturnRequestStoreOwnerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId);
 
 
         /// <summary>
         /// Sends 'Return Request status changed' message to a customer
         /// </summary>
         /// <param name="returnRequest">Return request</param>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderProductVariant opv, int languageId);
+        int SendReturnRequestStatusChangedCustomerNotification(ReturnRequest returnRequest, OrderItem orderItem, int languageId);
 
         #endregion
 
@@ -254,10 +254,10 @@ namespace SmartStore.Services.Messages
         /// <summary>
         /// Sends a "quantity below" notification to a store owner
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+        /// <param name="product">Product</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        int SendQuantityBelowStoreOwnerNotification(ProductVariant productVariant, int languageId);
+        int SendQuantityBelowStoreOwnerNotification(Product product, int languageId);
 
 
         /// <summary>

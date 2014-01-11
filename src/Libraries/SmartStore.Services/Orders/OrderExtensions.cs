@@ -29,24 +29,24 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Gets a total number of items in all shipments
         /// </summary>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <returns>Total number of items in all shipmentss</returns>
-        public static int GetTotalNumberOfItemsInAllShipment(this OrderProductVariant opv)
+        public static int GetTotalNumberOfItemsInAllShipment(this OrderItem orderItem)
         {
-            if (opv == null)
-                throw new ArgumentNullException("opv");
+            if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
             var totalInShipments = 0;
-            var shipments = opv.Order.Shipments.ToList();
+            var shipments = orderItem.Order.Shipments.ToList();
             for (int i = 0; i < shipments.Count; i++)
             {
                 var shipment = shipments[i];
-                var sopv = shipment.ShipmentOrderProductVariants
-                    .Where(x => x.OrderProductVariantId == opv.Id)
+                var si = shipment.ShipmentItems
+                    .Where(x => x.OrderItemId == orderItem.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    totalInShipments += sopv.Quantity;
+                    totalInShipments += si.Quantity;
                 }
             }
             return totalInShipments;
@@ -55,16 +55,16 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Gets a total number of already items which can be added to new shipments
         /// </summary>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <returns>Total number of already delivered items which can be added to new shipments</returns>
-        public static int GetTotalNumberOfItemsCanBeAddedToShipment(this OrderProductVariant opv)
+        public static int GetTotalNumberOfItemsCanBeAddedToShipment(this OrderItem orderItem)
         {
-            if (opv == null)
-                throw new ArgumentNullException("opv");
+            if (orderItem == null)
+                throw new ArgumentNullException("orderItem");
 
-            var totalInShipments = opv.GetTotalNumberOfItemsInAllShipment();
+            var totalInShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
 
-            var qtyOrdered = opv.Quantity;
+            var qtyOrdered = orderItem.Quantity;
             var qtyCanBeAddedToShipmentTotal = qtyOrdered - totalInShipments;
             if (qtyCanBeAddedToShipmentTotal < 0)
                 qtyCanBeAddedToShipmentTotal = 0;
@@ -75,15 +75,15 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Gets a total number of not yet shipped items (but added to shipments)
         /// </summary>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <returns>Total number of not yet shipped items (but added to shipments)</returns>
-        public static int GetTotalNumberOfNotYetShippedItems(this OrderProductVariant opv)
+        public static int GetTotalNumberOfNotYetShippedItems(this OrderItem orderItem)
         {
-            if (opv == null)
-                throw new ArgumentNullException("opv");
+            if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
             var result = 0;
-            var shipments = opv.Order.Shipments.ToList();
+            var shipments = orderItem.Order.Shipments.ToList();
             for (int i = 0; i < shipments.Count; i++)
             {
                 var shipment = shipments[i];
@@ -91,12 +91,12 @@ namespace SmartStore.Services.Orders
                     //already shipped
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
-                    .Where(x => x.OrderProductVariantId == opv.Id)
+                var si = shipment.ShipmentItems
+                    .Where(x => x.OrderItemId == orderItem.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
 
@@ -106,15 +106,15 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Gets a total number of already shipped items
         /// </summary>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <returns>Total number of already shipped items</returns>
-        public static int GetTotalNumberOfShippedItems(this OrderProductVariant opv)
+        public static int GetTotalNumberOfShippedItems(this OrderItem orderItem)
         {
-            if (opv == null)
-                throw new ArgumentNullException("opv");
+            if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
             var result = 0;
-            var shipments = opv.Order.Shipments.ToList();
+            var shipments = orderItem.Order.Shipments.ToList();
             for (int i = 0; i < shipments.Count; i++)
             {
                 var shipment = shipments[i];
@@ -122,12 +122,12 @@ namespace SmartStore.Services.Orders
                     //not shipped yet
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
-                    .Where(x => x.OrderProductVariantId == opv.Id)
+                var si = shipment.ShipmentItems
+                    .Where(x => x.OrderItemId == orderItem.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
             
@@ -137,15 +137,15 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Gets a total number of already delivered items
         /// </summary>
-        /// <param name="opv">Order product variant</param>
+        /// <param name="orderItem">Order item</param>
         /// <returns>Total number of already delivered items</returns>
-        public static int GetTotalNumberOfDeliveredItems(this OrderProductVariant opv)
+        public static int GetTotalNumberOfDeliveredItems(this OrderItem orderItem)
         {
-            if (opv == null)
-                throw new ArgumentNullException("opv");
+            if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
             var result = 0;
-            var shipments = opv.Order.Shipments.ToList();
+            var shipments = orderItem.Order.Shipments.ToList();
             for (int i = 0; i < shipments.Count; i++)
             {
                 var shipment = shipments[i];
@@ -153,18 +153,17 @@ namespace SmartStore.Services.Orders
                     //not delivered yet
                     continue;
 
-                var sopv = shipment.ShipmentOrderProductVariants
-                    .Where(x => x.OrderProductVariantId == opv.Id)
+                var si = shipment.ShipmentItems
+                    .Where(x => x.OrderItemId == orderItem.Id)
                     .FirstOrDefault();
-                if (sopv != null)
+                if (si != null)
                 {
-                    result += sopv.Quantity;
+                    result += si.Quantity;
                 }
             }
 
             return result;
         }
-
 
 
         /// <summary>
@@ -177,13 +176,13 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            foreach (var opv in order.OrderProductVariants)
+            foreach (var orderItem in order.OrderItems)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!orderItem.Product.IsShipEnabled)
                     continue;
 
-                var totalNumberOfItemsCanBeAddedToShipment = opv.GetTotalNumberOfItemsCanBeAddedToShipment();
+                var totalNumberOfItemsCanBeAddedToShipment = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
                 if (totalNumberOfItemsCanBeAddedToShipment <= 0)
                     continue;
 
@@ -202,13 +201,13 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            foreach (var opv in order.OrderProductVariants)
+            foreach (var orderItem in order.OrderItems)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!orderItem.Product.IsShipEnabled)
                     continue;
 
-                var totalNumberOfNotYetShippedItems = opv.GetTotalNumberOfNotYetShippedItems();
+                var totalNumberOfNotYetShippedItems = orderItem.GetTotalNumberOfNotYetShippedItems();
                 if (totalNumberOfNotYetShippedItems <= 0)
                     continue;
 
@@ -227,14 +226,14 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            foreach (var opv in order.OrderProductVariants)
+            foreach (var orderItem in order.OrderItems)
             {
                 //we can ship only shippable products
-                if (!opv.ProductVariant.IsShipEnabled)
+                if (!orderItem.Product.IsShipEnabled)
                     continue;
 
-                var totalNumberOfShippedItems = opv.GetTotalNumberOfShippedItems();
-                var totalNumberOfDeliveredItems = opv.GetTotalNumberOfDeliveredItems();
+                var totalNumberOfShippedItems = orderItem.GetTotalNumberOfShippedItems();
+                var totalNumberOfDeliveredItems = orderItem.GetTotalNumberOfDeliveredItems();
                 if (totalNumberOfShippedItems <= totalNumberOfDeliveredItems)
                     continue;
 

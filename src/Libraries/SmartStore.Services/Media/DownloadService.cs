@@ -115,14 +115,14 @@ namespace SmartStore.Services.Media
         /// <summary>
         /// Gets a value indicating whether download is allowed
         /// </summary>
-        /// <param name="orderProductVariant">Order produvt variant to check</param>
+        /// <param name="orderItem">Order item to check</param>
         /// <returns>True if download is allowed; otherwise, false.</returns>
-        public virtual bool IsDownloadAllowed(OrderProductVariant orderProductVariant)
+        public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
-            if (orderProductVariant == null)
+            if (orderItem == null)
                 return false;
 
-            var order = orderProductVariant.Order;
+            var order = orderItem.Order;
             if (order == null || order.Deleted)
                 return false;
 
@@ -130,21 +130,21 @@ namespace SmartStore.Services.Media
             if (order.OrderStatus == OrderStatus.Cancelled)
                 return false;
 
-            var productVariant = orderProductVariant.ProductVariant;
-            if (productVariant == null || !productVariant.IsDownload)
+            var product = orderItem.Product;
+            if (product == null || !product.IsDownload)
                 return false;
 
             //payment status
-            switch (productVariant.DownloadActivationType)
+            switch (product.DownloadActivationType)
             {
                 case DownloadActivationType.WhenOrderIsPaid:
                     {
                         if (order.PaymentStatus == PaymentStatus.Paid && order.PaidDateUtc.HasValue)
                         {
                             //expiration date
-                            if (productVariant.DownloadExpirationDays.HasValue)
+                            if (product.DownloadExpirationDays.HasValue)
                             {
-                                if (order.PaidDateUtc.Value.AddDays(productVariant.DownloadExpirationDays.Value) > DateTime.UtcNow)
+                                if (order.PaidDateUtc.Value.AddDays(product.DownloadExpirationDays.Value) > DateTime.UtcNow)
                                 {
                                     return true;
                                 }
@@ -158,12 +158,12 @@ namespace SmartStore.Services.Media
                     break;
                 case DownloadActivationType.Manually:
                     {
-                        if (orderProductVariant.IsDownloadActivated)
+                        if (orderItem.IsDownloadActivated)
                         {
                             //expiration date
-                            if (productVariant.DownloadExpirationDays.HasValue)
+                            if (product.DownloadExpirationDays.HasValue)
                             {
-                                if (order.CreatedOnUtc.AddDays(productVariant.DownloadExpirationDays.Value) > DateTime.UtcNow)
+                                if (order.CreatedOnUtc.AddDays(product.DownloadExpirationDays.Value) > DateTime.UtcNow)
                                 {
                                     return true;
                                 }
@@ -185,16 +185,16 @@ namespace SmartStore.Services.Media
         /// <summary>
         /// Gets a value indicating whether license download is allowed
         /// </summary>
-        /// <param name="orderProductVariant">Order produvt variant to check</param>
+        /// <param name="orderItem">Order item to check</param>
         /// <returns>True if license download is allowed; otherwise, false.</returns>
-        public virtual bool IsLicenseDownloadAllowed(OrderProductVariant orderProductVariant)
+        public virtual bool IsLicenseDownloadAllowed(OrderItem orderItem)
         {
-            if (orderProductVariant == null)
+            if (orderItem == null)
                 return false;
 
-            return IsDownloadAllowed(orderProductVariant) &&
-                orderProductVariant.LicenseDownloadId.HasValue &&
-                orderProductVariant.LicenseDownloadId > 0;
+            return IsDownloadAllowed(orderItem) &&
+                orderItem.LicenseDownloadId.HasValue &&
+                orderItem.LicenseDownloadId > 0;
         }
 
         #endregion

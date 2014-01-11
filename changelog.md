@@ -3,13 +3,11 @@
 ##SmartStore.NET 1.3.0.0#
 
 ###Highlights###
-
 * #112 Web-Api plugin
 * Improved product structure without product variant entity
 * Product types simple and grouped
 
 ###New Features###
-
 * #175 IPayment plugin: Implemented deactivation of specific credit card types
 * #137 Shipping method option to ignore additional shipping charges
 * #191 Implemented new scheduled task _Delete logs_
@@ -21,7 +19,6 @@
 * Shipment list can be filtered by tracking number
 
 ###Bugfixes###
-
 * #150 GTB & disclaimer aren't readable when they become to long
 * #151 NewsletterSubscriptionDeactivationUrl-Token doesn't get repleaced
 * #153 Admin->Contentslider throws an error when asigned languages aren't available anymore

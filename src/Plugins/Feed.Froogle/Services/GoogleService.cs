@@ -212,6 +212,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (category.IsNullOrEmpty())
 				return Helper.Resource("MissingDefaultCategory");
 
+			var brand = (manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand);
+			var mpn = Helper.ManufacturerPartNumber(product);
+
+			bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
+
 			writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
 
 			writer.WriteStartElement("title");
@@ -275,8 +280,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			}
 
 			writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
-			writer.WriteCData("brand", manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand, "g", _googleNamespace);
-			writer.WriteCData("mpn", Helper.ManufacturerPartNumber(product), "g", _googleNamespace);
+			writer.WriteCData("brand", brand, "g", _googleNamespace);
+			writer.WriteCData("mpn", mpn, "g", _googleNamespace);
 
 			writer.WriteCData("gender", Gender(googleProduct), "g", _googleNamespace);
 			writer.WriteCData("age_group", AgeGroup(googleProduct), "g", _googleNamespace);
@@ -287,6 +292,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteCData("item_group_id", ItemGroupId(googleProduct), "g", _googleNamespace);
 
 			writer.WriteElementString("g", "online_only", _googleNamespace, Settings.OnlineOnly ? "y" : "n");
+			writer.WriteElementString("g", "identifier_exists", _googleNamespace, identifierExists ? "TRUE" : "FALSE");
 
 			if (Settings.ExpirationDays > 0)
 			{

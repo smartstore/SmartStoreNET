@@ -179,24 +179,33 @@ namespace SmartStore.Services.Logging
         /// <summary>
         /// Inserts a log item
         /// </summary>
-        /// <param name="logLevel">Log level</param>
-        /// <param name="shortMessage">The short message</param>
-        /// <param name="fullMessage">The full message</param>
-        /// <param name="customer">The customer to associate log record with</param>
+        /// <param name="context">The log context</param>
         /// <returns>A log item</returns>
-        public virtual Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+        public virtual Log InsertLog(LogContext context)
         {
-			if (shortMessage.IsNullOrEmpty() && fullMessage.IsNullOrEmpty())
+			if (context == null || (context.ShortMessage.IsNullOrEmpty() && context.FullMessage.IsNullOrEmpty()))
 				return null;
 
 			Log log = null;
 
 			try
 			{
-				shortMessage = shortMessage.NaIfEmpty();
-				fullMessage = fullMessage.EmptyNull();
+				string shortMessage = context.ShortMessage.NaIfEmpty();
+				string fullMessage = context.FullMessage.EmptyNull();
+				string ipAddress = _webHelper.GetCurrentIpAddress();
+				string contentHash = null;
 
-				string contentHash = (shortMessage + fullMessage).Hash(true, true);
+				if (context.HashNotFullMessage || context.HashIpAddress)
+				{
+					contentHash = (shortMessage
+						+ (context.HashNotFullMessage ? "" : fullMessage)
+						+ (context.HashIpAddress ? ipAddress : "")
+					).Hash(true, true);
+				}
+				else
+				{
+					contentHash = (shortMessage + fullMessage).Hash(true, true);
+				}
 
 				log = _logRepository.Table.OrderByDescending(x => x.CreatedOnUtc).FirstOrDefault(x => x.ContentHash == contentHash);
 
@@ -205,11 +214,11 @@ namespace SmartStore.Services.Logging
 					log = new Log()
 					{
 						Frequency = 1,
-						LogLevel = logLevel,
+						LogLevel = context.LogLevel,
 						ShortMessage = shortMessage,
 						FullMessage = fullMessage,
-						IpAddress = _webHelper.GetCurrentIpAddress(),
-						Customer = customer,
+						IpAddress = ipAddress,
+						Customer = context.Customer,
 						PageUrl = _webHelper.GetThisPageUrl(true),
 						ReferrerUrl = _webHelper.GetUrlReferrer(),
 						CreatedOnUtc = DateTime.UtcNow,
@@ -223,9 +232,9 @@ namespace SmartStore.Services.Logging
 					if (log.Frequency < 2147483647)
 						log.Frequency = log.Frequency + 1;
 
-					log.LogLevel = logLevel;
-					log.IpAddress = _webHelper.GetCurrentIpAddress();
-					log.Customer = customer;
+					log.LogLevel = context.LogLevel;
+					log.IpAddress = ipAddress;
+					log.Customer = context.Customer;
 					log.PageUrl = _webHelper.GetThisPageUrl(true);
 					log.ReferrerUrl = _webHelper.GetUrlReferrer();
 					log.UpdatedOnUtc = DateTime.UtcNow;
@@ -240,6 +249,27 @@ namespace SmartStore.Services.Logging
 
 			return log;
         }
+
+		/// <summary>
+		/// Inserts a log item
+		/// </summary>
+		/// <param name="logLevel">Log level</param>
+		/// <param name="shortMessage">The short message</param>
+		/// <param name="fullMessage">The full message</param>
+		/// <param name="customer">The customer to associate log record with</param>
+		/// <returns>A log item</returns>
+		public virtual Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		{
+			var context = new LogContext()
+			{
+				LogLevel = logLevel,
+				ShortMessage = shortMessage,
+				FullMessage = fullMessage,
+				Customer = customer
+			};
+
+			return InsertLog(context);
+		}
 
         #endregion
     }

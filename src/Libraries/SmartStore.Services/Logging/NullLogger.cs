@@ -72,6 +72,11 @@ namespace SmartStore.Services.Logging
             return new List<Log>();
         }
 
+		public Log InsertLog(LogContext context)
+		{
+			return null;
+		}
+
         /// <summary>
         /// Inserts a log item
         /// </summary>

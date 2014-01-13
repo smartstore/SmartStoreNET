@@ -75,10 +75,17 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
 
-				string shortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult);
-				string fullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString());
+				var logContext = new LogContext()
+				{
+					ShortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
+					FullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()),
+					LogLevel = LogLevel.Warning,
+					Customer = customer,
+					HashNotFullMessage = true,
+					HashIpAddress = true
+				};
 
-				logger.InsertLog(LogLevel.Warning, shortMessage, fullMessage, customer);
+				logger.InsertLog(logContext);
 			}
 			catch (Exception exc)
 			{

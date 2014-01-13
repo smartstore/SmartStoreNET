@@ -56,6 +56,13 @@ namespace SmartStore.Services.Logging
         /// <returns>Log items</returns>
         IList<Log> GetLogByIds(int[] logIds);
 
+		/// <summary>
+		/// Inserts a log item
+		/// </summary>
+		/// <param name="context">The log context</param>
+		/// <returns>A log item</returns>
+		Log InsertLog(LogContext context);
+
         /// <summary>
         /// Inserts a log item
         /// </summary>

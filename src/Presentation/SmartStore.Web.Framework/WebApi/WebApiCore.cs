@@ -70,7 +70,7 @@ namespace SmartStore.Web.Framework.WebApi
 		public static class Error
 		{
 			public static string PropertyNotFound { get { return "Entity does not own property '{0}'."; } }
-			public static string PropertyNotExpanded { get { return "Property path '{0}' is not expanded."; } }
+			public static string PropertyNotExpanded { get { return "Property path '{0}' cannot be expanded."; } }
 			public static string NoKeyFromPath { get { return "Cannot retrieve entity key from OData path."; } }
 			public static string EntityNotFound { get { return "Entity with key '{0}' could not be found."; } }
 			public static string NoDataToInsert { get { return "No data to be inserted."; } }

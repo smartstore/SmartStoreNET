@@ -30,7 +30,8 @@ namespace SmartStore.Web.Framework.WebApi
 		}
 		protected internal HttpResponseException ExceptionNotExpanded<TProperty>(Expression<Func<TEntity, TProperty>> path)
 		{
-			var response = Request.CreateErrorResponse(HttpStatusCode.NotImplemented,
+			// NotFound cause of nullable properties
+			var response = Request.CreateErrorResponse(HttpStatusCode.NotFound,
 				WebApiGlobal.Error.PropertyNotExpanded.FormatWith(path.ToString()));
 
 			return new HttpResponseException(response);
@@ -173,7 +174,8 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			var entity = GetExpandedEntity<TProperty>(key, path);
 
-			var property = path.Compile().Invoke(entity);
+			var expression = path.Compile();
+			var property = expression.Invoke(entity);
 
 			if (property == null)
 				throw ExceptionNotExpanded<TProperty>(path);

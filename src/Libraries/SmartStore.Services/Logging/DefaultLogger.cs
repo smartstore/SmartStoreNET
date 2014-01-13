@@ -199,7 +199,7 @@ namespace SmartStore.Services.Logging
 				{
 					contentHash = (shortMessage
 						+ (context.HashNotFullMessage ? "" : fullMessage)
-						+ (context.HashIpAddress ? ipAddress : "")
+						+ (context.HashIpAddress ? ipAddress.EmptyNull() : "")
 					).Hash(true, true);
 				}
 				else

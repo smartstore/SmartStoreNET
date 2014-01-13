@@ -6,6 +6,8 @@ using SmartStore.Web.Framework.WebApi.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
@@ -41,6 +43,11 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		}
 
 		// navigation properties
+
+		public DeliveryTime GetDeliveryTime(int key)
+		{
+			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductCategory> GetProductCategories(int key)
@@ -80,6 +87,38 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			var entity = GetExpandedEntity<ICollection<ProductTag>>(key, x => x.ProductTags);
 
 			return entity.ProductTags.AsQueryable();
+		}
+
+		[WebApiQueryable]
+		public IQueryable<TierPrice> GetTierPrices(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<TierPrice>>(key, x => x.TierPrices);
+
+			return entity.TierPrices.AsQueryable();
+		}
+
+		[WebApiQueryable]
+		public IQueryable<Discount> GetAppliedDiscounts(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<Discount>>(key, x => x.AppliedDiscounts);
+
+			return entity.AppliedDiscounts.AsQueryable();
+		}
+
+		[WebApiQueryable]
+		public IQueryable<ProductVariantAttribute> GetProductVariantAttributes(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<ProductVariantAttribute>>(key, x => x.ProductVariantAttributes);
+
+			return entity.ProductVariantAttributes.AsQueryable();
+		}
+
+		[WebApiQueryable]
+		public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<ProductVariantAttributeCombination>>(key, x => x.ProductVariantAttributeCombinations);
+
+			return entity.ProductVariantAttributeCombinations.AsQueryable();
 		}
 
 		// actions

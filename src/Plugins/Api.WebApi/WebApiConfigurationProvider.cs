@@ -65,9 +65,12 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<ProductCategory>(WebApiOdataEntitySet.ProductCategories);
 			m.EntitySet<ProductManufacturer>(WebApiOdataEntitySet.ProductManufacturers);
 			m.EntitySet<ProductPicture>(WebApiOdataEntitySet.ProductPictures);
+			m.EntitySet<Product>(WebApiOdataEntitySet.Products);
 			m.EntitySet<ProductSpecificationAttribute>(WebApiOdataEntitySet.ProductSpecificationAttributes);
 			m.EntitySet<ProductTag>(WebApiOdataEntitySet.ProductTags);
-			m.EntitySet<Product>(WebApiOdataEntitySet.Products);
+			m.EntitySet<ProductVariantAttribute>(WebApiOdataEntitySet.ProductVariantAttributes);
+			m.EntitySet<ProductVariantAttributeValue>(WebApiOdataEntitySet.ProductVariantAttributeValues);
+			m.EntitySet<ProductVariantAttributeCombination>(WebApiOdataEntitySet.ProductVariantAttributeCombinations);
 			m.EntitySet<RelatedProduct>(WebApiOdataEntitySet.RelatedProducts);
 			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
 			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
@@ -78,8 +81,8 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<StateProvince>(WebApiOdataEntitySet.StateProvinces);
 			m.EntitySet<Store>(WebApiOdataEntitySet.Stores);
 			m.EntitySet<StoreMapping>(WebApiOdataEntitySet.StoreMappings);
+			m.EntitySet<TierPrice>(WebApiOdataEntitySet.TierPrices);
 			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
-
 
 			//AddActionsToCustomer(m.Entity<Customer>());
 			AddActionsToOrder(m.Entity<Order>());
@@ -109,9 +112,12 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string ProductCategories { get { return "ProductCategories"; } }
 		public static string ProductManufacturers { get { return "ProductManufacturers"; } }
 		public static string ProductPictures { get { return "ProductPictures"; } }
+		public static string Products { get { return "Products"; } }
 		public static string ProductSpecificationAttributes { get { return "ProductSpecificationAttributes"; } }
 		public static string ProductTags { get { return "ProductTags"; } }
-		public static string Products { get { return "Products"; } }
+		public static string ProductVariantAttributes { get { return "ProductVariantAttributes"; } }
+		public static string ProductVariantAttributeValues { get { return "ProductVariantAttributeValues"; } }
+		public static string ProductVariantAttributeCombinations { get { return "ProductVariantAttributeCombinations"; } }
 		public static string RelatedProducts { get { return "RelatedProducts"; } }
 		public static string ReturnRequests { get { return "ReturnRequests"; } }
 		public static string Settings { get { return "Settings"; } }
@@ -122,6 +128,7 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string StateProvinces { get { return "StateProvinces"; } }
 		public static string Stores { get { return "Stores"; } }
 		public static string StoreMappings { get { return "StoreMappings"; } }
+		public static string TierPrices { get { return "TierPrices"; } }
 		public static string UrlRecords { get { return "UrlRecords"; } }
 	}
 

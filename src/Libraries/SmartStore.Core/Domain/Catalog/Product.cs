@@ -882,6 +882,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the product attributes
 		/// </summary>
+		[DataMember]
 		public virtual ICollection<ProductVariantAttribute> ProductVariantAttributes
 		{
 			get { return _productVariantAttributes ?? (_productVariantAttributes = new List<ProductVariantAttribute>()); }
@@ -891,6 +892,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the product attribute combinations
 		/// </summary>
+		[DataMember]
 		public virtual ICollection<ProductVariantAttributeCombination> ProductVariantAttributeCombinations
 		{
 			get { return _productVariantAttributeCombinations ?? (_productVariantAttributeCombinations = new List<ProductVariantAttributeCombination>()); }
@@ -900,6 +902,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the tier prices
 		/// </summary>
+		[DataMember]
 		public virtual ICollection<TierPrice> TierPrices
 		{
 			get { return _tierPrices ?? (_tierPrices = new List<TierPrice>()); }
@@ -909,6 +912,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the collection of applied discounts
 		/// </summary>
+		[DataMember]
 		public virtual ICollection<Discount> AppliedDiscounts
 		{
 			get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }

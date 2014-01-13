@@ -59,7 +59,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers
 		public ActionResult Configure()
 		{
 			if (!HasPermission(false))
-				return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");
+				return AccessDeniedPartialView();
 
 			var model = new WebApiConfigModel();
 			model.Copy(_webApiSettings, true);

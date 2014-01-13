@@ -143,7 +143,7 @@ namespace SmartStore.Web.Framework.WebApi
 			return _get<WebApiControllingCacheData>(WebApiControllingCacheData.Key, () =>
 			{
 				var engine = EngineContext.Current;
-				var plugin = engine.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName("Misc.WebApi");
+				var plugin = engine.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(WebApiGlobal.PluginSystemName);
 				var settings = engine.Resolve<WebApiSettings>();
 
 				var data = new WebApiControllingCacheData()

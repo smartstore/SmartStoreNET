@@ -43,6 +43,7 @@ namespace SmartStore.Web.Framework.WebApi
 		public static string RouteNameDefaultApi { get { return "WebApi.Default"; } }
 		public static string RouteNameDefaultOdata { get { return "WebApi.OData.Default"; } }
 		public static string MostRecentOdataPath { get { return "odata/v1"; } }
+		public static string PluginSystemName { get { return "Api.WebApi"; } }
 
 		/// <remarks>see http://tools.ietf.org/html/rfc6648 </remarks>
 		public static class Header

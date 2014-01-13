@@ -417,6 +417,10 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
+            _messageTokenProvider.AddCompanyTokens(tokens);
+            _messageTokenProvider.AddBankConnectionTokens(tokens);
+            _messageTokenProvider.AddContactDataTokens(tokens);
+            
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
@@ -532,6 +536,10 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
+            _messageTokenProvider.AddCompanyTokens(tokens);
+            _messageTokenProvider.AddBankConnectionTokens(tokens);
+            _messageTokenProvider.AddContactDataTokens(tokens);
+
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
@@ -640,7 +648,7 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
 			_messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
-
+            
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 

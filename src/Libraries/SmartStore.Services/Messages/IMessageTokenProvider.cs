@@ -53,5 +53,14 @@ namespace SmartStore.Services.Messages
         string[] GetListOfCampaignAllowedTokens();
 
         string[] GetListOfAllowedTokens();
+
+        //codehint: sm-add begin
+        void AddBankConnectionTokens(IList<Token> tokens);
+        
+        void AddCompanyTokens(IList<Token> tokens);
+
+        void AddContactDataTokens(IList<Token> tokens);
+        //codehint: sm-add end
+
     }
 }

@@ -46,6 +46,10 @@ namespace SmartStore.Web.Framework.WebApi
 			return new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 
+		/// <summary>
+		/// Further entity processing typically used by OData actions.
+		/// </summary>
+		/// <param name="process">Return an error string or null if your processing succeeded.</param>
 		public static void ProcessEntity(this ApiController apiController, Func<string> process)
 		{
 			string error = null;

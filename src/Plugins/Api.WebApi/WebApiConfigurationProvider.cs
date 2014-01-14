@@ -17,11 +17,6 @@ namespace SmartStore.Plugin.Api.WebApi
 {
 	public partial class WebApiConfigurationProvider : IWebApiConfigurationProvider
 	{
-		//private void AddActionsToCustomer(EntityTypeConfiguration<Customer> customer)
-		//{
-		//	customer.Action(WebApiSatelliteNavigation.GenericAttributes)
-		//		.ReturnsCollection<GenericAttribute>();
-		//}
 		private void AddActionsToOrder(EntityTypeConfiguration<Order> order)
 		{
 			order.Action("PaymentPending")
@@ -38,11 +33,6 @@ namespace SmartStore.Plugin.Api.WebApi
 			order.Action("Cancel")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
 		}
-		//private void AddActionsToProducts(EntityTypeConfiguration<Product> product)
-		//{
-		//	product.Action(WebApiSatelliteNavigation.RelatedProducts)
-		//		.ReturnsCollection<RelatedProduct>();
-		//}
 
 		public void Configure(WebApiConfigurationBroadcaster configData)
 		{
@@ -84,9 +74,7 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<TierPrice>(WebApiOdataEntitySet.TierPrices);
 			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
 
-			//AddActionsToCustomer(m.Entity<Customer>());
 			AddActionsToOrder(m.Entity<Order>());
-			//AddActionsToProducts(m.Entity<Product>());
 		}
 
 		public int Priority { get { return 0; } }
@@ -131,11 +119,4 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string TierPrices { get { return "TierPrices"; } }
 		public static string UrlRecords { get { return "UrlRecords"; } }
 	}
-
-
-	//public static class WebApiSatelliteNavigation
-	//{
-	//	public static string GenericAttributes { get { return "GenericAttributes"; } }
-	//	public static string RelatedProducts { get { return "RelatedProducts"; } }
-	//}
 }

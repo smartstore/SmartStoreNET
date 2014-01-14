@@ -488,7 +488,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets shipments
         /// </summary>
-        public virtual ICollection<Shipment> Shipments
+		[DataMember]
+		public virtual ICollection<Shipment> Shipments
         {
             get { return _shipments ?? (_shipments = new List<Shipment>()); }
             protected set { _shipments = value; }

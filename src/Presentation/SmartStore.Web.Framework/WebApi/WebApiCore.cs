@@ -38,6 +38,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 	public static class WebApiGlobal
 	{
+		public static int MaxApiVersion { get { return 1; } }
 		public static int MaxTop { get { return 120; } }
 		public static int DefaultTimePeriodMinutes { get { return 15; } }
 		public static string RouteNameDefaultApi { get { return "WebApi.Default"; } }
@@ -53,6 +54,7 @@ namespace SmartStore.Web.Framework.WebApi
 			public static string Date { get { return Prefix + "Date"; } }
 			public static string PublicKey { get { return Prefix + "PublicKey"; } }
 			public static string MaxTop { get { return Prefix + "MaxTop"; } }
+			public static string Version { get { return Prefix + "Version"; } }
 			public static string HmacResultId { get { return Prefix + "HmacResultId"; } }
 			public static string HmacResultDescription { get { return Prefix + "HmacResultDesc"; } }
 			//public static string LastRequest { get { return Prefix + "LastRequest"; } }

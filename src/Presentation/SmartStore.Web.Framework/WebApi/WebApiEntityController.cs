@@ -39,11 +39,14 @@ namespace SmartStore.Web.Framework.WebApi
 
 		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
 		{
-			if (Request.Method == HttpMethod.Get &&	(
-				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") || 
-				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property")))
+			if (Request.Method == HttpMethod.Get)
 			{
-				return UnmappedGetProperty(odataPath);
+				if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
+					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property") ||
+					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/unresolved"))
+				{
+					return UnmappedGetProperty(odataPath);
+				}
 			}
 
 			return base.HandleUnmappedRequest(odataPath);
@@ -61,17 +64,28 @@ namespace SmartStore.Web.Framework.WebApi
 				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatWith(key));
 
 			PropertyInfo pi = null;
-			string propertyName = (odataPath.Segments.Last() as PropertyAccessPathSegment).PropertyName;
+			string propertyName = null;
+			var lastSegment = odataPath.Segments.Last();
+			var propertySegment = (lastSegment as PropertyAccessPathSegment);
+
+			if (propertySegment == null)
+				propertyName = lastSegment.ToString();
+			else
+				propertyName = propertySegment.PropertyName;
 
 			if (propertyName.HasValue())
 				pi = entity.GetType().GetProperty(propertyName);
 
 			if (pi == null)
-				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName ?? ""));
+				return UnmappedGetProperty(entity, propertyName ?? "");
 
 			var propertyValue = pi.GetValue(entity, null);
 
 			return Request.CreateResponse(HttpStatusCode.OK, pi.PropertyType, propertyValue);
+		}
+		protected virtual internal HttpResponseMessage UnmappedGetProperty(TEntity entity, string propertyName)
+		{
+			return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName));
 		}
 
 		protected virtual IRepository<TEntity> CreateRepository()

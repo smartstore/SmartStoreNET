@@ -40,7 +40,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		public SingleResult<Product> GetProduct(int key)
 		{
 			return GetSingleResult(key);
-		}
+		}		
 
 		// navigation properties
 
@@ -123,7 +123,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 		// actions
 
-		//[HttpGet, Queryable]
+		//[HttpGet, WebApiQueryable]
 		//public IQueryable<RelatedProduct> GetRelatedProducts(int key)
 		//{
 		//	if (!ModelState.IsValid)

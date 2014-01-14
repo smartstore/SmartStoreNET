@@ -198,6 +198,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				var response = HttpContext.Current.Response;
 
+				response.AddHeader(WebApiGlobal.Header.Version, cacheControllingData.Version);
 				response.AddHeader(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
 				response.AddHeader(WebApiGlobal.Header.Date, now.ToString("o"));
 
@@ -212,6 +213,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				var scheme = _hmac.GetWwwAuthenticateScheme(actionContext.Request.Headers.Authorization.Scheme);
 				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));		// see RFC-2616
 
+				headers.Add(WebApiGlobal.Header.Version, cacheControllingData.Version);
 				headers.Add(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
 				headers.Add(WebApiGlobal.Header.Date, now.ToString("o"));
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());

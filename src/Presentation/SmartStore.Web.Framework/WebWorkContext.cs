@@ -358,6 +358,14 @@ namespace SmartStore.Web.Framework
                         }
                     }
 
+					// find currency by domain ending
+					if (currency == null)
+					{
+						currency = _currencyService
+							.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)
+							.GetByDomainEnding(_httpContext.Request.Url.Authority);
+					}
+
                     // get PrimaryStoreCurrency
                     if (currency == null)
                     {

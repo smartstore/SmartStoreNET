@@ -293,16 +293,34 @@ namespace SmartStore.Admin.Controllers
 
             var currency = _currencyService.GetCurrencyById(id);
             if (currency == null)
-                //No currency found with the specified id
                 return RedirectToAction("List");
 
             var model = currency.ToModel();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(currency.CreatedOnUtc, DateTimeKind.Utc);
-            //locales
+            
+			//locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = currency.GetLocalized(x => x.Name, languageId, false, false);
             });
+
+			model.AvailableDomainEndings = new List<SelectListItem>()
+			{
+				new SelectListItem() { Text = ".com", Value = ".com" },
+				new SelectListItem() { Text = ".uk", Value = ".uk" },
+				new SelectListItem() { Text = ".de", Value = ".de" },
+				new SelectListItem() { Text = ".ch", Value = ".ch" }
+			};
+
+			foreach (var ending in model.DomainEndings.SplitSafe(","))
+			{
+				var item = model.AvailableDomainEndings.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual(ending));
+				if (item == null)
+					model.AvailableDomainEndings.Add(new SelectListItem() { Text = ending, Value = ending, Selected = true });
+				else
+					item.Selected = true;
+			}
+
 			//Stores
 			PrepareStoresMappingModel(model, currency, false);
 

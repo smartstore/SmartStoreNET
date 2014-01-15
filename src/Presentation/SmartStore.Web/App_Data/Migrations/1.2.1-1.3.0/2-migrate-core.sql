@@ -81,3 +81,9 @@ BEGIN
 	INSERT [Setting] ([Name], [Value], [StoreId])
 	VALUES (N'AdminAreaSettings.RichEditorFlavor', N'RichEditor', 0)
 END
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Currency]') and NAME='DomainEndings')
+BEGIN
+	ALTER TABLE [Currency] ADD [DomainEndings] nvarchar(1000) NULL
+END
+GO

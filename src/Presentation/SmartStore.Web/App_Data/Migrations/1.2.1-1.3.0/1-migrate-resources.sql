@@ -176,6 +176,14 @@ SET @resources='
 		<Value lang="de">Produkt-Informationen</Value>
 	</LocaleResource>
 	
+	<LocaleResource Name="Admin.Configuration.Currencies.Fields.DomainEndings">
+		<Value>Domain endings</Value>
+		<Value lang="de">Domain Endungen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Currencies.Fields.DomainEndings.Hint">
+		<Value>Selects this currency as the default currency based on the domain extension. Example: .ch</Value>
+		<Value lang="de">Wählt diese Währung als Standardwährung auf Basis der Domain-Endung aus. Beispiel: .ch</Value>
+	</LocaleResource>
 	
 </Language>
 '

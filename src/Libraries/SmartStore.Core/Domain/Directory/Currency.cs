@@ -70,6 +70,11 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
 		[DataMember]
 		public DateTime UpdatedOnUtc { get; set; }
-    }
 
+		/// <summary>
+		/// Gets or sets the (comma separated) list of domain endings (e.g. country code top-level domains) to which this currency is the default one
+		/// </summary>
+		[DataMember]
+		public string DomainEndings { get; set; }
+    }
 }

@@ -51,6 +51,10 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency")]
         public bool IsPrimaryStoreCurrency { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.DomainEndings")]
+		public string DomainEndings { get; set; }
+		public IList<SelectListItem> AvailableDomainEndings { get; set; }
+
         public IList<CurrencyLocalizedModel> Locales { get; set; }
 
 		//Store mapping

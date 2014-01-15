@@ -16,8 +16,6 @@ namespace SmartStore.Core.Domain.Catalog
     [DataContract]
 	public partial class Product : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
     {
-		private Dictionary<string, object> _mergedDataValues;
-
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
@@ -41,15 +39,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private int? _basePriceBaseAmount;
 
 		public bool MergedDataIgnore { get; set; }
-		public Dictionary<string, object> MergedDataValues
-		{
-			get
-			{
-				if (_mergedDataValues == null)
-					_mergedDataValues = new Dictionary<string, object>();
-				return _mergedDataValues;
-			}
-		}
+		public Dictionary<string, object> MergedDataValues { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product type identifier

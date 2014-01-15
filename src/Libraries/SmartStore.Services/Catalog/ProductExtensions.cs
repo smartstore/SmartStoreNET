@@ -41,10 +41,14 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.ArgumentNotNull(product, "product");
 
-			product.MergedDataValues.Clear();
+			if (product.MergedDataValues != null)
+				product.MergedDataValues.Clear();
 
 			if (combination == null)
 				return;
+
+			if (product.MergedDataValues == null)
+				product.MergedDataValues = new Dictionary<string, object>();
 
 			if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
 				product.MergedDataValues.Add("StockQuantity", combination.StockQuantity);

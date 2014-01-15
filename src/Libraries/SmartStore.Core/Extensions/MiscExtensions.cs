@@ -98,7 +98,7 @@ namespace SmartStore
 		{
 			try
 			{
-				if (!mergedData.MergedDataIgnore)
+				if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
 				{
 					object value;
 

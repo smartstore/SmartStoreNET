@@ -285,14 +285,15 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
                 .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
             //currencies
-            Mapper.CreateMap<Currency, CurrencyModel>()
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-                .ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
-                .ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+			Mapper.CreateMap<Currency, CurrencyModel>()
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore());
             Mapper.CreateMap<CurrencyModel, Currency>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore());

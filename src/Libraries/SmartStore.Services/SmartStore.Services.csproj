@@ -201,6 +201,7 @@
     <Compile Include="Customers\DeleteGuestsTask.cs" />
     <Compile Include="DataImportModeFlags.cs" />
     <Compile Include="DataImportResult.cs" />
+    <Compile Include="Directory\CurrencyExtensions.cs" />
     <Compile Include="Directory\IGeoCountryLookup.cs" />
     <Compile Include="Directory\GeoCountryLookup.cs" />
     <Compile Include="Directory\IDeliveryTimeService.cs" />

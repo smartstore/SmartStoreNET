@@ -17,6 +17,7 @@
 * New setting to redirect to order detail page if an order completed
 * New setting to suppress the search of SKUs
 * Shipment list can be filtered by tracking number
+* #238 Working currency in context of request domain
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long

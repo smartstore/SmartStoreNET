@@ -63,26 +63,40 @@ namespace SmartStore.Services.Seo
 
         private void WriteCategories(int parentCategoryId)
         {
-            var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, false);
+            string location = _webHelper.GetStoreLocation(false);
+
+            var categories = _categoryService.GetAllCategories(showHidden: false);
             foreach (var category in categories)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", _webHelper.GetStoreLocation(false), category.GetSeName());
+                var url = string.Format("{0}{1}", location, category.GetSeName());
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = category.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
-
-                WriteCategories(category.Id);
             }
+
+            //var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, false);
+            //foreach (var category in categories)
+            //{
+            //    //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
+            //    var url = string.Format("{0}{1}", location, category.GetSeName());
+            //    var updateFrequency = UpdateFrequency.Weekly;
+            //    var updateTime = category.UpdatedOnUtc;
+            //    WriteUrlLocation(url, updateFrequency, updateTime);
+
+            //    WriteCategories(category.Id);
+            //}
         }
 
         private void WriteManufacturers()
         {
+            string location = _webHelper.GetStoreLocation(false);
+            
             var manufacturers = _manufacturerService.GetAllManufacturers(false);
             foreach (var manufacturer in manufacturers)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", _webHelper.GetStoreLocation(false), manufacturer.GetSeName());
+                var url = string.Format("{0}{1}", location, manufacturer.GetSeName());
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = manufacturer.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
@@ -91,7 +105,9 @@ namespace SmartStore.Services.Seo
 
         private void WriteProducts()
         {
-			var ctx = new ProductSearchContext()
+            string location = _webHelper.GetStoreLocation(false);
+            
+            var ctx = new ProductSearchContext()
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
 				PageSize = int.MaxValue,
@@ -103,7 +119,7 @@ namespace SmartStore.Services.Seo
             foreach (var product in products)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", _webHelper.GetStoreLocation(false), product.GetSeName());
+                var url = string.Format("{0}{1}", location, product.GetSeName());
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = product.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
@@ -112,11 +128,13 @@ namespace SmartStore.Services.Seo
 
         private void WriteTopics()
         {
-			var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
+            string location = _webHelper.GetStoreLocation(false);
+            
+            var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
             foreach (var topic in topics)
             {
                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}t/{1}", _webHelper.GetStoreLocation(false), topic.SystemName.ToLowerInvariant());
+                var url = string.Format("{0}t/{1}", location, topic.SystemName.ToLowerInvariant());
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = DateTime.UtcNow;
                 WriteUrlLocation(url, updateFrequency, updateTime);

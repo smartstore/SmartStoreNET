@@ -15,5 +15,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Grouped product
 		/// </summary>
 		GroupedProduct = 10,
+
+		/// <summary>
+		/// Bundled product
+		/// </summary>
+		BundledProduct = 15
 	}
 }

@@ -129,5 +129,12 @@ namespace SmartStore.Services.Catalog
 		/// A value indicating whether to search by a specified "Keyword" in product SKU
 		/// </summary>
 		public bool SearchSku { get; set; }
+
+        /// <summary>
+        /// Any value indicating the origin of the search request,
+        /// e.g. the category id, if the caller is is a category page.
+        /// Can be useful in customization scenarios.
+        /// </summary>
+        public string Origin { get; set; }
     }
 }

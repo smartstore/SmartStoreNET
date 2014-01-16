@@ -1697,6 +1697,7 @@ namespace SmartStore.Web.Controllers
                 ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;
+                ctx.Origin = categoryId.ToString();
 
                 var featuredProducts = _productService.SearchProducts(ctx);
 
@@ -1748,6 +1749,7 @@ namespace SmartStore.Web.Controllers
                 ctx2.LoadFilterableSpecificationAttributeOptionIds = true;
 				ctx2.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 				ctx2.VisibleIndividuallyOnly = true;
+                ctx2.Origin = categoryId.ToString();
 
                 var products = _productService.SearchProducts(ctx2);
 

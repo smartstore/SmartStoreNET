@@ -74,18 +74,6 @@ namespace SmartStore.Services.Seo
                 var updateTime = category.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
             }
-
-            //var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, false);
-            //foreach (var category in categories)
-            //{
-            //    //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            //    var url = string.Format("{0}{1}", location, category.GetSeName());
-            //    var updateFrequency = UpdateFrequency.Weekly;
-            //    var updateTime = category.UpdatedOnUtc;
-            //    WriteUrlLocation(url, updateFrequency, updateTime);
-
-            //    WriteCategories(category.Id);
-            //}
         }
 
         private void WriteManufacturers()

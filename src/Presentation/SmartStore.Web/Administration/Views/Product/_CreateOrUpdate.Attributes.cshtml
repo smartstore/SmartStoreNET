@@ -68,12 +68,16 @@
         }
         else
         {
-            @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
+            <div class="alert alert-danger">
+                @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
+            </div>
         }
     }
     else
     {
-        @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
+        </div>
     }
 </div>
 
@@ -84,12 +88,12 @@
     {
         if (Model.NumberOfAvailableProductAttributes > 0)
         {
-            <div style="margin: 10px 0px 10px 0px;" class="muted">
+            <div style="margin: 10px 0px 10px 0px;" class="alert alert-success">
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
             <div style="margin: 10px 0 5px 0;">
-                <button class="btn add-new-combination">
+                <button class="btn btn-warning add-new-combination">
                     <i class="icon-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
@@ -192,7 +196,7 @@
             </div>
 
             <div style="margin-top:5px;">
-                <button class="btn add-new-combination">
+                <button class="btn btn-warning add-new-combination">
                     <i class="icon-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
@@ -200,11 +204,15 @@
         }
         else
         {
-            @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
+            <div class="alert alert-danger">
+                @T("Admin.Catalog.Products.ProductVariantAttributes.NoAttributesAvailable")
+            </div>
         }
     }
     else
     {
-        @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.ProductVariantAttributes.SaveBeforeEdit")
+        </div>
     }
 </div>

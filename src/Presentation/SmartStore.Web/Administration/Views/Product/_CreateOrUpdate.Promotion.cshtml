@@ -47,11 +47,12 @@
                         .Width(180);
                     })
                     .EnableCustomBinding(true))
+
                 </td>
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn" style="margin-top:3px;"
+                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning" style="margin-top:3px;"
                             onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="icon-plus"></i>
                         @T("Admin.Catalog.Products.RelatedProducts.AddNew")
@@ -76,7 +77,9 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.RelatedProducts.SaveBeforeEdit")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.RelatedProducts.SaveBeforeEdit")
+        </div>
     }
 </div>
 
@@ -123,7 +126,7 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn" style="margin-top:3px;"
+                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning" style="margin-top:3px;"
                             onclick="javascript:OpenWindow('@(Url.Action("CrossSellProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshCrossSellProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="icon-plus"></i>
                         @T("Admin.Catalog.Products.CrossSells.AddNew")
@@ -148,6 +151,8 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.CrossSells.SaveBeforeEdit")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.CrossSells.SaveBeforeEdit")
+        </div>
     }
 </div>

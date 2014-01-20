@@ -48,12 +48,15 @@
                 })
                 .EnableCustomBinding(true))
         </div>
-        <p style="margin-top:10px;">
-            <strong>@T("Admin.Catalog.Products.SpecificationAttributes.AddNew")</strong>
-        </p>
+        <div style="margin-top:10px;">
+            <h3 class="bordered">@T("Admin.Catalog.Products.SpecificationAttributes.AddNew")</h3>
+        </div>
         <script type="text/javascript">
             $(function() {
                 $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").change(function() {
+
+                    alert("changed");
+
                     var selectedItem = $(this).val();
                     var ddlSpecOptions = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeOptionId)")
                     $.ajax({
@@ -148,8 +151,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2" align="left">
-                    <button type="button" name="addProductSpec" id="addProductSpec" class="btn">
+                <td></td>
+                <td align="left" style="padding-top:10px">
+                    <button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-warning">
                         <i class="icon-plus"></i>
                         @T("Admin.Catalog.Products.SpecificationAttributes.AddButton")
                     </button>
@@ -159,10 +163,14 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.SpecificationAttributes.NoAttributes")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.SpecificationAttributes.NoAttributes")
+        </div>
     }
 }
 else
 {
-    @T("Admin.Catalog.Products.SpecificationAttributes.SaveBeforeEdit")
+    <div class="alert alert-danger">
+        @T("Admin.Catalog.Products.SpecificationAttributes.SaveBeforeEdit")
+    </div>
 }

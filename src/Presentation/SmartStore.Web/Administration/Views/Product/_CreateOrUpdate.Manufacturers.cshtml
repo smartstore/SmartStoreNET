@@ -51,10 +51,14 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.Manufacturers.NoManufacturersAvailable")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.Manufacturers.NoManufacturersAvailable")
+        </div>
     }
 }
 else
 {
-    @T("Admin.Catalog.Products.Manufacturers.SaveBeforeEdit")
+    <div class="alert alert-danger">
+        @T("Admin.Catalog.Products.Manufacturers.SaveBeforeEdit")
+    </div>
 }

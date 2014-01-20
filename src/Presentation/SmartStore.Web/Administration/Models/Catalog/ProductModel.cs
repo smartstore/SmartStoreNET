@@ -249,11 +249,9 @@ namespace SmartStore.Admin.Models.Catalog
 		public decimal? SpecialPrice { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPriceStartDateTimeUtc")]
-		[UIHint("DateTimeNullable")]
 		public DateTime? SpecialPriceStartDateTimeUtc { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPriceEndDateTimeUtc")]
-		[UIHint("DateTimeNullable")]
 		public DateTime? SpecialPriceEndDateTimeUtc { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CustomerEntersPrice")]
@@ -278,11 +276,9 @@ namespace SmartStore.Admin.Models.Catalog
 		public decimal Height { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableStartDateTime")]
-		[UIHint("DateTimeNullable")]
 		public DateTime? AvailableStartDateTimeUtc { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AvailableEndDateTime")]
-		[UIHint("DateTimeNullable")]
 		public DateTime? AvailableEndDateTimeUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]

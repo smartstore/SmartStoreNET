@@ -15,6 +15,7 @@
             {
                 columns.Bound(x => x.PictureUrl)
                     .Width(400)
+                    .Centered()
                     .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' width='150' /><a/>")
                     .ReadOnly();
                 columns.Bound(x => x.DisplayOrder).Width(100);
@@ -38,7 +39,7 @@
             .EnableCustomBinding(true))
     </div>
     <p style="margin-top:14px;">
-        <strong>@T("Admin.Catalog.Products.Pictures.AddNew")</strong>
+        <h3 class="bordered">@T("Admin.Catalog.Products.Pictures.AddNew")</h3>
     </p>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -101,5 +102,7 @@
 }
 else
 {
-    @T("Admin.Catalog.Products.Pictures.SaveBeforeEdit")
+    <div class="alert alert-danger">
+        @T("Admin.Catalog.Products.Pictures.SaveBeforeEdit")
+    </div>
 }

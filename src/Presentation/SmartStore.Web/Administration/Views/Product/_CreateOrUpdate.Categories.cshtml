@@ -51,10 +51,14 @@
     }
     else
     {
-        @T("Admin.Catalog.Products.Categories.NoCategoriesAvailable")
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.Categories.NoCategoriesAvailable")
+        </div>
     }
 }
 else
 {
-    @T("Admin.Catalog.Products.Categories.SaveBeforeEdit")
+    <div class="alert alert-danger">
+        @T("Admin.Catalog.Products.Categories.SaveBeforeEdit")
+    </div>
 }

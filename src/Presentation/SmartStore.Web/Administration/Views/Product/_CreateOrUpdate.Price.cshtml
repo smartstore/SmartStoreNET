@@ -141,7 +141,7 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.BasePrice_BaseAmount, new { small = true })
-                @Html.DropDownListFor(model => model.BasePrice_MeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth" })
+                @Html.DropDownListFor(model => model.BasePrice_MeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
             </td>
         </tr>
         <tr id="pnlBasePriceAmount">
@@ -205,7 +205,9 @@
         }
         else
         {
-            @T("Admin.Catalog.Products.TierPrices.SaveBeforeEdit")
+            <div class="alert alert-danger">
+                @T("Admin.Catalog.Products.TierPrices.SaveBeforeEdit")
+            </div>
         }
     </div>
 </div>

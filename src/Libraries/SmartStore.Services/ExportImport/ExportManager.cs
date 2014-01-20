@@ -305,6 +305,10 @@ namespace SmartStore.Services.ExportImport
 				if (product.BasePrice_BaseAmount.HasValue)
 					xmlWriter.WriteElementString("BasePrice_BaseAmount", null, product.BasePrice_BaseAmount.Value.ToString());
 
+				xmlWriter.WriteElementString("BundleTitleText", null, product.BundleTitleText);
+				xmlWriter.WriteElementString("BundleNonBundledShipping", null, product.BundleNonBundledShipping.ToString());
+				xmlWriter.WriteElementString("BundlePerItemPricing", null, product.BundlePerItemPricing.ToString());
+
 				xmlWriter.WriteStartElement("ProductDiscounts");
 				var discounts = product.AppliedDiscounts;
 				foreach (var discount in discounts)
@@ -452,6 +456,33 @@ namespace SmartStore.Services.ExportImport
                 }
                 xmlWriter.WriteEndElement();
 
+				xmlWriter.WriteStartElement("ProductBundleItems");
+				var bundleItems = _productService.GetBundleItemsByParentBundledProductId(product.Id, true);
+				foreach (var bundleItem in bundleItems)
+				{
+					xmlWriter.WriteStartElement("ProductBundleItem");
+
+					xmlWriter.WriteElementString("ProductId", null, bundleItem.ProductId.ToString());
+					xmlWriter.WriteElementString("ParentBundledProductId", null, bundleItem.ParentBundledProductId.ToString());
+					xmlWriter.WriteElementString("Quantity", null, bundleItem.Quantity.ToString());
+					if (bundleItem.Discount.HasValue)
+						xmlWriter.WriteElementString("Discount", null, bundleItem.Discount.Value.ToString());
+					xmlWriter.WriteElementString("OverrideName", null, bundleItem.OverrideName.ToString());
+					xmlWriter.WriteElementString("Name", null, bundleItem.Name);
+					xmlWriter.WriteElementString("OverrideShortDescription", null, bundleItem.OverrideShortDescription.ToString());
+					xmlWriter.WriteElementString("ShortDescription", null, bundleItem.ShortDescription);
+					xmlWriter.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());
+					xmlWriter.WriteElementString("Published", null, bundleItem.Published.ToString());
+					xmlWriter.WriteElementString("DisplayOrder", null, bundleItem.DisplayOrder.ToString());
+					xmlWriter.WriteElementString("CreatedOnUtc", null, bundleItem.CreatedOnUtc.ToString());
+					xmlWriter.WriteElementString("UpdatedOnUtc", null, bundleItem.UpdatedOnUtc.ToString());
+
+					xmlWriter.WriteEndElement();
+				}
+				xmlWriter.WriteEndElement();
+
+
+
                 xmlWriter.WriteEndElement();
             }
 
@@ -561,7 +592,10 @@ namespace SmartStore.Services.ExportImport
 					"BasePrice_Enabled",
 					"BasePrice_MeasureUnit",
 					"BasePrice_Amount",
-					"BasePrice_BaseAmount"
+					"BasePrice_BaseAmount",
+					"BundleTitleText",
+					"BundleNonBundledShipping",
+					"BundlePerItemPricing"
                 };
                 for (int i = 0; i < properties.Length; i++)
                 {
@@ -844,6 +878,15 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = p.BasePrice_Amount;
 					col++;
 					worksheet.Cells[row, col].Value = p.BasePrice_BaseAmount;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.BundleTitleText;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.BundleNonBundledShipping;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.BundlePerItemPricing;
 					col++;
 
                     row++;

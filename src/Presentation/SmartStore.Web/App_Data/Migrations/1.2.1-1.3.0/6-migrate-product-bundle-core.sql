@@ -32,7 +32,7 @@ BEGIN
 	
 	EXEC ('
 		ALTER TABLE [dbo].[ProductBundleItem] WITH CHECK ADD CONSTRAINT [ProductBundleItem_Product] FOREIGN KEY([ProductId])
-		REFERENCES [dbo].[Product] ([Id]) ON DELETE CASCADE	
+		REFERENCES [dbo].[Product] ([Id])
 	')
 	
 	EXEC ('
@@ -42,10 +42,10 @@ BEGIN
 	EXEC ('
 		CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ProductId] ON [ProductBundleItem] ([ProductId] ASC)
 	')
-	
+
 	EXEC ('
 		ALTER TABLE [dbo].[ProductBundleItem] WITH CHECK ADD CONSTRAINT [ProductBundleItem_ParentBundledProduct] FOREIGN KEY([ParentBundledProductId])
-		REFERENCES [dbo].[Product] ([Id])
+		REFERENCES [dbo].[Product] ([Id]) ON DELETE CASCADE
 	')
 	
 	EXEC ('

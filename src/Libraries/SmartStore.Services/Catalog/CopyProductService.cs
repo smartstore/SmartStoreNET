@@ -80,6 +80,7 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentException("Product name is required");
 
             Product productCopy = null;
+			var utcNow = DateTime.UtcNow;
 
 			// product download & sample download
 			int downloadId = product.DownloadId;
@@ -205,8 +206,16 @@ namespace SmartStore.Services.Catalog
 				DisplayOrder = product.DisplayOrder,
                 Published = isPublished,
                 Deleted = product.Deleted,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow,
+				DeliveryTimeId = product.DeliveryTimeId,
+				BasePrice_Enabled = product.BasePrice_Enabled,
+				BasePrice_MeasureUnit = product.BasePrice_MeasureUnit,
+				BasePrice_Amount = product.BasePrice_Amount,
+				BasePrice_BaseAmount = product.BasePrice_BaseAmount,
+				BundleTitleText = product.BundleTitleText,
+				BundleNonBundledShipping = product.BundleNonBundledShipping,
+				BundlePerItemPricing = product.BundlePerItemPricing
             };
 
             _productService.InsertProduct(productCopy);
@@ -242,6 +251,10 @@ namespace SmartStore.Services.Catalog
                 var metaTitle = product.GetLocalized(x => x.MetaTitle, lang.Id, false, false);
                 if (!String.IsNullOrEmpty(metaTitle))
                     _localizedEntityService.SaveLocalizedValue(productCopy, x => x.MetaTitle, metaTitle, lang.Id);
+
+				var bundleTitleText = product.GetLocalized(x => x.BundleTitleText, lang.Id, false, false);
+				if (!String.IsNullOrEmpty(bundleTitleText))
+					_localizedEntityService.SaveLocalizedValue(productCopy, x => x.BundleTitleText, bundleTitleText, lang.Id);
 
                 //search engine name
                 _urlRecordService.SaveSlug(productCopy, productCopy.ValidateSeName("", name, false), lang.Id);
@@ -477,7 +490,7 @@ namespace SmartStore.Services.Catalog
 			_productService.UpdateHasTierPricesProperty(productCopy);
 			_productService.UpdateHasDiscountsApplied(productCopy);
 
-			//associated products
+			// associated products
 			if (copyAssociatedProducts)
 			{
 				var searchContext = new ProductSearchContext()
@@ -496,6 +509,19 @@ namespace SmartStore.Services.Catalog
 					associatedProductCopy.ParentGroupedProductId = productCopy.Id;
 					_productService.UpdateProduct(productCopy);
 				}
+			}
+
+			// bundled products
+			var bundledItems = _productService.GetBundleItemsByParentBundledProductId(product.Id, true);
+
+			foreach (var bundledItem in bundledItems)
+			{
+				var newBundledItem = (ProductBundleItem)bundledItem.Clone();
+				newBundledItem.ParentBundledProductId = productCopy.Id;
+				newBundledItem.CreatedOnUtc = utcNow;
+				newBundledItem.UpdatedOnUtc = utcNow;
+
+				_productService.InsertBundleItem(newBundledItem);
 			}
 
             return productCopy;

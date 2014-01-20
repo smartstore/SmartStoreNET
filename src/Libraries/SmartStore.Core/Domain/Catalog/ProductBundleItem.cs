@@ -5,7 +5,7 @@ using SmartStore.Core.Domain.Localization;
 namespace SmartStore.Core.Domain.Catalog
 {
 	[DataContract]
-	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity
+	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity, ICloneable
 	{
 		/// <summary>
 		/// Gets or sets the product identifier
@@ -94,5 +94,26 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets the parent bundled product
 		/// </summary>
 		public virtual Product ParentBundledProduct { get; set; }
+
+		public object Clone()
+		{
+			var bundleItem = new ProductBundleItem()
+			{
+				ProductId = this.ProductId,
+				ParentBundledProductId = this.ParentBundledProductId,
+				Quantity = this.Quantity,
+				Discount = this.Discount,
+				OverrideName = this.OverrideName,
+				Name = this.Name,
+				OverrideShortDescription = this.OverrideShortDescription,
+				ShortDescription = this.ShortDescription,
+				HideThumbnail = this.HideThumbnail,
+				Published = this.Published,
+				DisplayOrder = this.DisplayOrder,
+				CreatedOnUtc = this.CreatedOnUtc,
+				UpdatedOnUtc = this.UpdatedOnUtc
+			};
+			return bundleItem;
+		}
 	}
 }

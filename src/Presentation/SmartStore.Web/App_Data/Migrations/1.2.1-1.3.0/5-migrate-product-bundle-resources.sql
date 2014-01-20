@@ -11,6 +11,117 @@ SET @resources='
 		<Value lang="de">Produktbündel</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.SaveBeforeEdit">
+		<Value>You need to save the product before you can add bundle products for this product page.</Value>
+		<Value lang="de">Das Produkt muss gespeichert werden, bevor Bündelprodukte zur Stückliste hinzugefügt werden können.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems">
+		<Value>Bundled products</Value>
+		<Value lang="de">Stückliste</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AddNew">
+		<Value>Add new bundle product</Value>
+		<Value lang="de">Bündelprodukt hinzufügen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.EditOf">
+		<Value>Edit of bundle product</Value>
+		<Value lang="de">Bearbeiten von Bündelprodukt</Value>
+	</LocaleResource>	
+	
+	<LocaleResource Name="Common.CreatedOn">
+		<Value>Created on</Value>
+		<Value lang="de">Erstellt am</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.CreatedOn.Hint">
+		<Value>Date of creation.</Value>
+		<Value lang="de">Datum der Erstellung.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.UpdatedOn">
+		<Value>Updated on</Value>
+		<Value lang="de">Geändert am</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.UpdatedOn.Hint">
+		<Value>Date of last modification.</Value>
+		<Value lang="de">Datum der letzten Modifizierung.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Product">
+		<Value>Product</Value>
+		<Value lang="de">Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Quantity">
+		<Value>Quantity</Value>
+		<Value lang="de">Menge</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Quantity.Hint">
+		<Value>Every time the bundle is added to the cart, the quantity of that item will be adjusted based on the value specified here.</Value>
+		<Value lang="de">Die Menge des Bündelprodukts wird dem gemäß hier angegebenen Wert angepasst, wenn das Bündel zum Warenkorb hinzugefügt wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Discount">
+		<Value>Discount (%)</Value>
+		<Value lang="de">Rabatt (%)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Discount.Hint">
+		<Value>Discount in percent.</Value>
+		<Value lang="de">Rabatt in Prozent.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideName">
+		<Value>Overrite name</Value>
+		<Value lang="de">Namen überschreiben</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideName.Hint">
+		<Value>Override the default product name for the bundled product.</Value>
+		<Value lang="de">Den Standardproduktnamen beim gebündelten Produkt überschreiben.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name">
+		<Value>Name</Value>
+		<Value lang="de">Name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name.Hint">
+		<Value>The name of the bundled product.</Value>
+		<Value lang="de">Der Name des gebündelten Produkts.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideShortDescription">
+		<Value>Overrite short description</Value>
+		<Value lang="de">Kurzbeschreibung überschreiben</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideShortDescription.Hint">
+		<Value>Override the default short description for the bundled product.</Value>
+		<Value lang="de">Die Standardkurzbeschreibung beim gebündelten Produkt überschreiben.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription">
+		<Value>Short description</Value>
+		<Value lang="de">Kurzbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription.Hint">
+		<Value>The short description of the bundled product.</Value>
+		<Value lang="de">Die Kurzbeschreibung des gebündelten Produkts.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.HideThumbnail">
+		<Value>Hide thumbnail</Value>
+		<Value lang="de">Vorschaubild ausblenden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.HideThumbnail.Hint">
+		<Value>Hide the thumbnail for the bundled product.</Value>
+		<Value lang="de">Das Vorschaubild des gebündelten Produkts ausblenden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published">
+		<Value>Bundle published</Value>
+		<Value lang="de">Veröffentlicht im Bündel</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published.Hint">
+		<Value>Whether to publish the product in the bundle.</Value>
+		<Value lang="de">Legt fest, ob das Produkt im Bündel angezeigt werden soll.</Value>
+	</LocaleResource>	
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder">
+		<Value>Bundle display order</Value>
+		<Value lang="de">Reihenfolge im Bündel</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder.Hint">
+		<Value>The position of the product in the bundle.</Value>
+		<Value lang="de">Die Position des Produkts im Bündel.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

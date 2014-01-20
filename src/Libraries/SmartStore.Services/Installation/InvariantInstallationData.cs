@@ -5081,13 +5081,19 @@ namespace SmartStore.Services.Installation
                                     {
                                         Name = "Simple product",
                                         ViewPath = "ProductTemplate.Simple",
-                                        DisplayOrder = 1
+                                        DisplayOrder = 10
                                     },
                                     new ProductTemplate
                                     {
                                         Name = "Grouped product",
                                         ViewPath = "ProductTemplate.Grouped",
-                                        DisplayOrder = 2
+                                        DisplayOrder = 100
+                                    },
+                                    new ProductTemplate
+                                    {
+                                        Name = "Bundled product",
+                                        ViewPath = "ProductTemplate.Bundled",
+                                        DisplayOrder = 200
                                     }
                                };
             this.Alter(entities);

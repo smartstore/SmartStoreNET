@@ -201,9 +201,28 @@ namespace SmartStore.Admin
         }
         #endregion
 
-        #region Languages
+		#region Product bundle items
 
-        public static LanguageModel ToModel(this Language entity)
+		public static ProductBundleItemModel ToModel(this ProductBundleItem entity)
+		{
+			return Mapper.Map<ProductBundleItem, ProductBundleItemModel>(entity);
+		}
+
+		public static ProductBundleItem ToEntity(this ProductBundleItemModel model)
+		{
+			return Mapper.Map<ProductBundleItemModel, ProductBundleItem>(model);
+		}
+
+		public static ProductBundleItem ToEntity(this ProductBundleItemModel model, ProductBundleItem destination)
+		{
+			return Mapper.Map(model, destination);
+		}
+
+		#endregion
+
+		#region Languages
+
+		public static LanguageModel ToModel(this Language entity)
         {
             return Mapper.Map<Language, LanguageModel>(entity);
         }

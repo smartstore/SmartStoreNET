@@ -42,6 +42,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
+		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ILanguageService _languageService;
@@ -96,6 +97,7 @@ namespace SmartStore.Services.Catalog
 			IRepository<StoreMapping> storeMappingRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
+			IRepository<ProductBundleItem> productBundleItemRepository,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
             ILanguageService languageService,
@@ -117,6 +119,7 @@ namespace SmartStore.Services.Catalog
 			this._storeMappingRepository = storeMappingRepository;
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
+			this._productBundleItemRepository = productBundleItemRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
             this._languageService = languageService;
@@ -1509,6 +1512,91 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #endregion
-    }
+		#region Bundled products
+
+		/// <summary>
+		/// Inserts a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void InsertBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			if (bundleItem.ParentBundledProductId == 0)
+				throw new SmartException("ParentBundledProductId of a bundle item can't be 0.");
+
+			_productBundleItemRepository.Insert(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityInserted(bundleItem);
+		}
+
+		/// <summary>
+		/// Updates a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void UpdateBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			_productBundleItemRepository.Update(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityUpdated(bundleItem);
+		}
+
+		/// <summary>
+		/// Deletes a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void DeleteBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			_productBundleItemRepository.Delete(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityDeleted(bundleItem);
+		}
+
+		/// <summary>
+		/// Get a product bundle item by item identifier
+		/// </summary>
+		/// <param name="bundleItemId">Product bundle item identifier</param>
+		/// <returns>Product bundle item</returns>
+		public virtual ProductBundleItem GetBundleItemById(int bundleItemId)
+		{
+			if (bundleItemId == 0)
+				return null;
+
+			return _productBundleItemRepository.GetById(bundleItemId);
+		}
+
+		/// <summary>
+		/// Gets a list of bundle items for a particular product identifier
+		/// </summary>
+		/// <param name="parentBundledProductId">Product identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>List of bundle items</returns>
+		public virtual IList<ProductBundleItem> GetBundleItemsByParentBundledProductId(int parentBundledProductId, bool showHidden = false)
+		{
+			var query =
+				from pbi in _productBundleItemRepository.Table
+				join p in _productRepository.Table on pbi.ProductId equals p.Id
+				where pbi.ParentBundledProductId == parentBundledProductId && !p.Deleted && (showHidden || pbi.Published)
+				orderby pbi.DisplayOrder
+				select pbi;
+
+			var bundleItems = query.ToList();
+
+			return bundleItems;
+		}
+
+		#endregion
+
+		#endregion
+	}
 }

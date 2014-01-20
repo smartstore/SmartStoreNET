@@ -182,6 +182,7 @@
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
+    <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
     <Compile Include="Models\Catalog\BulkEditListModel.cs" />
@@ -361,6 +362,7 @@
     <Content Include="Content\images\admin-gvw-bg.gif" />
     <Content Include="Content\images\admin-menu-bg.gif" />
     <Content Include="Content\images\ajax-progress-2.gif" />
+    <Content Include="Content\images\ajax_loader_small.gif" />
     <Content Include="Content\images\ap-catalog-white.png" />
     <Content Include="Content\images\ap-catalog.png" />
     <Content Include="Content\images\ap-chevron.png" />
@@ -1182,6 +1184,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Promotion.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.BundleItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\BundleItemAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

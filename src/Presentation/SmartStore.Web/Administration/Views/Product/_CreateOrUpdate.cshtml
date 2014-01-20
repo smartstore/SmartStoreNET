@@ -34,11 +34,20 @@
         .Icon("icon-bullhorn")
         .Content(TabPromotion());
 
-    if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
+    if (Model.Id > 0)
     {
-        x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
-            .Icon("icon-link")
-            .Content(TabAssociatedProducts());
+        if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
+        {
+            x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
+                .Icon("icon-link")
+                .Content(TabAssociatedProducts());
+        }
+        else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
+        {
+            x.Add().Text(T("Admin.Catalog.Products.BundleItems").Text)
+                .Icon("icon-link")
+                .Content(TabBundleItems());
+        }
     }
     
     x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
@@ -92,11 +101,21 @@
     @Html.Partial("_CreateOrUpdate.Promotion", Model)
 }
 
-@if (Model.Id > 0 && Model.ProductTypeId == (int)ProductType.GroupedProduct)
+@if (Model.Id > 0)
 {
-    @helper TabAssociatedProducts()
+    if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
     {
-        @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
+        @helper TabAssociatedProducts()
+        {
+            @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
+        }
+    }
+    else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
+    {
+        @helper TabBundleItems()
+        {
+            @Html.Partial("_CreateOrUpdate.BundleItems", Model)
+        }
     }
 }
 

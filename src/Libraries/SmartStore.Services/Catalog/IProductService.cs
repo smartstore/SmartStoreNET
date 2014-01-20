@@ -260,5 +260,43 @@ namespace SmartStore.Services.Catalog
         void UpdateProductPicture(ProductPicture productPicture);
 
         #endregion
+
+		#region Bundled products
+
+		/// <summary>
+		/// Inserts a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void InsertBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Updates a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void UpdateBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Deletes a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void DeleteBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Get a product bundle item by item identifier
+		/// </summary>
+		/// <param name="bundleItemId">Product bundle item identifier</param>
+		/// <returns>Product bundle item</returns>
+		ProductBundleItem GetBundleItemById(int bundleItemId);
+
+		/// <summary>
+		/// Gets a list of bundle items for a particular product identifier
+		/// </summary>
+		/// <param name="parentBundledProductId">Product identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>List of bundle items</returns>
+		IList<ProductBundleItem> GetBundleItemsByParentBundledProductId(int parentBundledProductId, bool showHidden = false);
+
+		#endregion
+
     }
 }

@@ -59,9 +59,8 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <p></p>
-                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn"
-                        onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn" style="margin-top:3px;"
+                            onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="icon-plus"></i>
                         @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
                     </button>

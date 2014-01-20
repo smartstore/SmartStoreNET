@@ -95,7 +95,7 @@
     function toggleProductType() {
         var selectedProductTypeId = $("#@Html.FieldIdFor(model => model.ProductTypeId)").val();
 
-        if (selectedProductTypeId == @(((int)ProductType.SimpleProduct).ToString())) {
+        if (selectedProductTypeId == '@((int)ProductType.SimpleProduct)') {
             $('#group-prices').show();
             $('#group-required-other-products').show();
             $('#group-giftcard').show();
@@ -105,7 +105,7 @@
             $('#group-tax').show();
             $('#group-inventory').show();
         }
-        else if (selectedProductTypeId == @(((int)ProductType.GroupedProduct).ToString())) {
+        else if (selectedProductTypeId == '@((int)ProductType.GroupedProduct)') {
             $('#group-prices').hide();
             $('#group-required-other-products').hide();
             $('#group-giftcard').hide();
@@ -114,6 +114,8 @@
             $('#group-shipping').hide();
             $('#group-tax').hide();
             $('#group-inventory').hide();
+        }
+        else if (selectedProductTypeId == '@((int)ProductType.BundledProduct)') {
         }
     }
 

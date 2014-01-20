@@ -26,6 +26,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private ICollection<ProductVariantAttributeCombination> _productVariantAttributeCombinations;
 		private ICollection<TierPrice> _tierPrices;
 		private ICollection<Discount> _appliedDiscounts;
+		private ICollection<ProductBundleItem> _productBundleItems;
 
 		private int _stockQuantity;
 		private string _sku;
@@ -907,6 +908,15 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }
 			protected set { _appliedDiscounts = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the collection of product bundle items
+		/// </summary>
+		public virtual ICollection<ProductBundleItem> ProductBundleItems
+		{
+			get { return _productBundleItems ?? (_productBundleItems = new List<ProductBundleItem>()); }
+			protected set { _productBundleItems = value; }
 		}
     }
 }

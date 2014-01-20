@@ -1660,9 +1660,233 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-        #region Product pictures
+		#region Bundle items
 
-        public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int productId)
+		private void PrepareBundleItemEditModel(ProductBundleItemModel model, ProductBundleItem bundleItem, string btnId, string formId, bool refreshPage = false)
+		{
+			if (bundleItem == null)
+			{
+				ViewBag.Title = _localizationService.GetResource("Admin.Catalog.Products.BundleItems.EditOf");
+			}
+			else
+			{
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.CreatedOnUtc, DateTimeKind.Utc);
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.UpdatedOnUtc, DateTimeKind.Utc);
+
+				AddLocales(_languageService, model.Locales, (locale, languageId) =>
+				{
+					locale.Name = bundleItem.GetLocalized(x => x.Name, languageId, false, false);
+					locale.ShortDescription = bundleItem.GetLocalized(x => x.ShortDescription, languageId, false, false);
+				});
+
+				ViewBag.Title = "{0} {1} ({2})".FormatWith(
+					_localizationService.GetResource("Admin.Catalog.Products.BundleItems.EditOf"), bundleItem.Product.Name, bundleItem.Product.Sku);
+			}
+
+			ViewBag.btnId = btnId;
+			ViewBag.formId = formId;
+			ViewBag.RefreshPage = refreshPage;
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult BundleItemList(GridCommand command, int productId)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var bundleItems = _productService.GetBundleItemsByParentBundledProductId(productId, true);
+
+			var bundleItemsModel = bundleItems.Select(x =>
+				{
+					return new ProductModel.BundleItemModel()
+					{
+						Id = x.Id,
+						ProductId = x.Product.Id,
+						ProductName = x.Product.Name,
+						Sku = x.Product.Sku,
+						DisplayOrder = x.DisplayOrder,
+						Published = x.Published
+					};
+				}).ToList();
+
+			var model = new GridModel<ProductModel.BundleItemModel>()
+			{
+				Data = bundleItemsModel,
+				Total = bundleItemsModel.Count
+			};
+
+			return new JsonResult { Data = model };
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult BundleItemDelete(int id, GridCommand command)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var bundleItem = _productService.GetBundleItemById(id);
+
+			if (bundleItem == null)
+				throw new ArgumentException("No product bundle item found with the specified id");
+
+			_productService.DeleteBundleItem(bundleItem);
+
+			return BundleItemList(command, bundleItem.ParentBundledProductId);
+		}
+
+		public ActionResult BundleItemAddPopup(int productId)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var model = new ProductModel.AddBundleItemModel();
+
+			//categories
+			var allCategories = _categoryService.GetAllCategories(showHidden: true);
+			var mappedCategories = allCategories.ToDictionary(x => x.Id);
+			foreach (var c in allCategories)
+			{
+				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+			}
+
+			//manufacturers
+			foreach (var m in _manufacturerService.GetAllManufacturers(true))
+			{
+				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+			}
+
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+			{
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
+
+			//product types
+			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[FormValueRequired("save")]
+		public ActionResult BundleItemAddPopup(string btnId, string formId, ProductModel.AddBundleItemModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			if (model.SelectedProductIds != null)
+			{
+				for (int i = 0; i < model.SelectedProductIds.Count(); ++i)
+				{
+					var bundleItem = new ProductBundleItem()
+					{
+						ProductId = model.SelectedProductIds[i],
+						ParentBundledProductId = model.ProductId,
+						Quantity = 1,
+						Published = true,
+						DisplayOrder = i + 1,
+						CreatedOnUtc = DateTime.UtcNow,
+						UpdatedOnUtc = DateTime.UtcNow
+					};
+
+					_productService.InsertBundleItem(bundleItem);
+				}
+			}
+
+			ViewBag.RefreshPage = true;
+			ViewBag.btnId = btnId;
+			ViewBag.formId = formId;
+			return View(model);
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult BundleItemAddPopupList(GridCommand command, ProductModel.AddBundleItemModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var searchContext = new ProductSearchContext()
+			{
+				CategoryIds = new List<int>() { model.SearchCategoryId },
+				ManufacturerId = model.SearchManufacturerId,
+				StoreId = model.SearchStoreId,
+				Keywords = model.SearchProductName,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				ShowHidden = true,
+				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
+			};
+
+			var products = _productService.SearchProducts(searchContext);
+
+			var gridModel = new GridModel();
+			gridModel.Data = products.Select(x => x.ToModel());
+			gridModel.Total = products.TotalCount;
+
+			return new JsonResult
+			{
+				Data = gridModel
+			};
+		}
+
+		public ActionResult BundleItemEditPopup(int id, string btnId, string formId)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var bundleItem = _productService.GetBundleItemById(id);
+
+			if (bundleItem == null)
+				throw new ArgumentException("No bundle item found with the specified id");
+
+			var model = bundleItem.ToModel();
+
+			PrepareBundleItemEditModel(model, bundleItem, btnId, formId);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateInput(false)]
+		public ActionResult BundleItemEditPopup(string btnId, string formId, ProductBundleItemModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			if (ModelState.IsValid)
+			{
+				var bundleItem = _productService.GetBundleItemById(model.Id);
+
+				if (bundleItem == null)
+					throw new ArgumentException("No bundle item found with the specified id");
+
+				bundleItem = model.ToEntity(bundleItem);
+				bundleItem.UpdatedOnUtc = DateTime.UtcNow;
+
+				_productService.UpdateBundleItem(bundleItem);
+
+				foreach (var localized in model.Locales)
+				{
+					_localizedEntityService.SaveLocalizedValue(bundleItem, x => x.Name, localized.Name, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedValue(bundleItem, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+				}
+
+				PrepareBundleItemEditModel(model, bundleItem, btnId, formId, true);
+			}
+			else
+			{
+				PrepareBundleItemEditModel(model, null, btnId, formId);
+			}
+			return View(model);
+		}
+
+		#endregion
+
+		#region Product pictures
+
+		public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int productId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();

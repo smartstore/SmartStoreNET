@@ -532,6 +532,54 @@ namespace SmartStore.Admin.Models.Catalog
 			public int[] SelectedProductIds { get; set; }
 		}
 
+		public partial class BundleItemModel : EntityModelBase
+		{
+			public int ProductId { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Product")]
+			public string ProductName { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.DisplayOrder")]
+			public int DisplayOrder { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Published")]
+			public bool Published { get; set; }
+		}
+		public partial class AddBundleItemModel : ModelBase
+		{
+			public AddBundleItemModel()
+			{
+				AvailableCategories = new List<SelectListItem>();
+				AvailableManufacturers = new List<SelectListItem>();
+				AvailableStores = new List<SelectListItem>();
+				AvailableProductTypes = new List<SelectListItem>();
+			}
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
+			[AllowHtml]
+			public string SearchProductName { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
+			public int SearchCategoryId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
+			public int SearchManufacturerId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+			public int SearchStoreId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
+			public int SearchProductTypeId { get; set; }
+
+			public IList<SelectListItem> AvailableCategories { get; set; }
+			public IList<SelectListItem> AvailableManufacturers { get; set; }
+			public IList<SelectListItem> AvailableStores { get; set; }
+			public IList<SelectListItem> AvailableProductTypes { get; set; }
+
+			public int ProductId { get; set; }
+
+			public int[] SelectedProductIds { get; set; }
+		}
+
         public class CrossSellProductModel : EntityModelBase
         {
             public int ProductId2 { get; set; }

@@ -1,10 +1,11 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Catalog
 {
 	[DataContract]
-	public partial class ProductBundle : BaseEntity, ILocalizedEntity
+	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity
 	{
 		/// <summary>
 		/// Gets or sets the product identifier
@@ -28,7 +29,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the discount in percent
 		/// </summary>
 		[DataMember]
-		public decimal Discount { get; set; }
+		public decimal? Discount { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the name should be overwritten
@@ -71,5 +72,27 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time of product bundle item creation
+		/// </summary>
+		[DataMember]
+		public DateTime CreatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time of product bundle item update
+		/// </summary>
+		[DataMember]
+		public DateTime UpdatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets the product
+		/// </summary>
+		public virtual Product Product { get; set; }
+
+		/// <summary>
+		/// Gets the parent bundled product
+		/// </summary>
+		public virtual Product ParentBundledProduct { get; set; }
 	}
 }

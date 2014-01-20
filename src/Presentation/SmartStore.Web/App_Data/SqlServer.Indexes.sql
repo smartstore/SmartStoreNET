@@ -175,3 +175,9 @@ GO
 
 CREATE NONCLUSTERED INDEX [IX_Product_Sku] ON [Product] ([Sku] ASC)
 GO
+
+CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ProductId] ON [ProductBundleItem] ([ProductId] ASC)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ParentBundledProductId] ON [ProductBundleItem] ([ParentBundledProductId] ASC)
+GO

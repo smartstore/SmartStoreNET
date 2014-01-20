@@ -13,9 +13,30 @@
         .Icon("icon-pencil")
         .Content(TabInfo())
         .Selected(true);
-    x.Add().Text(T("Admin.Catalog.Products.Price").Text)
-        .Icon("icon-barcode")
-        .Content(TabPrice());
+
+    if (Model.Id > 0)
+    {
+        if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
+        {
+            x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
+                .Icon("icon-link")
+                .Content(TabAssociatedProducts());
+        }
+        else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
+        {
+            x.Add().Text(T("Admin.Catalog.Products.BundleItems").Text)
+                .Icon("icon-link")
+                .Content(TabBundleItems());
+        }
+    }
+
+    if (Model.ProductTypeId != (int)ProductType.GroupedProduct)
+    {
+        x.Add().Text(T("Admin.Catalog.Products.Price").Text)
+            .Icon("icon-barcode")
+            .Content(TabPrice());
+    }
+    
     x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
         .Icon("icon-signal")
         .Content(TabDiscounts());    
@@ -33,22 +54,6 @@
     x.Add().Text(T("Admin.Catalog.Products.Promotion").Text)
         .Icon("icon-bullhorn")
         .Content(TabPromotion());
-
-    if (Model.Id > 0)
-    {
-        if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
-        {
-            x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
-                .Icon("icon-link")
-                .Content(TabAssociatedProducts());
-        }
-        else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
-        {
-            x.Add().Text(T("Admin.Catalog.Products.BundleItems").Text)
-                .Icon("icon-link")
-                .Content(TabBundleItems());
-        }
-    }
     
     x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
         .Icon("icon-list-alt")
@@ -74,10 +79,33 @@
 {
     @Html.Partial("_CreateOrUpdate.Info", Model)
 }
-@helper TabPrice()
+
+@if (Model.Id > 0)
 {
-    @Html.Partial("_CreateOrUpdate.Price", Model)
+    if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
+    {
+        @helper TabAssociatedProducts()
+        {
+            @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
+        }
+    }
+    else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
+    {
+        @helper TabBundleItems()
+        {
+            @Html.Partial("_CreateOrUpdate.BundleItems", Model)
+        }
+    }
 }
+
+@if (Model.ProductTypeId != (int)ProductType.GroupedProduct)
+{
+    @helper TabPrice()
+    {
+        @Html.Partial("_CreateOrUpdate.Price", Model)
+    }
+}
+
 @helper TabDiscounts()
 {
     @Html.Partial("_CreateOrUpdate.Discounts", Model)
@@ -99,24 +127,6 @@
 @helper TabPromotion()
 {
     @Html.Partial("_CreateOrUpdate.Promotion", Model)
-}
-
-@if (Model.Id > 0)
-{
-    if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
-    {
-        @helper TabAssociatedProducts()
-        {
-            @Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)
-        }
-    }
-    else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
-    {
-        @helper TabBundleItems()
-        {
-            @Html.Partial("_CreateOrUpdate.BundleItems", Model)
-        }
-    }
 }
 
 @helper TabAttributes()

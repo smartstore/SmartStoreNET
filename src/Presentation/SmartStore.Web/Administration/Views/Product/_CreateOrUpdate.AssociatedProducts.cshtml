@@ -4,11 +4,9 @@
 
 @if (Model.Id > 0)
 {
-    <div style="margin: 10px 0px 10px 0px;" class="muted">
+    <div style="margin: 10px 0px 10px 0px;" class="alert alert-success">
         <div>
             @T("Admin.Catalog.Products.AssociatedProducts.Note1")
-        </div>
-        <div>
             @T("Admin.Catalog.Products.AssociatedProducts.Note2")
         </div>
     </div>
@@ -59,7 +57,7 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn" style="margin-top:3px;"
+                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn btn-warning" style="margin-top:3px;"
                             onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="icon-plus"></i>
                         @T("Admin.Catalog.Products.AssociatedProducts.AddNew")

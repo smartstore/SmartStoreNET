@@ -700,6 +700,24 @@ namespace SmartStore.Core.Domain.Catalog
 		}
 
 		/// <summary>
+		/// Optional title text of a product bundle
+		/// </summary>
+		[DataMember]
+		public string BundleTitleText { get; set; }
+
+		/// <summary>
+		/// Non bundled shipping of bundle items
+		/// </summary>
+		[DataMember]
+		public bool BundleNonBundledShipping { get; set; }
+
+		/// <summary>
+		/// Per item pricing of bundle items
+		/// </summary>
+		[DataMember]
+		public bool BundlePerItemPricing { get; set; }
+
+		/// <summary>
 		/// Gets or sets the product type
 		/// </summary>
 		[DataMember]

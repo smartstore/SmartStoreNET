@@ -50,6 +50,8 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(p => p.BasePrice_Amount).HasPrecision(18, 4).IsOptional();
 			this.Ignore(p => p.BasePrice_HasValue);
 
+			this.Property(p => p.BundleTitleText).HasMaxLength(400);
+
 			this.HasMany(p => p.ProductTags)
 				.WithMany(pt => pt.Products)
 				.Map(m => m.ToTable("Product_ProductTag_Mapping"));

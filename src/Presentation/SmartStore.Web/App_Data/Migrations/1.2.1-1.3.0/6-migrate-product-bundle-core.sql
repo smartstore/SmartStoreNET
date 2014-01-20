@@ -57,3 +57,25 @@ BEGIN
 	')
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundleTitleText')
+BEGIN
+	ALTER TABLE [Product] ADD [BundleTitleText] nvarchar(400) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundleNonBundledShipping')
+BEGIN
+	EXEC ('ALTER TABLE [Product] ADD [BundleNonBundledShipping] bit NULL')
+	EXEC ('UPDATE [Product] SET [BundleNonBundledShipping] = 0 WHERE [BundleNonBundledShipping] IS NULL')
+	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundleNonBundledShipping] bit NOT NULL')
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundlePerItemPricing')
+BEGIN
+	EXEC ('ALTER TABLE [Product] ADD [BundlePerItemPricing] bit NULL')
+	EXEC ('UPDATE [Product] SET [BundlePerItemPricing] = 0 WHERE [BundlePerItemPricing] IS NULL')
+	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundlePerItemPricing] bit NOT NULL')
+END
+GO

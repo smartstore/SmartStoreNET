@@ -12,8 +12,8 @@ SET @resources='
 	</LocaleResource>
 
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.SaveBeforeEdit">
-		<Value>You need to save the product before you can add bundle products for this product page.</Value>
-		<Value lang="de">Das Produkt muss gespeichert werden, bevor Bündelprodukte zur Stückliste hinzugefügt werden können.</Value>
+		<Value>You need to save the product before you can add bundled products for this product page.</Value>
+		<Value lang="de">Das Produkt muss gespeichert werden, bevor gebündelte Produkte zur Stückliste hinzugefügt werden können.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems">
 		<Value>Bundled products</Value>
@@ -120,6 +120,31 @@ SET @resources='
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder.Hint">
 		<Value>The position of the product in the bundle.</Value>
 		<Value lang="de">Die Position des Produkts im Bündel.</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleTitleText">
+		<Value>Bundle title text</Value>
+		<Value lang="de">Bündel Titeltext</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleTitleText.Hint">
+		<Value>Optional title text of the product bundle.</Value>
+		<Value lang="de">Optionaler Titeltext des Produktbündels.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping">
+		<Value>Non-bundled shipping</Value>
+		<Value lang="de">Ungebündelter Versand</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping.Hint">
+		<Value>Sets whether the shipping of all bundled products should be calculated. By default, this option is disabled, i.e. the shipping cost of the product bundle is calculated.</Value>
+		<Value lang="de">Legt fest, ob die Versandkosten aller gebündelten Produkte berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. die Versandkosten des Produktbündels werden berechnet.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing">
+		<Value>Per-item pricing</Value>
+		<Value lang="de">Preis per gebündelten Produkten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing.Hint">
+		<Value>Determines whether the sum of the individual prices of all bundled products should be calculated as a price. By default, this option is disabled, i.e. the price of the product bundle is calculated.</Value>
+		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller gebündelten Produkte berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. der Preis des Produktsbündels wird berechnet.</Value>
 	</LocaleResource>
 
 </Language>

@@ -4,12 +4,56 @@
 
 @if (Model.Id > 0)
 {
-    <div style="margin: 10px 0px 10px 0px;" class="muted">
-        <div>
-        </div>
-    </div>
+    <div>
+        @(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-bundle-localized",
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].BundleTitleText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.Locales[item].BundleTitleText)
+                        @Html.ValidationMessageFor(model => model.Locales[item].BundleTitleText)
+                    </td>
+                </tr>
+            </table>        
+        ,
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.BundleTitleText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.BundleTitleText)
+                        @Html.ValidationMessageFor(model => model.BundleTitleText)
+                    </td>
+                </tr>
+            </table>
+        ))
+
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BundleNonBundledShipping)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.BundleNonBundledShipping)
+                    @Html.ValidationMessageFor(model => model.BundleNonBundledShipping)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BundlePerItemPricing)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.BundlePerItemPricing)
+                    @Html.ValidationMessageFor(model => model.BundlePerItemPricing)
+                </td>
+            </tr>
+        </table>
+    </div>    
     
-    <div style="margin: 10px 0">    
+    <div style="margin: 20px 0">
         <table class="adminContent">
             <tr>
                 <td>

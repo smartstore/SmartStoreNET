@@ -202,6 +202,8 @@ namespace SmartStore.Admin.Controllers
                                                                localized.MetaTitle,
                                                                localized.LanguageId);
 
+				_localizedEntityService.SaveLocalizedValue(product, x => x.BundleTitleText, localized.BundleTitleText, localized.LanguageId);
+
                 //search engine name
 				// codehint: sm-edit
                 var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
@@ -799,6 +801,7 @@ namespace SmartStore.Admin.Controllers
                 locale.MetaDescription = product.GetLocalized(x => x.MetaDescription, languageId, false, false);
                 locale.MetaTitle = product.GetLocalized(x => x.MetaTitle, languageId, false, false);
                 locale.SeName = product.GetSeName(languageId, false, false);
+				locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
             });
 
             PrepareProductPictureThumbnailModel(model, product);

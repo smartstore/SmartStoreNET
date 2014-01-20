@@ -288,6 +288,16 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
         public bool Published { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleTitleText")]
+		public string BundleTitleText { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleNonBundledShipping")]
+		public bool BundleNonBundledShipping { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundlePerItemPricing")]
+		public bool BundlePerItemPricing { get; set; }
+
+
 		public string PrimaryStoreCurrencyCode { get; set; }
 		public string BaseDimensionIn { get; set; }
 		public string BaseWeightIn { get; set; }
@@ -779,5 +789,8 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleTitleText")]
+		public string BundleTitleText { get; set; }
     }
 }

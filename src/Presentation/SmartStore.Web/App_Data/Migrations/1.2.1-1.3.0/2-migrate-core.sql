@@ -36,7 +36,9 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShippingMethod]') and NAME='IgnoreCharges')
 BEGIN
-	ALTER TABLE ShippingMethod ADD IgnoreCharges bit NOT NULL DEFAULT 0
+	EXEC ('ALTER TABLE [ShippingMethod] ADD [IgnoreCharges] bit NULL')
+	EXEC ('UPDATE [ShippingMethod] SET [IgnoreCharges] = 0 WHERE [IgnoreCharges] IS NULL')
+	EXEC ('ALTER TABLE [ShippingMethod] ALTER COLUMN [IgnoreCharges] bit NOT NULL')
 END
 GO
 
@@ -48,7 +50,9 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Log]') and NAME='Frequency')
 BEGIN
-	ALTER TABLE [Log] ADD [Frequency] int NOT NULL DEFAULT 1
+	EXEC ('ALTER TABLE [Log] ADD [Frequency] int NULL')
+	EXEC ('UPDATE [Log] SET [Frequency] = 1 WHERE [Frequency] IS NULL')
+	EXEC ('ALTER TABLE [Log] ALTER COLUMN [Frequency] int NOT NULL')
 END
 GO
 

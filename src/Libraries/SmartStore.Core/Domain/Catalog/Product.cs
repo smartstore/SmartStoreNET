@@ -648,24 +648,24 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets if base price quotation (PAnGV) is enabled
 		/// </summary>
 		[DataMember]
-		public bool BasePrice_Enabled { get; set; }
+		public bool BasePriceEnabled { get; set; }
 
 		/// <summary>
 		/// Measure unit for the base price (e.g. "kg", "g", "qm²" etc.)
 		/// </summary>
 		[DataMember]
-		public string BasePrice_MeasureUnit { get; set; }
+		public string BasePriceMeasureUnit { get; set; }
 
 		/// <summary>
 		/// Amount of product per packing unit in the given measure unit 
 		/// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
 		/// </summary>
 		[DataMember]
-		public decimal? BasePrice_Amount
+		public decimal? BasePriceAmount
 		{
 			get
 			{
-				return this.GetMergedDataValue<decimal?>("BasePrice_Amount", _basePriceAmount);
+				return this.GetMergedDataValue<decimal?>("BasePriceAmount", _basePriceAmount);
 			}
 			set
 			{
@@ -678,11 +678,11 @@ namespace SmartStore.Core.Domain.Catalog
 		/// (e.g. "1" liter. Formula: [BaseAmount] [MeasureUnit] = [SellingPrice] / [Amount])
 		/// </summary>
 		[DataMember]
-		public int? BasePrice_BaseAmount
+		public int? BasePriceBaseAmount
 		{
 			get
 			{
-				return this.GetMergedDataValue<int?>("BasePrice_BaseAmount", _basePriceBaseAmount);
+				return this.GetMergedDataValue<int?>("BasePriceBaseAmount", _basePriceBaseAmount);
 			}
 			set
 			{
@@ -691,11 +691,11 @@ namespace SmartStore.Core.Domain.Catalog
 		}
 
 		[DataMember]
-		public bool BasePrice_HasValue
+		public bool BasePriceHasValue
 		{
 			get
 			{
-				return BasePrice_Enabled && BasePrice_Amount.GetValueOrDefault() > 0 && BasePrice_BaseAmount.GetValueOrDefault() > 0 && BasePrice_MeasureUnit.HasValue();
+				return BasePriceEnabled && BasePriceAmount.GetValueOrDefault() > 0 && BasePriceBaseAmount.GetValueOrDefault() > 0 && BasePriceMeasureUnit.HasValue();
 			}
 		}
 

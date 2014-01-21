@@ -128,28 +128,28 @@
         <!-- PAnGV -->
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePrice_Enabled)
+                @Html.SmartLabelFor(model => model.BasePriceEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BasePrice_Enabled)
-                @Html.ValidationMessageFor(model => model.BasePrice_Enabled)
+                @Html.EditorFor(model => model.BasePriceEnabled)
+                @Html.ValidationMessageFor(model => model.BasePriceEnabled)
             </td>
         </tr>
         <tr id="pnlBasePriceBaseAmount">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePrice_BaseAmount)
+                @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BasePrice_BaseAmount, new { small = true })
-                @Html.DropDownListFor(model => model.BasePrice_MeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
+                @Html.EditorFor(model => model.BasePriceBaseAmount, new { small = true })
+                @Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
             </td>
         </tr>
         <tr id="pnlBasePriceAmount">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePrice_Amount)
+                @Html.SmartLabelFor(model => model.BasePriceAmount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BasePrice_Amount, new { small = true })
+                @Html.EditorFor(model => model.BasePriceAmount, new { small = true })
                 <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>

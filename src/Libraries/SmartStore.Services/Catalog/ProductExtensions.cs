@@ -71,9 +71,9 @@ namespace SmartStore.Services.Catalog
 				product.MergedDataValues.Add("Height", combination.Height.Value);
 
 			if (combination.BasePriceAmount.HasValue)
-				product.MergedDataValues.Add("BasePrice_Amount", combination.BasePriceAmount);
+				product.MergedDataValues.Add("BasePriceAmount", combination.BasePriceAmount);
 			if (combination.BasePriceBaseAmount.HasValue)
-				product.MergedDataValues.Add("BasePrice_BaseAmount", combination.BasePriceBaseAmount);
+				product.MergedDataValues.Add("BasePriceBaseAmount", combination.BasePriceBaseAmount);
 		}
 
 		public static void GetAllCombinationImageIds(this IList<ProductVariantAttributeCombination> combinations, List<int> imageIds)
@@ -374,13 +374,13 @@ namespace SmartStore.Services.Catalog
             if (localizationService == null)
                 throw new ArgumentNullException("localizationService");
 
-            if (product.BasePrice_HasValue && product.BasePrice_Amount != Decimal.Zero)
+            if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
             {
 				decimal price = decimal.Add(product.Price, priceAdjustment);
-				decimal basePriceValue = Convert.ToDecimal((price / product.BasePrice_Amount) * product.BasePrice_BaseAmount);
+				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
 				string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
-				string unit = "{0} {1}".FormatWith(product.BasePrice_BaseAmount, product.BasePrice_MeasureUnit);
+				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 
 				return localizationService.GetResource("Products.BasePriceInfo").FormatWith(basePrice, unit);
             }

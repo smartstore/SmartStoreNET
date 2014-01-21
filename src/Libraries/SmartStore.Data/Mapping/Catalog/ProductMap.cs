@@ -46,9 +46,9 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Ignore(p => p.MergedDataIgnore);
 			this.Ignore(p => p.MergedDataValues);
 
-			this.Property(p => p.BasePrice_MeasureUnit).HasMaxLength(50);
-			this.Property(p => p.BasePrice_Amount).HasPrecision(18, 4).IsOptional();
-			this.Ignore(p => p.BasePrice_HasValue);
+			this.Property(p => p.BasePriceMeasureUnit).HasMaxLength(50);
+			this.Property(p => p.BasePriceAmount).HasPrecision(18, 4).IsOptional();
+			this.Ignore(p => p.BasePriceHasValue);
 
 			this.Property(p => p.BundleTitleText).HasMaxLength(400);
 

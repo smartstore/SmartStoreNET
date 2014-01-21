@@ -101,10 +101,10 @@ namespace SmartStore.Services.ExportImport
             "Picture2",
             "Picture3",
 			"DeliveryTimeId",	// codehint: sm-add (following)
-			"BasePrice_Enabled",
-			"BasePrice_MeasureUnit",
-			"BasePrice_Amount",
-			"BasePrice_BaseAmount",
+			"BasePriceEnabled",
+			"BasePriceMeasureUnit",
+			"BasePriceAmount",
+			"BasePriceBaseAmount",
 			"BundleTitleText",
 			"BundleNonBundledShipping",
 			"BundlePerItemPricing"
@@ -319,16 +319,16 @@ namespace SmartStore.Services.ExportImport
 					if (HasValue(worksheet, iRow, "DeliveryTimeId"))
 						deliveryTimeId = GetValue<int>(worksheet, iRow, "DeliveryTimeId");
 
-					bool basePriceEnabled = GetValue<bool>(worksheet, iRow, "BasePrice_Enabled");
-					string basePriceMeasureUnit = GetValue<string>(worksheet, iRow, "BasePrice_MeasureUnit");
+					bool basePriceEnabled = GetValue<bool>(worksheet, iRow, "BasePriceEnabled");
+					string basePriceMeasureUnit = GetValue<string>(worksheet, iRow, "BasePriceMeasureUnit");
 
 					decimal? basePriceAmount = null;
-					if (HasValue(worksheet, iRow, "BasePrice_Amount"))
-						basePriceAmount = GetValue<decimal>(worksheet, iRow, "BasePrice_Amount");
+					if (HasValue(worksheet, iRow, "BasePriceAmount"))
+						basePriceAmount = GetValue<decimal>(worksheet, iRow, "BasePriceAmount");
 
 					int? basePriceBaseAmount = null;
-					if (HasValue(worksheet, iRow, "BasePrice_BaseAmount"))
-						basePriceBaseAmount = GetValue<int>(worksheet, iRow, "BasePrice_BaseAmount");
+					if (HasValue(worksheet, iRow, "BasePriceBaseAmount"))
+						basePriceBaseAmount = GetValue<int>(worksheet, iRow, "BasePriceBaseAmount");
 
 					string bundleTitleText = GetValue<string>(worksheet, iRow, "BundleTitleText");
 					bool bundleNonBundledShipping = GetValue<bool>(worksheet, iRow, "BundleNonBundledShipping");
@@ -429,10 +429,10 @@ namespace SmartStore.Services.ExportImport
 
 					// codehint: sm-add
 					product.DeliveryTimeId = deliveryTimeId;
-					product.BasePrice_Enabled = basePriceEnabled;
-					product.BasePrice_MeasureUnit = basePriceMeasureUnit;
-					product.BasePrice_Amount = basePriceAmount;
-					product.BasePrice_BaseAmount = basePriceBaseAmount;
+					product.BasePriceEnabled = basePriceEnabled;
+					product.BasePriceMeasureUnit = basePriceMeasureUnit;
+					product.BasePriceAmount = basePriceAmount;
+					product.BasePriceBaseAmount = basePriceBaseAmount;
 
 					product.BundleTitleText = bundleTitleText;
 					product.BundleNonBundledShipping = bundleNonBundledShipping;

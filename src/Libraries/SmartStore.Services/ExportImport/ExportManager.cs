@@ -298,12 +298,12 @@ namespace SmartStore.Services.ExportImport
 
 				if (product.DeliveryTimeId.HasValue)
 					xmlWriter.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
-				xmlWriter.WriteElementString("BasePrice_Enabled", null, product.BasePrice_Enabled.ToString());
-				xmlWriter.WriteElementString("BasePrice_MeasureUnit", null, product.BasePrice_MeasureUnit);
-				if (product.BasePrice_Amount.HasValue)
-					xmlWriter.WriteElementString("BasePrice_Amount", null, product.BasePrice_Amount.Value.ToString());
-				if (product.BasePrice_BaseAmount.HasValue)
-					xmlWriter.WriteElementString("BasePrice_BaseAmount", null, product.BasePrice_BaseAmount.Value.ToString());
+				xmlWriter.WriteElementString("BasePriceEnabled", null, product.BasePriceEnabled.ToString());
+				xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
+				if (product.BasePriceAmount.HasValue)
+					xmlWriter.WriteElementString("BasePriceAmount", null, product.BasePriceAmount.Value.ToString());
+				if (product.BasePriceBaseAmount.HasValue)
+					xmlWriter.WriteElementString("BasePriceBaseAmount", null, product.BasePriceBaseAmount.Value.ToString());
 
 				xmlWriter.WriteElementString("BundleTitleText", null, product.BundleTitleText);
 				xmlWriter.WriteElementString("BundleNonBundledShipping", null, product.BundleNonBundledShipping.ToString());
@@ -587,10 +587,10 @@ namespace SmartStore.Services.ExportImport
                     "Picture2",
                     "Picture3",
 					"DeliveryTimeId",	// codehint: sm-add (following)
-					"BasePrice_Enabled",
-					"BasePrice_MeasureUnit",
-					"BasePrice_Amount",
-					"BasePrice_BaseAmount",
+					"BasePriceEnabled",
+					"BasePriceMeasureUnit",
+					"BasePriceAmount",
+					"BasePriceBaseAmount",
 					"BundleTitleText",
 					"BundleNonBundledShipping",
 					"BundlePerItemPricing"
@@ -869,13 +869,13 @@ namespace SmartStore.Services.ExportImport
 
 					worksheet.Cells[row, col].Value = p.DeliveryTimeId;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice_Enabled;
+					worksheet.Cells[row, col].Value = p.BasePriceEnabled;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice_MeasureUnit;
+					worksheet.Cells[row, col].Value = p.BasePriceMeasureUnit;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice_Amount;
+					worksheet.Cells[row, col].Value = p.BasePriceAmount;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePrice_BaseAmount;
+					worksheet.Cells[row, col].Value = p.BasePriceBaseAmount;
 					col++;
 
 					worksheet.Cells[row, col].Value = p.BundleTitleText;

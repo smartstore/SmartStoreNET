@@ -188,13 +188,13 @@ namespace SmartStore.Web.Framework.Plugins
 		}
 		public string BasePrice(Product product)
 		{
-			if (product.BasePrice_BaseAmount.HasValue && product.BasePrice_MeasureUnit.HasValue())
+			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
 			{
-				decimal price = Convert.ToDecimal(product.Price / (product.BasePrice_Amount * product.BasePrice_BaseAmount));
+				decimal price = Convert.ToDecimal(product.Price / (product.BasePriceAmount * product.BasePriceBaseAmount));
 
 				string priceFormatted = EngineContext.Current.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
 
-				return "{0} / {1} {2}".FormatWith(priceFormatted, product.BasePrice_BaseAmount, product.BasePrice_MeasureUnit);
+				return "{0} / {1} {2}".FormatWith(priceFormatted, product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 			}
 			return "";
 		}

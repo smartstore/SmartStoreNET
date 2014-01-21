@@ -2092,6 +2092,28 @@ GO
 UPDATE [Product] SET [ProductTypeId]=5 WHERE [ProductTypeId]=0
 GO
 
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Enabled')
+BEGIN
+	EXEC sp_rename 'Product.BasePrice_Enabled', 'BasePriceEnabled', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_MeasureUnit')
+BEGIN
+	EXEC sp_rename 'Product.BasePrice_MeasureUnit', 'BasePriceMeasureUnit', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Amount')
+BEGIN
+	EXEC sp_rename 'Product.BasePrice_Amount', 'BasePriceAmount', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_BaseAmount')
+BEGIN
+	EXEC sp_rename 'Product.BasePrice_BaseAmount', 'BasePriceBaseAmount', 'COLUMN';
+END
+GO
+
+
 IF EXISTS (SELECT *
            FROM   sys.objects
            WHERE  object_id = OBJECT_ID(N'[dbo].[nop_splitstring_to_table]')

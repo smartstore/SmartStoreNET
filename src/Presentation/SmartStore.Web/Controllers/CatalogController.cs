@@ -1394,7 +1394,7 @@ namespace SmartStore.Web.Controllers
                 model.StockAvailability = product.FormatStockMessage(_localizationService);
             model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
             model.IsCurrentCustomerRegistered = _workContext.CurrentCustomer.IsRegistered();
-            model.IsBasePriceEnabled = product.BasePrice_Enabled;
+            model.IsBasePriceEnabled = product.BasePriceEnabled;
             model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter);
             model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);

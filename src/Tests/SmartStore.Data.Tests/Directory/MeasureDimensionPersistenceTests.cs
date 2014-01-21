@@ -13,7 +13,7 @@ namespace SmartStore.Data.Tests.Directory
             var measureDimension = new MeasureDimension
             {
                 Name = "inch(es)",
-                SystemKeyword = "inches",
+                SystemKeyword = "inch",
                 Ratio = 1.12345678M,
                 DisplayOrder = 2,
             };
@@ -21,7 +21,7 @@ namespace SmartStore.Data.Tests.Directory
             var fromDb = SaveAndLoadEntity(measureDimension);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("inch(es)");
-            fromDb.SystemKeyword.ShouldEqual("inches");
+            fromDb.SystemKeyword.ShouldEqual("inch");
             fromDb.Ratio.ShouldEqual(1.12345678M);
             fromDb.DisplayOrder.ShouldEqual(2);
         }

@@ -30,7 +30,7 @@ namespace SmartStore.Services.Tests.Directory
             {
                 Id = 1,
                 Name = "inch(es)",
-                SystemKeyword = "inches",
+                SystemKeyword = "inch",
                 Ratio = 1M,
                 DisplayOrder = 1,
             };

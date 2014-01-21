@@ -30,6 +30,9 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AssociatedProductPictureSize")]
         public int AssociatedProductPictureSize { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.BundledProductPictureSize")]
+		public int BundledProductPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
         public int CategoryThumbPictureSize { get; set; }
 

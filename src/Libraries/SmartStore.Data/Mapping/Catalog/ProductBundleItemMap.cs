@@ -19,9 +19,9 @@ namespace SmartStore.Data.Mapping.Catalog
 				.HasForeignKey(pbi => pbi.ProductId)
 				.WillCascadeOnDelete(false);		// SQL Server does not support multiple cascade deletes
 
-			this.HasRequired(pbi => pbi.ParentBundledProduct)
+			this.HasRequired(pbi => pbi.BundleProduct)
 				.WithMany()
-				.HasForeignKey(pbi => pbi.ParentBundledProductId)
+				.HasForeignKey(pbi => pbi.BundleProductId)
 				.WillCascadeOnDelete(true);
 		}
 	}

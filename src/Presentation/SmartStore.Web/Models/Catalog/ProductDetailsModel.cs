@@ -24,6 +24,8 @@ namespace SmartStore.Web.Models.Catalog
 			ProductVariantAttributes = new List<ProductVariantAttributeModel>();
 			Combinations = new List<ProductVariantAttributeCombination>();
 			AssociatedProducts = new List<ProductDetailsModel>();
+			BundledItems = new List<ProductDetailsModel>();
+			BundleItem = new ProductBundleItemModel();
         }
 
 		//picture(s)
@@ -89,6 +91,9 @@ namespace SmartStore.Web.Models.Catalog
 		public bool IsBasePriceEnabled { get; set; }
 		public string BasePriceInfo { get; set; }
 		public bool IsUnavailable { get; set; }
+		public string BundleTitleText { get; set; }
+		public bool BundleNonBundledShipping { get; set; }
+		public bool BundlePerItemPricing { get; set; }
 
 		public IList<ProductVariantAttributeCombination> Combinations { get; set; }
 		public ProductVariantAttributeCombination CombinationSelected { get; set; }
@@ -98,6 +103,9 @@ namespace SmartStore.Web.Models.Catalog
 
 		//a list of associated products. For example, "Grouped" products could have several child "simple" products
 		public IList<ProductDetailsModel> AssociatedProducts { get; set; }
+
+		public IList<ProductDetailsModel> BundledItems { get; set; }
+		public ProductBundleItemModel BundleItem { get; set; }
 
 		#region Nested Classes
 
@@ -250,6 +258,15 @@ namespace SmartStore.Web.Models.Catalog
 			public decimal PriceAdjustmentValue { get; set; }
 
 			public bool IsPreSelected { get; set; }
+		}
+
+		public partial class ProductBundleItemModel : EntityModelBase
+		{
+			public int Quantity { get; set; }
+			public decimal? Discount { get; set; }
+			public bool HideThumbnail { get; set; }
+			public string Name { get; set; }
+			public string ShortDescription { get; set; }
 		}
 
 		#endregion

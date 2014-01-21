@@ -11,12 +11,10 @@ BEGIN
 	(
 		[Id] [int] IDENTITY(1,1) NOT NULL,
 		[ProductId] int NOT NULL,
-		[ParentBundledProductId] int NOT NULL,		
+		[BundleProductId] int NOT NULL,		
 		[Quantity] int NOT NULL,
 		[Discount] [decimal](18, 4) NULL,
-		[OverrideName] bit NOT NULL,
 		[Name] [nvarchar](400) NULL,
-		[OverrideShortDescription] bit NOT NULL,
 		[ShortDescription] [nvarchar](max) NULL,
 		[HideThumbnail] bit NOT NULL,
 		[Published] bit NOT NULL,
@@ -44,16 +42,16 @@ BEGIN
 	')
 
 	EXEC ('
-		ALTER TABLE [dbo].[ProductBundleItem] WITH CHECK ADD CONSTRAINT [ProductBundleItem_ParentBundledProduct] FOREIGN KEY([ParentBundledProductId])
+		ALTER TABLE [dbo].[ProductBundleItem] WITH CHECK ADD CONSTRAINT [ProductBundleItem_BundleProduct] FOREIGN KEY([BundleProductId])
 		REFERENCES [dbo].[Product] ([Id]) ON DELETE CASCADE
 	')
 	
 	EXEC ('
-		ALTER TABLE [dbo].[ProductBundleItem] CHECK CONSTRAINT [ProductBundleItem_ParentBundledProduct]
+		ALTER TABLE [dbo].[ProductBundleItem] CHECK CONSTRAINT [ProductBundleItem_BundleProduct]
 	')
 	
 	EXEC ('
-		CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ParentBundledProductId] ON [ProductBundleItem] ([ParentBundledProductId] ASC)
+		CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_BundleProductId] ON [ProductBundleItem] ([BundleProductId] ASC)
 	')
 END
 GO
@@ -77,5 +75,11 @@ BEGIN
 	EXEC ('ALTER TABLE [Product] ADD [BundlePerItemPricing] bit NULL')
 	EXEC ('UPDATE [Product] SET [BundlePerItemPricing] = 0 WHERE [BundlePerItemPricing] IS NULL')
 	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundlePerItemPricing] bit NOT NULL')
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'mediasettings.bundledproductpicturesize')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.bundledproductpicturesize', N'125', 0)
 END
 GO

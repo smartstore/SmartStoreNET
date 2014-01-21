@@ -5,7 +5,7 @@ using SmartStore.Core.Domain.Localization;
 namespace SmartStore.Core.Domain.Catalog
 {
 	[DataContract]
-	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity, ICloneable
+	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity, ICloneable<ProductBundleItem>
 	{
 		/// <summary>
 		/// Gets or sets the product identifier
@@ -14,10 +14,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public int ProductId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the product identifier of the product bundle
+		/// Gets or sets the product identifier of the bundle product
 		/// </summary>
 		[DataMember]
-		public int ParentBundledProductId { get; set; }
+		public int BundleProductId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the quantity
@@ -32,22 +32,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public decimal? Discount { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the name should be overwritten
-		/// </summary>
-		[DataMember]
-		public bool OverrideName { get; set; }
-
-		/// <summary>
 		/// Gets or sets the name value
 		/// </summary>
 		[DataMember]
 		public string Name { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the short description should be overwritten
-		/// </summary>
-		[DataMember]
-		public bool OverrideShortDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name value
@@ -91,21 +79,19 @@ namespace SmartStore.Core.Domain.Catalog
 		public virtual Product Product { get; set; }
 
 		/// <summary>
-		/// Gets the parent bundled product
+		/// Gets the bundle product
 		/// </summary>
-		public virtual Product ParentBundledProduct { get; set; }
+		public virtual Product BundleProduct { get; set; }
 
-		public object Clone()
+		public ProductBundleItem Clone()
 		{
 			var bundleItem = new ProductBundleItem()
 			{
 				ProductId = this.ProductId,
-				ParentBundledProductId = this.ParentBundledProductId,
+				BundleProductId = this.BundleProductId,
 				Quantity = this.Quantity,
 				Discount = this.Discount,
-				OverrideName = this.OverrideName,
 				Name = this.Name,
-				OverrideShortDescription = this.OverrideShortDescription,
 				ShortDescription = this.ShortDescription,
 				HideThumbnail = this.HideThumbnail,
 				Published = this.Published,
@@ -114,6 +100,11 @@ namespace SmartStore.Core.Domain.Catalog
 				UpdatedOnUtc = this.UpdatedOnUtc
 			};
 			return bundleItem;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
 		}
 	}
 }

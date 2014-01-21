@@ -978,7 +978,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false, string attributes = null)
+        protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false, bool isBundledProduct = false, string attributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1050,7 +1050,7 @@ namespace SmartStore.Web.Controllers
 
             // pictures
             var pictures = _pictureService.GetPicturesByProductId(product.Id);
-			PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationImageIds, isAssociatedProduct, combination);
+			PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationImageIds, isAssociatedProduct, isBundledProduct, combination);
 
 			// associated products
 			if (product.ProductType == ProductType.GroupedProduct)
@@ -1069,6 +1069,26 @@ namespace SmartStore.Web.Controllers
 
 					foreach (var associatedProduct in associatedProducts)
 						model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
+				}
+			}
+			else if (product.ProductType == ProductType.BundledProduct)
+			{
+				if (!isBundledProduct)
+				{
+					var bundledItems = _productService.GetBundleItems(product.Id);
+
+					foreach (var bundledItem in bundledItems)
+					{
+						var bundledProductModel = PrepareProductDetailsPageModel(bundledItem.Product, false, true);
+
+						bundledProductModel.BundleItem.Quantity = bundledItem.Quantity;
+						bundledProductModel.BundleItem.Discount = bundledItem.Discount;
+						bundledProductModel.BundleItem.HideThumbnail = bundledItem.HideThumbnail;
+						bundledProductModel.BundleItem.Name = bundledItem.GetLocalized(x => x.Name);
+						bundledProductModel.BundleItem.ShortDescription = bundledItem.GetLocalized(x => x.ShortDescription);
+
+						model.BundledItems.Add(bundledProductModel);
+					}
 				}
 			}
 
@@ -1131,7 +1151,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
         protected void PrepareProductDetailsPictureModel(ProductDetailsPictureModel model, IList<Picture> pictures, string name, List<int> allCombinationImageIds,
-			bool isAssociatedProduct, ProductVariantAttributeCombination combination = null)
+			bool isAssociatedProduct, bool isBundledProduct, ProductVariantAttributeCombination combination = null)
         {
             model.Name = name;
             model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
@@ -1140,7 +1160,14 @@ namespace SmartStore.Web.Controllers
 
             Picture defaultPicture = null;
             var combiAssignedImages = (combination == null ? null : combination.GetAssignedPictureIds());
-			var defaultPictureSize = isAssociatedProduct ? _mediaSettings.AssociatedProductPictureSize : _mediaSettings.ProductDetailsPictureSize;
+			int defaultPictureSize;
+
+			if (isAssociatedProduct)
+				defaultPictureSize = _mediaSettings.AssociatedProductPictureSize;
+			else if (isBundledProduct)
+				defaultPictureSize = _mediaSettings.BundledProductPictureSize;
+			else
+				 defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
 
             if (pictures.Count > 0)
             {
@@ -1370,6 +1397,9 @@ namespace SmartStore.Web.Controllers
             model.IsBasePriceEnabled = product.BasePrice_Enabled;
             model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter);
             model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
+			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
+			model.BundlePerItemPricing = product.BundlePerItemPricing;
+			model.BundleNonBundledShipping = product.BundleNonBundledShipping;
 
             //_taxSettings.TaxDisplayType == TaxDisplayType.ExcludingTax;
 
@@ -1414,7 +1444,13 @@ namespace SmartStore.Web.Controllers
             model.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
 
-            model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
+			if (product.ProductType == ProductType.BundledProduct)
+				model.ThumbDimensions = _mediaSettings.BundledProductPictureSize;
+			else if (product.ProductType == ProductType.GroupedProduct)
+				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
+			else
+				model.ThumbDimensions = _mediaSettings.ProductDetailsPictureSize;
+
             model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;
@@ -2063,7 +2099,7 @@ namespace SmartStore.Web.Controllers
 			}
             
             //prepare the model
-            var model = PrepareProductDetailsPageModel(product, false, attributes);
+            var model = PrepareProductDetailsPageModel(product, false, false, attributes);
 
             //save as recently viewed
             _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -2534,7 +2570,6 @@ namespace SmartStore.Web.Controllers
             int quantity = 1;
             int galleryStartIndex = -1;
             string galleryHtml = null;
-			bool isAssociatedProduct = false;
             var pictureModel = new ProductDetailsPictureModel();
             var m = new ProductDetailsModel();
             var product = _productService.GetProductById(productId);
@@ -2573,7 +2608,8 @@ namespace SmartStore.Web.Controllers
 						.GetAllProductVariantAttributeCombinations(product.Id)
 						.GetAllCombinationImageIds(allCombinationImageIds);
 
-                    PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds, isAssociatedProduct, m.CombinationSelected);
+                    PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
+						false, false, m.CombinationSelected);
 
                     galleryHtml = this.RenderPartialViewToString("_ProductDetailsPictures", pictureModel);
                     galleryStartIndex = pictureModel.GalleryStartIndex;

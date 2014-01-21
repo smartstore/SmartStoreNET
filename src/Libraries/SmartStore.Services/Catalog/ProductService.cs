@@ -1523,7 +1523,7 @@ namespace SmartStore.Services.Catalog
 			if (bundleItem == null)
 				throw new ArgumentNullException("bundleItem");
 
-			if (bundleItem.ParentBundledProductId == 0)
+			if (bundleItem.BundleProductId == 0)
 				throw new SmartException("ParentBundledProductId of a bundle item can't be 0.");
 
 			_productBundleItemRepository.Insert(bundleItem);
@@ -1578,15 +1578,15 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Gets a list of bundle items for a particular product identifier
 		/// </summary>
-		/// <param name="parentBundledProductId">Product identifier</param>
+		/// <param name="bundleProductId">Product identifier</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
-		public virtual IList<ProductBundleItem> GetBundleItemsByParentBundledProductId(int parentBundledProductId, bool showHidden = false)
+		public virtual IList<ProductBundleItem> GetBundleItems(int bundleProductId, bool showHidden = false)
 		{
 			var query =
 				from pbi in _productBundleItemRepository.Table
 				join p in _productRepository.Table on pbi.ProductId equals p.Id
-				where pbi.ParentBundledProductId == parentBundledProductId && !p.Deleted && (showHidden || pbi.Published)
+				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || pbi.Published)
 				orderby pbi.DisplayOrder
 				select pbi;
 

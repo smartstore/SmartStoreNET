@@ -2290,6 +2290,8 @@
     <Content Include="Views\Topic\TopicWidget.cshtml" />
     <Content Include="Views\Shared\_ClientRes.cshtml" />
     <Content Include="Views\Shared\Header.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductTemplate.Bundled.cshtml" />
+    <Content Include="Views\Catalog\_ProductTemplate.Bundled.BundleItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

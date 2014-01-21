@@ -1697,7 +1697,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var bundleItems = _productService.GetBundleItemsByParentBundledProductId(productId, true);
+			var bundleItems = _productService.GetBundleItems(productId, true);
 
 			var bundleItemsModel = bundleItems.Select(x =>
 				{
@@ -1734,7 +1734,7 @@ namespace SmartStore.Admin.Controllers
 
 			_productService.DeleteBundleItem(bundleItem);
 
-			return BundleItemList(command, bundleItem.ParentBundledProductId);
+			return BundleItemList(command, bundleItem.BundleProductId);
 		}
 
 		public ActionResult BundleItemAddPopup(int productId)
@@ -1786,7 +1786,7 @@ namespace SmartStore.Admin.Controllers
 					var bundleItem = new ProductBundleItem()
 					{
 						ProductId = model.SelectedProductIds[i],
-						ParentBundledProductId = model.ProductId,
+						BundleProductId = model.ProductId,
 						Quantity = 1,
 						Published = true,
 						DisplayOrder = i + 1,

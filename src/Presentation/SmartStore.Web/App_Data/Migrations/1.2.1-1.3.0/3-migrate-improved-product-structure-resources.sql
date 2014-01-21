@@ -1895,7 +1895,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize.Hint">
 		<Value>The default size (pixels) for associated product images (part of "grouped" products).</Value>
-		<Value lang="de">Die Standardbildgröße (in Pixel) der verknüpften Produkte.</Value>
+		<Value lang="de">Die Standardbildgröße (in Pixel) von mit einem Gruppenprodukt verknüpften Produkten.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Admin.Catalog.Products.AssociatedProducts">

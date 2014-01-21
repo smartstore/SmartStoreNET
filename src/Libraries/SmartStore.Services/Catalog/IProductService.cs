@@ -291,10 +291,10 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Gets a list of bundle items for a particular product identifier
 		/// </summary>
-		/// <param name="parentBundledProductId">Product identifier</param>
+		/// <param name="bundleProductId">Product identifier</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
-		IList<ProductBundleItem> GetBundleItemsByParentBundledProductId(int parentBundledProductId, bool showHidden = false);
+		IList<ProductBundleItem> GetBundleItems(int bundleProductId, bool showHidden = false);
 
 		#endregion
 

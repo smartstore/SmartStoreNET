@@ -16,16 +16,10 @@ namespace SmartStore.Admin.Models.Catalog
 		public IList<ProductBundleItemLocalizedModel> Locales { get; set; }
 
 		public int ProductId { get; set; }
-		public int ParentBundledProductId { get; set; }
-
-		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.OverrideName")]
-		public bool OverrideName { get; set; }
+		public int BundleProductId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Name")]
 		public string Name { get; set; }
-
-		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.OverrideShortDescription")]
-		public bool OverrideShortDescription { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.ShortDescription")]
 		public string ShortDescription { get; set; }

@@ -3031,6 +3031,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("ProductTemplate.Grouped", x =>
                 {
 					x.Name = "Grouped product";
+                })
+				.Alter("ProductTemplate.Bundled", x =>
+                {
+					x.Name = "Bundled product";
                 });
         }
 

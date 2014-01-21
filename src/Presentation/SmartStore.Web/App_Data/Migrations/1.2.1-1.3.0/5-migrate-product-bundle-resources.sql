@@ -8,24 +8,24 @@ SET @resources='
 
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductType.BundledProduct">
 		<Value>Bundled product</Value>
-		<Value lang="de">Produktbündel</Value>
+		<Value lang="de">Produkt-Bundle</Value>
 	</LocaleResource>
 
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.SaveBeforeEdit">
 		<Value>You need to save the product before you can add bundled products for this product page.</Value>
-		<Value lang="de">Das Produkt muss gespeichert werden, bevor gebündelte Produkte zur Stückliste hinzugefügt werden können.</Value>
+		<Value lang="de">Das Produkt muss gespeichert werden, bevor Produkte zur Stückliste hinzugefügt werden können.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems">
 		<Value>Bundled products</Value>
 		<Value lang="de">Stückliste</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AddNew">
-		<Value>Add new bundle product</Value>
-		<Value lang="de">Bündelprodukt hinzufügen</Value>
+		<Value>Add new product to bundle</Value>
+		<Value lang="de">Produkt zur Stückliste hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.EditOf">
-		<Value>Edit of bundle product</Value>
-		<Value lang="de">Bearbeiten von Bündelprodukt</Value>
+		<Value>Edit product</Value>
+		<Value lang="de">Produkt bearbeiten</Value>
 	</LocaleResource>	
 	
 	<LocaleResource Name="Common.CreatedOn">
@@ -55,7 +55,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Quantity.Hint">
 		<Value>Every time the bundle is added to the cart, the quantity of that item will be adjusted based on the value specified here.</Value>
-		<Value lang="de">Die Menge des Bündelprodukts wird dem gemäß hier angegebenen Wert angepasst, wenn das Bündel zum Warenkorb hinzugefügt wird.</Value>
+		<Value lang="de">Die Produktmenge wird gemäß dem hier angegebenen Wert angepasst, wenn das Bundle zum Warenkorb hinzugefügt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Discount">
 		<Value>Discount (%)</Value>
@@ -65,86 +65,83 @@ SET @resources='
 		<Value>Discount in percent.</Value>
 		<Value lang="de">Rabatt in Prozent.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideName">
-		<Value>Overrite name</Value>
-		<Value lang="de">Namen überschreiben</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideName.Hint">
-		<Value>Override the default product name for the bundled product.</Value>
-		<Value lang="de">Den Standardproduktnamen beim gebündelten Produkt überschreiben.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name">
-		<Value>Name</Value>
-		<Value lang="de">Name</Value>
+		<Value>Override name</Value>
+		<Value lang="de">Name überschreiben</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name.Hint">
-		<Value>The name of the bundled product.</Value>
-		<Value lang="de">Der Name des gebündelten Produkts.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideShortDescription">
-		<Value>Overrite short description</Value>
-		<Value lang="de">Kurzbeschreibung überschreiben</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.OverrideShortDescription.Hint">
-		<Value>Override the default short description for the bundled product.</Value>
-		<Value lang="de">Die Standardkurzbeschreibung beim gebündelten Produkt überschreiben.</Value>
+		<Value>Override the default name of the product.</Value>
+		<Value lang="de">Den Standardnamen des Produkts überschreiben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription">
-		<Value>Short description</Value>
-		<Value lang="de">Kurzbeschreibung</Value>
+		<Value>Override short description</Value>
+		<Value lang="de">Kurzbeschreibung überschreiben</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription.Hint">
-		<Value>The short description of the bundled product.</Value>
-		<Value lang="de">Die Kurzbeschreibung des gebündelten Produkts.</Value>
+		<Value>Override the default short description for the product.</Value>
+		<Value lang="de">Die Standardkurzbeschreibung des Produktes überschreiben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.HideThumbnail">
 		<Value>Hide thumbnail</Value>
 		<Value lang="de">Vorschaubild ausblenden</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.HideThumbnail.Hint">
-		<Value>Hide the thumbnail for the bundled product.</Value>
-		<Value lang="de">Das Vorschaubild des gebündelten Produkts ausblenden.</Value>
+		<Value>Hide the thumbnail for the product.</Value>
+		<Value lang="de">Das Vorschaubild des Produktes ausblenden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published">
 		<Value>Bundle published</Value>
-		<Value lang="de">Veröffentlicht im Bündel</Value>
+		<Value lang="de">Im Bundle veröffentlicht</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published.Hint">
 		<Value>Whether to publish the product in the bundle.</Value>
-		<Value lang="de">Legt fest, ob das Produkt im Bündel angezeigt werden soll.</Value>
+		<Value lang="de">Legt fest, ob das Produkt im Bundle angezeigt werden soll.</Value>
 	</LocaleResource>	
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder">
 		<Value>Bundle display order</Value>
-		<Value lang="de">Reihenfolge im Bündel</Value>
+		<Value lang="de">Reihenfolge im Bundle</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder.Hint">
 		<Value>The position of the product in the bundle.</Value>
-		<Value lang="de">Die Position des Produkts im Bündel.</Value>
+		<Value lang="de">Die Position des Produkts im Bundle.</Value>
 	</LocaleResource>
 
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleTitleText">
 		<Value>Bundle title text</Value>
-		<Value lang="de">Bündel Titeltext</Value>
+		<Value lang="de">Bundle Titeltext</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleTitleText.Hint">
 		<Value>Optional title text of the product bundle.</Value>
-		<Value lang="de">Optionaler Titeltext des Produktbündels.</Value>
+		<Value lang="de">Optionaler Titeltext des Produkt Bundle.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping">
 		<Value>Non-bundled shipping</Value>
-		<Value lang="de">Ungebündelter Versand</Value>
+		<Value lang="de">Getrennter Versand</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping.Hint">
 		<Value>Sets whether the shipping of all bundled products should be calculated. By default, this option is disabled, i.e. the shipping cost of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob die Versandkosten aller gebündelten Produkte berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. die Versandkosten des Produktbündels werden berechnet.</Value>
+		<Value lang="de">Legt fest, ob die Versandkosten aller Produkte im Bundle berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. die Versandkosten des Bundles werden berechnet.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing">
 		<Value>Per-item pricing</Value>
-		<Value lang="de">Preis per gebündelten Produkten</Value>
+		<Value lang="de">Preis per Bundle-Element</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing.Hint">
 		<Value>Determines whether the sum of the individual prices of all bundled products should be calculated as a price. By default, this option is disabled, i.e. the price of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller gebündelten Produkte berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. der Preis des Produktsbündels wird berechnet.</Value>
+		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller Produkte im Bundle berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. der Preis des Bundle wird berechnet.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Products.NoBundledItems">
+		<Value>This product is sold out.</Value>
+		<Value lang="de">Dieses Produkt ist ausverkauft.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.BundledProductPictureSize">
+		<Value>Bundled product image size</Value>
+		<Value lang="de">Bildgröße des Produktes im Bundle</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.BundledProductPictureSize.Hint">
+		<Value>The default size (pixels) for bundled product images.</Value>
+		<Value lang="de">Die Standardbildgröße (in Pixel) von Produkten im Bundle.</Value>
 	</LocaleResource>
 
 </Language>

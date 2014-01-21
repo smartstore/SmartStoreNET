@@ -512,12 +512,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// bundled products
-			var bundledItems = _productService.GetBundleItemsByParentBundledProductId(product.Id, true);
+			var bundledItems = _productService.GetBundleItems(product.Id, true);
 
 			foreach (var bundledItem in bundledItems)
 			{
-				var newBundledItem = (ProductBundleItem)bundledItem.Clone();
-				newBundledItem.ParentBundledProductId = productCopy.Id;
+				var newBundledItem = bundledItem.Clone();
+				newBundledItem.BundleProductId = productCopy.Id;
 				newBundledItem.CreatedOnUtc = utcNow;
 				newBundledItem.UpdatedOnUtc = utcNow;
 

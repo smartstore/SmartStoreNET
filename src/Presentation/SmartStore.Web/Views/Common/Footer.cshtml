@@ -98,28 +98,31 @@
         </div>
 
         <div class="span8">
-            <div class="footer-newsletter last-col">
-                <h4>@T("Newsletter.Title")</h4>
+            @if (Model.HideNewsletterBlock)
+            {
+                <div class="footer-newsletter last-col">
+                    <h4>@T("Newsletter.Title")</h4>
 
-                <div id="newsletter-subscribe-block">
+                    <div id="newsletter-subscribe-block">
 
-                    @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = T("Newsletter.Email") })
-                    @Html.ValidationMessageFor(x => x.NewsletterEmail)
+                        @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = T("Newsletter.Email") })
+                        @Html.ValidationMessageFor(x => x.NewsletterEmail)
 
-                    <button id="newsletter-subscribe-button" class="btn btn-success pull-right">@T("Newsletter.Button")</button>
+                        <button id="newsletter-subscribe-button" class="btn btn-success pull-right">@T("Newsletter.Button")</button>
 
-                    <label class="radio">
-                      <input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
-                        @T("Newsletter.Subscribe")
-                    </label>
-                    <label class="radio">
-                      <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
-                        @T("Newsletter.Unsubscribe")
-                    </label>
+                        <label class="radio">
+                          <input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
+                            @T("Newsletter.Subscribe")
+                        </label>
+                        <label class="radio">
+                          <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
+                            @T("Newsletter.Unsubscribe")
+                        </label>
                     
+                    </div>
+                    <div id="newsletter-result-block" class="alert alert-success hide"></div>
                 </div>
-                <div id="newsletter-result-block" class="alert alert-success hide"></div>
-            </div>
+            }
         </div>
 
     </div>

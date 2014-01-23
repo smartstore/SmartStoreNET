@@ -1410,7 +1410,8 @@ namespace SmartStore.Web.Controllers
             model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
-			model.BundleNonBundledShipping = product.BundleNonBundledShipping;
+			model.BundlePerItemShipping = product.BundlePerItemShipping;
+			model.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
 
             //_taxSettings.TaxDisplayType == TaxDisplayType.ExcludingTax;
 

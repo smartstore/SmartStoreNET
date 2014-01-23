@@ -214,8 +214,9 @@ namespace SmartStore.Services.Catalog
 				BasePriceAmount = product.BasePriceAmount,
 				BasePriceBaseAmount = product.BasePriceBaseAmount,
 				BundleTitleText = product.BundleTitleText,
-				BundleNonBundledShipping = product.BundleNonBundledShipping,
-				BundlePerItemPricing = product.BundlePerItemPricing
+				BundlePerItemShipping = product.BundlePerItemShipping,
+				BundlePerItemPricing = product.BundlePerItemPricing,
+				BundlePerItemShoppingCart = product.BundlePerItemShoppingCart
             };
 
             _productService.InsertProduct(productCopy);

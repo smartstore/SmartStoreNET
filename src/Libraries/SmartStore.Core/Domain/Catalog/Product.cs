@@ -706,16 +706,22 @@ namespace SmartStore.Core.Domain.Catalog
 		public string BundleTitleText { get; set; }
 
 		/// <summary>
-		/// Non bundled shipping of bundle items
+		/// Per item shipping of bundle items
 		/// </summary>
 		[DataMember]
-		public bool BundleNonBundledShipping { get; set; }
+		public bool BundlePerItemShipping { get; set; }
 
 		/// <summary>
 		/// Per item pricing of bundle items
 		/// </summary>
 		[DataMember]
 		public bool BundlePerItemPricing { get; set; }
+
+		/// <summary>
+		/// Per item shopping cart handling of bundle items
+		/// </summary>
+		[DataMember]
+		public bool BundlePerItemShoppingCart { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product type

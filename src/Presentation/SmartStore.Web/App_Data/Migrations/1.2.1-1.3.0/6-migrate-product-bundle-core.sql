@@ -56,11 +56,11 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundleNonBundledShipping')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundlePerItemShipping')
 BEGIN
-	EXEC ('ALTER TABLE [Product] ADD [BundleNonBundledShipping] bit NULL')
-	EXEC ('UPDATE [Product] SET [BundleNonBundledShipping] = 0 WHERE [BundleNonBundledShipping] IS NULL')
-	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundleNonBundledShipping] bit NOT NULL')
+	EXEC ('ALTER TABLE [Product] ADD [BundlePerItemShipping] bit NULL')
+	EXEC ('UPDATE [Product] SET [BundlePerItemShipping] = 0 WHERE [BundlePerItemShipping] IS NULL')
+	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundlePerItemShipping] bit NOT NULL')
 END
 GO
 
@@ -69,6 +69,14 @@ BEGIN
 	EXEC ('ALTER TABLE [Product] ADD [BundlePerItemPricing] bit NULL')
 	EXEC ('UPDATE [Product] SET [BundlePerItemPricing] = 0 WHERE [BundlePerItemPricing] IS NULL')
 	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundlePerItemPricing] bit NOT NULL')
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BundlePerItemShoppingCart')
+BEGIN
+	EXEC ('ALTER TABLE [Product] ADD [BundlePerItemShoppingCart] bit NULL')
+	EXEC ('UPDATE [Product] SET [BundlePerItemShoppingCart] = 0 WHERE [BundlePerItemShoppingCart] IS NULL')
+	EXEC ('ALTER TABLE [Product] ALTER COLUMN [BundlePerItemShoppingCart] bit NOT NULL')
 END
 GO
 

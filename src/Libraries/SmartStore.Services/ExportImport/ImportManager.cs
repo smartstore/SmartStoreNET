@@ -106,8 +106,9 @@ namespace SmartStore.Services.ExportImport
 			"BasePriceAmount",
 			"BasePriceBaseAmount",
 			"BundleTitleText",
-			"BundleNonBundledShipping",
-			"BundlePerItemPricing"
+			"BundlePerItemShipping",
+			"BundlePerItemPricing",
+			"BundlePerItemShoppingCart"
         };
         #endregion
         
@@ -331,8 +332,9 @@ namespace SmartStore.Services.ExportImport
 						basePriceBaseAmount = GetValue<int>(worksheet, iRow, "BasePriceBaseAmount");
 
 					string bundleTitleText = GetValue<string>(worksheet, iRow, "BundleTitleText");
-					bool bundleNonBundledShipping = GetValue<bool>(worksheet, iRow, "BundleNonBundledShipping");
+					bool bundlePerItemShipping = GetValue<bool>(worksheet, iRow, "BundlePerItemShipping");
 					bool bundlePerItemPricing = GetValue<bool>(worksheet, iRow, "BundlePerItemPricing");
+					bool bundlePerItemShoppingCart = GetValue<bool>(worksheet, iRow, "BundlePerItemShoppingCart");
 
 					bool newProduct = false;
 					Product product = null;
@@ -435,8 +437,9 @@ namespace SmartStore.Services.ExportImport
 					product.BasePriceBaseAmount = basePriceBaseAmount;
 
 					product.BundleTitleText = bundleTitleText;
-					product.BundleNonBundledShipping = bundleNonBundledShipping;
+					product.BundlePerItemShipping = bundlePerItemShipping;
 					product.BundlePerItemPricing = bundlePerItemPricing;
+					product.BundlePerItemShoppingCart = bundlePerItemShoppingCart;
 
 					if (newProduct)
 					{

@@ -306,8 +306,9 @@ namespace SmartStore.Services.ExportImport
 					xmlWriter.WriteElementString("BasePriceBaseAmount", null, product.BasePriceBaseAmount.Value.ToString());
 
 				xmlWriter.WriteElementString("BundleTitleText", null, product.BundleTitleText);
-				xmlWriter.WriteElementString("BundleNonBundledShipping", null, product.BundleNonBundledShipping.ToString());
+				xmlWriter.WriteElementString("BundlePerItemShipping", null, product.BundlePerItemShipping.ToString());
 				xmlWriter.WriteElementString("BundlePerItemPricing", null, product.BundlePerItemPricing.ToString());
+				xmlWriter.WriteElementString("BundlePerItemShoppingCart", null, product.BundlePerItemShoppingCart.ToString());
 
 				xmlWriter.WriteStartElement("ProductDiscounts");
 				var discounts = product.AppliedDiscounts;
@@ -593,8 +594,9 @@ namespace SmartStore.Services.ExportImport
 					"BasePriceAmount",
 					"BasePriceBaseAmount",
 					"BundleTitleText",
-					"BundleNonBundledShipping",
-					"BundlePerItemPricing"
+					"BundlePerItemShipping",
+					"BundlePerItemPricing",
+					"BundlePerItemShoppingCart"
                 };
                 for (int i = 0; i < properties.Length; i++)
                 {
@@ -882,10 +884,13 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = p.BundleTitleText;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundleNonBundledShipping;
+					worksheet.Cells[row, col].Value = p.BundlePerItemShipping;
 					col++;
 
 					worksheet.Cells[row, col].Value = p.BundlePerItemPricing;
+					col++;
+
+					worksheet.Cells[row, col].Value = p.BundlePerItemShoppingCart;
 					col++;
 
                     row++;

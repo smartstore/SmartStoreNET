@@ -34,15 +34,6 @@
         <table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.BundleNonBundledShipping)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.BundleNonBundledShipping)
-                    @Html.ValidationMessageFor(model => model.BundleNonBundledShipping)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.BundlePerItemPricing)
                 </td>
                 <td class="adminData">
@@ -50,6 +41,24 @@
                     @Html.ValidationMessageFor(model => model.BundlePerItemPricing)
                 </td>
             </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.BundlePerItemShipping)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.BundlePerItemShipping)
+					@Html.ValidationMessageFor(model => model.BundlePerItemShipping)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.BundlePerItemShoppingCart)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.BundlePerItemShoppingCart)
+					@Html.ValidationMessageFor(model => model.BundlePerItemShoppingCart)
+				</td>
+			</tr>
         </table>
     </div>    
     

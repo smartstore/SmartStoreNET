@@ -291,12 +291,14 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleTitleText")]
 		public string BundleTitleText { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleNonBundledShipping")]
-		public bool BundleNonBundledShipping { get; set; }
-
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundlePerItemPricing")]
 		public bool BundlePerItemPricing { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundlePerItemShipping")]
+		public bool BundlePerItemShipping { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundlePerItemShoppingCart")]
+		public bool BundlePerItemShoppingCart { get; set; }
 
 		public string PrimaryStoreCurrencyCode { get; set; }
 		public string BaseDimensionIn { get; set; }

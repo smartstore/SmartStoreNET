@@ -94,8 +94,9 @@ namespace SmartStore.Web.Models.Catalog
 		public string BasePriceInfo { get; set; }
 		public bool IsUnavailable { get; set; }
 		public string BundleTitleText { get; set; }
-		public bool BundleNonBundledShipping { get; set; }
+		public bool BundlePerItemShipping { get; set; }
 		public bool BundlePerItemPricing { get; set; }
+		public bool BundlePerItemShoppingCart { get; set; }
 
 		public IList<ProductVariantAttributeCombination> Combinations { get; set; }
 		public ProductVariantAttributeCombination CombinationSelected { get; set; }

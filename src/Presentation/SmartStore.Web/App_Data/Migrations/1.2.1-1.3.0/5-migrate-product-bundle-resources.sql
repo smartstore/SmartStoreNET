@@ -122,21 +122,29 @@ SET @resources='
 		<Value>Optional title text of the product bundle.</Value>
 		<Value lang="de">Optionaler Titeltext des Produkt Bundle.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping">
-		<Value>Non-bundled shipping</Value>
-		<Value lang="de">Getrennter Versand</Value>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShipping">
+		<Value>Per-item shipping</Value>
+		<Value lang="de">Versand per Bundle-Element</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping.Hint">
-		<Value>Sets whether the shipping of all bundled products should be calculated. By default, this option is disabled, i.e. only the shipping cost of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob die Versandkosten aller Produkte im Bundle berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. nur die Versandkosten des Bundles werden berechnet.</Value>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShipping.Hint">
+		<Value>Sets whether the shipping cost of the bundle should be calculated or the amount of shipping of all products in the bundle.</Value>
+		<Value lang="de">Legt fest, ob die Versandkosten des Bundles berechnet werden sollen oder die Summe der Versandkosten aller Produkte im Bundle.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing">
 		<Value>Per-item pricing</Value>
 		<Value lang="de">Preis per Bundle-Element</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing.Hint">
-		<Value>Determines whether the sum of the individual prices of all bundled products should be calculated as a price. By default, this option is disabled, i.e. only the price of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller Produkte im Bundle berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. nur der Preis des Bundle wird berechnet.</Value>
+		<Value>Sets whether to calculate the price of the bundle or the sum of the individual prices of all products in the bundle.</Value>
+		<Value lang="de">Legt fest, ob der Preis des Bundles oder die Summe der Einzelpreise aller Produkte im Bundle berechnet werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShoppingCart">
+		<Value>Bundle item individually in the shopping cart</Value>
+		<Value lang="de">Bundle-Element einzeln in den Warenkorb</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShoppingCart.Hint">
+		<Value>Sets whether the bundle or all products in the bundle can be added to the shopping cart.</Value>
+		<Value lang="de">Legt fest, ob das Bundle oder alle Produkte im Bundle dem Warenkorb hinzugefügt werden können.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Products.NoBundledItems">

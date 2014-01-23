@@ -26,10 +26,16 @@ namespace SmartStore.Core.Domain.Catalog
 		public int Quantity { get; set; }
 
 		/// <summary>
-		/// Gets or sets the discount in percent
+		/// Gets or sets the discount value
 		/// </summary>
 		[DataMember]
 		public decimal? Discount { get; set; }
+
+		/// <summary>
+		/// Gets or sets whether the discount is in percent
+		/// </summary>
+		[DataMember]
+		public bool DiscountPercentage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name value
@@ -91,6 +97,7 @@ namespace SmartStore.Core.Domain.Catalog
 				BundleProductId = this.BundleProductId,
 				Quantity = this.Quantity,
 				Discount = this.Discount,
+				DiscountPercentage = this.DiscountPercentage,
 				Name = this.Name,
 				ShortDescription = this.ShortDescription,
 				HideThumbnail = this.HideThumbnail,

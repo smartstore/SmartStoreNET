@@ -40,53 +40,53 @@
             </div>
             <div class="product-collateral">
                 <div class="product-variant-list">
-                    @foreach (var variant in Model.AssociatedProducts)
+                    @foreach (var product in Model.AssociatedProducts)
                     {                       
-                        <div class="product-variant-line" data-productid="@Model.Id">
-                            @if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
+                        <div class="product-variant-line" data-productid="@product.Id">
+                            @if (!String.IsNullOrWhiteSpace(product.DetailsPictureModel.DefaultPictureModel.ImageUrl))
                             {
                                 <div class="variant-picture">
-                                    <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl" 
-                                         title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+                                    <img alt="@product.DetailsPictureModel.AlternateText" src="@product.DetailsPictureModel.DefaultPictureModel.ImageUrl" 
+                                         title="@product.DetailsPictureModel.DefaultPictureModel.Title" />
                                 </div>
                             }
-                            @if (!String.IsNullOrWhiteSpace(Model.Name))
+                            @if (!String.IsNullOrWhiteSpace(product.Name))
                             {
                                 <div class="variant-name">
-                                    @Model.Name
+                                    @product.Name
                                 </div>
                             }
-                            @if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
+                            @if (!String.IsNullOrWhiteSpace(product.ShortDescription))
                             {
                                 <div class="variant-description">
-                                    @Html.Raw(Model.ShortDescription)
+                                    @Html.Raw(product.ShortDescription)
                                 </div>
                             }
-                            @Html.Partial("_DownloadSample", Model)
-                            @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
+                            @Html.Partial("_DownloadSample", product)
+                            @Html.Action("ProductTierPrices", "Catalog", new { productId = product.Id })
                             @{
                                 var dataDictAttributes = new ViewDataDictionary();
-                                dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-                                @Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
+                                dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", product.Id);
+                                @Html.Partial("_ProductAttributes", product.ProductVariantAttributes, dataDictAttributes)                  
                             }
                             <!--product SKU, manufacturer part number, stock info-->
-                            @Html.Partial("_SKU_Man_Stock", Model)
+                            @Html.Partial("_SKU_Man_Stock", product)
                             <!--Back in stock subscription-->
-                            @Html.Partial("_BackInStockSubscription", Model)
+                            @Html.Partial("_BackInStockSubscription", product)
                             @{
                                 var dataDictGiftCard = new ViewDataDictionary();
-                                dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
-                                @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                                dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", product.Id);
+                                @Html.Partial("_GiftCardInfo", product.GiftCard, dataDictGiftCard)
                             }
                             @{
                                 var dataDictPrice = new ViewDataDictionary();
-                                dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", Model.Id);
-                                @Html.Partial("_ProductPrice", Model.ProductPrice, dataDictPrice)
+                                dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", product.Id);
+                                @Html.Partial("_ProductPrice", product.ProductPrice, dataDictPrice)
                             }
                             @{
                                 var dataDictAddToCart = new ViewDataDictionary();
-                                dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-                                @Html.Partial("_AddToCart", Model.AddToCart, dataDictAddToCart)
+                                dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", product.Id);
+                                @Html.Partial("_AddToCart", product.AddToCart, dataDictAddToCart)
                             }
                         </div>
                     }

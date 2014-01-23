@@ -1,0 +1,56 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+
+@{
+    string leftContentWidth = (Model.ThumbDimensions + 20).ToString() + "px";
+}
+
+<div class="product-variant-line" data-productid="@Model.Id" data-itemtype="bundleitem">
+    <div class="clearfix">
+        @if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !Model.BundleItem.HideThumbnail)
+        {
+            <div class="variant-picture equalized-column" data-equalized-column-name="pd">
+                <img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+                     title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+            </div>
+        }
+
+        <div class="variant-data equalized-column" data-equalized-column-name="pd" style="margin-left: @leftContentWidth">
+            @if (!String.IsNullOrWhiteSpace(Model.Name))
+            {
+                <div class="variant-name">
+					@if (Model.VisibleIndividually)
+					{
+						<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
+					}
+					else
+					{
+						@Model.Name
+					}
+                </div>
+            }
+            @if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <div class="variant-description">
+                    @Html.Raw(Model.ShortDescription)
+                </div>
+            }
+
+            <div class="row-fluid">
+				<div class="attributes">
+					<table>
+						<tr valign="top" class="stock attr-stock @(String.IsNullOrWhiteSpace(Model.StockAvailability) ? "hide fade" : "")">
+							<td class="attr-label">
+								<strong>@T("Products.Availability"):</strong>
+							</td>
+							<td class="value">
+								@Model.StockAvailability
+							</td>
+						</tr>
+					</table>
+				</div>
+            </div>
+            
+        </div>
+    </div>
+</div>

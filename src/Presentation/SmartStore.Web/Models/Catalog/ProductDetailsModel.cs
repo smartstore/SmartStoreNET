@@ -47,6 +47,8 @@ namespace SmartStore.Web.Models.Catalog
         public string MetaDescription { get; set; }
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
+		public ProductType ProductType { get; set; }
+		public bool VisibleIndividually { get; set; }
 
 		public bool ShowSku { get; set; }
 		public string Sku { get; set; }
@@ -264,9 +266,8 @@ namespace SmartStore.Web.Models.Catalog
 		{
 			public int Quantity { get; set; }
 			public decimal? Discount { get; set; }
+			public bool DiscountPercentage { get; set; }
 			public bool HideThumbnail { get; set; }
-			public string Name { get; set; }
-			public string ShortDescription { get; set; }
 		}
 
 		#endregion

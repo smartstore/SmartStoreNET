@@ -467,6 +467,7 @@ namespace SmartStore.Services.ExportImport
 					xmlWriter.WriteElementString("Quantity", null, bundleItem.Quantity.ToString());
 					if (bundleItem.Discount.HasValue)
 						xmlWriter.WriteElementString("Discount", null, bundleItem.Discount.Value.ToString());
+					xmlWriter.WriteElementString("DiscountPercentage", null, bundleItem.DiscountPercentage.ToString());
 					xmlWriter.WriteElementString("Name", null, bundleItem.Name);
 					xmlWriter.WriteElementString("ShortDescription", null, bundleItem.ShortDescription);
 					xmlWriter.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());

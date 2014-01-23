@@ -28,10 +28,13 @@
 		    	var context = $(this).closest('.product-variant-line'),
 		    		url = opts.updateUrl;
 
-		    	if (context[0])		// grouped product template
+		    	if (context[0]) {		// associated or bundled item
 		    		url = url.replace('__productid__', context.attr('data-productid'));
-				else
+		    		url += '&itemType=' + encodeURIComponent(context.attr('data-itemtype'));
+		    	}
+		    	else {
 		    		context = el;
+		    	}
 
                 /*
 		    	if ($(this).attr('name').endsWith('EnteredQuantity'))

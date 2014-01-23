@@ -120,6 +120,12 @@
                 $("#bundleitems-grid").data('tGrid').ajaxRequest();
                 return false;
             });
+
+        	$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').change(function () {
+        		$('#TierPriceContainer').toggle(
+					!$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').is(':checked')
+				);
+        	}).trigger('change');
         });
 
         function onRowDataBound_bundleItems(e) {

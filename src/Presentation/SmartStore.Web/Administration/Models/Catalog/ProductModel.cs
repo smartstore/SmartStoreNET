@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
@@ -6,6 +7,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Catalog;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -29,6 +31,7 @@ namespace SmartStore.Admin.Models.Catalog
 			AvailableMeasureUnits = new List<SelectListItem>();
 			AddPictureModel = new ProductPictureModel();
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
+			AvailableManageInventoryMethods = new List<SelectListItem>();
         }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]
@@ -189,6 +192,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManageInventoryMethod")]
 		public int ManageInventoryMethodId { get; set; }
+		public IList<SelectListItem> AvailableManageInventoryMethods { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.StockQuantity")]
 		public int StockQuantity { get; set; }

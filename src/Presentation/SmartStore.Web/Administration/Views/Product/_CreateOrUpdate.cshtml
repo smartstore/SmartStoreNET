@@ -53,11 +53,15 @@
 
     x.Add().Text(T("Admin.Catalog.Products.Promotion").Text)
         .Icon("icon-bullhorn")
-        .Content(TabPromotion());
-    
-    x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
-        .Icon("icon-list-alt")
-        .Content(TabAttributes());
+		.Content(TabPromotion());
+
+	if (Model.ProductTypeId != (int)ProductType.BundledProduct)
+	{
+		x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
+			.Icon("icon-list-alt")
+			.Content(TabAttributes());
+	}
+	
     x.Add().Text(T("Admin.Catalog.Products.SpecificationAttributes").Text)
         .Icon("icon-reorder")
         .Content(TabSpecificationAttributes());
@@ -129,10 +133,14 @@
     @Html.Partial("_CreateOrUpdate.Promotion", Model)
 }
 
-@helper TabAttributes()
+@if (Model.ProductTypeId != (int)ProductType.BundledProduct)
 {
-    @Html.Partial("_CreateOrUpdate.Attributes", Model)
+	@helper TabAttributes()
+	{
+		@Html.Partial("_CreateOrUpdate.Attributes", Model)
+	}
 }
+	
 @helper TabSpecificationAttributes()
 {
     @Html.Partial("_CreateOrUpdate.SpecificationAttributes", Model)

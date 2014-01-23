@@ -461,6 +461,20 @@ namespace SmartStore.Admin.Controllers
 				model.SelectedDiscountIds = product.AppliedDiscounts.Select(d => d.Id).ToArray();
 			}
 
+			var inventoryMethods = ((ManageInventoryMethod[])Enum.GetValues(typeof(ManageInventoryMethod))).Where(
+				x => (model.ProductTypeId == (int)ProductType.BundledProduct && x == ManageInventoryMethod.ManageStockByAttributes) ? false : true
+			);
+
+			foreach (var inventoryMethod in inventoryMethods)
+			{
+				model.AvailableManageInventoryMethods.Add(new SelectListItem()
+				{
+					Value = ((int)inventoryMethod).ToString(),
+					Text = inventoryMethod.GetLocalizedEnum(_localizationService, _workContext),
+					Selected = ((int)inventoryMethod == model.ManageInventoryMethodId)
+				});
+			}
+
 			//default values
 			if (setPredefinedValues)
 			{

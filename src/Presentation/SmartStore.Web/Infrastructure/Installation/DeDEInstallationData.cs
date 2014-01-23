@@ -3023,19 +3023,15 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.ViewPath)
+			entities.WithKey(x => x.ViewPath)
 				.Alter("ProductTemplate.Simple", x =>
-                {
+				{
 					x.Name = "Simple product";
-                })
+				})
 				.Alter("ProductTemplate.Grouped", x =>
-                {
+				{
 					x.Name = "Grouped product";
-                })
-				.Alter("ProductTemplate.Bundled", x =>
-                {
-					x.Name = "Bundled product";
-                });
+				});
         }
 
         protected override void Alter(IList<CategoryTemplate> entities)

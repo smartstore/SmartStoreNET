@@ -1,10 +1,3 @@
-IF (NOT EXISTS(SELECT 1 FROM [ProductTemplate] WHERE [ViewPath] = N'ProductTemplate.Bundled'))
-BEGIN
-	INSERT INTO [ProductTemplate] ([Name],[ViewPath],[DisplayOrder])
-	VALUES (N'Bundled product',N'ProductTemplate.Bundled',200)
-END
-GO
-
 IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ProductBundleItem]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
 	CREATE TABLE [dbo].[ProductBundleItem]
@@ -14,6 +7,7 @@ BEGIN
 		[BundleProductId] int NOT NULL,		
 		[Quantity] int NOT NULL,
 		[Discount] [decimal](18, 4) NULL,
+		[DiscountPercentage] bit NOT NULL,
 		[Name] [nvarchar](400) NULL,
 		[ShortDescription] [nvarchar](max) NULL,
 		[HideThumbnail] bit NOT NULL,

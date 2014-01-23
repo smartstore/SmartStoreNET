@@ -96,6 +96,15 @@
                 @Html.ValidationMessageFor(model => model.Discount)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DiscountPercentage)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.DiscountPercentage)
+				@Html.ValidationMessageFor(model => model.DiscountPercentage)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.HideThumbnail)

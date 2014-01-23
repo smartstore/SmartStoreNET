@@ -993,6 +993,8 @@ namespace SmartStore.Web.Controllers
                 MetaDescription = product.GetLocalized(x => x.MetaDescription),
                 MetaTitle = product.GetLocalized(x => x.MetaTitle),
                 SeName = product.GetSeName(),
+				ProductType = product.ProductType,
+				VisibleIndividually = product.VisibleIndividually,
                 //Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),  /* codehint: sm-edit */
                 Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
                 ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
@@ -1040,7 +1042,7 @@ namespace SmartStore.Web.Controllers
 
 			selectedAttributes.ConvertQueryData(queryAttributes, product.Id);
 
-			model = PrepareProductDetailModel(model, product, selectedAttributes);
+			model = PrepareProductDetailModel(model, product, selectedAttributes, 1, isAssociatedProduct, isBundledProduct);
 
 			model.Combinations.GetAllCombinationImageIds(combinationImageIds);
 
@@ -1081,11 +1083,19 @@ namespace SmartStore.Web.Controllers
 					{
 						var bundledProductModel = PrepareProductDetailsPageModel(bundledItem.Product, false, true);
 
+						bundledProductModel.BundleItem.Id = bundledItem.Id;
 						bundledProductModel.BundleItem.Quantity = bundledItem.Quantity;
 						bundledProductModel.BundleItem.Discount = bundledItem.Discount;
+						bundledProductModel.BundleItem.DiscountPercentage = bundledItem.DiscountPercentage;
 						bundledProductModel.BundleItem.HideThumbnail = bundledItem.HideThumbnail;
-						bundledProductModel.BundleItem.Name = bundledItem.GetLocalized(x => x.Name);
-						bundledProductModel.BundleItem.ShortDescription = bundledItem.GetLocalized(x => x.ShortDescription);
+
+						string bundleItemName = bundledItem.GetLocalized(x => x.Name);
+						if (bundleItemName.HasValue())
+							bundledProductModel.Name = bundleItemName;
+
+						string bundleItemShortDescription = bundledItem.GetLocalized(x => x.ShortDescription);
+						if (bundleItemShortDescription.HasValue())
+							bundledProductModel.ShortDescription = bundleItemShortDescription;
 
 						model.BundledItems.Add(bundledProductModel);
 					}
@@ -1236,7 +1246,8 @@ namespace SmartStore.Web.Controllers
 
         /// <param name="selectedAttributes">Attributes explicitly selected by user or by query string.</param>
         [NonAction]
-		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, FormCollection selectedAttributes = null, int selectedQuantity = 1)
+		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, FormCollection selectedAttributes = null, int selectedQuantity = 1,
+			bool isAssociatedProduct = false, bool isBundledProduct = false)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1444,12 +1455,10 @@ namespace SmartStore.Web.Controllers
             model.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
 
-			if (product.ProductType == ProductType.BundledProduct)
+			if (isBundledProduct)
 				model.ThumbDimensions = _mediaSettings.BundledProductPictureSize;
-			else if (product.ProductType == ProductType.GroupedProduct)
+			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
-			else
-				model.ThumbDimensions = _mediaSettings.ProductDetailsPictureSize;
 
             model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
@@ -2565,11 +2574,13 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateProductDetails(int productId, bool? updateGallery, FormCollection form)
+        public ActionResult UpdateProductDetails(int productId, string itemType, bool? updateGallery, FormCollection form)
         {
             int quantity = 1;
             int galleryStartIndex = -1;
             string galleryHtml = null;
+			bool isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
+			bool isBundled = itemType.IsCaseInsensitiveEqual("bundleitem");
             var pictureModel = new ProductDetailsPictureModel();
             var m = new ProductDetailsModel();
             var product = _productService.GetProductById(productId);
@@ -2580,7 +2591,7 @@ namespace SmartStore.Web.Controllers
                 int.TryParse(form[quantityKey], out quantity);
 
             // get merged model data
-            PrepareProductDetailModel(m, product, form, quantity);
+            PrepareProductDetailModel(m, product, form, quantity, isAssociated, isBundled);
 
             // get updated image gallery
             if (updateGallery ?? true)

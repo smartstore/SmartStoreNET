@@ -30,6 +30,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Discount")]
 		public decimal? Discount { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.DiscountPercentage")]
+		public bool DiscountPercentage { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.HideThumbnail")]
 		public bool HideThumbnail { get; set; }
 

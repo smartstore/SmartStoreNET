@@ -215,6 +215,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableManageInventoryMethods, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())

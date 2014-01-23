@@ -24,8 +24,8 @@ SET @resources='
 		<Value lang="de">Produkt zur Stückliste hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.EditOf">
-		<Value>Edit product</Value>
-		<Value lang="de">Produkt bearbeiten</Value>
+		<Value>Edit bundle product</Value>
+		<Value lang="de">Bundle-Produkt bearbeiten</Value>
 	</LocaleResource>	
 	
 	<LocaleResource Name="Common.CreatedOn">
@@ -58,28 +58,36 @@ SET @resources='
 		<Value lang="de">Die Produktmenge wird gemäß dem hier angegebenen Wert angepasst, wenn das Bundle zum Warenkorb hinzugefügt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Discount">
-		<Value>Discount (%)</Value>
-		<Value lang="de">Rabatt (%)</Value>
+		<Value>Discount</Value>
+		<Value lang="de">Rabatt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Discount.Hint">
-		<Value>Discount in percent.</Value>
-		<Value lang="de">Rabatt in Prozent.</Value>
+		<Value>The discount value.</Value>
+		<Value lang="de">Der Rabattwert.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DiscountPercentage">
+		<Value>Discount percentage</Value>
+		<Value lang="de">Rabatt in Prozent</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DiscountPercentage.Hint">
+		<Value>Specifies whether the discount is a percentage or a fixed value.</Value>
+		<Value lang="de">Legt fest, ob es sich bei dem Rabatt um einen prozentualen oder einen festen Wert handelt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name">
-		<Value>Override name</Value>
-		<Value lang="de">Name überschreiben</Value>
+		<Value>Product name</Value>
+		<Value lang="de">Produktname</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Name.Hint">
-		<Value>Override the default name of the product.</Value>
-		<Value lang="de">Den Standardnamen des Produkts überschreiben.</Value>
+		<Value>Offers the possibility to display a different product name in the bundle item list.</Value>
+		<Value lang="de">Bietet die Möglichkeit, in der Stückliste einen abweichenden Produktnamen anzuzeigen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription">
-		<Value>Override short description</Value>
-		<Value lang="de">Kurzbeschreibung überschreiben</Value>
+		<Value>Short description</Value>
+		<Value lang="de">Kurzbeschreibung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.ShortDescription.Hint">
-		<Value>Override the default short description for the product.</Value>
-		<Value lang="de">Die Standardkurzbeschreibung des Produktes überschreiben.</Value>
+		<Value>Offers the possibility to display a different short description in the bundle item list. Enter a space, if no short description should appear in the bundle item list, even though the product has one.</Value>
+		<Value lang="de">Bietet die Möglichkeit, in der Stückliste einen abweichende Kurzbeschreibung anzuzeigen. Geben Sie ein Leerzeichen ein, falls in der Stückliste keine Kurzbeschreibung angezeigt werden soll, obwohl das Produkt eine besitzt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.HideThumbnail">
 		<Value>Hide thumbnail</Value>
@@ -119,16 +127,16 @@ SET @resources='
 		<Value lang="de">Getrennter Versand</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundleNonBundledShipping.Hint">
-		<Value>Sets whether the shipping of all bundled products should be calculated. By default, this option is disabled, i.e. the shipping cost of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob die Versandkosten aller Produkte im Bundle berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. die Versandkosten des Bundles werden berechnet.</Value>
+		<Value>Sets whether the shipping of all bundled products should be calculated. By default, this option is disabled, i.e. only the shipping cost of the product bundle is calculated.</Value>
+		<Value lang="de">Legt fest, ob die Versandkosten aller Produkte im Bundle berechnet werden sollen. Standardmäßig ist diese Option deaktiviert, d.h. nur die Versandkosten des Bundles werden berechnet.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing">
 		<Value>Per-item pricing</Value>
 		<Value lang="de">Preis per Bundle-Element</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing.Hint">
-		<Value>Determines whether the sum of the individual prices of all bundled products should be calculated as a price. By default, this option is disabled, i.e. the price of the product bundle is calculated.</Value>
-		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller Produkte im Bundle berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. der Preis des Bundle wird berechnet.</Value>
+		<Value>Determines whether the sum of the individual prices of all bundled products should be calculated as a price. By default, this option is disabled, i.e. only the price of the product bundle is calculated.</Value>
+		<Value lang="de">Legt fest, ob als Preis die Summe der Einzelpreise aller Produkte im Bundle berechnet werden soll. Standardmäßig ist diese Option deaktiviert, d.h. nur der Preis des Bundle wird berechnet.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Products.NoBundledItems">

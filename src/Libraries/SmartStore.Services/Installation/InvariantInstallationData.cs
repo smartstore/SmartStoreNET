@@ -5089,12 +5089,6 @@ namespace SmartStore.Services.Installation
                                         Name = "Grouped product",
                                         ViewPath = "ProductTemplate.Grouped",
                                         DisplayOrder = 100
-                                    },
-                                    new ProductTemplate
-                                    {
-                                        Name = "Bundled product",
-                                        ViewPath = "ProductTemplate.Bundled",
-                                        DisplayOrder = 200
                                     }
                                };
             this.Alter(entities);

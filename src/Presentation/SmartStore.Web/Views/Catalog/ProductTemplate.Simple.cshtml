@@ -9,6 +9,7 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.Events;
+@using SmartStore.Web.Extensions;
 
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
@@ -184,7 +185,7 @@
                        
                     @Html.Widget("productdetails_overview_top")
 
-                    <div id="details-cnt">
+                    <div id="details-cnt" class="update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
 
                         <div class="short-description line alpha">
                             @Html.Raw(Model.ShortDescription)
@@ -400,8 +401,7 @@
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
-            zoomType: '@Model.DetailsPictureModel.PictureZoomType', // window, inner, lens
-            updateUrl: '@Html.Raw(Url.Action("UpdateProductDetails", "Catalog", new { productId = Model.Id }))'
+            zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
         };
 
         $('#product-details-form').productDetail(settings);

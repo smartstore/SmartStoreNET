@@ -240,14 +240,15 @@ namespace SmartStore.Services.Catalog
         /// <param name="additionalCharge">Additional charge</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
         /// <param name="quantity">Shopping cart item quantity</param>
+		/// <param name="bundleItem">A product bbundle item</param>
         /// <returns>Final price</returns>
 		public virtual decimal GetFinalPrice(Product product, 
             Customer customer,
             decimal additionalCharge, 
             bool includeDiscounts, 
-            int quantity)
+            int quantity,
+			ProductBundleItem bundleItem = null)
         {
-            
             //initial price
 			decimal result = product.Price;
 
@@ -257,7 +258,7 @@ namespace SmartStore.Services.Catalog
                 result = specialPrice.Value;
 
             //tier prices
-			if (product.HasTierPrices)
+			if (product.HasTierPrices && bundleItem == null)
             {
 				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity);
                 if (tierPrice.HasValue)
@@ -268,7 +269,7 @@ namespace SmartStore.Services.Catalog
             if (includeDiscounts)
             {
                 Discount appliedDiscount = null;
-				decimal discountAmount = GetDiscountAmount(product, customer, additionalCharge, quantity, out appliedDiscount);
+				decimal discountAmount = GetDiscountAmount(product, customer, additionalCharge, quantity, out appliedDiscount, bundleItem);
                 result = result + additionalCharge - discountAmount;
             }
             else
@@ -344,21 +345,36 @@ namespace SmartStore.Services.Catalog
         /// <param name="additionalCharge">Additional charge</param>
         /// <param name="quantity">Product quantity</param>
         /// <param name="appliedDiscount">Applied discount</param>
+		/// <param name="bundleItem">A product bbundle item</param>
         /// <returns>Discount amount</returns>
         public virtual decimal GetDiscountAmount(Product product,
             Customer customer,
             decimal additionalCharge,
             int quantity,
-            out Discount appliedDiscount)
+            out Discount appliedDiscount,
+			ProductBundleItem bundleItem = null)
         {
             appliedDiscount = null;
             decimal appliedDiscountAmount = decimal.Zero;
 
-            //we don't apply discounts to products with price entered by a customer
-            if (product.CustomerEntersPrice)
-                return appliedDiscountAmount;
+			if (bundleItem == null)
+			{
+				//we don't apply discounts to products with price entered by a customer
+				if (product.CustomerEntersPrice)
+					return appliedDiscountAmount;
 
-            appliedDiscount = GetPreferredDiscount(product, customer, additionalCharge, quantity);
+				appliedDiscount = GetPreferredDiscount(product, customer, additionalCharge, quantity);
+			}
+			else if (bundleItem.Discount.HasValue && bundleItem.BundleProduct.BundlePerItemPricing)
+			{
+				appliedDiscount = new Discount()
+				{
+					UsePercentage = bundleItem.DiscountPercentage,
+					DiscountPercentage = bundleItem.Discount.Value,
+					DiscountAmount = bundleItem.Discount.Value
+				};
+			}
+
             if (appliedDiscount != null)
             {
                 decimal finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity);

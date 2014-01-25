@@ -1721,6 +1721,8 @@ namespace SmartStore.Admin.Controllers
 						ProductId = x.Product.Id,
 						ProductName = x.Product.Name,
 						Sku = x.Product.Sku,
+						Quantity = x.Quantity,
+						Discount = x.Discount,
 						DisplayOrder = x.DisplayOrder,
 						Published = x.Published
 					};

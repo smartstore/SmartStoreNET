@@ -554,8 +554,14 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 			public string Sku { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Quantity")]
+			public int Quantity { get; set; }
+
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.DisplayOrder")]
 			public int DisplayOrder { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Discount")]
+			public decimal? Discount { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Published")]
 			public bool Published { get; set; }

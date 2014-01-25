@@ -978,7 +978,8 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false, bool isBundledProduct = false, string attributes = null)
+		protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false,
+			ProductBundleItem productBundleItem = null, string attributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1040,67 +1041,58 @@ namespace SmartStore.Web.Controllers
             var queryAttributes = _productAttributeParser.DeserializeQueryData(attributes);
             var selectedAttributes = new FormCollection();
 
+			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)	// associated products
+			{
+				var searchContext = new ProductSearchContext()
+				{
+					StoreId = _storeContext.CurrentStore.Id,
+					ParentGroupedProductId = product.Id,
+					VisibleIndividuallyOnly = false
+				};
+
+				var associatedProducts = _productService.SearchProducts(searchContext);
+
+				foreach (var associatedProduct in associatedProducts)
+					model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
+			}
+			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)		// bundled items
+			{
+				var bundleItems = _productService.GetBundleItems(product.Id);
+
+				foreach (var bundleItem in bundleItems)
+				{
+					var bundledProductModel = PrepareProductDetailsPageModel(bundleItem.Product, false, bundleItem);
+
+					bundledProductModel.BundleItem.Id = bundleItem.Id;
+					bundledProductModel.BundleItem.Quantity = bundleItem.Quantity;
+					bundledProductModel.BundleItem.HideThumbnail = bundleItem.HideThumbnail;
+					bundledProductModel.BundleItem.PriceWithDiscount = bundleItem.PriceWithDiscount;
+					bundledProductModel.BundleItem.PriceWithoutDiscount = bundleItem.PriceWithoutDiscount;
+
+					string bundleItemName = bundleItem.GetLocalized(x => x.Name);
+					if (bundleItemName.HasValue())
+						bundledProductModel.Name = bundleItemName;
+
+					string bundleItemShortDescription = bundleItem.GetLocalized(x => x.ShortDescription);
+					if (bundleItemShortDescription.HasValue())
+						bundledProductModel.ShortDescription = bundleItemShortDescription;
+
+					model.BundledItems.Add(bundledProductModel);
+				}
+			}
+
 			selectedAttributes.ConvertQueryData(queryAttributes, product.Id);
 
-			model = PrepareProductDetailModel(model, product, selectedAttributes, 1, isAssociatedProduct, isBundledProduct);
+			model = PrepareProductDetailModel(model, product, isAssociatedProduct, productBundleItem, selectedAttributes);
 
 			model.Combinations.GetAllCombinationImageIds(combinationImageIds);
 
 			if (combination == null && model.CombinationSelected != null)
 				combination = model.CombinationSelected;
 
-
             // pictures
             var pictures = _pictureService.GetPicturesByProductId(product.Id);
-			PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationImageIds, isAssociatedProduct, isBundledProduct, combination);
-
-			// associated products
-			if (product.ProductType == ProductType.GroupedProduct)
-			{
-				//ensure no circular references
-				if (!isAssociatedProduct)
-				{
-					var searchContext = new ProductSearchContext()
-					{
-						StoreId = _storeContext.CurrentStore.Id,
-						ParentGroupedProductId = product.Id,
-						VisibleIndividuallyOnly = false
-					};
-
-					var associatedProducts = _productService.SearchProducts(searchContext);
-
-					foreach (var associatedProduct in associatedProducts)
-						model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
-				}
-			}
-			else if (product.ProductType == ProductType.BundledProduct)
-			{
-				if (!isBundledProduct)
-				{
-					var bundledItems = _productService.GetBundleItems(product.Id);
-
-					foreach (var bundledItem in bundledItems)
-					{
-						var bundledProductModel = PrepareProductDetailsPageModel(bundledItem.Product, false, true);
-
-						bundledProductModel.BundleItem.Id = bundledItem.Id;
-						bundledProductModel.BundleItem.Quantity = bundledItem.Quantity;
-						bundledProductModel.BundleItem.Discount = bundledItem.Discount;
-						bundledProductModel.BundleItem.DiscountPercentage = bundledItem.DiscountPercentage;
-						bundledProductModel.BundleItem.HideThumbnail = bundledItem.HideThumbnail;
-
-						string bundleItemName = bundledItem.GetLocalized(x => x.Name);
-						if (bundleItemName.HasValue())
-							bundledProductModel.Name = bundleItemName;
-
-						string bundleItemShortDescription = bundledItem.GetLocalized(x => x.ShortDescription);
-						if (bundleItemShortDescription.HasValue())
-							bundledProductModel.ShortDescription = bundleItemShortDescription;
-
-						model.BundledItems.Add(bundledProductModel);
-					}
-				}
-			}
+			PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationImageIds, isAssociatedProduct, productBundleItem, combination);
 
             return model;
         }
@@ -1161,7 +1153,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
         protected void PrepareProductDetailsPictureModel(ProductDetailsPictureModel model, IList<Picture> pictures, string name, List<int> allCombinationImageIds,
-			bool isAssociatedProduct, bool isBundledProduct, ProductVariantAttributeCombination combination = null)
+			bool isAssociatedProduct, ProductBundleItem bundleItem = null, ProductVariantAttributeCombination combination = null)
         {
             model.Name = name;
             model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
@@ -1174,7 +1166,7 @@ namespace SmartStore.Web.Controllers
 
 			if (isAssociatedProduct)
 				defaultPictureSize = _mediaSettings.AssociatedProductPictureSize;
-			else if (isBundledProduct)
+			else if (bundleItem != null)
 				defaultPictureSize = _mediaSettings.BundledProductPictureSize;
 			else
 				 defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
@@ -1246,8 +1238,8 @@ namespace SmartStore.Web.Controllers
 
         /// <param name="selectedAttributes">Attributes explicitly selected by user or by query string.</param>
         [NonAction]
-		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, FormCollection selectedAttributes = null, int selectedQuantity = 1,
-			bool isAssociatedProduct = false, bool isBundledProduct = false)
+		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, bool isAssociatedProduct = false, ProductBundleItem bundleItem = null,
+			FormCollection selectedAttributes = null, int selectedQuantity = 1)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1261,10 +1253,12 @@ namespace SmartStore.Web.Controllers
             decimal preSelectedPriceAdjustmentBase = decimal.Zero;
             decimal preSelectedWeightAdjustment = decimal.Zero;
             bool displayPrices = _permissionService.Authorize(StandardPermissionProvider.DisplayPrices);
+			bool isBundle = (product.ProductType == ProductType.BundledProduct);
 
             bool hasSelectedAttributes = (selectedAttributes.Count > 0);
             List<ProductVariantAttributeValue> selectedAttributeValues = null;
-            var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
+
+			var variantAttributes = (isBundle ?	new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
 
             model.ProductPrice.DynamicPriceUpdate = _catalogSettings.EnableDynamicPriceUpdate;
 
@@ -1273,111 +1267,117 @@ namespace SmartStore.Web.Controllers
 
             #region Product attributes
 
-            foreach (var attribute in variantAttributes)
-            {
-                var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
-                {
-                    Id = attribute.Id,
-					ProductId = attribute.ProductId,
-                    ProductAttributeId = attribute.ProductAttributeId,
-                    Alias = attribute.ProductAttribute.Alias,
-                    Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
-                    Description = attribute.ProductAttribute.GetLocalized(x => x.Description),
-                    TextPrompt = attribute.TextPrompt,
-                    IsRequired = attribute.IsRequired,
-                    AttributeControlType = attribute.AttributeControlType,
-                    AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions,
-                };
+			if (!isBundle)		// bundles doesn't have attributes
+			{
+				foreach (var attribute in variantAttributes)
+				{
+					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
+					{
+						Id = attribute.Id,
+						ProductId = attribute.ProductId,
+						ProductAttributeId = attribute.ProductAttributeId,
+						Alias = attribute.ProductAttribute.Alias,
+						Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
+						Description = attribute.ProductAttribute.GetLocalized(x => x.Description),
+						TextPrompt = attribute.TextPrompt,
+						IsRequired = attribute.IsRequired,
+						AttributeControlType = attribute.AttributeControlType,
+						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions,
+					};
 
-                if (attribute.ShouldHaveValues())
-                {
-                    var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
+					if (attribute.ShouldHaveValues())
+					{
+						var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
 
-                    foreach (var pvaValue in pvaValues)
-                    {
-                        var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel()
-                        {
-                            Id = pvaValue.Id,
-                            Name = pvaValue.GetLocalized(x => x.Name),
-                            Alias = pvaValue.Alias,
-                            ColorSquaresRgb = pvaValue.ColorSquaresRgb, //used with "Color squares" attribute type
-                            IsPreSelected = pvaValue.IsPreSelected,
-                        };
+						foreach (var pvaValue in pvaValues)
+						{
+							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel()
+							{
+								Id = pvaValue.Id,
+								Name = pvaValue.GetLocalized(x => x.Name),
+								Alias = pvaValue.Alias,
+								ColorSquaresRgb = pvaValue.ColorSquaresRgb, //used with "Color squares" attribute type
+								IsPreSelected = pvaValue.IsPreSelected,
+							};
 
-                        if (hasSelectedAttributes)
-                            pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
+							if (hasSelectedAttributes)
+								pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
 
-                        pvaModel.Values.Add(pvaValueModel);
+							pvaModel.Values.Add(pvaValueModel);
 
-                        // display price if allowed
-                        if (displayPrices)
-                        {
-                            decimal taxRate = decimal.Zero;
-                            decimal priceAdjustmentBase = _taxService.GetProductPrice(product, pvaValue.PriceAdjustment, out taxRate);
-                            decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
+							// display price if allowed
+							if (displayPrices)
+							{
+								decimal taxRate = decimal.Zero;
+								decimal priceAdjustmentBase = _taxService.GetProductPrice(product, pvaValue.PriceAdjustment, out taxRate);
+								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
 
-                            if (priceAdjustmentBase > decimal.Zero)
-                                pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, false, false);
-                            else if (priceAdjustmentBase < decimal.Zero)
-                                pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, false, false);
+								if (priceAdjustmentBase > decimal.Zero)
+									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, false, false);
+								else if (priceAdjustmentBase < decimal.Zero)
+									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, false, false);
 
-                            if (pvaValueModel.IsPreSelected)
-                            {
-                                preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-                                preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
-                            }
+								if (pvaValueModel.IsPreSelected)
+								{
+									preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
+									preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
+								}
 
-                            pvaValueModel.PriceAdjustmentValue = priceAdjustment;
-                        }
-                    }
-                }
+								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
+							}
+						}
+					}
 
-                // we need selected attributes to get initially displayed combination images
-                if (!hasSelectedAttributes)
-                {
-                    var defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+					// we need selected attributes to get initially displayed combination images
+					if (!hasSelectedAttributes)
+					{
+						var defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
 
-                    if (defaultValue == null && pvaModel.Values.Count > 0 && attribute.IsRequired)
-                        defaultValue = pvaModel.Values.First();
+						if (defaultValue == null && pvaModel.Values.Count > 0 && attribute.IsRequired)
+							defaultValue = pvaModel.Values.First();
 
-                    if (defaultValue != null)
-                        selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id);
-                }
+						if (defaultValue != null)
+							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id);
+					}
 
-                model.ProductVariantAttributes.Add(pvaModel);
-            }
+					model.ProductVariantAttributes.Add(pvaModel);
+				}
+			}
 
             #endregion
 
             #region Attribute combinations
 
-            model.Combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
+			if (!isBundle)		//	bundles doesn't have attributes
+			{
+				model.Combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
 
-            if (selectedAttributes.Count > 0)
-            {		// merge with combination data if there's a match
-                var warnings = new List<string>();
-                string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser,
-                    _localizationService, _downloadService, _catalogSettings, this.Request, warnings);
+				if (selectedAttributes.Count > 0)
+				{		// merge with combination data if there's a match
+					var warnings = new List<string>();
+					string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser,
+						_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
 
-                selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
+					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
 
-                model.CombinationSelected = model.Combinations
-                    .FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
+					model.CombinationSelected = model.Combinations
+						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
-                model.IsUnavailable = (model.CombinationSelected != null && model.CombinationSelected.IsActive == false);
+					model.IsUnavailable = (model.CombinationSelected != null && model.CombinationSelected.IsActive == false);
 
-                product.MergeWithCombination(model.CombinationSelected);
+					product.MergeWithCombination(model.CombinationSelected);
 
-                // mark explicitly selected as pre-selected
-                foreach (var attribute in model.ProductVariantAttributes)
-                {
-                    foreach (var value in attribute.Values)
-                    {
-                        if (selectedAttributeValues.FirstOrDefault(v => v.Id == value.Id) != null)
-                            value.IsPreSelected = true;
-                    }
-                }
-            }
+					// mark explicitly selected as pre-selected
+					foreach (var attribute in model.ProductVariantAttributes)
+					{
+						foreach (var value in attribute.Values)
+						{
+							if (selectedAttributeValues.FirstOrDefault(v => v.Id == value.Id) != null)
+								value.IsPreSelected = true;
+						}
+					}
+				}
+			}
 
             #endregion
 
@@ -1456,7 +1456,7 @@ namespace SmartStore.Web.Controllers
             model.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
 
-			if (isBundledProduct)
+			if (bundleItem != null)
 				model.ThumbDimensions = _mediaSettings.BundledProductPictureSize;
 			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
@@ -1481,6 +1481,7 @@ namespace SmartStore.Web.Controllers
             #endregion
 
             #region Product price
+
             model.ProductPrice.ProductId = product.Id;
 
             if (displayPrices)
@@ -1499,11 +1500,15 @@ namespace SmartStore.Web.Controllers
                     else
                     {
                         decimal taxRate = decimal.Zero;
-                        decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
+						decimal oldPrice = decimal.Zero;
+						decimal finalPriceWithoutDiscountBase = decimal.Zero;
+						decimal finalPriceWithDiscountBase = decimal.Zero;
+						decimal attributesTotalPriceBase = decimal.Zero;
+						decimal finalPriceWithoutDiscount = decimal.Zero;
+						decimal finalPriceWithDiscount = decimal.Zero;
+						bool calculateBundleItemPrice = (bundleItem != null && bundleItem.BundleProduct.BundlePerItemPricing);
 
-                        decimal finalPriceWithoutDiscountBase = decimal.Zero;
-                        decimal finalPriceWithDiscountBase = decimal.Zero;
-                        decimal attributesTotalPriceBase = decimal.Zero;
+                        decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 
                         if (model.ProductPrice.DynamicPriceUpdate)
                         {
@@ -1523,24 +1528,40 @@ namespace SmartStore.Web.Controllers
                             }
                         }
 
-                        finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, false, selectedQuantity);
-                        finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, true, selectedQuantity);
+						if (isBundle && product.BundlePerItemPricing)
+						{
+							finalPriceWithoutDiscountBase = finalPriceWithoutDiscount = model.BundledItems.Sum(x => x.BundleItem.PriceWithoutDiscount * x.BundleItem.Quantity);
+							finalPriceWithDiscountBase = finalPriceWithDiscount = model.BundledItems.Sum(x => x.BundleItem.PriceWithDiscount * x.BundleItem.Quantity);
+						}
+						else
+						{
+							finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, false, selectedQuantity, bundleItem);
+							finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, true, selectedQuantity, bundleItem);
 
-                        finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
-                        finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
-                        // codehint: sm-edit (end)
+							finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
+							finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
 
-                        decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
-                        decimal finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, _workContext.WorkingCurrency);
-                        decimal finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, _workContext.WorkingCurrency);
+							oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
+							finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, _workContext.WorkingCurrency);
+							finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, _workContext.WorkingCurrency);
+						}
 
-                        if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
-                            model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);
+						if (bundleItem == null || calculateBundleItemPrice)
+						{
+							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
+								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);
 
-                        model.ProductPrice.Price = _priceFormatter.FormatPrice(finalPriceWithoutDiscount);
+							model.ProductPrice.Price = _priceFormatter.FormatPrice(finalPriceWithoutDiscount);
 
-                        if (finalPriceWithoutDiscountBase != finalPriceWithDiscountBase)
-                            model.ProductPrice.PriceWithDiscount = _priceFormatter.FormatPrice(finalPriceWithDiscount);
+							if (finalPriceWithoutDiscountBase != finalPriceWithDiscountBase)
+								model.ProductPrice.PriceWithDiscount = _priceFormatter.FormatPrice(finalPriceWithDiscount);
+						}
+
+						if (calculateBundleItemPrice)
+						{
+							bundleItem.PriceWithoutDiscount = finalPriceWithoutDiscount;
+							bundleItem.PriceWithDiscount = finalPriceWithDiscount;
+						}
 
                         model.ProductPrice.PriceValue = finalPriceWithoutDiscount;
                         model.ProductPrice.PriceWithDiscountValue = finalPriceWithDiscount;
@@ -2109,7 +2130,7 @@ namespace SmartStore.Web.Controllers
 			}
             
             //prepare the model
-            var model = PrepareProductDetailsPageModel(product, false, false, attributes);
+			var model = PrepareProductDetailsPageModel(product, attributes: attributes);
 
             //save as recently viewed
             _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -2575,16 +2596,17 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateProductDetails(int productId, string itemType, bool? updateGallery, FormCollection form)
+		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, bool? updateGallery, FormCollection form)
         {
             int quantity = 1;
             int galleryStartIndex = -1;
             string galleryHtml = null;
 			bool isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
-			bool isBundled = itemType.IsCaseInsensitiveEqual("bundleitem");
+			bool isBundleItem = itemType.IsCaseInsensitiveEqual("bundleitem");
             var pictureModel = new ProductDetailsPictureModel();
             var m = new ProductDetailsModel();
             var product = _productService.GetProductById(productId);
+			var bundleItem = _productService.GetBundleItemById(bundleItemId);
 
             // quantity required for tier prices
             string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
@@ -2592,7 +2614,7 @@ namespace SmartStore.Web.Controllers
                 int.TryParse(form[quantityKey], out quantity);
 
             // get merged model data
-            PrepareProductDetailModel(m, product, form, quantity, isAssociated, isBundled);
+            PrepareProductDetailModel(m, product, isAssociated, bundleItem, form, quantity);
 
             // get updated image gallery
             if (updateGallery ?? true)
@@ -2621,7 +2643,7 @@ namespace SmartStore.Web.Controllers
 						.GetAllCombinationImageIds(allCombinationImageIds);
 
                     PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
-						false, false, m.CombinationSelected);
+						false, bundleItem, m.CombinationSelected);
 
                     galleryHtml = this.RenderPartialViewToString("_ProductDetailsPictures", pictureModel);
                     galleryStartIndex = pictureModel.GalleryStartIndex;

@@ -4,6 +4,7 @@
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Extensions;
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
@@ -42,7 +43,7 @@
                 <div class="product-variant-list">
                     @foreach (var product in Model.AssociatedProducts)
                     {                       
-                        <div class="product-variant-line" data-productid="@product.Id">
+                        <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl("associateditem"))">
                             @if (!String.IsNullOrWhiteSpace(product.DetailsPictureModel.DefaultPictureModel.ImageUrl))
                             {
                                 <div class="variant-picture">

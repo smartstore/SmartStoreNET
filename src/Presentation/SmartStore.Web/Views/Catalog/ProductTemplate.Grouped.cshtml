@@ -185,8 +185,7 @@
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
-            zoomType: '@Model.DetailsPictureModel.PictureZoomType', // window, inner, lens
-            updateUrl: '@Html.Raw(Url.Action("UpdateProductDetails", "Catalog", new { productId = "__productid__" }))'
+            zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
         };
         $('#product-details-form').productDetail(settings);
 

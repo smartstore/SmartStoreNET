@@ -367,6 +367,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
+    <Compile Include="Extensions\ProductDetailsExtensions.cs" />
     <Compile Include="Extensions\PagerHtmlExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

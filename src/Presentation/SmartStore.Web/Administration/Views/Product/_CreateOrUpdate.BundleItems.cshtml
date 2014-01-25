@@ -86,6 +86,12 @@
                                 .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
                             columns.Bound(x => x.Sku)
                                 .ReadOnly();
+							columns.Bound(x => x.Quantity)
+								.Width(80)
+								.Centered();
+							columns.Bound(x => x.Discount)
+								.Width(80)
+								.Centered();
                             columns.Bound(x => x.Published)
                                 .Width(100)
                                 .Template(item => @Html.SymbolForBool(item.Published))

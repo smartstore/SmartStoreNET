@@ -58,12 +58,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="additionalCharge">Additional charge</param>
 		/// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
 		/// <param name="quantity">Shopping cart item quantity</param>
+		/// <param name="bundleItem">A product bundle item</param>
 		/// <returns>Final price</returns>
 		decimal GetFinalPrice(Product product,
 			Customer customer,
 			decimal additionalCharge,
 			bool includeDiscounts,
-			int quantity);
+			int quantity,
+			ProductBundleItem bundleItem = null);
 
 		/// <summary>
 		/// Gets discount amount
@@ -113,12 +115,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="additionalCharge">Additional charge</param>
 		/// <param name="quantity">Product quantity</param>
 		/// <param name="appliedDiscount">Applied discount</param>
+		/// <param name="bundleItem">A product bbundle item</param>
 		/// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(Product product,
 			Customer customer,
 			decimal additionalCharge,
 			int quantity,
-			out Discount appliedDiscount);
+			out Discount appliedDiscount,
+			ProductBundleItem bundleItem = null);
 
 
         /// <summary>

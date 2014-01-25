@@ -1,9 +1,10 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Extensions;
 @{
     string leftContentWidth = (Model.ThumbDimensions + 20).ToString() + "px";
 }
-<div class="product-variant-line" data-productid="@Model.Id" data-itemtype="associateditem">
+<div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl("associateditem"))">
 	<div class="clearfix">
 		@if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
 		{

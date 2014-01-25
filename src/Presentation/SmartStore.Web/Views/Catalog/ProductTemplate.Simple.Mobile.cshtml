@@ -1,5 +1,6 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Extensions;
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
@@ -37,7 +38,7 @@
                 <div class="product-variant-list">
                     @foreach (var product in Model.AssociatedProducts)
                     {
-                        <div class="product-variant-line" data-productid="@product.Id">
+                        <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
                             @Html.Partial("_DownloadSample", product)
                             @Html.Action("ProductTierPrices", "Catalog", new { productId = product.Id })
                             @{

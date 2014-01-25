@@ -80,6 +80,16 @@ namespace SmartStore.Core.Domain.Catalog
 		public DateTime UpdatedOnUtc { get; set; }
 
 		/// <summary>
+		/// The calculated price including discount
+		/// </summary>
+		public decimal PriceWithDiscount { get; set; }
+
+		/// <summary>
+		/// The calculated price excluding discount
+		/// </summary>
+		public decimal PriceWithoutDiscount { get; set; }
+
+		/// <summary>
 		/// Gets the product
 		/// </summary>
 		public virtual Product Product { get; set; }

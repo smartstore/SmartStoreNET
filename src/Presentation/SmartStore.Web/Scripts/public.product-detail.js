@@ -25,12 +25,9 @@
 
 			// update product data and gallery
 		    $(el).find(':input').change(function () {
-		    	var context = $(this).closest('.product-variant-line'),
-		    		url = opts.updateUrl;
+		    	var context = $(this).closest('.update-container');
 
 		    	if (context[0]) {		// associated or bundled item
-		    		url = url.replace('__productid__', context.attr('data-productid'));
-		    		url += '&itemType=' + encodeURIComponent(context.attr('data-itemtype'));
 		    	}
 		    	else {
 		    		context = el;
@@ -39,12 +36,10 @@
                 /*
 		    	if ($(this).attr('name').endsWith('EnteredQuantity'))
 		    		url += '&updateGallery=false';
-                */  
+                */
 
-
-		    	$({}).doAjax({
+		    	context.doAjax({
 		    		//smallIcon: '.price-details', // TODO... selector or object where to show small spinner
-		    		url: url,
 		    		data: context.find(':input').serialize(),
 		    		callbackSuccess: function (resp) {
 		    			self.updateDetailData(resp, context);

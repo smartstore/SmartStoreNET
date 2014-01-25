@@ -266,9 +266,9 @@ namespace SmartStore.Web.Models.Catalog
 		public partial class ProductBundleItemModel : EntityModelBase
 		{
 			public int Quantity { get; set; }
-			public decimal? Discount { get; set; }
-			public bool DiscountPercentage { get; set; }
 			public bool HideThumbnail { get; set; }
+			public decimal PriceWithDiscount { get; set; }
+			public decimal PriceWithoutDiscount { get; set; }
 		}
 
 		#endregion

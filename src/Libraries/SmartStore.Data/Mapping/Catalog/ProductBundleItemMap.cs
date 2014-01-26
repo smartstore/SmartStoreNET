@@ -14,9 +14,6 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(pbi => pbi.Name).HasMaxLength(400);
 			this.Property(pbi => pbi.ShortDescription).IsMaxLength();
 			
-			this.Ignore(pbi => pbi.PriceWithDiscount);
-			this.Ignore(pbi => pbi.PriceWithoutDiscount);
-
 			this.HasRequired(pbi => pbi.Product)
 				.WithMany(p => p.ProductBundleItems)
 				.HasForeignKey(pbi => pbi.ProductId)

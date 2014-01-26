@@ -979,7 +979,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
 		protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false,
-			ProductBundleItem productBundleItem = null, string attributes = null)
+			ProductBundleItem productBundleItem = null, IList<ProductBundleItem> productBundleItems = null, string attributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1035,7 +1035,7 @@ namespace SmartStore.Web.Controllers
                 return template.ViewPath;
             });
 
-            // product variant price
+			IList<ProductBundleItem> bundleItems = null;
             ProductVariantAttributeCombination combination = null;
             var combinationImageIds = new List<int>();
             var queryAttributes = _productAttributeParser.DeserializeQueryData(attributes);
@@ -1057,7 +1057,7 @@ namespace SmartStore.Web.Controllers
 			}
 			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)		// bundled items
 			{
-				var bundleItems = _productService.GetBundleItems(product.Id);
+				bundleItems = _productService.GetBundleItems(product.Id);
 
 				foreach (var bundleItem in bundleItems)
 				{
@@ -1066,8 +1066,6 @@ namespace SmartStore.Web.Controllers
 					bundledProductModel.BundleItem.Id = bundleItem.Id;
 					bundledProductModel.BundleItem.Quantity = bundleItem.Quantity;
 					bundledProductModel.BundleItem.HideThumbnail = bundleItem.HideThumbnail;
-					bundledProductModel.BundleItem.PriceWithDiscount = bundleItem.PriceWithDiscount;
-					bundledProductModel.BundleItem.PriceWithoutDiscount = bundleItem.PriceWithoutDiscount;
 
 					string bundleItemName = bundleItem.GetLocalized(x => x.Name);
 					if (bundleItemName.HasValue())
@@ -1083,7 +1081,7 @@ namespace SmartStore.Web.Controllers
 
 			selectedAttributes.ConvertQueryData(queryAttributes, product.Id);
 
-			model = PrepareProductDetailModel(model, product, isAssociatedProduct, productBundleItem, selectedAttributes);
+			model = PrepareProductDetailModel(model, product, isAssociatedProduct, productBundleItem, bundleItems, selectedAttributes);
 
 			model.Combinations.GetAllCombinationImageIds(combinationImageIds);
 
@@ -1238,8 +1236,8 @@ namespace SmartStore.Web.Controllers
 
         /// <param name="selectedAttributes">Attributes explicitly selected by user or by query string.</param>
         [NonAction]
-		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, bool isAssociatedProduct = false, ProductBundleItem bundleItem = null,
-			FormCollection selectedAttributes = null, int selectedQuantity = 1)
+		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, bool isAssociatedProduct = false, ProductBundleItem productBundleItem = null,
+			IList<ProductBundleItem> productBundleItems = null, FormCollection selectedAttributes = null, int selectedQuantity = 1)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1456,7 +1454,7 @@ namespace SmartStore.Web.Controllers
             model.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
 
-			if (bundleItem != null)
+			if (productBundleItem != null)
 				model.ThumbDimensions = _mediaSettings.BundledProductPictureSize;
 			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
@@ -1506,7 +1504,7 @@ namespace SmartStore.Web.Controllers
 						decimal attributesTotalPriceBase = decimal.Zero;
 						decimal finalPriceWithoutDiscount = decimal.Zero;
 						decimal finalPriceWithDiscount = decimal.Zero;
-						bool calculateBundleItemPrice = (bundleItem != null && bundleItem.BundleProduct.BundlePerItemPricing);
+						bool calculateBundleItemPrice = (productBundleItem != null && productBundleItem.BundleProduct.BundlePerItemPricing);
 
                         decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 
@@ -1528,25 +1526,21 @@ namespace SmartStore.Web.Controllers
                             }
                         }
 
-						if (isBundle && product.BundlePerItemPricing)
-						{
-							finalPriceWithoutDiscountBase = finalPriceWithoutDiscount = model.BundledItems.Sum(x => x.BundleItem.PriceWithoutDiscount * x.BundleItem.Quantity);
-							finalPriceWithDiscountBase = finalPriceWithDiscount = model.BundledItems.Sum(x => x.BundleItem.PriceWithDiscount * x.BundleItem.Quantity);
-						}
-						else
-						{
-							finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, false, selectedQuantity, bundleItem);
-							finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, _workContext.CurrentCustomer, attributesTotalPriceBase, true, selectedQuantity, bundleItem);
+						finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
+							_workContext.CurrentCustomer, attributesTotalPriceBase, false, selectedQuantity, productBundleItem);
+							
+						finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
+							_workContext.CurrentCustomer, attributesTotalPriceBase, true, selectedQuantity, productBundleItem);
 
-							finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
-							finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
+						finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
+						finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
 
-							oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
-							finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, _workContext.WorkingCurrency);
-							finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, _workContext.WorkingCurrency);
-						}
+						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
 
-						if (bundleItem == null || calculateBundleItemPrice)
+						finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, _workContext.WorkingCurrency);
+						finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, _workContext.WorkingCurrency);
+
+						if (productBundleItem == null || calculateBundleItemPrice)
 						{
 							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
 								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);
@@ -1555,12 +1549,6 @@ namespace SmartStore.Web.Controllers
 
 							if (finalPriceWithoutDiscountBase != finalPriceWithDiscountBase)
 								model.ProductPrice.PriceWithDiscount = _priceFormatter.FormatPrice(finalPriceWithDiscount);
-						}
-
-						if (calculateBundleItemPrice)
-						{
-							bundleItem.PriceWithoutDiscount = finalPriceWithoutDiscount;
-							bundleItem.PriceWithDiscount = finalPriceWithDiscount;
 						}
 
                         model.ProductPrice.PriceValue = finalPriceWithoutDiscount;
@@ -2607,6 +2595,10 @@ namespace SmartStore.Web.Controllers
             var m = new ProductDetailsModel();
             var product = _productService.GetProductById(productId);
 			var bundleItem = _productService.GetBundleItemById(bundleItemId);
+			IList<ProductBundleItem> bundleItems = null;
+
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
+				bundleItems = _productService.GetBundleItems(product.Id);
 
             // quantity required for tier prices
             string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
@@ -2614,7 +2606,7 @@ namespace SmartStore.Web.Controllers
                 int.TryParse(form[quantityKey], out quantity);
 
             // get merged model data
-            PrepareProductDetailModel(m, product, isAssociated, bundleItem, form, quantity);
+            PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
 
             // get updated image gallery
             if (updateGallery ?? true)

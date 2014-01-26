@@ -546,9 +546,7 @@ namespace SmartStore.Admin.Infrastructure
 			Mapper.CreateMap<ProductBundleItem, ProductBundleItemModel>()
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
-			Mapper.CreateMap<ProductBundleItemModel, ProductBundleItem>()
-				.ForMember(dest => dest.PriceWithDiscount, mo => mo.Ignore())
-				.ForMember(dest => dest.PriceWithoutDiscount, mo => mo.Ignore());
+			Mapper.CreateMap<ProductBundleItemModel, ProductBundleItem>();
 
             //discounts
             Mapper.CreateMap<Discount, DiscountModel>()

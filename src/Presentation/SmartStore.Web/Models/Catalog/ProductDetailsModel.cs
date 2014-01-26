@@ -267,8 +267,6 @@ namespace SmartStore.Web.Models.Catalog
 		{
 			public int Quantity { get; set; }
 			public bool HideThumbnail { get; set; }
-			public decimal PriceWithDiscount { get; set; }
-			public decimal PriceWithoutDiscount { get; set; }
 		}
 
 		#endregion

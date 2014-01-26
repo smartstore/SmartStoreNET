@@ -42,7 +42,7 @@
     <!--product breadcrumb-->
     @Html.Action("ProductBreadcrumb", "Catalog", new { productId = Model.Id })
 
-    <div class="page-body">
+    <div class="page-body update-container" data-referto="#ProductAttributes, #AddToCart" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
         @Html.Widget("productdetails_top")
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
         {
@@ -77,7 +77,7 @@
                         }
 
                         <!-- attributes -->
-                        <table class="attributes">
+                        <table id="ProductAttributes" class="attributes">
 
                             @if (Model.ShowSku)
                             {
@@ -185,7 +185,7 @@
                        
                     @Html.Widget("productdetails_overview_top")
 
-                    <div id="details-cnt" class="update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+                    <div id="details-cnt">
 
                         <div class="short-description line alpha">
                             @Html.Raw(Model.ShortDescription)
@@ -244,11 +244,13 @@
                         }
                     
                         <!-- addd to cart -->
+						<div id="AddToCart">
                         @{       
                             var dataDictAddToCart = new ViewDataDictionary();
                             dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);                
                             @Html.Partial("_AddToCart", Model, dataDictAddToCart)                    
                         }
+						</div>
 
                     <!-- quick links -->
                     <!-- TODO: _DownloadSample.cshtml ist jetzt eigentlich obsolete -->

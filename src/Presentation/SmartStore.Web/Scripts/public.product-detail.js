@@ -51,7 +51,8 @@
 		};
 
 		this.updateDetailData = function (data, context) {
-		    var gallery = $('#pd-gallery').data(galPluginName);
+			var gallery = $('#pd-gallery').data(galPluginName),
+				referTo = $(context).attr('data-referto');
 
 		    if (data.GalleryHtml) {
 		        var cnt = $('#pd-gallery-container');
@@ -72,10 +73,12 @@
 		        }
 		    }
 
-		    //update detail data in view
+			//update detail data in view
+		    if (referTo)
+		    	context = $(referTo);
 
 		    //prices
-		    var priceBlock = $(".price-details", $(context));
+		    var priceBlock = $(context).find('.price-details').addBack();
 		    priceBlock.find(".base-price").html(data.Price.Base.Info);
 		    priceBlock.find(".old-product-price").html(data.Price.Old.Text);
 		    priceBlock.find('.product-price-without-discount').html(data.Price.WithoutDiscount.Text);
@@ -87,7 +90,7 @@
 		    deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
 		     
 		    //attributes
-		    var attributesBlock = $(".attributes", $(context));
+		    var attributesBlock = $(context).find('.attributes').addBack();
 		    
 		    function updateAttrLine(className, newValue) {
 		        attrLine = attributesBlock.find(className);

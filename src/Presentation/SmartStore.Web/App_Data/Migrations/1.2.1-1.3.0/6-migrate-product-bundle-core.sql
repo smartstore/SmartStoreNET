@@ -11,6 +11,7 @@ BEGIN
 		[Name] [nvarchar](400) NULL,
 		[ShortDescription] [nvarchar](max) NULL,
 		[HideThumbnail] bit NOT NULL,
+		[Visible] bit NOT NULL,
 		[Published] bit NOT NULL,
 		[DisplayOrder] int NOT NULL,
 		[CreatedOnUtc] [datetime] NOT NULL,

@@ -114,6 +114,15 @@
                 @Html.ValidationMessageFor(model => model.HideThumbnail)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Visible)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Visible)
+				@Html.ValidationMessageFor(model => model.Visible)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Published)

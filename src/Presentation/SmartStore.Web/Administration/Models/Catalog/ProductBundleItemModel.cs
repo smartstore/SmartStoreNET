@@ -36,6 +36,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.HideThumbnail")]
 		public bool HideThumbnail { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Visible")]
+		public bool Visible { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Published")]
 		public bool Published { get; set; }
 

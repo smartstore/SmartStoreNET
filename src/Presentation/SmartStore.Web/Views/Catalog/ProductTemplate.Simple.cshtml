@@ -204,13 +204,13 @@
 										<div><h4>@Model.BundleTitleText</h4></div>
 									}
 									<div class="product-variant-list">
-										@foreach (var bundleItemModel in Model.BundledItems)
+										@foreach (var bundleItemModel in Model.BundledItems.Where(x => x.BundleItem.Visible))
 										{
 											var dataDictBundleItems = new ViewDataDictionary();
 											dataDictBundleItems.TemplateInfo.HtmlFieldPrefix = string.Format("bundleitem_{0}", bundleItemModel.BundleItem.Id);
 											@Html.Partial("_ProductBundleItems", bundleItemModel, dataDictBundleItems)
 										}
-										@if (Model.BundledItems.Count == 0)
+										@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
 										{
 											<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
 										}

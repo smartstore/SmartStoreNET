@@ -97,14 +97,22 @@ SET @resources='
 		<Value>Hide the thumbnail for the product.</Value>
 		<Value lang="de">Das Vorschaubild des Produktes ausblenden.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Visible">
+		<Value>Visible</Value>
+		<Value lang="de">Sichtbar</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Visible.Hint">
+		<Value>Allows to hide a product included in the bundle, so that it does not appear on the product page.</Value>
+		<Value lang="de">Ermöglicht es, ein im Bundle enthaltenes Produkt zu verbergen, so dass es auf der Produktseite nicht angezeigt wird.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published">
-		<Value>Bundle published</Value>
-		<Value lang="de">Im Bundle veröffentlicht</Value>
+		<Value>Contained in bundle</Value>
+		<Value lang="de">Im Bundle enthalten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published.Hint">
-		<Value>Whether to publish the product in the bundle.</Value>
-		<Value lang="de">Legt fest, ob das Produkt im Bundle angezeigt werden soll.</Value>
-	</LocaleResource>	
+		<Value>Whether the bundle contains the product.</Value>
+		<Value lang="de">Legt fest, ob das Produkt im Bundle enthalten ist.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder">
 		<Value>Bundle display order</Value>
 		<Value lang="de">Reihenfolge im Bundle</Value>

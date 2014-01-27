@@ -1724,6 +1724,7 @@ namespace SmartStore.Admin.Controllers
 						Quantity = x.Quantity,
 						Discount = x.Discount,
 						DisplayOrder = x.DisplayOrder,
+						Visible = x.Visible,
 						Published = x.Published
 					};
 				}).ToList();
@@ -1804,6 +1805,7 @@ namespace SmartStore.Admin.Controllers
 						ProductId = model.SelectedProductIds[i],
 						BundleProductId = model.ProductId,
 						Quantity = 1,
+						Visible = true,
 						Published = true,
 						DisplayOrder = i + 1,
 						CreatedOnUtc = DateTime.UtcNow,

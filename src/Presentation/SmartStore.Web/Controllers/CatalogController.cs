@@ -1066,6 +1066,7 @@ namespace SmartStore.Web.Controllers
 					bundledProductModel.BundleItem.Id = bundleItem.Id;
 					bundledProductModel.BundleItem.Quantity = bundleItem.Quantity;
 					bundledProductModel.BundleItem.HideThumbnail = bundleItem.HideThumbnail;
+					bundledProductModel.BundleItem.Visible = bundleItem.Visible;
 
 					string bundleItemName = bundleItem.GetLocalized(x => x.Name);
 					if (bundleItemName.HasValue())

@@ -472,6 +472,7 @@ namespace SmartStore.Services.ExportImport
 					xmlWriter.WriteElementString("Name", null, bundleItem.Name);
 					xmlWriter.WriteElementString("ShortDescription", null, bundleItem.ShortDescription);
 					xmlWriter.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());
+					xmlWriter.WriteElementString("Visible", null, bundleItem.Visible.ToString());
 					xmlWriter.WriteElementString("Published", null, bundleItem.Published.ToString());
 					xmlWriter.WriteElementString("DisplayOrder", null, bundleItem.DisplayOrder.ToString());
 					xmlWriter.WriteElementString("CreatedOnUtc", null, bundleItem.CreatedOnUtc.ToString());

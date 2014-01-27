@@ -56,6 +56,12 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool HideThumbnail { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the item is visible
+		/// </summary>
+		[DataMember]
+		public bool Visible { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the entity is published
 		/// </summary>
 		[DataMember]
@@ -101,6 +107,7 @@ namespace SmartStore.Core.Domain.Catalog
 				Name = this.Name,
 				ShortDescription = this.ShortDescription,
 				HideThumbnail = this.HideThumbnail,
+				Visible = this.Visible,
 				Published = this.Published,
 				DisplayOrder = this.DisplayOrder,
 				CreatedOnUtc = this.CreatedOnUtc,

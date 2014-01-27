@@ -92,6 +92,11 @@
 							columns.Bound(x => x.Discount)
 								.Width(80)
 								.Centered();
+							columns.Bound(x => x.Visible)
+								.Width(100)
+								.Template(item => @Html.SymbolForBool(item.Visible))
+								.ClientTemplate(@Html.SymbolForBool("Visible"))
+								.Centered();
                             columns.Bound(x => x.Published)
                                 .Width(100)
                                 .Template(item => @Html.SymbolForBool(item.Published))

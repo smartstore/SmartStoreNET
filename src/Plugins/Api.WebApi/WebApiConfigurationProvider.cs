@@ -52,6 +52,7 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
 			m.EntitySet<Picture>(WebApiOdataEntitySet.Pictures);
 			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
+			m.EntitySet<ProductBundleItem>(WebApiOdataEntitySet.ProductBundleItems);
 			m.EntitySet<ProductCategory>(WebApiOdataEntitySet.ProductCategories);
 			m.EntitySet<ProductManufacturer>(WebApiOdataEntitySet.ProductManufacturers);
 			m.EntitySet<ProductPicture>(WebApiOdataEntitySet.ProductPictures);
@@ -97,6 +98,7 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string Orders { get { return "Orders"; } }
 		public static string Pictures { get { return "Pictures"; } }
 		public static string ProductAttributes { get { return "ProductAttributes"; } }
+		public static string ProductBundleItems { get { return "ProductBundleItems"; } }
 		public static string ProductCategories { get { return "ProductCategories"; } }
 		public static string ProductManufacturers { get { return "ProductManufacturers"; } }
 		public static string ProductPictures { get { return "ProductPictures"; } }

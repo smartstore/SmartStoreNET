@@ -88,11 +88,13 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets the product
 		/// </summary>
+		[DataMember]
 		public virtual Product Product { get; set; }
 
 		/// <summary>
 		/// Gets the bundle product
 		/// </summary>
+		[DataMember]
 		public virtual Product BundleProduct { get; set; }
 
 		public ProductBundleItem Clone()

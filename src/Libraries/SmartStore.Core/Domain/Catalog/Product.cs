@@ -937,6 +937,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the collection of product bundle items
 		/// </summary>
+		[DataMember]
 		public virtual ICollection<ProductBundleItem> ProductBundleItems
 		{
 			get { return _productBundleItems ?? (_productBundleItems = new List<ProductBundleItem>()); }

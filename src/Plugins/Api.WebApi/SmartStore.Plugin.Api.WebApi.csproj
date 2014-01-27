@@ -167,6 +167,7 @@
     <Compile Include="Controllers\OData\OrderNotesController.cs" />
     <Compile Include="Controllers\OData\OrdersController.cs" />
     <Compile Include="Controllers\OData\PicturesController.cs" />
+    <Compile Include="Controllers\OData\ProductBundleItemsController.cs" />
     <Compile Include="Controllers\OData\ProductVariantAttributeCombinationsController.cs" />
     <Compile Include="Controllers\OData\ProductVariantAttributeValuesController.cs" />
     <Compile Include="Controllers\OData\ProductVariantAttributesController.cs" />

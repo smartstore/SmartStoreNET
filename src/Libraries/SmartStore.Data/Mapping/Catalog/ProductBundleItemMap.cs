@@ -15,12 +15,12 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(pbi => pbi.ShortDescription).IsMaxLength();
 			
 			this.HasRequired(pbi => pbi.Product)
-				.WithMany(p => p.ProductBundleItems)
+				.WithMany()
 				.HasForeignKey(pbi => pbi.ProductId)
 				.WillCascadeOnDelete(false);		// SQL Server does not support multiple cascade deletes
 
 			this.HasRequired(pbi => pbi.BundleProduct)
-				.WithMany()
+				.WithMany(p => p.ProductBundleItems)
 				.HasForeignKey(pbi => pbi.BundleProductId)
 				.WillCascadeOnDelete(true);
 		}

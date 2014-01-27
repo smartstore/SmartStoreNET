@@ -121,6 +121,14 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			return entity.ProductVariantAttributeCombinations.AsQueryable();
 		}
 
+		[WebApiQueryable]
+		public IQueryable<ProductBundleItem> GetProductBundleItems(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<ProductBundleItem>>(key, x => x.ProductBundleItems);
+
+			return entity.ProductBundleItems.AsQueryable();
+		}
+
 		// actions
 
 		//[HttpGet, WebApiQueryable]

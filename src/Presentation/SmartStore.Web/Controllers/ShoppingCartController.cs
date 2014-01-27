@@ -946,8 +946,8 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//we can add only simple products
-			if (product.ProductType != ProductType.SimpleProduct)
+			// filter out product types that cannot be add to cart
+			if (product.ProductType == ProductType.GroupedProduct)
 			{
 				return Json(new
 				{
@@ -1054,8 +1054,8 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-			//we can add only simple products
-			if (product.ProductType != ProductType.SimpleProduct)
+			// filter out product types that cannot be add to cart
+			if (product.ProductType == ProductType.GroupedProduct)
 			{
 				return Json(new
 				{
@@ -1099,88 +1099,92 @@ namespace SmartStore.Web.Controllers
             string attributes = "";
 
             #region Product attributes
-            string selectedAttributes = string.Empty;
-            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
-            foreach (var attribute in productVariantAttributes)
-            {
-                string controlId = string.Format("product_attribute_{0}_{1}_{2}", attribute.ProductId, attribute.ProductAttributeId, attribute.Id);
-                switch (attribute.AttributeControlType)
-                {
-                    case AttributeControlType.DropdownList:
-                    case AttributeControlType.RadioList:
-                    case AttributeControlType.ColorSquares:
-                        {
-                            var rblAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(rblAttributes))
-                            {
-                                int selectedAttributeId = int.Parse(rblAttributes);
-                                if (selectedAttributeId > 0)
-                                    selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                        attribute, selectedAttributeId.ToString());
-                            }
-                        }
-                        break;
-                    case AttributeControlType.Checkboxes:
-                        {
-                            var cblAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(cblAttributes))
-                            {
-                                foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    int selectedAttributeId = int.Parse(item);
-                                    if (selectedAttributeId > 0)
-                                        selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                            attribute, selectedAttributeId.ToString());
-                                }
-                            }
-                        }
-                        break;
-                    case AttributeControlType.TextBox:
-                    case AttributeControlType.MultilineTextbox:
-                        {
-                            var txtAttribute = form[controlId];
-                            if (!String.IsNullOrEmpty(txtAttribute))
-                            {
-                                string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes, attribute, enteredText);
-                            }
-                        }
-                        break;
-                    case AttributeControlType.Datepicker:
-                        {
-                            var day = form[controlId + "_day"];
-                            var month = form[controlId + "_month"];
-                            var year = form[controlId + "_year"];
-                            DateTime? selectedDate = null;
-                            try
-                            {
-                                selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(day));
-                            }
-                            catch { }
-                            if (selectedDate.HasValue)
-                            {
-                                selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                    attribute, selectedDate.Value.ToString("D"));
-                            }
-                        }
-                        break;
-                    case AttributeControlType.FileUpload:
-                        {
-                            Guid downloadGuid;
-                            Guid.TryParse(form[controlId], out downloadGuid);
-                            var download = _downloadService.GetDownloadByGuid(downloadGuid);
-                            if (download != null)
-                            {
-                                selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                        attribute, download.DownloadGuid.ToString());
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            attributes = selectedAttributes;
+
+			if (product.ProductType != ProductType.BundledProduct)		// bundles doesn't have attributes
+			{
+				string selectedAttributes = string.Empty;
+				var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
+				foreach (var attribute in productVariantAttributes)
+				{
+					string controlId = string.Format("product_attribute_{0}_{1}_{2}", attribute.ProductId, attribute.ProductAttributeId, attribute.Id);
+					switch (attribute.AttributeControlType)
+					{
+						case AttributeControlType.DropdownList:
+						case AttributeControlType.RadioList:
+						case AttributeControlType.ColorSquares:
+							{
+								var rblAttributes = form[controlId];
+								if (!String.IsNullOrEmpty(rblAttributes))
+								{
+									int selectedAttributeId = int.Parse(rblAttributes);
+									if (selectedAttributeId > 0)
+										selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
+											attribute, selectedAttributeId.ToString());
+								}
+							}
+							break;
+						case AttributeControlType.Checkboxes:
+							{
+								var cblAttributes = form[controlId];
+								if (!String.IsNullOrEmpty(cblAttributes))
+								{
+									foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+									{
+										int selectedAttributeId = int.Parse(item);
+										if (selectedAttributeId > 0)
+											selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
+												attribute, selectedAttributeId.ToString());
+									}
+								}
+							}
+							break;
+						case AttributeControlType.TextBox:
+						case AttributeControlType.MultilineTextbox:
+							{
+								var txtAttribute = form[controlId];
+								if (!String.IsNullOrEmpty(txtAttribute))
+								{
+									string enteredText = txtAttribute.Trim();
+									selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes, attribute, enteredText);
+								}
+							}
+							break;
+						case AttributeControlType.Datepicker:
+							{
+								var day = form[controlId + "_day"];
+								var month = form[controlId + "_month"];
+								var year = form[controlId + "_year"];
+								DateTime? selectedDate = null;
+								try
+								{
+									selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(day));
+								}
+								catch { }
+								if (selectedDate.HasValue)
+								{
+									selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
+										attribute, selectedDate.Value.ToString("D"));
+								}
+							}
+							break;
+						case AttributeControlType.FileUpload:
+							{
+								Guid downloadGuid;
+								Guid.TryParse(form[controlId], out downloadGuid);
+								var download = _downloadService.GetDownloadByGuid(downloadGuid);
+								if (download != null)
+								{
+									selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
+											attribute, download.DownloadGuid.ToString());
+								}
+							}
+							break;
+						default:
+							break;
+					}
+				}
+				attributes = selectedAttributes;
+			}
 
             #endregion
 

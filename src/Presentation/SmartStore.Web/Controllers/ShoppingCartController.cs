@@ -244,8 +244,8 @@ namespace SmartStore.Web.Controllers
 
             //codehint:sm-add
             model.MediaDimensions = _mediaSettings.CartThumbPictureSize;
-            //TODO: add setting
             model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
+            model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
             model.IsEditable = isEditable;
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
             model.ShowSku = _catalogSettings.ShowProductSku;
@@ -445,7 +445,8 @@ namespace SmartStore.Web.Controllers
                     Quantity = sci.Quantity,
                     AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml),
                     IsShipEnabled = sci.Product.IsShipEnabled,
-                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.Product.DeliveryTimeId.GetValueOrDefault())
+                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.Product.DeliveryTimeId.GetValueOrDefault()),
+                    ShortDesc = sci.Product.ShortDescription
                 };
 
                 //allowed quantities

@@ -79,6 +79,14 @@
                             <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
 
                             <!-- delivery time -->
+                            @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
+                            {
+                                <div class="short-desc">
+                                    @item.ShortDesc
+                                </div>
+                            }
+
+                            <!-- delivery time -->
                             @if (Model.DisplayDeliveryTime)
                             {
                                 <div class="delivery-time">

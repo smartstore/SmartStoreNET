@@ -107,17 +107,18 @@
         </div>
         <div class="add-to-cart line">
             <div class="form-inline clearfix" style="text-align:right;@(Model.IsUnavailable ? "display:none;" : "")">
-                @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" }):
-                @if (Model.AddToCart.AllowedQuantities.Count > 0)
-                {
-                    @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
-                }
-                else
-                {
-                    @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
-                }
                 @if (!Model.AddToCart.DisableBuyButton)
                 {
+                    @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
+                    if (Model.AddToCart.AllowedQuantities.Count > 0)
+                    {
+                        @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                    }
+
                     <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
                         href="#"
                         data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 

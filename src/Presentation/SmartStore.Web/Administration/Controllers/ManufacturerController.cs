@@ -457,12 +457,17 @@ namespace SmartStore.Admin.Controllers
                 Data = productManufacturers
                 .Select(x =>
                 {
+					var product = _productService.GetProductById(x.ProductId);
+
                     return new ManufacturerModel.ManufacturerProductModel()
                     {
                         Id = x.Id,
                         ManufacturerId = x.ManufacturerId,
                         ProductId = x.ProductId,
-                        ProductName = _productService.GetProductById(x.ProductId).Name,
+                        ProductName = product.Name,
+						Sku = product.Sku,
+						ProductTypeName = product.ProductType.GetLocalizedEnum(_localizationService, _workContext),
+						Published = product.Published,
                         IsFeaturedProduct = x.IsFeaturedProduct,
                         DisplayOrder1 = x.DisplayOrder
                     };

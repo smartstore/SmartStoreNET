@@ -720,12 +720,17 @@ namespace SmartStore.Admin.Controllers
                 Data = productCategories
                 .Select(x =>
                 {
+					var product = _productService.GetProductById(x.ProductId);
+
                     return new CategoryModel.CategoryProductModel()
                     {
                         Id = x.Id,
                         CategoryId = x.CategoryId,
                         ProductId = x.ProductId,
-                        ProductName = _productService.GetProductById(x.ProductId).Name,
+                        ProductName = product.Name,
+						Sku = product.Sku,
+						ProductTypeName = product.ProductType.GetLocalizedEnum(_localizationService, _workContext),
+						Published = product.Published,
                         IsFeaturedProduct = x.IsFeaturedProduct,
                         DisplayOrder1 = x.DisplayOrder
                     };

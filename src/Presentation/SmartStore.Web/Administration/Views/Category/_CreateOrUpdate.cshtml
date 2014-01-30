@@ -279,11 +279,22 @@
 							.Update("ProductUpdate", "Category")
 							.Delete("ProductDelete", "Category");
 					})
-					.Columns(columns => {
+					.Columns(columns =>
+					{
 						columns.Bound(x => x.ProductName)
                             .ReadOnly()
                             .Template(x => Html.ActionLink(x.ProductName, "Edit", "Product", new { id = x.ProductId }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
+						columns.Bound(x => x.Sku)
+							.ReadOnly();
+						columns.Bound(x => x.ProductTypeName)
+							.ReadOnly();
+						columns.Bound(x => x.Published)
+							.ReadOnly()
+							.Width(100)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
 						columns.Bound(x => x.IsFeaturedProduct)
 							.Width(100)
 							.Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
@@ -292,7 +303,8 @@
 						columns.Bound(x => x.DisplayOrder1)
 							.Width(100)
 							.Centered();
-						columns.Command(commands => {
+						columns.Command(commands =>
+						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
 						})
@@ -304,7 +316,11 @@
                 </tr>
                 <tr>
                     <td width="100%">
-                        <input type="submit" id="btnAddNewProduct" name="btnAddNewProduct" value="@T("Admin.Catalog.Categories.Products.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Category", new { categoryId = Model.Id, btnId = "btnRefreshProducts", formId = "category-form" }))', 800, 700, true); return false;" class="btn" />
+						<button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn" style="margin-top:3px;"
+								onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Category", new { categoryId = Model.Id, btnId = "btnRefreshProducts", formId = "category-form" }))', 1000, 700, true); return false;">
+							<i class="icon-plus"></i>
+							@T("Admin.Catalog.Categories.Products.AddNew")
+						</button>
                         <input type="submit" id="btnRefreshProducts" name="btnRefreshProducts" style="display: none" />
                         <script type="text/javascript">
                             $(document).ready(function () {

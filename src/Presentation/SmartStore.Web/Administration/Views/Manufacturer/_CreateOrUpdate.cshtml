@@ -254,6 +254,16 @@
                             .ReadOnly()
                             .Template(x => Html.ActionLink(x.ProductName, "Edit", "Product", new { id = x.ProductId }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
+						columns.Bound(x => x.Sku)
+							.ReadOnly();
+						columns.Bound(x => x.ProductTypeName)
+							.ReadOnly();
+						columns.Bound(x => x.Published)
+							.ReadOnly()
+							.Width(100)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
                         columns.Bound(x => x.IsFeaturedProduct)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
@@ -275,7 +285,11 @@
                 </tr>
                 <tr>
                     <td width="100%">
-                        <input type="submit" id="btnAddNewProduct" name="btnAddNewProduct" value="@T("Admin.Catalog.Manufacturers.Products.AddNew")" onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Manufacturer", new { manufacturerId = Model.Id, btnId = "btnRefreshProducts", formId = "manufacturer-form" }))', 800, 700, true); return false;" class="t-button" />
+						<button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn" style="margin-top:3px;"
+								onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Manufacturer", new { manufacturerId = Model.Id, btnId = "btnRefreshProducts", formId = "manufacturer-form" }))', 1000, 700, true); return false;">
+							<i class="icon-plus"></i>
+							@T("Admin.Catalog.Manufacturers.Products.AddNew")
+						</button>
                         <input type="submit" id="btnRefreshProducts" name="btnRefreshProducts" style="display: none" />
                         <script type="text/javascript">
                             $(document).ready(function () {

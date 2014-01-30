@@ -100,6 +100,15 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.Product")]
             public string ProductName { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+			public bool Published { get; set; }
+
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 

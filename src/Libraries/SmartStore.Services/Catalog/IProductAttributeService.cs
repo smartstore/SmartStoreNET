@@ -177,5 +177,33 @@ namespace SmartStore.Services.Catalog
         bool VariantHasAttributeCombinations(int productId);
 
         #endregion
+
+		#region Product bundle item attribute filter
+
+		/// <summary>
+		/// Inserts a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		void InsertProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter);
+
+		/// <summary>
+		/// Updates the product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		void UpdateProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter);
+
+		/// <summary>
+		/// Deletes a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		void DeleteProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter);
+
+		/// <summary>
+		/// Deletes all attribute filters for a bundle item
+		/// </summary>
+		/// <param name="bundleItem">Bundle item</param>
+		void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem);
+
+		#endregion
     }
 }

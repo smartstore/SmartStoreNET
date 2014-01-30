@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
@@ -11,9 +13,11 @@ namespace SmartStore.Admin.Models.Catalog
 		public ProductBundleItemModel()
 		{
 			Locales = new List<ProductBundleItemLocalizedModel>();
+			Attributes = new List<ProductBundleItemAttributeModel>();
 		}
 
 		public IList<ProductBundleItemLocalizedModel> Locales { get; set; }
+		public IList<ProductBundleItemAttributeModel> Attributes { get; set; }
 
 		public int ProductId { get; set; }
 		public int BundleProductId { get; set; }
@@ -32,6 +36,9 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.DiscountPercentage")]
 		public bool DiscountPercentage { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.FilterAttributes")]
+		public bool FilterAttributes { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.HideThumbnail")]
 		public bool HideThumbnail { get; set; }
@@ -62,5 +69,26 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.ShortDescription")]
 		public string ShortDescription { get; set; }
+	}
+
+
+	public class ProductBundleItemAttributeModel : EntityModelBase
+	{
+		public ProductBundleItemAttributeModel()
+		{
+			Values = new List<SelectListItem>();
+			PreSelect = new List<SelectListItem>();
+		}
+
+		public static string AttributeControlPrefix { get { return "attribute_"; } }
+		public static string PreSelectControlPrefix { get { return "preselect_"; } }
+
+		public string AttributeControlId { get { return AttributeControlPrefix + Id.ToString(); } }
+		public string PreSelectControlId { get { return PreSelectControlPrefix + Id.ToString(); } }
+
+		public string Name { get; set; }
+
+		public IList<SelectListItem> Values { get; set; }
+		public IList<SelectListItem> PreSelect { get; set; }
 	}
 }

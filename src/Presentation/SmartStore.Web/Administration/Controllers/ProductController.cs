@@ -1681,28 +1681,99 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareBundleItemEditModel(ProductBundleItemModel model, ProductBundleItem bundleItem, string btnId, string formId, bool refreshPage = false)
 		{
+			ViewBag.btnId = btnId;
+			ViewBag.formId = formId;
+			ViewBag.RefreshPage = refreshPage;
+
 			if (bundleItem == null)
 			{
 				ViewBag.Title = _localizationService.GetResource("Admin.Catalog.Products.BundleItems.EditOf");
+				return;
 			}
-			else
-			{
-				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.CreatedOnUtc, DateTimeKind.Utc);
-				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.UpdatedOnUtc, DateTimeKind.Utc);
 
+			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.CreatedOnUtc, DateTimeKind.Utc);
+			model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.UpdatedOnUtc, DateTimeKind.Utc);
+
+			if (model.Locales.Count == 0)
+			{
 				AddLocales(_languageService, model.Locales, (locale, languageId) =>
 				{
 					locale.Name = bundleItem.GetLocalized(x => x.Name, languageId, false, false);
 					locale.ShortDescription = bundleItem.GetLocalized(x => x.ShortDescription, languageId, false, false);
 				});
-
-				ViewBag.Title = "{0} {1} ({2})".FormatWith(
-					_localizationService.GetResource("Admin.Catalog.Products.BundleItems.EditOf"), bundleItem.Product.Name, bundleItem.Product.Sku);
 			}
 
-			ViewBag.btnId = btnId;
-			ViewBag.formId = formId;
-			ViewBag.RefreshPage = refreshPage;
+			ViewBag.Title = "{0} {1} ({2})".FormatWith(
+				_localizationService.GetResource("Admin.Catalog.Products.BundleItems.EditOf"), bundleItem.Product.Name, bundleItem.Product.Sku);
+
+			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(bundleItem.ProductId);
+
+			foreach (var attribute in attributes)
+			{
+				var attributeModel = new ProductBundleItemAttributeModel()
+				{
+					Id = attribute.Id,
+					Name = (attribute.ProductAttribute.Alias.HasValue() ?
+						"{0} ({1})".FormatWith(attribute.ProductAttribute.Name, attribute.ProductAttribute.Alias) : attribute.ProductAttribute.Name)
+				};
+
+				var attributeValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
+
+				foreach (var attributeValue in attributeValues)
+				{
+					var filteredValue = bundleItem.AttributeFilters.FirstOrDefault(x => x.AttributeId == attribute.Id && x.AttributeValueId == attributeValue.Id);
+
+					attributeModel.Values.Add(new SelectListItem()
+					{
+						Text = attributeValue.Name,
+						Value = attributeValue.Id.ToString(),
+						Selected = (filteredValue != null)
+					});
+
+					if (filteredValue != null)
+					{
+						attributeModel.PreSelect.Add(new SelectListItem()
+						{
+							Text = attributeValue.Name,
+							Value = attributeValue.Id.ToString(),
+							Selected = filteredValue.IsPreSelected
+						});
+					}
+				}
+
+				if (attributeModel.Values.Count > 0)
+				{
+					if (attributeModel.PreSelect.Count > 0)
+						attributeModel.PreSelect.Insert(0, new SelectListItem() { Text = "-", Value = "0" });
+
+					model.Attributes.Add(attributeModel);
+				}
+			}
+		}
+		private void SaveFilteredAttributes(ProductBundleItem bundleItem, FormCollection form)
+		{
+			_productAttributeService.DeleteProductBundleItemAttributeFilter(bundleItem);
+
+			var allFilterKeys = form.AllKeys.Where(x => x.HasValue() && x.StartsWith(ProductBundleItemAttributeModel.AttributeControlPrefix));
+
+			foreach (var key in allFilterKeys)
+			{
+				int attributeId = key.Substring(ProductBundleItemAttributeModel.AttributeControlPrefix.Length).ToInt();
+				string preSelectId = form[ProductBundleItemAttributeModel.PreSelectControlPrefix + attributeId.ToString()].EmptyNull();
+
+				foreach (var valueId in form[key].SplitSafe(","))
+				{
+					var attributeFilter = new ProductBundleItemAttributeFilter()
+					{
+						BundleItemId = bundleItem.Id,
+						AttributeId = attributeId,
+						AttributeValueId = valueId.ToInt(),
+						IsPreSelected = (preSelectId == valueId)
+					};
+
+					_productAttributeService.InsertProductBundleItemAttributeFilter(attributeFilter);
+				}
+			}
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
@@ -1798,16 +1869,18 @@ namespace SmartStore.Admin.Controllers
 
 			if (model.SelectedProductIds != null)
 			{
-				for (int i = 0; i < model.SelectedProductIds.Count(); ++i)
+				var products = _productService.GetProductsByIds(model.SelectedProductIds);
+
+				foreach (var product in products)
 				{
 					var bundleItem = new ProductBundleItem()
 					{
-						ProductId = model.SelectedProductIds[i],
+						ProductId = product.Id,
 						BundleProductId = model.ProductId,
 						Quantity = 1,
 						Visible = true,
-						Published = true,
-						DisplayOrder = i + 1,
+						Published = product.Published,
+						DisplayOrder = products.IndexOf(product) + 1,
 						CreatedOnUtc = DateTime.UtcNow,
 						UpdatedOnUtc = DateTime.UtcNow
 					};
@@ -1869,12 +1942,14 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost]
 		[ValidateInput(false)]
-		public ActionResult BundleItemEditPopup(string btnId, string formId, ProductBundleItemModel model)
+		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		public ActionResult BundleItemEditPopup(string btnId, string formId, bool continueEditing, ProductBundleItemModel model, FormCollection form)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
+
+			ViewBag.closeWindow = !continueEditing;
 
 			if (ModelState.IsValid)
 			{
@@ -1894,7 +1969,12 @@ namespace SmartStore.Admin.Controllers
 					_localizedEntityService.SaveLocalizedValue(bundleItem, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
 				}
 
+				SaveFilteredAttributes(bundleItem, form);
+
 				PrepareBundleItemEditModel(model, bundleItem, btnId, formId, true);
+
+				if (continueEditing)
+					this.SuccessNotification(_localizationService.GetResource("Admin.Common.DataSuccessfullySaved"));
 			}
 			else
 			{

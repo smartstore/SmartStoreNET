@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 
@@ -7,6 +8,8 @@ namespace SmartStore.Core.Domain.Catalog
 	[DataContract]
 	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity, ICloneable<ProductBundleItem>
 	{
+		private ICollection<ProductBundleItemAttributeFilter> _attributeFilters;
+
 		/// <summary>
 		/// Gets or sets the product identifier
 		/// </summary>
@@ -48,6 +51,12 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public string ShortDescription { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to filter attributes
+		/// </summary>
+		[DataMember]
+		public bool FilterAttributes { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to hide the thumbnail
@@ -96,6 +105,15 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public virtual Product BundleProduct { get; set; }
+
+		/// <summary>
+		/// Gets or sets the collection of attribute filters
+		/// </summary>
+		public virtual ICollection<ProductBundleItemAttributeFilter> AttributeFilters
+		{
+			get { return _attributeFilters ?? (_attributeFilters = new List<ProductBundleItemAttributeFilter>()); }
+			protected set { _attributeFilters = value; }
+		}
 
 		public ProductBundleItem Clone()
 		{

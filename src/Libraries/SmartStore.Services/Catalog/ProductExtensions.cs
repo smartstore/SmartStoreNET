@@ -387,5 +387,16 @@ namespace SmartStore.Services.Catalog
 			return "";
         }
 
+		public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
+		{
+			if (bundleItem != null && value != null && bundleItem.FilterAttributes)
+			{
+				filter = bundleItem.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+
+				return (filter == null);
+			}
+			filter = null;
+			return false;
+		}
     }
 }

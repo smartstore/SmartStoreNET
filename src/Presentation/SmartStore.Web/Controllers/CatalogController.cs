@@ -1270,6 +1270,8 @@ namespace SmartStore.Web.Controllers
 			{
 				foreach (var attribute in variantAttributes)
 				{
+					int preSelectedValueId = 0;
+
 					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
 					{
 						Id = attribute.Id,
@@ -1290,13 +1292,21 @@ namespace SmartStore.Web.Controllers
 
 						foreach (var pvaValue in pvaValues)
 						{
+							ProductBundleItemAttributeFilter attributeFilter = null;
+
+							if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
+								continue;
+
+							if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+								preSelectedValueId = attributeFilter.AttributeValueId;
+
 							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel()
 							{
 								Id = pvaValue.Id,
 								Name = pvaValue.GetLocalized(x => x.Name),
 								Alias = pvaValue.Alias,
 								ColorSquaresRgb = pvaValue.ColorSquaresRgb, //used with "Color squares" attribute type
-								IsPreSelected = pvaValue.IsPreSelected,
+								IsPreSelected = pvaValue.IsPreSelected
 							};
 
 							if (hasSelectedAttributes)
@@ -1330,7 +1340,18 @@ namespace SmartStore.Web.Controllers
 					// we need selected attributes to get initially displayed combination images
 					if (!hasSelectedAttributes)
 					{
-						var defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+						ProductDetailsModel.ProductVariantAttributeValueModel defaultValue = null;
+
+						if (preSelectedValueId != 0)	// value pre-selected by a bundle item filter discards the default pre-selection
+						{
+							pvaModel.Values.Each(x => x.IsPreSelected = false);
+
+							if ((defaultValue = pvaModel.Values.FirstOrDefault(v => v.Id == preSelectedValueId)) != null)
+								defaultValue.IsPreSelected = true;
+						}
+
+						if (defaultValue == null)
+							defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
 
 						if (defaultValue == null && pvaModel.Values.Count > 0 && attribute.IsRequired)
 							defaultValue = pvaModel.Values.First();

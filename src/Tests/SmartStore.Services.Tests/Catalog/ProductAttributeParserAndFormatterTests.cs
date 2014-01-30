@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tests.Catalog
         IRepository<ProductVariantAttribute> _productVariantAttributeRepo;
         IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepo;
         IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepo;
+		IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilter;
         IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
         IEventPublisher _eventPublisher;
@@ -163,6 +164,8 @@ namespace SmartStore.Services.Tests.Catalog
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_1.Id)).Return(pvav2_1);
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_2.Id)).Return(pvav2_2);
 
+			_productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
+
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
@@ -175,6 +178,7 @@ namespace SmartStore.Services.Tests.Catalog
                 _productVariantAttributeRepo,
                 _productVariantAttributeCombinationRepo,
                 _productVariantAttributeValueRepo,
+				_productBundleItemAttributeFilter,
                 _eventPublisher,
                 _pictureService);
 

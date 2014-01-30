@@ -167,6 +167,36 @@ SET @resources='
 		<Value>The default size (pixels) for bundled product images.</Value>
 		<Value lang="de">Die Standardbildgröße (in Pixel) von Produkten im Bundle.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Attributes">
+		<Value>Attributes</Value>
+		<Value lang="de">Attribute</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.FilterAttributes">
+		<Value>Exclude attributes</Value>
+		<Value lang="de">Attribute ausschließen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.FilterAttributes.Hint">
+		<Value>Select this option if you want to exclude attributes for the product in the bundle.</Value>
+		<Value lang="de">Aktivieren Sie diese Option, falls Sie Attribute für das Produkt im Bundle ausschließen möchten.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.FilterAttributes.NoneNote">
+		<Value>There are no attributes specified for this product.</Value>
+		<Value lang="de">Für das Produkt sind keine Attribute festgelegt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect">
+		<Value>Is pre-selected</Value>
+		<Value lang="de">Vorausgewählt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint">
+		<Value>Determines whether this attribute value is pre selected for the customer</Value>
+		<Value lang="de">Legt fest, ob dieses Attribut vorausgewählt ist.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Common.DataSuccessfullySaved">
+		<Value>The data were saved successfully.</Value>
+		<Value lang="de">Die Daten wurden erfolgreich gespeichert.</Value>
+	</LocaleResource>
 
 </Language>
 '

@@ -38,6 +38,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
+		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
 		private readonly IPictureService _pictureService;
@@ -60,6 +61,7 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
+			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
             IEventPublisher eventPublisher,
 			IPictureService pictureService)
         {
@@ -68,6 +70,7 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeRepository = productVariantAttributeRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
+			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
             _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
         }
@@ -594,6 +597,73 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #endregion
-    }
+		#region Product bundle item attribute filter
+
+		/// <summary>
+		/// Inserts a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void InsertProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			if (attributeFilter.AttributeId != 0 && attributeFilter.AttributeValueId != 0)
+			{
+				_productBundleItemAttributeFilterRepository.Insert(attributeFilter);
+
+				_eventPublisher.EntityInserted(attributeFilter);
+			}
+		}
+
+		/// <summary>
+		/// Updates the product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void UpdateProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			_productBundleItemAttributeFilterRepository.Update(attributeFilter);
+
+			_eventPublisher.EntityUpdated(attributeFilter);
+		}
+
+		/// <summary>
+		/// Deletes a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			_productBundleItemAttributeFilterRepository.Delete(attributeFilter);
+
+			_eventPublisher.EntityDeleted(attributeFilter);
+		}
+
+		/// <summary>
+		/// Deletes all attribute filters for a bundle item
+		/// </summary>
+		/// <param name="bundleItem">Bundle item</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem)
+		{
+			if (bundleItem != null && bundleItem.Id != 0)
+			{
+				var attributeFilterQuery =
+					from x in _productBundleItemAttributeFilterRepository.Table
+					where x.BundleItemId == bundleItem.Id
+					select x;
+
+				foreach (var attributeFilter in attributeFilterQuery.ToList())
+					DeleteProductBundleItemAttributeFilter(attributeFilter);
+			}
+		}
+
+		#endregion
+
+		#endregion
+	}
 }

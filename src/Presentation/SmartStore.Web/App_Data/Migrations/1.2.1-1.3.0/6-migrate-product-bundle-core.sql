@@ -10,6 +10,7 @@ BEGIN
 		[DiscountPercentage] bit NOT NULL,
 		[Name] [nvarchar](400) NULL,
 		[ShortDescription] [nvarchar](max) NULL,
+		[FilterAttributes] bit NOT NULL,
 		[HideThumbnail] bit NOT NULL,
 		[Visible] bit NOT NULL,
 		[Published] bit NOT NULL,
@@ -48,6 +49,37 @@ BEGIN
 	EXEC ('
 		CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_BundleProductId] ON [ProductBundleItem] ([BundleProductId] ASC)
 	')
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[ProductBundleItemAttributeFilter]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
+BEGIN
+	CREATE TABLE [dbo].[ProductBundleItemAttributeFilter]
+	(
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[BundleItemId] int NOT NULL,
+		[AttributeId] int NOT NULL,
+		[AttributeValueId] int NOT NULL,
+		[IsPreSelected] bit NOT NULL
+
+		PRIMARY KEY CLUSTERED 
+		(
+			[Id] ASC
+		) WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+	)
+
+	EXEC ('
+		ALTER TABLE [dbo].[ProductBundleItemAttributeFilter] WITH CHECK ADD CONSTRAINT [ProductBundleItemAttributeFilter_BundleItem] FOREIGN KEY([BundleItemId])
+		REFERENCES [dbo].[ProductBundleItem] ([Id]) ON DELETE CASCADE
+	')
+	
+	EXEC ('
+		ALTER TABLE [dbo].[ProductBundleItemAttributeFilter] CHECK CONSTRAINT [ProductBundleItemAttributeFilter_BundleItem]
+	')
+	
+	EXEC ('
+		CREATE NONCLUSTERED INDEX [IX_ProductBundleItemAttributeFilter_BundleItemId] ON [ProductBundleItemAttributeFilter] ([BundleItemId] ASC)
+	')	
 END
 GO
 

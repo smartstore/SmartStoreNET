@@ -2733,6 +2733,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new ProductsByTagModel()
             {
+                Id = productTag.Id,
                 TagName = productTag.GetLocalized(y => y.Name)
             };
 

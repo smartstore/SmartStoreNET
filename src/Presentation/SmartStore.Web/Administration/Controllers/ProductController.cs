@@ -684,6 +684,7 @@ namespace SmartStore.Admin.Controllers
             gridModel.Data = products.Select(x =>
             {
                 var productModel = x.ToModel();
+				productModel.FullDescription = ""; // Perf
 				PrepareProductPictureThumbnailModel(productModel, x);
 				
 				productModel.ProductTypeName = x.ProductType.GetLocalizedEnum(_localizationService, _workContext);

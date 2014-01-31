@@ -604,6 +604,9 @@ namespace SmartStore.Web.Controllers
                 model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
                 model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
 				model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+                if (model.DeliveryTime != null) { 
+                    model.DeliveryTime.Name = model.DeliveryTime.GetLocalized(x => x.Name);
+                }
 				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
 				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock();
 				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
@@ -1415,7 +1418,11 @@ namespace SmartStore.Web.Controllers
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
 
             model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
-            model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+
+            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+            deliveryTime.Name = deliveryTime.GetLocalized(x => x.Name);
+            model.DeliveryTime = deliveryTime;
+
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;
             model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();

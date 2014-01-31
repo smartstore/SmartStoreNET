@@ -35,6 +35,7 @@
 * Mobile: Paginator does not work
 * Product could be overwritten by attribute combination data
 * Quantity field was shown though the add to cart button was disabled
+* #260 Delivery times translations are not getting applied
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

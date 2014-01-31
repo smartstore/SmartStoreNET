@@ -449,6 +449,11 @@ namespace SmartStore.Web.Controllers
                     ShortDesc = sci.Product.ShortDescription
                 };
 
+                if (cartItemModel.DeliveryTime != null) 
+                { 
+                    cartItemModel.DeliveryTime.Name = cartItemModel.DeliveryTime.GetLocalized(x => x.Name);
+                }
+
                 //allowed quantities
                 var allowedQuantities = sci.Product.ParseAllowedQuatities();
                 foreach (var qty in allowedQuantities)

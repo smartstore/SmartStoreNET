@@ -323,26 +323,23 @@ namespace SmartStore.Data
         // codehint: sm-edit (added Hooks)
         public override int SaveChanges()
         {
-            HookedEntityEntry[] modifiedHookEntries = null;
             bool hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
 
 			var modifiedEntries = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached);
+				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+                .Select(x => new HookedEntityEntry()
+                {
+                    Entity = x.Entity,
+                    PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
+                })
+                .ToArray();
             
             if (hooksEnabled)
             {
-				modifiedHookEntries = modifiedEntries
-                                .Select(x => new HookedEntityEntry()
-                                {
-                                    Entity = x.Entity,
-                                    PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
-                                })
-                                .ToArray();
-
                 if (_preHooks.Count > 0)
                 {
                     // Regardless of validation (possible fixing validation errors too)
-                    ExecutePreActionHooks(modifiedHookEntries, false);
+                    ExecutePreActionHooks(modifiedEntries, false);
                 }
             }
 
@@ -365,7 +362,7 @@ namespace SmartStore.Data
 
             if (hooksEnabled && _preHooks.Count > 0)
             {
-                ExecutePreActionHooks(modifiedHookEntries, true);
+                ExecutePreActionHooks(modifiedEntries, true);
             }
 
 			IgnoreMergedData(modifiedEntries, true);
@@ -381,7 +378,7 @@ namespace SmartStore.Data
 
             if (hooksEnabled && _postHooks.Count > 0)
             {
-                ExecutePostActionHooks(modifiedHookEntries);
+                ExecutePostActionHooks(modifiedEntries);
             }
 
             return result;
@@ -527,11 +524,11 @@ namespace SmartStore.Data
             return sb.ToString();
         }
 
-		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
+		private void IgnoreMergedData(HookedEntityEntry[] modifiedEntries, bool ignore)
 		{
 			try
 			{
-				foreach (var entry in entries)
+				foreach (var entry in modifiedEntries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
 

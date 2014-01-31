@@ -65,7 +65,7 @@ namespace SmartStore.Services.Tests.Directory
             {
                 Id = 1,
                 Name = "ounce(s)",
-                SystemKeyword = "ounce",
+                SystemKeyword = "oz",
                 Ratio = 16M,
                 DisplayOrder = 1,
             };

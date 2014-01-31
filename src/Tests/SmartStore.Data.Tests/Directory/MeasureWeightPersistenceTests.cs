@@ -13,7 +13,7 @@ namespace SmartStore.Data.Tests.Directory
             var measureWeight = new MeasureWeight
             {
                 Name = "ounce(s)",
-                SystemKeyword = "ounce",
+                SystemKeyword = "oz",
                 Ratio = 1.12345678M,
                 DisplayOrder = 2,
             };
@@ -21,7 +21,7 @@ namespace SmartStore.Data.Tests.Directory
             var fromDb = SaveAndLoadEntity(measureWeight);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("ounce(s)");
-            fromDb.SystemKeyword.ShouldEqual("ounce");
+            fromDb.SystemKeyword.ShouldEqual("oz");
             fromDb.Ratio.ShouldEqual(1.12345678M);
             fromDb.DisplayOrder.ShouldEqual(2);
         }

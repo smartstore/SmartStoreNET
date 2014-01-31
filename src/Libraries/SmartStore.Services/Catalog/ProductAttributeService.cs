@@ -645,7 +645,7 @@ namespace SmartStore.Services.Catalog
 		}
 
 		/// <summary>
-		/// Deletes all attribute filters for a bundle item
+		/// Deletes all attribute filters of a bundle item
 		/// </summary>
 		/// <param name="bundleItem">Bundle item</param>
 		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem)
@@ -657,9 +657,23 @@ namespace SmartStore.Services.Catalog
 					where x.BundleItemId == bundleItem.Id
 					select x;
 
-				foreach (var attributeFilter in attributeFilterQuery.ToList())
-					DeleteProductBundleItemAttributeFilter(attributeFilter);
+				attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
 			}
+		}
+
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		/// <param name="attributeValueId">Attribute value identifier</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(int attributeId, int attributeValueId)
+		{
+			var attributeFilterQuery =
+				from x in _productBundleItemAttributeFilterRepository.Table
+				where x.AttributeId == attributeId && x.AttributeValueId == attributeValueId
+				select x;
+
+			attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
 		}
 
 		#endregion

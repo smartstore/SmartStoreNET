@@ -162,6 +162,7 @@
     <Compile Include="Catalog\IProductTagService.cs" />
     <Compile Include="Catalog\ProductTagService.cs" />
     <Compile Include="Catalog\IRecentlyViewedProductsService.cs" />
+    <Compile Include="Catalog\ProductVariantAttributeValuePostDeleteHook.cs" />
     <Compile Include="Catalog\RecentlyViewedProductsService.cs" />
     <Compile Include="Catalog\TierPriceExtensions.cs" />
     <Compile Include="Catalog\ProductExtensions.cs" />

@@ -123,8 +123,9 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerHttpRequest();
 
-            //// register DB Hooks (codehint: sm-add)
-            builder.RegisterType<LocalizedEntityPostDeleteHook>().As<IHook>();     
+            // register DB Hooks (codehint: sm-add)
+            builder.RegisterType<LocalizedEntityPostDeleteHook>().As<IHook>();
+			builder.RegisterType<ProductVariantAttributeValuePostDeleteHook>().As<IHook>();
             
             //plugins
             builder.RegisterType<PluginFinder>().As<IPluginFinder>().SingleInstance(); // xxx (http)

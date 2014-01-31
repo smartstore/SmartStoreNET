@@ -199,10 +199,17 @@ namespace SmartStore.Services.Catalog
 		void DeleteProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter);
 
 		/// <summary>
-		/// Deletes all attribute filters for a bundle item
+		/// Deletes all attribute filters of a bundle item
 		/// </summary>
 		/// <param name="bundleItem">Bundle item</param>
 		void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		/// <param name="attributeValueId">Attribute value identifier</param>
+		void DeleteProductBundleItemAttributeFilter(int attributeId, int attributeValueId);
 
 		#endregion
     }

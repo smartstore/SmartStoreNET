@@ -193,6 +193,11 @@ SET @resources='
 		<Value>Determines whether to display the product short description in the order summary</Value>
 		<Value lang="de">Bestimmt ob die Kurzbeschreibungen der Produkte im Warenkorb angezeigt werden sollen</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf"><Value lang="de"></Value></LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf">
+		<Value lang="de">Katalog als PDF downloaden</Value>
+	</LocaleResource>
 
 	
 </Language>

@@ -739,6 +739,24 @@ namespace SmartStore.Core.Domain.Catalog
 			}
 		}
 
+		public string ProductTypeLabelHint
+		{
+			get
+			{
+				switch (ProductType)
+				{
+					case ProductType.SimpleProduct:
+						return "smnet-hide";
+					case ProductType.GroupedProduct:
+						return "success";
+					case ProductType.BundledProduct:
+						return "info";
+					default:
+						return "";
+				}
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the backorder mode
 		/// </summary>

@@ -33,6 +33,42 @@ namespace SmartStore.Web.Framework.UI
             return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
         }
 
+		public static string LabeledProductName<T>(this HtmlHelper<T> helper, string id, string name, string typeName = "ProductTypeName", string typeLabelHint = "ProductTypeLabelHint")
+		{
+			string namePart = null;
+
+			if (id.HasValue())
+			{
+				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
+
+				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, helper.Encode(name));
+			}
+			else
+			{
+				namePart = "<span><#= {0} #></span>".FormatInvariant(helper.Encode(name));
+			}
+
+			return "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+		}
+
+		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
+		{
+			string namePart = null;
+
+			if (id != 0)
+			{
+				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
+
+				namePart = "<a href=\"{0}{1}\">{2}</a>".FormatInvariant(url, id, helper.Encode(name));
+			}
+			else
+			{
+				namePart = "<span>{0}</span>".FormatInvariant(helper.Encode(name));
+			}
+
+			return new HelperResult(writer => writer.Write("<span class='label label-smnet label-{0}'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+		}
+
         public static string RichEditorFlavor(this HtmlHelper helper)
         {
             return EngineContext.Current.Resolve<AdminAreaSettings>().RichEditorFlavor.NullEmpty() ?? "RichEditor";

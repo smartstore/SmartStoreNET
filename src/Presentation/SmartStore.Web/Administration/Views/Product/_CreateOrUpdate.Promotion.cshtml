@@ -26,8 +26,8 @@
                     {
                         columns.Bound(x => x.Product2Name)
                             .ReadOnly()
-                            .Template(x => Html.ActionLink(x.Product2Name, "Edit", "Product", new { id = x.ProductId2 }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId2 #>\"><#= Product2Name #></a>");
+							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
                         columns.Bound(x => x.Product2Sku)
                             .ReadOnly();
                         columns.Bound(x => x.Product2Published)
@@ -107,8 +107,8 @@
                     {
                         columns.Bound(x => x.Product2Name)
                             .ReadOnly()
-                            .Template(x => Html.ActionLink(x.Product2Name, "Edit", "Product", new { id = x.ProductId2 }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId2 #>\"><#= Product2Name #></a>");
+							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
                         columns.Bound(x => x.Product2Sku);
                         columns.Bound(x => x.Product2Published)
                             .Width(100)

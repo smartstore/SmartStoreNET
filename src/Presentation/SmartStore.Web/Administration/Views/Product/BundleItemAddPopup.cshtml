@@ -91,7 +91,9 @@
                             .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups'/>")
                             .Width(50)
                             .HtmlAttributes(new { style = "text-align:center" });
-                        columns.Bound(x => x.Name);
+                        columns.Bound(x => x.Name)
+							.Template(x => @Html.LabeledProductName(0, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
                         columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Published)
                             .Template(item => @Html.SymbolForBool(item.Published))

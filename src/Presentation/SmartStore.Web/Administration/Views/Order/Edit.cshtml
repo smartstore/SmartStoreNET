@@ -1641,7 +1641,9 @@
         }
         <tr>
             <td class="adminData">
-                <input type="submit" id="btnAddNewProduct" name="btnAddNewProduct" value="@T("Admin.Orders.Products.AddNew")" onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;" class="btn" />
+                <button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;" class="btn">
+					<i class="icon-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")
+				</button>
             </td>
         </tr>
     </table>

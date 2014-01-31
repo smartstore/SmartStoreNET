@@ -1535,6 +1535,8 @@ namespace SmartStore.Admin.Controllers
                     Id = x.Id,
                     Name =  x.Name,
                     Sku = x.Sku,
+					ProductTypeName = x.GetProductTypeLabel(_localizationService),
+					ProductTypeLabelHint = x.ProductTypeLabelHint
                 };
 
                 return productModel;

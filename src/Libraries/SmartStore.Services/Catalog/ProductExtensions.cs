@@ -387,6 +387,16 @@ namespace SmartStore.Services.Catalog
 			return "";
         }
 
+		public static string GetProductTypeLabel(this Product product, ILocalizationService localizationService)
+		{
+			if (product != null && product.ProductType != ProductType.SimpleProduct)
+			{
+				string key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatWith(product.ProductType.ToString());
+				return localizationService.GetResource(key);
+			}
+			return "";
+		}
+
 		public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
 		{
 			if (bundleItem != null && value != null && bundleItem.FilterAttributes)

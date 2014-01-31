@@ -80,8 +80,8 @@
                     {
                         columns.Bound(p => p.Name)
                             .ReadOnly()
-                            .Template(p => Html.ActionLink(p.Name, "Edit", new { id = p.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
                         columns.Bound(p => p.Sku);
                         columns.Bound(p => p.Price);
                         columns.Bound(p => p.OldPrice);

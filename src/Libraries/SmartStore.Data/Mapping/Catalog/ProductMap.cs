@@ -37,6 +37,7 @@ namespace SmartStore.Data.Mapping.Catalog
 				.WillCascadeOnDelete(false);
 			
 			this.Ignore(p => p.ProductType);
+			this.Ignore(p => p.ProductTypeLabelHint);
 			this.Ignore(p => p.BackorderMode);
 			this.Ignore(p => p.DownloadActivationType);
 			this.Ignore(p => p.GiftCardType);

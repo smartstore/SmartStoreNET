@@ -283,11 +283,9 @@
 					{
 						columns.Bound(x => x.ProductName)
                             .ReadOnly()
-                            .Template(x => Html.ActionLink(x.ProductName, "Edit", "Product", new { id = x.ProductId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
+							.Template(x => @Html.LabeledProductName(x.Id, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 						columns.Bound(x => x.Sku)
-							.ReadOnly();
-						columns.Bound(x => x.ProductTypeName)
 							.ReadOnly();
 						columns.Bound(x => x.Published)
 							.ReadOnly()

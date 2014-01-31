@@ -466,7 +466,8 @@ namespace SmartStore.Admin.Controllers
                         ProductId = x.ProductId,
                         ProductName = product.Name,
 						Sku = product.Sku,
-						ProductTypeName = product.ProductType.GetLocalizedEnum(_localizationService, _workContext),
+						ProductTypeName = product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = product.ProductTypeLabelHint,
 						Published = product.Published,
                         IsFeaturedProduct = x.IsFeaturedProduct,
                         DisplayOrder1 = x.DisplayOrder
@@ -529,11 +530,17 @@ namespace SmartStore.Admin.Controllers
             var products = _productService.SearchProducts(ctx);
 
             var model = new ManufacturerModel.AddManufacturerProductModel();
-            model.Products = new GridModel<ProductModel>
-            {
-                Data = products.Select(x => x.ToModel()),
-                Total = products.TotalCount
-            };
+			model.Products = new GridModel<ProductModel>
+			{
+				Data = products.Select(x =>
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				}),
+				Total = products.TotalCount
+			};
 
             //categories
             var allCategories = _categoryService.GetAllCategories(showHidden: true);
@@ -580,7 +587,13 @@ namespace SmartStore.Admin.Controllers
 
             var products = _productService.SearchProducts(ctx);
 
-            gridModel.Data = products.Select(x => x.ToModel());
+            gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
             gridModel.Total = products.TotalCount;
             return new JsonResult
             {

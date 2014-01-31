@@ -198,6 +198,15 @@ SET @resources='
 		<Value lang="de">Die Daten wurden erfolgreich gespeichert.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Catalog.Products.ProductType.BundledProduct.Label">
+		<Value>Bundle</Value>
+		<Value lang="de">Bundle</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductType.GroupedProduct.Label">
+		<Value>Group</Value>
+		<Value lang="de">Gruppe</Value>
+	</LocaleResource>	
+	
 </Language>
 '
 

@@ -105,6 +105,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
 			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
 			public bool Published { get; set; }

@@ -368,6 +368,9 @@ namespace SmartStore.Admin.Models.Orders
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.SKU")]
                 [AllowHtml]
                 public string Sku { get; set; }
+
+				public string ProductTypeName { get; set; }
+				public string ProductTypeLabelHint { get; set; }
             }
 
             public class ProductDetailsModel : ModelBase

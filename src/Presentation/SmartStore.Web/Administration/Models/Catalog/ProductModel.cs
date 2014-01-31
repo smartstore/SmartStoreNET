@@ -46,6 +46,7 @@ namespace SmartStore.Admin.Models.Catalog
 		public int ProductTypeId { get; set; }
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
 		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
 		public int AssociatedToProductId { get; set; }
@@ -450,6 +451,10 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Admin.Catalog.Products.RelatedProducts.Fields.Product")]
             public string Product2Name { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
             
             [SmartResourceDisplayName("Admin.Catalog.Products.RelatedProducts.Fields.DisplayOrder")]
             public int DisplayOrder { get; set; }
@@ -503,6 +508,10 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.Product")]
 			public string ProductName { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
+
 			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder")]
 			public int DisplayOrder { get; set; }
 
@@ -550,6 +559,10 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Product")]
 			public string ProductName { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 			public string Sku { get; set; }
@@ -607,6 +620,10 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Admin.Catalog.Products.CrossSells.Fields.Product")]
             public string Product2Name { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 			public string Product2Sku { get; set; }

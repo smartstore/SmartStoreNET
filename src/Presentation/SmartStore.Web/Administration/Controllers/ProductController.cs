@@ -637,7 +637,7 @@ namespace SmartStore.Admin.Controllers
                     var productModel = x.ToModel();
                     PrepareProductPictureThumbnailModel(productModel, x);
 
-					productModel.ProductTypeName = x.ProductType.GetLocalizedEnum(_localizationService, _workContext);
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
                     return productModel;
                 }),
@@ -701,8 +701,8 @@ namespace SmartStore.Admin.Controllers
             {
                 var productModel = x.ToModel();
 				PrepareProductPictureThumbnailModel(productModel, x);
-				
-				productModel.ProductTypeName = x.ProductType.GetLocalizedEnum(_localizationService, _workContext);
+
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
                 return productModel;
             });
@@ -1173,6 +1173,8 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         ProductId2 = x.ProductId2,
                         Product2Name = product2.Name,
+						ProductTypeName = product2.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = product2.ProductTypeLabelHint,
                         DisplayOrder = x.DisplayOrder,
 						Product2Sku = product2.Sku,
 						Product2Published = product2.Published
@@ -1240,7 +1242,13 @@ namespace SmartStore.Admin.Controllers
             var model = new ProductModel.AddRelatedProductModel();
             model.Products = new GridModel<ProductModel>
             {
-                Data = products.Select(x => x.ToModel()),
+                Data = products.Select(x => 
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				}),
                 Total = products.TotalCount
             };
 
@@ -1294,7 +1302,13 @@ namespace SmartStore.Admin.Controllers
 			ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
 
             var products = _productService.SearchProducts(ctx);
-            gridModel.Data = products.Select(x => x.ToModel());
+            gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
             gridModel.Total = products.TotalCount;
             return new JsonResult
             {
@@ -1359,6 +1373,8 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         ProductId2 = x.ProductId2,
 						Product2Name = product2.Name,
+						ProductTypeName = product2.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = product2.ProductTypeLabelHint,
 						Product2Sku = product2.Sku,
 						Product2Published = product2.Published
                     };
@@ -1409,7 +1425,13 @@ namespace SmartStore.Admin.Controllers
             var model = new ProductModel.AddCrossSellProductModel();
             model.Products = new GridModel<ProductModel>
             {
-                Data = products.Select(x => x.ToModel()),
+                Data = products.Select(x => 
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				}),
                 Total = products.TotalCount
             };
 
@@ -1464,7 +1486,13 @@ namespace SmartStore.Admin.Controllers
 
             var products = _productService.SearchProducts(ctx);
 
-            gridModel.Data = products.Select(x => x.ToModel());
+			gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
             gridModel.Total = products.TotalCount;
             return new JsonResult
             {
@@ -1531,6 +1559,8 @@ namespace SmartStore.Admin.Controllers
 					{
 						Id = x.Id,
 						ProductName = x.Name,
+						ProductTypeName = x.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.ProductTypeLabelHint,
 						DisplayOrder = x.DisplayOrder,
 						Sku = x.Sku,
 						Published = x.Published
@@ -1640,7 +1670,13 @@ namespace SmartStore.Admin.Controllers
 			var products = _productService.SearchProducts(searchContext);
 
 			var gridModel = new GridModel();
-			gridModel.Data = products.Select(x => x.ToModel());
+			gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
 			gridModel.Total = products.TotalCount;
 
 			return new JsonResult
@@ -1791,6 +1827,8 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						ProductId = x.Product.Id,
 						ProductName = x.Product.Name,
+						ProductTypeName = x.Product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.Product.ProductTypeLabelHint,
 						Sku = x.Product.Sku,
 						Quantity = x.Quantity,
 						Discount = x.Discount,
@@ -1916,7 +1954,13 @@ namespace SmartStore.Admin.Controllers
 			var products = _productService.SearchProducts(searchContext);
 
 			var gridModel = new GridModel();
-			gridModel.Data = products.Select(x => x.ToModel());
+			gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
 			gridModel.Total = products.TotalCount;
 
 			return new JsonResult
@@ -2467,7 +2511,13 @@ namespace SmartStore.Admin.Controllers
 			var allProducts = _productService.GetLowStockProducts();
 			var model = new GridModel<ProductModel>()
 			{
-				Data = allProducts.PagedForCommand(command).Select(x => x.ToModel()),
+				Data = allProducts.PagedForCommand(command).Select(x =>
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				}),
 				Total = allProducts.Count
 			};
 			return new JsonResult
@@ -2535,6 +2585,8 @@ namespace SmartStore.Admin.Controllers
 				{
 					Id = x.Id,
 					Name = x.Name,
+					ProductTypeName = x.GetProductTypeLabel(_localizationService),
+					ProductTypeLabelHint = x.ProductTypeLabelHint,
 					Sku = x.Sku,
 					OldPrice = x.OldPrice,
 					Price = x.Price,

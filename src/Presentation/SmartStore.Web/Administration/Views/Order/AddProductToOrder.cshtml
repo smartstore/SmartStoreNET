@@ -64,13 +64,16 @@
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(p => p.Id).Width(70);
-                        columns.Bound(p => p.Name).Width(400);
-                        columns.Bound(p => p.Sku).Width(100);
+                        columns.Bound(p => p.Id)
+							.Width(80);
+                        columns.Bound(p => p.Name)
+							.Template(p => @Html.LabeledProductName(0, p.Name, p.ProductTypeName, p.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+                        columns.Bound(p => p.Sku);
                     })
                     .Selectable()
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                            .DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
                     .ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelected("onRowSelected"))
                     .EnableCustomBinding(true))
         </td>

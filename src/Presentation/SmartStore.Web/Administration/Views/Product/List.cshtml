@@ -133,11 +133,10 @@
                                 .ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
                         }
                         columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
                         columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Price);
-                        columns.Bound(x => x.ProductTypeName);                        
                         columns.Bound(x => x.StockQuantity);
                         columns.Bound(x => x.Published)
                             .Width(100)

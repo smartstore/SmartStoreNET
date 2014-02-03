@@ -1420,8 +1420,10 @@ namespace SmartStore.Web.Controllers
             model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
-            deliveryTime.Name = deliveryTime.GetLocalized(x => x.Name);
-            model.DeliveryTime = deliveryTime;
+            if (deliveryTime != null) { 
+                deliveryTime.Name = deliveryTime.GetLocalized(x => x.Name);
+                model.DeliveryTime = deliveryTime;
+            }
 
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;

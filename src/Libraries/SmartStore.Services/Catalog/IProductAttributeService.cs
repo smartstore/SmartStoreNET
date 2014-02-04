@@ -211,6 +211,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="attributeValueId">Attribute value identifier</param>
 		void DeleteProductBundleItemAttributeFilter(int attributeId, int attributeValueId);
 
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		void DeleteProductBundleItemAttributeFilter(int attributeId);
+
 		#endregion
     }
 }

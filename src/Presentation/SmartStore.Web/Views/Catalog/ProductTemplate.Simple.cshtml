@@ -198,36 +198,30 @@
                         @{
 							if (Model.ProductType == ProductType.BundledProduct)
 							{
-								<div class="product-collateral clearfix">
-									@if (Model.BundleTitleText.HasValue() && Model.BundledItems.Count > 0)
+								<div id="ProductBundleItems" class="product-bundle">
+									@if (Model.RenderBundleTitle())
 									{
-										<div><h4>@Model.BundleTitleText</h4></div>
+										<div class="bundle-title">
+											<h4>@Model.BundleTitleText</h4>
+										</div>
 									}
-									<div class="product-variant-list">
-										@foreach (var bundleItemModel in Model.BundledItems.Where(x => x.BundleItem.Visible))
-										{
-											var dataDictBundleItems = new ViewDataDictionary();
-											dataDictBundleItems.TemplateInfo.HtmlFieldPrefix = string.Format("bundleitem_{0}", bundleItemModel.BundleItem.Id);
-											@Html.Partial("_ProductBundleItems", bundleItemModel, dataDictBundleItems)
-										}
-										@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
-										{
-											<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
-										}
+									<div class="bundle-items">										
+										@Html.Partial("_ProductBundleItems")
 									</div>
+									@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
+									{
+										<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
+									}
 								</div>
 							}
-							else
+							else if (Model.ProductVariantAttributes.ShouldBeRendered())
 							{
 								var dataDictAttributes = new ViewDataDictionary();
 								dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
-								if (Model.ProductVariantAttributes.Count > 0)
-								{ 
-									<div class="product-attributes line">
-										@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
-									</div>
-								}
+								<div class="product-attributes line">
+									@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
+								</div>
 							}
                         }
                     

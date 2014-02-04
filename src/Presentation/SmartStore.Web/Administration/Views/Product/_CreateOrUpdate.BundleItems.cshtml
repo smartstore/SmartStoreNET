@@ -122,11 +122,11 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewBundleItem" name="btnAddNewBundleItem" class="btn btn-warning" style="margin-top:3px;"
-                            onclick="javascript:OpenWindow('@(Url.Action("BundleItemAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshBundleItems", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="icon-plus"></i>
-                        @T("Common.AddNew")
-                    </button>
+					<button type="submit" id="btnAddNewBundleItem" name="btnAddNewBundleItem" class="btn btn-warning btn-below"
+							onclick="javascript:OpenWindow('@(Url.Action("BundleItemAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshBundleItems", formId = "product-form" }))', 1000, 730, true); return false;">
+						<i class="icon-plus"></i>
+						@T("Common.AddNew")
+					</button>
 
                     <input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" style="display: none" />
                 </td>

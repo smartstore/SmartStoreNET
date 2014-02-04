@@ -6,7 +6,7 @@
     Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
 }
 
-@using (Html.BeginForm(new { btnId = ViewBag.btnId, formId = ViewBag.formId }))
+@using (Html.BeginForm(new { btnId = ViewBag.BtnId, formId = ViewBag.FormId }))
 {
     @Html.ValidationSummary(false)
     @Html.HiddenFor(model => model.Id)
@@ -31,7 +31,7 @@
 			@foreach (var attribute in Model.Attributes)
 			{
 				<text>
-				$('#attribute_@attribute.Id').select2();
+				$('#attribute_@attribute.Id').selectWrapper();
 				</text>
 			}
 
@@ -45,11 +45,11 @@
 		@if (ViewBag.RefreshPage)
 		{
 			<text>
-            try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+            try {window.opener.document.forms['@(ViewBag.FormId)'].@(ViewBag.BtnId).click();}
 			catch (e){}
 			</text>
 		}
-		@if (ViewBag.RefreshPage && ViewBag.closeWindow)
+		@if (ViewBag.RefreshPage && ViewBag.CloseWindow)
 		{
 			<text>
 			window.close();

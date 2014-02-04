@@ -217,6 +217,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool EnableDynamicPriceUpdate { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether base price should be rendered for bundle items
+		/// </summary>
+		public bool BundleItemShowBasePrice { get; set; }
+
         /// <summary>
         /// Gets or sets a number of product tags that appear in the tag cloud
         /// </summary>

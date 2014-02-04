@@ -121,7 +121,7 @@
 		@{
 			bool hasAttrsOrGiftCard = false;
 			string spanClass = "span24";
-			if (Model.ProductVariantAttributes.Count > 0 || Model.GiftCard.IsGiftCard)
+			if (Model.ProductVariantAttributes.ShouldBeRendered() || Model.GiftCard.IsGiftCard)
 			{
 				hasAttrsOrGiftCard = true;
 				spanClass = "span12";

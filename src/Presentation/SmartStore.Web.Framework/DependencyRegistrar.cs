@@ -125,6 +125,7 @@ namespace SmartStore.Web.Framework
 
             // register DB Hooks (codehint: sm-add)
             builder.RegisterType<LocalizedEntityPostDeleteHook>().As<IHook>();
+			builder.RegisterType<ProductVariantAttributePostDeleteHook>().As<IHook>();
 			builder.RegisterType<ProductVariantAttributeValuePostDeleteHook>().As<IHook>();
             
             //plugins

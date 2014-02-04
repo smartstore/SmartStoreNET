@@ -397,6 +397,11 @@ namespace SmartStore.Services.Catalog
 			return "";
 		}
 
+		public static bool CanBeBundleItem(this Product product)
+		{
+			return (product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload);
+		}
+
 		public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
 		{
 			if (bundleItem != null && value != null && bundleItem.FilterAttributes)

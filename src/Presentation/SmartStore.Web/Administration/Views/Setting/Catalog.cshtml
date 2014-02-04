@@ -608,6 +608,15 @@
                 @Html.ValidationMessageFor(model => model.EnableDynamicPriceUpdate)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.BundleItemShowBasePrice)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.BundleItemShowBasePrice)
+				@Html.ValidationMessageFor(model => model.BundleItemShowBasePrice)
+			</td>
+		</tr>
     </table>
 }    
 @helper TabProductSearchSettings()

@@ -167,6 +167,10 @@ namespace SmartStore.Web.Models.Catalog
 			public bool HidePrices { get; set; }
 
 			public bool DynamicPriceUpdate { get; set; }
+			public bool BundleItemShowBasePrice { get; set; }
+
+			public string NoteWithDiscount { get; set; }
+			public string NoteWithoutDiscount { get; set; }
 		}
 
 		public partial class GiftCardModel : ModelBase
@@ -220,6 +224,8 @@ namespace SmartStore.Web.Models.Catalog
 			public string TextPrompt { get; set; }
 
 			public bool IsRequired { get; set; }
+
+			public bool IsDisabled { get; set; }
 
 			/// <summary>
 			/// Selected value for textboxes

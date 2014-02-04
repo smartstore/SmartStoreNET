@@ -262,7 +262,7 @@ namespace SmartStore.Web.Framework
         public static MvcHtmlString DatePickerDropDowns(this HtmlHelper html,
             string dayName, string monthName, string yearName,
             int? beginYear = null, int? endYear = null,
-            int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true)
+            int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true, bool disabled = false)
         {
             var daysList = new TagBuilder("select");
             //daysList.MergeAttribute("placeholder", "TAGE");
@@ -277,6 +277,13 @@ namespace SmartStore.Web.Framework
             daysList.Attributes.Add("class", "date-part");
             monthsList.Attributes.Add("class", "date-part");
             yearsList.Attributes.Add("class", "date-part");
+
+			if (disabled)
+			{
+				daysList.Attributes.Add("disabled", "disabled");
+				monthsList.Attributes.Add("disabled", "disabled");
+				yearsList.Attributes.Add("disabled", "disabled");
+			}
 
             var days = new StringBuilder();
             var months = new StringBuilder();

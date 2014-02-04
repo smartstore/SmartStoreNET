@@ -630,6 +630,7 @@ form.form-search {
 	.icon-rss { color: #999 }
 }
 
+
 /* SITEMAP */
 .sitemap-page .entity { 
     margin: 5px 0 30px; 
@@ -1826,7 +1827,7 @@ table.cart .cart-item-row .qty-input {
 	text-align: right;
 	padding-bottom: 10px;
 }
-.product-details-page .product-attributes .color-squares {
+.product-details-page .attributes .color-squares {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
@@ -1867,11 +1868,11 @@ table.cart .cart-item-row .qty-input {
 	}
 }
 
-.ie8 .product-details-page .product-attributes .color-squares input[type=radio] {
+.ie8 .product-details-page .attributes .color-squares input[type=radio] {
 	display: inline-block !important;
 	margin-top: 6px;
 }
-.ie8 .product-details-page .product-attributes .color-squares li {
+.ie8 .product-details-page .attributes .color-squares li {
 	margin-right: 15px;
 }
 
@@ -1938,6 +1939,10 @@ table.cart .cart-item-row .qty-input {
 .product-details-page .price-details .old-product-price {
 	text-decoration: line-through;
 	color: #aaa;
+}
+.product-details-page .price-details .without-discount-block {
+	text-align: right;
+	padding: 6px 0 3px 0;
 }
 .product-details-page #details-cnt .short-description {
 	color: #aaa;
@@ -2016,6 +2021,57 @@ table.cart .cart-item-row .qty-input {
 	&:after { content: ' *' }
 }
 
+/* PRODUCT BUNDLE ITEMS */
+.product-bundle {
+	.bundle-item-border {
+		border-top: 1px solid #ddd;
+	}
+}
+
+.product-bundle .bundle-item {
+	margin-top: 10px;
+	padding-top: 10px;
+
+	.bundle-item-attributes {
+		margin-top: 3px;
+	}
+
+	.bundle-item-image {
+		float: left;
+		margin-right: 16px;
+	}
+
+	.bundle-item-body {
+		display: table-cell;
+	}
+
+	.bundle-item-name {
+		font-weight: bold;
+	}
+
+	.bundle-item-price {
+		padding: 5px 0 5px 0;
+
+		.product-price-without-discount,
+		.product-price-with-discount {
+			font-size: 1.1em;
+		}
+
+		.older-price {
+			text-decoration: line-through;
+			color: #aaa;
+		}
+
+		.base-price {
+			font-size: 0.85em;
+		}
+	}
+
+	.bundle-item-footer {
+		clear: both;
+		padding-top: 13px;
+	}
+}
 
 .tier-prices {
     padding-top: 0 !important;

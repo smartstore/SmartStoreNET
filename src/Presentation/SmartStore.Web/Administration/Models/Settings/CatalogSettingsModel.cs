@@ -120,6 +120,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate")]
         public bool EnableDynamicPriceUpdate { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.BundleItemShowBasePrice")]
+		public bool BundleItemShowBasePrice { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfProductTags")]
         public int NumberOfProductTags { get; set; }
 

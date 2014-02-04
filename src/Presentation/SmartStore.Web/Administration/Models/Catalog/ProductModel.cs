@@ -364,6 +364,8 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
 		public int? DeliveryTimeId { get; set; }
 		public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
+
+		public string ProductSelectCheckboxClass { get; set; }
         
         #region Nested classes
         
@@ -610,8 +612,10 @@ namespace SmartStore.Admin.Models.Catalog
 			public IList<SelectListItem> AvailableProductTypes { get; set; }
 
 			public int ProductId { get; set; }
+			public bool IsPerItemPricing { get; set; }
 
 			public int[] SelectedProductIds { get; set; }
+			public string ExistingProductIds { get; set; }
 		}
 
         public class CrossSellProductModel : EntityModelBase

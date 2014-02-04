@@ -115,6 +115,6 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'mediasettings.bundledproductpicturesize')
 BEGIN
-	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.bundledproductpicturesize', N'125', 0)
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.bundledproductpicturesize', N'70', 0)
 END
 GO

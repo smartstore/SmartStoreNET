@@ -106,12 +106,12 @@ SET @resources='
 		<Value lang="de">Ermöglicht es, ein im Bundle enthaltenes Produkt zu verbergen, so dass es auf der Produktseite nicht angezeigt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published">
-		<Value>Contained in bundle</Value>
-		<Value lang="de">Im Bundle enthalten</Value>
+		<Value>Active</Value>
+		<Value lang="de">Aktiv</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published.Hint">
-		<Value>Whether the bundle contains the product.</Value>
-		<Value lang="de">Legt fest, ob das Produkt im Bundle enthalten ist.</Value>
+		<Value>Whether the product is active that is part of the bundle.</Value>
+		<Value lang="de">Legt fest, ob das Produkt im Bundle aktiv, d.h. enthalten ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder">
 		<Value>Bundle display order</Value>
@@ -132,7 +132,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShipping">
 		<Value>Per-item shipping</Value>
-		<Value lang="de">Versand per Bundle-Element</Value>
+		<Value lang="de">Versand per Bundle-Bestandteil</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShipping.Hint">
 		<Value>Sets whether the shipping cost of the bundle should be calculated or the amount of shipping of all products in the bundle.</Value>
@@ -140,7 +140,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing">
 		<Value>Per-item pricing</Value>
-		<Value lang="de">Preis per Bundle-Element</Value>
+		<Value lang="de">Preis per Bundle-Bestandteil</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemPricing.Hint">
 		<Value>Sets whether to calculate the price of the bundle or the sum of the individual prices of all products in the bundle.</Value>
@@ -148,7 +148,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShoppingCart">
 		<Value>Bundle item individually in the shopping cart</Value>
-		<Value lang="de">Bundle-Element einzeln in den Warenkorb</Value>
+		<Value lang="de">Bundle-Bestandteil einzeln in den Warenkorb</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShoppingCart.Hint">
 		<Value>Sets whether the bundle or all products in the bundle can be added to the shopping cart.</Value>
@@ -197,6 +197,10 @@ SET @resources='
 		<Value>The data were saved successfully.</Value>
 		<Value lang="de">Die Daten wurden erfolgreich gespeichert.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.PleaseSelect">
+		<Value>Please select</Value>
+		<Value lang="de">Bitte auswählen</Value>
+	</LocaleResource>
 
 	<LocaleResource Name="Admin.Catalog.Products.ProductType.BundledProduct.Label">
 		<Value>Bundle</Value>
@@ -205,8 +209,59 @@ SET @resources='
 	<LocaleResource Name="Admin.Catalog.Products.ProductType.GroupedProduct.Label">
 		<Value>Group</Value>
 		<Value lang="de">Gruppe</Value>
-	</LocaleResource>	
+	</LocaleResource>
+
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNoteGeneral">
+		<Value><![CDATA[
+		<p>All simple products except such with recurring payments and downloads can be part of a bundle.</p>
+		]]></Value>
+		<Value lang="de"><![CDATA[
+		<p>Alle einfachen Produkte außer Abos und Downloads können Bestandteil eines Bundle sein.</p>
+		]]></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNotePerItemPricing">
+		<Value><![CDATA[
+		<p>Following is included or taken into account while calculating the price of bundle items are:<br />Special price, price adjustment of attributes, per bundle item specified discounts and quantities.</p>
+		<p>Not included and taken into account are:<br />Tier prices, customer enters price, call for price, all other discounts.</p>
+		<p>The display of basic prices can be controlled by an option (see catalog settings).</p>
+		]]></Value>
+		<Value lang="de"><![CDATA[
+		<p>Bei der Preisberechnung per Bundle-Bestandteile enthalten bzw. berücksichtigt sind:<br />Aktionspreis, Mehr-/Minderpreis von Attributen, Per Bundle-Bestandteile festgelegte Rabatte und Mengen.</p>
+		<p>Nicht enthalten bzw. unberücksichtigt sind:<br />Staffelpreise, Preis auf Anfrage, Preisvorschlag, alle sonstigen Rabatte.</p>
+		<p>Die Anzeige von Grundpreisen kann über eine Option (s. Katalog-Einstellungen) gesteuert werden.</p>
+		]]></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNoteBundlePricing">
+		<Value><![CDATA[
+		<p>Price adjustments of attributes are not included in bundle pricing and a selection of attributes by the customer is not possible.</p>
+		]]></Value>
+		<Value lang="de"><![CDATA[
+		<p>Mehr-/Minderpreise von Attributen werden bei Bundle-Preisberechnung nicht berücksichtigt und die Auswahl von Attributen durch den Kunden ist nicht möglich.</p>
+		]]></Value>
+	</LocaleResource>
 	
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.BundleItemShowBasePrice">
+		<Value>Base price for bundle items</Value>
+		<Value lang="de">Grundpreis bei Bundle-Bestandteilen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.BundleItemShowBasePrice.Hint">
+		<Value>Sets whether the base price should be displayed for bundle items.</Value>
+		<Value lang="de">Legt fest, ob der Grundpreis bei Bundle-Bestandteilen angezeigt werden soll.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Products.Bundle.PriceWithDiscount.Note">
+		<Value>Now only:</Value>
+		<Value lang="de">Jetzt nur:</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Bundle.PriceWithoutDiscount.Note">
+		<Value>Instead of:</Value>
+		<Value lang="de">Anstatt:</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Price">
+		<Value>Price:</Value>
+		<Value lang="de">Preis:</Value>
+	</LocaleResource>
+
 </Language>
 '
 

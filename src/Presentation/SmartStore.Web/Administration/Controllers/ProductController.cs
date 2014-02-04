@@ -1717,8 +1717,8 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareBundleItemEditModel(ProductBundleItemModel model, ProductBundleItem bundleItem, string btnId, string formId, bool refreshPage = false)
 		{
-			ViewBag.btnId = btnId;
-			ViewBag.formId = formId;
+			ViewBag.BtnId = btnId;
+			ViewBag.FormId = formId;
 			ViewBag.RefreshPage = refreshPage;
 
 			if (bundleItem == null)
@@ -1780,7 +1780,7 @@ namespace SmartStore.Admin.Controllers
 				if (attributeModel.Values.Count > 0)
 				{
 					if (attributeModel.PreSelect.Count > 0)
-						attributeModel.PreSelect.Insert(0, new SelectListItem() { Text = "-", Value = "0" });
+						attributeModel.PreSelect.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.PleaseSelect") });
 
 					model.Attributes.Add(attributeModel);
 				}
@@ -1868,7 +1868,19 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var model = new ProductModel.AddBundleItemModel();
+			var product = _productService.GetProductById(productId);
+
+			if (product.ProductType != ProductType.BundledProduct)
+				throw new ArgumentException("Bundle items can only be added to bundles.");
+
+			var model = new ProductModel.AddBundleItemModel()
+			{
+				IsPerItemPricing = product.BundlePerItemPricing
+			};
+
+			var productIds = _productService.GetBundleItems(productId, true).Select(x => x.ProductId).ToArray();
+			if (productIds.Count() > 0)
+				model.ExistingProductIds = string.Join(",", productIds);
 
 			//categories
 			var allCategories = _categoryService.GetAllCategories(showHidden: true);
@@ -1909,7 +1921,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var products = _productService.GetProductsByIds(model.SelectedProductIds);
 
-				foreach (var product in products)
+				foreach (var product in products.Where(x => x.CanBeBundleItem()))
 				{
 					var bundleItem = new ProductBundleItem()
 					{
@@ -1934,10 +1946,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult BundleItemAddPopupList(GridCommand command, ProductModel.AddBundleItemModel model)
+		public ActionResult BundleItemAddPopupList(GridCommand command, ProductModel.AddBundleItemModel model, string existingIds)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
+
+			var existingProductIds = existingIds.ToIntArray();
 
 			var searchContext = new ProductSearchContext()
 			{
@@ -1958,6 +1972,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var productModel = x.ToModel();
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+				productModel.ProductSelectCheckboxClass = (existingProductIds.Contains(x.Id) || !x.CanBeBundleItem() ? " hide" : "");
 
 				return productModel;
 			});
@@ -1993,7 +2008,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			ViewBag.closeWindow = !continueEditing;
+			ViewBag.CloseWindow = !continueEditing;
 
 			if (ModelState.IsValid)
 			{
@@ -2013,7 +2028,8 @@ namespace SmartStore.Admin.Controllers
 					_localizedEntityService.SaveLocalizedValue(bundleItem, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
 				}
 
-				SaveFilteredAttributes(bundleItem, form);
+				if (bundleItem.FilterAttributes)	// only update filters if attribute filtering is activated to reduce payload
+					SaveFilteredAttributes(bundleItem, form);
 
 				PrepareBundleItemEditModel(model, bundleItem, btnId, formId, true);
 

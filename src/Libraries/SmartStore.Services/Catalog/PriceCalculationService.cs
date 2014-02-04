@@ -298,15 +298,19 @@ namespace SmartStore.Services.Catalog
 			if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem);
 
-			decimal result = additionalCharge;
+			decimal result = decimal.Zero;
 
 			if (bundleItems != null)
 			{
 				foreach (var item in bundleItems)
 				{
-					var bundleItemPrice = GetFinalPrice(item.Product, customer, decimal.Zero, includeDiscounts, 1, item);
+					var bundleItemPrice = GetFinalPrice(item.Product, customer, additionalCharge, includeDiscounts, 1, item);
 					result = result + decimal.Multiply(bundleItemPrice, item.Quantity);
 				}
+			}
+			else
+			{
+				result = result + additionalCharge;
 			}
 
 			return (result < decimal.Zero ? decimal.Zero : result);

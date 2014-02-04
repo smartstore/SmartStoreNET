@@ -4432,7 +4432,7 @@ namespace SmartStore.Services.Installation
                     ProductDetailsPictureSize = 300,
                     ProductThumbPictureSizeOnProductDetailsPage = 70,
                     AssociatedProductPictureSize = 125,
-					BundledProductPictureSize = 125,
+					BundledProductPictureSize = 70,
                     CategoryThumbPictureSize = 125,
                     ManufacturerThumbPictureSize = 125,
                     CartThumbPictureSize = 80,

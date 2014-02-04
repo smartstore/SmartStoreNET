@@ -2,133 +2,92 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Extensions;
 
-@{
-    string leftContentWidth = (Model.ThumbDimensions + 20).ToString() + "px";
+@foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
+{
+	string bundleItemClass = (Model.BundledItems.IndexOf(item) == 0 && !Model.RenderBundleTitle()) ? "" : " bundle-item-border";
+
+	<div class="bundle-item clearfix update-container@(bundleItemClass)" data-url="@Html.Raw(item.UpdateProductDetailsUrl("bundleitem"))">
+
+		@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+		{
+			<div class="bundle-item-image" style="min-width: @(item.ThumbDimensions)px; min-height: @(item.ThumbDimensions);">
+				<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl" alt="@item.DetailsPictureModel.AlternateText" title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
+			</div>
+		}
+		<div class="bundle-item-body">
+			<div class="bundle-item-name">
+				@if (item.VisibleIndividually)
+				{
+					<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+				}
+				else
+				{
+					@item.Name
+				}
+				@if (item.BundleItem.Quantity > 1)
+				{
+					<text>
+						&#215;&nbsp;@item.BundleItem.Quantity
+					</text>
+				}
+			</div>
+
+			@if (!String.IsNullOrWhiteSpace(item.ShortDescription))
+			{
+				<div class="bundle-item-description">
+					@Html.Raw(item.ShortDescription)
+				</div>
+			}
+			<div class="attributes bundle-item-attributes">
+				<table>
+					<tr class="stock attr-stock @(String.IsNullOrWhiteSpace(item.StockAvailability) ? "hide fade" : "")">
+						<td class="attr-label">
+							<strong>@T("Products.Availability"): </strong>
+						</td>
+						<td class="value">
+							@item.StockAvailability
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			@if (!(String.IsNullOrWhiteSpace(item.ProductPrice.Price) && String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount)))
+			{
+				<div class="bundle-item-price price-block">
+					@{
+						string priceClass = String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount) ? "" : " older-price";
+					}
+
+					<span class="product-price-without-discount@(priceClass)@(String.IsNullOrWhiteSpace(item.ProductPrice.Price) ? " hide fade" : "")">
+						@Html.Raw(item.ProductPrice.Price)</span>@* no line break cause of strike through *@
+
+					<span class="product-price-with-discount@(String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount) ? " hide fade" : "")">
+						@Html.Raw(item.ProductPrice.PriceWithDiscount)
+					</span>
+
+					<div class="base-price muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
+						@item.BasePriceInfo
+					</div>
+				</div>
+			}
+		</div>
+
+		@if (item.ProductVariantAttributes.ShouldBeRendered())
+		{
+			var dataDictBundleItemAttributes = new ViewDataDictionary();
+			dataDictBundleItemAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("bundle_item_attributes_{0}", item.Id);
+			<div class="bundle-item-footer">
+				@Html.Partial("_ProductAttributes", item.ProductVariantAttributes, dataDictBundleItemAttributes)
+			</div>
+		}
+
+		@if (item.GiftCard.IsGiftCard)
+		{
+			var dataDictBundleItemGiftCard = new ViewDataDictionary();
+			dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("bundle_item_giftcard_{0}", item.Id);
+			<div class="bundle-item-footer">
+				@Html.Partial("_GiftCardInfo", item.GiftCard, dataDictBundleItemGiftCard)
+			</div>
+		}
+	</div>
 }
-
-<div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl("bundleitem"))">
-	<div class="clearfix">
-		@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !Model.BundleItem.HideThumbnail)
-		{
-			<div class="variant-picture equalized-column" data-equalized-column-name="pd">
-				<img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
-					 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
-			</div>
-		}
-
-		<div class="variant-data equalized-column" data-equalized-column-name="pd" style="margin-left: @leftContentWidth">
-			@if (!String.IsNullOrWhiteSpace(Model.Name))
-			{
-				<div class="variant-name">
-					@if (Model.VisibleIndividually)
-					{
-						<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
-					}
-					else
-					{
-						@Model.Name
-					}
-				</div>
-			}
-			@if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
-			{
-				<div class="variant-description">
-					@Html.Raw(Model.ShortDescription)
-				</div>
-			}
-
-			<div class="row-fluid">
-				<div class="attributes">
-					<table>
-						@if (Model.BundleItem.Quantity > 1)
-						{
-							<tr valign="top" class="attr-quantity">
-								<td class="attr-label">
-									<strong>@T("Products.Qty"):</strong>
-								</td>
-								<td class="value">
-									@Model.BundleItem.Quantity
-								</td>
-							</tr>
-						}
-						<tr valign="top" class="stock attr-stock @(String.IsNullOrWhiteSpace(Model.StockAvailability) ? "hide fade" : "")">
-							<td class="attr-label">
-								<strong>@T("Products.Availability"):</strong>
-							</td>
-							<td class="value">
-								@Model.StockAvailability
-							</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-
-			@if (!(String.IsNullOrWhiteSpace(Model.ProductPrice.Price) && String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount)))
-			{
-			<div class="row-fluid">
-				<div style="padding:5px 0 5px 0; font-size:1.1em;">
-					@{
-						string priceStyle = String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount) ? "" : "style=\"text-decoration: line-through; color: #aaa;\"";
-					}
-
-					@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
-					{
-						<span @Html.Raw(priceStyle)>@Html.Raw(Model.ProductPrice.Price)</span>
-					}
-
-					@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
-					{
-						<span>@Html.Raw(Model.ProductPrice.PriceWithDiscount)</span>
-					}
-				</div>
-			</div>
-			}
-		</div>
-	</div>
-
-	<div class="variant-line-bottom row-fluid">
-		@{
-			bool hasAttrsOrGiftCard = false;
-			string spanClass = "span24";
-			if (Model.ProductVariantAttributes.Count > 0 || Model.GiftCard.IsGiftCard)
-			{
-				hasAttrsOrGiftCard = true;
-				spanClass = "span12";
-			}
-		}
-
-		@if (hasAttrsOrGiftCard)
-		{
-			<div class="left-content equalized-column span12" data-equalized-column-name="vlb">
-				<div>
-					@{
-			var dataDictAttributes = new ViewDataDictionary();
-			dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-			<div class="product-attributes">
-				@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)
-			</div>
-					}
-
-					@{
-			var dataDictGiftCard = new ViewDataDictionary();
-			dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
-			@Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
-					}
-				</div>
-			</div>
-		}
-
-		<div class="right-content equalized-column @spanClass" data-equalized-column-name="vlb">
-			@if (Model.HasSampleDownload)
-			{
-				<div>
-					<a href="@Url.RouteUrl("GetSampleDownload", new { productId = Model.Id })">
-						@T("Products.DownloadSample")
-						<i class="icon-download-alt"></i>
-					</a>
-				</div>
-			}
-		</div>
-	</div>
-</div>
-

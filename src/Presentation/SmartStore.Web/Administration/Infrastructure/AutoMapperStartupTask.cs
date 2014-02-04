@@ -228,7 +228,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
 				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())

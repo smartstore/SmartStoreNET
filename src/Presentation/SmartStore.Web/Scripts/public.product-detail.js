@@ -15,7 +15,7 @@
 		
 		this.init = function() {
 			
-		    var opts = this.options;
+			var opts = this.options;
 			
 		    this.createGallery(opts.galleryStartIndex);
 			
@@ -33,13 +33,7 @@
 		    		context = el;
 		    	}
 
-                /*
-		    	if ($(this).attr('name').endsWith('EnteredQuantity'))
-		    		url += '&updateGallery=false';
-                */
-
 		    	context.doAjax({
-		    		//smallIcon: '.price-details', // TODO... selector or object where to show small spinner
 		    		data: context.find(':input').serialize(),
 		    		callbackSuccess: function (resp) {
 		    			self.updateDetailData(resp, context);
@@ -78,7 +72,7 @@
 		    	context = $(referTo);
 
 		    //prices
-		    var priceBlock = $(context).find('.price-details').addBack();
+		    var priceBlock = $(context).find('.price-block').addBack();
 		    priceBlock.find(".base-price").html(data.Price.Base.Info);
 		    priceBlock.find(".old-product-price").html(data.Price.Old.Text);
 		    priceBlock.find('.product-price-without-discount').html(data.Price.WithoutDiscount.Text);

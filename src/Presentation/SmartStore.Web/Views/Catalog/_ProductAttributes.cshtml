@@ -7,16 +7,20 @@
 @using System.Globalization;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Security;
+@using SmartStore.Web.Extensions;
+
 @{
     var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
 }
 
 <div class="attributes">
         
-    @foreach (var attribute in Model)
-    {
+    @foreach (var attribute in Model.Where(x => x.ShouldBeRendered()))
+    {		
         string controlId = string.Format("product_attribute_{0}_{1}_{2}", attribute.ProductId, attribute.ProductAttributeId, attribute.Id);
         string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
+		string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
+		
         <div class="control-group">
             <label class='control-label@(attribute.IsRequired ? " required" : "")' for="@(controlId)">@textPrompt</label>
 
@@ -32,7 +36,7 @@
                 {
                     case AttributeControlType.DropdownList:
                         {
-                    <select name="@(controlId)" id="@(controlId)" style="width:100%">
+                    <select name="@(controlId)" id="@(controlId)" style="width:100%"@(Html.Raw(disabled))>
                         @if (!attribute.IsRequired)
                         {
                             <option value="0">---</option>
@@ -52,7 +56,7 @@
                             foreach (var pvaValue in attribute.Values)
                             {
                                 <label for="@(controlId)_@(pvaValue.Id)" class="radio">
-                                    <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" />
+									<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
                                         @pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
                                 </label>
                             }
@@ -64,7 +68,7 @@
                             foreach (var pvaValue in attribute.Values)
                             {       
                                 <label for="@(controlId)_@(pvaValue.Id)" class="checkbox">                             
-                                    <input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" />
+									<input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
                                         @pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
                                 </label>
                             }
@@ -73,17 +77,17 @@
                         break;
                     case AttributeControlType.TextBox:
                         {
-                    <input name="@(controlId)" type="text" class="textbox input-block-level" id="@(controlId)" value="@attribute.TextValue" />
+							<input name="@(controlId)" type="text" class="textbox input-block-level" id="@(controlId)" value="@attribute.TextValue"@(Html.Raw(disabled)) />
                         }
                         break;
                     case AttributeControlType.MultilineTextbox:
                         {
-                    <textarea cols="20" id="@(controlId)" class="input-block-level"  name="@(controlId)">@attribute.TextValue</textarea>
+							<textarea cols="20" id="@(controlId)" class="input-block-level" name="@(controlId)"@(Html.Raw(disabled))>@attribute.TextValue</textarea>
                         }
                         break;
                     case AttributeControlType.Datepicker:
                         {
-                    @Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear)
+							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
                         }
                         break;
                     case AttributeControlType.FileUpload:
@@ -110,10 +114,10 @@
                                     @T("Common.Remove")
                                 </button>
 
-                                <span class="btn btn-primary fileinput-button">
+                                <span class="btn btn-primary fileinput-button"@(Html.Raw(disabled))>
                                     <i class="icon-upload-alt"></i>
                                     <span>@T("Common.Fileuploader.Upload")</span>
-                                    <input id="fileupload-@random" type="file" name="file" />
+                                    <input id="fileupload-@random" type="file" name="file"@(Html.Raw(disabled)) />
                                 </span>
 
                                 <button class="btn btn-warning cancel">
@@ -192,7 +196,7 @@
                                         <span class="color-container tooltip-toggle" title="@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)">
                                             <span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
                                         </span>
-                                        <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" />
+                                        <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@Html.Raw(disabled) />
                                         @*uncomment below to display attribute value name*@
                                         @*<span class="name">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</span>*@
                                     </label>

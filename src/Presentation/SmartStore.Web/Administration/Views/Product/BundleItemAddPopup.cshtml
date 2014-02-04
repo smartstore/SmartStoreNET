@@ -17,6 +17,14 @@
             @T("Admin.Catalog.Products.BundleItems.AddNew")
         </div>
     </div>
+	
+	<div class="alert alert-success fade in">
+		<button class="close" data-dismiss="alert">&#215;</button>
+
+		@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNoteGeneral"))
+
+		@Html.Raw(T("Admin.Catalog.Products.BundleItems." + (Model.IsPerItemPricing ? "AdminNotePerItemPricing" : "AdminNoteBundlePricing")))
+	</div>
 
     if (ViewBag.RefreshPage == true)
     {
@@ -83,34 +91,32 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<ProductModel>()
-                    .Name("products-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-                            .Template(x => string.Format("<input type='checkbox' name='SelectedProductIds' value='{0}' class='checkboxGroups'/>", x.Id))
-                            .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" });
-                        columns.Bound(x => x.Name)
-							.Template(x => @Html.LabeledProductName(0, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Name("products-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups<#= ProductSelectCheckboxClass #>' />")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center;" });
+						columns.Bound(x => x.Name)
 							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
-                        columns.Bound(x => x.Sku);
-                        columns.Bound(x => x.Published)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered()
-                            .Width(100);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("BundleItemAddPopupList", "Product"))
-                    .ClientEvents(events => events.OnDataBinding("bundleItem_onDataBinding"))
-                    .EnableCustomBinding(true))
+						columns.Bound(x => x.Sku);
+						columns.Bound(x => x.Published)
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered()
+							.Width(100);
+					})
+					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("BundleItemAddPopupList", "Product", new { existingIds = Model.ExistingProductIds }))
+					.ClientEvents(events => events.OnDataBinding("bundleItem_onDataBinding"))
+					.EnableCustomBinding(true))
             </td>
         </tr>
         <tr>
             <td colspan="2">
-                <p></p>
-                <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+				<button type="submit" name="save" value="save" class="btn btn-primary btn-below">
+					<i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")
+				</button>
             </td>
         </tr>
     </table>
@@ -140,7 +146,7 @@
                 SearchStoreId: $('#SearchStoreId').val(),
                 SearchProductTypeId: $('#SearchProductTypeId').val()
             };
-            e.data = searchModel;
+        	e.data = searchModel;
         }
     </script>
 }

@@ -676,6 +676,20 @@ namespace SmartStore.Services.Catalog
 			attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
 		}
 
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(int attributeId)
+		{
+			var attributeFilterQuery =
+				from x in _productBundleItemAttributeFilterRepository.Table
+				where x.AttributeId == attributeId
+				select x;
+
+			attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
+		}
+
 		#endregion
 
 		#endregion

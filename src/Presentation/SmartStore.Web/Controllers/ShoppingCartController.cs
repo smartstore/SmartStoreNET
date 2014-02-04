@@ -435,6 +435,7 @@ namespace SmartStore.Web.Controllers
             foreach (var sci in cart)
             {
                 sci.Product.MergeWithCombination(sci.AttributesXml);
+                
                 var cartItemModel = new ShoppingCartModel.ShoppingCartItemModel()
                 {
                     Id = sci.Id,
@@ -445,13 +446,14 @@ namespace SmartStore.Web.Controllers
                     Quantity = sci.Quantity,
                     AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml),
                     IsShipEnabled = sci.Product.IsShipEnabled,
-                    DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.Product.DeliveryTimeId.GetValueOrDefault()),
                     ShortDesc = sci.Product.ShortDescription
                 };
 
-                if (cartItemModel.DeliveryTime != null) 
+                var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(sci.Product.DeliveryTimeId.GetValueOrDefault());
+                if (deliveryTime != null) 
                 { 
-                    cartItemModel.DeliveryTime.Name = cartItemModel.DeliveryTime.GetLocalized(x => x.Name);
+                    cartItemModel.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+                    cartItemModel.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
                 }
 
                 //allowed quantities

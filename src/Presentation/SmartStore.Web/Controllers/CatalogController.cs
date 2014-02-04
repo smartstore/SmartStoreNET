@@ -603,10 +603,13 @@ namespace SmartStore.Web.Controllers
                 model.TotalReviews = product.ApprovedTotalReviews;
                 model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
                 model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
-				model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
-                if (model.DeliveryTime != null) { 
-                    model.DeliveryTime.Name = model.DeliveryTime.GetLocalized(x => x.Name);
+				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+                if (deliveryTime != null)
+                {
+                    model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+                    model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
                 }
+
 				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
 				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock();
 				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
@@ -1421,8 +1424,8 @@ namespace SmartStore.Web.Controllers
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
             if (deliveryTime != null) { 
-                deliveryTime.Name = deliveryTime.GetLocalized(x => x.Name);
-                model.DeliveryTime = deliveryTime;
+                model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+                model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
             }
 
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
@@ -2594,9 +2597,9 @@ namespace SmartStore.Web.Controllers
             {
                 Delivery = new
                 {
-                    Id = (m.DeliveryTime == null ? 0 : m.DeliveryTime.Id),
-                    Name = (m.DeliveryTime == null ? "" : m.DeliveryTime.Name),
-                    Color = (m.DeliveryTime == null ? "" : m.DeliveryTime.ColorHexValue)
+                    Id = 0,
+                    Name = m.DeliveryTimeName,
+                    Color = m.DeliveryTimeHexValue
                 },
                 Measure = new
                 {

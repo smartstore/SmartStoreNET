@@ -113,12 +113,12 @@
     @if (Model.ShowDeliveryTimes)
     {
     <div class="delivery-time" data-equalized-part="delivery-time">
-        @if (Model.DeliveryTime != null && Model.IsShipEnabled)
+        @if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
         {
             <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
             if(Model.DisplayDeliveryTimeAccordingToStock)
             {
-                <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+                <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
             }
             else {
                 <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>

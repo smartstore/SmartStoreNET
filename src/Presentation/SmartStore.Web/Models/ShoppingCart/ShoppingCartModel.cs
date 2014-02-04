@@ -90,7 +90,9 @@ namespace SmartStore.Web.Models.ShoppingCart
             //codehint: BEGIN sm-add
             public bool IsShipEnabled { get; set; }
 
-            public DeliveryTime DeliveryTime { get; set; }
+            public string DeliveryTimeName { get; set; }
+            
+            public string DeliveryTimeHexValue { get; set; }
 
             public string ShortDesc { get; set; }
             //codehint: END sm-add

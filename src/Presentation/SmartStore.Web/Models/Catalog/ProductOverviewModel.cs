@@ -43,7 +43,9 @@ namespace SmartStore.Web.Models.Catalog
         public int TotalReviews { get; set; }
         public bool ShowReviews { get; set; }
         public bool ShowDeliveryTimes { get; set; }
-        public DeliveryTime DeliveryTime { get; set; }
+        public string DeliveryTimeName { get; set; }
+        public string DeliveryTimeHexValue { get; set; }
+
         public bool IsShipEnabled { get; set; }
         public bool DisplayDeliveryTimeAccordingToStock { get; set; }
         public string StockAvailablity { get; set; }

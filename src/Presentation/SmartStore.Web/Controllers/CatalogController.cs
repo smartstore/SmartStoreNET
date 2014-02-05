@@ -979,7 +979,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
 		protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false,
-			ProductBundleItem productBundleItem = null, IList<ProductBundleItem> productBundleItems = null, string attributes = null)
+			ProductBundleItem productBundleItem = null, IList<ProductBundleItem> productBundleItems = null, FormCollection selectedAttributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1038,8 +1038,6 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItem> bundleItems = null;
             ProductVariantAttributeCombination combination = null;
             var combinationImageIds = new List<int>();
-            var queryAttributes = _productAttributeParser.DeserializeQueryData(attributes);
-            var selectedAttributes = new FormCollection();
 
 			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)	// associated products
 			{
@@ -1080,14 +1078,15 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			selectedAttributes.ConvertQueryData(queryAttributes, product.Id);
-
 			model = PrepareProductDetailModel(model, product, isAssociatedProduct, productBundleItem, bundleItems, selectedAttributes);
 
-			model.Combinations.GetAllCombinationImageIds(combinationImageIds);
+			if (productBundleItem == null)
+			{
+				model.Combinations.GetAllCombinationImageIds(combinationImageIds);
 
-			if (combination == null && model.CombinationSelected != null)
-				combination = model.CombinationSelected;
+				if (combination == null && model.CombinationSelected != null)
+					combination = model.CombinationSelected;
+			}
 
             // pictures
             var pictures = _pictureService.GetPicturesByProductId(product.Id);
@@ -1168,7 +1167,7 @@ namespace SmartStore.Web.Controllers
 			else if (bundleItem != null)
 				defaultPictureSize = _mediaSettings.BundledProductPictureSize;
 			else
-				 defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
+				defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
 
             if (pictures.Count > 0)
             {
@@ -1372,12 +1371,13 @@ namespace SmartStore.Web.Controllers
 
             #region Attribute combinations
 
-			if (!isBundle)		//	bundles doesn't have attributes
+			if (!isBundle || (isBundle && product.BundlePerItemPricing))
 			{
 				model.Combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
 
 				if (selectedAttributes.Count > 0)
-				{		// merge with combination data if there's a match
+				{
+					// merge with combination data if there's a match
 					var warnings = new List<string>();
 					string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser,
 						_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
@@ -1463,17 +1463,18 @@ namespace SmartStore.Web.Controllers
             string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 
             model.WeightValue = product.Weight;
-            if (selectedAttributeValues != null)
-            {
-                foreach (var attributeValue in selectedAttributeValues)
-                {
-                    model.WeightValue = decimal.Add(model.WeightValue, attributeValue.WeightAdjustment);
-                }
-            }
-            else
-            {
-                model.WeightValue = decimal.Add(model.WeightValue, preSelectedWeightAdjustment);
-            }
+			if (!isBundle)
+			{
+				if (selectedAttributeValues != null)
+				{
+					foreach (var attributeValue in selectedAttributeValues)
+						model.WeightValue = decimal.Add(model.WeightValue, attributeValue.WeightAdjustment);
+				}
+				else
+				{
+					model.WeightValue = decimal.Add(model.WeightValue, preSelectedWeightAdjustment);
+				}
+			}
 
             model.Weight = (model.WeightValue > 0) ? "{0} {1}".FormatCurrent(model.WeightValue.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : "";
             model.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
@@ -1551,6 +1552,11 @@ namespace SmartStore.Web.Controllers
                                 attributesTotalPriceBase = preSelectedPriceAdjustmentBase;
                             }
                         }
+
+						if (productBundleItem != null)
+						{
+							productBundleItem.AdditionalCharge = attributesTotalPriceBase;
+						}
 
 						finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
 							_workContext.CurrentCustomer, attributesTotalPriceBase, false, selectedQuantity, productBundleItem);
@@ -2158,7 +2164,10 @@ namespace SmartStore.Web.Controllers
 			}
             
             //prepare the model
-			var model = PrepareProductDetailsPageModel(product, attributes: attributes);
+			var selectedAttributes = new FormCollection();
+			selectedAttributes.ConvertQueryData(_productAttributeParser.DeserializeQueryData(attributes), product.Id);
+
+			var model = PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 
             //save as recently viewed
             _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -2642,7 +2651,16 @@ namespace SmartStore.Web.Controllers
                 int.TryParse(form[quantityKey], out quantity);
 
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
+			{
 				bundleItems = _productService.GetBundleItems(product.Id);
+				if (form.Count > 0)
+				{
+					foreach (var item in bundleItems)
+					{
+						var tempModel = PrepareProductDetailsPageModel(item.Product, false, item, null, form);
+					}
+				}
+			}
 
             // get merged model data
             PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);

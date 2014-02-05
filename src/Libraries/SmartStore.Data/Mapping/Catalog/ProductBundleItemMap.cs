@@ -13,6 +13,8 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(pbi => pbi.Discount).HasPrecision(18, 4);
 			this.Property(pbi => pbi.Name).HasMaxLength(400);
 			this.Property(pbi => pbi.ShortDescription).IsMaxLength();
+
+			this.Ignore(pbi => pbi.AdditionalCharge);
 			
 			this.HasRequired(pbi => pbi.Product)
 				.WithMany()

@@ -94,6 +94,8 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public DateTime UpdatedOnUtc { get; set; }
 
+		public decimal AdditionalCharge { get; set; }
+
 		/// <summary>
 		/// Gets the product
 		/// </summary>

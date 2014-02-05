@@ -74,10 +74,8 @@
 
 		@if (item.ProductVariantAttributes.ShouldBeRendered())
 		{
-			var dataDictBundleItemAttributes = new ViewDataDictionary();
-			dataDictBundleItemAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("bundle_item_attributes_{0}", item.Id);
 			<div class="bundle-item-footer">
-				@Html.Partial("_ProductAttributes", item.ProductVariantAttributes, dataDictBundleItemAttributes)
+				@Html.Partial("_ProductAttributes", item.ProductVariantAttributes, new ViewDataDictionary())
 			</div>
 		}
 

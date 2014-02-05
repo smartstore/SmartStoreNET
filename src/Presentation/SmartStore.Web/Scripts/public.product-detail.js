@@ -35,8 +35,19 @@
 
 		    	context.doAjax({
 		    		data: context.find(':input').serialize(),
-		    		callbackSuccess: function (resp) {
-		    			self.updateDetailData(resp, context);
+		    		callbackSuccess: function (response) {
+		    			self.updateDetailData(response, context);
+
+		    			if (context.hasClass('bundle-item')) {
+		    				// update bundle price too
+		    				$('#TotalPriceUpdateContainer').doAjax({
+		    					data: $('#ProductBundleItems').find(':input').serialize(),
+		    					callbackSuccess: function (response2) {
+		    						self.updateDetailData(response2, $('#AddToCart'));
+		    					}
+		    				});
+		    			}
+
 		    		}
 		    	});
 		    });

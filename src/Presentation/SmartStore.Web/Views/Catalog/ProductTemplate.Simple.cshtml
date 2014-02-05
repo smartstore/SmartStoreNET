@@ -42,7 +42,7 @@
     <!--product breadcrumb-->
     @Html.Action("ProductBreadcrumb", "Catalog", new { productId = Model.Id })
 
-    <div class="page-body update-container" data-referto="#ProductAttributes, #AddToCart" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+    <div id="TotalPriceUpdateContainer" class="page-body update-container" data-referto="#ProductAttributes, #AddToCart" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
         @Html.Widget("productdetails_top")
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
         {

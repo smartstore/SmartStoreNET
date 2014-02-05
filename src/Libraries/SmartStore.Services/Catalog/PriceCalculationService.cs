@@ -304,13 +304,9 @@ namespace SmartStore.Services.Catalog
 			{
 				foreach (var item in bundleItems)
 				{
-					var bundleItemPrice = GetFinalPrice(item.Product, customer, additionalCharge, includeDiscounts, 1, item);
+					var bundleItemPrice = GetFinalPrice(item.Product, customer, item.AdditionalCharge, includeDiscounts, 1, item);
 					result = result + decimal.Multiply(bundleItemPrice, item.Quantity);
 				}
-			}
-			else
-			{
-				result = result + additionalCharge;
 			}
 
 			return (result < decimal.Zero ? decimal.Zero : result);

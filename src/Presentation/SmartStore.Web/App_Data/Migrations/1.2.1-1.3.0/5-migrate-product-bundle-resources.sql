@@ -222,12 +222,12 @@ SET @resources='
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNotePerItemPricing">
 		<Value><![CDATA[
 		<p>Following is included or taken into account while calculating the price of bundle items are:<br />Special price, price adjustment of attributes, per bundle item specified discounts and quantities.</p>
-		<p>Not included and taken into account are:<br />Tier prices, customer enters price, call for price, all other discounts.</p>
+		<p>Not included and taken into account are:<br />Tier prices, customer enters price, call for price, weight adjustment of attributes, all other discounts.</p>
 		<p>The display of basic prices can be controlled by an option (see catalog settings).</p>
 		]]></Value>
 		<Value lang="de"><![CDATA[
-		<p>Bei der Preisberechnung per Bundle-Bestandteile enthalten bzw. berücksichtigt sind:<br />Aktionspreis, Mehr-/Minderpreis von Attributen, Per Bundle-Bestandteile festgelegte Rabatte und Mengen.</p>
-		<p>Nicht enthalten bzw. unberücksichtigt sind:<br />Staffelpreise, Preis auf Anfrage, Preisvorschlag, alle sonstigen Rabatte.</p>
+		<p>Bei der Preisberechnung per Bundle-Bestandteile enthalten bzw. berücksichtigt sind:<br />Aktionspreis, Mehr-/Minderpreis von Attributen, per Bundle-Bestandteile festgelegte Rabatte und Mengen.</p>
+		<p>Nicht enthalten bzw. unberücksichtigt sind:<br />Staffelpreise, Preis auf Anfrage, Preisvorschlag, Mehr-/Mindergewichte von Attributen, alle sonstigen Rabatte.</p>
 		<p>Die Anzeige von Grundpreisen kann über eine Option (s. Katalog-Einstellungen) gesteuert werden.</p>
 		]]></Value>
 	</LocaleResource>
@@ -236,7 +236,7 @@ SET @resources='
 		<p>Price adjustments of attributes are not included in bundle pricing and a selection of attributes by the customer is not possible.</p>
 		]]></Value>
 		<Value lang="de"><![CDATA[
-		<p>Mehr-/Minderpreise von Attributen werden bei Bundle-Preisberechnung nicht berücksichtigt und die Auswahl von Attributen durch den Kunden ist nicht möglich.</p>
+		<p>Mehr-/Minderpreise von Attributen werden bei Bundle-Preisberechnung nicht berücksichtigt, und die Auswahl von Attributen durch den Kunden ist nicht möglich.</p>
 		]]></Value>
 	</LocaleResource>
 	

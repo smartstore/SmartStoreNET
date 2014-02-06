@@ -119,7 +119,7 @@
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
 		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
 
-		    context.find('.add-to-cart .form-inline').toggle(!data.Stock.Availability.Unavailable);
+		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 		};
 		
 		this.initialized = false;

@@ -1387,7 +1387,11 @@ namespace SmartStore.Web.Controllers
 					model.CombinationSelected = model.Combinations
 						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
-					model.IsUnavailable = (model.CombinationSelected != null && model.CombinationSelected.IsActive == false);
+					if (model.CombinationSelected != null && model.CombinationSelected.IsActive == false)
+					{
+						model.IsAvailable = false;
+						model.StockAvailability = _localizationService.GetResource("Products.Availability.OutOfStock");
+					}
 
 					product.MergeWithCombination(model.CombinationSelected);
 
@@ -1407,6 +1411,12 @@ namespace SmartStore.Web.Controllers
 
             #region Properties
 
+			if (model.IsAvailable)
+			{
+				model.IsAvailable = product.IsAvailableByStock();
+				model.StockAvailability = product.FormatStockMessage(_localizationService);
+			}
+
             model.Id = product.Id;
             model.Name = product.GetLocalized(x => x.Name);
             model.ShowSku = _catalogSettings.ShowProductSku;
@@ -1423,10 +1433,6 @@ namespace SmartStore.Web.Controllers
             model.ShowWeight = _catalogSettings.ShowWeight;
             model.ShowGtin = _catalogSettings.ShowGtin;
 			model.Gtin = product.Gtin;
-            if (model.IsUnavailable)
-                model.StockAvailability = _localizationService.GetResource("Products.Availability.OutOfStock");
-            else
-                model.StockAvailability = product.FormatStockMessage(_localizationService);
             model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
             model.IsCurrentCustomerRegistered = _workContext.CurrentCustomer.IsRegistered();
             model.IsBasePriceEnabled = product.BasePriceEnabled;
@@ -2748,7 +2754,7 @@ namespace SmartStore.Web.Controllers
                 Stock = new
                 {
                     Quantity = new { Value = product.StockQuantity, Show = product.DisplayStockQuantity },
-                    Availability = new { Text = m.StockAvailability, Show = product.DisplayStockAvailability, Unavailable = m.IsUnavailable }
+                    Availability = new { Text = m.StockAvailability, Show = product.DisplayStockAvailability, Available = m.IsAvailable }
                 },
 
                 GalleryHtml = galleryHtml,

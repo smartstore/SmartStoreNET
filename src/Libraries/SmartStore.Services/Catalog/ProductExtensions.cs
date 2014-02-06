@@ -151,6 +151,19 @@ namespace SmartStore.Services.Catalog
             return picture;
         }
 
+		public static bool IsAvailableByStock(this Product product)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+			{
+				if (product.StockQuantity <= 0 && product.BackorderMode == BackorderMode.NoBackorders)
+					return false;
+			}
+			return true;
+		}
+
         /// <summary>
         /// Formats the stock availability/quantity message
         /// </summary>
@@ -167,81 +180,25 @@ namespace SmartStore.Services.Catalog
 
             string stockMessage = string.Empty;
 
-			// codehint: sm-edit
             if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
                 && product.DisplayStockAvailability)
             {
-                switch (product.BackorderMode)
-                {
-                    case BackorderMode.NoBackorders:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                if (product.DisplayStockQuantity)
-                                {
-                                    //display "in stock" with stock quantity
-                                    stockMessage = string.Format(localizationService.GetResource("Products.Availability.InStockWithQuantity"), product.StockQuantity);
-                                }
-                                else
-                                {
-                                    //display "in stock" without stock quantity
-                                    stockMessage = localizationService.GetResource("Products.Availability.InStock");
-                                }
-                            }
-                            else
-                            {
-                                //display "out of stock"
-                                stockMessage = localizationService.GetResource("Products.Availability.OutOfStock");
-                            }
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                if (product.DisplayStockQuantity)
-                                {
-                                    //display "in stock" with stock quantity
-                                    stockMessage = string.Format(localizationService.GetResource("Products.Availability.InStockWithQuantity"), product.StockQuantity);
-                                }
-                                else
-                                {
-                                    //display "in stock" without stock quantity
-                                    stockMessage = localizationService.GetResource("Products.Availability.InStock");
-                                }
-                            }
-                            else
-                            {
-                                //display "in stock" without stock quantity
-                                stockMessage = localizationService.GetResource("Products.Availability.InStock");
-                            }
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                if (product.DisplayStockQuantity)
-                                {
-                                    //display "in stock" with stock quantity
-                                    stockMessage = string.Format(localizationService.GetResource("Products.Availability.InStockWithQuantity"), product.StockQuantity);
-                                }
-                                else
-                                {
-                                    //display "in stock" without stock quantity
-                                    stockMessage = localizationService.GetResource("Products.Availability.InStock");
-                                }
-                            }
-                            else
-                            {
-                                //display "backorder" without stock quantity
-                                stockMessage = localizationService.GetResource("Products.Availability.Backordering");
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
+				if (product.StockQuantity > 0)
+				{
+					if (product.DisplayStockQuantity)
+						stockMessage = string.Format(localizationService.GetResource("Products.Availability.InStockWithQuantity"), product.StockQuantity);
+					else
+						stockMessage = localizationService.GetResource("Products.Availability.InStock");
+				}
+				else
+				{
+					if (product.BackorderMode == BackorderMode.NoBackorders)
+						stockMessage = localizationService.GetResource("Products.Availability.OutOfStock");
+					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0)
+						stockMessage = localizationService.GetResource("Products.Availability.InStock");
+					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
+						stockMessage = localizationService.GetResource("Products.Availability.Backordering");
+				}
             }
 
             return stockMessage;

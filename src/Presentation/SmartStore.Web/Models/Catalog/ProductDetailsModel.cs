@@ -26,6 +26,7 @@ namespace SmartStore.Web.Models.Catalog
 			AssociatedProducts = new List<ProductDetailsModel>();
 			BundledItems = new List<ProductDetailsModel>();
 			BundleItem = new ProductBundleItemModel();
+			IsAvailable = true;
         }
 
 		//picture(s)
@@ -64,6 +65,7 @@ namespace SmartStore.Web.Models.Catalog
 		public GiftCardModel GiftCard { get; set; }
 
 		public string StockAvailability { get; set; }
+		public bool IsAvailable { get; set; }
 
 		public bool IsCurrentCustomerRegistered { get; set; }
 		public bool DisplayBackInStockSubscription { get; set; }
@@ -92,7 +94,6 @@ namespace SmartStore.Web.Models.Catalog
 		public bool DisplayDeliveryTimeAccordingToStock { get; set; }
 		public bool IsBasePriceEnabled { get; set; }
 		public string BasePriceInfo { get; set; }
-		public bool IsUnavailable { get; set; }
 		public string BundleTitleText { get; set; }
 		public bool BundlePerItemShipping { get; set; }
 		public bool BundlePerItemPricing { get; set; }

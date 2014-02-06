@@ -50,6 +50,10 @@
                     </div>
         
 					<div class="pull-left">
+						@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
+						{
+							<br />
+						}
 						<span>@Html.Raw(Model.ProductPrice.NoteWithDiscount)</span>
 
 						<span class="product-price with-discount current">
@@ -105,7 +109,7 @@
         
         </div>
         <div class="add-to-cart line">
-            <div class="form-inline clearfix" style="text-align:right;@(Model.IsUnavailable ? "display:none;" : "")">
+            <div class="form-inline clearfix" style="text-align:right;@(Model.IsAvailable ? "" : "display:none;")">
                 @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" }):
                 @if (Model.AddToCart.AllowedQuantities.Count > 0)
                 {

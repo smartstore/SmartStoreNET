@@ -876,6 +876,11 @@ namespace SmartStore.Admin.Controllers
 					_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
 				}
 
+                if (product.StockQuantity != prevStockQuantity && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+                {
+                    _productService.AdjustInventory(product, true, 0, string.Empty);
+                }
+
                 //activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
                 

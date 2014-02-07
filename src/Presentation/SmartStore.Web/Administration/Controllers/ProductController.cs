@@ -700,6 +700,7 @@ namespace SmartStore.Admin.Controllers
             gridModel.Data = products.Select(x =>
             {
                 var productModel = x.ToModel();
+				productModel.FullDescription = ""; // Perf
 				PrepareProductPictureThumbnailModel(productModel, x);
 
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
@@ -891,6 +892,11 @@ namespace SmartStore.Admin.Controllers
 				{
 					_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
 				}
+
+                if (product.StockQuantity != prevStockQuantity && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+                {
+                    _productService.AdjustInventory(product, true, 0, string.Empty);
+                }
 
                 //activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);

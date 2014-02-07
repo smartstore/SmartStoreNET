@@ -55,5 +55,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes")]
         public bool ShowDeliveryTimes { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowShortDesc")]
+        public bool ShowShortDesc { get; set; }
+        
     }
 }

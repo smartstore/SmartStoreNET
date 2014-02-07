@@ -82,14 +82,14 @@
             @if (Model.DisplayDeliveryTime) 
             {
                 <div class="delivery-time">
-                    @if (Model.DeliveryTime != null && Model.IsShipEnabled)
+                    @if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
                     {
                         <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
                     
                         if (Model.DisplayDeliveryTimeAccordingToStock)
                         {
-                            <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
-                            <span class="delivery-time-value">@Model.DeliveryTime.Name</span>
+                            <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
+                            <span class="delivery-time-value">@Model.DeliveryTimeName</span>
                         } 
                         else
                         {
@@ -110,17 +110,18 @@
         </div>
         <div class="add-to-cart line">
             <div class="form-inline clearfix" style="text-align:right;@(Model.IsAvailable ? "" : "display:none;")">
-                @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" }):
-                @if (Model.AddToCart.AllowedQuantities.Count > 0)
-                {
-                    @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
-                }
-                else
-                {
-                    @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
-                }
                 @if (!Model.AddToCart.DisableBuyButton)
                 {
+                    @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
+                    if (Model.AddToCart.AllowedQuantities.Count > 0)
+                    {
+                        @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                    }
+
                     <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
                         href="#"
                         data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 

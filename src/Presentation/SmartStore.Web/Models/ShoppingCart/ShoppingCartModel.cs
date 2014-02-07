@@ -45,6 +45,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         //codehint: sm-add
         public int MediaDimensions { get; set; }
         public bool DisplayDeliveryTime { get; set; }
+        public bool DisplayShortDesc { get; set; }
         
 
         public IList<string> ButtonPaymentMethodActionNames { get; set; }
@@ -88,7 +89,12 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             //codehint: BEGIN sm-add
             public bool IsShipEnabled { get; set; }
-            public DeliveryTime DeliveryTime { get; set; }
+
+            public string DeliveryTimeName { get; set; }
+            
+            public string DeliveryTimeHexValue { get; set; }
+
+            public string ShortDesc { get; set; }
             //codehint: END sm-add
 
         }

@@ -641,7 +641,8 @@ namespace SmartStore.Web.Controllers
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = _themeSettings.AllowCustomerToSelectTheme && AvailableStoreThemes.Count > 1,          
                 BlogEnabled = _blogSettings.Enabled,                          
-                ForumEnabled = _forumSettings.ForumsEnabled,                  
+                ForumEnabled = _forumSettings.ForumsEnabled,
+                HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
             };
 
             var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };

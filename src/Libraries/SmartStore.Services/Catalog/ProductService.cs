@@ -1030,20 +1030,17 @@ namespace SmartStore.Services.Catalog
                         //check if minimum quantity is reached
                         if (decrease)
                         {
-							if (product.MinStockQuantity >= newStockQuantity)
-							{
-								switch (product.LowStockActivity)
-                                {
-                                    case LowStockActivity.DisableBuyButton:
-                                        newDisableBuyButton = true;
-                                        newDisableWishlistButton = true;
-                                        break;
-                                    case LowStockActivity.Unpublish:
-                                        newPublished = false;
-                                        break;
-                                    default:
-                                        break;
-                                }
+                            switch (product.LowStockActivity)
+                            {
+                                case LowStockActivity.DisableBuyButton:
+                                    newDisableBuyButton = product.MinStockQuantity >= newStockQuantity;
+                                    newDisableWishlistButton = product.MinStockQuantity >= newStockQuantity;
+                                    break;
+                                case LowStockActivity.Unpublish:
+                                    newPublished = product.MinStockQuantity <= newStockQuantity;
+                                    break;
+                                default:
+                                    break;
                             }
                         }
 

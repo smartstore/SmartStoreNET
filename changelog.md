@@ -34,6 +34,8 @@
 * Product filter included deleted manufacturers
 * Mobile: Paginator does not work
 * Product could be overwritten by attribute combination data
+* Quantity field was shown though the add to cart button was disabled
+* #260 Delivery times translations are not getting applied
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC
@@ -51,6 +53,7 @@
 * #217 GMC Feed Plugin: Make export of expiration_date configurable
 * #222 Feed Plugins: Take special price into consideration
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
+* Added an option to display the short description of products within the order summary
 
 ##SmartStore.NET 1.2.1.0#
 

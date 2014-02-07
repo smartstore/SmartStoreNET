@@ -603,7 +603,13 @@ namespace SmartStore.Web.Controllers
                 model.TotalReviews = product.ApprovedTotalReviews;
                 model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
                 model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
-				model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+                if (deliveryTime != null)
+                {
+                    model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+                    model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+                }
+
 				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
 				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock();
 				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
@@ -1492,7 +1498,13 @@ namespace SmartStore.Web.Controllers
 			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
 
-            model.DeliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+
+            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+            if (deliveryTime != null) { 
+                model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+                model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+            }
+
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;
             model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();
@@ -2711,9 +2723,9 @@ namespace SmartStore.Web.Controllers
             {
                 Delivery = new
                 {
-                    Id = (m.DeliveryTime == null ? 0 : m.DeliveryTime.Id),
-                    Name = (m.DeliveryTime == null ? "" : m.DeliveryTime.Name),
-                    Color = (m.DeliveryTime == null ? "" : m.DeliveryTime.ColorHexValue)
+                    Id = 0,
+                    Name = m.DeliveryTimeName,
+                    Color = m.DeliveryTimeHexValue
                 },
                 Measure = new
                 {
@@ -2852,6 +2864,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new ProductsByTagModel()
             {
+                Id = productTag.Id,
                 TagName = productTag.GetLocalized(y => y.Name)
             };
 

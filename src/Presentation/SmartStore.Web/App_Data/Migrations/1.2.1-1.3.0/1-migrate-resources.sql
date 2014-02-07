@@ -184,6 +184,21 @@ SET @resources='
 		<Value>Selects this currency as the default currency based on the domain extension. Example: .ch</Value>
 		<Value lang="de">Wählt diese Währung als Standardwährung auf Basis der Domain-Endung aus. Beispiel: .ch</Value>
 	</LocaleResource>
+
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowShortDesc">
+		<Value>Display product short description</Value>
+		<Value lang="de">Zeige Kurzbeschreibung der Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowShortDesc.Hint">
+		<Value>Determines whether to display the product short description in the order summary</Value>
+		<Value lang="de">Bestimmt ob die Kurzbeschreibungen der Produkte im Warenkorb angezeigt werden sollen</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf"><Value lang="de"></Value></LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf">
+		<Value lang="de">Katalog als PDF downloaden</Value>
+	</LocaleResource>
+
 	
 </Language>
 '

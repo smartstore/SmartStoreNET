@@ -88,7 +88,9 @@ namespace SmartStore.Web.Models.Catalog
 		public string Width { get; set; }
 		public string Height { get; set; }
 		public int ThumbDimensions { get; set; }
-		public DeliveryTime DeliveryTime { get; set; }
+        public string DeliveryTimeName { get; set; }
+        public string DeliveryTimeHexValue { get; set; }
+
 		public bool DisplayDeliveryTime { get; set; }
 		public bool IsShipEnabled { get; set; }
 		public bool DisplayDeliveryTimeAccordingToStock { get; set; }

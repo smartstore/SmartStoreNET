@@ -21,6 +21,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		public int ProductId { get; set; }
 		public int BundleProductId { get; set; }
+		public bool IsPerItemPricing { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Name")]
 		public string Name { get; set; }

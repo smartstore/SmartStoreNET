@@ -118,3 +118,9 @@ BEGIN
 	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.bundledproductpicturesize', N'70', 0)
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShoppingCartItem]') and NAME='ParentItemId')
+BEGIN
+	ALTER TABLE [ShoppingCartItem] ADD [ParentItemId] int NULL
+END
+GO

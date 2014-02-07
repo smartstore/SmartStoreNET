@@ -233,10 +233,10 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNoteBundlePricing">
 		<Value><![CDATA[
-		<p>Price adjustments of attributes are not included in bundle pricing and a selection of attributes by the customer is not possible.</p>
+		<p>Not included in bundle pricing and not taken into account are:<br />Price adjustments of attributes, discounts of bundle items. A selection of attributes by the customer is not possible.</p>
 		]]></Value>
 		<Value lang="de"><![CDATA[
-		<p>Mehr-/Minderpreise von Attributen werden bei Bundle-Preisberechnung nicht berücksichtigt, und die Auswahl von Attributen durch den Kunden ist nicht möglich.</p>
+		<p>Bei der Preisberechnung per Bundle nicht enthalten bzw. unberücksichtigt sind:<br />Mehr-/Minderpreise von Attributen, Rabatte von Bundle-Bestandteilen. Ferner ist eine Attributauswahl durch den Kunden ist nicht möglich.</p>
 		]]></Value>
 	</LocaleResource>
 	

@@ -12,7 +12,12 @@ namespace SmartStore.Core.Domain.Orders
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>
-		public virtual int StoreId { get; set; }
+		public int StoreId { get; set; }
+
+		/// <summary>
+		/// The parent shopping cart item id
+		/// </summary>
+		public int? ParentItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the shopping cart type identifier

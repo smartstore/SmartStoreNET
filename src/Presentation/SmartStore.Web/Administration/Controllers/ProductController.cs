@@ -1735,6 +1735,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.CreatedOnUtc, DateTimeKind.Utc);
 			model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(bundleItem.UpdatedOnUtc, DateTimeKind.Utc);
+			model.IsPerItemPricing = bundleItem.BundleProduct.BundlePerItemPricing;
 
 			if (model.Locales.Count == 0)
 			{

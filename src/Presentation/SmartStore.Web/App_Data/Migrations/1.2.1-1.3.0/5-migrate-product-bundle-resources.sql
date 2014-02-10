@@ -236,7 +236,7 @@ SET @resources='
 		<p>Not included in bundle pricing and not taken into account are:<br />Price adjustments of attributes, discounts of bundle items. A selection of attributes by the customer is not possible.</p>
 		]]></Value>
 		<Value lang="de"><![CDATA[
-		<p>Bei der Preisberechnung per Bundle nicht enthalten bzw. unberücksichtigt sind:<br />Mehr-/Minderpreise von Attributen, Rabatte von Bundle-Bestandteilen. Ferner ist eine Attributauswahl durch den Kunden ist nicht möglich.</p>
+		<p>Bei der Preisberechnung per Bundle nicht enthalten bzw. unberücksichtigt sind:<br />Mehr-/Minderpreise von Attributen, Rabatte von Bundle-Bestandteilen. Ferner ist eine Attributauswahl durch den Kunden nicht möglich.</p>
 		]]></Value>
 	</LocaleResource>
 	
@@ -260,6 +260,43 @@ SET @resources='
 	<LocaleResource Name="Products.Price">
 		<Value>Price:</Value>
 		<Value lang="de">Preis:</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="ShoppingCart.IsNotSimpleProduct">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.ShoppingCart.AddOnlySimpleProductsToCart">
+		<Value></Value>
+		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.ProductNotAvailableForOrder">
+		<Value>This product is not available for order.</Value>
+		<Value lang="de">Dieses Produkt kann nicht bestellt werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.BundleItemUnpublished">
+		<Value>The bundle item "{0}" is not published.</Value>
+		<Value lang="de">Der Bundle-Bestandteil "{0}" wurde nicht veröffentlicht.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.MissingProduct">
+		<Value>The bundle item "{0}" has a missing product or bundle link.</Value>
+		<Value lang="de">Bei dem Bundle-Bestandteil "{0}" fehlt die Verknüpfung zum Produkt oder Bundle.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.Quantity">
+		<Value>The bundle item "{0}" has a of 0 or less 0.</Value>
+		<Value lang="de">Bei dem Bundle-Bestandteil "{0}" ist die Menge kleiner gleich 0.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.ProductResrictions">
+		<Value>The bundle item "{0}" is a download or has recurring payment which is not supported.</Value>
+		<Value lang="de">Bei dem Bundle-Bestandteil "{0}" handelt es sich um ein Abo oder Download, was nicht unterstützt wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.NoAttributes">
+		<Value>Attributes are not possible for bundles.</Value>
+		<Value lang="de">Bei Bundles sind Attribute nicht möglich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.NoCustomerEnteredPrice">
+		<Value>Price proposals are not possible for this bundle.</Value>
+		<Value lang="de">Bei diesem Bundle sind Preisvorschläge nicht möglich.</Value>
 	</LocaleResource>
 
 </Language>

@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -207,6 +209,28 @@ namespace SmartStore.Services.Customers
 
             return result;
         }
+
+		#region Shopping cart
+
+		public static int CountProductsInCart(this Customer customer, ShoppingCartType cartType, int? storeId = null)
+		{
+			int count = customer.ShoppingCartItems
+				.Filter(cartType, storeId)
+				.Where(x => x.ParentItemId == null)
+				.Sum(x => x.Quantity);
+
+			return count;
+		}
+		public static List<ShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null)
+		{
+			var rawItems = customer.ShoppingCartItems
+				.Filter(cartType, storeId)
+				.ToList();
+
+			return rawItems.Organize().ToList();
+		}
+
+		#endregion
 
 		#region Gift cards
 

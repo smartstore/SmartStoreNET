@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -31,6 +32,7 @@ namespace SmartStore.Services.Orders
         private readonly IProductService _productService;
         private readonly ILocalizationService _localizationService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductAttributeService _productAttributeService;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly IPriceFormatter _priceFormatter;
@@ -71,6 +73,7 @@ namespace SmartStore.Services.Orders
 			ICurrencyService currencyService,
             IProductService productService, ILocalizationService localizationService,
             IProductAttributeParser productAttributeParser,
+			IProductAttributeService productAttributeService,
             ICheckoutAttributeService checkoutAttributeService,
             ICheckoutAttributeParser checkoutAttributeParser,
             IPriceFormatter priceFormatter,
@@ -89,6 +92,7 @@ namespace SmartStore.Services.Orders
             this._productService = productService;
             this._localizationService = localizationService;
             this._productAttributeParser = productAttributeParser;
+			this._productAttributeService = productAttributeService;
             this._checkoutAttributeService = checkoutAttributeService;
             this._checkoutAttributeParser = checkoutAttributeParser;
             this._priceFormatter = priceFormatter;
@@ -111,14 +115,16 @@ namespace SmartStore.Services.Orders
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
         /// <param name="ensureOnlyActiveCheckoutAttributes">A value indicating whether to ensure that only active checkout attributes are attached to the current customer</param>
+		/// <param name="deleteChildCartItems">A value indicating whether to delete child cart items</param>
         public virtual void DeleteShoppingCartItem(ShoppingCartItem shoppingCartItem, bool resetCheckoutData = true, 
-            bool ensureOnlyActiveCheckoutAttributes = false)
+            bool ensureOnlyActiveCheckoutAttributes = false, bool deleteChildCartItems = true)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
             var customer = shoppingCartItem.Customer;
 			var storeId = shoppingCartItem.StoreId;
+			int cartItemId = shoppingCartItem.Id;
 
             //reset checkout data
             if (resetCheckoutData)
@@ -134,10 +140,7 @@ namespace SmartStore.Services.Orders
                 //only for shopping cart items (ignore wishlist)
                 shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
-				var cart = customer.ShoppingCartItems
-					.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart)
-					.Where(x => x.StoreId == storeId)
-					.ToList();
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
 				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 				checkoutAttributesXml = _checkoutAttributeParser.EnsureOnlyActiveAttributes(checkoutAttributesXml, cart);
@@ -146,7 +149,28 @@ namespace SmartStore.Services.Orders
 
             //event notification
             _eventPublisher.EntityDeleted(shoppingCartItem);
+
+			// delete child items
+			if (deleteChildCartItems)
+			{
+				var childCartItems = _sciRepository.Table
+					.Where(x => x.ParentItemId != null && x.ParentItemId.Value == cartItemId && x.Id != cartItemId).ToList();
+
+				foreach (var cartItem in childCartItems)
+					DeleteShoppingCartItem(cartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, false);
+			}
         }
+
+		public virtual void DeleteShoppingCartItem(int shoppingCartItemId, bool resetCheckoutData = true,
+			bool ensureOnlyActiveCheckoutAttributes = false, bool deleteChildCartItems = true)
+		{
+			if (shoppingCartItemId != 0)
+			{
+				var shoppingCartItem = _sciRepository.GetById(shoppingCartItemId);
+
+				DeleteShoppingCartItem(shoppingCartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, deleteChildCartItems);
+			}
+		}
 
         /// <summary>
         /// Deletes expired shopping cart items
@@ -155,13 +179,16 @@ namespace SmartStore.Services.Orders
         /// <returns>Number of deleted items</returns>
         public virtual int DeleteExpiredShoppingCartItems(DateTime olderThanUtc)
         {
-            var query = from sci in _sciRepository.Table
-                           where sci.UpdatedOnUtc < olderThanUtc
-                           select sci;
+            var query =
+				from sci in _sciRepository.Table
+				where sci.UpdatedOnUtc < olderThanUtc
+				select sci;
 
             var cartItems = query.ToList();
+
             foreach (var cartItem in cartItems)
                 _sciRepository.Delete(cartItem);
+
             return cartItems.Count;
         }
         
@@ -184,11 +211,7 @@ namespace SmartStore.Services.Orders
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            var cart = customer.ShoppingCartItems
-                .Where(sci => sci.ShoppingCartType == shoppingCartType)
-                .Where(sci => sci.StoreId == storeId)
-                .ToList();
-
+            var cart = customer.GetCartItems(shoppingCartType, storeId);
             var warnings = new List<string>();
 
             if (product.RequireOtherProducts)
@@ -222,7 +245,8 @@ namespace SmartStore.Services.Orders
                             if (automaticallyAddRequiredProductsIfEnabled)
                             {
                                 //pass 'false' for 'automaticallyAddRequiredProducsIfEnabled' to prevent circular references
-								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false);
+								int shoppingCartItemId;
+								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false, out shoppingCartItemId);
                                 if (addToCartWarnings.Count > 0)
                                 {
                                     //a product wasn't atomatically added for some reasons
@@ -277,10 +301,17 @@ namespace SmartStore.Services.Orders
                 return warnings;
             }
 
-			//we can add only simple products
-			if (product.ProductType != ProductType.SimpleProduct)
+			// check if the product type is available for order
+			if (product.ProductType == ProductType.GroupedProduct)
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.IsNotSimpleProduct"));
+				warnings.Add(_localizationService.GetResource("ShoppingCart.ProductNotAvailableForOrder"));
+			}
+
+			// validate bundle
+			if (product.ProductType == ProductType.BundledProduct)
+			{
+				if (product.BundlePerItemPricing && customerEnteredPrice != decimal.Zero)
+					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoCustomerEnteredPrice"));
 			}
 
             //published?
@@ -427,14 +458,18 @@ namespace SmartStore.Services.Orders
         /// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetShoppingCartItemAttributeWarnings(ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes)
+			Product product, string selectedAttributes, ProductBundleItem bundleItem = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
             var warnings = new List<string>();
+
+			if (bundleItem != null && !bundleItem.BundleProduct.BundlePerItemPricing)
+				return warnings;	// customer cannot select anything... selectedAttribute is always empty
 
             //selected attributes
             var pva1Collection = _productAttributeParser.ParseProductVariantAttributes(selectedAttributes);
@@ -479,17 +514,17 @@ namespace SmartStore.Services.Orders
                         }
                     }
 
-                    //if not found
+					if (!found && bundleItem != null && bundleItem.FilterAttributes && !bundleItem.AttributeFilters.Exists(x => x.AttributeId == pva2.ProductAttributeId))
+					{
+						found = true;	// attribute is filtered out on bundle item level... it cannot be selected by customer
+					}
+
                     if (!found)
                     {
-                        if (!string.IsNullOrEmpty(pva2.TextPrompt))
-                        {
+                        if (pva2.TextPrompt.HasValue())
                             warnings.Add(pva2.TextPrompt);
-                        }
                         else
-                        {
                             warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.SelectAttribute"), pva2.ProductAttribute.GetLocalized(a => a.Name)));
-                        }
                     }
                 }
             }
@@ -547,6 +582,36 @@ namespace SmartStore.Services.Orders
 
             return warnings;
         }
+
+		/// <summary>
+		/// Validates bundle items
+		/// </summary>
+		/// <param name="shoppingCartType">Shopping cart type</param>
+		/// <param name="bundleItem">Product bundle item</param>
+		/// <returns>Warnings</returns>
+		public virtual IList<string> GetBundleItemWarnings(ShoppingCartType shoppingCartType, ProductBundleItem bundleItem)
+		{
+			var warnings = new List<string>();
+
+			if (bundleItem != null)
+			{
+				string name = (bundleItem.GetLocalized(x => x.Name) ?? bundleItem.Product.GetLocalized(x => x.Name));
+
+				if (!bundleItem.Published)
+					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.BundleItemUnpublished").FormatWith(name));
+
+				if (bundleItem.ProductId == 0 || bundleItem.BundleProductId == 0 || bundleItem.Product == null || bundleItem.BundleProduct == null)
+					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.MissingProduct").FormatWith(name));
+
+				if (bundleItem.Quantity <= 0)
+					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.Quantity").FormatWith(name));
+
+				if (bundleItem.Product.IsDownload || bundleItem.Product.IsRecurring)
+					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.ProductResrictions").FormatWith(name));
+			}
+
+			return warnings;
+		}
         
         /// <summary>
         /// Validates shopping cart item
@@ -562,14 +627,17 @@ namespace SmartStore.Services.Orders
         /// <param name="getStandardWarnings">A value indicating whether we should validate a product for standard properties</param>
         /// <param name="getAttributesWarnings">A value indicating whether we should validate product attributes</param>
         /// <param name="getGiftCardWarnings">A value indicating whether we should validate gift card properties</param>
-        /// <param name="getRequiredWarnings">A value indicating whether we should validate required products (products which require other products to be added to the cart)</param>
+        /// <param name="getRequiredProductWarnings">A value indicating whether we should validate required products (products which require other products to be added to the cart)</param>
+		/// <param name="getBundleWarnings">A value indicating whether we should validate bundle and bundle items</param>
+		/// <param name="bundleItem">Product bundle item if bundles should be validated</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetShoppingCartItemWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, int storeId, 
 			string selectedAttributes, decimal customerEnteredPrice,
 			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
             bool getStandardWarnings = true, bool getAttributesWarnings = true, 
-            bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true)
+            bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true,
+			bool getBundleWarnings = true, ProductBundleItem bundleItem = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -582,7 +650,7 @@ namespace SmartStore.Services.Orders
 
             //selected attributes
             if (getAttributesWarnings)
-                warnings.AddRange(GetShoppingCartItemAttributeWarnings(shoppingCartType, product, selectedAttributes));
+                warnings.AddRange(GetShoppingCartItemAttributeWarnings(shoppingCartType, product, selectedAttributes, bundleItem));
 
             //gift cards
             if (getGiftCardWarnings)
@@ -591,6 +659,10 @@ namespace SmartStore.Services.Orders
             //required products
             if (getRequiredProductWarnings)
 				warnings.AddRange(GetRequiredProductWarnings(customer, shoppingCartType, product, storeId, automaticallyAddRequiredProductsIfEnabled));
+
+			// bundle and bundle item warnings
+			if (getBundleWarnings)
+				warnings.AddRange(GetBundleItemWarnings(shoppingCartType, bundleItem));
             
             return warnings;
         }
@@ -714,7 +786,7 @@ namespace SmartStore.Services.Orders
 
             foreach (var sci in shoppingCart.Where(a => a.ShoppingCartType == shoppingCartType))
             {
-                if (sci.ProductId == product.Id)
+                if (sci.ProductId == product.Id && sci.Product.ProductTypeId == product.ProductTypeId)
                 {
                     //attributes
                     bool attributesEqual = _productAttributeParser.AreProductAttributesEqual(sci.AttributesXml, selectedAttributes);
@@ -772,11 +844,17 @@ namespace SmartStore.Services.Orders
         /// <param name="customerEnteredPrice">The price enter by a customer</param>
         /// <param name="quantity">Quantity</param>
 		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
+		/// <param name="shoppingCartItemId">Identifier fo the new shopping cart item</param>
+		/// <param name="parentItemId">Identifier of the parent shopping cart item</param>
+		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> AddToCart(Customer customer, Product product,
 			ShoppingCartType shoppingCartType, int storeId, string selectedAttributes,
-			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled)
+			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,
+			out int shoppingCartItemId, int? parentItemId = null, ProductBundleItem bundleItem = null)
         {
+			shoppingCartItemId = 0;
+
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
@@ -804,21 +882,18 @@ namespace SmartStore.Services.Orders
             //reset checkout info
 			_customerService.ResetCheckoutData(customer, storeId);
 
-			var cart = customer.ShoppingCartItems
-				 .Where(sci => sci.ShoppingCartType == shoppingCartType)
-				 .Where(sci => sci.StoreId == storeId)
-				 .ToList();
-
-            var shoppingCartItem = FindShoppingCartItemInTheCart(cart,
-                shoppingCartType, product, selectedAttributes, customerEnteredPrice);
+			var cart = customer.GetCartItems(shoppingCartType, storeId);
+            var shoppingCartItem = FindShoppingCartItemInTheCart(cart, shoppingCartType, product, selectedAttributes, customerEnteredPrice);
 
             if (shoppingCartItem != null)
             {
                 //update existing shopping cart item
                 int newQuantity = shoppingCartItem.Quantity + quantity;
-                warnings.AddRange(GetShoppingCartItemWarnings(customer, shoppingCartType, product,
-					storeId, selectedAttributes,
-					customerEnteredPrice, newQuantity, automaticallyAddRequiredProductsIfEnabled));
+
+                warnings.AddRange(
+					GetShoppingCartItemWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, newQuantity, 
+						automaticallyAddRequiredProductsIfEnabled, bundleItem: bundleItem)
+				);
 
                 if (warnings.Count == 0)
                 {
@@ -834,8 +909,11 @@ namespace SmartStore.Services.Orders
             else
             {
                 //new shopping cart item
-                warnings.AddRange(GetShoppingCartItemWarnings(customer, shoppingCartType, product,
-					storeId, selectedAttributes, customerEnteredPrice, quantity, automaticallyAddRequiredProductsIfEnabled));
+                warnings.AddRange(
+					GetShoppingCartItemWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity,
+						automaticallyAddRequiredProductsIfEnabled, bundleItem: bundleItem)
+				);
+
                 if (warnings.Count == 0)
                 {
                     //maximum items validation
@@ -873,10 +951,17 @@ namespace SmartStore.Services.Orders
                         CustomerEnteredPrice = customerEnteredPrice,
                         Quantity = quantity,
                         CreatedOnUtc = now,
-                        UpdatedOnUtc = now
+                        UpdatedOnUtc = now,
+						ParentItemId = parentItemId
                     };
+
+					if (bundleItem != null)
+						shoppingCartItem.BundleItemId = bundleItem.Id;
+
                     customer.ShoppingCartItems.Add(shoppingCartItem);
                     _customerService.UpdateCustomer(customer);
+
+					shoppingCartItemId = shoppingCartItem.Id;
 
                     //event notification
                     _eventPublisher.EntityInserted(shoppingCartItem);
@@ -956,9 +1041,10 @@ namespace SmartStore.Services.Orders
             var fromCart = fromCustomer.ShoppingCartItems.ToList();
             for (int i = 0; i < fromCart.Count; i++)
             {
+				int shoppingCartItemId;
                 var sci = fromCart[i];
-				AddToCart(toCustomer, sci.Product, sci.ShoppingCartType, sci.StoreId, 
-                    sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, false);
+				AddToCart(toCustomer, sci.Product, sci.ShoppingCartType, sci.StoreId,
+					sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, false, out shoppingCartItemId);
             }
             for (int i = 0; i < fromCart.Count; i++)
             {

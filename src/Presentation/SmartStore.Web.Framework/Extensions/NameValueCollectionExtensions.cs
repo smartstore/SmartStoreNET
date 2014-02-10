@@ -68,6 +68,9 @@ namespace SmartStore
 			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings, 
 			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true)
 		{
+			if (collection == null)
+				return "";
+
 			string controlId;
 			string selectedAttributes = "";
 
@@ -139,6 +142,17 @@ namespace SmartStore
 						break;
 
 					case AttributeControlType.FileUpload:
+						if (request == null)
+						{
+							Guid downloadGuid;
+							Guid.TryParse(collection[controlId], out downloadGuid);
+							var download = downloadService.GetDownloadByGuid(downloadGuid);
+							if (download != null)
+							{
+								selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes,	attribute, download.DownloadGuid.ToString());
+							}
+						}
+						else
 						{
 							var httpPostedFile = request.Files[controlId];
 							if (httpPostedFile != null && httpPostedFile.FileName.HasValue())
@@ -175,6 +189,46 @@ namespace SmartStore
 				}
 			}
 			return selectedAttributes;
+		}
+
+		public static string AddGiftCardAttribute(this NameValueCollection collection, string attributes, int productId, IProductAttributeParser productAttributeParser)
+		{
+			string recipientName = "";
+			string recipientEmail = "";
+			string senderName = "";
+			string senderEmail = "";
+			string giftCardMessage = "";
+
+			foreach (string formKey in collection.AllKeys)
+			{
+				if (formKey.Equals(string.Format("giftcard_{0}.RecipientName", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					recipientName = collection[formKey];
+					continue;
+				}
+				if (formKey.Equals(string.Format("giftcard_{0}.RecipientEmail", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					recipientEmail = collection[formKey];
+					continue;
+				}
+				if (formKey.Equals(string.Format("giftcard_{0}.SenderName", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					senderName = collection[formKey];
+					continue;
+				}
+				if (formKey.Equals(string.Format("giftcard_{0}.SenderEmail", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					senderEmail = collection[formKey];
+					continue;
+				}
+				if (formKey.Equals(string.Format("giftcard_{0}.Message", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					giftCardMessage = collection[formKey];
+					continue;
+				}
+			}
+
+			return productAttributeParser.AddGiftCardAttribute(attributes, recipientName, recipientEmail, senderName, senderEmail, giftCardMessage);
 		}
 	}
 }

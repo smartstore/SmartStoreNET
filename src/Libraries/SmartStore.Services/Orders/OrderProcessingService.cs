@@ -2483,9 +2483,10 @@ namespace SmartStore.Services.Orders
 
             foreach (var orderItem in order.OrderItems)
             {
+				int shoppingCartItem;
                 _shoppingCartService.AddToCart(orderItem.Order.Customer, orderItem.Product,
 					 ShoppingCartType.ShoppingCart, orderItem.Order.StoreId, orderItem.AttributesXml,
-                    orderItem.UnitPriceExclTax, orderItem.Quantity, false);
+                    orderItem.UnitPriceExclTax, orderItem.Quantity, false, out shoppingCartItem);
             }
         }
         

@@ -1521,7 +1521,13 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("bundleItem");
 
 			if (bundleItem.BundleProductId == 0)
-				throw new SmartException("BundleProductId of a bundle item can't be 0.");
+				throw new SmartException("BundleProductId of a bundle item cannot be 0.");
+
+			if (bundleItem.ProductId == 0)
+				throw new SmartException("ProductId of a bundle item cannot be 0.");
+
+			if (bundleItem.ProductId == bundleItem.BundleProductId)
+				throw new SmartException("A bundle item cannot be an element of itself.");
 
 			_productBundleItemRepository.Insert(bundleItem);
 

@@ -544,10 +544,9 @@ namespace SmartStore.Web.Controllers
             }
 
             //subtotal
-            var cart = _workContext.CurrentCustomer.ShoppingCartItems
-				.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == _storeContext.CurrentStore.Id)
-				.ToList();
-            decimal subtotal = 0;
+			decimal subtotal = 0;
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
             if (cart.Count > 0)
             {
                 decimal subtotalBase = decimal.Zero;
@@ -555,9 +554,10 @@ namespace SmartStore.Web.Controllers
                 Discount orderSubTotalAppliedDiscount = null;
                 decimal subTotalWithoutDiscountBase = decimal.Zero;
                 decimal subTotalWithDiscountBase = decimal.Zero;
+
                 _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
-                    out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+
                 subtotalBase = subTotalWithoutDiscountBase;
                 subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
             }
@@ -578,21 +578,11 @@ namespace SmartStore.Web.Controllers
 
             if (model.ShoppingCartEnabled || model.WishlistEnabled)
             {
-                var scItems = customer.ShoppingCartItems;
-                if (model.ShoppingCartEnabled)
-                {
-                    model.ShoppingCartItems = scItems
-                        .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-                        .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
-                        .GetTotalProducts();
-                }
+				if (model.ShoppingCartEnabled)
+					model.ShoppingCartItems = cart.GetTotalProducts();
+
                 if (model.WishlistEnabled)
-                {
-                    model.WishlistItems = scItems
-                        .Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist)
-                        .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
-                        .GetTotalProducts();
-                }
+					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
             }
 
             if (_catalogSettings.CompareProductsEnabled)

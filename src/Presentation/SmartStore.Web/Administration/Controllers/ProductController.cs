@@ -1885,8 +1885,11 @@ namespace SmartStore.Admin.Controllers
 				IsPerItemPricing = product.BundlePerItemPricing
 			};
 
-			var productIds = _productService.GetBundleItems(productId, true).Select(x => x.ProductId).ToArray();
-			if (productIds.Count() > 0)
+			var productIds = new List<int>();
+			productIds.Add(product.Id);
+			productIds.AddRange(_productService.GetBundleItems(productId, true).Select(x => x.ProductId));
+			
+			if (productIds.Count > 0)
 				model.ExistingProductIds = string.Join(",", productIds);
 
 			//categories

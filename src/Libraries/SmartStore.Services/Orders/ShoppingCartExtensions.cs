@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
@@ -142,6 +143,43 @@ namespace SmartStore.Services.Orders
 
             return shoppingCart[0].Customer;
         }
+
+		public static IEnumerable<ShoppingCartItem> Filter(this IEnumerable<ShoppingCartItem> shoppingCart, ShoppingCartType type, int? storeId = null)
+		{
+			var enumerable = shoppingCart.Where(x => x.ShoppingCartType == type);
+
+			if (storeId.HasValue)
+				enumerable = enumerable.Where(x => x.StoreId == storeId.Value);
+
+			return enumerable;
+		}
+		public static IEnumerable<ShoppingCartItem> Organize(this IList<ShoppingCartItem> shoppingCart)
+		{
+			if (shoppingCart.Exists(x => x.ParentItemId != null) && !shoppingCart.Exists(x => x.ChildItems != null))
+			{
+				var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
+
+				foreach (var item in shoppingCart.Where(x => x.ParentItemId != null).OrderByDescending(x => x.Id))
+				{
+					var parentItem = shoppingCart.FirstOrDefault(x => x.Id == item.ParentItemId);
+					if (parentItem != null)
+					{
+						if (parentItem.Product != null && parentItem.Product.BundlePerItemPricing && item.AttributesXml != null && item.BundleItem != null)
+						{
+							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(item.AttributesXml);
+							if (attributeValues != null)
+								attributeValues.Each(x => item.BundleItem.AdditionalCharge += x.PriceAdjustment);
+						}
+
+						if (parentItem.ChildItems == null)
+							parentItem.ChildItems = new List<ShoppingCartItem>() { item };
+						else
+							parentItem.ChildItems.Add(item);
+					}
+				}
+			}
+			return shoppingCart.Where(x => x.ParentItemId == null);
+		}
 
     }
 }

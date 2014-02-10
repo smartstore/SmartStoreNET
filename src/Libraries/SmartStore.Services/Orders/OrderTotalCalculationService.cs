@@ -177,6 +177,7 @@ namespace SmartStore.Services.Orders
             //sub totals
             decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
             decimal subTotalInclTaxWithoutDiscount = decimal.Zero;
+
             foreach (var shoppingCartItem in cart)
             {
                 decimal taxRate = decimal.Zero;
@@ -240,6 +241,7 @@ namespace SmartStore.Services.Orders
                 subTotalWithoutDiscount = subTotalInclTaxWithoutDiscount;
             else
                 subTotalWithoutDiscount = subTotalExclTaxWithoutDiscount;
+
             if (subTotalWithoutDiscount < decimal.Zero)
                 subTotalWithoutDiscount = decimal.Zero;
 
@@ -249,8 +251,10 @@ namespace SmartStore.Services.Orders
             /*We calculate discount amount on order subtotal excl tax (discount first)*/
             //calculate discount amount ('Applied to order subtotal' discount)
             decimal discountAmountExclTax = GetOrderSubtotalDiscount(customer, subTotalExclTaxWithoutDiscount, out appliedDiscount);
+
             if (subTotalExclTaxWithoutDiscount < discountAmountExclTax)
                 discountAmountExclTax = subTotalExclTaxWithoutDiscount;
+
             decimal discountAmountInclTax = discountAmountExclTax;
             //subtotal with discount (excl tax)
             decimal subTotalExclTaxWithDiscount = subTotalExclTaxWithoutDiscount - discountAmountExclTax;

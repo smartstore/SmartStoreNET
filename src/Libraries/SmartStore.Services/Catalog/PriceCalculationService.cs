@@ -434,33 +434,37 @@ namespace SmartStore.Services.Catalog
         /// <returns>Shopping cart unit price (one item)</returns>
         public virtual decimal GetUnitPrice(ShoppingCartItem shoppingCartItem, bool includeDiscounts)
         {
+			decimal finalPrice = decimal.Zero;
             var customer = shoppingCartItem.Customer;
-            decimal finalPrice = decimal.Zero;
 			var product = shoppingCartItem.Product;
+
             if (product != null)
             {
-                decimal attributesTotalPrice = decimal.Zero;
-
-                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
-                if (pvaValues != null)
-                {
-                    foreach (var pvaValue in pvaValues)
-                    {
-                        attributesTotalPrice += pvaValue.PriceAdjustment;
-                    }
-                }
-
 				if (product.CustomerEntersPrice)
                 {
                     finalPrice = shoppingCartItem.CustomerEnteredPrice;
                 }
+				else if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
+				{
+					if (shoppingCartItem.ChildItems != null)
+					{
+						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItem != null).Select(x => x.BundleItem).ToList();
+
+						finalPrice = GetFinalPrice(product, bundleItems, customer, decimal.Zero, includeDiscounts, shoppingCartItem.Quantity);
+					}
+				}
                 else
                 {
-					finalPrice = GetFinalPrice(product,
-                        customer,
-                        attributesTotalPrice,
-                        includeDiscounts,
-                        shoppingCartItem.Quantity);
+					decimal attributesTotalPrice = decimal.Zero;
+
+					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
+					if (pvaValues != null)
+					{
+						foreach (var pvaValue in pvaValues)
+							attributesTotalPrice += pvaValue.PriceAdjustment;
+					}
+
+					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Quantity);
                 }
             }
 

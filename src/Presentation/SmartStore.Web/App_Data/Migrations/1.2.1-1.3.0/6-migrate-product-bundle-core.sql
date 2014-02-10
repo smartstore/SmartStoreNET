@@ -124,3 +124,18 @@ BEGIN
 	ALTER TABLE [ShoppingCartItem] ADD [ParentItemId] int NULL
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShoppingCartItem]') and NAME='BundleItemId')
+BEGIN
+	EXEC ('ALTER TABLE [ShoppingCartItem] ADD [BundleItemId] int NULL')
+	
+	EXEC ('
+		ALTER TABLE [dbo].[ShoppingCartItem] WITH CHECK ADD CONSTRAINT [ShoppingCartItem_BundleItem] FOREIGN KEY([BundleItemId])
+		REFERENCES [dbo].[ProductBundleItem] ([Id])
+	')
+	
+	EXEC ('
+		ALTER TABLE [dbo].[ShoppingCartItem] CHECK CONSTRAINT [ShoppingCartItem_BundleItem]
+	')
+END
+GO

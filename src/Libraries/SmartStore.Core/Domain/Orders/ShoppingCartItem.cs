@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 
@@ -18,6 +19,11 @@ namespace SmartStore.Core.Domain.Orders
 		/// The parent shopping cart item id
 		/// </summary>
 		public int? ParentItemId { get; set; }
+
+		/// <summary>
+		/// Gets or sets ths bundle item identifier
+		/// </summary>
+		public int? BundleItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the shopping cart type identifier
@@ -83,6 +89,13 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the customer
         /// </summary>
         public virtual Customer Customer { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product bundle item
+		/// </summary>
+		public virtual ProductBundleItem BundleItem { get; set; }
+
+		public IList<ShoppingCartItem> ChildItems { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the shopping cart item is free shipping

@@ -28,6 +28,12 @@ namespace SmartStore.Core.Data
                 ctx.ValidateOnSaveEnabled = validateOnSave.Value;
         }
 
+		public int Commit()
+		{
+			var ctx = EngineContext.Current.Resolve<IDbContext>(_alias);
+			return ctx.SaveChanges();
+		}
+
         public void Dispose()
         {
             var ctx = EngineContext.Current.Resolve<IDbContext>(_alias);

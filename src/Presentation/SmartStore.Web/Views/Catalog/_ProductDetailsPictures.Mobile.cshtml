@@ -14,10 +14,10 @@
     <script type="text/javascript">
         function UpdateMainImage(url) {
             //show progress
-            $.mobile.showPageLoadingMsg();
+            $.mobile.loading("show")
             $('#default-image').attr("src", url);
             //hide progress
-            $.mobile.hidePageLoadingMsg();
+            $.mobile.loading("hide")
         }
 
         //BEGIN: implement control of images via swiping
@@ -59,23 +59,18 @@
     <div class="ui-grid-b">
 	    <div class="ui-block-a">
             <div id="picture-prev" data-theme="c" class="ui-btn ui-btn-corner-all ui-shadow ui-btn-up-c" aria-disabled="false">
-                <span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true"><span class="ui-btn-text">Zurück</span></span>
+                <span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true">
+                    <span class="ui-btn-text">@T("Mobile.DetailImages.Prev")</span>
+                </span>
             </div>
 	    </div>
 	    <div class="ui-block-b"></div>
 	    <div class="ui-block-c">
             <div id="picture-next" data-theme="c" class="ui-btn ui-btn-corner-all ui-shadow ui-btn-up-c" aria-disabled="false">
-                <span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true"><span class="ui-btn-text">Vor</span></span>
+                <span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true">
+                    <span class="ui-btn-text">@T("Mobile.DetailImages.Next")</span>
+                </span>
             </div>
 	    </div>
     </div>
-    
-    @*<ul class="picture-thumbs">
-        @foreach (var picture in Model.PictureModels)
-        {
-            <li class="picture">
-                <img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" onclick="UpdateMainImage('@(picture.FullSizeImageUrl)')" />
-            </li>
-        }
-    </ul>*@
 }

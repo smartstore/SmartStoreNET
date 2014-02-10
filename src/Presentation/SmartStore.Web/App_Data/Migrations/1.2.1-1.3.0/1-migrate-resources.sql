@@ -199,6 +199,14 @@ SET @resources='
 		<Value lang="de">Katalog als PDF downloaden</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Mobile.DetailImages.Next">
+		<Value>Next</Value>
+		<Value lang="de">Vor</Value>
+	</LocaleResource>
+	<LocaleResource Name="Mobile.DetailImages.Prev">
+		<Value>Previous</Value>
+		<Value lang="de">Zurück</Value>
+	</LocaleResource>
 	
 </Language>
 '

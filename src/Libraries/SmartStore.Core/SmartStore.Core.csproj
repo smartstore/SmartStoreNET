@@ -164,7 +164,7 @@
     <Compile Include="Linq\Expressions\ExpressionVisitor.cs" />
     <Compile Include="Linq\Expressions\MemberAccessPathVisitor.cs" />
     <Compile Include="Linq\Expressions\MemberAccessPropertyInfoVisitor.cs" />
-    <Compile Include="Pageable.cs" />
+    <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\ThreadSafeList.cs" />
     <Compile Include="Collections\TreeNode.cs" />
@@ -462,9 +462,8 @@
     <Compile Include="Domain\Logging\Log.cs" />
     <Compile Include="Domain\Logging\LogLevel.cs" />
     <Compile Include="Domain\Configuration\Setting.cs" />
-    <Compile Include="IPagedList.cs" />
     <Compile Include="SmartException.cs" />
-    <Compile Include="PagedList.cs" />
+    <Compile Include="PagedList`T.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>

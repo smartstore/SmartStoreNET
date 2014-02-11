@@ -29,7 +29,7 @@ namespace SmartStore.Web.Models.Catalog
     }
 
     // codehint: sm-add
-    public partial class PagingFilteringModel : PageableBase
+    public partial class PagingFilteringModel : PagedListBase
     {
         
         public PagingFilteringModel()

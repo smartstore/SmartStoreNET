@@ -729,7 +729,7 @@ namespace SmartStore.Services.ExportImport
 				}
 
 				_bof = true;
-				_pageable = new Pageable(0, BATCHSIZE, _totalRows);
+				_pageable = new PagedList(0, BATCHSIZE, _totalRows);
 			}
 
 			public int TotalRows

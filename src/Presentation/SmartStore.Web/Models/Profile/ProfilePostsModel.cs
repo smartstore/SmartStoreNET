@@ -4,7 +4,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Profile
 {
-    public partial class ProfilePostsModel : PageableBase
+    public partial class ProfilePostsModel : PagedListBase
     {
         public ProfilePostsModel(IPageable pageable) : base(pageable)
         {

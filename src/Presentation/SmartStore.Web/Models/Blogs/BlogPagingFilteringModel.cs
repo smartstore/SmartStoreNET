@@ -5,7 +5,7 @@ using SmartStore.Core;
 namespace SmartStore.Web.Models.Blogs
 {
     // codehint: sm-edit (formerly inherited BasePageableModel)
-    public partial class BlogPagingFilteringModel : PageableBase // BasePageableModel
+    public partial class BlogPagingFilteringModel : PagedListBase // BasePageableModel
     {
         #region Methods
 

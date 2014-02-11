@@ -4,7 +4,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Customer
 {
-    public partial class CustomerForumSubscriptionsModel : PageableBase
+    public partial class CustomerForumSubscriptionsModel : PagedListBase
     {
         public CustomerForumSubscriptionsModel(IPageable pageable) : base(pageable)
         {

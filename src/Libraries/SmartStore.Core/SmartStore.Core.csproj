@@ -138,6 +138,9 @@
     <Compile Include="Data\Hooks\PreInsertHook.cs" />
     <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
+    <Compile Include="Data\Impex\ImportModeFlags.cs" />
+    <Compile Include="Data\Impex\ImportMessage.cs" />
+    <Compile Include="Data\Impex\ImportResult.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Domain\Catalog\ProductType.cs" />
     <Compile Include="Domain\Cms\ContentSliderSettings.cs" />

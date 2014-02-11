@@ -24,11 +24,11 @@ namespace SmartStore.Services.Messages
             _eventPublisher = eventPublisher;
         }
 
-        public DataImportResult ImportSubscribers(Stream stream)
+        public ImportResult ImportSubscribers(Stream stream)
         {
             Guard.ArgumentNotNull(() => stream);
 
-            var result = new DataImportResult();
+            var result = new ImportResult();
             var toAdd = new List<NewsLetterSubscription>();
             var toUpdate = new List<NewsLetterSubscription>();
             var autoCommit = _subscriptionRepository.AutoCommitEnabled;
@@ -76,13 +76,13 @@ namespace SmartStore.Services.Messages
 
                         if (email.Length > 255)
                         {
-                            result.Warnings.Add("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
+                            result.AddWarning("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
                             continue;
                         }
 
                         if (!email.IsEmail())
                         {
-                            result.Warnings.Add("'{0}' is not a valid email address.".FormatInvariant(email));
+							result.AddWarning("'{0}' is not a valid email address.".FormatInvariant(email));
                             continue;
                         }
 
@@ -98,7 +98,6 @@ namespace SmartStore.Services.Messages
 
                             toUpdate.Add(subscription);
                             result.ModifiedRecords++;
-                            result.AffectedRecords++;
                         }
                         else
                         {
@@ -112,7 +111,6 @@ namespace SmartStore.Services.Messages
 
                             toAdd.Add(subscription);
                             result.NewRecords++;
-                            result.AffectedRecords++;
                         }
                     }
                 }

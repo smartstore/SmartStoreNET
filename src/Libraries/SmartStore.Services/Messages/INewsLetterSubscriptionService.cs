@@ -2,6 +2,7 @@
 using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Messages
 {
@@ -13,7 +14,7 @@ namespace SmartStore.Services.Messages
         /// </summary>
         /// <param name="stream">The input file stream</param>
         /// <returns>The import result</returns>
-        DataImportResult ImportSubscribers(Stream stream);
+        ImportResult ImportSubscribers(Stream stream);
         
         /// <summary>
         /// Inserts a newsletter subscription

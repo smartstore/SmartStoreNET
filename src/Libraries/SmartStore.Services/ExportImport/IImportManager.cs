@@ -1,5 +1,7 @@
 ﻿
 using System.IO;
+using SmartStore.Core.Data;
+
 namespace SmartStore.Services.ExportImport
 {
     /// <summary>
@@ -11,6 +13,6 @@ namespace SmartStore.Services.ExportImport
         /// Import products from XLSX file
         /// </summary>
         /// <param name="stream">Stream</param>
-        void ImportProductsFromXlsx(Stream stream);
+		ImportResult ImportProductsFromXlsx(Stream stream);
     }
 }

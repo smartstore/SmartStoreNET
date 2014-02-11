@@ -8,8 +8,6 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
@@ -18,6 +16,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using System.Collections.Generic;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -491,7 +490,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult ImportXml(int id, FormCollection form, DataImportModeFlags mode, bool updateTouched)
+        public ActionResult ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
                 return AccessDeniedView();

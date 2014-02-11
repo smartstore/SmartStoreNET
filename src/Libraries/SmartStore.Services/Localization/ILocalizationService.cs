@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
 using System.Xml;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
 
@@ -122,7 +122,7 @@ namespace SmartStore.Services.Localization
             XmlDocument xmlDocument,
             string rootKey = null,
             bool sourceIsPlugin = false,
-            DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
+            ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false);
 
 		/// <summary>

@@ -616,7 +616,6 @@ namespace SmartStore.Admin.Models.Catalog
 			public bool IsPerItemShipping { get; set; }
 
 			public int[] SelectedProductIds { get; set; }
-			public string ExistingProductIds { get; set; }
 		}
 
         public class CrossSellProductModel : EntityModelBase

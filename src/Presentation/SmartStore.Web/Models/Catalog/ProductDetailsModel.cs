@@ -74,6 +74,7 @@ namespace SmartStore.Web.Models.Catalog
 		public ProductPriceModel ProductPrice { get; set; }
 		public AddToCartModel AddToCart { get; set; }
 		public IList<ProductVariantAttributeModel> ProductVariantAttributes { get; set; }
+		public string AttributeInfo { get; set; }
 
         public bool DisplayAdminLink { get; set; }
         public bool EnableHtmlTextCollapser { get; set; }

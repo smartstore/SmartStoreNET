@@ -62,6 +62,7 @@ namespace SmartStore.Web.Controllers
         private readonly IManufacturerTemplateService _manufacturerTemplateService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductAttributeFormatter _productAttributeFormatter;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly ITaxService _taxService;
@@ -118,6 +119,7 @@ namespace SmartStore.Web.Controllers
             ICategoryTemplateService categoryTemplateService,
             IManufacturerTemplateService manufacturerTemplateService,
             IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
+			IProductAttributeFormatter productAttributeFormatter,
             IWorkContext workContext, IStoreContext storeContext,
 			ITaxService taxService, ICurrencyService currencyService,
             IPictureService pictureService, ILocalizationService localizationService,
@@ -151,6 +153,7 @@ namespace SmartStore.Web.Controllers
             this._manufacturerTemplateService = manufacturerTemplateService;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
+			this._productAttributeFormatter = productAttributeFormatter;
             this._workContext = workContext;
 			this._storeContext = storeContext;
             this._taxService = taxService;
@@ -1297,8 +1300,7 @@ namespace SmartStore.Web.Controllers
 						TextPrompt = attribute.TextPrompt,
 						IsRequired = attribute.IsRequired,
 						AttributeControlType = attribute.AttributeControlType,
-						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions,
-						IsDisabled = isBundlePricing
+						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions
 					};
 
 					if (attribute.ShouldHaveValues())
@@ -1375,7 +1377,10 @@ namespace SmartStore.Web.Controllers
 							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id);
 					}
 
-					model.ProductVariantAttributes.Add(pvaModel);
+					if (!isBundlePricing)
+					{
+						model.ProductVariantAttributes.Add(pvaModel);
+					}
 				}
 			}
 
@@ -1395,6 +1400,12 @@ namespace SmartStore.Web.Controllers
 						_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
 
 					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
+
+					if (isBundlePricing)
+					{
+						model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, attributeXml, _workContext.CurrentCustomer,
+							renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+					}
 
 					model.CombinationSelected = model.Combinations
 						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
@@ -1423,7 +1434,12 @@ namespace SmartStore.Web.Controllers
 
             #region Properties
 
-			if (model.IsAvailable)
+			if (productBundleItem != null && !productBundleItem.BundleProduct.BundlePerItemShoppingCart)
+			{
+				model.IsAvailable = true;
+				model.StockAvailability = "";
+			}			
+			else if (model.IsAvailable)
 			{
 				model.IsAvailable = product.IsAvailableByStock();
 				model.StockAvailability = product.FormatStockMessage(_localizationService);

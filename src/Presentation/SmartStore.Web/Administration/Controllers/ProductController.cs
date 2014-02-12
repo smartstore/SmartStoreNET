@@ -1886,13 +1886,6 @@ namespace SmartStore.Admin.Controllers
 				IsPerItemShipping = product.BundlePerItemShipping
 			};
 
-			var productIds = new List<int>();
-			productIds.Add(product.Id);
-			productIds.AddRange(_productService.GetBundleItems(productId, true).Select(x => x.ProductId));
-			
-			if (productIds.Count > 0)
-				model.ExistingProductIds = string.Join(",", productIds);
-
 			//categories
 			var allCategories = _categoryService.GetAllCategories(showHidden: true);
 			var mappedCategories = allCategories.ToDictionary(x => x.Id);
@@ -1957,12 +1950,10 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult BundleItemAddPopupList(GridCommand command, ProductModel.AddBundleItemModel model, string existingIds)
+		public ActionResult BundleItemAddPopupList(GridCommand command, ProductModel.AddBundleItemModel model)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
-
-			var existingProductIds = existingIds.ToIntArray();
 
 			var searchContext = new ProductSearchContext()
 			{
@@ -1983,7 +1974,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var productModel = x.ToModel();
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-				productModel.ProductSelectCheckboxClass = (existingProductIds.Contains(x.Id) || !x.CanBeBundleItem() ? " hide" : "");
+				productModel.ProductSelectCheckboxClass = (!x.CanBeBundleItem() ? " hide" : "");
 
 				return productModel;
 			});

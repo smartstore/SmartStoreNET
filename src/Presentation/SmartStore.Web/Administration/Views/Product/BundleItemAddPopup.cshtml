@@ -112,7 +112,7 @@
 							.Width(100);
 					})
 					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("BundleItemAddPopupList", "Product", new { existingIds = Model.ExistingProductIds }))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("BundleItemAddPopupList", "Product"))
 					.ClientEvents(events => events.OnDataBinding("bundleItem_onDataBinding"))
 					.EnableCustomBinding(true))
             </td>

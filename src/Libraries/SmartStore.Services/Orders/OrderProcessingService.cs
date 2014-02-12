@@ -557,10 +557,7 @@ namespace SmartStore.Services.Orders
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     //load shopping cart
-					cart = customer.ShoppingCartItems
-						.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-						.Where(sci => sci.StoreId == processPaymentRequest.StoreId)
-						.ToList();
+					cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
 
                     if (cart.Count == 0)
                         throw new SmartException("Cart is empty");
@@ -585,7 +582,7 @@ namespace SmartStore.Services.Orders
                     {
                         var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.ShoppingCartType,
 							sci.Product, processPaymentRequest.StoreId, sci.AttributesXml,
-                            sci.CustomerEnteredPrice, sci.Quantity, false);
+                            sci.CustomerEnteredPrice, sci.Quantity, false, childItems: sci.ChildItems);
                         if (sciWarnings.Count > 0)
                         {
                             var warningsSb = new StringBuilder();

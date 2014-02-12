@@ -1617,7 +1617,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult GetCartList(int customerId, int cartTypeId)
         {
             var customer = _customerService.GetCustomerById(customerId);
-            var cart = customer.ShoppingCartItems.Where(x => x.ShoppingCartTypeId == cartTypeId).ToList();
+            var cart = customer.GetCartItems((ShoppingCartType)cartTypeId);
 
             var gridModel = new GridModel<ShoppingCartItemModel>()
             {

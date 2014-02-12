@@ -416,7 +416,13 @@ namespace SmartStore.Web.Controllers
 							{
 								#region Simple product
 
-								minPossiblePrice = _priceCalculationService.GetFinalPrice(product,
+								IList<ProductBundleItem> bundleItems = null;
+								bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
+
+								if (isBundlePerItemPricing)
+									bundleItems = _productService.GetBundleItems(product.Id);
+
+								minPossiblePrice = _priceCalculationService.GetFinalPrice(product, bundleItems,
 									_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 
 								//add to cart button
@@ -459,7 +465,7 @@ namespace SmartStore.Web.Controllers
 
 											//do we have tier prices configured?
 											var tierPrices = new List<TierPrice>();
-											if (product.HasTierPrices)
+											if (product.HasTierPrices && !isBundlePerItemPricing)
 											{
 												tierPrices.AddRange(product.TierPrices
 													.OrderBy(tp => tp.Quantity)
@@ -2411,10 +2417,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult CrossSellProducts(int? productThumbPictureSize)
         {
-			var cart = _workContext.CurrentCustomer.ShoppingCartItems
-				 .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-				 .Where(sci => sci.StoreId == _storeContext.CurrentStore.Id)
-				 .ToList();
+			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             var products = _productService.GetCrosssellProductsByShoppingCart(cart, _shoppingCartSettings.CrossSellsNumber);
 			//ACL and store mapping

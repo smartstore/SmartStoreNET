@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 {
@@ -50,7 +51,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
                 return false;
 
             //cart
-			var cart = request.Customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart && x.StoreId == request.Store.Id);
+			var cart = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
             bool found = false;
             foreach (var restrictedProduct in restrictedProducts)

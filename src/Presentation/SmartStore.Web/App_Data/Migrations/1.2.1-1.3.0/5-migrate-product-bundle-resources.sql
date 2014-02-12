@@ -221,7 +221,7 @@ SET @resources='
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNotePerItemPricing">
 		<Value><![CDATA[
-		<p>Following is included or taken into account while calculating the price of bundle items are:<br />Special price, price adjustment of attributes, per bundle item specified discounts and quantities.</p>
+		<p>Included or taken into account during calculation of the price of bundle items are:<br />Special price, price adjustment of attributes, per bundle item specified discounts and quantities.</p>
 		<p>Not included and taken into account are:<br />Tier prices, customer enters price, call for price, weight adjustment of attributes, all other discounts.</p>
 		<p>The display of basic prices can be controlled by an option (see catalog settings).</p>
 		]]></Value>
@@ -237,6 +237,14 @@ SET @resources='
 		]]></Value>
 		<Value lang="de"><![CDATA[
 		<p>Bei der Preisberechnung per Bundle nicht enthalten bzw. unberücksichtigt sind:<br />Mehr-/Minderpreise von Attributen, Rabatte von Bundle-Bestandteilen. Ferner ist eine Attributauswahl durch den Kunden nicht möglich.</p>
+		]]></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.AdminNotePerItemShipping">
+		<Value><![CDATA[
+		<p>Included or taken into account during calculation of shipping cost of bundle items are:<br />Shipping enabled, Free shipping, Additional shipping charge.</p>
+		]]></Value>
+		<Value lang="de"><![CDATA[
+		<p>Bei der Versandkostenberechnung per Bundle-Bestandteile enthalten bzw. berücksichtigt sind:<br />Versand möglich, Versandkostenfrei, Transportzuschlag.</p>
 		]]></Value>
 	</LocaleResource>
 	
@@ -278,6 +286,10 @@ SET @resources='
 		<Value>The bundle item "{0}" is not published.</Value>
 		<Value lang="de">Der Bundle-Bestandteil "{0}" wurde nicht veröffentlicht.</Value>
 	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Bundle.BundleItemNotFound">
+		<Value>The bundle item "{0}" cannot be found.</Value>
+		<Value lang="de">Der Bundle-Bestandteil "{0}" wurde nicht gefunden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Bundle.MissingProduct">
 		<Value>The bundle item "{0}" has a missing product or bundle link.</Value>
 		<Value lang="de">Bei dem Bundle-Bestandteil "{0}" fehlt die Verknüpfung zum Produkt oder Bundle.</Value>
@@ -297,6 +309,24 @@ SET @resources='
 	<LocaleResource Name="ShoppingCart.Bundle.NoCustomerEnteredPrice">
 		<Value>Price proposals are not possible for this bundle.</Value>
 		<Value lang="de">Bei diesem Bundle sind Preisvorschläge nicht möglich.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="ShoppingCart.DeleteCartItem.Success">
+		<Value>The product has been removed.</Value>
+		<Value lang="de">Das Produkt wurde entfernt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.DeleteCartItem.Failed">
+		<Value>An error occurred during the removal of the product.</Value>
+		<Value lang="de">Es ist ein Fehler beim Entfernen des Produktes aufgetreten.</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Common.NoProcessingSecurityIssue">
+		<Value>The operation was not carried out for security reasons.</Value>
+		<Value lang="de">Der Vorgang wurde aus Sicherheitsgründen nicht ausgeführt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.ProductNotAddedToTheCart">
+		<Value>Product could not be added to the shopping cart.</Value>
+		<Value lang="de">Produkt konnte nicht zum Warenkorb hinzugefügt werden.</Value>
 	</LocaleResource>
 
 </Language>

@@ -434,9 +434,28 @@ namespace SmartStore.Services.Orders
             if (IsFreeShipping(cart))
                 return decimal.Zero;
 
-			var adjustedRate = shippingRate;
+			decimal adjustedRate = decimal.Zero;
+			decimal bundlePerItemShipping = decimal.Zero;
 			bool ignoreAdditionalShippingCharge = false;
 			ShippingMethod shippingMethod;
+
+			foreach (var item in cart)
+			{
+				if (item.Product != null && item.Product.ProductType == ProductType.BundledProduct && item.Product.BundlePerItemShipping)
+				{
+					if (item.ChildItems != null)
+					{
+						foreach (var childItem in item.ChildItems.Where(x => x.IsShipEnabled && !x.IsFreeShipping))
+							bundlePerItemShipping += shippingRate;
+					}
+				}
+				else if (adjustedRate == decimal.Zero)
+				{
+					adjustedRate = shippingRate;
+				}
+			}
+
+			adjustedRate += bundlePerItemShipping;
 
 			if (shippingMethodName.HasValue() && shippingMethods != null &&
 				(shippingMethod = shippingMethods.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(shippingMethodName))) != null)

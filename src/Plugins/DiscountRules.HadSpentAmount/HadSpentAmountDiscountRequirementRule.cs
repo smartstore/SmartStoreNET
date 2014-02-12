@@ -87,9 +87,7 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 
         private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request, bool includingDiscount = true)
         {
-            var cartItems = request.Customer.ShoppingCartItems
-                .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == request.Store.Id)
-                .ToList();
+            var cartItems = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
             decimal spentAmount = decimal.Zero;
             decimal taxRate = decimal.Zero;

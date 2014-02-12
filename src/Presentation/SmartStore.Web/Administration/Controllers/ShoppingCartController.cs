@@ -82,7 +82,7 @@ namespace SmartStore.Admin.Controllers
                         CustomerEmail = x.IsGuest() ?
                         _localizationService.GetResource("Admin.Customers.Guest") :
                         x.Email,
-                        TotalItems = x.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList().GetTotalProducts()
+                        TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
                     };
                 }),
                 Total = customers.TotalCount
@@ -100,7 +100,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var customer = _customerService.GetCustomerById(customerId);
-            var cart = customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart);
 
             var gridModel = new GridModel<ShoppingCartItemModel>()
             {
@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Controllers
                         CustomerEmail = x.IsGuest() ?
                         _localizationService.GetResource("Admin.Customers.Guest") :
                         x.Email,
-                        TotalItems = x.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList().GetTotalProducts()
+                        TotalItems = x.CountProductsInCart(ShoppingCartType.Wishlist)
                     };
                 }),
                 Total = customers.TotalCount
@@ -177,7 +177,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var customer = _customerService.GetCustomerById(customerId);
-            var cart = customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist);
 
             var gridModel = new GridModel<ShoppingCartItemModel>()
             {

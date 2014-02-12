@@ -134,8 +134,19 @@ namespace SmartStore.Core.Domain.Orders
             {
                 decimal additionalShippingCharge = decimal.Zero;
 				var product = this.Product;
+
 				if (product != null)
-					additionalShippingCharge = product.AdditionalShippingCharge * Quantity;
+				{
+					if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemShipping)
+					{
+						if (ChildItems != null)
+							ChildItems.Each(x => additionalShippingCharge += (x.AdditionalShippingCharge * x.Quantity));
+					}
+					else
+					{
+						additionalShippingCharge = product.AdditionalShippingCharge * Quantity;
+					}
+				}
                 return additionalShippingCharge;
             }
         }

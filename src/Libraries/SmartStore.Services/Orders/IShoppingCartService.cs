@@ -86,7 +86,8 @@ namespace SmartStore.Services.Orders
 		/// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="bundleItem">Product bundle item</param>
 		/// <returns>Warnings</returns>
-		IList<string> GetBundleItemWarnings(ShoppingCartType shoppingCartType, ProductBundleItem bundleItem);
+		IList<string> GetBundleItemWarnings(ProductBundleItem bundleItem);
+		IList<string> GetBundleItemWarnings(IList<ShoppingCartItem> cartItems);
 
         /// <summary>
         /// Validates shopping cart item
@@ -105,6 +106,7 @@ namespace SmartStore.Services.Orders
 		/// <param name="getRequiredProductWarnings">A value indicating whether we should validate required products (products which require other products to be added to the cart)</param>
 		/// <param name="getBundleWarnings">A value indicating whether we should validate bundle and bundle items</param>
 		/// <param name="bundleItem">Product bundle item if bundles should be validated</param>
+		/// <param name="childItems">Child cart items to validate bundle items</param>
         /// <returns>Warnings</returns>
         IList<string> GetShoppingCartItemWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, int storeId, 
@@ -112,7 +114,7 @@ namespace SmartStore.Services.Orders
 			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
             bool getStandardWarnings = true, bool getAttributesWarnings = true,
             bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true,
-			bool getBundleWarnings = true, ProductBundleItem bundleItem = null);
+			bool getBundleWarnings = true, ProductBundleItem bundleItem = null, IList<ShoppingCartItem> childItems = null);
 
         /// <summary>
         /// Validates whether this shopping cart is valid
@@ -177,5 +179,7 @@ namespace SmartStore.Services.Orders
         /// <param name="fromCustomer">From customer</param>
         /// <param name="toCustomer">To customer</param>
         void MigrateShoppingCart(Customer fromCustomer, Customer toCustomer);
+
+		IList<string> Copy(ShoppingCartItem item, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
     }
 }

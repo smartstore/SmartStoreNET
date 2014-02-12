@@ -24,6 +24,11 @@
 		@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNoteGeneral"))
 
 		@Html.Raw(T("Admin.Catalog.Products.BundleItems." + (Model.IsPerItemPricing ? "AdminNotePerItemPricing" : "AdminNoteBundlePricing")))
+
+		@if (Model.IsPerItemShipping)
+		{
+			@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNotePerItemShipping"))
+		}
 	</div>
 
     if (ViewBag.RefreshPage == true)

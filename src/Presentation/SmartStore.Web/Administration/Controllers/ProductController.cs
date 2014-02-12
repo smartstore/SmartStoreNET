@@ -1882,7 +1882,8 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ProductModel.AddBundleItemModel()
 			{
-				IsPerItemPricing = product.BundlePerItemPricing
+				IsPerItemPricing = product.BundlePerItemPricing,
+				IsPerItemShipping = product.BundlePerItemShipping
 			};
 
 			var productIds = new List<int>();

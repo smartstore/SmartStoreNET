@@ -370,5 +370,11 @@ namespace SmartStore.Services.Catalog
 			filter = null;
 			return false;
 		}
+		public static string GetLocalizedName(this ProductBundleItem bundleItem)
+		{
+			if (bundleItem != null)
+				return (bundleItem.GetLocalized(x => x.Name) ?? bundleItem.Product.GetLocalized(x => x.Name));
+			return null;
+		}
     }
 }

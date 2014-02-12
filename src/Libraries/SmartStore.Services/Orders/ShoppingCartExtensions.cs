@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
@@ -159,22 +160,27 @@ namespace SmartStore.Services.Orders
 			{
 				var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
 
-				foreach (var item in shoppingCart.Where(x => x.ParentItemId != null).OrderByDescending(x => x.Id))
+				var childItems = shoppingCart
+					.Where(x => x.ParentItemId != null && x.Product.CanBeBundleItem())
+					.OrderByDescending(x => x.Id);
+
+				foreach (var childItem in childItems)
 				{
-					var parentItem = shoppingCart.FirstOrDefault(x => x.Id == item.ParentItemId);
-					if (parentItem != null)
+					var parentItem = shoppingCart.FirstOrDefault(x => x.Id == childItem.ParentItemId);
+
+					if (parentItem != null && parentItem.ShoppingCartTypeId == childItem.ShoppingCartTypeId)
 					{
-						if (parentItem.Product != null && parentItem.Product.BundlePerItemPricing && item.AttributesXml != null && item.BundleItem != null)
+						if (parentItem.Product != null && parentItem.Product.BundlePerItemPricing && childItem.AttributesXml != null && childItem.BundleItem != null)
 						{
-							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(item.AttributesXml);
+							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(childItem.AttributesXml);
 							if (attributeValues != null)
-								attributeValues.Each(x => item.BundleItem.AdditionalCharge += x.PriceAdjustment);
+								attributeValues.Each(x => childItem.BundleItem.AdditionalCharge += x.PriceAdjustment);
 						}
 
 						if (parentItem.ChildItems == null)
-							parentItem.ChildItems = new List<ShoppingCartItem>() { item };
+							parentItem.ChildItems = new List<ShoppingCartItem>() { childItem };
 						else
-							parentItem.ChildItems.Add(item);
+							parentItem.ChildItems.Add(childItem);
 					}
 				}
 			}

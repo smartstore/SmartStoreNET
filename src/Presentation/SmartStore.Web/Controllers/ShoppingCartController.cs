@@ -362,6 +362,147 @@ namespace SmartStore.Web.Controllers
 
 			return model;
 		}
+		private WishlistModel.ShoppingCartItemModel PrepareWishlistCartItemModel(ShoppingCartItem sci)
+		{
+			sci.Product.MergeWithCombination(sci.AttributesXml);
+
+			var model = new WishlistModel.ShoppingCartItemModel()
+			{
+				Id = sci.Id,
+				Sku = sci.Product.Sku,
+				ProductId = sci.Product.Id,
+				ProductName = sci.Product.GetLocalized(x => x.Name),
+				ProductSeName = sci.Product.GetSeName(),
+				Quantity = sci.Quantity,
+				ShortDesc = sci.Product.ShortDescription,
+				ProductType = sci.Product.ProductType,
+				VisibleIndividually = sci.Product.VisibleIndividually
+			};
+
+			if (sci.BundleItem != null)
+			{
+				model.BundlePerItemPricing = sci.BundleItem.BundleProduct.BundlePerItemPricing;
+				model.BundlePerItemShoppingCart = sci.BundleItem.BundleProduct.BundlePerItemShoppingCart;
+				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml, _workContext.CurrentCustomer,
+					renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+
+				string bundleItemName = sci.BundleItem.GetLocalized(x => x.Name);
+				if (bundleItemName.HasValue())
+					model.ProductName = bundleItemName;
+
+				string bundleItemShortDescription = sci.BundleItem.GetLocalized(x => x.ShortDescription);
+				if (bundleItemShortDescription.HasValue())
+					model.ShortDesc = bundleItemShortDescription;
+
+				model.BundleItem.Id = sci.BundleItem.Id;
+				model.BundleItem.DisplayOrder = sci.BundleItem.DisplayOrder;
+
+				if (model.BundlePerItemPricing && model.BundlePerItemShoppingCart)
+				{
+					decimal taxRate = decimal.Zero;
+					decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
+					decimal bundleItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+
+					model.BundleItem.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItemSubTotalWithDiscount);
+				}
+			}
+			else
+			{
+				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml);
+			}
+
+			//allowed quantities
+			var allowedQuantities = sci.Product.ParseAllowedQuatities();
+			foreach (var qty in allowedQuantities)
+			{
+				model.AllowedQuantities.Add(new SelectListItem()
+				{
+					Text = qty.ToString(),
+					Value = qty.ToString(),
+					Selected = sci.Quantity == qty
+				});
+			}
+
+			//recurring info
+			if (sci.Product.IsRecurring)
+			{
+				model.RecurringInfo = string.Format(_localizationService.GetResource("ShoppingCart.RecurringPeriod"), 
+					sci.Product.RecurringCycleLength, sci.Product.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
+			}
+
+			//unit prices
+			if (sci.Product.CallForPrice)
+			{
+				model.UnitPrice = _localizationService.GetResource("Products.CallForPrice");
+			}
+			else
+			{
+				decimal taxRate = decimal.Zero;
+				decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
+				decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
+				
+				model.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
+			}
+
+			//subtotal, discount
+			if (sci.Product.CallForPrice)
+			{
+				model.SubTotal = _localizationService.GetResource("Products.CallForPrice");
+			}
+			else
+			{
+				//sub total
+				decimal taxRate = decimal.Zero;
+				decimal shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
+				decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+				
+				model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
+
+				//display an applied discount amount
+				decimal shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
+				decimal shoppingCartItemDiscountBase = shoppingCartItemSubTotalWithoutDiscountBase - shoppingCartItemSubTotalWithDiscountBase;
+				
+				if (shoppingCartItemDiscountBase > decimal.Zero)
+				{
+					decimal shoppingCartItemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemDiscountBase, _workContext.WorkingCurrency);
+					
+					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
+				}
+			}
+
+			//picture
+			if (sci.BundleItem != null)
+			{
+				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
+					model.Picture = PrepareCartItemPictureModel(sci.Product, _mediaSettings.CartThumbBundleItemPictureSize, true, model.ProductName, sci.AttributesXml);
+			}
+			else
+			{
+				if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
+					model.Picture = PrepareCartItemPictureModel(sci.Product, _mediaSettings.CartThumbPictureSize, true, model.ProductName, sci.AttributesXml);
+			}
+
+			//item warnings
+			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, sci.ShoppingCartType, sci.Product, sci.StoreId,
+				sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, false, childItems: sci.ChildItems);
+
+			foreach (var warning in itemWarnings)
+			{
+				model.Warnings.Add(warning);
+			}
+
+			if (sci.ChildItems != null)
+			{
+				foreach (var childItem in sci.ChildItems.Where(x => x.Id != sci.Id))
+				{
+					var childModel = PrepareWishlistCartItemModel(childItem);
+
+					model.ChildItems.Add(childModel);
+				}
+			}
+
+			return model;
+		}
 
         /// <summary>
         /// Prepare shopping cart model
@@ -672,7 +813,10 @@ namespace SmartStore.Web.Controllers
             model.CustomerGuid = customer.CustomerGuid;
             model.CustomerFullname = customer.GetFullName();
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
+			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
             model.ShowSku = _catalogSettings.ShowProductSku;
+			model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
+			model.BundleThumbSize = _mediaSettings.CartThumbBundleItemPictureSize;
 
             //cart warnings
             var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, "", false);
@@ -685,87 +829,9 @@ namespace SmartStore.Web.Controllers
 
             foreach (var sci in cart)
             {
-                sci.Product.MergeWithCombination(sci.AttributesXml);
-                var cartItemModel = new WishlistModel.ShoppingCartItemModel()
-                {
-                    Id = sci.Id,
-                    Sku = sci.Product.Sku,
-                    ProductId = sci.Product.Id,
-					ProductName = sci.Product.GetLocalized(x => x.Name),
-                    ProductSeName = sci.Product.GetSeName(),
-                    Quantity = sci.Quantity,
-                    AttributeInfo = _productAttributeFormatter.FormatAttributes(sci.Product, sci.AttributesXml),
-                };
+				var wishlistCartItemModel = PrepareWishlistCartItemModel(sci);
 
-                //allowed quantities
-                var allowedQuantities = sci.Product.ParseAllowedQuatities();
-                foreach (var qty in allowedQuantities)
-                {
-                    cartItemModel.AllowedQuantities.Add(new SelectListItem()
-                    {
-                        Text = qty.ToString(),
-                        Value = qty.ToString(),
-                        Selected = sci.Quantity == qty
-                    });
-                }
-
-
-                //recurring info
-				if (sci.Product.IsRecurring)
-				{
-					cartItemModel.RecurringInfo = string.Format(_localizationService.GetResource("ShoppingCart.RecurringPeriod"), sci.Product.RecurringCycleLength, sci.Product.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
-				}
-
-                //unit prices
-                if (sci.Product.CallForPrice)
-                {
-                    cartItemModel.UnitPrice = _localizationService.GetResource("Products.CallForPrice");
-                }
-                else
-                {
-                    decimal taxRate = decimal.Zero;
-                    decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
-                    decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
-                    cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
-                }
-                //subtotal, discount
-                if (sci.Product.CallForPrice)
-                {
-                    cartItemModel.SubTotal = _localizationService.GetResource("Products.CallForPrice");
-                }
-                else
-                {
-                    //sub total
-                    decimal taxRate = decimal.Zero;
-                    decimal shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
-                    decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-                    cartItemModel.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
-
-                    //display an applied discount amount
-                    decimal shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
-                    decimal shoppingCartItemDiscountBase = shoppingCartItemSubTotalWithoutDiscountBase - shoppingCartItemSubTotalWithDiscountBase;
-                    if (shoppingCartItemDiscountBase > decimal.Zero)
-                    {
-                        decimal shoppingCartItemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemDiscountBase, _workContext.WorkingCurrency);
-                        cartItemModel.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
-                    }
-                }
-
-                //picture
-                if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
-                {
-                    cartItemModel.Picture = PrepareCartItemPictureModel(sci.Product,
-                        _mediaSettings.CartThumbPictureSize, true, cartItemModel.ProductName, sci.AttributesXml);
-                }
-
-                //item warnings
-                var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, sci.ShoppingCartType, sci.Product, sci.StoreId,
-					sci.AttributesXml, sci.CustomerEnteredPrice, sci.Quantity, false, childItems: sci.ChildItems);
-
-                foreach (var warning in itemWarnings)
-                    cartItemModel.Warnings.Add(warning);
-
-                model.Items.Add(cartItemModel);
+                model.Items.Add(wishlistCartItemModel);
             }
 
             #endregion
@@ -819,9 +885,9 @@ namespace SmartStore.Web.Controllers
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
                 model.DisplayCheckoutButton = checkoutAttributes.Count == 0 && minOrderSubtotalAmountOk;
 
-                //products. sort descending (recently added products)... no cause the order should be equal to the one in the cart
+                //products. sort descending (recently added products)
                 foreach (var sci in cart
-                    //.OrderByDescending(x => x.Id)
+                    .OrderByDescending(x => x.Id)
                     .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
                     .ToList())
                 {

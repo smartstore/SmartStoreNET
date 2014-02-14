@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Media;
 
@@ -33,7 +34,10 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         // codehint: sm-add
         public int ThumbSize { get; set; }
+		public int BundleThumbSize { get; set; }
         public int IgnoredProductsCount { get; set; }
+		public bool DisplayShortDesc { get; set; }
+		public bool ShowProductBundleImages { get; set; }
         
 		#region Nested Classes
 
@@ -44,6 +48,8 @@ namespace SmartStore.Web.Models.ShoppingCart
                 Picture = new PictureModel();
                 AllowedQuantities = new List<SelectListItem>();
                 Warnings = new List<string>();
+				ChildItems = new List<ShoppingCartItemModel>();
+				BundleItem = new BundleItemModel();
             }
             public string Sku { get; set; }
 
@@ -54,6 +60,10 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductName { get; set; }
 
             public string ProductSeName { get; set; }
+
+			public bool VisibleIndividually { get; set; }
+
+			public ProductType ProductType { get; set; }
 
             public string UnitPrice { get; set; }
 
@@ -70,7 +80,19 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public IList<string> Warnings { get; set; }
 
+			public string ShortDesc { get; set; }
+
+			public bool BundlePerItemPricing { get; set; }
+			public bool BundlePerItemShoppingCart { get; set; }
+			public BundleItemModel BundleItem { get; set; }
+			public IList<ShoppingCartItemModel> ChildItems { get; set; }
         }
+
+		public partial class BundleItemModel : EntityModelBase
+		{
+			public string PriceWithDiscount { get; set; }
+			public int DisplayOrder { get; set; }
+		}
 
 		#endregion
     }

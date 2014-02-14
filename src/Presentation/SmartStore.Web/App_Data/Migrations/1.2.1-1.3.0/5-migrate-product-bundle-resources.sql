@@ -151,8 +151,8 @@ SET @resources='
 		<Value lang="de">Bundle-Bestandteil einzeln in den Warenkorb</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.BundlePerItemShoppingCart.Hint">
-		<Value>Sets whether the bundle or all products in the bundle can be added to the shopping cart.</Value>
-		<Value lang="de">Legt fest, ob das Bundle oder alle Produkte im Bundle dem Warenkorb hinzugefügt werden können.</Value>
+		<Value>Quantity and price of bundle items appear in the shopping cart. Inventory management based on the bundle items, rather than of the bundle.</Value>
+		<Value lang="de">Menge und Preis von Bundle-Bestandteilen werden im Warenkorb angezeigt. Bestandsführung erfolgt auf Basis der Bundle-Bestandteile, anstatt des Bundles.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Products.NoBundledItems">
@@ -166,6 +166,30 @@ SET @resources='
 	<LocaleResource Name="Admin.Configuration.Settings.Media.BundledProductPictureSize.Hint">
 		<Value>The default size (pixels) for bundled product images.</Value>
 		<Value lang="de">Die Standardbildgröße (in Pixel) von Produkten im Bundle.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize">
+		<Value>Cart/Wishlist thumbnail image size for bundle items</Value>
+		<Value lang="de">Bildgröße der Thumbnails von Bundle-Bestandteilen im Warenkorb</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize.Hint">
+		<Value>The default size (pixels) for product thumbnail images of bundle items on the shopping cart and wishlist.</Value>
+		<Value lang="de">Standardgröße in Pixeln der Produktthumbnails von Bundle-Bestandteilen im Warenkorb und auf dem Wunschzettel.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart">
+		<Value>Show product images of bundle items on cart</Value>
+		<Value lang="de">Anzeige der Produktbilder von Bundle-Bestandteilen im Warenkorb</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart.Hint">
+		<Value>Determines whether product images of bundle items should be displayed in your store shopping cart.</Value>
+		<Value lang="de">Zeigt Produktbilder von Bundle-Bestandteilen im Warenkorb an.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList">
+		<Value>Show product images of bundle items on wishlist</Value>
+		<Value lang="de">Zeigt Produktbilder von Bundle-Bestandteilen auf dem Wunschzettel</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList.Hint">
+		<Value>Determines whether product images of bundle items should be displayed on customer wishlists.</Value>
+		<Value lang="de">Zeigt Produktbilder von Bundle-Bestandteilen auf dem Wunschzettel an.</Value>
 	</LocaleResource>
 	
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Attributes">

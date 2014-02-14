@@ -155,6 +155,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CartThumbBundleItemPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CartThumbBundleItemPictureSize)
+                @Html.ValidationMessageFor(model => model.CartThumbBundleItemPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.MiniCartThumbPictureSize)
             </td>
             <td class="adminData">

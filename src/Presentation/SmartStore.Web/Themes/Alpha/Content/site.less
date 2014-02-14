@@ -836,6 +836,34 @@ table.cart .cart-item-row .qty-input {
 	width: 32px;
 }
 
+table.cart {
+    tbody.cart-body:nth-child(odd) td {
+      background-color: @tableBackgroundAccent;
+    }
+}
+.cart-body {
+	border: none !important;
+}
+table.cart .cart-item-bundle-row td {
+	border: none !important;
+}
+
+.cart-body-bundle .bundle-item {
+	.bundle-item-image {
+		float: left;
+		margin-right: 16px;
+	}
+
+	.bundle-item-body {
+		display: table-cell;
+	}
+
+	.bundle-item-attribute-info {
+		font-size: 0.85em;
+		line-height: 1.45em;
+	}
+}
+
 
 .order-summary-content .cart-footer {
 	margin-top: 20px;

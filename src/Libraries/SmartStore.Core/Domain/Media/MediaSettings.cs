@@ -14,6 +14,7 @@ namespace SmartStore.Core.Domain.Media
         public int CategoryThumbPictureSize { get; set; }
         public int ManufacturerThumbPictureSize { get; set; }
         public int CartThumbPictureSize { get; set; }
+		public int CartThumbBundleItemPictureSize { get; set; }
         public int MiniCartThumbPictureSize { get; set; }
         public int AutoCompleteSearchThumbPictureSize { get; set; }
 

@@ -28,6 +28,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool ShowSku { get; set; }
         public bool ShowProductImages { get; set; }
+		public bool ShowProductBundleImages { get; set; }
         public bool IsEditable { get; set; }
         public IList<ShoppingCartItemModel> Items { get; set; }
 
@@ -44,6 +45,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         //codehint: sm-add
         public int MediaDimensions { get; set; }
+		public int BundleThumbSize { get; set; }
         public bool DisplayDeliveryTime { get; set; }
         public bool DisplayShortDesc { get; set; }
         
@@ -61,6 +63,8 @@ namespace SmartStore.Web.Models.ShoppingCart
                 Picture = new PictureModel();
                 AllowedQuantities = new List<SelectListItem>();
                 Warnings = new List<string>();
+				ChildItems = new List<ShoppingCartItemModel>();
+				BundleItem = new BundleItemModel();
             }
             public string Sku { get; set; }
 
@@ -71,6 +75,10 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductName { get; set; }
 
             public string ProductSeName { get; set; }
+
+			public bool VisibleIndividually { get; set; }
+
+			public ProductType ProductType { get; set; }
 
             public string UnitPrice { get; set; }
 
@@ -87,7 +95,6 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public IList<string> Warnings { get; set; }
 
-            //codehint: BEGIN sm-add
             public bool IsShipEnabled { get; set; }
 
             public string DeliveryTimeName { get; set; }
@@ -95,9 +102,18 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string DeliveryTimeHexValue { get; set; }
 
             public string ShortDesc { get; set; }
-            //codehint: END sm-add
 
+			public bool BundlePerItemPricing { get; set; }
+			public bool BundlePerItemShoppingCart { get; set; }
+			public BundleItemModel BundleItem { get; set; }
+			public IList<ShoppingCartItemModel> ChildItems { get; set; }
         }
+
+		public partial class BundleItemModel : EntityModelBase
+		{
+			public string PriceWithDiscount { get; set; }
+			public int DisplayOrder { get; set; }
+		}
 
         public partial class CheckoutAttributeModel : EntityModelBase
         {

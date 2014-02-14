@@ -42,6 +42,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbPictureSize")]
         public int CartThumbPictureSize { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize")]
+		public int CartThumbBundleItemPictureSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MiniCartThumbPictureSize")]
         public int MiniCartThumbPictureSize { get; set; }
         

@@ -22,8 +22,14 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnShoppingCart")]
         public bool ShowProductImagesOnShoppingCart { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart")]
+		public bool ShowProductBundleImagesOnShoppingCart { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnWishList")]
         public bool ShowProductImagesOnWishList { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList")]
+		public bool ShowProductBundleImagesOnWishList { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox")]
         public bool ShowDiscountBox { get; set; }

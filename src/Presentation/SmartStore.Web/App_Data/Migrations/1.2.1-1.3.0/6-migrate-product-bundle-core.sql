@@ -119,6 +119,24 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'mediasettings.cartthumbbundleitempicturesize')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'mediasettings.cartthumbbundleitempicturesize', N'32', 0)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'shoppingcartsettings.showproductbundleimagesonshoppingcart')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'shoppingcartsettings.showproductbundleimagesonshoppingcart', N'True', 0)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'shoppingcartsettings.showproductbundleimagesonwishlist')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'shoppingcartsettings.showproductbundleimagesonwishlist', N'True', 0)
+END
+GO
+
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ShoppingCartItem]') and NAME='ParentItemId')
 BEGIN
 	ALTER TABLE [ShoppingCartItem] ADD [ParentItemId] int NULL

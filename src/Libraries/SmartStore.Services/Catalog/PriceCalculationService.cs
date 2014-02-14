@@ -407,7 +407,7 @@ namespace SmartStore.Services.Catalog
 
             if (appliedDiscount != null)
             {
-                decimal finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity);
+                decimal finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
                 appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
             }
 
@@ -464,7 +464,7 @@ namespace SmartStore.Services.Catalog
 							attributesTotalPrice += pvaValue.PriceAdjustment;
 					}
 
-					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Quantity);
+					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Quantity, shoppingCartItem.BundleItem);
                 }
             }
 

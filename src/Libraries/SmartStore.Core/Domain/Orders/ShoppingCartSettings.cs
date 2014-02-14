@@ -40,10 +40,20 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool ShowProductImagesOnShoppingCart { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to show product bundle images on shopping cart page
+		/// </summary>
+		public bool ShowProductBundleImagesOnShoppingCart { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to show product image on wishlist page
         /// </summary>
         public bool ShowProductImagesOnWishList { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show product image on wishlist page
+		/// </summary>
+		public bool ShowProductBundleImagesOnWishList { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show discount box on shopping cart page

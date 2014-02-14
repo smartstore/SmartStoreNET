@@ -10,7 +10,7 @@
 
 		@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 		{
-			<div class="bundle-item-image" style="min-width: @(item.ThumbDimensions)px; min-height: @(item.ThumbDimensions);">
+			<div class="bundle-item-image" style="min-width: @(item.ThumbDimensions)px; min-height: @(item.ThumbDimensions)px;">
 				<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl" alt="@item.DetailsPictureModel.AlternateText" title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
 			</div>
 		}
@@ -71,7 +71,7 @@
 				</div>
 			}
 			
-			@if (item.AttributeInfo.HasValue())
+			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
 				<div class="bundle-item-attribute-info muted">
 					@Html.Raw(item.AttributeInfo)

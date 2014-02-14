@@ -160,9 +160,7 @@ namespace SmartStore.Services.Orders
 			{
 				var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
 
-				var childItems = shoppingCart
-					.Where(x => x.ParentItemId != null && x.Product.CanBeBundleItem())
-					.OrderByDescending(x => x.Id);
+				var childItems = shoppingCart.Where(x => x.ParentItemId != null && x.Product.CanBeBundleItem());
 
 				foreach (var childItem in childItems)
 				{
@@ -174,7 +172,10 @@ namespace SmartStore.Services.Orders
 						{
 							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(childItem.AttributesXml);
 							if (attributeValues != null)
+							{
+								childItem.BundleItem.AdditionalCharge = decimal.Zero;
 								attributeValues.Each(x => childItem.BundleItem.AdditionalCharge += x.PriceAdjustment);
+							}
 						}
 
 						if (parentItem.ChildItems == null)

@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Caching;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Caching
@@ -13,7 +14,7 @@ namespace SmartStore.Services.Caching
         /// </summary>
         public void Execute()
         {
-            var cacheManager = new DefaultCacheManager(new StaticCache());
+            var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
             cacheManager.Clear();
         }
     }

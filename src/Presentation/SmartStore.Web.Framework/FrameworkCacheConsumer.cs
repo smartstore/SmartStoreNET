@@ -57,24 +57,24 @@ namespace SmartStore.Web.Framework
         public FrameworkCacheConsumer()
         {
             // TODO inject static cache manager using constructor
-            this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_static");
+			this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("static");
         }
 
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
         {
-            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
             cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
         {
-            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
             cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
         {
-            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
             cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 

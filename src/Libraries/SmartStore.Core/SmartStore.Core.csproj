@@ -114,6 +114,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Async\AsyncState.cs" />
     <Compile Include="Caching\DefaultCacheManager.cs" />
     <Compile Include="Caching\AspNetCache.cs" />
     <Compile Include="Caching\RequestCache.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\Impex\ImportModeFlags.cs" />
     <Compile Include="Data\Impex\ImportMessage.cs" />
+    <Compile Include="Data\Impex\ImportProgressInfo.cs" />
     <Compile Include="Data\Impex\ImportResult.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Domain\Catalog\ProductType.cs" />
@@ -159,6 +161,8 @@
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
+    <Compile Include="Async\AsyncRunner.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
     <Compile Include="IO\MimeTypes.cs" />
     <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Web.Mvc;
 using Autofac;
+using Autofac.Integration.Mvc;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -62,8 +64,7 @@ namespace SmartStore.Core.Infrastructure
         private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker, SmartStoreConfig config)
         {
             var builder = new ContainerBuilder();
-
-            _containerManager = new ContainerManager(builder.Build());
+			_containerManager = new ContainerManager(builder.Build());
             configurer.Configure(this, _containerManager, broker, config);
         }
 

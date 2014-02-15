@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Data;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
-using SmartStore.Services.Events;
-using SmartStore.Data;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -56,6 +58,139 @@ namespace SmartStore.Services.ExportImport
 		/// Import products from XLSX file
 		/// </summary>
 		/// <param name="stream">Stream</param>
+		public virtual async Task<ImportResult> ImportProductsFromExcelAsync(
+			Stream stream, 
+			CancellationToken cancellationToken,
+			IProgress<ImportProgressInfo> progress = null)
+		{
+			Guard.ArgumentNotNull(() => stream);
+
+			var t = await Task.Run<ImportResult>(async () => {
+
+				var result = new ImportResult();
+
+				using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+				{
+					using (var segmenter = new DataSegmenter<Product>(stream))
+					{
+						result.TotalRecords = segmenter.TotalRows;
+						
+						while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
+						{
+							var batch = segmenter.CurrentBatch;
+
+							// Update progress for calling thread
+							if (progress != null)
+							{
+								progress.Report(new ImportProgressInfo
+								{
+									TotalRecords = result.TotalRecords,
+									TotalProcessed = segmenter.CurrentSegmentFirstRowIndex - 1,
+									NewRecords = result.NewRecords,
+									ModifiedRecords = result.ModifiedRecords,
+									ElapsedTime = DateTime.UtcNow - result.StartDateUtc,
+									TotalWarnings = result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
+									TotalErrors = result.Messages.Count(x => x.MessageType == ImportMessageType.Error),
+								});
+							}
+
+							// ===========================================================================
+							// 1.) Import products
+							// ===========================================================================
+							try
+							{
+								await ProcessProducts(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex);
+							}
+
+							// reduce batch to saved (valid) products.
+							// No need to perform import operations on errored products.
+							batch = batch.Where(x => x.Entity != null && !x.IsTransient).AsReadOnly();
+
+							// update result object
+							result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
+							result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+
+							// ===========================================================================
+							// 2.) Import SEO Slugs
+							// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
+							//            as Slugs are going to be validated against existing ones in DB.
+							// ===========================================================================
+							if (batch.Any(x => x.IsNew || (x.ContainsKey("SeName") || x.NameChanged)))
+							{
+								ProcessSlugs(batch, result);
+							}
+
+							// ===========================================================================
+							// 3.) Import product category mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("CategoryIds")))
+							{
+								try
+								{
+									await ProcessProductCategories(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+							// ===========================================================================
+							// 4.) Import product manufacturer mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("ManufacturerIds")))
+							{
+								try
+								{
+									await ProcessProductManufacturers(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+							// ===========================================================================
+							// 5.) Import product picture mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("Picture1") || x.ContainsKey("Picture2") || x.ContainsKey("Picture3")))
+							{
+								try
+								{
+									ProcessProductPictures(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+						}
+					}
+				}
+
+				result.EndDateUtc = DateTime.UtcNow;
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					result.Cancelled = true;
+					result.AddInfo("Import task was cancelled by user");
+				}
+
+				return result;
+			});
+
+			return t;
+		}
+
+		/// <summary>
+		/// Import products from XLSX file
+		/// </summary>
+		/// <param name="stream">Stream</param>
 		public virtual ImportResult ImportProductsFromXlsx(Stream stream)
 		{
 			Guard.ArgumentNotNull(() => stream);
@@ -71,7 +206,7 @@ namespace SmartStore.Services.ExportImport
 					while (segmenter.ReadNextBatch())
 					{
 						var batch = segmenter.CurrentBatch;
-
+						
 						// ===========================================================================
 						// 1.) Import products
 						// ===========================================================================
@@ -155,7 +290,7 @@ namespace SmartStore.Services.ExportImport
 			return result;
 		}
 
-		private void ProcessProducts(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private async Task<int> ProcessProducts(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
 			_rsProduct.AutoCommitEnabled = false;
 
@@ -298,13 +433,18 @@ namespace SmartStore.Services.ExportImport
 			}
 
 			// commit whole batch at once
-			_rsProduct.Context.SaveChanges();
+			var t = await _rsProduct.Context.SaveChangesAsync();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
 				_eventPublisher.EntityInserted(lastInserted);
 			if (lastUpdated != null)
 				_eventPublisher.EntityUpdated(lastUpdated);
+
+			//// ensure all products got imported before processing other stuff.
+			//t.Wait();
+
+			return t;
 		}
 
 		private void ProcessSlugs(ICollection<ImportRow<Product>> batch, ImportResult result)
@@ -326,7 +466,7 @@ namespace SmartStore.Services.ExportImport
 			}
 		}
 
-		private void ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private async Task<int> ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
 			_rsProductCategory.AutoCommitEnabled = false;
 
@@ -362,20 +502,22 @@ namespace SmartStore.Services.ExportImport
 					}
 					catch (Exception ex)
 					{
-						Console.Write("TBD: (MSG)");
+						result.AddWarning(ex.Message, row.GetRowInfo(), "CategoryIds");
 					}
 				}
 			}
 
 			// commit whole batch at once
-			_rsProductCategory.Context.SaveChanges();
+			var t = await _rsProductCategory.Context.SaveChangesAsync();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
 				_eventPublisher.EntityInserted(lastInserted);
+
+			return t;
 		}
 
-		private void ProcessProductManufacturers(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private async Task<int> ProcessProductManufacturers(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
 			_rsProductManufacturer.AutoCommitEnabled = false;
 
@@ -411,17 +553,19 @@ namespace SmartStore.Services.ExportImport
 					}
 					catch (Exception ex)
 					{
-						Console.Write("TBD: (MSG)");
+						result.AddWarning(ex.Message, row.GetRowInfo(), "ManufacturerIds");
 					}
 				}
 			}
 
 			// commit whole batch at once
-			_rsProductManufacturer.Context.SaveChanges();
+			var t = await _rsProductManufacturer.Context.SaveChangesAsync();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
 				_eventPublisher.EntityInserted(lastInserted);
+
+			return t;
 		}
 
 		private void ProcessProductPictures(ICollection<ImportRow<Product>> batch, ImportResult result)
@@ -439,13 +583,16 @@ namespace SmartStore.Services.ExportImport
  					row.GetValue<string>("Picture1"),
 					row.GetValue<string>("Picture2"),
 					row.GetValue<string>("Picture3")
-				}.Where(x => x.HasValue());
+				};
 
+				int i = 0;
 				try
 				{
-					foreach (var picture in pictures)
+					for (i = 0; i < pictures.Length; i++)
 					{
-						if (!File.Exists(picture))
+						var picture = pictures[i];
+
+						if (picture.IsEmpty() || !File.Exists(picture))
 							continue;
 
 						var currentPictures = _rsProductPicture.TableUntracked.Where(x => x.ProductId == row.Entity.Id);
@@ -467,11 +614,15 @@ namespace SmartStore.Services.ExportImport
 								lastInserted = mapping;
 							}
 						}
+						else
+						{
+							result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "Picture" + (i + 1).ToString());
+						}
 					}
 				}
 				catch (Exception ex)
 				{
-					Console.Write("TBD: (MSG)");
+					result.AddWarning(ex.Message, row.GetRowInfo(), "Picture" + (i + 1).ToString());
 				}
 			
 			}
@@ -497,7 +648,7 @@ namespace SmartStore.Services.ExportImport
         /// </summary>
         /// <param name="path">The picture to find a duplicate for</param>
         /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
-        /// <returns>The picture binary for <c>path</c> when no picture euqals in the sequence, <c>null</c> otherwise.</returns>
+        /// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
         private byte[] FindEqualPicture(string path, IEnumerable<ProductPicture> productPictures)
         {
             try

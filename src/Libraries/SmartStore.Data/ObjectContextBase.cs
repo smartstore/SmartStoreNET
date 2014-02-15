@@ -9,6 +9,8 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
@@ -320,99 +322,44 @@ namespace SmartStore.Data
             }
         }
 
-        // codehint: sm-edit (added Hooks)
         public override int SaveChanges()
         {
-            HookedEntityEntry[] modifiedHookEntries = null;
-            bool hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
+			IEnumerable<DbEntityEntry> modifiedEntries;
+			bool hooksEnabled;
+			HookedEntityEntry[] modifiedHookEntries;
+			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
 
-			var modifiedEntries = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached);
-            
-            if (hooksEnabled)
-            {
-				modifiedHookEntries = modifiedEntries
-                                .Select(x => new HookedEntityEntry()
-                                {
-                                    Entity = x.Entity,
-                                    PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
-                                })
-                                .ToArray();
-
-                if (_preHooks.Count > 0)
-                {
-                    // Regardless of validation (possible fixing validation errors too)
-                    ExecutePreActionHooks(modifiedHookEntries, false);
-                }
-            }
-
-            if (this.Configuration.ValidateOnSaveEnabled)
-            {
-                var results = from entry in this.ChangeTracker.Entries()
-                              where this.ShouldValidateEntity(entry)
-                              let validationResult = entry.GetValidationResult()
-                              where !validationResult.IsValid
-                              select validationResult;
-
-                if (results.Any())
-                {
-
-                    var fail = new DbEntityValidationException(FormatValidationExceptionMessage(results), results);
-                    //Debug.WriteLine(fail.Message, fail);
-                    throw fail;
-                }
-            }
-
-            if (hooksEnabled && _preHooks.Count > 0)
-            {
-                ExecutePreActionHooks(modifiedHookEntries, true);
-            }
-
-			IgnoreMergedData(modifiedEntries, true);
-
-            bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
-            
-            // SAVE NOW!!!
-            this.Configuration.ValidateOnSaveEnabled = false;
+			// SAVE NOW!!!
+			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
+			this.Configuration.ValidateOnSaveEnabled = false;
             int result = this.Commit();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
-			IgnoreMergedData(modifiedEntries, false);
-
-            if (hooksEnabled && _postHooks.Count > 0)
-            {
-                ExecutePostActionHooks(modifiedHookEntries);
-            }
+			PerformPostSaveActions(modifiedEntries, hooksEnabled, modifiedHookEntries);
 
             return result;
         }
 
-        private int Commit()
-        {
-            int result = 0;
-            bool commitFailed = false;
-            do
-            {
-                commitFailed = false;
+		public override Task<int> SaveChangesAsync()
+		{
+			IEnumerable<DbEntityEntry> modifiedEntries;
+			bool hooksEnabled;
+			HookedEntityEntry[] modifiedHookEntries;
+			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
 
-                try
-                {
-                    result = base.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    commitFailed = true;
+			// SAVE NOW!!!
+			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
+			this.Configuration.ValidateOnSaveEnabled = false;
+			var result = this.CommitAsync();
 
-                    foreach (var entry in ex.Entries)
-                    {
-                        entry.Reload();
-                    }
-                }
-            }
-            while (commitFailed);
+			result.ContinueWith((t) =>
+			{
+				this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
+				PerformPostSaveActions(modifiedEntries, hooksEnabled, modifiedHookEntries);
+			});
 
-            return result;
-        }
+			return result;
+		}
 
         // codehint: sm-add (required for UoW implementation)
         public string Alias { get; internal set; }
@@ -543,6 +490,129 @@ namespace SmartStore.Data
 		}
 
         #endregion
+
+		#region EF helpers
+
+		private int Commit()
+		{
+			int result = 0;
+			bool commitFailed = false;
+			do
+			{
+				commitFailed = false;
+
+				try
+				{
+					result = base.SaveChanges();
+				}
+				catch (DbUpdateConcurrencyException ex)
+				{
+					commitFailed = true;
+
+					foreach (var entry in ex.Entries)
+					{
+						entry.Reload();
+					}
+				}
+			}
+			while (commitFailed);
+
+			return result;
+		}
+
+		private Task<int> CommitAsync()
+		{
+			var tcs = new TaskCompletionSource<int>();
+
+			base.SaveChangesAsync().ContinueWith((t) =>
+			{
+				if (!t.IsFaulted)
+				{
+					//if (t.IsCanceled)
+					//{
+					//	tcs.TrySetCanceled();
+					//	return;
+					//}
+					tcs.TrySetResult(t.Result);
+					return;
+				}
+
+				var ex = t.Exception.InnerException;
+				if (ex != null && ex is DbUpdateConcurrencyException)
+				{
+					// try again
+					tcs.TrySetResult(this.CommitAsync().Result);
+				}
+				else
+				{
+					tcs.TrySetException(ex);
+				}
+			});
+
+			return tcs.Task;
+		}
+
+		private void PerformPreSaveActions(out IEnumerable<DbEntityEntry> modifiedEntries, out bool hooksEnabled, out HookedEntityEntry[] modifiedHookEntries)
+		{
+			modifiedHookEntries = null;
+			hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
+
+			modifiedEntries = this.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached);
+
+			if (hooksEnabled)
+			{
+				modifiedHookEntries = modifiedEntries
+								.Select(x => new HookedEntityEntry()
+								{
+									Entity = x.Entity,
+									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
+								})
+								.ToArray();
+
+				if (_preHooks.Count > 0)
+				{
+					// Regardless of validation (possible fixing validation errors too)
+					ExecutePreActionHooks(modifiedHookEntries, false);
+				}
+			}
+
+			if (this.Configuration.ValidateOnSaveEnabled)
+			{
+				var results = from entry in this.ChangeTracker.Entries()
+							  where this.ShouldValidateEntity(entry)
+							  let validationResult = entry.GetValidationResult()
+							  where !validationResult.IsValid
+							  select validationResult;
+
+				if (results.Any())
+				{
+
+					var fail = new DbEntityValidationException(FormatValidationExceptionMessage(results), results);
+					//Debug.WriteLine(fail.Message, fail);
+					throw fail;
+				}
+			}
+
+			if (hooksEnabled && _preHooks.Count > 0)
+			{
+				ExecutePreActionHooks(modifiedHookEntries, true);
+			}
+
+			IgnoreMergedData(modifiedEntries, true);
+		}
+
+		private void PerformPostSaveActions(IEnumerable<DbEntityEntry> modifiedEntries, bool hooksEnabled, HookedEntityEntry[] modifiedHookEntries)
+		{
+			IgnoreMergedData(modifiedEntries, false);
+
+			if (hooksEnabled && _postHooks.Count > 0)
+			{
+				ExecutePostActionHooks(modifiedHookEntries);
+			}
+		}
+
+		#endregion
 
     }
 }

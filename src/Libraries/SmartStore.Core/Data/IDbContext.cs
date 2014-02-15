@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Threading.Tasks;
 using SmartStore.Core;
 
 namespace SmartStore.Core.Data
@@ -9,6 +10,8 @@ namespace SmartStore.Core.Data
         IDbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
 
         int SaveChanges();
+
+		Task<int> SaveChangesAsync();
 
         IList<TEntity> ExecuteStoredProcedureList<TEntity>(string commandText, params object[] parameters) 
             where TEntity : BaseEntity, new();

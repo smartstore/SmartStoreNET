@@ -10,7 +10,9 @@ using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
 using Microsoft.Web.Infrastructure;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.ComponentModel;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Utilities.Threading;
 
@@ -56,7 +58,9 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
-            using (Locker.GetWriteLock())
+			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
+			
+			using (Locker.GetWriteLock())
             {
                 // TODO: Add verbose exception handling / raising here since this is happening on app startup and could
                 // prevent app from starting altogether

@@ -50,6 +50,12 @@ namespace SmartStore.Core.Data
 			get { return NewRecords + ModifiedRecords; }
 		}
 
+		public bool Cancelled
+		{
+			get;
+			set;
+		}
+
 		public ImportMessage AddInfo(string message, ImportRowInfo affectedRow = null, string affectedField = null)
 		{
 			return this.AddMessage(message, ImportMessageType.Info, affectedRow, affectedField);

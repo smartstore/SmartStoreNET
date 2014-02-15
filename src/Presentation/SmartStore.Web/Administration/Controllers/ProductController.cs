@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Stores;
@@ -32,6 +33,11 @@ using SmartStore.Services.Directory;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Data;
+using System.Threading;
+using SmartStore.Core.Infrastructure;
+using Autofac;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -57,7 +63,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICopyProductService _copyProductService;
         private readonly IPdfService _pdfService;
         private readonly IExportManager _exportManager;
-        private readonly IImportManager _importManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
@@ -80,6 +85,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IPriceFormatter _priceFormatter;
+		private readonly IAsyncRunner _asyncRunner;
 
         #endregion
 
@@ -124,7 +130,8 @@ namespace SmartStore.Admin.Controllers
 			CurrencySettings currencySettings,
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
-			IPriceFormatter priceFormatter)
+			IPriceFormatter priceFormatter,
+			IAsyncRunner asyncRunner)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -143,7 +150,6 @@ namespace SmartStore.Admin.Controllers
             this._copyProductService = copyProductService;
             this._pdfService = pdfService;
             this._exportManager = exportManager;
-            this._importManager = importManager;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
             this._aclService = aclService;
@@ -166,6 +172,7 @@ namespace SmartStore.Admin.Controllers
 			this._measureService = measureService;
 			this._measureSettings = measureSettings;
 			this._priceFormatter = priceFormatter;
+			this._asyncRunner = asyncRunner;
         }
 
         #endregion
@@ -2098,34 +2105,125 @@ namespace SmartStore.Admin.Controllers
             return File(bytes, "text/xls", "products.xlsx");
         }
 
-        [HttpPost]
-        public ActionResult ImportExcel(FormCollection form)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+		//[HttpPost]
+		//public ActionResult ImportExcel(FormCollection form)
+		//{
+		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+		//		return AccessDeniedView();
 
-            try
-            {
-                var file = Request.Files["importexcelfile"];
-                if (file != null && file.ContentLength > 0)
-                {
-                    _importManager.ImportProductsFromXlsx(file.InputStream);
-                }
-                else
-                {
-                    ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
-                    return RedirectToAction("List");
-                }
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Imported"));
-                return RedirectToAction("List");
-            }
-            catch (Exception exc)
-            {
-                ErrorNotification(exc);
-                return RedirectToAction("List");
-            }
+		//	try
+		//	{
+		//		var file = Request.Files["importexcelfile"];
+		//		if (file != null && file.ContentLength > 0)
+		//		{
+		//			_importManager.ImportProductsFromXlsx(file.InputStream);
+		//		}
+		//		else
+		//		{
+		//			ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+		//			return RedirectToAction("List");
+		//		}
+		//		SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Imported"));
+		//		return RedirectToAction("List");
+		//	}
+		//	catch (Exception exc)
+		//	{
+		//		ErrorNotification(exc);
+		//		return RedirectToAction("List");
+		//	}
 
-        }
+		//}
+
+		[HttpPost]
+		public ActionResult ImportExcel(FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			try
+			{
+				var file = Request.Files["importexcelfile"];
+				if (file != null && file.ContentLength > 0)
+				{
+					var stream = new MemoryStream();
+					file.InputStream.CopyTo(stream);
+
+					var options = TaskCreationOptions.LongRunning;
+					var cts = new CancellationTokenSource();
+					var scheduler = TaskScheduler.Default;
+
+					_asyncRunner.Run(c =>
+					{
+						var progress = new Progress<ImportProgressInfo>(p =>
+						{
+							AsyncState.Current.Set(p);
+						});
+
+						try
+						{
+							AsyncState.Current.SetCancelTokenSource<ImportProgressInfo>(cts);
+							var importManager = c.Resolve<IImportManager>();
+							var t = importManager.ImportProductsFromExcelAsync(stream, cts.Token, progress);
+
+							var result = t.Result;
+
+							// TODO: Persist/serialize the result somewhere
+							// [...]
+						}
+						catch (AggregateException ae)
+						{
+							foreach (var e in ae.Flatten().InnerExceptions)
+							{
+								// TBD: do exactly WHAT now?! Logging? Nothing?
+								// [...]
+							}
+						}
+						finally
+						{
+							AsyncState.Current.Remove<ImportProgressInfo>();
+						}
+						
+					}, cts.Token, options, scheduler);
+				}
+				else
+				{
+					ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+					return RedirectToAction("List");
+				}
+				SuccessNotification("Produkte werden jetzt im Hintergrund importiert.");
+				return RedirectToAction("List");
+			}
+			catch (Exception exc)
+			{
+				ErrorNotification(exc);
+				return RedirectToAction("List");
+			}
+		}
+
+		public ActionResult ImportExcelProgress()
+		{
+			var progress = AsyncState.Current.Get<ImportProgressInfo>();
+
+			if (progress == null)
+			{
+				return Content("There is NO import task running!");
+			}
+
+			return Content("Import running: processed {0} of {1} items. Elapsed: {2} sec.".FormatInvariant(progress.TotalProcessed, progress.TotalRecords, progress.ElapsedTime.TotalSeconds));
+		}
+
+		public ActionResult ImportExcelCancel()
+		{
+			var tcs = AsyncState.Current.GetCancelTokenSource<ImportProgressInfo>();
+			if (tcs == null)
+			{
+				return Content("Nothing to cancel here!");
+			}
+
+			tcs.Cancel();
+
+			return Content("YOOO... ABGEBROCHEN");
+		}
 
         #endregion
 

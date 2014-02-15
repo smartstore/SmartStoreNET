@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Threading;
 using Autofac;
 using Autofac.Integration.Mvc;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
     public class ContainerManager
     {
         private readonly IContainer _container;
+		private ILifetimeScope _threadScope;
 
         public ContainerManager(IContainer container)
         {
@@ -63,7 +66,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             });
         }
 
-        public void AddComponentInstance<TService>(object instance, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
+        public void AddComponentInstance<TService>(TService instance, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
         {
             AddComponentInstance(typeof(TService), instance, key, lifeStyle);
         }
@@ -101,45 +104,45 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             });
         }
 
-        public T Resolve<T>(string key = "") where T : class
+		public T Resolve<T>(string key = "", ILifetimeScope scope = null) where T : class
         {
             if (string.IsNullOrEmpty(key))
             {
-                return Scope().Resolve<T>();
+				return (scope ?? Scope()).Resolve<T>();
             }
-            return Scope().ResolveKeyed<T>(key);
+			return (scope ?? Scope()).ResolveKeyed<T>(key);
         }
 
-        public T ResolveNamed<T>(string name) where T : class
+		public T ResolveNamed<T>(string name, ILifetimeScope scope = null) where T : class
         {
-            return Scope().ResolveNamed<T>(name);
+			return (scope ?? Scope()).ResolveNamed<T>(name);
         }
 
-        public object Resolve(Type type)
+		public object Resolve(Type type, ILifetimeScope scope = null)
         {
-            return Scope().Resolve(type);
+			return (scope ?? Scope()).Resolve(type);
         }
 
-        public object ResolveNamed(string name, Type type)
+		public object ResolveNamed(string name, Type type, ILifetimeScope scope = null)
         {
-            return Scope().ResolveNamed(name, type);
+			return (scope ?? Scope()).ResolveNamed(name, type);
         }
 
-        public T[] ResolveAll<T>(string key = "")
+		public T[] ResolveAll<T>(string key = "", ILifetimeScope scope = null)
         {
             if (string.IsNullOrEmpty(key))
             {
-                return Scope().Resolve<IEnumerable<T>>().ToArray();
+				return (scope ?? Scope()).Resolve<IEnumerable<T>>().ToArray();
             }
-            return Scope().ResolveKeyed<IEnumerable<T>>(key).ToArray();
+			return (scope ?? Scope()).ResolveKeyed<IEnumerable<T>>(key).ToArray();
         }
 
-        public T ResolveUnregistered<T>() where T : class
+        public T ResolveUnregistered<T>(ILifetimeScope scope = null) where T : class
         {
-            return ResolveUnregistered(typeof(T)) as T;
+            return ResolveUnregistered(typeof(T), scope) as T;
         }
 
-        public object ResolveUnregistered(Type type)
+		public object ResolveUnregistered(Type type, ILifetimeScope scope = null)
         {
             var constructors = type.GetConstructors();
             foreach (var constructor in constructors)
@@ -150,7 +153,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
                     var parameterInstances = new List<object>();
                     foreach (var parameter in parameters)
                     {
-                        var service = Resolve(parameter.ParameterType);
+                        var service = Resolve(parameter.ParameterType, scope);
                         if (service == null)
                             throw new SmartException("Unkown dependency");
                         parameterInstances.Add(service);
@@ -165,19 +168,19 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             throw new SmartException("No contructor was found that had all the dependencies satisfied.");
         }
 
-        public bool TryResolve(Type serviceType, out object instance)
+		public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
         {
-            return Scope().TryResolve(serviceType, out instance);
+			return (scope ?? Scope()).TryResolve(serviceType, out instance);
         }
 
-        public bool IsRegistered(Type serviceType)
+		public bool IsRegistered(Type serviceType, ILifetimeScope scope = null)
         {
-            return Scope().IsRegistered(serviceType);
+			return (scope ?? Scope()).IsRegistered(serviceType);
         }
 
-        public object ResolveOptional(Type serviceType)
+		public object ResolveOptional(Type serviceType, ILifetimeScope scope = null)
         {
-            return Scope().ResolveOptional(serviceType);
+			return (scope ?? Scope()).ResolveOptional(serviceType);
         }
 
 
@@ -192,14 +195,37 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
         {
             try
             {
-                return AutofacRequestLifetimeHttpModule.GetLifetimeScope(Container, null);
+				return _threadScope ?? AutofacDependencyResolver.Current.RequestLifetimeScope ?? Container;
             }
             catch
             {
                 return Container;
             }
         }
+
+		public IDisposable CreateThreadScope()
+		{
+			return ActionDisposable.Empty;
+			
+			//if (HttpContext.Current != null)
+			//	return ActionDisposable.Empty;
+
+			//if (_threadScope == null)
+			//{
+			//	_threadScope = _container.BeginLifetimeScope(AutofacLifetimeScopeProvider.HttpRequestTag);
+			//}
+
+			//return new ActionDisposable(() =>
+			//{
+			//	if (_threadScope != null)
+			//	{
+			//		_threadScope.Dispose();
+			//		_threadScope = null;
+			//	}
+			//});
+		}
     }
+
     public static class ContainerManagerExtensions
     {
         public static Autofac.Builder.IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> PerLifeStyle<TLimit, TActivatorData, TRegistrationStyle>(this Autofac.Builder.IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, ComponentLifeStyle lifeStyle)

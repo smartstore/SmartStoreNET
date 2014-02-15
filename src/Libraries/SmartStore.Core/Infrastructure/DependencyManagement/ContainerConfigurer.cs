@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
+using Autofac.Integration.Mvc;
 using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
@@ -34,8 +36,14 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
                     dependencyRegistrar.Register(x, typeFinder);
             });
 
-            //event broker
+            // event broker
             containerManager.AddComponentInstance(broker);
+
+			//// AutofacDependencyResolver
+			var scopeProvider = new AutofacLifetimeScopeProvider(containerManager.Container);
+			var dependencyResolver = new AutofacDependencyResolver(containerManager.Container, scopeProvider);
+			//containerManager.AddComponentInstance<AutofacDependencyResolver>(dependencyResolver);
+			DependencyResolver.SetResolver(dependencyResolver);
         }
     }
 }

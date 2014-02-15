@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Web;
 using Autofac;
 using Autofac.Integration.Mvc;
@@ -10,79 +11,100 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
     /// that creates a nested lifetime scope for each HTTP request.
     /// </summary>
     public class AutofacRequestLifetimeHttpModule : IHttpModule
-    {
-        /// <summary>
-        /// Tag used to identify registrations that are scoped to the HTTP request level.
-        /// </summary>
-        //in the previous versions of Autofac (for MVC3) it was set to "httpRequest"
-        public static readonly object HttpRequestTag = "AutofacWebRequest";
+	{
+		#region New
 
-        /// <summary>
-        /// Initializes a module and prepares it to handle requests.
-        /// </summary>
-        /// <param name="context">An <see cref="T:System.Web.HttpApplication"/> that provides access to the 
-        /// methods, properties, and events common to all application objects within an ASP.NET application</param>
-        public void Init(HttpApplication context)
-        {
-            context.EndRequest += ContextEndRequest;
-        }
+		public void Init(HttpApplication context)
+		{
+			Guard.ArgumentNotNull(() => context);
 
-        /// <summary>
-        /// Gets a nested lifetime scope that services can be resolved from.
-        /// </summary>
-        /// <param name="container">The parent container.</param>
-        /// <param name="configurationAction">Action on a <see cref="ContainerBuilder"/>
-        /// that adds component registations visible only in nested lifetime scopes.</param>
-        /// <returns>A new or existing nested lifetime scope.</returns>
-        public static ILifetimeScope GetLifetimeScope(ILifetimeScope container, Action<ContainerBuilder> configurationAction)
-        {
-            //little hack here to get dependencies when HttpContext is not available
-            if (HttpContext.Current != null)
-            {
-                return LifetimeScope ?? (LifetimeScope = InitializeLifetimeScope(configurationAction, container));
-            }
-            else
-            {
-                //throw new InvalidOperationException("HttpContextNotAvailable");
-                return InitializeLifetimeScope(configurationAction, container);
-            }
-        }
+			//context.EndRequest += OnEndRequest;
+			// IMPORTANT: call this manually in Global.asax
+		}
 
-        /// <summary>
-        /// Disposes of the resources (other than memory) used by the module that implements <see cref="T:System.Web.IHttpModule"/>.
-        /// </summary>
-        public void Dispose()
-        {
-        }
+		public static void OnEndRequest(object sender, EventArgs e)
+		{
+			if (LifetimeScopeProvider != null)
+			{
+				LifetimeScopeProvider.EndLifetimeScope();
+			}
+		}
 
-        static ILifetimeScope LifetimeScope
-        {
-            get 
-            {
-                return (ILifetimeScope)HttpContext.Current.Items[typeof(ILifetimeScope)]; 
-            }
-            set 
-            { 
-                HttpContext.Current.Items[typeof(ILifetimeScope)] = value; 
-            }
-        }
+		public static void SetLifetimeScopeProvider(ILifetimeScopeProvider lifetimeScopeProvider)
+		{
+			if (lifetimeScopeProvider == null)
+			{
+				throw new ArgumentNullException("lifetimeScopeProvider");
+			}
+			LifetimeScopeProvider = lifetimeScopeProvider;
+		}
 
-        public static void ContextEndRequest(object sender, EventArgs e)
-        {
-            try
-            {
-                ILifetimeScope lifetimeScope = LifetimeScope;
-                if (lifetimeScope != null)
-                    lifetimeScope.Dispose();
-            }
-            catch { }
-        }
 
-        static ILifetimeScope InitializeLifetimeScope(Action<ContainerBuilder> configurationAction, ILifetimeScope container)
-        {
-            return (configurationAction == null)
-                ? container.BeginLifetimeScope(HttpRequestTag)
-                : container.BeginLifetimeScope(HttpRequestTag, configurationAction);
-        }
-    }
+		internal static ILifetimeScopeProvider LifetimeScopeProvider
+		{
+			get;
+			set;
+		}
+
+		public void Dispose()
+		{
+		}
+
+		#endregion
+
+		#region OBSOLETE
+
+		//private static readonly ThreadLocal<ILifetimeScope> _lifetimeScope = new ThreadLocal<ILifetimeScope>(false);
+
+		///// <summary>
+		///// Gets a nested lifetime scope that services can be resolved from.
+		///// </summary>
+		///// <param name="container">The parent container.</param>
+		///// <param name="configurationAction">Action on a <see cref="ContainerBuilder"/>
+		///// that adds component registations visible only in nested lifetime scopes.</param>
+		///// <returns>A new or existing nested lifetime scope.</returns>
+		//public static ILifetimeScope GetLifetimeScope(ILifetimeScope container, Action<ContainerBuilder> configurationAction)
+		//{
+		//	return LifetimeScope ?? (LifetimeScope = InitializeLifetimeScope(configurationAction, container));
+			
+		//	////little hack here to get dependencies when HttpContext is not available
+		//	//if (HttpContext.Current != null)
+		//	//{
+		//	//	return LifetimeScope ?? (LifetimeScope = InitializeLifetimeScope(configurationAction, container));
+		//	//}
+		//	//else
+		//	//{
+		//	//	//throw new InvalidOperationException("HttpContextNotAvailable");
+		//	//	return InitializeLifetimeScope(configurationAction, container);
+		//	//}
+		//}
+
+		//static ILifetimeScope LifetimeScope
+		//{
+		//	get 
+		//	{
+		//		if (HttpContext.Current != null)
+		//		{
+		//			return (ILifetimeScope)HttpContext.Current.Items[typeof(ILifetimeScope)]; 
+		//		}
+		//		else
+		//		{
+		//			return _lifetimeScope.Value;
+		//		}
+		//	}
+		//	set 
+		//	{
+		//		if (HttpContext.Current != null)
+		//		{
+		//			HttpContext.Current.Items[typeof(ILifetimeScope)] = value; 
+		//		}
+		//		else
+		//		{
+		//			_lifetimeScope.Value = value;
+		//		}
+		//	}
+		//}
+
+		#endregion
+	}
 }

@@ -90,12 +90,22 @@ namespace SmartStore.Services.ExportImport
 
 		public int CurrentSegment
 		{
-			get { return _pageable.PageNumber; }
+			get { return _bof ? 0 : _pageable.PageNumber; }
+		}
+
+		public int CurrentSegmentFirstRowIndex
+		{
+			get { return _pageable.FirstItemIndex; }
 		}
 
 		public int TotalSegments
 		{
 			get { return _pageable.TotalPages; }
+		}
+
+		public int BatchSize
+		{
+			get { return BATCHSIZE; }
 		}
 
 		public void Reset()

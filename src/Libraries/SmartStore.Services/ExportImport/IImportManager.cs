@@ -11,12 +11,6 @@ namespace SmartStore.Services.ExportImport
     /// </summary>
     public interface IImportManager
     {
-        /// <summary>
-        /// Import products from XLSX file
-        /// </summary>
-        /// <param name="stream">Stream</param>
-		ImportResult ImportProductsFromXlsx(Stream stream);
-
 		Task<ImportResult> ImportProductsFromExcelAsync(
 			Stream stream,
  			CancellationToken cancellationToken,

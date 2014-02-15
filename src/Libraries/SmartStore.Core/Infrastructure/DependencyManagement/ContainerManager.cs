@@ -12,7 +12,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
     public class ContainerManager
     {
         private readonly IContainer _container;
-		private ILifetimeScope _threadScope;
 
         public ContainerManager(IContainer container)
         {
@@ -195,7 +194,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
         {
             try
             {
-				return _threadScope ?? AutofacDependencyResolver.Current.RequestLifetimeScope ?? Container;
+				return AutofacDependencyResolver.Current.RequestLifetimeScope ?? Container;
             }
             catch
             {
@@ -203,27 +202,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             }
         }
 
-		public IDisposable CreateThreadScope()
-		{
-			return ActionDisposable.Empty;
-			
-			//if (HttpContext.Current != null)
-			//	return ActionDisposable.Empty;
-
-			//if (_threadScope == null)
-			//{
-			//	_threadScope = _container.BeginLifetimeScope(AutofacLifetimeScopeProvider.HttpRequestTag);
-			//}
-
-			//return new ActionDisposable(() =>
-			//{
-			//	if (_threadScope != null)
-			//	{
-			//		_threadScope.Dispose();
-			//		_threadScope = null;
-			//	}
-			//});
-		}
     }
 
     public static class ContainerManagerExtensions

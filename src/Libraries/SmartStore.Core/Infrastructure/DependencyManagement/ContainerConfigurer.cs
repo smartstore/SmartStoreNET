@@ -39,10 +39,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             // event broker
             containerManager.AddComponentInstance(broker);
 
-			//// AutofacDependencyResolver
+			// AutofacDependencyResolver
 			var scopeProvider = new AutofacLifetimeScopeProvider(containerManager.Container);
 			var dependencyResolver = new AutofacDependencyResolver(containerManager.Container, scopeProvider);
-			//containerManager.AddComponentInstance<AutofacDependencyResolver>(dependencyResolver);
 			DependencyResolver.SetResolver(dependencyResolver);
         }
     }

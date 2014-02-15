@@ -42,8 +42,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public ILifetimeScope GetLifetimeScope(Action<ContainerBuilder> configurationAction)
 		{
-			//return LifetimeScope ?? (LifetimeScope = GetLifetimeScopeCore(configurationAction));
-
 			//little hack here to get dependencies when HttpContext is not available
 			if (HttpContext.Current != null)
 			{

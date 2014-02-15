@@ -91,14 +91,6 @@ namespace SmartStore.Web
 
             bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
 
-			//// set dependency resolver
-			//var container = EngineContext.Current.ContainerManager.Container;
-			//var scopeProvider = new SmartLifetimeScopeProvider(container);
-			//var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
-			//DependencyResolver.SetResolver(dependencyResolver);
-			////var dependencyResolver = new SmartDependencyResolver();
-			////DependencyResolver.SetResolver(dependencyResolver);
-
             // model binders
             ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
 

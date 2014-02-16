@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Catalog
 {
@@ -375,6 +376,34 @@ namespace SmartStore.Services.Catalog
 			if (bundleItem != null)
 				return (bundleItem.GetLocalized(x => x.Name) ?? bundleItem.Product.GetLocalized(x => x.Name));
 			return null;
+		}
+		
+		public static ProductBundleData ToBundleData(this ProductBundleItem bundleItem, decimal priceWithDiscount = decimal.Zero, string attributesXml = null)
+		{
+			string bundleItemName = bundleItem.GetLocalized(x => x.Name);
+
+			var bundleData = new ProductBundleData()
+			{
+				BundleItemId = bundleItem.Id,
+				ProductId = bundleItem.ProductId,
+				Sku = bundleItem.Product.Sku,
+				ProductName = (bundleItemName ?? bundleItem.Product.GetLocalized(x => x.Name)),
+				ProductSeName = bundleItem.Product.GetSeName(),
+				VisibleIndividually = bundleItem.Product.VisibleIndividually,
+				Quantity = bundleItem.Quantity,
+				DisplayOrder = bundleItem.DisplayOrder,
+				AttributesXml = attributesXml,
+				PriceWithDiscount = priceWithDiscount
+			};
+
+			return bundleData;
+		}
+		public static void ToBundleData(this ProductBundleItem bundleItem, IList<ProductBundleData> bundleData, decimal priceWithDiscount = decimal.Zero, string attributesXml = null)
+		{
+			var item = bundleItem.ToBundleData(priceWithDiscount, attributesXml);
+
+			if (item.ProductId != 0 && item.BundleItemId != 0)
+				bundleData.Add(item);
 		}
     }
 }

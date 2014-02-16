@@ -420,7 +420,8 @@ namespace SmartStore.Web.Controllers
 
 					if (model.BundlePerItemShoppingCart)
 					{
-						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+						decimal priceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItem.PriceWithDiscount, _workContext.WorkingCurrency);
+						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
 					}
 					
 					model.BundleItems.Add(bundleItemModel);

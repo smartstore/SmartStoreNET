@@ -199,29 +199,33 @@ namespace SmartStore
 			string senderEmail = "";
 			string giftCardMessage = "";
 
+			string strProductId = "";
+			if (productId != 0)
+				strProductId = "_" + productId.ToString();
+
 			foreach (string formKey in collection.AllKeys)
 			{
-				if (formKey.Equals(string.Format("giftcard_{0}.RecipientName", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("giftcard{0}.RecipientName", strProductId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					recipientName = collection[formKey];
 					continue;
 				}
-				if (formKey.Equals(string.Format("giftcard_{0}.RecipientEmail", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("giftcard{0}.RecipientEmail", strProductId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					recipientEmail = collection[formKey];
 					continue;
 				}
-				if (formKey.Equals(string.Format("giftcard_{0}.SenderName", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("giftcard{0}.SenderName", strProductId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					senderName = collection[formKey];
 					continue;
 				}
-				if (formKey.Equals(string.Format("giftcard_{0}.SenderEmail", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("giftcard{0}.SenderEmail", strProductId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					senderEmail = collection[formKey];
 					continue;
 				}
-				if (formKey.Equals(string.Format("giftcard_{0}.Message", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("giftcard{0}.Message", strProductId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					giftCardMessage = collection[formKey];
 					continue;

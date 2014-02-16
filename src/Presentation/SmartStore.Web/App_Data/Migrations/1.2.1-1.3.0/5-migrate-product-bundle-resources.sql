@@ -356,6 +356,15 @@ SET @resources='
 		<Value>Please select the desired products.</Value>
 		<Value lang="de">Bitte die gewünschten Produkte auswählen.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Orders.Products.AddNew.Note1">
+		<Value>Click on the desired product to add it to the order.</Value>
+		<Value lang="de">Klicken Sie auf das gewünschte Produkt, um es dem Auftrag hinzuzufügen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Products.AddNew.Note2">
+		<Value>Do not to forget to update order totals after adding this product.</Value>
+		<Value lang="de">Vergessen Sie nicht, die Auftragssummen zu aktualisieren, nachdem Sie das Produkt hinzugefügt haben.</Value>
+	</LocaleResource>
 
 </Language>
 '

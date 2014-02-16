@@ -13,6 +13,12 @@
     <div class="options">
     </div>
 </div>
+
+<div class="alert alert-info fade in">
+	<button class="close" data-dismiss="alert">&#215;</button>
+	@T("Admin.Orders.Products.AddNew.Note1")
+</div>
+
 <table width="100%">
     <tr>
         <td class="adminTitle">
@@ -48,16 +54,14 @@
     </tr>
     <tr>
         <td colspan="2">
-            <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+            <button type="submit" id="search-products" value="search-products" class="btn btn-above"><i class="icon-search icon-white">
+				</i>&nbsp;@T("Admin.Common.Search")
+			</button>
         </td>
     </tr>
 </table>
+
 <table class="adminContent">
-    <tr>
-        <td>
-            <strong>@T("Admin.Orders.Products.AddNew.Note1")</strong>
-        </td>
-    </tr>
     <tr>
         <td>
             @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
@@ -79,8 +83,10 @@
         </td>
     </tr>
 </table>
+
 <div id="productdetails">
 </div>
+
 @Html.HiddenFor(model => Model.OrderId)
 <script type="text/javascript">
     $(document).ready(function () {

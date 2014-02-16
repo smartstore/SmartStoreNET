@@ -1090,26 +1090,9 @@ namespace SmartStore.Services.Orders
 
 									foreach (var childItem in sc.ChildItems)
 									{
-										string bundleItemName = childItem.BundleItem.GetLocalized(x => x.Name);
+										decimal bundleItemSubTotal = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
 
-										var bundleData = new ProductBundleData()
-										{
-											BundleItemId = childItem.BundleItemId ?? 0,
-											ProductId = childItem.Product.Id,
-											Sku = childItem.Product.Sku,
-											ProductName = (bundleItemName ?? childItem.Product.GetLocalized(x => x.Name)),
-											ProductSeName = childItem.Product.GetSeName(),
-											VisibleIndividually = childItem.Product.VisibleIndividually,
-											Quantity = childItem.BundleItem.Quantity,
-											DisplayOrder = childItem.BundleItem.DisplayOrder,
-											AttributesXml = childItem.AttributesXml
-										};
-
-										decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
-										bundleData.PriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-
-										if (bundleData.ProductId != 0 && bundleData.BundleItemId != 0)
-											listBundleData.Add(bundleData);
+										childItem.BundleItem.ToBundleData(listBundleData, bundleItemSubTotal, childItem.AttributesXml);
 									}
 
 									orderItem.SetBundleData(listBundleData);

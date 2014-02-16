@@ -27,10 +27,12 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -68,6 +70,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IDownloadService _downloadService;
 	    private readonly IShipmentService _shipmentService;
 		private readonly IStoreService _storeService;
+		private readonly ITaxService _taxService;
+		private readonly IPriceCalculationService _priceCalculationService;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -98,6 +102,8 @@ namespace SmartStore.Admin.Controllers
             ICheckoutAttributeFormatter checkoutAttributeFormatter, 
             IGiftCardService giftCardService, IDownloadService downloadService,
 			IShipmentService shipmentService, IStoreService storeService,
+			ITaxService taxService,
+			IPriceCalculationService priceCalculationService,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings)
 		{
@@ -130,6 +136,8 @@ namespace SmartStore.Admin.Controllers
             this._downloadService = downloadService;
             this._shipmentService = shipmentService;
 			this._storeService = storeService;
+			this._taxService = taxService;
+			this._priceCalculationService = priceCalculationService;
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -450,12 +458,13 @@ namespace SmartStore.Admin.Controllers
 						if (bundleItem.AttributesXml.HasValue())
 						{
 							bundleItemModel.AttributeInfo = _productAttributeFormatter.FormatAttributes(_productService.GetProductById(bundleItem.ProductId),
-								bundleItem.AttributesXml, order.Customer, renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+								bundleItem.AttributesXml, order.Customer, renderGiftCardAttributes: false, allowHyperlinks: false);
 						}
 
 						if (orderItemModel.BundlePerItemShoppingCart)
 						{
-							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+							decimal priceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItem.PriceWithDiscount, _workContext.WorkingCurrency);
+							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
 						}
 
 						orderItemModel.BundleItems.Add(bundleItemModel);
@@ -1614,117 +1623,16 @@ namespace SmartStore.Admin.Controllers
             var priceExclTax = decimal.Zero;
             decimal.TryParse(form["SubTotalExclTax"], out priceExclTax);
 
-            //attributes
-            //warnings
             var warnings = new List<string>();
             string attributes = "";
 
-            #region Product attributes
-            string selectedAttributes = string.Empty;
-            var productVariantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
-            foreach (var attribute in productVariantAttributes)
-            {
-                string controlId = string.Format("product_attribute_{0}_{1}", attribute.ProductAttributeId, attribute.Id);
-                switch (attribute.AttributeControlType)
-                {
-                    case AttributeControlType.DropdownList:
-                    case AttributeControlType.RadioList:
-                    case AttributeControlType.ColorSquares:
-                        {
-                            var ctrlAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(ctrlAttributes))
-                            {
-                                int selectedAttributeId = int.Parse(ctrlAttributes);
-                                if (selectedAttributeId > 0)
-                                    selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
-                            }
-                        }
-                        break;
+			if (product.ProductType != ProductType.BundledProduct)
+			{
+				var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-                    case AttributeControlType.Checkboxes:
-                        {
-                            var cblAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(cblAttributes))
-                            {
-                                foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    int selectedAttributeId = int.Parse(item);
-                                    if (selectedAttributeId > 0)
-                                        selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                            attribute, selectedAttributeId.ToString());
-                                }
-                            }
-                        }
-                        break;
-                    case AttributeControlType.TextBox:
-                    case AttributeControlType.MultilineTextbox:
-                        {
-                            var txtAttribute = form[controlId];
-                            if (!String.IsNullOrEmpty(txtAttribute))
-                            {
-                                string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                    attribute, enteredText);
-                            }
-                        }
-                        break;
-                    case AttributeControlType.Datepicker:
-                        {
-                            var day = form[controlId + "_day"];
-                            var month = form[controlId + "_month"];
-                            var year = form[controlId + "_year"];
-                            DateTime? selectedDate = null;
-                            try
-                            {
-                                selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(day));
-                            }
-                            catch { }
-                            if (selectedDate.HasValue)
-                            {
-                                selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                    attribute, selectedDate.Value.ToString("D"));
-                            }
-                        }
-                        break;
-                    case AttributeControlType.FileUpload:
-                        {
-                            var httpPostedFile = this.Request.Files[controlId];
-                            if ((httpPostedFile != null) && (!String.IsNullOrEmpty(httpPostedFile.FileName)))
-                            {
-                                int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                                if (httpPostedFile.ContentLength > fileMaxSize)
-                                {
-                                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)));
-                                }
-                                else
-                                {
-                                    //save an uploaded file
-                                    var download = new Download()
-                                    {
-                                        DownloadGuid = Guid.NewGuid(),
-                                        UseDownloadUrl = false,
-                                        DownloadUrl = "",
-                                        DownloadBinary = httpPostedFile.GetDownloadBits(),
-                                        ContentType = httpPostedFile.ContentType,
-                                        Filename = System.IO.Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-                                        Extension = System.IO.Path.GetExtension(httpPostedFile.FileName),
-                                        IsNew = true
-                                    };
-                                    _downloadService.InsertDownload(download);
-                                    //save attribute
-                                    selectedAttributes = _productAttributeParser.AddProductAttribute(selectedAttributes,
-                                        attribute, download.DownloadGuid.ToString());
-                                }
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            attributes = selectedAttributes;
-
-            #endregion
+				attributes = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService, _downloadService,
+					_catalogSettings, this.Request, warnings, false);
+			}
 
             #region Gift cards
 
@@ -1773,10 +1681,9 @@ namespace SmartStore.Admin.Controllers
             //warnings
             warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, product, attributes));
             warnings.AddRange(_shoppingCartService.GetShoppingCartItemGiftCardWarnings(ShoppingCartType.ShoppingCart, product, attributes));
+
             if (warnings.Count == 0)
             {
-                //no errors
-
                 //attributes
                 string attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
 
@@ -1799,6 +1706,24 @@ namespace SmartStore.Admin.Controllers
                     IsDownloadActivated = false,
                     LicenseDownloadId = 0
                 };
+
+				if (product.ProductType == ProductType.BundledProduct)
+				{
+					var listBundleData = new List<ProductBundleData>();
+					var bundleItems = _productService.GetBundleItems(product.Id);
+
+					foreach (var bundleItem in bundleItems)
+					{
+						decimal taxRate;
+						decimal finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Quantity);
+						decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Product, finalPrice, out taxRate);
+
+						bundleItem.ToBundleData(listBundleData, bundleItemSubTotalWithDiscountBase);
+					}
+
+					orderItem.SetBundleData(listBundleData);
+				}
+
                 order.OrderItems.Add(orderItem);
                 _orderService.UpdateOrder(order);
 

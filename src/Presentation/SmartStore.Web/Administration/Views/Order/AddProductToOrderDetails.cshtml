@@ -13,6 +13,11 @@
 	});
 </script>
 
+<div class="alert alert-info fade in">
+	<button class="close" data-dismiss="alert">&#215;</button>
+	@T("Admin.Orders.Products.AddNew.Note2")
+</div>
+
 @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
 @using (Html.BeginForm("AddProductToOrderDetails", "Order",
     new RouteValueDictionary(new { orderId = Model.OrderId, productId = Model.ProductId }),
@@ -48,7 +53,6 @@
     if (Model.ProductType == ProductType.SimpleProduct)
     {
         <div>
-		    @*codehint: sm-edit*@
 		    <table class="adminContent">
 		    <tr>
 			    <td class="adminTitle">
@@ -97,19 +101,20 @@
             <div id="ProductAddAttributeContainer">
                 @Html.Partial("_ProductAddAttributes", Model.ProductVariantAttributes)
             </div>
-            <div class="clear">
-            </div>
+
+            <div class="clear"></div>
+
             @{
                 var dataDictGiftCard = new ViewDataDictionary();
                 dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = "giftcard";
                 @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
             }
-            <div class="clear">
-            </div>
-            <p style="margin:12px 0 12px 0;">
-                <strong>@T("Admin.Orders.Products.AddNew.Note2")</strong>
-            </p>
-            <button type="submit" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
+            
+			<div class="clear"></div>
+
+			<div style="margin-top: 10px;">
+				<button type="submit" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
+			</div>
         </div>
     }
     else if (Model.ProductType == ProductType.GroupedProduct)

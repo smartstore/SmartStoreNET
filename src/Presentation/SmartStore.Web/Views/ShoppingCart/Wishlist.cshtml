@@ -10,7 +10,7 @@
     Html.AddTitleParts(T("PageTitle.Wishlist").Text);
 }
 
-@helper SimpleItem(WishlistModel.ShoppingCartItemModel item)
+@helper SimpleProduct(WishlistModel.ShoppingCartItemModel item)
 {
 	<tr class="cart-item-row">
 		@if (Model.IsEditable)
@@ -106,13 +106,13 @@
 	</tr>	
 }
 
-@helper BundleItems(WishlistModel.ShoppingCartItemModel parentItem)
+@helper BundleProducts(WishlistModel.ShoppingCartItemModel parentItem)
 {
 	if (parentItem.ChildItems != null)
 	{	
 		foreach (var item in parentItem.ChildItems.OrderBy(x => x.BundleItem.DisplayOrder))
 		{
-			<tr class="cart-item-bundle-row">
+			<tr class="product-bundle-row">
 				@if (Model.IsEditable)
 				{
 					<td>&nbsp;</td>
@@ -134,7 +134,10 @@
 						@if (Model.ShowProductBundleImages)
 						{
 							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatWith(Model.BundleThumbSize + 10))">
-								<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+								@if (!item.BundleItem.HideThumbnail)
+								{
+									<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+								}
 							</div>
 						}						
 						<div class="bundle-item-body">
@@ -231,7 +234,7 @@
                 }
                 using (Html.BeginRouteForm("Wishlist", FormMethod.Post))
                 {
-                <table class="cart table">
+                <table class="cart table table-order-products">
                     <thead>
                         <tr class="cart-header-row">
                             @if (Model.IsEditable)
@@ -277,15 +280,15 @@
                         {
 							if (item.ProductType == ProductType.BundledProduct)
 							{
-								<tbody class="cart-body cart-body-bundle">
-									@SimpleItem(item)
-									@BundleItems(item)
+								<tbody class="product-body product-body-bundle">
+									@SimpleProduct(item)
+									@BundleProducts(item)
 								</tbody>
 							}
 							else
 							{
-								<tbody class="cart-body cart-body-simple">
-									@SimpleItem(item)
+								<tbody class="product-body product-body-simple">
+									@SimpleProduct(item)
 								</tbody>
 							}
                         }

@@ -418,6 +418,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     Id = orderItem.Id,
 					ProductId = orderItem.ProductId,
+					ProductName = orderItem.Product.GetLocalized(x => x.Name),
                     Sku = orderItem.Product.Sku,
                     Quantity = orderItem.Quantity,
                     IsDownload = orderItem.Product.IsDownload,

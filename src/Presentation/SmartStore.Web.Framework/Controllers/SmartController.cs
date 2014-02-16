@@ -42,6 +42,16 @@ namespace SmartStore.Web.Framework.Controllers
             var customer = workContext.CurrentCustomer;
             logger.Error(exc.Message, exc, customer);
         }
+
+		/// <summary>
+		/// Display info notification
+		/// </summary>
+		/// <param name="message">Message</param>
+		/// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
+		protected virtual void InfoNotification(string message, bool persistForTheNextRequest = true)
+		{
+			AddNotification(NotifyType.Info, message, persistForTheNextRequest);
+		}
         /// <summary>
         /// Display success notification
         /// </summary>
@@ -80,19 +90,27 @@ namespace SmartStore.Web.Framework.Controllers
         /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
         protected virtual void AddNotification(NotifyType type, string message, bool persistForTheNextRequest)
         {
+			if (message.IsNullOrEmpty())
+				return;
+
+			List<string> lst = null;
             string dataKey = string.Format("sm.notifications.{0}", type);
+
             if (persistForTheNextRequest)
             {
                 if (TempData[dataKey] == null)
                     TempData[dataKey] = new List<string>();
-                ((List<string>)TempData[dataKey]).Add(message);
+                lst = (List<string>)TempData[dataKey];
             }
             else
             {
                 if (ViewData[dataKey] == null)
                     ViewData[dataKey] = new List<string>();
-                ((List<string>)ViewData[dataKey]).Add(message);
+                lst = (List<string>)ViewData[dataKey];
             }
+
+			if (lst != null && !lst.Exists(m => m == message))
+				lst.Add(message);
         }
 
     }

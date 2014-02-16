@@ -1022,6 +1022,7 @@ namespace SmartStore.Services.ExportImport
                         xmlWriter.WriteElementString("DownloadCount", null, orderItem.DownloadCount.ToString());
                         xmlWriter.WriteElementString("IsDownloadActivated", null, orderItem.IsDownloadActivated.ToString());
                         xmlWriter.WriteElementString("LicenseDownloadId", null, orderItem.LicenseDownloadId.ToString());
+						xmlWriter.WriteElementString("BundleData", null, orderItem.BundleData);
                         xmlWriter.WriteEndElement();
                     }
                     xmlWriter.WriteEndElement();

@@ -30,6 +30,7 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Orders
 {
@@ -1082,6 +1083,37 @@ namespace SmartStore.Services.Orders
                                     LicenseDownloadId = 0,
                                     ItemWeight = itemWeight,
                                 };
+
+								if (sc.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
+								{
+									var listBundleData = new List<ProductBundleData>();
+
+									foreach (var childItem in sc.ChildItems)
+									{
+										string bundleItemName = childItem.BundleItem.GetLocalized(x => x.Name);
+
+										var bundleData = new ProductBundleData()
+										{
+											Sku = childItem.Product.Sku,
+											ProductName = (bundleItemName ?? childItem.Product.GetLocalized(x => x.Name)),
+											ProductSeName = childItem.Product.GetSeName(),
+											VisibleIndividually = childItem.Product.VisibleIndividually,
+											Quantity = childItem.BundleItem.Quantity,
+											DisplayOrder = childItem.BundleItem.DisplayOrder
+										};
+
+										bundleData.AttributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Product, childItem.AttributesXml, order.Customer,
+											renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+
+										decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
+										bundleData.PriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+
+										listBundleData.Add(bundleData);
+									}
+
+									orderItem.SetBundleData(listBundleData);
+								}
+
                                 order.OrderItems.Add(orderItem);
                                 _orderService.UpdateOrder(order);
 
@@ -1146,7 +1178,8 @@ namespace SmartStore.Services.Orders
                                     DownloadCount = 0,
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
-                                    ItemWeight = orderItem.ItemWeight
+                                    ItemWeight = orderItem.ItemWeight,
+									BundleData = orderItem.BundleData
                                 };
                                 order.OrderItems.Add(newOrderItem);
                                 _orderService.UpdateOrder(order);

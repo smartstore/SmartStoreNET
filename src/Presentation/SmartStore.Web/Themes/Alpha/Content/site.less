@@ -836,35 +836,44 @@ table.cart .cart-item-row .qty-input {
 	width: 32px;
 }
 
-table.cart {
-    tbody.cart-body:nth-child(odd) td {
-      background-color: @tableBackgroundAccent;
-    }
-}
-.cart-body {
-	border: none !important;
-}
-table.cart .cart-item-bundle-row td {
-	border: none !important;
-}
-
-.cart-body-bundle .bundle-item {
-	.bundle-item-image {
-		float: left;
-		margin-right: 16px;
+.table-order-products {
+	tbody.product-body:nth-child(odd) td {
+		background-color: @tableBackgroundAccent;
 	}
 
-	.bundle-item-body {
-		display: table-cell;
+	.product-body {
+		border: none !important;
 	}
 
-	.bundle-item-attribute-info {
-		font-size: 0.85em;
-		line-height: 1.45em;
-		margin-top: 2px;
+	.product-bundle-row td {
+		border: none !important;
+	}
+
+	.bundle-item-indent {
+		padding-left: 100px;
+	}
+
+	.product-body-bundle .bundle-item {
+		.bundle-item-image {
+			float: left;
+			margin-right: 16px;
+		}
+
+		.bundle-item-body {
+			display: table-cell;
+		}
+
+		.bundle-item-attribute-info {
+			font-size: 0.85em;
+			line-height: 1.45em;
+			margin-top: 2px;
+		}
 	}
 }
 
+.table-order-items {
+	border-bottom: 1px solid #ddd;
+}
 
 .order-summary-content .cart-footer {
 	margin-top: 20px;
@@ -2632,7 +2641,7 @@ table.cart .cart-item-bundle-row td {
 
 .checkout-confirm-page .order-summary-content form {
     border: 1px solid #bbb;
-    background: #efefef;
+    /*background: #efefef;*/
     border-bottom: none;
     margin: 0 !important;
     padding-bottom: 20px;
@@ -2640,7 +2649,7 @@ table.cart .cart-item-bundle-row td {
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
     border: 1px solid #bbb;
-    background: #efefef;
+    /*background: #efefef;*/
     border-top: none;
     padding: 20px;
     margin-bottom: 30px;

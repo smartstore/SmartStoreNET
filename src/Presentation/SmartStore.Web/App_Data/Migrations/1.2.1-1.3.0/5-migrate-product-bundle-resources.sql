@@ -352,6 +352,10 @@ SET @resources='
 		<Value>Product could not be added to the shopping cart.</Value>
 		<Value lang="de">Produkt konnte nicht zum Warenkorb hinzugefügt werden.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Products.SelectProducts">
+		<Value>Please select the desired products.</Value>
+		<Value lang="de">Bitte die gewünschten Produkte auswählen.</Value>
+	</LocaleResource>
 
 </Language>
 '

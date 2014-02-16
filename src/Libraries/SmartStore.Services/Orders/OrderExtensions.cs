@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Orders
@@ -165,6 +168,24 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
+		public static List<ProductBundleData> GetBundleData(this OrderItem orderItem)
+		{
+			if (orderItem != null && orderItem.BundleData.HasValue())
+			{
+				var data = CommonHelper.To<List<ProductBundleData>>(orderItem.BundleData);
+				return data;
+			}
+			return new List<ProductBundleData>();
+		}
+		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleData> bundleData)
+		{
+			string rawData = null;
+
+			if (bundleData != null && bundleData.Count > 0)
+				rawData = CommonHelper.To<string>(bundleData);
+
+			orderItem.BundleData = rawData;
+		}
 
         /// <summary>
         /// Gets a value indicating whether an order has items to be added to a shipment

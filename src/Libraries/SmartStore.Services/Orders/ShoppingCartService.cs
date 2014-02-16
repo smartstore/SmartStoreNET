@@ -1102,7 +1102,7 @@ namespace SmartStore.Services.Orders
 			{
 				foreach (var childItem in item.ChildItems)
 				{
-					AddToCart(customer, childItem.Product, childItem.ShoppingCartType, storeId,	childItem.AttributesXml, childItem.CustomerEnteredPrice,
+					AddToCart(customer, childItem.Product, cartType, storeId, childItem.AttributesXml, childItem.CustomerEnteredPrice,
 						childItem.Quantity, false, out childItemId, parentItemId, childItem.BundleItem);
 				}
 			}

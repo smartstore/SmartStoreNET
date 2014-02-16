@@ -113,6 +113,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 		{
 			public string PriceWithDiscount { get; set; }
 			public int DisplayOrder { get; set; }
+			public bool HideThumbnail { get; set; }
 		}
 
         public partial class CheckoutAttributeModel : EntityModelBase

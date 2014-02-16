@@ -285,43 +285,12 @@ namespace SmartStore.Web.Controllers
             //purchased products
             model.ShowSku = _catalogSettings.ShowProductSku;
             var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+
             foreach (var orderItem in orderItems)
             {
-                orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                var orderItemModel = new OrderDetailsModel.OrderItemModel()
-                {
-                    Id = orderItem.Id,
-                    Sku = orderItem.Product.Sku,
-                    ProductId = orderItem.Product.Id,
-					ProductName = orderItem.Product.GetLocalized(x => x.Name),
-                    ProductSeName = orderItem.Product.GetSeName(),
-                    Quantity = orderItem.Quantity,
-                    AttributeInfo = orderItem.AttributeDescription
-                };
+				var orderItemModel = PrepareOrderItemModel(order, orderItem);
+
                 model.Items.Add(orderItemModel);
-
-                //unit price, subtotal
-                switch (order.CustomerTaxDisplayType)
-                {
-                    case TaxDisplayType.ExcludingTax:
-                        {
-                            var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
-                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
-
-                            var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
-                            orderItemModel.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
-                        }
-                        break;
-                    case TaxDisplayType.IncludingTax:
-                        {
-                            var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
-                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
-
-                            var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
-                            orderItemModel.SubTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
-                        }
-                        break;
-                }
             }
 
             return model;
@@ -403,6 +372,74 @@ namespace SmartStore.Web.Controllers
             
             return model;
         }
+
+		private OrderDetailsModel.OrderItemModel PrepareOrderItemModel(Order order, OrderItem orderItem)
+		{
+			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
+
+			var model = new OrderDetailsModel.OrderItemModel()
+			{
+				Id = orderItem.Id,
+				Sku = orderItem.Product.Sku,
+				ProductId = orderItem.Product.Id,
+				ProductName = orderItem.Product.GetLocalized(x => x.Name),
+				ProductSeName = orderItem.Product.GetSeName(),
+				ProductType = orderItem.Product.ProductType,
+				Quantity = orderItem.Quantity,
+				AttributeInfo = orderItem.AttributeDescription
+			};
+
+			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
+			{
+				model.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
+				model.BundlePerItemShoppingCart = orderItem.Product.BundlePerItemShoppingCart;
+
+				foreach (var bundleItem in orderItem.GetBundleData())
+				{
+					var bundleItemModel = new OrderDetailsModel.BundleItemModel()
+					{
+						Sku = bundleItem.Sku,
+						ProductName = bundleItem.ProductName,
+						ProductSeName = bundleItem.ProductSeName,
+						VisibleIndividually = bundleItem.VisibleIndividually,
+						Quantity = bundleItem.Quantity,
+						DisplayOrder = bundleItem.DisplayOrder,
+						AttributeInfo = bundleItem.AttributesInfo
+					};
+
+					if (model.BundlePerItemShoppingCart)
+					{
+						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+					}
+					
+					model.BundleItems.Add(bundleItemModel);
+				}
+			}
+
+			//unit price, subtotal
+			switch (order.CustomerTaxDisplayType)
+			{
+				case TaxDisplayType.ExcludingTax:
+					{
+						var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
+						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+
+						var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
+						model.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+					}
+					break;
+				case TaxDisplayType.IncludingTax:
+					{
+						var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
+						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+
+						var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
+						model.SubTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+					}
+					break;
+			}
+			return model;
+		}
 
         #endregion
 

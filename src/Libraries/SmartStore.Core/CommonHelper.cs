@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Core
@@ -19,6 +20,7 @@ namespace SmartStore.Core
     public partial class CommonHelper
     {
         private static readonly ShippingOptionListTypeConverter s_soListTypeConverter = new ShippingOptionListTypeConverter();
+		private static readonly ProductBundleDataListTypeConverter _productBundleListTypeConverter = new ProductBundleDataListTypeConverter();
         private static readonly Dictionary<Type, TypeConverter> s_customTypeConverters = new Dictionary<Type, TypeConverter>
         {
             { typeof(List<int>), new GenericListTypeConverter<int>() },
@@ -26,7 +28,9 @@ namespace SmartStore.Core
             { typeof(List<string>), new GenericListTypeConverter<string>() },
             { typeof(ShippingOption), new ShippingOptionTypeConverter() },
             { typeof(List<ShippingOption>), s_soListTypeConverter },
-            { typeof(IList<ShippingOption>), s_soListTypeConverter }
+            { typeof(IList<ShippingOption>), s_soListTypeConverter },
+			{ typeof(List<ProductBundleData>), _productBundleListTypeConverter },
+			{ typeof(IList<ProductBundleData>), _productBundleListTypeConverter }
         };
         
         /// <summary>

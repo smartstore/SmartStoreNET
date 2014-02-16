@@ -92,6 +92,11 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public decimal? ItemWeight { get; set; }
 
+		/// <summary>
+		/// Gets or sets extra bundle data
+		/// </summary>
+		public string BundleData { get; set; }
+
         /// <summary>
         /// Gets the order
         /// </summary>

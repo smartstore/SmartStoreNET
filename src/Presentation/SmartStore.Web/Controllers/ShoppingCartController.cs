@@ -248,6 +248,7 @@ namespace SmartStore.Web.Controllers
 
 				model.BundleItem.Id = sci.BundleItem.Id;
 				model.BundleItem.DisplayOrder = sci.BundleItem.DisplayOrder;
+				model.BundleItem.HideThumbnail = sci.BundleItem.HideThumbnail;
 				
 				if (model.BundlePerItemPricing && model.BundlePerItemShoppingCart)
 				{
@@ -396,6 +397,7 @@ namespace SmartStore.Web.Controllers
 
 				model.BundleItem.Id = sci.BundleItem.Id;
 				model.BundleItem.DisplayOrder = sci.BundleItem.DisplayOrder;
+				model.BundleItem.HideThumbnail = sci.BundleItem.HideThumbnail;
 
 				if (model.BundlePerItemPricing && model.BundlePerItemShoppingCart)
 				{
@@ -2323,6 +2325,8 @@ namespace SmartStore.Web.Controllers
                 var model = new WishlistModel();
 
                 PrepareWishlistModel(model, cart, !customerGuid.HasValue);
+
+				this.InfoNotification(_localizationService.GetResource("Products.SelectProducts"), true);
 
                 return View(model);
             }

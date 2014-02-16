@@ -157,3 +157,9 @@ BEGIN
 	')
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[OrderItem]') and NAME='BundleData')
+BEGIN
+	ALTER TABLE [OrderItem] ADD [BundleData] nvarchar(max) NULL
+END
+GO

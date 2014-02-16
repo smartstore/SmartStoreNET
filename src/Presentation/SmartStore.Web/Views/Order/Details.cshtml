@@ -1,5 +1,6 @@
 ﻿@model OrderDetailsModel
 @using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Order;
 @using SmartStore.Services.Localization;
 @{
@@ -14,6 +15,102 @@
     //title
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 }
+
+@helper SimpleProduct(OrderDetailsModel.OrderItemModel item)
+{
+	<tr>
+		@if (Model.ShowSku)
+		{
+			<td>
+				@item.Sku
+			</td>
+		}
+		<td>
+			@if (!Model.PrintMode)
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+			}
+			else
+			{
+				@item.ProductName
+			}
+			@if (!String.IsNullOrEmpty(item.AttributeInfo))
+			{
+				<div class="attributes">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+		</td>
+		<td class="ar">
+			@item.UnitPrice
+		</td>
+		<td class="ac">
+			@item.Quantity
+		</td>
+		<td class="ar text-success">
+			@item.SubTotal
+		</td>
+	</tr>
+}
+
+@helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
+{
+	if (parentItem.BundleItems != null)
+	{
+		foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+		{
+			<tr class="product-bundle-row">
+				@if (Model.ShowSku)
+				{
+					<td>&nbsp;</td>
+				}
+				<td>
+					<div class="bundle-item bundle-item-indent">
+						<div class="bundle-item-body">
+							<div class="bundle-item-name">
+								@if (item.VisibleIndividually)
+								{
+									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+								}
+								else
+								{
+									@item.ProductName
+								}
+								@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
+								{
+									<text>
+										&#215;&nbsp;@item.Quantity
+									</text>
+								}
+							</div>
+							@if (!String.IsNullOrEmpty(item.AttributeInfo))
+							{
+								<div class="bundle-item-attribute-info muted">
+									@Html.Raw(item.AttributeInfo)
+								</div>
+							}
+						</div>
+					</div>
+				</td>
+				<td class="ar">
+					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+					{
+						<span class="muted">
+							@Html.Raw(item.PriceWithDiscount)
+						</span>
+					}
+					else
+					{
+						<text>&nbsp;</text>
+					}
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		}
+	}
+}
+
 @if (Model.PrintMode)
 {
     <script type="text/javascript">
@@ -280,7 +377,7 @@
             </div>
 
             <div class="products-box">
-                <table class="table table-striped table-hover">
+                <table class="table table-order-items table-order-products">
                     <thead>
                         <tr>
                             @if (Model.ShowSku)
@@ -303,44 +400,24 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var item in Model.Items)
+                    @{
+                        foreach (var item in Model.Items)
                         {
-                            <tr>
-                                @if (Model.ShowSku)
-                                {
-                                    <td>
-                                        @item.Sku
-                                    </td>
-                                }
-                                <td>
-                                    @if (!Model.PrintMode)
-                                    {
-                                        <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
-                                    }
-                                    else
-                                    {
-                                        @item.ProductName
-                                    }
-                                    @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                                    {
-                                        <div class="attributes">
-                                            @Html.Raw(item.AttributeInfo)
-                                        </div>
-                                    }
-                                </td>
-                                <td class="ar">
-                                    @item.UnitPrice
-                                </td>
-                                <td class="ac">
-                                    @item.Quantity
-                                </td>
-                                <td class="ar text-success">
-                                    @item.SubTotal
-                                </td>
-                            </tr>
+							if (item.ProductType == ProductType.BundledProduct)
+							{
+								<tbody class="product-body product-body-bundle">
+									@SimpleProduct(item)
+									@BundleProducts(item)
+								</tbody>
+							}
+							else
+							{
+								<tbody class="product-body product-body-simple">
+									@SimpleProduct(item)
+								</tbody>
+							}
                         }
-                    </tbody>
+                    }
                 </table>
 
                 @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))

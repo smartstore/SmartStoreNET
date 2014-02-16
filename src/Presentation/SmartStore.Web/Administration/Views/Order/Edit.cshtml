@@ -1307,6 +1307,42 @@
     </table>
     }
 }
+
+@helper BundleItemsInfo(OrderModel.OrderItemModel parentItem)
+{
+	if (parentItem.BundleItems != null)
+	{
+		<div class="bundle-items-container">
+			@foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+			{
+				<div class="bundle-item">
+					<div class="bundle-item-name">
+						@Html.ActionLink(item.ProductName, "Edit", "Product", new { id = item.ProductId }, new { })
+						@if (item.Quantity > 1)
+						{
+							<text>
+								&#215;&nbsp;@item.Quantity
+							</text>
+						}
+					</div>
+					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+					{
+						<div class="bundle-item-price">
+							@Html.Raw(item.PriceWithDiscount)
+						</div>
+					}
+					@if (!String.IsNullOrEmpty(item.AttributeInfo))
+												{
+						<div class="bundle-item-attribute-info muted">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
 @helper TabProducts()
 {
     <table class="adminContent">
@@ -1398,6 +1434,11 @@
                                             <strong>@T("Admin.Orders.Products.SKU")</strong><text>:</text>
                                             @item.Sku
                                         }
+										@if (item.ProductType == ProductType.BundledProduct)
+										{
+											<br />
+											@BundleItemsInfo(item)
+										}
                                         @if (item.ReturnRequestIds.Count > 0)
                                         {
                                             <br />

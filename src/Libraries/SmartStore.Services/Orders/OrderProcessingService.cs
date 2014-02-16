@@ -1094,6 +1094,7 @@ namespace SmartStore.Services.Orders
 
 										var bundleData = new ProductBundleData()
 										{
+											ProductId = childItem.Product.Id,
 											Sku = childItem.Product.Sku,
 											ProductName = (bundleItemName ?? childItem.Product.GetLocalized(x => x.Name)),
 											ProductSeName = childItem.Product.GetSeName(),

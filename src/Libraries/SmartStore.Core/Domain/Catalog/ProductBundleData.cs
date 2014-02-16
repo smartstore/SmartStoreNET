@@ -10,6 +10,7 @@ namespace SmartStore.Core.Domain.Catalog
 {
 	public partial class ProductBundleData
 	{
+		public int ProductId { get; set; }
 		public string Sku { get; set; }
 		public string ProductName { get; set; }
 		public string ProductSeName { get; set; }

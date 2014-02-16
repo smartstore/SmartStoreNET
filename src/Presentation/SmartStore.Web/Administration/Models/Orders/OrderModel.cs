@@ -263,10 +263,12 @@ namespace SmartStore.Admin.Models.Orders
             {
                 ReturnRequestIds = new List<int>();
                 PurchasedGiftCardIds = new List<int>();
+				BundleItems = new List<BundleItemModel>();
             }
 			public int ProductId { get; set; }
 			public string ProductName { get; set; }
             public string Sku { get; set; }
+			public ProductType ProductType { get; set; }
 
             public string UnitPriceInclTax { get; set; }
             public string UnitPriceExclTax { get; set; }
@@ -295,7 +297,25 @@ namespace SmartStore.Admin.Models.Orders
             public DownloadActivationType DownloadActivationType { get; set; }
             public bool IsDownloadActivated { get; set; }
             public int? LicenseDownloadId { get; set; }
+
+			public bool BundlePerItemPricing { get; set; }
+			public bool BundlePerItemShoppingCart { get; set; }
+
+			public IList<BundleItemModel> BundleItems { get; set; }
         }
+
+		public class BundleItemModel : ModelBase
+		{
+			public int ProductId { get; set; }
+			public string Sku { get; set; }
+			public string ProductName { get; set; }
+			public string ProductSeName { get; set; }
+			public bool VisibleIndividually { get; set; }
+			public int Quantity { get; set; }
+			public int DisplayOrder { get; set; }
+			public string PriceWithDiscount { get; set; }
+			public string AttributeInfo { get; set; }
+		}
 
         public class TaxRate : ModelBase
         {

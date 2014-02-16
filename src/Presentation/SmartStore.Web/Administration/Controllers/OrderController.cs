@@ -420,6 +420,7 @@ namespace SmartStore.Admin.Controllers
 					ProductId = orderItem.ProductId,
 					ProductName = orderItem.Product.GetLocalized(x => x.Name),
                     Sku = orderItem.Product.Sku,
+					ProductType = orderItem.Product.ProductType,
                     Quantity = orderItem.Quantity,
                     IsDownload = orderItem.Product.IsDownload,
                     DownloadCount = orderItem.DownloadCount,
@@ -427,6 +428,34 @@ namespace SmartStore.Admin.Controllers
                     IsDownloadActivated = orderItem.IsDownloadActivated,
                     LicenseDownloadId = orderItem.LicenseDownloadId
                 };
+
+				if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
+				{
+					orderItemModel.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
+					orderItemModel.BundlePerItemShoppingCart = orderItem.Product.BundlePerItemShoppingCart;
+
+					foreach (var bundleItem in orderItem.GetBundleData())
+					{
+						var bundleItemModel = new OrderModel.BundleItemModel()
+						{
+							ProductId = bundleItem.ProductId,
+							Sku = bundleItem.Sku,
+							ProductName = bundleItem.ProductName,
+							ProductSeName = bundleItem.ProductSeName,
+							VisibleIndividually = bundleItem.VisibleIndividually,
+							Quantity = bundleItem.Quantity,
+							DisplayOrder = bundleItem.DisplayOrder,
+							AttributeInfo = bundleItem.AttributesInfo
+						};
+
+						if (orderItemModel.BundlePerItemShoppingCart)
+						{
+							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+						}
+
+						orderItemModel.BundleItems.Add(bundleItemModel);
+					}
+				}
 
                 //unit price
                 orderItemModel.UnitPriceInclTaxValue = orderItem.UnitPriceInclTax;

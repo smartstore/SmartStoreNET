@@ -43,6 +43,8 @@ namespace SmartStore.Web.Controllers
         private readonly IShippingService _shippingService;
         private readonly ICountryService _countryService;
         private readonly IWebHelper _webHelper;
+		private readonly IProductService _productService;
+		private readonly IProductAttributeFormatter _productAttributeFormatter;
 
         private readonly OrderSettings _orderSettings;
         private readonly TaxSettings _taxSettings;
@@ -66,7 +68,9 @@ namespace SmartStore.Web.Controllers
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             TaxSettings taxSettings, PdfSettings pdfSettings,
             ShippingSettings shippingSettings, AddressSettings addressSettings,
-            ICheckoutAttributeFormatter checkoutAttributeFormatter )
+            ICheckoutAttributeFormatter checkoutAttributeFormatter,
+			IProductService productService,
+			IProductAttributeFormatter productAttributeFormatter)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -81,6 +85,8 @@ namespace SmartStore.Web.Controllers
             this._shippingService = shippingService;
             this._countryService = countryService;
             this._webHelper = webHelper;
+			this._productService = productService;
+			this._productAttributeFormatter = productAttributeFormatter;
 
             this._catalogSettings = catalogSettings;
             this._orderSettings = orderSettings;
@@ -403,9 +409,14 @@ namespace SmartStore.Web.Controllers
 						ProductSeName = bundleItem.ProductSeName,
 						VisibleIndividually = bundleItem.VisibleIndividually,
 						Quantity = bundleItem.Quantity,
-						DisplayOrder = bundleItem.DisplayOrder,
-						AttributeInfo = bundleItem.AttributesInfo
+						DisplayOrder = bundleItem.DisplayOrder
 					};
+
+					if (bundleItem.AttributesXml.HasValue())
+					{
+						bundleItemModel.AttributeInfo = _productAttributeFormatter.FormatAttributes(_productService.GetProductById(bundleItem.ProductId),
+							bundleItem.AttributesXml, order.Customer, renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+					}
 
 					if (model.BundlePerItemShoppingCart)
 					{

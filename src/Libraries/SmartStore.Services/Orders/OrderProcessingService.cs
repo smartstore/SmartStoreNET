@@ -1094,22 +1094,22 @@ namespace SmartStore.Services.Orders
 
 										var bundleData = new ProductBundleData()
 										{
+											BundleItemId = childItem.BundleItemId ?? 0,
 											ProductId = childItem.Product.Id,
 											Sku = childItem.Product.Sku,
 											ProductName = (bundleItemName ?? childItem.Product.GetLocalized(x => x.Name)),
 											ProductSeName = childItem.Product.GetSeName(),
 											VisibleIndividually = childItem.Product.VisibleIndividually,
 											Quantity = childItem.BundleItem.Quantity,
-											DisplayOrder = childItem.BundleItem.DisplayOrder
+											DisplayOrder = childItem.BundleItem.DisplayOrder,
+											AttributesXml = childItem.AttributesXml
 										};
-
-										bundleData.AttributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Product, childItem.AttributesXml, order.Customer,
-											renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
 
 										decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
 										bundleData.PriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
 
-										listBundleData.Add(bundleData);
+										if (bundleData.ProductId != 0 && bundleData.BundleItemId != 0)
+											listBundleData.Add(bundleData);
 									}
 
 									orderItem.SetBundleData(listBundleData);
@@ -2512,12 +2512,28 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
+			int parentItemId, childItemId;
+
             foreach (var orderItem in order.OrderItems)
             {
-				int shoppingCartItem;
-                _shoppingCartService.AddToCart(orderItem.Order.Customer, orderItem.Product,
-					 ShoppingCartType.ShoppingCart, orderItem.Order.StoreId, orderItem.AttributesXml,
-                    orderItem.UnitPriceExclTax, orderItem.Quantity, false, out shoppingCartItem);
+				bool isBundle = (orderItem.Product.ProductType == ProductType.BundledProduct);
+
+                var warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, orderItem.Product, ShoppingCartType.ShoppingCart, orderItem.Order.StoreId,
+					orderItem.AttributesXml, isBundle ? decimal.Zero : orderItem.UnitPriceExclTax, orderItem.Quantity, false, out parentItemId);
+
+				if (isBundle && orderItem.BundleData.HasValue() && warnings.Count <= 0)
+				{
+					foreach (var bundleData in orderItem.GetBundleData())
+					{
+						var bundleItem = _productService.GetBundleItemById(bundleData.BundleItemId);
+
+						warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, bundleItem.Product, ShoppingCartType.ShoppingCart,
+							orderItem.Order.StoreId, bundleData.AttributesXml, decimal.Zero, bundleData.Quantity, false, out childItemId, parentItemId, bundleItem);
+
+						if (warnings.Count > 0)
+							_shoppingCartService.DeleteShoppingCartItem(parentItemId);
+					}
+				}
             }
         }
         

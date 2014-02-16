@@ -10,6 +10,7 @@ namespace SmartStore.Core.Domain.Catalog
 {
 	public partial class ProductBundleData
 	{
+		public int BundleItemId { get; set; }
 		public int ProductId { get; set; }
 		public string Sku { get; set; }
 		public string ProductName { get; set; }
@@ -18,7 +19,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public int Quantity { get; set; }
 		public decimal PriceWithDiscount { get; set; }
 		public int DisplayOrder { get; set; }
-		public string AttributesInfo { get; set; }
+		public string AttributesXml { get; set; }
 	}
 
 	public class ProductBundleDataListTypeConverter : TypeConverter

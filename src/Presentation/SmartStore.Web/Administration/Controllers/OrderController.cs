@@ -444,9 +444,14 @@ namespace SmartStore.Admin.Controllers
 							ProductSeName = bundleItem.ProductSeName,
 							VisibleIndividually = bundleItem.VisibleIndividually,
 							Quantity = bundleItem.Quantity,
-							DisplayOrder = bundleItem.DisplayOrder,
-							AttributeInfo = bundleItem.AttributesInfo
+							DisplayOrder = bundleItem.DisplayOrder
 						};
+
+						if (bundleItem.AttributesXml.HasValue())
+						{
+							bundleItemModel.AttributeInfo = _productAttributeFormatter.FormatAttributes(_productService.GetProductById(bundleItem.ProductId),
+								bundleItem.AttributesXml, order.Customer, renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+						}
 
 						if (orderItemModel.BundlePerItemShoppingCart)
 						{

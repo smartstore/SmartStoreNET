@@ -36,6 +36,8 @@ namespace SmartStore.Admin.Models.Orders
             public int OrderItemId { get; set; }
             public int ProductId { get; set; }
             public string ProductName { get; set; }
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
             public string Sku { get; set; }
             public string AttributeInfo { get; set; }
 

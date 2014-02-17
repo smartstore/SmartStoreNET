@@ -34,8 +34,13 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <button type="submit" id="btnSearch" class="btn">@T("Admin.SalesReport.NeverSold.RunReport")</button>
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <button type="submit" id="btnSearch" class="btn">
+					<i class="icon-search icon-white"></i>&nbsp;@T("Admin.SalesReport.NeverSold.RunReport")
+				</button>
             </td>
         </tr>
     </table>
@@ -50,15 +55,8 @@
                         .Columns(columns =>
                         {
                             columns.Bound(x => x.ProductName)
-                               .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "Product", new { id = x.ProductId }, new { }))                                
-                               .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\">" + "<#= ProductName #>\">" + "</a>");
-                    
-                            columns.Bound(x => x.ProductId)
-                                .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "Product", new { id = x.ProductId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .Title(T("Admin.Common.View").Text);
+								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));                    
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))

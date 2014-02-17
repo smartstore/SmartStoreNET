@@ -34,8 +34,8 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(sci => sci.ProductName)
-                                    .Template(sci => Html.ActionLink(sci.ProductName, "Edit", "Product", new { id = sci.ProductId }, new { }))
-                                    .ClientTemplate("<a href=\""+ @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
+									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                                 columns.Bound(sci => sci.Quantity).Width(100);
                                 columns.Bound(sci => sci.UnitPrice).Width(100);
                                 columns.Bound(sci => sci.Total).Width(100);

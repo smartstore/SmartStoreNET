@@ -58,6 +58,8 @@ namespace SmartStore.Admin.Controllers
             model.Id = productReview.Id;
             model.ProductId = productReview.ProductId;
             model.ProductName = productReview.Product.Name;
+			model.ProductTypeName = productReview.Product.GetProductTypeLabel(_localizationService);
+			model.ProductTypeLabelHint = productReview.Product.ProductTypeLabelHint;
             model.CustomerId = productReview.CustomerId;
             model.IpAddress = productReview.IpAddress;
             model.Rating = productReview.Rating;

@@ -1252,11 +1252,9 @@
         
     <div class="clear">
     </div>    
-    <p>
-        <strong>
-            @T("Admin.Orders.Shipments")
-        </strong>
-    </p>
+
+	<h3>@T("Admin.Orders.Shipments")</h3>
+
     <div class="clear">
     </div>  
         <table class="adminContent">
@@ -1282,13 +1280,23 @@
                         .HeaderTemplate(T("Admin.Common.View").Text);
                 })
                 .EnableCustomBinding(true))
+
+				@if (Model.CanAddNewShipments)
+				{
+					<div>
+
+					</div>
+				}
             </td>
         </tr>
         @if (Model.CanAddNewShipments)
         {
             <tr>
-                <td class="adminData">
-                    <input type="submit" id="btnAddNewShipment" name="btnAddNewShipment" value="@T("Admin.Orders.Shipments.AddNew")" onclick="javascript:setLocation('@(Url.Action("AddShipment", "Order", new { orderId = Model.Id }))'); return false;" class="btn" />
+                <td>
+                    <button type="submit" id="btnAddNewShipment" name="btnAddNewShipment" class="btn btn-below"
+						onclick="javascript:setLocation('@(Url.Action("AddShipment", "Order", new { orderId = Model.Id }))'); return false;">
+						<i class="icon-plus"></i>&nbsp;@T("Admin.Orders.Shipments.AddNew")
+					</button>
                 </td>
             </tr>
         }
@@ -1417,7 +1425,8 @@
                             <tr>
                                 <td style="width: 25%;">
                                     <div>
-                                        <a href="@Url.Action("Edit", "Product", new { id = item.ProductId })">@item.ProductName</a>
+										@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
                                             <br />
@@ -1681,8 +1690,9 @@
             </tr>
         }
         <tr>
-            <td class="adminData">
-                <button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;" class="btn">
+            <td>
+                <button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn btn-below"
+						onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;">
 					<i class="icon-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")
 				</button>
             </td>

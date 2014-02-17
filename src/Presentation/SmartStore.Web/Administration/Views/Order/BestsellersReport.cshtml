@@ -66,15 +66,11 @@
                         .ClientEvents(events => events.OnDataBinding("onDataBinding"))
                         .Columns(columns =>
                         {
-                            columns.Bound(x => x.ProductName);
-                            columns.Bound(x => x.TotalQuantity);
-                            columns.Bound(x => x.TotalAmount);
-                            columns.Bound(x => x.ProductId)
-                                .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "Product", new { id = x.ProductId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .Title(T("Admin.Common.View").Text);
+                            columns.Bound(x => x.ProductName)
+								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                            columns.Bound(x => x.TotalQuantity).Centered().Width(100);
+                            columns.Bound(x => x.TotalAmount).Width(200);
                         })
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
                         .EnableCustomBinding(true))

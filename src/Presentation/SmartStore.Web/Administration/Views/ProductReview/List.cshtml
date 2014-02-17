@@ -55,32 +55,31 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id)
-                        .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                        .Title("<input id='mastercheckbox' type='checkbox'/>")
-                        .Width(50)
-                        .HtmlAttributes(new { style = "text-align:center" })
-                        .HeaderHtmlAttributes(new { style = "text-align:center" });
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
 
                         columns.Bound(x => x.ProductName)
-                            .Width(200)
-                            .Template(x => Html.ActionLink(x.ProductName, "Edit", "Product", new { id = x.ProductId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
+							.Width(200)
+							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                         columns.Bound(x => x.CustomerId)
                             .Width(50)
+							.Centered()
                             .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\">" + T("Admin.Common.View").Text + "</a>");
                         columns.Bound(x => x.Title)
-                            .Width(150)
-                            .Centered();
+                            .Width(150);
                         columns.Bound(x => x.ReviewText)
                             .Width(350)
-                            .Encoded(false)
-                            .Centered();
+                            .Encoded(false);
                         columns.Bound(x => x.Rating)
                             .Width(50)
                             .Centered();
                         columns.Bound(x => x.IsApproved)
-                            .Width(100)
+                            .Width(80)
                             .Template(item => @Html.SymbolForBool(item.IsApproved))
                             .ClientTemplate(@Html.SymbolForBool("IsApproved"))
                             .Centered();

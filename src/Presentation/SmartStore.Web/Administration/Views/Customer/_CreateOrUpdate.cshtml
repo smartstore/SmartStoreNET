@@ -620,13 +620,13 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(sci => sci.ProductName)
-                                .Template(sci => Html.ActionLink(sci.ProductName, "Edit", "Product", new { id = sci.ProductId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
-                                columns.Bound(sci => sci.Quantity).Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(100);
-                                columns.Bound(sci => sci.Total).Width(100);
-								columns.Bound(sci => sci.Store).Width(100);
-                                columns.Bound(sci => sci.UpdatedOn).Width(100);
+									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                                columns.Bound(sci => sci.Quantity).Centered().Width(100);
+                                columns.Bound(sci => sci.UnitPrice).Width(120);
+                                columns.Bound(sci => sci.Total).Width(120);
+								columns.Bound(sci => sci.Store).Width(300);
+                                columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
                             .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("GetCartList", "Customer", new
@@ -649,13 +649,13 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(sci => sci.ProductName)
-                                .Template(sci => Html.ActionLink(sci.ProductName, "Edit", "Product", new { id = sci.ProductId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Product/Edit/") + "<#= ProductId #>\"><#= ProductName #></a>");
-                                columns.Bound(sci => sci.Quantity).Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(100);
-                                columns.Bound(sci => sci.Total).Width(100);
-								columns.Bound(sci => sci.Store).Width(100);
-                                columns.Bound(sci => sci.UpdatedOn).Width(100);
+									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                                columns.Bound(sci => sci.Quantity).Centered().Width(100);
+                                columns.Bound(sci => sci.UnitPrice).Width(120);
+                                columns.Bound(sci => sci.Total).Width(120);
+								columns.Bound(sci => sci.Store).Width(300);
+                                columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
                             .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("GetCartList", "Customer", new

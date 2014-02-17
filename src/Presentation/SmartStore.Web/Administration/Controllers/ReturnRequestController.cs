@@ -12,6 +12,7 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
@@ -75,6 +76,8 @@ namespace SmartStore.Admin.Controllers
             model.Id = returnRequest.Id;
             model.ProductId = orderItem.ProductId;
 			model.ProductName = orderItem.Product.Name;
+			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService);
+			model.ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint;
             model.OrderId = orderItem.OrderId;
             model.CustomerId = returnRequest.CustomerId;
 			model.CustomerFullName = returnRequest.Customer.GetFullName();

@@ -429,6 +429,8 @@ namespace SmartStore.Admin.Controllers
 					ProductName = orderItem.Product.GetLocalized(x => x.Name),
                     Sku = orderItem.Product.Sku,
 					ProductType = orderItem.Product.ProductType,
+					ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
+					ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                     Quantity = orderItem.Quantity,
                     IsDownload = orderItem.Product.IsDownload,
                     DownloadCount = orderItem.DownloadCount,
@@ -611,6 +613,8 @@ namespace SmartStore.Admin.Controllers
                         OrderItemId = orderItem.Id,
                         ProductId = orderItem.ProductId,
 						ProductName = orderItem.Product.Name,
+						ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                         Sku = orderItem.Product.Sku,
                         AttributeInfo = orderItem.AttributeDescription,
                         ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
@@ -2002,6 +2006,8 @@ namespace SmartStore.Admin.Controllers
                     OrderItemId = orderItem.Id,
 					ProductId = orderItem.ProductId,
 					ProductName = orderItem.Product.Name,
+					ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
+					ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                     Sku = orderItem.Product.Sku,
                     AttributeInfo = orderItem.AttributeDescription,
                     ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
@@ -2375,15 +2381,21 @@ namespace SmartStore.Admin.Controllers
 
             var model = report.Select(x =>
             {
+				var product = _productService.GetProductById(x.ProductId);
+
                 var m = new BestsellersReportLineModel()
                 {
                     ProductId = x.ProductId,
                     TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
                     TotalQuantity = x.TotalQuantity,
                 };
-                var product = _productService.GetProductById(x.ProductId);
-                if (product != null)
-                    m.ProductName = product.Name;
+
+				if (product != null)
+				{
+					m.ProductName = product.Name;
+					m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
+					m.ProductTypeLabelHint = product.ProductTypeLabelHint;
+				}
                 return m;
             }).ToList();
 
@@ -2470,15 +2482,21 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = items.Select(x =>
                 {
+					var product = _productService.GetProductById(x.ProductId);
+
                     var m = new BestsellersReportLineModel()
                     {
                         ProductId = x.ProductId,
                         TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
                         TotalQuantity = x.TotalQuantity
                     };
-                    var product = _productService.GetProductById(x.ProductId);
-                    if (product != null)
+
+					if (product != null)
+					{
 						m.ProductName = product.Name;
+						m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
+						m.ProductTypeLabelHint = product.ProductTypeLabelHint;
+					}
                     return m;
                 }),
                 Total = items.Count
@@ -2507,16 +2525,21 @@ namespace SmartStore.Admin.Controllers
             
             var items = _orderReportService.ProductsNeverSold(startDateValue, endDateValue,
                 command.Page - 1, command.PageSize, true);
-            var gridModel = new GridModel<NeverSoldReportLineModel>
-            {
-                Data = items.Select(x =>
-                    new NeverSoldReportLineModel()
-                    {
-                        ProductId = x.Id,
-						ProductName = x.Name
-                    }),
-                Total = items.TotalCount
-            };
+			var gridModel = new GridModel<NeverSoldReportLineModel>
+			{
+				Data = items.Select(x =>
+				{
+					var m = new NeverSoldReportLineModel()
+					{
+						ProductId = x.Id,
+						ProductName = x.Name,
+						ProductTypeName = x.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.ProductTypeLabelHint
+					};
+					return m;
+				}),
+				Total = items.TotalCount
+			};
             return new JsonResult
             {
                 Data = gridModel

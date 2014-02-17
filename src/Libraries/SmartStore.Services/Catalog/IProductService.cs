@@ -90,6 +90,20 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product</returns>
         Product GetProductByGtin(string sku);
         
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="cartItem">Shopping cart item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		void AdjustInventory(ShoppingCartItem cartItem, bool decrease);
+
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		void AdjustInventory(OrderItem orderItem, bool decrease);
+
         /// <summary>
         /// Adjusts inventory
         /// </summary>
@@ -97,8 +111,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-        void AdjustInventory(Product product, bool decrease,
-            int quantity, string attributesXml);
+        void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml);
 
         /// <summary>
         /// Update HasTierPrices property (used for performance optimization)

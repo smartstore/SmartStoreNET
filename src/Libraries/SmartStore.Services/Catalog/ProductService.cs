@@ -11,10 +11,10 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
 {
@@ -992,7 +992,65 @@ namespace SmartStore.Services.Catalog
             var product = query.FirstOrDefault();
             return product;
         }
-        
+
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="cartItem">Shopping cart item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		public virtual void AdjustInventory(ShoppingCartItem cartItem, bool decrease)
+		{
+			if (cartItem == null)
+				throw new ArgumentNullException("cartItem");
+
+			if (cartItem.Product.ProductType == ProductType.BundledProduct && cartItem.Product.BundlePerItemShoppingCart)
+			{
+				if (cartItem.ChildItems == null)
+					return;
+
+				foreach (var item in cartItem.ChildItems.Where(x => x.Id != cartItem.Id))
+					AdjustInventory(item, decrease);
+			}
+			else
+			{
+				AdjustInventory(cartItem.Product, decrease, cartItem.Quantity, cartItem.AttributesXml);
+			}
+		}
+
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		public virtual void AdjustInventory(OrderItem orderItem, bool decrease)
+		{
+			if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
+
+			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.Product.BundlePerItemShoppingCart)
+			{
+				if (orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
+					if (bundleData.Count > 0)
+					{
+						var products = GetProductsByIds(bundleData.Select(x => x.ProductId).ToArray());
+
+						foreach (var item in bundleData)
+						{
+							var product = products.FirstOrDefault(x => x.Id == item.ProductId);
+							if (product != null)
+								AdjustInventory(product, decrease, item.Quantity, item.AttributesXml);
+						}
+					}
+				}
+			}
+			else
+			{
+				AdjustInventory(orderItem.Product, decrease, orderItem.Quantity, orderItem.AttributesXml);
+			}
+		}
+
         /// <summary>
         /// Adjusts inventory
         /// </summary>
@@ -1000,8 +1058,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-		public virtual void AdjustInventory(Product product, bool decrease,
-            int quantity, string attributesXml)
+		public virtual void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
 			if (product == null)
 				throw new ArgumentNullException("product");

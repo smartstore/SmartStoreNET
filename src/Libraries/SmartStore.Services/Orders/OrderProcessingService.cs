@@ -1132,7 +1132,7 @@ namespace SmartStore.Services.Orders
                                 }
 
                                 //inventory
-                                _productService.AdjustInventory(sc.Product, true, sc.Quantity, sc.AttributesXml);
+								_productService.AdjustInventory(sc, true);
                             }
 
                             //clear shopping cart
@@ -1199,7 +1199,7 @@ namespace SmartStore.Services.Orders
                                 }
 
                                 //inventory
-                                _productService.AdjustInventory(orderItem.Product, true, orderItem.Quantity, orderItem.AttributesXml);
+								_productService.AdjustInventory(orderItem, true);
                             }
                         }
 
@@ -1412,8 +1412,10 @@ namespace SmartStore.Services.Orders
             }
 
             //Adjust inventory
-            foreach (var orderItem in order.OrderItems)
-                _productService.AdjustInventory(orderItem.Product, false, orderItem.Quantity, orderItem.AttributesXml);
+			foreach (var orderItem in order.OrderItems)
+			{
+				_productService.AdjustInventory(orderItem, false);
+			}
 
             //add a note
             order.OrderNotes.Add(new OrderNote()
@@ -1778,8 +1780,10 @@ namespace SmartStore.Services.Orders
             }
 
             //Adjust inventory
-            foreach (var orderItem in order.OrderItems)
-                _productService.AdjustInventory(orderItem.Product, false, orderItem.Quantity, orderItem.AttributesXml);
+			foreach (var orderItem in order.OrderItems)
+			{
+				_productService.AdjustInventory(orderItem, false);
+			}
         }
 
 

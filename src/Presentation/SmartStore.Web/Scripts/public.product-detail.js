@@ -103,7 +103,8 @@
 		            attrLine.find(".value").html(newValue);
 		            attrLine.removeClass("hide");
 		            attrLine.addClass("in");
-		        } else {
+		        }
+		        else {
 		            attrLine.find(".value").html();
 		            attrLine.addClass("hide");
 		            attrLine.removeClass("in");
@@ -120,6 +121,10 @@
 		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
+
+		    if (data.DynamicThumblUrl && data.DynamicThumblUrl.length > 0) {
+		    	$(context).find('.dynamic-image img').attr('src', data.DynamicThumblUrl);
+		    }
 		};
 		
 		this.initialized = false;

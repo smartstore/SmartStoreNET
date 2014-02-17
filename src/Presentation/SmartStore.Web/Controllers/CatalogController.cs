@@ -1388,7 +1388,7 @@ namespace SmartStore.Web.Controllers
 
             #region Attribute combinations
 
-			if (!isBundle || (isBundle && product.BundlePerItemPricing))
+			if (!isBundle)
 			{
 				model.Combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
 
@@ -2675,6 +2675,7 @@ namespace SmartStore.Web.Controllers
             int quantity = 1;
             int galleryStartIndex = -1;
             string galleryHtml = null;
+			string dynamicThumbUrl = null;
 			bool isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
             var pictureModel = new ProductDetailsPictureModel();
             var m = new ProductDetailsModel();
@@ -2702,40 +2703,43 @@ namespace SmartStore.Web.Controllers
             // get merged model data
             PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
 
-            // get updated image gallery
-			if (product.ProductType != ProductType.BundledProduct && bundleItem == null)
-            {
-                var pictures = _pictureService.GetPicturesByProductId(productId);
+			if (bundleItem != null)		// update bundle item thumbnail
+			{
+				if (!bundleItem.HideThumbnail)
+				{
+					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.ProductId);
+					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
+				}
+			}
+			else if (isAssociated)		// update associated product thumbnail
+			{
+				var picture = m.GetAssignedPicture(_pictureService, null, productId);
+				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
+			}
+			else if (product.ProductType != ProductType.BundledProduct)		// update image gallery
+			{
+				var pictures = _pictureService.GetPicturesByProductId(productId);
 
-                if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
-                {
-					// all pictures rendered... only index is required
-                    if (m.CombinationSelected != null)
-                    {
-                        var combiAssignedImages = m.CombinationSelected.GetAssignedPictureIds();
-                        if (combiAssignedImages.Length > 0)
-                        {
-                            var picture = pictures.FirstOrDefault(p => p.Id == combiAssignedImages[0]);
-                            if (picture != null)
-                                galleryStartIndex = pictures.IndexOf(picture);
-                        }
-                    }
-                }
-                else
-                {
-                    var allCombinationImageIds = new List<int>();
+				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)	// all pictures rendered... only index is required
+				{
+					var picture = m.GetAssignedPicture(_pictureService, pictures);
+					galleryStartIndex = (picture == null ? 0 : pictures.IndexOf(picture));
+				}
+				else
+				{
+					var allCombinationImageIds = new List<int>();
 
 					_productAttributeService
 						.GetAllProductVariantAttributeCombinations(product.Id)
 						.GetAllCombinationImageIds(allCombinationImageIds);
 
-                    PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
+					PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
 						false, bundleItem, m.CombinationSelected);
 
-                    galleryHtml = this.RenderPartialViewToString("_ProductDetailsPictures", pictureModel);
-                    galleryStartIndex = pictureModel.GalleryStartIndex;
-                }
-            }
+					galleryStartIndex = pictureModel.GalleryStartIndex;
+					galleryHtml = this.RenderPartialViewToString("_ProductDetailsPictures", pictureModel);
+				}
+			}
 
             #region data object
             object data = new
@@ -2788,8 +2792,9 @@ namespace SmartStore.Web.Controllers
                     Availability = new { Text = m.StockAvailability, Show = product.DisplayStockAvailability, Available = m.IsAvailable }
                 },
 
-                GalleryHtml = galleryHtml,
-                GalleryStartIndex = galleryStartIndex
+				DynamicThumblUrl = dynamicThumbUrl,
+				GalleryStartIndex = galleryStartIndex,
+				GalleryHtml = galleryHtml
             };
             #endregion
 

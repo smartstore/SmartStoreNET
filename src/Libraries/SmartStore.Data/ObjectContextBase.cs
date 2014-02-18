@@ -474,11 +474,11 @@ namespace SmartStore.Data
             return sb.ToString();
         }
 
-		private void IgnoreMergedData(HookedEntityEntry[] modifiedEntries, bool ignore)
+		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
 		{
 			try
 			{
-				foreach (var entry in modifiedEntries)
+				foreach (var entry in entries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
 

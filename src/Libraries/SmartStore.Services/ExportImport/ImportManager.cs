@@ -309,10 +309,14 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.Width);
 				row.SetProperty(result, product, (x) => x.Height);
 				row.SetProperty(result, product, (x) => x.DeliveryTimeId);
-				row.SetProperty(result, product, (x) => x.BasePrice_Enabled);
-				row.SetProperty(result, product, (x) => x.BasePrice_MeasureUnit);
-				row.SetProperty(result, product, (x) => x.BasePrice_Amount);
-				row.SetProperty(result, product, (x) => x.BasePrice_BaseAmount);
+				row.SetProperty(result, product, (x) => x.BasePriceEnabled);
+				row.SetProperty(result, product, (x) => x.BasePriceMeasureUnit);
+				row.SetProperty(result, product, (x) => x.BasePriceAmount);
+				row.SetProperty(result, product, (x) => x.BasePriceBaseAmount);
+				row.SetProperty(result, product, (x) => x.BundlePerItemPricing);
+				row.SetProperty(result, product, (x) => x.BundlePerItemShipping);
+				row.SetProperty(result, product, (x) => x.BundlePerItemShoppingCart);
+				row.SetProperty(result, product, (x) => x.BundleTitleText);
 				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow, OADateToUtcDate);
 
 				product.UpdatedOnUtc = DateTime.UtcNow;

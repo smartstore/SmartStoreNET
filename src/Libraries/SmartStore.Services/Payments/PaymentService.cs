@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -35,14 +36,14 @@ namespace SmartStore.Services.Payments
 		/// <param name="pluginService">Plugin service</param>
         public PaymentService(PaymentSettings paymentSettings, IPluginFinder pluginFinder,
             ShoppingCartSettings shoppingCartSettings,
-			ISettingService settingService,
-			ILocalizationService localizationService)
+			ISettingService settingService)
         {
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
-			this._localizationService = localizationService;
+			// TODO: (MC) Make ctor injection (didn't want to break unit tests)
+			this._localizationService = EngineContext.Current.Resolve<ILocalizationService>();
         }
 
         #endregion

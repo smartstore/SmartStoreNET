@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Routing;
@@ -160,7 +160,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a value indicating whether capture is supported
 		/// </summary>
-		public bool SupportCapture
+		public virtual bool SupportCapture
 		{
 			get
 			{
@@ -171,7 +171,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a value indicating whether partial refund is supported
 		/// </summary>
-		public bool SupportPartiallyRefund
+		public virtual bool SupportPartiallyRefund
 		{
 			get
 			{
@@ -182,7 +182,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a value indicating whether refund is supported
 		/// </summary>
-		public bool SupportRefund
+		public virtual bool SupportRefund
 		{
 			get
 			{
@@ -193,7 +193,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a value indicating whether void is supported
 		/// </summary>
-		public bool SupportVoid
+		public virtual bool SupportVoid
 		{
 			get
 			{
@@ -204,7 +204,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a recurring payment type of payment method
 		/// </summary>
-		public RecurringPaymentType RecurringPaymentType
+		public virtual RecurringPaymentType RecurringPaymentType
 		{
 			get
 			{
@@ -215,7 +215,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets a payment method type
 		/// </summary>
-		public PaymentMethodType PaymentMethodType
+		public virtual PaymentMethodType PaymentMethodType
 		{
 			get
 			{

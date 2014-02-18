@@ -49,7 +49,7 @@ namespace SmartStore.Plugin.Payments.Manual
         /// </summary>
         /// <param name="processPaymentRequest">Payment info required for an order processing</param>
         /// <returns>Process payment result</returns>
-        public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+        public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new ProcessPaymentResult();
 
@@ -135,7 +135,7 @@ namespace SmartStore.Plugin.Payments.Manual
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		public override void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "PaymentManual";
@@ -148,17 +148,17 @@ namespace SmartStore.Plugin.Payments.Manual
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
-        public void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentManual";
             routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Manual.Controllers" }, { "area", null } };
         }
 
-        public Type GetControllerType()
-        {
-            return typeof(PaymentManualController);
-        }
+		public override Type GetControllerType()
+		{
+			return typeof(PaymentManualController);
+		}
 
         public override void Install()
         {

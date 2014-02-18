@@ -7,6 +7,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Tests.Payments
 {

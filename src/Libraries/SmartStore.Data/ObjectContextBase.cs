@@ -324,7 +324,7 @@ namespace SmartStore.Data
 
         public override int SaveChanges()
         {
-			IEnumerable<DbEntityEntry> modifiedEntries;
+			IList<DbEntityEntry> modifiedEntries;
 			bool hooksEnabled;
 			HookedEntityEntry[] modifiedHookEntries;
 			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
@@ -342,7 +342,7 @@ namespace SmartStore.Data
 
 		public override Task<int> SaveChangesAsync()
 		{
-			IEnumerable<DbEntityEntry> modifiedEntries;
+			IList<DbEntityEntry> modifiedEntries;
 			bool hooksEnabled;
 			HookedEntityEntry[] modifiedHookEntries;
 			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
@@ -474,7 +474,7 @@ namespace SmartStore.Data
             return sb.ToString();
         }
 
-		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
+		private void IgnoreMergedData(IList<DbEntityEntry> entries, bool ignore)
 		{
 			try
 			{
@@ -552,13 +552,14 @@ namespace SmartStore.Data
 			return tcs.Task;
 		}
 
-		private void PerformPreSaveActions(out IEnumerable<DbEntityEntry> modifiedEntries, out bool hooksEnabled, out HookedEntityEntry[] modifiedHookEntries)
+		private void PerformPreSaveActions(out IList<DbEntityEntry> modifiedEntries, out bool hooksEnabled, out HookedEntityEntry[] modifiedHookEntries)
 		{
 			modifiedHookEntries = null;
 			hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
 
 			modifiedEntries = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached);
+				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+				.ToList();
 
 			if (hooksEnabled)
 			{
@@ -602,7 +603,7 @@ namespace SmartStore.Data
 			IgnoreMergedData(modifiedEntries, true);
 		}
 
-		private void PerformPostSaveActions(IEnumerable<DbEntityEntry> modifiedEntries, bool hooksEnabled, HookedEntityEntry[] modifiedHookEntries)
+		private void PerformPostSaveActions(IList<DbEntityEntry> modifiedEntries, bool hooksEnabled, HookedEntityEntry[] modifiedHookEntries)
 		{
 			IgnoreMergedData(modifiedEntries, false);
 

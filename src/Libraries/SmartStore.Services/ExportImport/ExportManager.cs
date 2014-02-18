@@ -464,13 +464,14 @@ namespace SmartStore.Services.ExportImport
 					xmlWriter.WriteStartElement("ProductBundleItem");
 
 					xmlWriter.WriteElementString("ProductId", null, bundleItem.ProductId.ToString());
-					xmlWriter.WriteElementString("ParentBundledProductId", null, bundleItem.BundleProductId.ToString());
+					xmlWriter.WriteElementString("BundleProductId", null, bundleItem.BundleProductId.ToString());
 					xmlWriter.WriteElementString("Quantity", null, bundleItem.Quantity.ToString());
 					if (bundleItem.Discount.HasValue)
 						xmlWriter.WriteElementString("Discount", null, bundleItem.Discount.Value.ToString());
 					xmlWriter.WriteElementString("DiscountPercentage", null, bundleItem.DiscountPercentage.ToString());
 					xmlWriter.WriteElementString("Name", null, bundleItem.Name);
 					xmlWriter.WriteElementString("ShortDescription", null, bundleItem.ShortDescription);
+					xmlWriter.WriteElementString("FilterAttributes", null, bundleItem.FilterAttributes.ToString());
 					xmlWriter.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());
 					xmlWriter.WriteElementString("Visible", null, bundleItem.Visible.ToString());
 					xmlWriter.WriteElementString("Published", null, bundleItem.Published.ToString());
@@ -597,7 +598,8 @@ namespace SmartStore.Services.ExportImport
 					"BundleTitleText",
 					"BundlePerItemShipping",
 					"BundlePerItemPricing",
-					"BundlePerItemShoppingCart"
+					"BundlePerItemShoppingCart",
+					"BundleItemSkus"
                 };
                 for (int i = 0; i < properties.Length; i++)
                 {
@@ -892,6 +894,16 @@ namespace SmartStore.Services.ExportImport
 					col++;
 
 					worksheet.Cells[row, col].Value = p.BundlePerItemShoppingCart;
+					col++;
+
+					string bundleItemSkus = "";
+
+					if (p.ProductType == ProductType.BundledProduct)
+					{
+						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Product.Sku));
+					}
+
+					worksheet.Cells[row, col].Value = bundleItemSkus;
 					col++;
 
                     row++;

@@ -54,7 +54,14 @@
                             @if (!String.IsNullOrWhiteSpace(product.Name))
                             {
                                 <div class="variant-name">
-                                    @product.Name
+									@if (product.VisibleIndividually)
+									{
+										<a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" title="@T("Products.Details")">@product.Name</a>
+									}
+									else
+									{
+										@product.Name
+									}
                                 </div>
                             }
                             @if (!String.IsNullOrWhiteSpace(product.ShortDescription))

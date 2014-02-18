@@ -2,5 +2,8 @@
 @using SmartStore.Web.Models.Common;
 
 <div data-role="header" data-position="inline" class="header-logo">
-    <img src='@Url.Content(Model.LogoUrl)' alt="@Model.LogoTitle" title="@Model.LogoTitle" />
+	@if (Model.LogoUploaded)
+	{
+		<img src='@Url.Content(Model.LogoUrl)' alt="@Model.LogoTitle" title="@Model.LogoTitle" />
+	}
 </div>

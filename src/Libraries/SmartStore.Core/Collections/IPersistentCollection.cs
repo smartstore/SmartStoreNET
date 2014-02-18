@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SmartStore.Core
+namespace SmartStore.Collections
 {
     public interface IPersistentCollection<T> : ICollection<T>, ICollection
             where T : class

@@ -2,7 +2,7 @@
 using System.Web;
 using System.Collections.Specialized;
 
-namespace SmartStore.Core.Collections
+namespace SmartStore.Collections
 {
     /// <summary>
     /// http://weblogs.asp.net/bradvincent/archive/2008/10/27/helper-class-querystring-builder-chainable.aspx

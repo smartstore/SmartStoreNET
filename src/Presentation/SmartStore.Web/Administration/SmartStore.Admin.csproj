@@ -360,11 +360,6 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\1pix.gif" />
-    <Content Include="Content\images\active-false.gif" />
-    <Content Include="Content\images\active-true.gif" />
-    <Content Include="Content\images\admin-gvw-bg.gif" />
-    <Content Include="Content\images\admin-menu-bg.gif" />
     <Content Include="Content\images\ajax-progress-2.gif" />
     <Content Include="Content\images\ap-catalog-white.png" />
     <Content Include="Content\images\ap-catalog.png" />
@@ -388,9 +383,7 @@
     <Content Include="Content\images\ap-system-white.png" />
     <Content Include="Content\images\ap-system.png" />
     <Content Include="Content\images\checkmark.png" />
-    <Content Include="Content\images\error-message.gif" />
     <Content Include="Content\images\google-maps.gif" />
-    <Content Include="Content\images\hr.png" />
     <Content Include="Content\images\ico-content-negative.png" />
     <Content Include="Content\images\ico-content-o60.png" />
     <Content Include="Content\images\ico-content.png" />
@@ -407,8 +400,6 @@
     <Content Include="Content\images\icon-plugin-tax.png" />
     <Content Include="Content\images\preloader-32.gif" />
     <Content Include="Content\images\smnet.png" />
-    <Content Include="Content\images\throbber-synchronizing.gif" />
-    <Content Include="Content\images\success-message.gif" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />

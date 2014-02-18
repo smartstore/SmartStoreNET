@@ -273,7 +273,7 @@ namespace SmartStore.Web.Framework
                             foreach (var culture in userLangs)
                             {
                                 browserLanguage = _languageService.GetLanguageByCulture(culture);
-                                if (this.IsPublishedLanguage(browserLanguage.Id, storeId))
+								if (browserLanguage != null && this.IsPublishedLanguage(browserLanguage.Id, storeId))
                                 {
                                     // the language is found. now we need to save it
                                     if (this.CurrentCustomer != null && customerLangId != browserLanguage.Id)

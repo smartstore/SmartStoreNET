@@ -85,7 +85,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IPriceFormatter _priceFormatter;
-		private readonly IAsyncRunner _asyncRunner;
 
         #endregion
 
@@ -130,8 +129,7 @@ namespace SmartStore.Admin.Controllers
 			CurrencySettings currencySettings,
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
-			IPriceFormatter priceFormatter,
-			IAsyncRunner asyncRunner)
+			IPriceFormatter priceFormatter)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -172,7 +170,6 @@ namespace SmartStore.Admin.Controllers
 			this._measureService = measureService;
 			this._measureSettings = measureSettings;
 			this._priceFormatter = priceFormatter;
-			this._asyncRunner = asyncRunner;
         }
 
         #endregion
@@ -2152,7 +2149,7 @@ namespace SmartStore.Admin.Controllers
 					var cts = new CancellationTokenSource();
 					var scheduler = TaskScheduler.Default;
 
-					_asyncRunner.Run(c =>
+					AsyncRunner.Run(c =>
 					{
 						var progress = new Progress<ImportProgressInfo>(p =>
 						{
@@ -2200,29 +2197,31 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+		[HttpPost]
 		public ActionResult ImportExcelProgress()
 		{
 			var progress = AsyncState.Current.Get<ImportProgressInfo>();
 
 			if (progress == null)
 			{
-				return Content("There is NO import task running!");
+				return Json(new { NoRunningTask = true }, JsonRequestBehavior.DenyGet);
 			}
 
-			return Content("Import running: processed {0} of {1} items. Elapsed: {2} sec.".FormatInvariant(progress.TotalProcessed, progress.TotalRecords, progress.ElapsedTime.TotalSeconds));
+			return Json(progress, JsonRequestBehavior.DenyGet);
 		}
 
+		[HttpPost]
 		public ActionResult ImportExcelCancel()
 		{
 			var tcs = AsyncState.Current.GetCancelTokenSource<ImportProgressInfo>();
 			if (tcs == null)
 			{
-				return Content("Nothing to cancel here!");
+				return Json(new { NoRunningTask = true }, JsonRequestBehavior.DenyGet);
 			}
 
 			tcs.Cancel();
 
-			return Content("YOOO... ABGEBROCHEN");
+			return Json(new { Success = true }, JsonRequestBehavior.DenyGet);
 		}
 
         #endregion

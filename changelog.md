@@ -15,7 +15,7 @@
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
 * Enabled fulltext search
 * New setting to redirect to order detail page if an order completed
-* New setting to suppress the search of SKUs
+* New setting to suppress the search for SKUs
 * Shipment list can be filtered by tracking number
 * #238 Working currency in context of request domain
 
@@ -52,6 +52,7 @@
 * #180 Display delivery time in shopping cart and relevant mails
 * #217 GMC Feed Plugin: Make export of expiration_date configurable
 * #222 Feed Plugins: Take special price into consideration
+* (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 * Added an option to display the short description of products within the order summary
 

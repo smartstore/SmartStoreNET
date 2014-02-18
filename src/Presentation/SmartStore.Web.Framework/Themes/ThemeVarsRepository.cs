@@ -27,7 +27,7 @@ namespace SmartStore.Web.Framework.Themes
             Guard.ArgumentIsPositive(storeId, "storeId");
 
             // we need the Asp.Net here cache in order to define cacheKey dependencies
-            var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_aspnet");
+			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
 
             string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
             return cacheManager.Get(cacheKey, () =>

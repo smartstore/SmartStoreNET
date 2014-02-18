@@ -247,22 +247,38 @@ namespace SmartStore.Services.Seo
                     }
                     else
                     {
-                        //insert new record
-                        //we do not update the existing record because we should track all previously entered slugs
-                        //to ensure that URLs will work fine
-                        var urlRecord = new UrlRecord()
-                        {
-                            EntityId = entity.Id,
-                            EntityName = entityName,
-                            Slug = slug,
-                            LanguageId = languageId,
-                            IsActive = true,
-                        };
-                        InsertUrlRecord(urlRecord);
+						// MC: Absolutely ensure, that we have no duplicate active record for this entity.
+						// In such case a record other than "activeUrlRecord" could have same seName
+						// and the DB would report an Index error.
+						var alreadyActiveDuplicate = allUrlRecords.FirstOrDefault(x => x.Slug.IsCaseInsensitiveEqual(slug) && x.IsActive);
+						if (alreadyActiveDuplicate != null)
+						{
+							// deactivate all
+							allUrlRecords.Each(x => x.IsActive = false);
+							// set the existing one to active again
+							alreadyActiveDuplicate.IsActive = true;
+							// update all records
+							allUrlRecords.Each(x => UpdateUrlRecord(x));
+						}
+						else
+						{
+							//insert new record
+							//we do not update the existing record because we should track all previously entered slugs
+							//to ensure that URLs will work fine
+							var urlRecord = new UrlRecord()
+							{
+								EntityId = entity.Id,
+								EntityName = entityName,
+								Slug = slug,
+								LanguageId = languageId,
+								IsActive = true,
+							};
+							InsertUrlRecord(urlRecord);
 
-                        //disable the previous active URL record
-                        activeUrlRecord.IsActive = false;
-                        UpdateUrlRecord(activeUrlRecord);
+							//disable the previous active URL record
+							activeUrlRecord.IsActive = false;
+							UpdateUrlRecord(activeUrlRecord);
+						}
                     }
 
                 }

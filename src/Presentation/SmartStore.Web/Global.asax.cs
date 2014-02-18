@@ -26,6 +26,9 @@ using SmartStore.Services.Events;
 using SmartStore.Core.Events;
 using System.Web;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Infrastructure.DependencyManagement;
+using Autofac;
+using Autofac.Integration.Mvc;
 
 
 namespace SmartStore.Web
@@ -87,10 +90,6 @@ namespace SmartStore.Web
             EngineContext.Initialize(false);
 
             bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
-
-            // set dependency resolver
-            var dependencyResolver = new SmartDependencyResolver();
-            DependencyResolver.SetResolver(dependencyResolver);
 
             // model binders
             ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
@@ -219,17 +218,16 @@ namespace SmartStore.Web
 				Context = HttpContext.Current
 			});
 
-            //////dispose registered resources
-            //////we do not register AutofacRequestLifetimeHttpModule as IHttpModule 
-            //////because it disposes resources before this Application_EndRequest method is called
-            //////and this case the code above will throw an exception
-            //try
-            //{
-            //    AutofacRequestLifetimeHttpModule.ContextEndRequest(sender, e);
-            //}
-            //catch { }
+			// dispose registered resources:
+			// AutofacRequestLifetimeHttpModule disposes resources before this Application_EndRequest method is called
+			// and as a result the code above would throw an exception
+			try
+			{
+				AutofacRequestLifetimeHttpModule.OnEndRequest(sender, e);
+			}
+			catch { }
         }
-
+		
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
             // [...]

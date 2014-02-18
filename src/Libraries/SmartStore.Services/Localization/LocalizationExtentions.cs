@@ -5,10 +5,9 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using System.Collections.Generic;
-using SmartStore.Data;
 using Fasterflect;
 using System.Xml;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Localization
 {
@@ -449,7 +448,7 @@ namespace SmartStore.Services.Localization
             string xml,
             string rootKey = null,
             bool sourceIsPlugin = false,
-            DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
+            ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
         {
             if (language == null)

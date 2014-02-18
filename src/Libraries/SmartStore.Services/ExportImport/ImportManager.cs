@@ -1,14 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SmartStore.Core;
+using System.Threading;
+using System.Threading.Tasks;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Data;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
-using OfficeOpenXml;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -17,533 +19,533 @@ namespace SmartStore.Services.ExportImport
     /// </summary>
     public partial class ImportManager : IImportManager
     {
-        #region properties
-
-        private IDictionary<string, int> s_columnsMap = new Dictionary<string, int>();
-        
-
-        //the columns
-        private readonly static string[] s_properties = new string[]
-        {
-            "ProductTypeId",
-            "ParentGroupedProductId",
-			"VisibleIndividually",
-            "Name",
-            "ShortDescription",
-            "FullDescription",
-            "ProductTemplateId",
-            "ShowOnHomePage",
-            "MetaKeywords",
-            "MetaDescription",
-            "MetaTitle",
-            "SeName",
-            "AllowCustomerReviews",
-            "Published",
-            "SKU",
-            "ManufacturerPartNumber",
-            "Gtin",
-            "IsGiftCard",
-            "GiftCardTypeId",
-            "RequireOtherProducts",
-            "RequiredProductIds",
-            "AutomaticallyAddRequiredProducts",
-            "IsDownload",
-            "DownloadId",
-            "UnlimitedDownloads",
-            "MaxNumberOfDownloads",
-            "DownloadActivationTypeId",
-            "HasSampleDownload",
-            "SampleDownloadId",
-            "HasUserAgreement",
-            "UserAgreementText",
-            "IsRecurring",
-            "RecurringCycleLength",
-            "RecurringCyclePeriodId",
-            "RecurringTotalCycles",
-            "IsShipEnabled",
-            "IsFreeShipping",
-            "AdditionalShippingCharge",
-            "IsTaxExempt",
-            "TaxCategoryId",
-            "ManageInventoryMethodId",
-            "StockQuantity",
-            "DisplayStockAvailability",
-            "DisplayStockQuantity",
-            "MinStockQuantity",
-            "LowStockActivityId",
-            "NotifyAdminForQuantityBelow",
-            "BackorderModeId",
-            "AllowBackInStockSubscriptions",
-            "OrderMinimumQuantity",
-            "OrderMaximumQuantity",
-            "AllowedQuantities",
-            "DisableBuyButton",
-            "DisableWishlistButton",
-			"AvailableForPreOrder",
-            "CallForPrice",
-            "Price",
-            "OldPrice",
-            "ProductCost",
-            "SpecialPrice",
-            "SpecialPriceStartDateTimeUtc",
-            "SpecialPriceEndDateTimeUtc",
-            "CustomerEntersPrice",
-            "MinimumCustomerEnteredPrice",
-            "MaximumCustomerEnteredPrice",
-            "Weight",
-            "Length",
-            "Width",
-            "Height",
-            "CreatedOnUtc",
-            "CategoryIds",
-            "ManufacturerIds",
-            "Picture1",
-            "Picture2",
-            "Picture3",
-			"DeliveryTimeId",	// codehint: sm-add (following)
-			"BasePriceEnabled",
-			"BasePriceMeasureUnit",
-			"BasePriceAmount",
-			"BasePriceBaseAmount",
-			"BundleTitleText",
-			"BundlePerItemShipping",
-			"BundlePerItemPricing",
-			"BundlePerItemShoppingCart"
-        };
-        #endregion
-        
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
         private readonly IPictureService _pictureService;
         private readonly IUrlRecordService _urlRecordService;
+		private readonly IEventPublisher _eventPublisher;
+		private readonly IRepository<Product> _rsProduct;
+		private readonly IRepository<ProductCategory> _rsProductCategory;
+		private readonly IRepository<ProductManufacturer> _rsProductManufacturer;
+		private readonly IRepository<ProductPicture> _rsProductPicture;
 
-        public ImportManager(IProductService productService, ICategoryService categoryService,
-            IManufacturerService manufacturerService, IPictureService pictureService,
-            IUrlRecordService urlRecordService)
+        public ImportManager(
+			IProductService productService, 
+			ICategoryService categoryService,
+            IManufacturerService manufacturerService, 
+			IPictureService pictureService,
+            IUrlRecordService urlRecordService,
+			IEventPublisher eventPublisher,
+			IRepository<Product> rsProduct,
+			IRepository<ProductCategory> rsProductCategory,
+			IRepository<ProductManufacturer> rsProductManufacturer,
+			IRepository<ProductPicture> rsProductPicture)
         {
             this._productService = productService;
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
             this._pictureService = pictureService;
             this._urlRecordService = urlRecordService;
-
-            this.ColumnsMap = new Dictionary<string, int>();
+			this._eventPublisher = eventPublisher;
+			this._rsProduct = rsProduct;
+			this._rsProductCategory = rsProductCategory;
+			this._rsProductManufacturer = rsProductManufacturer;
+			this._rsProductPicture = rsProductPicture;
         }
 
-        internal Dictionary<string, int> ColumnsMap { get; set; }
-
-        protected virtual int GetColumnIndex(string columnName)
-        {
-            if (columnName == null)
-                throw new ArgumentNullException("columnName");
-
-            int idx;
-            if (ColumnsMap.TryGetValue(columnName, out idx)) 
-            {
-                return idx;
-            }
-
-            for (int i = 0; i < s_properties.Length; i++)
-            {
-                if (s_properties[i].Equals(columnName, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ColumnsMap.Add(columnName, i + 1);
-                    return i + 1; //excel indexes start from 1
-                }
-            }
-
-            ColumnsMap.Add(columnName, 0);
-            return 0;
-        }
-
-        private T GetValue<T>(ExcelWorksheet worksheet, int rowIndex, string columnName)
-        {
-            var columnIndex = GetColumnIndex(columnName);
-
-            if (columnIndex == 0) 
-            {
-                return default(T);
-            }
-
-            var cell = worksheet.Cells[rowIndex, columnIndex];
-            object value = null;
-
-            if (cell.Value != null)
-            {
-                value = cell.Value;
-                return value.Convert<T>();
-            }
-            else 
-            {
-                return default(T);
-            }
-            
-        }
-
-		private bool HasValue(ExcelWorksheet worksheet, int rowIndex, string columnName)
+		/// <summary>
+		/// Import products from XLSX file
+		/// </summary>
+		/// <param name="stream">Stream</param>
+		public virtual async Task<ImportResult> ImportProductsFromExcelAsync(
+			Stream stream, 
+			CancellationToken cancellationToken,
+			IProgress<ImportProgressInfo> progress = null)
 		{
-			var columnIndex = GetColumnIndex(columnName);
+			Guard.ArgumentNotNull(() => stream);
 
-			if (columnIndex == 0)
-				return false;
+			var t = await Task.Run<ImportResult>(async () => {
 
-			var cell = worksheet.Cells[rowIndex, columnIndex];
-			return (cell != null && cell.Value != null);
+				var result = new ImportResult();
+
+				using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+				{
+					using (var segmenter = new DataSegmenter<Product>(stream))
+					{
+						result.TotalRecords = segmenter.TotalRows;
+						
+						while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
+						{
+							var batch = segmenter.CurrentBatch;
+
+							// Update progress for calling thread
+							if (progress != null)
+							{
+								progress.Report(new ImportProgressInfo
+								{
+									TotalRecords = result.TotalRecords,
+									TotalProcessed = segmenter.CurrentSegmentFirstRowIndex - 1,
+									NewRecords = result.NewRecords,
+									ModifiedRecords = result.ModifiedRecords,
+									ElapsedTime = DateTime.UtcNow - result.StartDateUtc,
+									TotalWarnings = result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
+									TotalErrors = result.Messages.Count(x => x.MessageType == ImportMessageType.Error),
+								});
+							}
+
+							// ===========================================================================
+							// 1.) Import products
+							// ===========================================================================
+							try
+							{
+								await ProcessProducts(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex);
+							}
+
+							// reduce batch to saved (valid) products.
+							// No need to perform import operations on errored products.
+							batch = batch.Where(x => x.Entity != null && !x.IsTransient).AsReadOnly();
+
+							// update result object
+							result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
+							result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+
+							// ===========================================================================
+							// 2.) Import SEO Slugs
+							// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
+							//            as Slugs are going to be validated against existing ones in DB.
+							// ===========================================================================
+							if (batch.Any(x => x.IsNew || (x.ContainsKey("SeName") || x.NameChanged)))
+							{
+								ProcessSlugs(batch, result);
+							}
+
+							// ===========================================================================
+							// 3.) Import product category mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("CategoryIds")))
+							{
+								try
+								{
+									await ProcessProductCategories(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+							// ===========================================================================
+							// 4.) Import product manufacturer mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("ManufacturerIds")))
+							{
+								try
+								{
+									await ProcessProductManufacturers(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+							// ===========================================================================
+							// 5.) Import product picture mappings
+							// ===========================================================================
+							if (batch.Any(x => x.ContainsKey("Picture1") || x.ContainsKey("Picture2") || x.ContainsKey("Picture3")))
+							{
+								try
+								{
+									ProcessProductPictures(batch, result);
+								}
+								catch (Exception ex)
+								{
+									result.AddError(ex);
+								}
+							}
+
+						}
+					}
+				}
+
+				result.EndDateUtc = DateTime.UtcNow;
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					result.Cancelled = true;
+					result.AddInfo("Import task was cancelled by user");
+				}
+
+				return result;
+			});
+
+			return t;
 		}
 
-        /// <summary>
-        /// Import products from XLSX file
-        /// </summary>
-        /// <param name="stream">Stream</param>
-        public virtual void ImportProductsFromXlsx(Stream stream)
-        {
-            // ok, we can run the real code of the sample now
-            using (var xlPackage = new ExcelPackage(stream))
-            {
-                // get the first worksheet in the workbook
-                var worksheet = xlPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    throw new SmartException("No worksheet found");
+		private async Task<int> ProcessProducts(ICollection<ImportRow<Product>> batch, ImportResult result)
+		{
+			_rsProduct.AutoCommitEnabled = false;
 
-                // TODO: reset s_columnsMap 
+			Product lastInserted = null;
+			Product lastUpdated = null;
 
-                int iRow = 2;
-                while (true)
-                {
-                    bool allColumnsAreEmpty = true;
-                    for (var i = 1; i <= s_properties.Length; i++)
-                        if (worksheet.Cells[iRow, i].Value != null && !String.IsNullOrEmpty(worksheet.Cells[iRow, i].Value.ToString()))
-                        {
-                            allColumnsAreEmpty = false;
-                            break;
-                        }
-                    if (allColumnsAreEmpty)
-                        break;
+			foreach (var row in batch)
+			{
+				Product product = null;
 
-					int productTypeId = GetValue<int>(worksheet, iRow, "ProductTypeId");
-					int parentGroupedProductId = GetValue<int>(worksheet, iRow, "ParentGroupedProductId");
-					bool visibleIndividually = GetValue<bool>(worksheet, iRow, "VisibleIndividually");
-                    string name = GetValue<string>(worksheet, iRow, "Name");
-                    string shortDescription = GetValue<string>(worksheet, iRow, "ShortDescription");
-                    string fullDescription = GetValue<string>(worksheet, iRow, "FullDescription");
-                    int productTemplateId = GetValue<int>(worksheet, iRow, "ProductTemplateId");
-                    bool showOnHomePage = GetValue<bool>(worksheet, iRow, "ShowOnHomePage");
-                    string metaKeywords = GetValue<string>(worksheet, iRow, "MetaKeywords");
-                    string metaDescription = GetValue<string>(worksheet, iRow, "MetaDescription");
-                    string metaTitle = GetValue<string>(worksheet, iRow, "MetaTitle");
-                    string seName = GetValue<string>(worksheet, iRow, "SeName");
-                    bool allowCustomerReviews = GetValue<bool>(worksheet, iRow, "AllowCustomerReviews");
-                    bool published = GetValue<bool>(worksheet, iRow, "Published");
-                    string sku = GetValue<string>(worksheet, iRow, "SKU");
-                    string manufacturerPartNumber = GetValue<string>(worksheet, iRow, "ManufacturerPartNumber");
-                    string gtin = GetValue<string>(worksheet, iRow, "Gtin");
-                    bool isGiftCard = GetValue<bool>(worksheet, iRow, "IsGiftCard");
-                    int giftCardTypeId = GetValue<int>(worksheet, iRow, "GiftCardTypeId");
-                    bool requireOtherProducts = GetValue<bool>(worksheet, iRow, "RequireOtherProducts");
-					string requiredProductIds = GetValue<string>(worksheet, iRow, "RequiredProductIds");
-					bool automaticallyAddRequiredProducts = GetValue<bool>(worksheet, iRow, "AutomaticallyAddRequiredProducts");
-                    bool isDownload = GetValue<bool>(worksheet, iRow, "IsDownload");
-                    int downloadId = GetValue<int>(worksheet, iRow, "DownloadId");
-                    bool unlimitedDownloads = GetValue<bool>(worksheet, iRow, "UnlimitedDownloads");
-                    int maxNumberOfDownloads = GetValue<int>(worksheet, iRow, "MaxNumberOfDownloads");
-                    int downloadActivationTypeId = GetValue<int>(worksheet, iRow, "DownloadActivationTypeId");
-                    bool hasSampleDownload = GetValue<bool>(worksheet, iRow, "HasSampleDownload");
-                    int sampleDownloadId = GetValue<int>(worksheet, iRow, "SampleDownloadId");
-                    bool hasUserAgreement = GetValue<bool>(worksheet, iRow, "HasUserAgreement");
-                    string userAgreementText = GetValue<string>(worksheet, iRow, "UserAgreementText");
-                    bool isRecurring = GetValue<bool>(worksheet, iRow, "IsRecurring");
-                    int recurringCycleLength = GetValue<int>(worksheet, iRow, "RecurringCycleLength");
-                    int recurringCyclePeriodId = GetValue<int>(worksheet, iRow, "RecurringCyclePeriodId");
-                    int recurringTotalCycles = GetValue<int>(worksheet, iRow, "RecurringTotalCycles");
-                    bool isShipEnabled = GetValue<bool>(worksheet, iRow, "IsShipEnabled");
-                    bool isFreeShipping = GetValue<bool>(worksheet, iRow, "IsFreeShipping");
-                    decimal additionalShippingCharge = GetValue<decimal>(worksheet, iRow, "AdditionalShippingCharge");
-                    bool isTaxExempt = GetValue<bool>(worksheet, iRow, "IsTaxExempt");
-                    int taxCategoryId = GetValue<int>(worksheet, iRow, "TaxCategoryId");
-                    int manageInventoryMethodId = GetValue<int>(worksheet, iRow, "ManageInventoryMethodId");
-                    int stockQuantity = GetValue<int>(worksheet, iRow, "StockQuantity");
-                    bool displayStockAvailability = GetValue<bool>(worksheet, iRow, "DisplayStockAvailability");
-                    bool displayStockQuantity = GetValue<bool>(worksheet, iRow, "DisplayStockQuantity");
-                    int minStockQuantity = GetValue<int>(worksheet, iRow, "MinStockQuantity");
-                    int lowStockActivityId = GetValue<int>(worksheet, iRow, "LowStockActivityId");
-                    int notifyAdminForQuantityBelow = GetValue<int>(worksheet, iRow, "NotifyAdminForQuantityBelow");
-                    int backorderModeId = GetValue<int>(worksheet, iRow, "BackorderModeId");
-                    bool allowBackInStockSubscriptions = GetValue<bool>(worksheet, iRow, "AllowBackInStockSubscriptions");
-                    int orderMinimumQuantity = GetValue<int>(worksheet, iRow, "OrderMinimumQuantity");
-                    int orderMaximumQuantity = GetValue<int>(worksheet, iRow, "OrderMaximumQuantity");
-                    string allowedQuantities = GetValue<string>(worksheet, iRow, "AllowedQuantities");
-                    bool disableBuyButton = GetValue<bool>(worksheet, iRow, "DisableBuyButton");
-                    bool disableWishlistButton = GetValue<bool>(worksheet, iRow, "DisableWishlistButton");
-					bool availableForPreOrder = GetValue<bool>(worksheet, iRow, "AvailableForPreOrder");
-                    bool callForPrice = GetValue<bool>(worksheet, iRow, "CallForPrice");
-                    decimal price = GetValue<decimal>(worksheet, iRow, "Price");
-                    decimal oldPrice = GetValue<decimal>(worksheet, iRow, "OldPrice");
-                    decimal productCost = GetValue<decimal>(worksheet, iRow, "ProductCost");
+				object key;
 
-					// codehint: sm-edit
-					decimal? specialPrice = null;
-					if (HasValue(worksheet, iRow, "SpecialPrice"))
-						specialPrice = GetValue<decimal>(worksheet, iRow, "SpecialPrice");
+				// try get by int ID
+				if (row.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				{
+					product = _productService.GetProductById(key.ToString().ToInt());
+				}
 
-                    DateTime? specialPriceStartDateTimeUtc = null;
-                    var specialPriceStartDateTimeUtcExcel = GetValue<double>(worksheet, iRow, "SpecialPriceStartDateTimeUtc");
-                    if (specialPriceStartDateTimeUtcExcel != 0)
-                        specialPriceStartDateTimeUtc = DateTime.FromOADate(Convert.ToDouble(specialPriceStartDateTimeUtcExcel));
-                    DateTime? specialPriceEndDateTimeUtc = null;
-                    var specialPriceEndDateTimeUtcExcel = GetValue<double>(worksheet, iRow, "SpecialPriceEndDateTimeUtc");
-                    if (specialPriceEndDateTimeUtcExcel != 0)
-                        specialPriceEndDateTimeUtc = DateTime.FromOADate(Convert.ToDouble(specialPriceEndDateTimeUtcExcel));
+				// try get by SKU
+				if (product == null && row.TryGetValue("SKU", out key))
+				{
+					product = _productService.GetProductBySku(key.ToString());
+				}
 
-                    bool customerEntersPrice = GetValue<bool>(worksheet, iRow, "CustomerEntersPrice");
-                    decimal minimumCustomerEnteredPrice = GetValue<decimal>(worksheet, iRow, "MinimumCustomerEnteredPrice");
-                    decimal maximumCustomerEnteredPrice = GetValue<decimal>(worksheet, iRow, "MaximumCustomerEnteredPrice");
-                    decimal weight = GetValue<decimal>(worksheet, iRow, "Weight");
-                    decimal length = GetValue<decimal>(worksheet, iRow, "Length");
-                    decimal width = GetValue<decimal>(worksheet, iRow, "Width");
-                    decimal height = GetValue<decimal>(worksheet, iRow, "Height");
+				// try get by GTIN
+				if (product == null && row.TryGetValue("Gtin", out key))
+				{
+					product = _productService.GetProductByGtin(key.ToString());
+				}
 
-                    DateTime createdOnUtc = new DateTime();
-                    var createdOnUtcExcel = GetValue<double>(worksheet, iRow, "CreatedOnUtc");
-                    createdOnUtc = createdOnUtcExcel == 0 ? DateTime.UtcNow : DateTime.FromOADate(createdOnUtcExcel);
-                    
-                    //DateTime createdOnUtc = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[iRow, GetColumnIndex(properties, "CreatedOnUtc")].Value));
-
-                    string categoryIds = GetValue<string>(worksheet, iRow, "CategoryIds");
-                    string manufacturerIds = GetValue<string>(worksheet, iRow, "ManufacturerIds");
-                    string picture1 = GetValue<string>(worksheet, iRow, "Picture1");
-                    string picture2 = GetValue<string>(worksheet, iRow, "Picture2");
-                    string picture3 = GetValue<string>(worksheet, iRow, "Picture3");
-
-					// codehint: sm-add (note s_properties if you want add columns)
-					int? deliveryTimeId = null;
-					if (HasValue(worksheet, iRow, "DeliveryTimeId"))
-						deliveryTimeId = GetValue<int>(worksheet, iRow, "DeliveryTimeId");
-
-					bool basePriceEnabled = GetValue<bool>(worksheet, iRow, "BasePriceEnabled");
-					string basePriceMeasureUnit = GetValue<string>(worksheet, iRow, "BasePriceMeasureUnit");
-
-					decimal? basePriceAmount = null;
-					if (HasValue(worksheet, iRow, "BasePriceAmount"))
-						basePriceAmount = GetValue<decimal>(worksheet, iRow, "BasePriceAmount");
-
-					int? basePriceBaseAmount = null;
-					if (HasValue(worksheet, iRow, "BasePriceBaseAmount"))
-						basePriceBaseAmount = GetValue<int>(worksheet, iRow, "BasePriceBaseAmount");
-
-					string bundleTitleText = GetValue<string>(worksheet, iRow, "BundleTitleText");
-					bool bundlePerItemShipping = GetValue<bool>(worksheet, iRow, "BundlePerItemShipping");
-					bool bundlePerItemPricing = GetValue<bool>(worksheet, iRow, "BundlePerItemPricing");
-					bool bundlePerItemShoppingCart = GetValue<bool>(worksheet, iRow, "BundlePerItemShoppingCart");
-
-					bool newProduct = false;
-					Product product = null;
-
-                    if (sku.HasValue())
-                    {
-                        product = _productService.GetProductBySku(sku);
-                    }
-
-                    if (product == null && gtin.HasValue())
-                    {
-                        product = _productService.GetProductByGtin(gtin);
-                    }
-
-					if (product == null)
+				if (product == null)
+				{
+					// a Name is required with new products.
+					if (!row.ContainsKey("Name")) 
 					{
-						product = new Product();
-						newProduct = true;
+						result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
+						continue;
 					}
+					product = new Product();
+				}
 
-					product.ProductTypeId = productTypeId;
-					product.ParentGroupedProductId = parentGroupedProductId;
-					product.VisibleIndividually = visibleIndividually;
-					product.Name = name;
-					product.ShortDescription = shortDescription;
-					product.FullDescription = fullDescription;
-					product.ProductTemplateId = productTemplateId;
-					product.ShowOnHomePage = showOnHomePage;
-					product.MetaKeywords = metaKeywords;
-					product.MetaDescription = metaDescription;
-					product.MetaTitle = metaTitle;
-					product.AllowCustomerReviews = allowCustomerReviews;
-					product.Published = published;
-					product.CreatedOnUtc = createdOnUtc;
-					product.UpdatedOnUtc = DateTime.UtcNow;
-					product.Sku = sku;
-					product.ManufacturerPartNumber = manufacturerPartNumber;
-					product.Gtin = gtin;
-					product.IsGiftCard = isGiftCard;
-					product.GiftCardTypeId = giftCardTypeId;
-					product.RequireOtherProducts = requireOtherProducts;
-					product.RequiredProductIds = requiredProductIds;
-					product.AutomaticallyAddRequiredProducts = automaticallyAddRequiredProducts;
-					product.IsDownload = isDownload;
-					product.DownloadId = downloadId;
-					product.UnlimitedDownloads = unlimitedDownloads;
-					product.MaxNumberOfDownloads = maxNumberOfDownloads;
-					product.DownloadActivationTypeId = downloadActivationTypeId;
-					product.HasSampleDownload = hasSampleDownload;
-					product.SampleDownloadId = sampleDownloadId;
-					product.HasUserAgreement = hasUserAgreement;
-					product.UserAgreementText = userAgreementText;
-					product.IsRecurring = isRecurring;
-					product.RecurringCycleLength = recurringCycleLength;
-					product.RecurringCyclePeriodId = recurringCyclePeriodId;
-					product.RecurringTotalCycles = recurringTotalCycles;
-					product.IsShipEnabled = isShipEnabled;
-					product.IsFreeShipping = isFreeShipping;
-					product.AdditionalShippingCharge = additionalShippingCharge;
-					product.IsTaxExempt = isTaxExempt;
-					product.TaxCategoryId = taxCategoryId;
-					product.ManageInventoryMethodId = manageInventoryMethodId;
-					product.StockQuantity = stockQuantity;
-					product.DisplayStockAvailability = displayStockAvailability;
-					product.DisplayStockQuantity = displayStockQuantity;
-					product.MinStockQuantity = minStockQuantity;
-					product.LowStockActivityId = lowStockActivityId;
-					product.NotifyAdminForQuantityBelow = notifyAdminForQuantityBelow;
-					product.BackorderModeId = backorderModeId;
-					product.AllowBackInStockSubscriptions = allowBackInStockSubscriptions;
-					product.OrderMinimumQuantity = orderMinimumQuantity;
-					product.OrderMaximumQuantity = orderMaximumQuantity;
-					product.AllowedQuantities = allowedQuantities;
-					product.DisableBuyButton = disableBuyButton;
-					product.DisableWishlistButton = disableWishlistButton;
-					product.AvailableForPreOrder = availableForPreOrder;
-					product.CallForPrice = callForPrice;
-					product.Price = price;
-					product.OldPrice = oldPrice;
-					product.ProductCost = productCost;
-					product.SpecialPrice = specialPrice;
-					product.SpecialPriceStartDateTimeUtc = specialPriceStartDateTimeUtc;
-					product.SpecialPriceEndDateTimeUtc = specialPriceEndDateTimeUtc;
-					product.CustomerEntersPrice = customerEntersPrice;
-					product.MinimumCustomerEnteredPrice = minimumCustomerEnteredPrice;
-					product.MaximumCustomerEnteredPrice = maximumCustomerEnteredPrice;
-					product.Weight = weight;
-					product.Length = length;
-					product.Width = width;
-					product.Height = height;
-					product.Published = published;
-					product.CreatedOnUtc = createdOnUtc;
-					product.UpdatedOnUtc = DateTime.UtcNow;
+				row.Initialize(product, row["Name"].ToString());
 
-					// codehint: sm-add
-					product.DeliveryTimeId = deliveryTimeId;
-					product.BasePriceEnabled = basePriceEnabled;
-					product.BasePriceMeasureUnit = basePriceMeasureUnit;
-					product.BasePriceAmount = basePriceAmount;
-					product.BasePriceBaseAmount = basePriceBaseAmount;
-
-					product.BundleTitleText = bundleTitleText;
-					product.BundlePerItemShipping = bundlePerItemShipping;
-					product.BundlePerItemPricing = bundlePerItemPricing;
-					product.BundlePerItemShoppingCart = bundlePerItemShoppingCart;
-
-					if (newProduct)
+				if (!row.IsNew)
+				{
+					if (!product.Name.Equals(row["Name"].ToString(), StringComparison.OrdinalIgnoreCase))
 					{
-						_productService.InsertProduct(product);
+						// Perf: use this later for SeName updates.
+						row.NameChanged = true;
 					}
-					else
+				}
+
+				row.SetProperty(result, product, (x) => x.Sku);
+				row.SetProperty(result, product, (x) => x.Gtin);
+				row.SetProperty(result, product, (x) => x.ManufacturerPartNumber);
+				row.SetProperty(result, product, (x) => x.ProductTypeId, (int)ProductType.SimpleProduct);
+				row.SetProperty(result, product, (x) => x.ParentGroupedProductId);
+				row.SetProperty(result, product, (x) => x.VisibleIndividually, true);
+				row.SetProperty(result, product, (x) => x.Name);
+				row.SetProperty(result, product, (x) => x.ShortDescription);
+				row.SetProperty(result, product, (x) => x.FullDescription);
+				row.SetProperty(result, product, (x) => x.ProductTemplateId);
+				row.SetProperty(result, product, (x) => x.ShowOnHomePage);
+				row.SetProperty(result, product, (x) => x.MetaKeywords);
+				row.SetProperty(result, product, (x) => x.MetaDescription);
+				row.SetProperty(result, product, (x) => x.MetaTitle);
+				row.SetProperty(result, product, (x) => x.AllowCustomerReviews, true);
+				row.SetProperty(result, product, (x) => x.Published, true);
+				row.SetProperty(result, product, (x) => x.IsGiftCard);
+				row.SetProperty(result, product, (x) => x.GiftCardTypeId);
+				row.SetProperty(result, product, (x) => x.RequireOtherProducts);
+				row.SetProperty(result, product, (x) => x.RequiredProductIds);
+				row.SetProperty(result, product, (x) => x.AutomaticallyAddRequiredProducts);
+				row.SetProperty(result, product, (x) => x.IsDownload);
+				row.SetProperty(result, product, (x) => x.DownloadId);
+				row.SetProperty(result, product, (x) => x.UnlimitedDownloads, true);
+				row.SetProperty(result, product, (x) => x.MaxNumberOfDownloads, 10);
+				row.SetProperty(result, product, (x) => x.DownloadActivationTypeId, 1);
+				row.SetProperty(result, product, (x) => x.HasSampleDownload);
+				row.SetProperty(result, product, (x) => x.SampleDownloadId);
+				row.SetProperty(result, product, (x) => x.HasUserAgreement);
+				row.SetProperty(result, product, (x) => x.UserAgreementText);
+				row.SetProperty(result, product, (x) => x.IsRecurring);
+				row.SetProperty(result, product, (x) => x.RecurringCycleLength, 100);
+				row.SetProperty(result, product, (x) => x.RecurringCyclePeriodId);
+				row.SetProperty(result, product, (x) => x.RecurringTotalCycles, 10);
+				row.SetProperty(result, product, (x) => x.IsShipEnabled, true);
+				row.SetProperty(result, product, (x) => x.IsFreeShipping);
+				row.SetProperty(result, product, (x) => x.AdditionalShippingCharge);
+				row.SetProperty(result, product, (x) => x.IsTaxExempt);
+				row.SetProperty(result, product, (x) => x.TaxCategoryId, 1);
+				row.SetProperty(result, product, (x) => x.ManageInventoryMethodId);
+				row.SetProperty(result, product, (x) => x.StockQuantity, 10000);
+				row.SetProperty(result, product, (x) => x.DisplayStockAvailability);
+				row.SetProperty(result, product, (x) => x.DisplayStockQuantity);
+				row.SetProperty(result, product, (x) => x.MinStockQuantity);
+				row.SetProperty(result, product, (x) => x.LowStockActivityId);
+				row.SetProperty(result, product, (x) => x.NotifyAdminForQuantityBelow, 1);
+				row.SetProperty(result, product, (x) => x.BackorderModeId);
+				row.SetProperty(result, product, (x) => x.AllowBackInStockSubscriptions);
+				row.SetProperty(result, product, (x) => x.OrderMinimumQuantity, 1);
+				row.SetProperty(result, product, (x) => x.OrderMaximumQuantity, 10000);
+				row.SetProperty(result, product, (x) => x.AllowedQuantities);
+				row.SetProperty(result, product, (x) => x.DisableBuyButton);
+				row.SetProperty(result, product, (x) => x.DisableWishlistButton);
+				row.SetProperty(result, product, (x) => x.AvailableForPreOrder);
+				row.SetProperty(result, product, (x) => x.CallForPrice);
+				row.SetProperty(result, product, (x) => x.Price);
+				row.SetProperty(result, product, (x) => x.OldPrice);
+				row.SetProperty(result, product, (x) => x.ProductCost);
+				row.SetProperty(result, product, (x) => x.SpecialPrice);
+				row.SetProperty(result, product, (x) => x.SpecialPriceStartDateTimeUtc, null, OADateToUtcDate);
+				row.SetProperty(result, product, (x) => x.SpecialPriceEndDateTimeUtc, null, OADateToUtcDate);
+				row.SetProperty(result, product, (x) => x.CustomerEntersPrice);
+				row.SetProperty(result, product, (x) => x.MinimumCustomerEnteredPrice);
+				row.SetProperty(result, product, (x) => x.MaximumCustomerEnteredPrice, 1000);
+				row.SetProperty(result, product, (x) => x.Weight);
+				row.SetProperty(result, product, (x) => x.Length);
+				row.SetProperty(result, product, (x) => x.Width);
+				row.SetProperty(result, product, (x) => x.Height);
+				row.SetProperty(result, product, (x) => x.DeliveryTimeId);
+				row.SetProperty(result, product, (x) => x.BasePrice_Enabled);
+				row.SetProperty(result, product, (x) => x.BasePrice_MeasureUnit);
+				row.SetProperty(result, product, (x) => x.BasePrice_Amount);
+				row.SetProperty(result, product, (x) => x.BasePrice_BaseAmount);
+				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow, OADateToUtcDate);
+
+				product.UpdatedOnUtc = DateTime.UtcNow;
+
+				if (row.IsTransient)
+				{
+					_rsProduct.Insert(product);
+					lastInserted = product;
+				}
+				else
+				{
+					_rsProduct.Update(product);
+					lastUpdated = product;
+				}
+			}
+
+			// commit whole batch at once
+			var t = await _rsProduct.Context.SaveChangesAsync();
+
+			// Perf: notify only about LAST insertion and update
+			if (lastInserted != null)
+				_eventPublisher.EntityInserted(lastInserted);
+			if (lastUpdated != null)
+				_eventPublisher.EntityUpdated(lastUpdated);
+
+			//// ensure all products got imported before processing other stuff.
+			//t.Wait();
+
+			return t;
+		}
+
+		private void ProcessSlugs(ICollection<ImportRow<Product>> batch, ImportResult result)
+		{
+			foreach (var row in batch)
+			{
+				if (row.IsNew || row.NameChanged || row.ContainsKey("SeName"))
+				{
+					try
 					{
-						_productService.UpdateProduct(product);
+						string seName = row.GetValue<string>("SeName");
+						_urlRecordService.SaveSlug(row.Entity, row.Entity.ValidateSeName(seName, row.Entity.Name, true), 0);
 					}
+					catch (Exception ex)
+					{
+						result.AddWarning(ex.Message, row.GetRowInfo(), "SeName");
+					}
+				}
+			}
+		}
 
-					//search engine name
-					_urlRecordService.SaveSlug(product, product.ValidateSeName(seName, product.Name, true), 0);
+		private async Task<int> ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
+		{
+			_rsProductCategory.AutoCommitEnabled = false;
 
+			ProductCategory lastInserted = null;
+			
+			foreach (var row in batch)
+			{
+				string categoryIds = row.GetValue<string>("CategoryIds");
+				if (categoryIds.HasValue())
+				{
+					try
+					{
+						foreach (var id in categoryIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
+						{
+							if (_rsProductCategory.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
+							{
+								// ensure that category exists
+								var category = _categoryService.GetCategoryById(id);
+								if (category != null)
+								{
+									var productCategory = new ProductCategory()
+									{
+										ProductId = row.Entity.Id,
+										CategoryId = category.Id,
+										IsFeaturedProduct = false,
+										DisplayOrder = 1
+									};
+									_rsProductCategory.Insert(productCategory);
+									lastInserted = productCategory;
+								}
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						result.AddWarning(ex.Message, row.GetRowInfo(), "CategoryIds");
+					}
+				}
+			}
 
+			// commit whole batch at once
+			var t = await _rsProductCategory.Context.SaveChangesAsync();
 
-                    //category mappings
-                    if (!String.IsNullOrEmpty(categoryIds))
-                    {
-                        foreach (var id in categoryIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
-                        {
-                            if (product.ProductCategories.Where(x => x.CategoryId == id).FirstOrDefault() == null)
-                            {
-                                //ensure that category exists
-                                var category = _categoryService.GetCategoryById(id);
-                                if (category != null)
-                                {
-                                    var productCategory = new ProductCategory()
-                                    {
-                                        ProductId = product.Id,
-                                        CategoryId = category.Id,
-                                        IsFeaturedProduct = false,
-                                        DisplayOrder = 1
-                                    };
-                                    _categoryService.InsertProductCategory(productCategory);
-                                }
-                            }
-                        }
-                    }
+			// Perf: notify only about LAST insertion and update
+			if (lastInserted != null)
+				_eventPublisher.EntityInserted(lastInserted);
 
-                    //manufacturer mappings
-                    if (!String.IsNullOrEmpty(manufacturerIds))
-                    {
-                        foreach (var id in manufacturerIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
-                        {
-                            if (product.ProductManufacturers.Where(x => x.ManufacturerId == id).FirstOrDefault() == null)
-                            {
-                                //ensure that manufacturer exists
-                                var manufacturer = _manufacturerService.GetManufacturerById(id);
-                                if (manufacturer != null)
-                                {
-                                    var productManufacturer = new ProductManufacturer()
-                                    {
-                                        ProductId = product.Id,
-                                        ManufacturerId = manufacturer.Id,
-                                        IsFeaturedProduct = false,
-                                        DisplayOrder = 1
-                                    };
-                                    _manufacturerService.InsertProductManufacturer(productManufacturer);
-                                }
-                            }
-                        }
-                    }
+			return t;
+		}
 
-                    //pictures
-                    bool hasNewPictures = false;
-                    foreach (var picture in new string[] { picture1, picture2, picture3 })
-                    {
-                        if (String.IsNullOrEmpty(picture) || !File.Exists(picture))
-                            continue;
+		private async Task<int> ProcessProductManufacturers(ICollection<ImportRow<Product>> batch, ImportResult result)
+		{
+			_rsProductManufacturer.AutoCommitEnabled = false;
 
-                        var pictureBinary = FindEqualPicture(picture, product.ProductPictures);
-                        if (pictureBinary != null && pictureBinary.Length > 0)
-                        {
-                            // no equal picture found in sequence
-							product.ProductPictures.Add(new ProductPicture()
-                            {
-                                Picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(name), true, true),
-                                DisplayOrder = 1,
-                            });
-                            hasNewPictures = true;
-                        }           
-                    }
+			ProductManufacturer lastInserted = null;
 
-                    if (hasNewPictures)
-                    {
-                        _productService.UpdateProduct(product);
-                    }
+			foreach (var row in batch)
+			{
+				string manufacturerIds = row.GetValue<string>("ManufacturerIds");
+				if (manufacturerIds.HasValue())
+				{
+					try
+					{
+						foreach (var id in manufacturerIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
+						{
+							if (_rsProductManufacturer.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.ManufacturerId == id).FirstOrDefault() == null)
+							{
+								// ensure that manufacturer exists
+								var manufacturer = _manufacturerService.GetManufacturerById(id);
+								if (manufacturer != null)
+								{
+									var productManufacturer = new ProductManufacturer()
+									{
+										ProductId = row.Entity.Id,
+										ManufacturerId = manufacturer.Id,
+										IsFeaturedProduct = false,
+										DisplayOrder = 1
+									};
+									_rsProductManufacturer.Insert(productManufacturer);
+									lastInserted = productManufacturer;
+								}
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						result.AddWarning(ex.Message, row.GetRowInfo(), "ManufacturerIds");
+					}
+				}
+			}
 
-                    //update "HasTierPrices" and "HasDiscountsApplied" properties
-                    _productService.UpdateHasTierPricesProperty(product);
-                    _productService.UpdateHasDiscountsApplied(product);
+			// commit whole batch at once
+			var t = await _rsProductManufacturer.Context.SaveChangesAsync();
 
-                    //next product
-                    iRow++;
-                }
-            }
-        }
+			// Perf: notify only about LAST insertion and update
+			if (lastInserted != null)
+				_eventPublisher.EntityInserted(lastInserted);
+
+			return t;
+		}
+
+		private void ProcessProductPictures(ICollection<ImportRow<Product>> batch, ImportResult result)
+		{
+			// true, cause pictures must be saved and assigned an id
+			// prior adding a mapping.
+			_rsProductPicture.AutoCommitEnabled = true;
+
+			ProductPicture lastInserted = null;
+
+			foreach (var row in batch)
+			{
+				var pictures = new string[] 
+				{
+ 					row.GetValue<string>("Picture1"),
+					row.GetValue<string>("Picture2"),
+					row.GetValue<string>("Picture3")
+				};
+
+				int i = 0;
+				try
+				{
+					for (i = 0; i < pictures.Length; i++)
+					{
+						var picture = pictures[i];
+
+						if (picture.IsEmpty() || !File.Exists(picture))
+							continue;
+
+						var currentPictures = _rsProductPicture.TableUntracked.Where(x => x.ProductId == row.Entity.Id);
+						var pictureBinary = FindEqualPicture(picture, currentPictures);
+
+						if (pictureBinary != null && pictureBinary.Length > 0)
+						{
+							// no equal picture found in sequence
+							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, true);
+							if (newPicture != null)
+							{
+								var mapping = new ProductPicture()
+								{
+									ProductId = row.Entity.Id,
+									PictureId = newPicture.Id,
+									DisplayOrder = 1,
+								};
+								_rsProductPicture.Insert(mapping);
+								lastInserted = mapping;
+							}
+						}
+						else
+						{
+							result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "Picture" + (i + 1).ToString());
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					result.AddWarning(ex.Message, row.GetRowInfo(), "Picture" + (i + 1).ToString());
+				}
+			
+			}
+
+			// Perf: notify only about LAST insertion and update
+			if (lastInserted != null)
+				_eventPublisher.EntityInserted(lastInserted);
+		}
+
+		private DateTime? OADateToUtcDate(object value)
+		{
+			double oaDate;
+			if (value.TryConvert<double>(out oaDate) && oaDate != 0)
+			{
+				return DateTime.FromOADate(Convert.ToDouble(oaDate));
+			}
+
+			return null;
+		}
 
         /// <summary>
         /// Finds an equal picture by comparing the binary buffer
         /// </summary>
         /// <param name="path">The picture to find a duplicate for</param>
         /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
-        /// <returns>The picture binary for <c>path</c> when no picture euqals in the sequence, <c>null</c> otherwise.</returns>
+        /// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
         private byte[] FindEqualPicture(string path, IEnumerable<ProductPicture> productPictures)
         {
             try
@@ -572,7 +574,6 @@ namespace SmartStore.Services.ExportImport
             {
                 return null;
             }
-        }
-
-    }
+		}
+	}
 }

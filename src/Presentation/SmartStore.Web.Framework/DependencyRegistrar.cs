@@ -58,6 +58,7 @@ using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Web.Framework
 {
@@ -78,18 +79,14 @@ namespace SmartStore.Web.Framework
                 .As<HttpContextBase>()
                 .InstancePerHttpRequest();
 
-            //web helper
+			// async
+			builder.RegisterType<AsyncRunner>().As<IAsyncRunner>();
+
+            // web helper
             builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerHttpRequest();
 
-            //controllers
+            // controllers
             builder.RegisterControllers(foundAssemblies);
-
-            //// codehint: sm-add
-            //// http controllers (web api)
-            ////builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
-            ////builder.RegisterWebApiModelBinderProvider();
-            ////builder.RegisterWebApiModelBinders(foundAssemblies);
-            //builder.RegisterApiControllers(foundAssemblies).PropertiesAutowired();
            
             //data layer
             var dataSettingsManager = new DataSettingsManager();
@@ -138,23 +135,23 @@ namespace SmartStore.Web.Framework
             
             builder.RegisterType<DefaultCacheManager>()
                 .As<ICacheManager>()
-                .Named<ICacheManager>("sm_cache_static")
+                .Named<ICacheManager>("static")
                 .WithParameter(ResolvedParameter.ForNamed<ICache>("static"))
                 .InstancePerHttpRequest();
             builder.RegisterType<DefaultCacheManager>()
                 .As<ICacheManager>()
-                .Named<ICacheManager>("sm_cache_aspnet")
+                .Named<ICacheManager>("aspnet")
                 .WithParameter(ResolvedParameter.ForNamed<ICache>("aspnet"))
                 .InstancePerHttpRequest();
             builder.RegisterType<DefaultCacheManager>()
                 .As<ICacheManager>()
-                .Named<ICacheManager>("sm_cache_per_request")
+                .Named<ICacheManager>("request")
                 .WithParameter(ResolvedParameter.ForNamed<ICache>("request"))
                 .InstancePerHttpRequest();
 
             //work context
             builder.RegisterType<WebWorkContext>().As<IWorkContext>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                 .InstancePerHttpRequest();
 			//store context
@@ -179,7 +176,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerHttpRequest();
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
 			builder.RegisterType<ProductTagService>().As<IProductTagService>()
-				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
 				.InstancePerHttpRequest();
 
             builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerHttpRequest();
@@ -195,12 +192,12 @@ namespace SmartStore.Web.Framework
 
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<PermissionService>().As<IPermissionService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
 
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<AclService>().As<IAclService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
 
             builder.RegisterType<GeoCountryLookup>().As<IGeoCountryLookup>().InstancePerHttpRequest();
@@ -216,7 +213,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerHttpRequest();
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
 			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>()
-				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
 				.InstancePerHttpRequest();
 
             builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerHttpRequest();
@@ -224,17 +221,17 @@ namespace SmartStore.Web.Framework
 
 			//pass MemoryCacheManager as cacheManager (cache settings between requests)
             builder.RegisterType<SettingService>().As<ISettingService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
 			builder.RegisterSource(new SettingsSource());
 			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizationService>().As<ILocalizationService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
 
 			//pass MemoryCacheManager as cacheManager (cache locales between requests)
             builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
             builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerHttpRequest();
 
@@ -270,7 +267,7 @@ namespace SmartStore.Web.Framework
 
             //pass MemoryCacheManager to UrlRecordService as cacheManager (cache settings between requests)
             builder.RegisterType<UrlRecordService>().As<IUrlRecordService>()
-                .WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"))
+				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"))
                 .InstancePerHttpRequest();
 
             builder.RegisterType<ShipmentService>().As<IShipmentService>().InstancePerHttpRequest();

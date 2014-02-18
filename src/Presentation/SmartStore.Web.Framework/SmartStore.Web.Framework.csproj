@@ -191,7 +191,6 @@
     <Compile Include="Controllers\CustomerLastActivityAttribute.cs" />
     <Compile Include="Controllers\ParameterBasedOnFormNameAndValueAttribute.cs" />
     <Compile Include="Controllers\ParameterBasedOnFormNameAttribute.cs" />
-    <Compile Include="Controllers\SmartAsyncController.cs" />
     <Compile Include="Controllers\SmartController.cs" />
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
@@ -353,9 +352,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Less\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>

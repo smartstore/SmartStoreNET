@@ -38,11 +38,13 @@ namespace SmartStore.Services.Tasks
                 var type2 = System.Type.GetType(this.Type);
                 if (type2 != null)
                 {
-                    object instance;
-                    if (!EngineContext.Current.ContainerManager.TryResolve(type2, out instance))
+					var scope = EngineContext.Current.ContainerManager.Scope();
+					
+					object instance;
+                    if (!EngineContext.Current.ContainerManager.TryResolve(type2, scope, out instance))
                     {
                         //not resolved
-                        instance = EngineContext.Current.ContainerManager.ResolveUnregistered(type2);
+                        instance = EngineContext.Current.ContainerManager.ResolveUnregistered(type2, scope);
                     }
                     task = instance as ITask;
                 }

@@ -4,7 +4,7 @@ namespace SmartStore.Utilities
 {
 
     /// <summary>
-    /// Allows action to be executed, when it is disposed
+    /// Allows action to be executed when it is disposed
     /// </summary>
     internal struct ActionDisposable : IDisposable
     {

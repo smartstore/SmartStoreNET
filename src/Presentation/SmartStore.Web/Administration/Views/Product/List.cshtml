@@ -41,13 +41,17 @@
                 <li><a id="exportexcel-selected" href="javascript:void(0)">@T("Admin.Common.ExportToExcel.Selected")</a></li>
               </ul>
             </div>
-            @*<button type="submit" id="importexcel2" name="importexcel2" value="importexcel2" class="btn">@T("Admin.Common.ImportFromExcel")</button>*@
-            <a id="importexcel" href="#importexcel-window" class="btn" role="button" data-toggle="modal">@T("Admin.Common.ImportFromExcel")</a>
-            <button type="submit" id="delete-selected" class="btn btn-danger"><i class="icon-trash"></i>&nbsp;@T("Admin.Common.Delete.Selected")</button>
+            <a id="importexcel" href="#importexcel-window" class="btn" role="button" data-toggle="modal">
+				@T("Admin.Common.ImportFromExcel")
+			</a>
+            <button type="submit" id="delete-selected" class="btn btn-danger">
+				<i class="icon-trash"></i>
+				@T("Admin.Common.Delete.Selected")
+			</button>
         </div>
     </div>
 
-       <table width="100%">
+       <table style="width:100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SearchProductName)
@@ -276,9 +280,9 @@
         .Name("importexcel-window")
         .Title(T("Admin.Common.ImportFromExcel").Text)
         .Content(@<text>
-            @using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
-                <table style="text-align: left;">
+				<table style="text-align: left;">
                     <tr>
                         <td>
                             <strong>@T("Admin.Common.ExcelFile"): </strong>
@@ -289,6 +293,7 @@
                     </tr>
                 </table>
             }
+
             </text>)
         .FooterContent(@<text>
             <button id="importexcelsubmit" type="submit" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
@@ -307,13 +312,33 @@
             var win = $('#importexcel-window');
             win.data('modal').hide();
 
+        	//win.find("form").submit();
+            //return;
+
             var progress = function () {
-                $.throbber.show({
+            	$.throbber.show({
                     message: '@T("Admin.Common.ImportFromExcelProgress")',
                     callback: function () {
                         win.find("form").submit();
                     }
-                });
+            	});
+
+            	return;
+            	$.ajax({
+            		type: "POST",
+            		url: '@Url.Action("ImportExcel", "Product")',
+            		data: new FormData($("#importexcel-form").get(0)),
+            		dataType: "json",
+            		async: true,
+            		contentType: false,
+            		processData: false,
+            		success: function (data) {
+            			console.log("File Upload Success");
+            		},
+            		error: function (jqXHR, textStatus, errorThrown) {
+            			console.log("File Upload Success");
+            		}
+            	});
             };
 
             _.delay(progress, 200);
@@ -321,5 +346,72 @@
         });
 
     });
+</script>
+
+<script>
+    var ExcelImport = (function () {
+
+        var progressIntervall;
+
+        function checkProgress() {
+            $.ajax({
+                url: '@Url.Action("ImportExcelProgress", "Product")',
+                dataType: "json",
+                async: true,
+                type: "POST",
+                cache: false,
+                success: function (data, status) {
+                    console.log(data);
+                },
+                error: function () {
+                    console.log("ERROR");
+                    handleError(arguments[0].responseText);
+                }
+            });
+        }
+
+        function finalizeImport(success) {
+            $.ajax({
+                url: '@Url.Action("ImportExcelFinalize", "Product")',
+                data: { restart: success },
+                dataType: "json",
+                async: false,
+                type: "POST"
+            });
+        }
+
+        function handleError(errors) {
+			// [...]
+        }
+
+        return {
+
+            onStart: function (context) {
+
+                console.log("Importing");
+
+                // start the checkprogress interval
+                progressIntervall = window.setInterval(checkProgress, 2000);
+
+            },
+
+            onSuccess: function (data) {
+
+                finalizeImport(data.Success);
+
+                console.log("Finalizing");
+            },
+
+            onFailure: function (context) {
+                handleError(context);
+            },
+
+            onComplete: function () {
+                window.clearInterval(progressIntervall);
+            }
+
+        };
+
+    })();
 </script>
 

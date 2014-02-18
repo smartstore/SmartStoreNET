@@ -26,7 +26,7 @@ using System.Configuration;
 namespace SmartStore.Web.Controllers
 {
 
-    public partial class InstallController : AsyncController
+    public partial class InstallController : Controller
     {
         #region Fields
 

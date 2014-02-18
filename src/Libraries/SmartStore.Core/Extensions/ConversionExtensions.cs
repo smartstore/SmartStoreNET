@@ -112,17 +112,29 @@ namespace SmartStore
             // see if source or target types have a TypeConverter that converts between the two
             TypeConverter toConverter = TypeDescriptor.GetConverter(fromType);
 
-            if (toConverter != null && toConverter.CanConvertTo(to))
+			Type nonNullableTo = to.GetNonNullableType();
+			bool isNullableTo = to != nonNullableTo;
+
+			if (toConverter != null && toConverter.CanConvertTo(nonNullableTo))
             {
-                return toConverter.ConvertTo(null, culture, value, to);
+				object result = toConverter.ConvertTo(null, culture, value, nonNullableTo);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
             }
 
-            TypeConverter fromConverter = TypeDescriptor.GetConverter(to);
+			TypeConverter fromConverter = TypeDescriptor.GetConverter(nonNullableTo);
 
             if (fromConverter != null && fromConverter.CanConvertFrom(fromType))
             {
-                return fromConverter.ConvertFrom(null, culture, value);
+                object result = fromConverter.ConvertFrom(null, culture, value);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
             }
+			
+			// TypeConverter doesn't like Double to Decimal
+			if (fromType == typeof(double) && nonNullableTo == typeof(decimal))
+			{
+				decimal result = new Decimal((double)value);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
+			}
 
             throw Error.InvalidCast(fromType, to);
 

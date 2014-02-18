@@ -403,7 +403,7 @@ namespace SmartStore.Services.Localization
             XmlDocument xmlDocument, 
             string rootKey = null, 
             bool sourceIsPlugin = false, 
-            DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
+            ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
 		{            
             var autoCommit = _lsrRepository.AutoCommitEnabled;
@@ -444,7 +444,7 @@ namespace SmartStore.Services.Localization
                     var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                     if (resource != null)
                     {
-                        if (mode.IsSet<DataImportModeFlags>(DataImportModeFlags.Update))
+                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
                         {
                             if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
                             {
@@ -456,7 +456,7 @@ namespace SmartStore.Services.Localization
                     }
                     else
                     {
-                        if (mode.IsSet<DataImportModeFlags>(DataImportModeFlags.Insert))
+                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
                         {
                             toAdd.Add(
                                 new LocaleStringResource()

@@ -1154,8 +1154,10 @@ namespace SmartStore.Services.Catalog
 			if (product == null)
 				throw new ArgumentNullException("product");
 
+			var prevValue = product.HasTierPrices;
 			product.HasTierPrices = product.TierPrices.Count > 0;
-			UpdateProduct(product);
+			if (prevValue != product.HasTierPrices)
+				UpdateProduct(product);
         }
 
         /// <summary>
@@ -1167,8 +1169,10 @@ namespace SmartStore.Services.Catalog
 			if (product == null)
 				throw new ArgumentNullException("product");
 
+			var prevValue = product.HasDiscountsApplied;
 			product.HasDiscountsApplied = product.AppliedDiscounts.Count > 0;
-			UpdateProduct(product);
+			if (prevValue != product.HasDiscountsApplied)
+				UpdateProduct(product);
         }
 
         #endregion

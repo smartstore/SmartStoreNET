@@ -201,8 +201,6 @@
     <Compile Include="Customers\ICustomerReportService.cs" />
     <Compile Include="Customers\CustomerReportService.cs" />
     <Compile Include="Customers\DeleteGuestsTask.cs" />
-    <Compile Include="DataImportModeFlags.cs" />
-    <Compile Include="DataImportResult.cs" />
     <Compile Include="Directory\CurrencyExtensions.cs" />
     <Compile Include="Directory\IGeoCountryLookup.cs" />
     <Compile Include="Directory\GeoCountryLookup.cs" />
@@ -214,6 +212,7 @@
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Events\ISubscriptionService.cs" />
     <Compile Include="Events\SubscriptionService.cs" />
+    <Compile Include="ExportImport\DataSegmenter.cs" />
     <Compile Include="Filter\FilterCriteria.cs" />
     <Compile Include="Filter\FilterExtensions.cs" />
     <Compile Include="Filter\FilterMisc.cs" />

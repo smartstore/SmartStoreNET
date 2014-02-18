@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SmartStore.Services
+namespace SmartStore.Core.Data
 {
     
     [Flags]
-    public enum DataImportModeFlags
+    public enum ImportModeFlags
     {
         Insert = 1,
         Update = 2

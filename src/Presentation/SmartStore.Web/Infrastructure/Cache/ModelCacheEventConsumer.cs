@@ -427,7 +427,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         public ModelCacheEventConsumer()
         {
             //TODO inject static cache manager using constructor
-            this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("sm_cache_static");
+			this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("static");
         }
 
         //languages

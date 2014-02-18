@@ -121,7 +121,7 @@ namespace SmartStore.Admin.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-            var cacheManager = EngineContext.Current.Resolve<ICacheManager>("sm_cache_static");
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
 
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
             string cacheKey = string.Format("smartstore.pres.adminmenu.navigation-{0}-{1}", _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
@@ -660,7 +660,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult ClearCache()
         {
-            var cacheManager = new DefaultCacheManager(new StaticCache());
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
             cacheManager.Clear();
 
             return RedirectToAction("Index", "Home");

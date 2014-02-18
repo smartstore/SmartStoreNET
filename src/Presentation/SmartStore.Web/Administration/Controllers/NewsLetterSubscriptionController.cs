@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;

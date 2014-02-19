@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
     /// <summary>
     /// PayInStore payment processor
     /// </summary>
-    public class PayInStorePaymentProcessor : BasePlugin, IPaymentMethod
+    public class PayInStorePaymentProcessor : PaymentMethodBase
     {
         #region Fields
         private readonly PayInStorePaymentSettings _payInStorePaymentSettings;
@@ -46,7 +46,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="processPaymentRequest">Payment info required for an order processing</param>
         /// <returns>Process payment result</returns>
-        public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+        public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new ProcessPaymentResult();
             result.NewPaymentStatus = PaymentStatus.Pending;
@@ -54,20 +54,11 @@ namespace SmartStore.Plugin.Payments.PayInStore
         }
 
         /// <summary>
-        /// Post process payment (used by payment gateways that require redirecting to a third-party URL)
-        /// </summary>
-        /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
-        public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
-        {
-            //nothing
-        }
-
-        /// <summary>
         /// Gets additional handling fee
         /// </summary>
         /// <param name="cart">Shoping cart</param>
         /// <returns>Additional handling fee</returns>
-        public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+        public override decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
 			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, _payInStorePaymentSettings.AdditionalFee, _payInStorePaymentSettings.AdditionalFeePercentage);
 			return result;
@@ -78,7 +69,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="capturePaymentRequest">Capture payment request</param>
         /// <returns>Capture payment result</returns>
-        public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+        public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
         {
             var result = new CapturePaymentResult();
             result.AddError(_localizationService.GetResource("Common.Payment.NoCaptureSupport"));
@@ -90,7 +81,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="refundPaymentRequest">Request</param>
         /// <returns>Result</returns>
-        public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
+        public override RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
         {
             var result = new RefundPaymentResult();
             result.AddError(_localizationService.GetResource("Common.Payment.NoRefundSupport"));
@@ -102,7 +93,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="voidPaymentRequest">Request</param>
         /// <returns>Result</returns>
-        public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
+        public override VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
         {
             var result = new VoidPaymentResult();
             result.AddError(_localizationService.GetResource("Common.Payment.NoVoidSupport"));
@@ -114,7 +105,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="processPaymentRequest">Payment info required for an order processing</param>
         /// <returns>Process payment result</returns>
-        public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
+        public override ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new ProcessPaymentResult();
             result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
@@ -126,7 +117,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="cancelPaymentRequest">Request</param>
         /// <returns>Result</returns>
-        public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
+        public override CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
         {
             var result = new CancelRecurringPaymentResult();
             result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
@@ -138,7 +129,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// </summary>
         /// <param name="order">Order</param>
         /// <returns>Result</returns>
-        public bool CanRePostProcessPayment(Order order)
+        public override bool CanRePostProcessPayment(Order order)
         {
             if (order == null)
                 throw new ArgumentNullException("order");
@@ -153,7 +144,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        public override void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "PaymentPayInStore";
@@ -166,14 +157,14 @@ namespace SmartStore.Plugin.Payments.PayInStore
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
-        public void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentPayInStore";
             routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayInStore.Controllers" }, { "area", null } };
         }
 
-        public Type GetControllerType()
+        public override Type GetControllerType()
         {
             return typeof(PaymentPayInStoreController);
         }
@@ -208,64 +199,9 @@ namespace SmartStore.Plugin.Payments.PayInStore
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether capture is supported
-        /// </summary>
-        public bool SupportCapture
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether partial refund is supported
-        /// </summary>
-        public bool SupportPartiallyRefund
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether refund is supported
-        /// </summary>
-        public bool SupportRefund
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether void is supported
-        /// </summary>
-        public bool SupportVoid
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets a recurring payment type of payment method
-        /// </summary>
-        public RecurringPaymentType RecurringPaymentType
-        {
-            get
-            {
-                return RecurringPaymentType.NotSupported;
-            }
-        }
-
-        /// <summary>
         /// Gets a payment method type
         /// </summary>
-        public PaymentMethodType PaymentMethodType
+        public override PaymentMethodType PaymentMethodType
         {
             get
             {

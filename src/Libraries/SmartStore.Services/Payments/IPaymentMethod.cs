@@ -100,7 +100,7 @@ namespace SmartStore.Services.Payments
 		///// The defined route is being redirected to during the checkout process > PaymentInfo page.
 		///// Implementors should return <c>null</c> if no redirection occurs.
 		///// </remarks>
-		//RouteInfo GetPaymentInfoHandlerRoute();
+		RouteInfo GetPaymentInfoHandlerRoute();
 
         Type GetControllerType();
 

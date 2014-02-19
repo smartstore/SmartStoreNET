@@ -119,6 +119,18 @@
 .order-summary-content .checkout-buttons{margin:0;padding:0;}
 .order-summary-content .addon-buttons{clear:both;margin:0;padding:10px;text-align:right;}
 
+.product-bundle-items {
+	padding: 4px 0 4px 40px;
+}
+.product-bundle-items .bundle-item {
+	padding: 4px 0 4px 0;
+}
+.product-bundle-items .bundle-item-price,
+.product-bundle-items .bundle-item-attribute-info {
+	font-size: 0.85em;
+	line-height: normal;
+}
+
 /* CHECKOUT */
 .checkout-page{}
 .checkout-page .checkout-data{margin:0;padding:0;background-color:inherit;}
@@ -448,6 +460,14 @@
 .tier-prices .prices-list .item-table .item-price{color:Green;}
 .tier-prices .prices-list .header-table td{border-bottom:solid 3px #d7d7d7;padding-top:3px;padding-bottom:3px;font-weight:700;}
 .tier-prices .prices-list .prices-table .field-header{font-weight:700;text-align:center;}
+
+.product-bundle .bundle-title {
+	text-align: center;
+}
+.product-bundle .bundle-item {
+	text-align: center;
+	padding-bottom: 20px;
+}
 
 /* PRODUCT REVIEWS PAGE */
 .product-reviews-page{}

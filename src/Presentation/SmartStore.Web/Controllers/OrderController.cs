@@ -397,10 +397,12 @@ namespace SmartStore.Web.Controllers
 
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 			{
-				model.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
-				model.BundlePerItemShoppingCart = orderItem.Product.BundlePerItemShoppingCart;
+				var bundleData = orderItem.GetBundleData();
 
-				foreach (var bundleItem in orderItem.GetBundleData())
+				model.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
+				model.BundlePerItemShoppingCart = bundleData.Any(x => x.PerItemShoppingCart);
+
+				foreach (var bundleItem in bundleData)
 				{
 					var bundleItemModel = new OrderDetailsModel.BundleItemModel()
 					{
@@ -409,18 +411,13 @@ namespace SmartStore.Web.Controllers
 						ProductSeName = bundleItem.ProductSeName,
 						VisibleIndividually = bundleItem.VisibleIndividually,
 						Quantity = bundleItem.Quantity,
-						DisplayOrder = bundleItem.DisplayOrder
+						DisplayOrder = bundleItem.DisplayOrder,
+						AttributeInfo = bundleItem.AttributesInfo
 					};
-
-					if (bundleItem.AttributesXml.HasValue())
-					{
-						bundleItemModel.AttributeInfo = _productAttributeFormatter.FormatAttributes(_productService.GetProductById(bundleItem.ProductId),
-							bundleItem.AttributesXml, order.Customer, renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
-					}
 
 					if (model.BundlePerItemShoppingCart)
 					{
-						decimal priceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItem.PriceWithDiscount, _workContext.WorkingCurrency);
+						decimal priceWithDiscount = _currencyService.ConvertCurrency(bundleItem.PriceWithDiscount, order.CurrencyRate);
 						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
 					}
 					

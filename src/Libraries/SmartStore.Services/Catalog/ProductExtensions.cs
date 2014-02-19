@@ -378,7 +378,7 @@ namespace SmartStore.Services.Catalog
 			return null;
 		}
 		
-		public static ProductBundleData ToBundleData(this ProductBundleItem bundleItem, decimal priceWithDiscount = decimal.Zero, string attributesXml = null)
+		public static ProductBundleData ToBundleData(this ProductBundleItem bundleItem, decimal priceWithDiscount = decimal.Zero, string attributesXml = null, string attributesInfo = null)
 		{
 			string bundleItemName = bundleItem.GetLocalized(x => x.Name);
 
@@ -392,15 +392,18 @@ namespace SmartStore.Services.Catalog
 				VisibleIndividually = bundleItem.Product.VisibleIndividually,
 				Quantity = bundleItem.Quantity,
 				DisplayOrder = bundleItem.DisplayOrder,
+				PriceWithDiscount = priceWithDiscount,
 				AttributesXml = attributesXml,
-				PriceWithDiscount = priceWithDiscount
+				AttributesInfo = attributesInfo,
+				PerItemShoppingCart = bundleItem.BundleProduct.BundlePerItemShoppingCart
 			};
 
 			return bundleData;
 		}
-		public static void ToBundleData(this ProductBundleItem bundleItem, IList<ProductBundleData> bundleData, decimal priceWithDiscount = decimal.Zero, string attributesXml = null)
+		public static void ToBundleData(this ProductBundleItem bundleItem, IList<ProductBundleData> bundleData, decimal priceWithDiscount = decimal.Zero,
+			string attributesXml = null, string attributesInfo = null)
 		{
-			var item = bundleItem.ToBundleData(priceWithDiscount, attributesXml);
+			var item = bundleItem.ToBundleData(priceWithDiscount, attributesXml, attributesInfo);
 
 			if (item.ProductId != 0 && item.BundleItemId != 0)
 				bundleData.Add(item);

@@ -441,10 +441,12 @@ namespace SmartStore.Admin.Controllers
 
 				if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 				{
-					orderItemModel.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
-					orderItemModel.BundlePerItemShoppingCart = orderItem.Product.BundlePerItemShoppingCart;
+					var bundleData = orderItem.GetBundleData();
 
-					foreach (var bundleItem in orderItem.GetBundleData())
+					orderItemModel.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
+					orderItemModel.BundlePerItemShoppingCart = bundleData.Any(x => x.PerItemShoppingCart);
+
+					foreach (var bundleItem in bundleData)
 					{
 						var bundleItemModel = new OrderModel.BundleItemModel()
 						{
@@ -454,19 +456,13 @@ namespace SmartStore.Admin.Controllers
 							ProductSeName = bundleItem.ProductSeName,
 							VisibleIndividually = bundleItem.VisibleIndividually,
 							Quantity = bundleItem.Quantity,
-							DisplayOrder = bundleItem.DisplayOrder
+							DisplayOrder = bundleItem.DisplayOrder,
+							AttributeInfo = bundleItem.AttributesInfo
 						};
-
-						if (bundleItem.AttributesXml.HasValue())
-						{
-							bundleItemModel.AttributeInfo = _productAttributeFormatter.FormatAttributes(_productService.GetProductById(bundleItem.ProductId),
-								bundleItem.AttributesXml, order.Customer, renderGiftCardAttributes: false, allowHyperlinks: false);
-						}
 
 						if (orderItemModel.BundlePerItemShoppingCart)
 						{
-							decimal priceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItem.PriceWithDiscount, _workContext.WorkingCurrency);
-							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, primaryStoreCurrency, _workContext.WorkingLanguage, false);
 						}
 
 						orderItemModel.BundleItems.Add(bundleItemModel);

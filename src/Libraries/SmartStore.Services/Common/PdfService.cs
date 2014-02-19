@@ -24,6 +24,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using System.Globalization;
 using SmartStore.Services.Stores;
+using System.Text;
 
 namespace SmartStore.Services.Common
 {
@@ -337,7 +338,7 @@ namespace SmartStore.Services.Common
                 doc.Add(new Paragraph(_localizationService.GetResource("PDFInvoice.Product(s)", lang.Id), titleFont));
                 doc.Add(new Paragraph(" "));
 
-
+				float cellPadding = 4f;
                 var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
 
                 var productsTable = new PdfPTable(_catalogSettings.ShowProductSku ? 5 : 4);
@@ -346,14 +347,16 @@ namespace SmartStore.Services.Common
 
                 //product name
                 cell = new PdfPCell(new Phrase(_localizationService.GetResource("PDFInvoice.ProductName", lang.Id), font));
+				cell.Padding = cellPadding;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 productsTable.AddCell(cell);
 
                 //SKU
                 if (_catalogSettings.ShowProductSku)
                 {
                     cell = new PdfPCell(new Phrase(_localizationService.GetResource("PDFInvoice.SKU", lang.Id), font));
+					cell.Padding = cellPadding;
                     cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                     cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     productsTable.AddCell(cell);
@@ -361,20 +364,23 @@ namespace SmartStore.Services.Common
 
                 //price
                 cell = new PdfPCell(new Phrase(_localizationService.GetResource("PDFInvoice.ProductPrice", lang.Id), font));
+				cell.Padding = cellPadding;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                cell.HorizontalAlignment = Element.ALIGN_RIGHT;
                 productsTable.AddCell(cell);
 
                 //qty
                 cell = new PdfPCell(new Phrase(_localizationService.GetResource("PDFInvoice.ProductQuantity", lang.Id), font));
+				cell.Padding = cellPadding;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 productsTable.AddCell(cell);
 
                 //total
                 cell = new PdfPCell(new Phrase(_localizationService.GetResource("PDFInvoice.ProductTotal", lang.Id), font));
+				cell.Padding = cellPadding;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                cell.HorizontalAlignment = Element.ALIGN_RIGHT;
                 productsTable.AddCell(cell);
 
                 for (int i = 0; i < orderItems.Count; i++)
@@ -384,11 +390,44 @@ namespace SmartStore.Services.Common
 
                     //product name
 					string name = p.GetLocalized(x => x.Name, lang.Id);
-                    cell = new PdfPCell();
+					cell = new PdfPCell();
+					cell.Padding = cellPadding;
+					cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     cell.AddElement(new Paragraph(name, font));
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderItem.AttributeDescription, true, true), attributesFont);
-                    cell.AddElement(attributesParagraph);
+
+					if (p.ProductType == ProductType.BundledProduct)
+					{
+						var itemParagraph = new Paragraph("", font);
+						itemParagraph.IndentationLeft = 25;
+
+						var bundleData = orderItem.GetBundleData();
+						foreach (var bundleItem in bundleData)
+						{
+							if (bundleData.IndexOf(bundleItem) != 0)
+								itemParagraph.Add(new Paragraph(" "));
+
+							if (bundleItem.PerItemShoppingCart && bundleItem.Quantity > 1)
+								itemParagraph.Add(new Paragraph("{0} × {1}".FormatWith(bundleItem.ProductName, bundleItem.Quantity), font));
+							else
+								itemParagraph.Add(new Paragraph(bundleItem.ProductName, font));
+
+							if (bundleItem.PerItemShoppingCart)
+							{
+								decimal priceWithDiscount = _currencyService.ConvertCurrency(bundleItem.PriceWithDiscount, order.CurrencyRate);
+								itemParagraph.Add(new Paragraph(_priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, lang, false), font));
+							}
+							
+							if (bundleItem.AttributesInfo.HasValue())
+								itemParagraph.Add(new Paragraph(HtmlUtils.ConvertHtmlToPlainText(bundleItem.AttributesInfo, true, true), attributesFont));
+						}
+						cell.AddElement(itemParagraph);
+					}
+					else
+					{
+						var attributesParagraph = new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderItem.AttributeDescription, true, true), attributesFont);
+						cell.AddElement(attributesParagraph);
+					}
+
                     productsTable.AddCell(cell);
 
                     //SKU
@@ -396,6 +435,7 @@ namespace SmartStore.Services.Common
                     {
 						p.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
                         cell = new PdfPCell(new Phrase(p.Sku ?? String.Empty, font));
+						cell.Padding = cellPadding;
                         cell.HorizontalAlignment = Element.ALIGN_CENTER;
                         productsTable.AddCell(cell);
                     }
@@ -418,12 +458,14 @@ namespace SmartStore.Services.Common
                             break;
                     }
                     cell = new PdfPCell(new Phrase(unitPrice, font));
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+					cell.Padding = cellPadding;
+                    cell.HorizontalAlignment = Element.ALIGN_RIGHT;
                     productsTable.AddCell(cell);
 
                     //qty
                     cell = new PdfPCell(new Phrase(orderItem.Quantity.ToString(), font));
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+					cell.Padding = cellPadding;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     productsTable.AddCell(cell);
 
                     //total
@@ -444,7 +486,8 @@ namespace SmartStore.Services.Common
                             break;
                     }
                     cell = new PdfPCell(new Phrase(subTotal, font));
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+					cell.Padding = cellPadding;
+                    cell.HorizontalAlignment = Element.ALIGN_RIGHT;
                     productsTable.AddCell(cell);
                 }
                 doc.Add(productsTable);

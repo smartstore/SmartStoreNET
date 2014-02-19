@@ -1092,7 +1092,10 @@ namespace SmartStore.Services.Orders
 									{
 										decimal bundleItemSubTotal = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
 
-										childItem.BundleItem.ToBundleData(listBundleData, bundleItemSubTotal, childItem.AttributesXml);
+										string attributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Product, childItem.AttributesXml, order.Customer,
+											renderPrices: false, allowHyperlinks: false);
+
+										childItem.BundleItem.ToBundleData(listBundleData, bundleItemSubTotal, childItem.AttributesXml, attributesInfo);
 									}
 
 									orderItem.SetBundleData(listBundleData);

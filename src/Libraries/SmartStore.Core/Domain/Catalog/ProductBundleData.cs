@@ -20,6 +20,8 @@ namespace SmartStore.Core.Domain.Catalog
 		public decimal PriceWithDiscount { get; set; }
 		public int DisplayOrder { get; set; }
 		public string AttributesXml { get; set; }
+		public string AttributesInfo { get; set; }
+		public bool PerItemShoppingCart { get; set; }
 	}
 
 	public class ProductBundleDataListTypeConverter : TypeConverter

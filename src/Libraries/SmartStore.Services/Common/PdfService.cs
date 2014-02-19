@@ -933,6 +933,12 @@ namespace SmartStore.Services.Common
 
             int productNumber = 1;
             int prodCount = products.Count;
+			string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			string measureWeightName = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+			string labelPrice = _localizationService.GetResource("PDFProductCatalog.Price", lang.Id);
+			string labelSku = _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id);
+			string labelWeight = _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id);
+			string labelStock = _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id);
 
             foreach (var product in products)
             {
@@ -944,16 +950,16 @@ namespace SmartStore.Services.Common
                 doc.Add(new Paragraph(HtmlUtils.StripTags(HtmlUtils.ConvertHtmlToPlainText(productFullDescription)), font));
                 doc.Add(new Paragraph(" "));
 
-				if (product.ProductType == ProductType.SimpleProduct)
+				if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 				{
-					doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Price", lang.Id), product.Price.ToString("0.00"), _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode), font));
-					doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id), product.Sku), font));
+					doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelPrice, product.Price.ToString("0.00"), currencyCode), font));
+					doc.Add(new Paragraph(String.Format("{0}: {1}", labelSku, product.Sku), font));
 
 					if (product.IsShipEnabled && product.Weight > Decimal.Zero)
-						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id), product.Weight.ToString("0.00"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelWeight, product.Weight.ToString("0.00"), measureWeightName), font));
 
 					if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-						doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id), product.StockQuantity), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1}", labelStock, product.StockQuantity), font));
 
 					doc.Add(new Paragraph(" "));
 				}
@@ -977,6 +983,7 @@ namespace SmartStore.Services.Common
 									var cell = new PdfPCell(Image.GetInstance(pictureLocalPath));
 									cell.HorizontalAlignment = Element.ALIGN_LEFT;
 									cell.Border = Rectangle.NO_BORDER;
+									cell.PaddingBottom = 5f;
 									table.AddCell(cell);
 								}
                             }
@@ -997,7 +1004,7 @@ namespace SmartStore.Services.Common
 				if (product.ProductType == ProductType.GroupedProduct)
 				{
 					//grouped product. render its associated products
-					int pvNum = 1;
+					int pNum = 1;
 					var searchContext = new ProductSearchContext()
 					{
 						ParentGroupedProductId = product.Id,
@@ -1006,7 +1013,7 @@ namespace SmartStore.Services.Common
 
 					foreach (var associatedProduct in _productService.SearchProducts(searchContext))
 					{
-						doc.Add(new Paragraph(String.Format("{0}-{1}. {2}", productNumber, pvNum, associatedProduct.GetLocalized(x => x.Name, lang.Id)), font));
+						doc.Add(new Paragraph(String.Format("{0}-{1}. {2}", productNumber, pNum, associatedProduct.GetLocalized(x => x.Name, lang.Id)), font));
 						doc.Add(new Paragraph(" "));
 
 						//uncomment to render associated product description
@@ -1029,18 +1036,40 @@ namespace SmartStore.Services.Common
 						//    }
 						//}
 
-						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Price", lang.Id), associatedProduct.Price.ToString("0.00"), _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode), font));
-						doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.SKU", lang.Id), associatedProduct.Sku), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelPrice, associatedProduct.Price.ToString("0.00"), currencyCode), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1}", labelSku, associatedProduct.Sku), font));
 
 						if (associatedProduct.IsShipEnabled && associatedProduct.Weight > Decimal.Zero)
-							doc.Add(new Paragraph(String.Format("{0}: {1} {2}", _localizationService.GetResource("PDFProductCatalog.Weight", lang.Id), associatedProduct.Weight.ToString("0.00"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name), font));
+							doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelWeight, associatedProduct.Weight.ToString("0.00"), measureWeightName), font));
 
 						if (associatedProduct.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-							doc.Add(new Paragraph(String.Format("{0}: {1}", _localizationService.GetResource("PDFProductCatalog.StockQuantity", lang.Id), associatedProduct.StockQuantity), font));
+							doc.Add(new Paragraph(String.Format("{0}: {1}", labelStock, associatedProduct.StockQuantity), font));
 
 						doc.Add(new Paragraph(" "));
 
-						pvNum++;
+						pNum++;
+					}
+				}
+				else if (product.ProductType == ProductType.BundledProduct)
+				{
+					int pNum = 1;
+
+					foreach (var item in _productService.GetBundleItems(product.Id))
+					{
+						doc.Add(new Paragraph("{0}-{1}. {2}".FormatWith(productNumber, pNum, item.GetLocalizedName(lang.Id)), font));
+
+						doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelPrice, item.Product.Price.ToString("0.00"), currencyCode), font));
+						doc.Add(new Paragraph(String.Format("{0}: {1}", labelSku, item.Product.Sku), font));
+
+						if (item.Product.IsShipEnabled && item.Product.Weight > Decimal.Zero)
+							doc.Add(new Paragraph(String.Format("{0}: {1} {2}", labelWeight, item.Product.Weight.ToString("0.00"), measureWeightName), font));
+
+						if (item.Product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+							doc.Add(new Paragraph(String.Format("{0}: {1}", labelStock, item.Product.StockQuantity), font));
+
+						doc.Add(new Paragraph(" "));
+
+						pNum++;
 					}
 				}
 

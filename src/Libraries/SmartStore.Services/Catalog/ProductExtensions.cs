@@ -374,7 +374,19 @@ namespace SmartStore.Services.Catalog
 		public static string GetLocalizedName(this ProductBundleItem bundleItem)
 		{
 			if (bundleItem != null)
-				return (bundleItem.GetLocalized(x => x.Name) ?? bundleItem.Product.GetLocalized(x => x.Name));
+			{
+				string name = bundleItem.GetLocalized(x => x.Name);
+				return (name.HasValue() ? name : bundleItem.Product.GetLocalized(x => x.Name));
+			}
+			return null;
+		}
+		public static string GetLocalizedName(this ProductBundleItem bundleItem, int languageId)
+		{
+			if (bundleItem != null)
+			{
+				string name = bundleItem.GetLocalized(x => x.Name, languageId);
+				return (name.HasValue() ? name : bundleItem.Product.GetLocalized(x => x.Name, languageId));
+			}
 			return null;
 		}
 		

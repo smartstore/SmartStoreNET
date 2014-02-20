@@ -216,7 +216,7 @@ namespace SmartStore.Services.Seo
             seName = GetSeName(seName);
 
             //max length
-            seName = CommonHelper.EnsureMaximumLength(seName, 400);
+			seName = seName.Truncate(400);
 
             if (String.IsNullOrWhiteSpace(seName))
             {

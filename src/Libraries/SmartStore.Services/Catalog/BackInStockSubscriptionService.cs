@@ -187,7 +187,7 @@ namespace SmartStore.Services.Catalog
             foreach (var subscription in subscriptions)
             {
                 //ensure that customer is registered (simple and fast way)
-                if (CommonHelper.IsValidEmail(subscription.Customer.Email))
+				if (subscription.Customer.Email.IsEmail())
                 {
 					var customer = subscription.Customer;
 					var customerLanguageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, subscription.StoreId);

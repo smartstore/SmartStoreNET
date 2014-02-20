@@ -532,7 +532,7 @@ namespace SmartStore.Services.Orders
                     if (customer.BillingAddress == null)
                         throw new SmartException("Billing address is not provided");
 
-                    if (!CommonHelper.IsValidEmail(customer.BillingAddress.Email))
+					if (!customer.BillingAddress.Email.IsEmail())
                         throw new SmartException("Email is not valid");
 
                     //clone billing address
@@ -705,7 +705,7 @@ namespace SmartStore.Services.Orders
                         if (customer.ShippingAddress == null)
                             throw new SmartException("Shipping address is not provided");
 
-                        if (!CommonHelper.IsValidEmail(customer.ShippingAddress.Email))
+						if (!customer.ShippingAddress.Email.IsEmail())
                             throw new SmartException("Email is not valid");
 
                         //clone shipping address

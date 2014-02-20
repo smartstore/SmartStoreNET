@@ -47,7 +47,7 @@ namespace SmartStore.Web.Controllers
             string result;
             bool success = false;
 
-            if (!CommonHelper.IsValidEmail(email))
+			if (!email.IsEmail())
                 result = _localizationService.GetResource("Newsletter.Email.Wrong");
             else
             {

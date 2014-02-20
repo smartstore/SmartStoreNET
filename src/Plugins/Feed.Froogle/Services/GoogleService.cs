@@ -220,7 +220,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
 
 			writer.WriteStartElement("title");
-			writer.WriteCData(product.Name.Truncate(70, ""));
+			writer.WriteCData(product.Name.Truncate(70));
 			writer.WriteEndElement();
 
 			var description = Helper.BuildProductDescription(product, manu, d =>

@@ -165,6 +165,7 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
+    <Compile Include="Infrastructure\CommonStartupTask.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
     <Compile Include="IO\MimeTypes.cs" />
     <Compile Include="IStoreContext.cs" />
@@ -248,7 +249,7 @@
     <Compile Include="Caching\Extensions.cs" />
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
-    <Compile Include="CommonHelper.cs" />
+    <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Configuration\SmartStoreConfig.cs" />
@@ -456,7 +457,7 @@
     <Compile Include="Utilities\DateTimeConvert.cs" />
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\Inflector.cs" />
-    <Compile Include="Utilities\JsonExtensions.cs" />
+    <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />

@@ -8,6 +8,7 @@ using SmartStore.Core.Plugins;
 using Fasterflect;
 using System.Xml;
 using SmartStore.Core.Data;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Localization
 {
@@ -103,7 +104,7 @@ namespace SmartStore.Services.Localization
                     var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
                     resultStr = leService.GetLocalizedValue(languageId, entity.Id, localeKeyGroup, localeKey);
                     if (!String.IsNullOrEmpty(resultStr))
-                        result = CommonHelper.To<TPropType>(resultStr);
+						result = resultStr.Convert<TPropType>();
                 }
             }
 
@@ -161,7 +162,7 @@ namespace SmartStore.Services.Localization
 
             //set default value if required
             if (String.IsNullOrEmpty(result))
-                result = CommonHelper.ConvertEnum(enumValue.ToString());
+                result = Inflector.Titleize(enumValue.ToString());
 
             return result;
         }

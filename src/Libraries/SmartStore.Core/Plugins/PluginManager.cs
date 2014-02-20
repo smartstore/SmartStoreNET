@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
@@ -82,7 +83,7 @@ namespace SmartStore.Core.Plugins
                     Directory.CreateDirectory(pluginFolder.FullName);
                     Directory.CreateDirectory(_shadowCopyFolder.FullName);
 
-                    //get list of all files in bin
+                    // get list of all files in bin
                     var binFiles = _shadowCopyFolder.GetFiles("*", SearchOption.AllDirectories);
                     if (_clearShadowDirectoryOnStartup)
                     {
@@ -101,7 +102,7 @@ namespace SmartStore.Core.Plugins
                         }
                     }
 
-                    //load description files
+                    // load description files
                     foreach (var dfd in GetDescriptionFilesAndDescriptors(pluginFolder))
                     {
                         var descriptionFile = dfd.Key;
@@ -404,7 +405,7 @@ namespace SmartStore.Core.Plugins
 
             FileInfo shadowCopiedPlug;
 
-            if (CommonHelper.GetTrustLevel() != AspNetHostingPermissionLevel.Unrestricted)
+            if (WebHelper.GetTrustLevel() != AspNetHostingPermissionLevel.Unrestricted)
             {
                 //all plugins will need to be copied to ~/Plugins/bin/
                 //this is aboslutely required because all of this relies on probingPaths being set statically in the web.config

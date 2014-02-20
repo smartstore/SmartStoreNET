@@ -8,6 +8,7 @@ using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Feed.Froogle
 {

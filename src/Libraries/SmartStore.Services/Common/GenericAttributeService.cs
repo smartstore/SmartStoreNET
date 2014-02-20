@@ -159,7 +159,7 @@ namespace SmartStore.Services.Common
             var prop = props.FirstOrDefault(ga =>
                 ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
 
-            string valueStr = CommonHelper.To<string>(value);
+            string valueStr = value.Convert<string>();
 
             if (prop != null)
             {

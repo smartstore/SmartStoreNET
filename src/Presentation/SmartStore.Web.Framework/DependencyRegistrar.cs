@@ -59,6 +59,7 @@ using SmartStore.Services.Themes;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Core.Async;
+using Fasterflect;
 
 namespace SmartStore.Web.Framework
 {
@@ -373,8 +374,15 @@ namespace SmartStore.Web.Framework
             var ts = service as TypedService;
             if (ts != null && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
-                var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
-                yield return (IComponentRegistration)buildMethod.Invoke(null, null);
+                //var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
+                //yield return (IComponentRegistration)buildMethod.Invoke(null, null);
+
+				// Perf with Fasterflect
+				yield return (IComponentRegistration)typeof(SettingsSource).TryCallMethodWithValues(
+					null, 
+					"BuildRegistration", 
+					new Type[] { ts.ServiceType }, 
+					BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
 

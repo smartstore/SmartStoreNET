@@ -16,8 +16,10 @@ namespace SmartStore.Core
     /// Represents a common helper
     /// </summary>
     public partial class WebHelper : IWebHelper
-    {        
-        private readonly HttpContextBase _httpContext;
+    {
+		private static AspNetHostingPermissionLevel? s_trustLevel = null;
+		
+		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
 
         /// <summary>
@@ -548,7 +550,7 @@ namespace SmartStore.Core
                 queryParam = _httpContext.Request.QueryString[name];
 
             if (!String.IsNullOrEmpty(queryParam))
-                return CommonHelper.To<T>(queryParam);
+                return queryParam.Convert<T>();
 
             return default(T);
         }
@@ -560,7 +562,7 @@ namespace SmartStore.Core
         /// <param name="redirectUrl">Redirect URL; empty string if you want to redirect to the current page URL</param>
         public virtual void RestartAppDomain(bool makeRedirect = false, string redirectUrl = "")
         {
-            if (CommonHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
+            if (WebHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
             {
                 //full trust
                 HttpRuntime.UnloadAppDomain();
@@ -696,6 +698,42 @@ namespace SmartStore.Core
                 _httpContext.Items["sm.IsPOSTBeingDone"] = value;
             }
         }
+
+		/// <summary>
+		/// Finds the trust level of the running application (http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx)
+		/// </summary>
+		/// <returns>The current trust level.</returns>
+		public static AspNetHostingPermissionLevel GetTrustLevel()
+		{
+			if (!s_trustLevel.HasValue)
+			{
+				//set minimum
+				s_trustLevel = AspNetHostingPermissionLevel.None;
+
+				//determine maximum
+				foreach (AspNetHostingPermissionLevel trustLevel in
+						new AspNetHostingPermissionLevel[] {
+                                AspNetHostingPermissionLevel.Unrestricted,
+                                AspNetHostingPermissionLevel.High,
+                                AspNetHostingPermissionLevel.Medium,
+                                AspNetHostingPermissionLevel.Low,
+                                AspNetHostingPermissionLevel.Minimal 
+                            })
+				{
+					try
+					{
+						new AspNetHostingPermission(trustLevel).Demand();
+						s_trustLevel = trustLevel;
+						break; //we've set the highest permission we can
+					}
+					catch (System.Security.SecurityException)
+					{
+						continue;
+					}
+				}
+			}
+			return s_trustLevel.Value;
+		}
 
         private class StoreHost
         {

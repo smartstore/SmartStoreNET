@@ -575,7 +575,7 @@ namespace SmartStore.Services.Orders
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
                     //validate for virtual gift cards only
-                    if (String.IsNullOrEmpty(giftCardRecipientEmail) || !CommonHelper.IsValidEmail(giftCardRecipientEmail))
+					if (String.IsNullOrEmpty(giftCardRecipientEmail) || !giftCardRecipientEmail.IsEmail())
                         warnings.Add(_localizationService.GetResource("ShoppingCart.RecipientEmailError"));
                 }
 
@@ -585,7 +585,7 @@ namespace SmartStore.Services.Orders
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
                     //validate for virtual gift cards only
-                    if (String.IsNullOrEmpty(giftCardSenderEmail) || !CommonHelper.IsValidEmail(giftCardSenderEmail))
+					if (String.IsNullOrEmpty(giftCardSenderEmail) || !giftCardSenderEmail.IsEmail())
                         warnings.Add(_localizationService.GetResource("ShoppingCart.SenderEmailError"));
                 }
             }

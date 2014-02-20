@@ -194,7 +194,7 @@ namespace SmartStore.Plugin.Payments.Manual
         /// <summary>
         /// Gets a recurring payment type of payment method
         /// </summary>
-        public RecurringPaymentType RecurringPaymentType
+        public override RecurringPaymentType RecurringPaymentType
         {
             get
             {
@@ -205,7 +205,7 @@ namespace SmartStore.Plugin.Payments.Manual
         /// <summary>
         /// Gets a payment method type
         /// </summary>
-        public PaymentMethodType PaymentMethodType
+        public override PaymentMethodType PaymentMethodType
         {
             get
             {

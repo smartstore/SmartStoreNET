@@ -190,9 +190,9 @@ namespace SmartStore.Services.Logging
             if (activityType == null || !activityType.Enabled)
                 return null;
 
-            comment = CommonHelper.EnsureNotNull(comment);
+			comment = comment.EmptyNull();
             comment = string.Format(comment, commentParams);
-            comment = CommonHelper.EnsureMaximumLength(comment, 4000);
+			comment = comment.Truncate(4000);
 
             var activity = new ActivityLog();
             activity.ActivityLogTypeId = activityType.Id;

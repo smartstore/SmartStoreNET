@@ -36,14 +36,14 @@ namespace SmartStore.Services.Payments
 		/// <param name="pluginService">Plugin service</param>
         public PaymentService(PaymentSettings paymentSettings, IPluginFinder pluginFinder,
             ShoppingCartSettings shoppingCartSettings,
-			ISettingService settingService)
+			ISettingService settingService,
+			ILocalizationService localizationService)
         {
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
-			// TODO: (MC) Make ctor injection (didn't want to break unit tests)
-			this._localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+			this._localizationService = localizationService;
         }
 
         #endregion

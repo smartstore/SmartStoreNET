@@ -267,13 +267,13 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool IsWebUrl(this string value)
         {
-            return !String.IsNullOrEmpty(value) && RegularExpressions.IsWebUrl.IsMatch(value);
+            return !String.IsNullOrEmpty(value) && RegularExpressions.IsWebUrl.IsMatch(value.Trim());
         }
 
         [DebuggerStepThrough]
         public static bool IsEmail(this string value)
         {
-            return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value);
+            return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value.Trim());
         }
 
         [DebuggerStepThrough]
@@ -288,6 +288,20 @@ namespace SmartStore
                    RegularExpressions.IsNumeric.IsMatch(value);
         }
 
+		/// <summary>
+		/// Ensures that a string only contains numeric values
+		/// </summary>
+		/// <param name="str">Input string</param>
+		/// <returns>Input string with only numeric values, empty string if input is null or empty</returns>
+		[DebuggerStepThrough]
+		public static string EnsureNumericOnly(this string str)
+		{
+			if (String.IsNullOrEmpty(str))
+				return string.Empty;
+
+			return new String(str.Where(c => Char.IsDigit(c)).ToArray());
+		}
+
         [DebuggerStepThrough]
         public static bool IsAlpha(this string value)
         {
@@ -301,13 +315,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-        public static string Truncate(this string value, int maxLength)
-        {
-            return Truncate(value, maxLength, "...");
-        }
-
-        [DebuggerStepThrough]
-        public static string Truncate(this string value, int maxLength, string suffix)
+        public static string Truncate(this string value, int maxLength, string suffix = "")
         {
             Guard.ArgumentNotNull(suffix, "suffix");
             Guard.ArgumentIsPositive(maxLength, "maxLength");
@@ -320,7 +328,7 @@ namespace SmartStore
             if (value != null && value.Length > maxLength)
             {
                 string truncatedString = value.Substring(0, subStringLength);
-                // incase the last character is a space
+                // in case the last character is a space
                 truncatedString = truncatedString.Trim();
                 truncatedString += suffix;
 
@@ -727,7 +735,6 @@ namespace SmartStore
 		}
 		
 		/// <summary>Appends grow and uses delimiter if the string is not empty.</summary>
-		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
 		public static string Grow(this string value, string grow, string delimiter) 
         {
@@ -741,7 +748,6 @@ namespace SmartStore
 		}
 		
 		/// <summary>Returns n/a if string is empty else self.</summary>
-		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
 		public static string NaIfEmpty(this string value) 
         {
@@ -749,7 +755,6 @@ namespace SmartStore
 		}
 
 		/// <summary>Replaces substring with position x1 to x2 by replaceBy.</summary>
-		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
 		public static string Replace(this string value, int x1, int x2, string replaceBy = null) 
         {

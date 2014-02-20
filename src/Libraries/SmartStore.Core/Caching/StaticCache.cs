@@ -39,11 +39,11 @@ namespace SmartStore.Core.Caching
             }
             else
             {
-                lock (s_lock)
+				lock (s_lock)
                 { 
                     if (!Cache.Contains(key))
                     {
-                        var value = acquirer();
+						var value = acquirer();
                         if (value != null)
                         {
                             var cacheItem = new CacheItem(key, value);

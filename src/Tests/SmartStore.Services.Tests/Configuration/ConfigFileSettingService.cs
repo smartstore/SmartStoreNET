@@ -45,7 +45,7 @@ namespace SmartStore.Services.Tests.Configuration
 			}
 
 			if (setting != null)
-				return CommonHelper.To<T>(setting.Value);
+				return setting.Value.Convert<T>();
 
 			return defaultValue;
         }

@@ -235,9 +235,9 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                if (!CommonHelper.IsValidEmail(giftCard.RecipientEmail))
+				if (!giftCard.RecipientEmail.IsEmail())
                     throw new SmartException("Recipient email is not valid");
-                if (!CommonHelper.IsValidEmail(giftCard.SenderEmail))
+				if (!giftCard.SenderEmail.IsEmail())
                     throw new SmartException("Sender email is not valid");
 
                 var languageId = 0;

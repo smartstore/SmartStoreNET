@@ -14,7 +14,6 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data
 
         public int Order
         {
-            //ensure that this task is run first 
             get { return 0; }
         }
     }

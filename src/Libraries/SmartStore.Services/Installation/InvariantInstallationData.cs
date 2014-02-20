@@ -39,6 +39,7 @@ using SmartStore.Core.IO;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Utilities;
 
 //using SmartStore.Services.Installation;
 

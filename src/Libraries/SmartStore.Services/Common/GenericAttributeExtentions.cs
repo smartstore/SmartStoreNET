@@ -88,7 +88,7 @@ namespace SmartStore.Services.Common
                 return default(TPropType);
             }
 
-            return CommonHelper.To<TPropType>(prop.Value);
+			return prop.Value.Convert<TPropType>();
         }
     }
 }

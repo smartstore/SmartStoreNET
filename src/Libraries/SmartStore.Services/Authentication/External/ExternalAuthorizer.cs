@@ -10,6 +10,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Authentication.External
 {

@@ -13,9 +13,6 @@ namespace SmartStore.Web.Framework.WebApi
 {   
     public class WebApiStartupTask : IStartupTask
     {
-        public WebApiStartupTask()
-        {
-        }
         
         public void Execute()
         {

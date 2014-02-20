@@ -1018,7 +1018,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (String.IsNullOrWhiteSpace(customer.Email))
                     throw new SmartException("Customer email is empty");
-                if (!CommonHelper.IsValidEmail(customer.Email))
+				if (!customer.Email.IsEmail())
                     throw new SmartException("Customer email is not valid");
                 if (String.IsNullOrWhiteSpace(model.SendEmail.Subject))
                     throw new SmartException("Email subject is empty");

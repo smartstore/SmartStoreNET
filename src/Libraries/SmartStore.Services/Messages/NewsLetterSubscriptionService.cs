@@ -157,7 +157,7 @@ namespace SmartStore.Services.Messages
             }
 
             //Handle e-mail
-            newsLetterSubscription.Email = CommonHelper.EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
+            newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Persist
             _subscriptionRepository.Insert(newsLetterSubscription);
@@ -185,7 +185,7 @@ namespace SmartStore.Services.Messages
             }
 
             //Handle e-mail
-            newsLetterSubscription.Email = CommonHelper.EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
+            newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Get original subscription record
             NewsLetterSubscription originalSubscription = _context.LoadOriginalCopy(newsLetterSubscription);
@@ -273,7 +273,8 @@ namespace SmartStore.Services.Messages
         /// <returns>NewsLetter subscription</returns>
         public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email)
         {
-            if (!CommonHelper.IsValidEmail(email)) return null;
+			if (!email.IsEmail())
+				return null;
 
             email = email.Trim();
 
@@ -328,5 +329,22 @@ namespace SmartStore.Services.Messages
                 }
             }
         }
+
+		/// <summary>
+		/// Ensures the subscriber email or throw.
+		/// </summary>
+		/// <param name="email">The email.</param>
+		/// <returns></returns>
+		private static string EnsureSubscriberEmailOrThrow(string email)
+		{
+			string output = email.EmptyNull().Trim().Truncate(255);
+
+			if (!output.IsEmail())
+			{
+				throw Error.ArgumentOutOfRange("email", "Email is not valid", email);
+			}
+
+			return output;
+		}
     }
 }

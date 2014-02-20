@@ -602,10 +602,10 @@ namespace SmartStore.Services.Media
         /// <returns>Picture</returns>
         public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true)
         {
-            mimeType = CommonHelper.EnsureNotNull(mimeType);
-            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+			mimeType = mimeType.EmptyNull();
+			mimeType = mimeType.Truncate(20);
 
-            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+			seoFilename = seoFilename.Truncate(100);
 
             if (validateBinary)
             {
@@ -644,8 +644,8 @@ namespace SmartStore.Services.Media
         public virtual Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType,
             string seoFilename, bool isNew, bool validateBinary = true)
         {
-            mimeType = mimeType.EmptyNull().Truncate(20, "");
-            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+            mimeType = mimeType.EmptyNull().Truncate(20);
+			seoFilename = seoFilename.Truncate(100);
 
             if (validateBinary)
             {

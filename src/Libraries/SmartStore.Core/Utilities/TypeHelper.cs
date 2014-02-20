@@ -42,38 +42,6 @@ namespace SmartStore.Utilities
                 throw new ArgumentException("Type {0} cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
         }
 
-
-        /////// <summary>
-        /////// Gets the type of the typed list's items.
-        /////// </summary>
-        /////// <param name="type">The list type.</param>
-        /////// <returns>The type of the typed list's items.</returns>
-        //public static Type GetListItemType(Type type)
-        //{
-        //    Guard.ArgumentNotNull(type, "type");
-        //    Type genericListType;
-
-        //    if (type.IsArray)
-        //    {
-        //        return type.GetElementType();
-        //    }
-        //    else if (type.IsSubClass(typeof(IList<>), out genericListType))
-        //    {
-        //        if (genericListType.IsGenericTypeDefinition)
-        //            throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
-
-        //        return genericListType.GetGenericArguments()[0];
-        //    }
-        //    else if (typeof(IList).IsAssignableFrom(type))
-        //    {
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
-        //    }
-        //}
-
         public static Type GetElementType(Type type)
         {
             if (!type.IsPredefinedSimpleType())

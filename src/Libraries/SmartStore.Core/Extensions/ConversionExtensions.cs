@@ -10,10 +10,11 @@ using System.Globalization;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-
 using SmartStore.Utilities;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using SmartStore.Core.ComponentModel;
+using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore
 {
@@ -86,8 +87,8 @@ namespace SmartStore
 
             Type fromType = value.GetType();
 
-            if (to.IsInterface || to.IsGenericTypeDefinition || to.IsAbstract)
-                throw Error.Argument("to", "Target type '{0}' is not a value type or a non-abstract class.", to.FullName);
+			//if (to.IsInterface || to.IsGenericTypeDefinition || to.IsAbstract)
+			//	throw Error.Argument("to", "Target type '{0}' is not a value type or a non-abstract class.", to.FullName);
 
             // use Convert.ChangeType if both types are IConvertible
             if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))

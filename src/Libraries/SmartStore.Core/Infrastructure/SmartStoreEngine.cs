@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
@@ -53,12 +54,14 @@ namespace SmartStore.Core.Infrastructure
                     startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
                 }
             }
-            
-            //sort
-            foreach (var startUpTask in startUpTasks.OrderBy(st => st.Order))
-            {
-                startUpTask.Execute();
-            }
+
+			// execute tasks async grouped by order
+			var groupedTasks = startUpTasks.OrderBy(st => st.Order).ToLookup(x => x.Order);
+			foreach (var tasks in groupedTasks)
+			{
+				Parallel.ForEach(tasks, task => { task.Execute(); });
+			}
+			
         }
         
         private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker, SmartStoreConfig config)

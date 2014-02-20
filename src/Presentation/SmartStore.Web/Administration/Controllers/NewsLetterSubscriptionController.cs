@@ -9,6 +9,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 

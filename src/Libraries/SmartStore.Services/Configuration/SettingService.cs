@@ -13,6 +13,7 @@ using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.Core.Plugins;
+using System.ComponentModel;
 
 namespace SmartStore.Services.Configuration
 {
@@ -239,7 +240,7 @@ namespace SmartStore.Services.Configuration
 					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
 
 				if (setting != null)
-					return CommonHelper.To<T>(setting.Value);
+					return setting.Value.Convert<T>();
 			}
             return defaultValue;
         }
@@ -340,9 +341,9 @@ namespace SmartStore.Services.Configuration
                     continue;          
                 }
 
-                var converter = CommonHelper.GetCustomTypeConverter(prop.PropertyType);
+				var converter = TypeDescriptor.GetConverter(prop.PropertyType);
 
-                if (!converter.CanConvertFrom(typeof(string)))
+                if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
                 if (!converter.IsValid(setting))
@@ -370,7 +371,7 @@ namespace SmartStore.Services.Configuration
             Guard.ArgumentNotEmpty(() => key);
 
             key = key.Trim().ToLowerInvariant();
-			string valueStr = CommonHelper.GetCustomTypeConverter(typeof(T)).ConvertToInvariantString(value);
+			string valueStr = TypeDescriptor.GetConverter(typeof(T)).ConvertToInvariantString(value);
 
 			var allSettings = GetAllSettingsCached();
 			var settingForCaching = allSettings.ContainsKey(key) ?
@@ -420,7 +421,7 @@ namespace SmartStore.Services.Configuration
 				if (!prop.CanRead || !prop.CanWrite)
 					continue;
 
-				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+				if (!TypeDescriptor.GetConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
 					continue;
 
 				string key = typeof(T).Name + "." + prop.Name;

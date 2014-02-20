@@ -551,8 +551,8 @@ namespace SmartStore.Web.Framework
 				sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
 
 				sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
-				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3, "").ToUpper());
-				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3, "").ToUpper());
+				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
+				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
 				sb.Append("<span class=\"onoffswitch-switch\"></span>");
 				sb.Append("<span class=\"onoffswitch-inner\"></span>");
 				sb.Append("</label>");

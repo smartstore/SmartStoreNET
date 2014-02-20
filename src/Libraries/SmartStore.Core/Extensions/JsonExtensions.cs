@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 // Needs JSon.Net (Newtonsoft.Json.dll) from http://json.codeplex.com/
 //////////////////////////////////////////////////////////////////////
 
-namespace SmartStore.Core.Utilities
+namespace SmartStore
 {
     public static class JsonExtensions
     {

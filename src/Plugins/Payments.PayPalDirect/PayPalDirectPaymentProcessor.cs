@@ -27,7 +27,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 	/// <summary>
 	/// PayPalDirect payment processor
 	/// </summary>
-	public class PayPalDirectPaymentProcessor : BasePlugin, IPaymentMethod
+    public class PayPalDirectPaymentProcessor : PaymentMethodBase
 	{
 		#region Fields
 
@@ -288,7 +288,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
 		/// <returns>Process payment result</returns>
-		public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest) {
+        public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+        {
 			if (_paypalDirectPaymentSettings.TransactMode == TransactMode.Authorize) {
 				return AuthorizeOrSale(processPaymentRequest, true);
 			}
@@ -298,18 +299,12 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		}
 
 		/// <summary>
-		/// Post process payment (used by payment gateways that require redirecting to a third-party URL)
-		/// </summary>
-		/// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
-		public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest) {
-		}
-
-		/// <summary>
 		/// Gets additional handling fee
 		/// </summary>
 		/// <param name="cart">Shoping cart</param>
 		/// <returns>Additional handling fee</returns>
-		public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart) {
+        public override decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+        {
 			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
 				_paypalDirectPaymentSettings.AdditionalFee, _paypalDirectPaymentSettings.AdditionalFeePercentage);
 			return result;
@@ -320,7 +315,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="capturePaymentRequest">Capture payment request</param>
 		/// <returns>Capture payment result</returns>
-		public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+        public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
 		{
 			var result = new CapturePaymentResult();
 
@@ -371,7 +366,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="refundPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
+        public override RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
 		{
 			var result = new RefundPaymentResult();
 
@@ -422,7 +417,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="voidPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
+        public override VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
 		{
 			var result = new VoidPaymentResult();
 
@@ -472,7 +467,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
 		/// <returns>Process payment result</returns>
-		public ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
+        public override ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
 		{
 			var result = new ProcessPaymentResult();
 
@@ -587,7 +582,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="cancelPaymentRequest">Request</param>
 		/// <returns>Result</returns>
-		public CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
+        public override CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
 		{
 			var result = new CancelRecurringPaymentResult();
 			var order = cancelPaymentRequest.Order;
@@ -633,7 +628,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// </summary>
 		/// <param name="order">Order</param>
 		/// <returns>Result</returns>
-		public bool CanRePostProcessPayment(Order order) {
+        public override bool CanRePostProcessPayment(Order order)
+        {
 			if (order == null)
 				throw new ArgumentNullException("order");
 
@@ -647,7 +643,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <param name="actionName">Action name</param>
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+        public override void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        {
 			actionName = "Configure";
 			controllerName = "PaymentPayPalDirect";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalDirect.Controllers" }, { "area", null } };
@@ -659,13 +656,15 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <param name="actionName">Action name</param>
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
-		public void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+        public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        {
 			actionName = "PaymentInfo";
 			controllerName = "PaymentPayPalDirect";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalDirect.Controllers" }, { "area", null } };
 		}
 
-		public Type GetControllerType() {
+        public override Type GetControllerType()
+        {
 			return typeof(PaymentPayPalDirectController);
 		}
 
@@ -700,25 +699,18 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <summary>
 		/// Gets a value indicating whether capture is supported
 		/// </summary>
-		public bool SupportCapture {
+        public override bool SupportCapture
+        {
 			get {
 				return true;
 			}
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether partial refund is supported
-		/// </summary>
-		public bool SupportPartiallyRefund {
-			get {
-				return false;
-			}
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether refund is supported
 		/// </summary>
-		public bool SupportRefund {
+        public override bool SupportRefund
+        {
 			get {
 				return true;
 			}
@@ -727,7 +719,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <summary>
 		/// Gets a value indicating whether void is supported
 		/// </summary>
-		public bool SupportVoid {
+        public override bool SupportVoid
+        {
 			get {
 				return true;
 			}
@@ -736,7 +729,8 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <summary>
 		/// Gets a recurring payment type of payment method
 		/// </summary>
-		public RecurringPaymentType RecurringPaymentType {
+        public override RecurringPaymentType RecurringPaymentType
+        {
 			get {
 				return RecurringPaymentType.Automatic;
 			}
@@ -745,7 +739,7 @@ namespace SmartStore.Plugin.Payments.PayPalDirect
 		/// <summary>
 		/// Gets a payment method type
 		/// </summary>
-		public PaymentMethodType PaymentMethodType {
+		public override PaymentMethodType PaymentMethodType {
 			get {
 				return PaymentMethodType.Standard;
 			}

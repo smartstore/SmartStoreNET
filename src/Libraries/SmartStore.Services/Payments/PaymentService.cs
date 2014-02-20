@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Payments
 {
@@ -18,7 +20,8 @@ namespace SmartStore.Services.Payments
         private readonly PaymentSettings _paymentSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
+		private readonly ILocalizationService _localizationService;
 
         #endregion
 
@@ -38,7 +41,9 @@ namespace SmartStore.Services.Payments
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
             this._shoppingCartSettings = shoppingCartSettings;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
+			// TODO: (MC) Make ctor injection (didn't want to break unit tests)
+			this._localizationService = EngineContext.Current.Resolve<ILocalizationService>();
         }
 
         #endregion
@@ -212,7 +217,21 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(capturePaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");
-            return paymentMethod.Capture(capturePaymentRequest);
+
+			try
+			{
+				return paymentMethod.Capture(capturePaymentRequest);
+			}
+			catch (NotSupportedException)
+			{
+				var result = new CapturePaymentResult();
+				result.AddError(_localizationService.GetResource("Common.Payment.NoCaptureSupport"));
+				return result;
+			}
+			catch
+			{
+				throw;
+			}
         }
 
 
@@ -253,7 +272,21 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(refundPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");
-            return paymentMethod.Refund(refundPaymentRequest);
+
+			try
+			{
+				return paymentMethod.Refund(refundPaymentRequest);
+			}
+			catch (NotSupportedException)
+			{
+				var result = new RefundPaymentResult();
+				result.AddError(_localizationService.GetResource("Common.Payment.NoRefundSupport"));
+				return result;
+			}
+			catch
+			{
+				throw;
+			}
         }
 
 
@@ -281,7 +314,21 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(voidPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");
-            return paymentMethod.Void(voidPaymentRequest);
+
+			try
+			{
+				return paymentMethod.Void(voidPaymentRequest);
+			}
+			catch (NotSupportedException)
+			{
+				var result = new VoidPaymentResult();
+				result.AddError(_localizationService.GetResource("Common.Payment.NoVoidSupport"));
+				return result;
+			}
+			catch
+			{
+				throw;
+			}
         }
 
 
@@ -319,7 +366,21 @@ namespace SmartStore.Services.Payments
                 var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
                 if (paymentMethod == null)
                     throw new SmartException("Payment method couldn't be loaded");
-                return paymentMethod.ProcessRecurringPayment(processPaymentRequest);
+
+				try
+				{
+					return paymentMethod.ProcessRecurringPayment(processPaymentRequest);
+				}
+				catch (NotSupportedException)
+				{
+					var result = new ProcessPaymentResult();
+					result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
             }
         }
 
@@ -336,7 +397,21 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(cancelPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");
-            return paymentMethod.CancelRecurringPayment(cancelPaymentRequest);
+
+			try
+			{
+				return paymentMethod.CancelRecurringPayment(cancelPaymentRequest);
+			}
+			catch (NotSupportedException)
+			{
+				var result = new CancelRecurringPaymentResult();
+				result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+				return result;
+			}
+			catch
+			{
+				throw;
+			}
         }
 
 

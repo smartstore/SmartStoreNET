@@ -79,9 +79,6 @@ namespace SmartStore.Web.Framework
                 .As<HttpContextBase>()
                 .InstancePerHttpRequest();
 
-			// async
-			builder.RegisterType<AsyncRunner>().As<IAsyncRunner>();
-
             // web helper
             builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerHttpRequest();
 

@@ -219,7 +219,7 @@ namespace SmartStore.Core
             //we can't use the following code in order to register our custom type descriptors
             //TypeDescriptor.AddAttributes(typeof(List<int>), new TypeConverterAttribute(typeof(GenericListTypeConverter<int>)));
             //so we do it manually here
-
+			
             #region Old code (doesn't work in meidum trust)
 
             //            namespace SmartStore.Core

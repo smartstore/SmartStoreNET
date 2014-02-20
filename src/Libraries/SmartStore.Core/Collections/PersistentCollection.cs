@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartStore.Core
+namespace SmartStore.Collections
 {
     public class PersistentCollection<T> : IPersistentCollection<T>
          where T : class

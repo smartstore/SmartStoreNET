@@ -329,7 +329,7 @@
     <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
     <Compile Include="Infrastructure\ValueObject.cs" />
-    <Compile Include="IPersistentCollection.cs" />
+    <Compile Include="Collections\IPersistentCollection.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -397,7 +397,7 @@
     <Compile Include="IPageable.cs" />
     <Compile Include="Linq\LinqContainsPredicateBuilder.cs" />
     <Compile Include="Linq\PredicateBuilder.cs" />
-    <Compile Include="PersistentCollection.cs" />
+    <Compile Include="Collections\PersistentCollection.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
     <Compile Include="Plugins\IPreApplicationStart.cs" />
     <Compile Include="Plugins\PluginFileParser.cs" />
@@ -443,6 +443,7 @@
     <Compile Include="IO\IStorageProvider.cs" />
     <Compile Include="Domain\Customers\PasswordFormat.cs" />
     <Compile Include="HttpSecurityMode.cs" />
+    <Compile Include="RouteInfo.cs" />
     <Compile Include="SmartStoreVersion.cs" />
     <Compile Include="Themes\IThemeRegistry.cs" />
     <Compile Include="Themes\ThemeManifest.cs" />

@@ -7,43 +7,36 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Core.Async
 {
-	
-	public interface IAsyncRunner
+
+	public static class AsyncRunner
 	{
-		Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler);
-	}
 
-	public static class IAsyncRunnerExtensions
-	{
-		public static Task Run(this IAsyncRunner runner, Action<ILifetimeScope> action)
+		public static Task Run(Action<ILifetimeScope> action)
 		{
-			return runner.Run(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+			return Run(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 
-		public static Task Run(this IAsyncRunner runner, Action<ILifetimeScope> action, CancellationToken cancellationToken)
+		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken)
 		{
-			return runner.Run(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+			return Run(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 
-		public static Task Run(this IAsyncRunner runner, Action<ILifetimeScope> action, TaskCreationOptions options)
+		public static Task Run(Action<ILifetimeScope> action, TaskCreationOptions options)
 		{
-			return runner.Run(action, CancellationToken.None, options, TaskScheduler.Default);
+			return Run(action, CancellationToken.None, options, TaskScheduler.Default);
 		}
 
-		public static Task Run(this IAsyncRunner runner, Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options)
+		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options)
 		{
-			return runner.Run(action, cancellationToken, options, TaskScheduler.Default);
+			return Run(action, cancellationToken, options, TaskScheduler.Default);
 		}
 
-		public static Task Run(this IAsyncRunner runner, Action<ILifetimeScope> action, TaskScheduler scheduler)
+		public static Task Run(Action<ILifetimeScope> action, TaskScheduler scheduler)
 		{
-			return runner.Run(action, CancellationToken.None, TaskCreationOptions.None, scheduler);
+			return Run(action, CancellationToken.None, TaskCreationOptions.None, scheduler);
 		}
-	}
-
-	public class AsyncRunner : IAsyncRunner
-	{
-		public Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		
+		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
 			Guard.ArgumentNotNull(() => action);
 			Guard.ArgumentNotNull(() => scheduler);
@@ -57,6 +50,7 @@ namespace SmartStore.Core.Async
 
 			return t;
 		}
+
 	}
 
 }

@@ -16,7 +16,7 @@ namespace SmartStore.Core.Data
 			set;
 		}
 
-		public int TotalProcessed
+		public int TotalProcessed 
 		{
 			get;
 			set;
@@ -26,7 +26,7 @@ namespace SmartStore.Core.Data
 		{
 			get
 			{
-				return (double)((TotalProcessed / TotalRecords) * 100);
+				return ((double)TotalProcessed / (double)TotalRecords) * 100;
 			}
 		}
 

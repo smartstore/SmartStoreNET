@@ -7,7 +7,7 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.Payments
 {
     /// <summary>
-    /// Provides an interface for creating payment gateways & methods
+    /// Provides an interface for creating payment gateways and methods
     /// </summary>
     public partial interface IPaymentMethod : IPlugin
     {
@@ -90,6 +90,17 @@ namespace SmartStore.Services.Payments
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
         void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
+
+		///// <summary>
+		///// Gets a route for the payment info handler controller action
+		///// </summary>
+		///// <param name="order">Order</param>
+		///// <returns>Result</returns>
+		///// <remarks>
+		///// The defined route is being redirected to during the checkout process > PaymentInfo page.
+		///// Implementors should return <c>null</c> if no redirection occurs.
+		///// </remarks>
+		RouteInfo GetPaymentInfoHandlerRoute();
 
         Type GetControllerType();
 

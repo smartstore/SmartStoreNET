@@ -82,6 +82,24 @@
                     @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
                     @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                 </div>
+				@if (Model.ProductType == ProductType.BundledProduct)
+				{
+					<div id="ProductBundleItems" class="product-bundle">
+						@if (Model.RenderBundleTitle())
+						{
+							<div class="bundle-title">
+								<h3>@Model.BundleTitleText</h3>
+							</div>
+						}
+						<div class="bundle-items">										
+							@BundleProducts()
+						</div>
+						@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
+						{
+							<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
+						}
+					</div>
+				}
                 <div class="full-description">
                     @Html.Raw(Model.FullDescription)
                 </div>
@@ -91,32 +109,12 @@
                     <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
                         @Html.Partial("_DownloadSample", Model)
                         @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
-                        @{
-							if (Model.ProductType == ProductType.BundledProduct)
-							{
-								<div id="ProductBundleItems" class="product-bundle">
-									@if (Model.RenderBundleTitle())
-									{
-										<div class="bundle-title">
-											<h3>@Model.BundleTitleText</h3>
-										</div>
-									}
-									<div class="bundle-items">										
-										@BundleProducts()
-									</div>
-									@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
-									{
-										<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
-									}
-								</div>								
-							}
-							else if (Model.ProductVariantAttributes.ShouldBeRendered())
-							{
-								var dataDictAttributes = new ViewDataDictionary();
-								dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-								@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)
-							}
-                        }
+                        @if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
+						{
+							var dataDictAttributes = new ViewDataDictionary();
+							dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+							@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)
+						}
                         <!--product SKU, manufacturer part number, stock info-->
                         @Html.Partial("_SKU_Man_Stock", Model)
                         <!--Back in stock subscription-->

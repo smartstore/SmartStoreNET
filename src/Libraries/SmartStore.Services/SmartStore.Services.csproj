@@ -180,6 +180,7 @@
     <Compile Include="Cms\WidgetExtentions.cs" />
     <Compile Include="Cms\WidgetService.cs" />
     <Compile Include="Cms\IWidgetPlugin.cs" />
+    <Compile Include="CommonServices.cs" />
     <Compile Include="Common\AddressService.cs" />
     <Compile Include="Common\AddressExtentions.cs" />
     <Compile Include="Common\FulltextService.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="Installation\InstallationException.cs" />
     <Compile Include="Installation\InstallDataContext.cs" />
     <Compile Include="Installation\InvariantInstallationData.cs" />
+    <Compile Include="ICommonServices.cs" />
     <Compile Include="Localization\LocalizedEntityPostDeleteHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Logging\LogContext.cs" />

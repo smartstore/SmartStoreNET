@@ -11,7 +11,17 @@ namespace SmartStore.Services.Logging
     /// </summary>
     public partial class NullLogger : ILogger
     {
-        /// <summary>
+		private static readonly ILogger s_instance = new NullLogger();
+
+		public static ILogger Instance
+		{
+			get
+			{
+				return s_instance;
+			}
+		}
+		
+		/// <summary>
         /// Determines whether a log level is enabled
         /// </summary>
         /// <param name="level">Log level</param>

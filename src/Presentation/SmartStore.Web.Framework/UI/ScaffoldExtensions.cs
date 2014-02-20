@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Mvc.Html;
 using System.Web.WebPages;
-
 using Telerik.Web.Mvc.UI.Fluent;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Web.Framework.Localization;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {

@@ -175,6 +175,9 @@
     <Compile Include="Linq\Expressions\ExpressionVisitor.cs" />
     <Compile Include="Linq\Expressions\MemberAccessPathVisitor.cs" />
     <Compile Include="Linq\Expressions\MemberAccessPropertyInfoVisitor.cs" />
+    <Compile Include="Localization\LocalizedString.cs" />
+    <Compile Include="Localization\Localizer.cs" />
+    <Compile Include="Localization\NullLocalizer.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\ThreadSafeList.cs" />

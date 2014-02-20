@@ -7,13 +7,14 @@ using System.IO;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using SmartStore.Core;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Themes; // codehint: sm-add
+using SmartStore.Core.Themes;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Themes;
-using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Localization;
 
 #endregion
 
@@ -22,8 +23,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
     public abstract class WebViewPage<TModel> : System.Web.Mvc.WebViewPage<TModel>
     {
 
-        private ILocalizationService _localizationService;
-        private Localizer _localizer;
+		private IText _text;
         private IWorkContext _workContext;
 
         // codehint: sm-add
@@ -33,7 +33,6 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         private ExpandoObject _themeVars;
         private bool? _isHomePage;
 
-        // codehint: sm-add (mc)
         protected int CurrentCategoryId
         {
             get
@@ -93,35 +92,14 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             }
         }
 
-        // codehint: sm-add (mc) end
-
         /// <summary>
-        /// Get a localized resources
+        /// Get a localized resource
         /// </summary>
         public Localizer T
         {
             get
             {
-                if (_localizer == null)
-                {
-                    //null localizer
-                    //_localizer = (format, args) => new LocalizedString((args == null || args.Length == 0) ? format : string.Format(format, args));
-
-                    //default localizer
-                    _localizer = (format, args) =>
-                                     {
-                                         var resFormat = _localizationService.GetResource(format);
-                                         if (string.IsNullOrEmpty(resFormat))
-                                         {
-                                             return new LocalizedString(format);
-                                         }
-                                         return
-                                             new LocalizedString((args == null || args.Length == 0)
-                                                                     ? resFormat
-                                                                     : string.Format(resFormat, args));
-                                     };
-                }
-                return _localizer;
+				return _text.Get;
             }
         }
 
@@ -139,7 +117,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 
             if (DataSettingsHelper.DatabaseIsInstalled())
             {
-                _localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();
             }
         }

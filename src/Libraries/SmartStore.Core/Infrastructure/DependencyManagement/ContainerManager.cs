@@ -4,8 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Threading;
 using Autofac;
+using Autofac.Builder;
 using Autofac.Integration.Mvc;
 using SmartStore.Utilities;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
@@ -206,7 +208,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
     public static class ContainerManagerExtensions
     {
-        public static Autofac.Builder.IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> PerLifeStyle<TLimit, TActivatorData, TRegistrationStyle>(this Autofac.Builder.IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, ComponentLifeStyle lifeStyle)
+        public static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> PerLifeStyle<TLimit, TActivatorData, TRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, ComponentLifeStyle lifeStyle)
         {
             switch (lifeStyle)
             {
@@ -220,5 +222,16 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
                     return builder.SingleInstance();
             }
         }
+
+		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithStaticCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
+		{
+			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("static"));
+		}
+
+		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithRequestCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
+		{
+			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("request"));
+		}
+
     }
 }

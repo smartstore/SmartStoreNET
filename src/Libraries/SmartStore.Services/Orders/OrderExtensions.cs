@@ -177,6 +177,7 @@ namespace SmartStore.Services.Orders
 			}
 			return new List<ProductBundleData>();
 		}
+
 		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleData> bundleData)
 		{
 			string rawData = null;

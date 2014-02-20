@@ -201,7 +201,9 @@
     <Compile Include="HtmlAttribute.cs" />
     <Compile Include="HtmlAttributeExtensions.cs" />
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />
+    <Compile Include="Localization\IText.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
+    <Compile Include="Localization\Text.cs" />
     <Compile Include="Mvc\Bundles\BundlePublisher.cs" />
     <Compile Include="Mvc\Bundles\IBundleProvider.cs" />
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />
@@ -257,8 +259,6 @@
     <Compile Include="Mvc\IModelAttribute.cs" />
     <Compile Include="Localization\ILocalizedModel.cs" />
     <Compile Include="Localization\ILocalizedModelLocal.cs" />
-    <Compile Include="Localization\LocalizedString.cs" />
-    <Compile Include="Localization\Localizer.cs" />
     <Compile Include="Mvc\DeleteConfirmationModel.cs" />
     <Compile Include="Mvc\Routes\IRouteProvider.cs" />
     <Compile Include="Mvc\Routes\IRoutePublisher.cs" />

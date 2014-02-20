@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Web;
 
-namespace SmartStore.Web.Framework.Localization
+namespace SmartStore.Core.Localization
 {
     public class LocalizedString : MarshalByRefObject, IHtmlString
     {
         private readonly string _localized;
-        private readonly string _scope;
         private readonly string _textHint;
         private readonly object[] _args;
 
@@ -15,10 +14,9 @@ namespace SmartStore.Web.Framework.Localization
             _localized = localized;
         }
 
-        public LocalizedString(string localized, string scope, string textHint, object[] args)
+        public LocalizedString(string localized, string textHint, object[] args)
         {
             _localized = localized;
-            _scope = scope;
             _textHint = textHint;
             _args = args;
         }
@@ -28,11 +26,6 @@ namespace SmartStore.Web.Framework.Localization
             if (string.IsNullOrEmpty(text))
                 return defaultValue;
             return new LocalizedString(text);
-        }
-
-        public string Scope
-        {
-            get { return _scope; }
         }
 
         public string TextHint
@@ -50,7 +43,6 @@ namespace SmartStore.Web.Framework.Localization
             get { return _localized; }
         }
 
-        // codehint: sm-add
         public static implicit operator string(LocalizedString obj)
         {
             return obj.Text;
@@ -61,7 +53,7 @@ namespace SmartStore.Web.Framework.Localization
             return _localized;
         }
 
-        public string ToHtmlString()
+		string IHtmlString.ToHtmlString()
         {
             return _localized;
         }

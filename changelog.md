@@ -4,8 +4,8 @@
 
 ###Highlights###
 * #112 Web-Api plugin
+* #106 Implement 'Bundle Products'
 * Improved product structure without product variant entity
-* Product types simple and grouped
 
 ###New Features###
 * #175 IPayment plugin: Implemented deactivation of specific credit card types

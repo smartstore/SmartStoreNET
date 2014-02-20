@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SmartStore.Core.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Core.Infrastructure
@@ -17,6 +18,8 @@ namespace SmartStore.Core.Infrastructure
 			TypeDescriptor.AddAttributes(typeof(ShippingOption), new TypeConverterAttribute(typeof(ShippingOptionTypeConverter)));
 			TypeDescriptor.AddAttributes(typeof(List<ShippingOption>), new TypeConverterAttribute(typeof(ShippingOptionListTypeConverter)));
 			TypeDescriptor.AddAttributes(typeof(IList<ShippingOption>), new TypeConverterAttribute(typeof(ShippingOptionListTypeConverter)));
+			TypeDescriptor.AddAttributes(typeof(List<ProductBundleData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
+			TypeDescriptor.AddAttributes(typeof(IList<ProductBundleData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
 		}
 
 		public int Order

@@ -172,7 +172,7 @@ namespace SmartStore.Services.Orders
 		{
 			if (orderItem != null && orderItem.BundleData.HasValue())
 			{
-				var data = CommonHelper.To<List<ProductBundleData>>(orderItem.BundleData);
+				var data = orderItem.BundleData.Convert<List<ProductBundleData>>();
 				return data;
 			}
 			return new List<ProductBundleData>();
@@ -182,7 +182,7 @@ namespace SmartStore.Services.Orders
 			string rawData = null;
 
 			if (bundleData != null && bundleData.Count > 0)
-				rawData = CommonHelper.To<string>(bundleData);
+				rawData = bundleData.Convert<string>();
 
 			orderItem.BundleData = rawData;
 		}

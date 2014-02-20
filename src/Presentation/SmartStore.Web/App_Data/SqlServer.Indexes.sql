@@ -179,5 +179,8 @@ GO
 CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ProductId] ON [ProductBundleItem] ([ProductId] ASC)
 GO
 
-CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_ParentBundledProductId] ON [ProductBundleItem] ([ParentBundledProductId] ASC)
+CREATE NONCLUSTERED INDEX [IX_ProductBundleItem_BundleProductId] ON [ProductBundleItem] ([BundleProductId] ASC)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ProductBundleItemAttributeFilter_BundleItemId] ON [ProductBundleItemAttributeFilter] ([BundleItemId] ASC)
 GO

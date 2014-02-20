@@ -481,13 +481,12 @@ namespace SmartStore.Web.Controllers
                     var dataProviderInstance = EngineContext.Current.Resolve<BaseDataProviderManager>().LoadDataProvider();
                     dataProviderInstance.InitDatabase();
 
-                    //now resolve installation service
+                    // now resolve installation service
                     var installationService = EngineContext.Current.Resolve<IInstallationService>();
 
-					// infrastructure is current store dependend, means default store needs to be imported first
+					// infrastructure is store dependend, means default store needs to be created first
 					installationService.InstallEarlyRequiredData();
 
-                    // codehint: sm-add
                     // resolve installdata instance from primary language
                     var lazyLang = _locService.GetAppLanguage(model.PrimaryLanguage);
                     if (lazyLang == null)

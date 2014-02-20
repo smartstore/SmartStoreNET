@@ -41,7 +41,6 @@ namespace SmartStore.Services.Localization
         private readonly ICacheManager _cacheManager;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-        private readonly CommonSettings _commonSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
@@ -66,7 +65,7 @@ namespace SmartStore.Services.Localization
             ILogger logger, IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
             ILanguageService languageService,
-            IDataProvider dataProvider, IDbContext dbContext, CommonSettings commonSettings,
+            IDataProvider dataProvider, IDbContext dbContext,
             LocalizationSettings localizationSettings, IEventPublisher eventPublisher)
         {
             this._cacheManager = cacheManager;
@@ -76,10 +75,8 @@ namespace SmartStore.Services.Localization
             this._languageService = languageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
-            this._commonSettings = commonSettings;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
-            this._commonSettings = commonSettings;
             this._localizationSettings = localizationSettings;
             this._eventPublisher = eventPublisher;
         }

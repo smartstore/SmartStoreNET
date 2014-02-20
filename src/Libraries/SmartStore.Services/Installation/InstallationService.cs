@@ -105,8 +105,8 @@ namespace SmartStore.Services.Installation
         #region Ctor
 
         public InstallationService(
-            IDbContext context, // codehint: sm-add
-            ISettingService settingService, // codehint: sm-add
+            IDbContext context,
+            ISettingService settingService,
 			IRepository<Store> storeRepository,
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
@@ -145,8 +145,8 @@ namespace SmartStore.Services.Installation
             IGenericAttributeService genericAttributeService,
             IWebHelper webHelper)
         {
-            this._dbContext = context; // codehint: sm-add
-            this._settingService = settingService; // codehint: sm-add
+            this._dbContext = context;
+            this._settingService = settingService;
 			this._storeRepository = storeRepository;
             this._measureDimensionRepository = measureDimensionRepository;
             this._measureWeightRepository = measureWeightRepository;
@@ -214,6 +214,7 @@ namespace SmartStore.Services.Installation
 				throw new InstallationException("InstallStores", ex);
 			}
 		}
+
 		private void UpdateStores()
 		{
 			var oldAutoDetect = _dbContext.AutoDetectChangesEnabled;
@@ -457,8 +458,8 @@ namespace SmartStore.Services.Installation
                 adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));
                 _customerRepository.Insert(adminUser);
                 //set default customer name
-                _genericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
-                _genericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
+				_genericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
+				_genericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
 
                 //search engine (crawler) built-in user
                 var customer = _installData.SearchEngineUser();

@@ -256,22 +256,21 @@ namespace SmartStore.Web.Framework
 				builder.Register<IDbContext>(c => new SmartObjectContext(dataProviderSettings.DataConnectionString))
 					.InstancePerHttpRequest()
 					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+
+				// register DB Hooks (only when app was installed properly)
+				var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
+				foreach (var hook in hooks)
+				{
+					builder.RegisterType(hook).As(typeof(IHook)).InstancePerHttpRequest();
+				}
 			}
 			else
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(dataSettingsManager.LoadSettings().DataConnectionString))
-					.InstancePerHttpRequest()
-					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+				builder.Register<IDbContext>(c => new SmartObjectContext(dataSettingsManager.LoadSettings().DataConnectionString)).InstancePerHttpRequest();
 			}
 
 			builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerHttpRequest();
 
-			// register DB Hooks
-			var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
-			foreach (var hook in hooks)
-			{
-				builder.RegisterType(hook).As(typeof(IHook)).InstancePerHttpRequest();
-			}
 		}
 	}
 
@@ -526,7 +525,9 @@ namespace SmartStore.Web.Framework
             return RegistrationBuilder
 				.ForDelegate((c, p) =>
 				{
-					var currentStoreId = c.Resolve<IStoreContext>().CurrentStore.Id;
+					var store = c.Resolve<IStoreContext>().CurrentStore;
+
+					var currentStoreId = store.Id;
 					//uncomment the code below if you want load settings per store only when you have two stores installed.
 					//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
 					//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;

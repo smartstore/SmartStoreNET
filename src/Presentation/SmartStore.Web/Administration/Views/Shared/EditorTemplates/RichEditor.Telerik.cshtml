@@ -2,6 +2,7 @@
 @model System.String
 @using Telerik.Web.Mvc.UI
 @using SmartStore.Core;
+@using SmartStore.Utilities;
 @{
     var clientId = (ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty));
     var random = CommonHelper.GenerateRandomInteger();

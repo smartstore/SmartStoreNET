@@ -36,6 +36,7 @@
 * Product could be overwritten by attribute combination data
 * Quantity field was shown though the add to cart button was disabled
 * #260 Delivery times translations are not getting applied
+* robots.txt: localizable disallow paths did not contain a trailing slash
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC

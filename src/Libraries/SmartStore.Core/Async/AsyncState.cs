@@ -2,16 +2,17 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading;
 
 namespace SmartStore.Core.Async
 {
-	
+
 	public class AsyncState
 	{
 		private readonly static AsyncState s_instance = new AsyncState();
-		private readonly ConcurrentDictionary<StateKey, StateInfo> _states = new ConcurrentDictionary<StateKey, StateInfo>();
+		private readonly MemoryCache _cache = MemoryCache.Default;
 
 		private AsyncState()
 		{
@@ -25,7 +26,7 @@ namespace SmartStore.Core.Async
 		public bool Exists<T>(string name = null)
 		{
 			var key = BuildKey<T>(name);
-			return _states.ContainsKey(key) && !object.Equals(_states[key].Progress, default(T));
+			return _cache.Contains(key) && !object.Equals(((StateInfo)_cache[key]).Progress, default(T));
 		}
 
 		public T Get<T>(string name = null)
@@ -45,8 +46,10 @@ namespace SmartStore.Core.Async
 		{
 			cancelTokenSource = null;
 			var key = BuildKey<T>(name);
-			StateInfo value;
-			if (_states.TryGetValue(key, out value))
+
+			var value = _cache.Get(key) as StateInfo;
+
+			if (value != null)
 			{
 				cancelTokenSource = value.CancellationTokenSource;
 				return (T)(value.Progress);
@@ -55,9 +58,9 @@ namespace SmartStore.Core.Async
 			return default(T);
 		}
 
-		public void Set<T>(T state, string name = null)
+		public void Set<T>(T state, string name = null, bool neverExpires = false)
 		{
-			this.Set(state, null, name);
+			this.Set(state, null, name, neverExpires);
 		}
 
 		public void SetCancelTokenSource<T>(CancellationTokenSource cancelTokenSource, string name = null)
@@ -67,27 +70,33 @@ namespace SmartStore.Core.Async
 			this.Set<T>(default(T), cancelTokenSource, name);
 		}
 
-		private void Set<T>(T state, CancellationTokenSource cancelTokenSource, string name = null)
+		private void Set<T>(T state, CancellationTokenSource cancelTokenSource, string name = null, bool neverExpires = false)
 		{
-			_states.AddOrUpdate(
-				BuildKey(typeof(T), name),
-				(key) => new StateInfo { Progress = state, CancellationTokenSource = cancelTokenSource },
-				(key, old) => 
-				{ 
-					old.Progress = state;
-					if (cancelTokenSource != null && old.CancellationTokenSource == null)
-					{
-						old.CancellationTokenSource = cancelTokenSource;
-					}
-					return old; 
-				});
+			var key = BuildKey(typeof(T), name);
+
+			var value = _cache.Get(key) as StateInfo;
+
+			if (value != null)
+			{
+				// exists already, so update
+				value.Progress = state;
+				if (cancelTokenSource != null && value.CancellationTokenSource == null)
+				{
+					value.CancellationTokenSource = cancelTokenSource;
+				}
+			}
+
+			var policy = new CacheItemPolicy { SlidingExpiration = neverExpires ? TimeSpan.Zero : TimeSpan.FromMinutes(15) };
+
+			_cache.Set(key, value ?? new StateInfo { Progress = state, CancellationTokenSource = cancelTokenSource }, policy);
 		}
 
 		public bool Remove<T>(string name = null)
 		{
 			var key = BuildKey<T>(name);
-			StateInfo value;
-			if (_states.TryRemove(key, out value)) 
+			var value = _cache.Remove(key) as StateInfo;
+
+			if (value != null)
 			{
 				if (value.CancellationTokenSource != null)
 				{
@@ -99,32 +108,14 @@ namespace SmartStore.Core.Async
 			return false;
 		}
 
-		private StateKey BuildKey<T>(string name)
+		private string BuildKey<T>(string name)
 		{
 			return BuildKey(typeof(T), name);
 		}
 
-		private StateKey BuildKey(Type type, string name)
+		private string BuildKey(Type type, string name)
 		{
-			return new StateKey(type, name);
-		}
-
-		class StateKey : Tuple<Type, string>
-		{
-			public StateKey(Type type, string token) : base(type, token)
-			{
-				Guard.ArgumentNotNull(() => type);
-			}
-			
-			public Type StateType 
-			{
-				get { return base.Item1; }
-			}
-
-			public string Token
-			{
-				get { return base.Item2; }
-			}
+			return "{0}:{1}:{2}".FormatInvariant("AsyncStateKey", type.FullName, name.EmptyNull());
 		}
 
 		class StateInfo

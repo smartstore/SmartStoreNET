@@ -1038,7 +1038,7 @@ namespace SmartStore.Web.Controllers
                 // URLs are localizable. Append SEO code
                 foreach (var language in _languageService.GetAllLanguages(storeId: _storeContext.CurrentStore.Id))
                 {
-                    disallows = disallows.Concat(localizableDisallowPaths.Select(x => "{0}{1}".FormatInvariant(language.UniqueSeoCode, x)));
+                    disallows = disallows.Concat(localizableDisallowPaths.Select(x => "/{0}{1}".FormatInvariant(language.UniqueSeoCode, x)));
                 }
             }
 

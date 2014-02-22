@@ -53,7 +53,7 @@ namespace SmartStore.Core.Localization
             return _localized;
         }
 
-		string IHtmlString.ToHtmlString()
+		public string ToHtmlString()
         {
             return _localized;
         }

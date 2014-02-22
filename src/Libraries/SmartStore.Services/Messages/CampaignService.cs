@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Events;
 using SmartStore.Services.Customers;
 using SmartStore.Core;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Services.Messages
 {
@@ -193,9 +193,12 @@ namespace SmartStore.Services.Messages
             string subject = _tokenizer.Replace(campaign.Subject, tokens, false);
             string body = _tokenizer.Replace(campaign.Body, tokens, true);
 
-            var from = new MailAddress(emailAccount.Email, emailAccount.DisplayName);
-            var to = new MailAddress(email);
-            _emailSender.SendEmail(emailAccount, subject, body, from, to);
+			var to = new EmailAddress(email);
+            var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
+
+			var msg = new EmailMessage(to, subject, body, from);
+
+            _emailSender.SendEmail(new SmtpContext(emailAccount), msg);
         }
     }
 }

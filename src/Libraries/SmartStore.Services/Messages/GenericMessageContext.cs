@@ -17,7 +17,7 @@ namespace SmartStore.Services.Messages
         public IList<Token> Tokens { get; internal set; }
         public IMessageTokenProvider MessagenTokenProvider { get; internal set; }
         public Customer Customer { get; set; }
-        public bool SetCustomerAsSender { get; set; }
+        public bool ReplyToCustomer { get; set; }
         public string ToEmail { get; set; }
         public string ToName { get; set; }
     }

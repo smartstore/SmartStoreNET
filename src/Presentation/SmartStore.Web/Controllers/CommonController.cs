@@ -753,7 +753,9 @@ namespace SmartStore.Web.Controllers
                     Subject = subject,
                     Body = body,
                     CreatedOnUtc = DateTime.UtcNow,
-                    EmailAccountId = emailAccount.Id
+                    EmailAccountId = emailAccount.Id,
+					ReplyTo = email,
+					ReplyToName = fullName
                 });
 
                 model.SuccessfullySent = true;

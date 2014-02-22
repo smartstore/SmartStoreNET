@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Email;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
@@ -181,11 +183,13 @@ namespace SmartStore.Admin.Controllers
                     throw new SmartException("Enter test email address");
 
 
-                var from = new MailAddress(emailAccount.Email, emailAccount.DisplayName);
-                var to = new MailAddress(model.SendTestEmailTo);
+				var to = new EmailAddress(model.SendTestEmailTo);
+				var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
 				string subject = _storeContext.CurrentStore.Name + ". Testing email functionality.";
                 string body = "Email works fine.";
-                _emailSender.SendEmail(emailAccount, subject, body, from, to);
+
+				_emailSender.SendEmail(new SmtpContext(emailAccount), new EmailMessage(to, subject, body, from));
+
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
             }
             catch (Exception exc)

@@ -58,12 +58,12 @@ using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using SmartStore.Core.Async;
 using Fasterflect;
 using SmartStore.Services;
 using Module = Autofac.Module;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Web.Framework
 {
@@ -78,6 +78,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new LoggingModule());
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new EventModule(typeFinder));
+			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new UiModule(typeFinder));
 
@@ -153,16 +154,6 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerHttpRequest();
             builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance(); // xxx (http)
             builder.RegisterType<PictureService>().As<IPictureService>().InstancePerHttpRequest();
-
-            builder.RegisterType<MessageTemplateService>().As<IMessageTemplateService>().InstancePerHttpRequest();
-            builder.RegisterType<QueuedEmailService>().As<IQueuedEmailService>().InstancePerHttpRequest();
-            builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerHttpRequest();
-            builder.RegisterType<CampaignService>().As<ICampaignService>().InstancePerHttpRequest();
-            builder.RegisterType<EmailAccountService>().As<IEmailAccountService>().InstancePerHttpRequest();
-            builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerHttpRequest();
-            builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerHttpRequest();
-            builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerHttpRequest();
-            builder.RegisterType<EmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
 
             builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerHttpRequest();
             builder.RegisterType<CheckoutAttributeParser>().As<ICheckoutAttributeParser>().InstancePerHttpRequest();
@@ -421,6 +412,22 @@ namespace SmartStore.Web.Framework
 				}, typeof(IConsumer<>)))
 					.InstancePerHttpRequest();
 			}
+		}
+	}
+
+	public class MessagingModule : Module
+	{
+		protected override void Load(ContainerBuilder builder)
+		{
+			builder.RegisterType<MessageTemplateService>().As<IMessageTemplateService>().InstancePerHttpRequest();
+			builder.RegisterType<QueuedEmailService>().As<IQueuedEmailService>().InstancePerHttpRequest();
+			builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerHttpRequest();
+			builder.RegisterType<CampaignService>().As<ICampaignService>().InstancePerHttpRequest();
+			builder.RegisterType<EmailAccountService>().As<IEmailAccountService>().InstancePerHttpRequest();
+			builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerHttpRequest();
+			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerHttpRequest();
+			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerHttpRequest();
+			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
 		}
 	}
 

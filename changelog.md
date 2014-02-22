@@ -43,6 +43,7 @@
 * Product filtering by price now supports decimal places
 * Excel Import: Field _CreatedOnUtc_ is optional now
 * Enhanced Admin UI for _Message Templates_
+* _Repliable_ Emails now have customer's email as ReplyTo address
 * #140 Import all plugin resources after adding a language
 * #45 Smarter logging. Save same log notifications only once including its frequency.
 * jQuery Mobile is updated to 1.3.2

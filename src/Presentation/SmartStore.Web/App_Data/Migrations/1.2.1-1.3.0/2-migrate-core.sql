@@ -91,3 +91,16 @@ BEGIN
 	ALTER TABLE [Currency] ADD [DomainEndings] nvarchar(1000) NULL
 END
 GO
+
+-- QueuedEmail.ReplyTo (New)
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[QueuedEmail]') and NAME='ReplyTo')
+BEGIN
+	ALTER TABLE [QueuedEmail] ADD [ReplyTo] nvarchar(500) NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[QueuedEmail]') and NAME='ReplyToName')
+BEGIN
+	ALTER TABLE [QueuedEmail] ADD [ReplyToName] nvarchar(500) NULL
+END
+GO

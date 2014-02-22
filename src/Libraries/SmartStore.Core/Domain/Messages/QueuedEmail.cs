@@ -32,6 +32,16 @@ namespace SmartStore.Core.Domain.Messages
         /// </summary>
         public string ToName { get; set; }
 
+		/// <summary>
+		/// Gets or sets the ReplyTo property
+		/// </summary>
+		public string ReplyTo { get; set; }
+
+		/// <summary>
+		/// Gets or sets the ReplyToName property
+		/// </summary>
+		public string ReplyToName { get; set; }
+
         /// <summary>
         /// Gets or sets the CC
         /// </summary>

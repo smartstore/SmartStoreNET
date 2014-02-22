@@ -68,16 +68,22 @@ namespace SmartStore.Services.Messages
 
         #region Utilities
 
-        protected int SendNotification(MessageTemplate messageTemplate,
-            EmailAccount emailAccount, int languageId, IEnumerable<Token> tokens,
-            string toEmailAddress, string toName)
+        protected int SendNotification(
+			MessageTemplate messageTemplate,
+            EmailAccount emailAccount, 
+			int languageId, 
+			IEnumerable<Token> tokens,
+            string toEmailAddress, 
+			string toName,
+			string replyTo = null,
+			string replyToName = null)
         {
-            //retrieve localized message template data
+            // retrieve localized message template data
             var bcc = messageTemplate.GetLocalized((mt) => mt.BccEmailAddresses, languageId);
             var subject = messageTemplate.GetLocalized((mt) => mt.Subject, languageId);
             var body = messageTemplate.GetLocalized((mt) => mt.Body, languageId);
 
-            //Replace subject and body tokens 
+            // Replace subject and body tokens 
             var subjectReplaced = _tokenizer.Replace(subject, tokens, false);
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
 
@@ -90,6 +96,8 @@ namespace SmartStore.Services.Messages
                 ToName = toName,
                 CC = string.Empty,
                 Bcc = bcc,
+				ReplyTo = replyTo,
+				ReplyToName = replyToName,
                 Subject = subjectReplaced,
                 Body = bodyReplaced,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -127,17 +135,18 @@ namespace SmartStore.Services.Messages
             if (emailAccount == null)
                 emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
 
-            // clone it, otherwise the EF state tracker will keep overwritten values
-            return emailAccount.Clone();
+            return emailAccount;
         }
 
-        private void SetCustomerAsSender(EmailAccount account, Customer customer)
+        private Tuple<string, string> GetReplyToEmail(Customer customer)
         {
-            if (customer == null || customer.Email.IsEmpty())
-                return;
+			if (customer == null || customer.Email.IsEmpty())
+				return new Tuple<string, string>(null, null);
 
-            account.Email = customer.Email;
-            account.DisplayName = GetDisplayNameForCustomer(customer);
+			string email = customer.Email;
+			string name = GetDisplayNameForCustomer(customer);
+
+			return new Tuple<string, string>(email, name);
         }
 
         private string GetDisplayNameForCustomer(Customer customer)
@@ -235,12 +244,13 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, customer);
+            // use customer email as reply address
+			var replyTo = GetReplyToEmail(customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -380,17 +390,18 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use buyer's email as sender/reply address
-            emailAccount.Email = order.BillingAddress.Email;
-            emailAccount.DisplayName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
+            // use buyer's email as reply address
+            var replyToEmail = order.BillingAddress.Email;
+            var replyToName = emailAccount.DisplayName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             if (order.BillingAddress.Company.HasValue())
             {
-                emailAccount.DisplayName += ", " + order.BillingAddress.Company;
+				replyToName += ", " + order.BillingAddress.Company;
             }
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyToEmail, replyToName);
         }
 
         /// <summary>
@@ -819,11 +830,7 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer's email as sender/reply address
-            emailAccount.Email = senderEmail;
-            emailAccount.DisplayName = senderName;
-
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName, senderEmail, senderName);
         }
 
         /// <summary>
@@ -902,12 +909,13 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, returnRequest.Customer);
+            // use customer email as reply address
+			var replyTo = GetReplyToEmail(returnRequest.Customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1116,13 +1124,17 @@ namespace SmartStore.Services.Messages
             var toEmail = ctx.ToEmail.HasValue() ? ctx.ToEmail : emailAccount.Email;
             var toName = ctx.ToName.HasValue() ? ctx.ToName : emailAccount.DisplayName;
 
-            if (ctx.SetCustomerAsSender)
+			string replyToEmail = null;
+			string replyToName = null;
+            if (ctx.ReplyToCustomer)
             {
-                // use customer email as sender/reply address
-                SetCustomerAsSender(emailAccount, ctx.Customer);
+                // use customer email as reply address
+				var replyTo = GetReplyToEmail(ctx.Customer);
+				replyToEmail = replyTo.Item1;
+				replyToName = replyTo.Item2;
             }
 
-            return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName);
+			return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName, replyToEmail, replyToName);
         }
 
         /// <summary>
@@ -1197,12 +1209,13 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, productReview.Customer);
+            // use customer email as reply address
+			var replyTo = GetReplyToEmail(productReview.Customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1273,12 +1286,13 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, customer);
+            // use customer email as reply address
+			var replyTo = GetReplyToEmail(customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1311,12 +1325,13 @@ namespace SmartStore.Services.Messages
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, blogComment.Customer);
+            // use customer email as reply address
+			var replyTo = GetReplyToEmail(blogComment.Customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1350,11 +1365,12 @@ namespace SmartStore.Services.Messages
             var toName = emailAccount.DisplayName;
 
             // use customer email as sender/reply address
-            SetCustomerAsSender(emailAccount, newsComment.Customer);
+			var replyTo = GetReplyToEmail(newsComment.Customer);
 
             return SendNotification(messageTemplate, emailAccount,
                 languageId, tokens,
-                toEmail, toName);
+                toEmail, toName,
+				replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>

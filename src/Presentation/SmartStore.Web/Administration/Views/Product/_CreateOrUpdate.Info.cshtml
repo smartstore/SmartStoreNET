@@ -474,7 +474,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].Name)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => Model.Locales[item].Name)
+				@Html.TextBoxFor(model => Model.Locales[item].Name, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Locales[item].Name)
 			</td>
 		</tr>
@@ -483,7 +483,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.Locales[item].ShortDescription)
+				@Html.TextAreaFor(model => model.Locales[item].ShortDescription, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
 			</td>
 		</tr>
@@ -509,7 +509,7 @@
 				@Html.SmartLabelFor(model => model.Name)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Name)
+				@Html.TextBoxFor(model => model.Name, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Name)
 			</td>
 		</tr>
@@ -518,7 +518,7 @@
 				@Html.SmartLabelFor(model => model.ShortDescription)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(x => x.ShortDescription)
+				@Html.TextAreaFor(x => x.ShortDescription, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.ShortDescription)
 			</td>
 		</tr>

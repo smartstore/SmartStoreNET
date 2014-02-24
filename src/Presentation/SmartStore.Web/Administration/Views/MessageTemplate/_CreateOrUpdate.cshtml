@@ -104,7 +104,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].Subject)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Subject)
+                @Html.TextBoxFor(model => Model.Locales[item].Subject, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.Locales[item].Subject)
             </td>
         </tr>
@@ -148,7 +148,7 @@
                 @Html.SmartLabelFor(model => model.Subject)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Subject)
+                @Html.TextBoxFor(model => model.Subject, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.Subject)
             </td>
         </tr>

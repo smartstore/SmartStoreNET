@@ -315,9 +315,24 @@ td.adminData {
 }
 
 .t-grid tbody {
-	
+
+	td {
+		padding: 6px 8px;
+	}
+
 	.t-last {
 		.text-overflow();
+	}
+
+	.t-grid-new-row > td,
+	.t-grid-edit-row > td {
+		padding: 6px;
+	}
+
+	.t-grid-edit-row .text-box,
+	.t-grid-edit-row .t-numerictextbox,
+	.t-grid-edit-row .t-datepicker {
+		margin: 0;
 	}
 
 	.t-button {
@@ -332,18 +347,11 @@ td.adminData {
 	}
 
 	.t-numerictextbox {
-		padding: 3px 4px 2px 5px;
-
-		.t-formatted-value {
-			padding: 3px 4px 2px 5px;
-		}
-
+		margin: 0 4px; /* let it 'breathe' */
 		.t-input {
-			max-width: 90%;
+			max-width: 85%;
 		}
 	}
-
-
 }
 
 .t-grid form.t-grid-actions {
@@ -357,18 +365,31 @@ td.adminData {
     border: initial !important;
 }
 
+.t-numerictextbox {
+	overflow: hidden;
+	position: relative;
+}
+
 .t-numerictextbox .t-input {
-    padding: 4px;
+    width: 252px;
+	padding: 4px 8px 4px 2px !important;
+}
+.t-numerictextbox.small .t-input {
+	width: 80px;
 }
 .t-numerictextbox .t-formatted-value {
-    padding: 4px 4px 2px 6px;
+	position: absolute;
+    padding: 4px 0;
+	left: 6px;
+	right: 16px;
+	overflow: hidden;
 }
 .t-numerictextbox .t-arrow-up {
-    margin-top: 3px;
+    margin-top: 3px !important;
     margin-left: -19px;
 }
 .t-numerictextbox .t-arrow-down {
-    margin-bottom: 3px;
+    margin-bottom: 3px !important;
 }
 .t-numerictextbox .t-icon {
     .opacity(50);
@@ -609,6 +630,11 @@ td.adminData {
 td.adminData .text-box.single-line {
     width: 250px;
 }
+td.adminData input[type=text].input-large,
+td.adminData textarea.input-large {
+	width: 500px;
+}
+
 .t-grid .text-box.single-line {
     /* ... */
 }
@@ -617,17 +643,6 @@ td.adminData textarea {
 }
 td.adminData .t-combobox {
     width: 256px;
-}
-
-td.adminData .t-numerictextbox {
-    margin-right: 4px; /* let it 'breathe' */
-    .t-input {
-        width: 261px;
-        padding: 4px 1px 3px 0;
-    }
-    &.small .t-input {
-        width: 80px;
-    }
 }
 
 tr.adminSeparator hr {

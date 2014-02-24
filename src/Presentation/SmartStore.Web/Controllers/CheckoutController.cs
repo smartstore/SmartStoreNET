@@ -127,6 +127,14 @@ namespace SmartStore.Web.Controllers
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, ignoreRewardPoints);
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
                 result = false;
+
+            //Check whether paymethod needs workflow
+            var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
+            if (processPaymentRequest != null)
+            {
+                result = processPaymentRequest.RequiresPaymentWorkflow;
+            }
+
             return result;
         }
 
@@ -276,7 +284,9 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
+                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard ||
+                    pm.PaymentMethodType == PaymentMethodType.StandardAndButton ||
+                    pm.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
             {
@@ -339,6 +349,7 @@ namespace SmartStore.Web.Controllers
             model.PaymentInfoControllerName = controllerName;
             model.PaymentInfoRouteValues = routeValues;
             model.DisplayOrderTotals = _orderSettings.OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab;
+
             return model;
         }
 
@@ -692,8 +703,8 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
             if (!isPaymentWorkflowRequired)
             {
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-					 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
+                //TODO: get all paymenthods, when there's only one set it to be the selected
+				//_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
                 return RedirectToRoute("CheckoutPaymentInfo");
             }
 
@@ -798,6 +809,13 @@ namespace SmartStore.Web.Controllers
 
             //model
             var model = PreparePaymentInfoModel(paymentMethod);
+
+            RouteInfo routeinfo = paymentMethod.GetPaymentInfoHandlerRoute();
+            if (routeinfo != null)
+            {
+                return new RedirectToRouteResult(routeinfo.RouteValues);
+            }
+
             return View(model);
         }
         [HttpPost, ActionName("PaymentInfo")]

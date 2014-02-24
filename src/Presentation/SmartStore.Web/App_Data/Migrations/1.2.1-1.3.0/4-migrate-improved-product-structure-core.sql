@@ -1,3 +1,24 @@
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariant]') and NAME='BasePrice_Enabled')
+BEGIN
+	EXEC sp_rename 'ProductVariant.BasePrice_Enabled', 'BasePriceEnabled', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariant]') and NAME='BasePrice_MeasureUnit')
+BEGIN
+	EXEC sp_rename 'ProductVariant.BasePrice_MeasureUnit', 'BasePriceMeasureUnit', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariant]') and NAME='BasePrice_Amount')
+BEGIN
+	EXEC sp_rename 'ProductVariant.BasePrice_Amount', 'BasePriceAmount', 'COLUMN';
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariant]') and NAME='BasePrice_BaseAmount')
+BEGIN
+	EXEC sp_rename 'ProductVariant.BasePrice_BaseAmount', 'BasePriceBaseAmount', 'COLUMN';
+END
+GO
+
 --rename ShipmentOrderProductVariant to ShipmentItem
 IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[Shipment_OrderProductVariant]') and OBJECTPROPERTY(object_id, N'IsUserTable') = 1)
 BEGIN
@@ -533,28 +554,28 @@ BEGIN
 	ADD [DeliveryTimeId] int NULL
 END
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Enabled')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePriceEnabled')
 BEGIN
 	ALTER TABLE [Product]
-	ADD [BasePrice_Enabled] bit NULL
+	ADD [BasePriceEnabled] bit NULL
 END
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_MeasureUnit')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePriceMeasureUnit')
 BEGIN
 	ALTER TABLE [Product]
-	ADD [BasePrice_MeasureUnit] nvarchar(50) NULL
+	ADD [BasePriceMeasureUnit] nvarchar(50) NULL
 END
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Amount')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePriceAmount')
 BEGIN
 	ALTER TABLE [Product]
-	ADD [BasePrice_Amount] decimal(18, 4) NULL
+	ADD [BasePriceAmount] decimal(18, 4) NULL
 END
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_BaseAmount')
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePriceBaseAmount')
 BEGIN
 	ALTER TABLE [Product]
-	ADD [BasePrice_BaseAmount] int NULL
+	ADD [BasePriceBaseAmount] int NULL
 END
 GO
 
@@ -870,14 +891,14 @@ BEGIN
 		SET @UpdatedOnUtc = null -- clear cache (variable scope)
 		DECLARE @DeliveryTimeId int
 		SET @DeliveryTimeId = null
-		DECLARE @BasePrice_Enabled bit
-		SET @BasePrice_Enabled = null
-		DECLARE @BasePrice_MeasureUnit nvarchar(50)
-		SET @BasePrice_MeasureUnit = null
-		DECLARE @BasePrice_Amount decimal(18, 4)
-		SET @BasePrice_Amount = null
-		DECLARE @BasePrice_BaseAmount int
-		SET @BasePrice_BaseAmount = null
+		DECLARE @BasePriceEnabled bit
+		SET @BasePriceEnabled = null
+		DECLARE @BasePriceMeasureUnit nvarchar(50)
+		SET @BasePriceMeasureUnit = null
+		DECLARE @BasePriceAmount decimal(18, 4)
+		SET @BasePriceAmount = null
+		DECLARE @BasePriceBaseAmount int
+		SET @BasePriceBaseAmount = null
 
 		DECLARE @sql nvarchar(4000)
 		SET @sql = 'SELECT 
@@ -951,10 +972,10 @@ BEGIN
 		@CreatedOnUtc = [CreatedOnUtc],
 		@UpdatedOnUtc = [UpdatedOnUtc],
 		@DeliveryTimeId = [DeliveryTimeId],
-		@BasePrice_Enabled = [BasePrice_Enabled],
-		@BasePrice_MeasureUnit = [BasePrice_MeasureUnit],
-		@BasePrice_Amount = [BasePrice_Amount],
-		@BasePrice_BaseAmount = [BasePrice_BaseAmount]
+		@BasePriceEnabled = [BasePriceEnabled],
+		@BasePriceMeasureUnit = [BasePriceMeasureUnit],
+		@BasePriceAmount = [BasePriceAmount],
+		@BasePriceBaseAmount = [BasePriceBaseAmount]
 		FROM [ProductVariant] 
 		WHERE [Id]=' + ISNULL(CAST(@ExistingProductVariantID AS nvarchar(max)), '0')
 
@@ -1029,10 +1050,10 @@ BEGIN
 		@CreatedOnUtc datetime OUTPUT,
 		@UpdatedOnUtc datetime OUTPUT,
 		@DeliveryTimeId int OUTPUT,
-		@BasePrice_Enabled bit OUTPUT,
-		@BasePrice_MeasureUnit nvarchar(50) OUTPUT,
-		@BasePrice_Amount decimal(18, 4) OUTPUT,
-		@BasePrice_BaseAmount int OUTPUT',
+		@BasePriceEnabled bit OUTPUT,
+		@BasePriceMeasureUnit nvarchar(50) OUTPUT,
+		@BasePriceAmount decimal(18, 4) OUTPUT,
+		@BasePriceBaseAmount int OUTPUT',
 		@ProductId OUTPUT,
 		@Name OUTPUT,
 		@Description OUTPUT,
@@ -1103,10 +1124,10 @@ BEGIN
 		@CreatedOnUtc OUTPUT,
 		@UpdatedOnUtc OUTPUT,
 		@DeliveryTimeId OUTPUT,
-		@BasePrice_Enabled OUTPUT,
-		@BasePrice_MeasureUnit OUTPUT,
-		@BasePrice_Amount OUTPUT,
-		@BasePrice_BaseAmount OUTPUT
+		@BasePriceEnabled OUTPUT,
+		@BasePriceMeasureUnit OUTPUT,
+		@BasePriceAmount OUTPUT,
+		@BasePriceBaseAmount OUTPUT
 		
 		--how many variants do we have?
 		DECLARE @NumberOfVariants int
@@ -1193,10 +1214,10 @@ BEGIN
 			[AvailableStartDateTimeUtc] = @AvailableStartDateTimeUtc,
 			[AvailableEndDateTimeUtc] = @AvailableEndDateTimeUtc,
 			[DeliveryTimeId] = @DeliveryTimeId,
-			[BasePrice_Enabled] = @BasePrice_Enabled,
-			[BasePrice_MeasureUnit] = @BasePrice_MeasureUnit,
-			[BasePrice_Amount] = @BasePrice_Amount,
-			[BasePrice_BaseAmount] = @BasePrice_BaseAmount
+			[BasePriceEnabled] = @BasePriceEnabled,
+			[BasePriceMeasureUnit] = @BasePriceMeasureUnit,
+			[BasePriceAmount] = @BasePriceAmount,
+			[BasePriceBaseAmount] = @BasePriceBaseAmount
 			WHERE [Id]=@ProductId
 			
 			--product type
@@ -1293,10 +1314,10 @@ BEGIN
 			[AvailableStartDateTimeUtc] = @AvailableStartDateTimeUtc,
 			[AvailableEndDateTimeUtc] = @AvailableEndDateTimeUtc,
 			[DeliveryTimeId] = @DeliveryTimeId,
-			[BasePrice_Enabled] = @BasePrice_Enabled,
-			[BasePrice_MeasureUnit] = @BasePrice_MeasureUnit,
-			[BasePrice_Amount] = @BasePrice_Amount,
-			[BasePrice_BaseAmount] = @BasePrice_BaseAmount
+			[BasePriceEnabled] = @BasePriceEnabled,
+			[BasePriceMeasureUnit] = @BasePriceMeasureUnit,
+			[BasePriceAmount] = @BasePriceAmount,
+			[BasePriceBaseAmount] = @BasePriceBaseAmount
 			WHERE [Id]=@ProductId
 			
 			--product type
@@ -1350,7 +1371,7 @@ BEGIN
 			CustomerEntersPrice, MinimumCustomerEnteredPrice, MaximumCustomerEnteredPrice, HasTierPrices, 
 			HasDiscountsApplied, Weight, Length, Width, Height,
 			AvailableStartDateTimeUtc, AvailableEndDateTimeUtc,
-			DeliveryTimeId, BasePrice_Enabled, BasePrice_MeasureUnit, BasePrice_Amount, BasePrice_BaseAmount,			
+			DeliveryTimeId, BasePriceEnabled, BasePriceMeasureUnit, BasePriceAmount, BasePriceBaseAmount,			
 			ProductTypeId, ParentGroupedProductId) 
 			VALUES (@AssociatedProductName, @Description, @SimpleProductTemplateId, 
 			0, 0, 0, 0, 
@@ -1372,7 +1393,7 @@ BEGIN
 			@MinimumCustomerEnteredPrice, @MaximumCustomerEnteredPrice, @HasTierPrices, @HasDiscountsApplied, 
 			@Weight, @Length, @Width, @Height, 
 			@AvailableStartDateTimeUtc, @AvailableEndDateTimeUtc,
-			@DeliveryTimeId, @BasePrice_Enabled, @BasePrice_MeasureUnit, @BasePrice_Amount, @BasePrice_BaseAmount,			
+			@DeliveryTimeId, @BasePriceEnabled, @BasePriceMeasureUnit, @BasePriceAmount, @BasePriceBaseAmount,			
 			--simple product
 			5 , @ProductId)
 			
@@ -1870,7 +1891,7 @@ ALTER COLUMN [Height] decimal(18, 4) NOT NULL
 GO
 
 ALTER TABLE [Product]
-ALTER COLUMN [BasePrice_Enabled] bit NOT NULL
+ALTER COLUMN [BasePriceEnabled] bit NOT NULL
 GO
 
 -- new indexes
@@ -2090,27 +2111,6 @@ GO
 
 --updated product type values
 UPDATE [Product] SET [ProductTypeId]=5 WHERE [ProductTypeId]=0
-GO
-
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Enabled')
-BEGIN
-	EXEC sp_rename 'Product.BasePrice_Enabled', 'BasePriceEnabled', 'COLUMN';
-END
-GO
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_MeasureUnit')
-BEGIN
-	EXEC sp_rename 'Product.BasePrice_MeasureUnit', 'BasePriceMeasureUnit', 'COLUMN';
-END
-GO
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_Amount')
-BEGIN
-	EXEC sp_rename 'Product.BasePrice_Amount', 'BasePriceAmount', 'COLUMN';
-END
-GO
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='BasePrice_BaseAmount')
-BEGIN
-	EXEC sp_rename 'Product.BasePrice_BaseAmount', 'BasePriceBaseAmount', 'COLUMN';
-END
 GO
 
 

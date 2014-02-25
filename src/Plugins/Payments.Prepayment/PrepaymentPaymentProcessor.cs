@@ -200,16 +200,16 @@ namespace SmartStore.Plugin.Payments.Prepayment
 
         #region Properties
 
-        /// <summary>
-        /// Gets a payment method type
-        /// </summary>
-        public PaymentMethodType PaymentMethodType
-        {
-            get
-            {
-                return PaymentMethodType.Standard;
-            }
-        }
+		/// <summary>
+		/// Gets a payment method type
+		/// </summary>
+		public override PaymentMethodType PaymentMethodType
+		{
+			get
+			{
+				return PaymentMethodType.Standard;
+			}
+		}
 
         #endregion
         

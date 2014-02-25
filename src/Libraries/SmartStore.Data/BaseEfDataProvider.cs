@@ -16,8 +16,9 @@ namespace SmartStore.Data
         /// Initialize connection factory
         /// </summary>
         public void InitConnectionFactory()
-        {
-            Database.DefaultConnectionFactory = GetConnectionFactory();
+		{
+#pragma warning disable 0618
+			Database.DefaultConnectionFactory = GetConnectionFactory();
         }
 
         /// <summary>

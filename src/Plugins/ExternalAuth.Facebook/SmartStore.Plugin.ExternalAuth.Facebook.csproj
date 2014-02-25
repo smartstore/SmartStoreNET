@@ -190,6 +190,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Views\ExternalAuthFacebook\Configure.cshtml" />
     <EmbeddedResource Include="Views\ExternalAuthFacebook\PublicInfo.cshtml" />
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="web.config" />
   </ItemGroup>

@@ -4547,13 +4547,12 @@ namespace SmartStore.Services.Installation
                 },
                 new PaymentSettings()
                 {
-                    ActivePaymentMethodSystemNames = new List<string>() // TODO: ZA (welche?)
+                    ActivePaymentMethodSystemNames = new List<string>()
                     {
-                        "Payments.CashOnDelivery",
-                        "Payments.CheckMoneyOrder",
+						"Payments.CashOnDelivery",
                         "Payments.Manual",
                         "Payments.PayInStore",
-                        "Payments.PurchaseOrder",
+						"Payments.Prepayment"
                     },
                     AllowRePostingPayments = true,
                     BypassPaymentMethodSelectionIfOnlyOne = true,

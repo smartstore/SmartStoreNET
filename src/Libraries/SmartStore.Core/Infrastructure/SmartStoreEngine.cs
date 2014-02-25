@@ -82,11 +82,16 @@ namespace SmartStore.Core.Infrastructure
         public void Initialize(SmartStoreConfig config)
         {
             bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
-            if (databaseInstalled)
-            {
-                //startup tasks
-                RunStartupTasks();
-            }
+			if (databaseInstalled)
+			{
+				//startup tasks
+				RunStartupTasks();
+			}
+			else
+			{
+				// TODO: (MC) not really good code. Find a better pattern!
+				new CommonStartupTask().Execute();
+			}
         }
 
         public T Resolve<T>(string name = null) where T : class

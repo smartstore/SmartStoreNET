@@ -2176,15 +2176,16 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.EstimateShippingEnabled = false;
                 })
 
-                .Alter<PaymentSettings>(x =>
-                {
-                    x.ActivePaymentMethodSystemNames = new List<string>() 
-                    { 
-                        "Payments.CashOnDelivery",
-                        "Payments.Manual",
-                        "Payments.PayPalStandard",
-                    };
-                })
+				//.Alter<PaymentSettings>(x =>
+				//{
+				//	x.ActivePaymentMethodSystemNames = new List<string>() 
+				//	{ 
+				//		"Payments.CashOnDelivery",
+				//		"Payments.Manual",
+				//		"Payments.PayInStore",
+				//		"Payments.Prepayment"
+				//	};
+				//})
 
                 .Alter<TaxSettings>(x =>
                 {

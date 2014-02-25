@@ -1928,6 +1928,7 @@ namespace SmartStore.Admin.Controllers
 			if (model.SelectedProductIds != null)
 			{
 				var products = _productService.GetProductsByIds(model.SelectedProductIds);
+				var utcNow = DateTime.UtcNow;
 
 				foreach (var product in products.Where(x => x.CanBeBundleItem()))
 				{
@@ -1937,10 +1938,10 @@ namespace SmartStore.Admin.Controllers
 						BundleProductId = model.ProductId,
 						Quantity = 1,
 						Visible = true,
-						Published = product.Published,
+						Published = true,
 						DisplayOrder = products.IndexOf(product) + 1,
-						CreatedOnUtc = DateTime.UtcNow,
-						UpdatedOnUtc = DateTime.UtcNow
+						CreatedOnUtc = utcNow,
+						UpdatedOnUtc = utcNow
 					};
 
 					_productService.InsertBundleItem(bundleItem);

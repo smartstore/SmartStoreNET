@@ -694,6 +694,8 @@
     <Content Include="Scripts\public.product-list-scroller.js" />
     <Content Include="Scripts\jquery.scrollTo.js" />
     <Content Include="Scripts\jquery.serialScroll.js" />
+    <Content Include="Scripts\underscore.js" />
+    <Content Include="Scripts\underscore.min.js" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
     <Content Include="Content\Images\file-type-icons.png" />
@@ -1906,11 +1908,10 @@
     <Content Include="Scripts\smartstore.smartgallery.js" />
     <Content Include="Scripts\smartstore.thumbzoomer.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\underscore.js" />
-    <Content Include="Scripts\underscore.min.js" />
     <Content Include="Scripts\underscore.mixins.js" />
     <Content Include="Scripts\underscore.string.js" />
     <Content Include="Scripts\underscore.string.min.js" />
+    <Content Include="Scripts\underscore.min.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Content\bootstrap\custom\throbber.less" />
     <Content Include="Content\bootstrap\custom\images\throbber-progress-black-16.gif" />

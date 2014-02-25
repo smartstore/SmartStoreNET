@@ -45,10 +45,10 @@
     Html.AppendScriptParts(ResourceLocation.Head,
         "~/Scripts/modernizr-{version}.js",
         "~/Scripts/jquery-{version}.js",
-        "~/Scripts/jquery.globalize/globalize.js");
+        "~/Scripts/globalize/globalize.js");
         
     Html.AddScriptParts(ResourceLocation.Head, true,
-        "~/Scripts/jquery.globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
+        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
         "~/Scripts/smartstore.globalize.adapter.js");
 
     // add js assets (Foot)

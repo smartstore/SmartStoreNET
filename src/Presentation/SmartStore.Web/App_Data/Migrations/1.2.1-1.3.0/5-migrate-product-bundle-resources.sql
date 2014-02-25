@@ -110,8 +110,8 @@ SET @resources='
 		<Value lang="de">Aktiv</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.Published.Hint">
-		<Value>Whether the product is active that is part of the bundle.</Value>
-		<Value lang="de">Legt fest, ob das Produkt im Bundle aktiv, d.h. enthalten ist.</Value>
+		<Value>Determines whether the product is included in the bundle. Note: Non-published products are never part of a bundle.</Value>
+		<Value lang="de">Legt fest, ob das Produkt im Bundle enthalten ist. Hinweis: Nicht veröffentlichte Produkte sind niemals Teil eines Bundles.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.BundleItems.Fields.DisplayOrder">
 		<Value>Bundle display order</Value>

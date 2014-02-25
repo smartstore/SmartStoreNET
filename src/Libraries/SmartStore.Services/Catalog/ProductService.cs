@@ -1650,7 +1650,7 @@ namespace SmartStore.Services.Catalog
 			var query =
 				from pbi in _productBundleItemRepository.Table
 				join p in _productRepository.Table on pbi.ProductId equals p.Id
-				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || pbi.Published)
+				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || (pbi.Published && p.Published))
 				orderby pbi.DisplayOrder
 				select pbi;
 

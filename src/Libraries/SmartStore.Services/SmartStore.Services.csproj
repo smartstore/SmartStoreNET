@@ -56,8 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\ImageResizer.3.4.2\lib\ImageResizer.dll</HintPath>
     </Reference>
-    <Reference Include="ImageResizer.Plugins.PrettyGifs">
-      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.3.3.3\lib\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
+    <Reference Include="ImageResizer.Plugins.PrettyGifs, Version=3.4.2.549, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.3.4.2\lib\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp, Version=5.5.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -19,7 +19,7 @@
 		<MsBuildTasksFolder>$(RootFolder)\buildtasks</MsBuildTasksFolder>
 		<ArtifactsFolder>$(RootFolder)\artifacts</ArtifactsFolder>
 		<SqlCeFolder>$(LibFolder)\sqlce</SqlCeFolder>
-		<NoesisFolder>$(LibFolder)\Javascript</NoesisFolder>
+		<V8Folder>$(LibFolder)\ClearScript.V8</V8Folder>
 		<SourceArtifactFolder>$(ArtifactsFolder)\Source</SourceArtifactFolder>
 		<MsDeployArtifactFolder>$(ArtifactsFolder)\MsDeploy</MsDeployArtifactFolder>
 		<GalleryArtifactFolder>$(ArtifactsFolder)\Gallery</GalleryArtifactFolder>
@@ -103,9 +103,9 @@
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
-		  	<Noesis-Libs Include="$(NoesisFolder)\lib\**\*"/>
-		  	<Noesis-Native-Binaries-x86 Include="$(NoesisFolder)\Native\x86\**\*"/>
-		  	<Noesis-Native-Binaries-amd64 Include="$(NoesisFolder)\Native\amd64\**\*"/>
+		  	<V8-Libs Include="$(V8Folder)\lib\**\*"/>
+		  	<V8-Native-Binaries-x86 Include="$(V8Folder)\Native\x86\**\*"/>
+		  	<V8-Native-Binaries-amd64 Include="$(V8Folder)\Native\amd64\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -155,10 +155,10 @@
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 		
-		<!-- copy Noesis Javascript engine files (V8) -->
-		<Copy SourceFiles="@(Noesis-Libs)" DestinationFolder="$(StageFolder)\Noesis.Javascript\%(RecursiveDir)" />
-		<Copy SourceFiles="@(Noesis-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(Noesis-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		<!-- copy ClearScript.V8 Javascript engine files -->
+		<Copy SourceFiles="@(V8-Libs)" DestinationFolder="$(StageFolder)\bin\ClearScript.V8\%(RecursiveDir)" />
+		<Copy SourceFiles="@(V8-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(V8-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />

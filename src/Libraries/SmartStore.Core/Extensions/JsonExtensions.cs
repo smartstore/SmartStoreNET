@@ -19,7 +19,7 @@ namespace SmartStore
                 wc.Encoding = System.Text.Encoding.UTF8;
                 wc.Headers["User-Agent"] = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727; .NET4.0C; .NET4.0E)";
                 var response = await wc.DownloadStringTaskAsync(uri);
-                return JsonConvert.DeserializeObjectAsync(response);
+                return JsonConvert.DeserializeObject(response);
             }
         }
     }

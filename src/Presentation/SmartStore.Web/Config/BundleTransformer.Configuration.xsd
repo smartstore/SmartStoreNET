@@ -311,6 +311,16 @@
 				<xs:documentation>Flag for whether to enable JavaScript in less files</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="globalVariables" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>String representation of variable list, that can be referenced by the file (semicolon-separated list of values of the form VAR=VALUE)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="modifyVariables" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>String representation of variable list, that modifies a variables already declared in the file (semicolon-separated list of values of the form VAR=VALUE)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<!-- /LESS settings -->
 
@@ -379,11 +389,6 @@
 		<xs:attribute name="removeComments" type="Boolean_SchemaType" use="optional" default="false">
 			<xs:annotation>
 				<xs:documentation>Flag for whether to do not emit comments to output</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="allowBool" type="Boolean_SchemaType" use="optional" default="false">
-			<xs:annotation>
-				<xs:documentation>Flag for whether to allow 'bool' as a synonym for 'boolean'</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="allowAutomaticSemicolonInsertion" type="Boolean_SchemaType" use="optional" default="true">
@@ -1139,6 +1144,11 @@ to preserve references to external symbols.</xs:documentation>
 				<xs:documentation>Flag for whether to hoist function declarations</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="keepFunctionArgs" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to drop unused function arguments</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="hoistVars" type="Boolean_SchemaType" use="optional" default="false">
 			<xs:annotation>
 				<xs:documentation>Flag for whether to hoist var declarations</xs:documentation>
@@ -1162,6 +1172,26 @@ to preserve references to external symbols.</xs:documentation>
 		<xs:attribute name="globalDefinitions" type="xs:string" use="optional" default="">
 			<xs:annotation>
 				<xs:documentation>String representation of the object (comma-separated list of values of the form SYMBOL[=value]) with properties named after symbols to replace (except where symbol has properly declared by a var declaration or use as function parameter or similar) and the values representing the AST replacement value</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="pureGetters" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to UglifyJS will assume that object property access (e.g. foo.bar or foo["bar"]) doesn't have any side effects</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="pureFunctions" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>String representation of the function names list, which UglifyJS will assume that those functions do not produce side effects</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="dropConsole" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to discard calls to `console.*` functions</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="angular" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to enable support of `@ngInject` annotations</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -1264,6 +1294,11 @@ to preserve references to external symbols.</xs:documentation>
 		<xs:attribute name="preserveLine" type="Boolean_SchemaType" use="optional" default="false">
 			<xs:annotation>
 				<xs:documentation>Flag for whether to preserve line breaks</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="unescapeRegexps" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to unescape regular expressions</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -1386,10 +1421,49 @@ to preserve references to external symbols.</xs:documentation>
 				<xs:documentation>Flag for whether to keep line breaks</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="removeEmpty" type="Boolean_SchemaType" use="optional" default="false">
+		<xs:attribute name="noAdvanced" type="Boolean_SchemaType" use="optional" default="false">
 			<xs:annotation>
-				<xs:documentation>Flag for whether to remove empty elements</xs:documentation>
+				<xs:documentation>Flag for whether to disable advanced optimizations (selector and property merging, reduction, etc)</xs:documentation>
 			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="compatibility" use="optional" default="Ie7">
+			<xs:annotation>
+				<xs:documentation>Compatibility mode</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="None">
+						<xs:annotation>
+							<xs:documentation>None</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Ie7">
+						<xs:annotation>
+							<xs:documentation>IE7 compatibility mode</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Ie8">
+						<xs:annotation>
+							<xs:documentation>IE8 compatibility mode</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="severity" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+					Severity level of errors:
+					0 - only error messages;
+					1 - only error messages and warnings.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:minInclusive value="0" />
+					<xs:maxInclusive value="1" />
+				</xs:restriction>
+			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
 	<!-- /Clean-css settings -->

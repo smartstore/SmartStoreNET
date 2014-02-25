@@ -86,6 +86,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\BundleTransformer.MicrosoftAjax.1.8.23\lib\net40\BundleTransformer.MicrosoftAjax.dll</HintPath>
     </Reference>
+    <Reference Include="ClearScript">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.1.1.1\lib\net40\ClearScript.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.dll</HintPath>
@@ -112,8 +115,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.1.0\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.V8">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.0.9.2\lib\net40\JavaScriptEngineSwitcher.V8.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.V8, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.1.1.1\lib\net40\JavaScriptEngineSwitcher.V8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -2732,13 +2736,13 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
     xcopy /s /y "$(SolutionDir)..\lib\sqlce\x86\*.*" "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)..\lib\Javascript\Native\x86\*.*" "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\x86\*.*" "$(TargetDir)x86"
 if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
     xcopy /s /y "$(SolutionDir)..\lib\sqlce\amd64\*.*" "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)..\lib\Javascript\Native\amd64\*.*" "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\amd64\*.*" "$(TargetDir)amd64"
 
-if not exist "$(ProjectDir)Noesis.Javascript" md "$(ProjectDir)Noesis.Javascript"
-     xcopy /s /y "$(SolutionDir)..\lib\Javascript\lib\*.*" "$(ProjectDir)Noesis.Javascript"</PostBuildEvent>
+if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
+     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

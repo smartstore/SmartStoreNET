@@ -461,6 +461,11 @@
 .tier-prices .prices-list .header-table td{border-bottom:solid 3px #d7d7d7;padding-top:3px;padding-bottom:3px;font-weight:700;}
 .tier-prices .prices-list .prices-table .field-header{font-weight:700;text-align:center;}
 
+.product-bundle {
+	clear: both;
+	margin-right: 15px;
+	margin-left:0;
+}
 .product-bundle .bundle-title {
 	text-align: center;
 }

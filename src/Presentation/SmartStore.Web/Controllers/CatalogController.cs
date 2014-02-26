@@ -90,6 +90,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IStoreMappingService _storeMappingService;
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
+		private readonly ICustomerActivityService _customerActivityService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -140,7 +141,8 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings,
             /* codehint: sm-add */
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
-            IDeliveryTimeService deliveryTimeService, ISettingService settingService
+            IDeliveryTimeService deliveryTimeService, ISettingService settingService,
+			ICustomerActivityService customerActivityService
             )
         {
 			this._services = services;
@@ -177,6 +179,7 @@ namespace SmartStore.Web.Controllers
 			this._storeMappingService = storeMappingService;
             this._permissionService = permissionService;
             this._downloadService = downloadService;
+			this._customerActivityService = customerActivityService;
 
             //codehint: sm-edit begin
             this._measureService = measureService;
@@ -1089,6 +1092,7 @@ namespace SmartStore.Web.Controllers
 					bundledProductModel.BundleItem.Quantity = bundleItem.Quantity;
 					bundledProductModel.BundleItem.HideThumbnail = bundleItem.HideThumbnail;
 					bundledProductModel.BundleItem.Visible = bundleItem.Visible;
+					bundledProductModel.BundleItem.IsBundleItemPricing = bundleItem.BundleProduct.BundlePerItemPricing;
 
 					string bundleItemName = bundleItem.GetLocalized(x => x.Name);
 					if (bundleItemName.HasValue())
@@ -1386,10 +1390,7 @@ namespace SmartStore.Web.Controllers
 							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id);
 					}
 
-					if (!isBundlePricing)
-					{
-						model.ProductVariantAttributes.Add(pvaModel);
-					}
+					model.ProductVariantAttributes.Add(pvaModel);
 				}
 			}
 
@@ -2225,6 +2226,130 @@ namespace SmartStore.Web.Controllers
 
             return View(model.ProductTemplateViewPath, model);
         }
+
+		//add product to cart using HTTP POST
+		//currently we use this method only for mobile device version
+		//desktop version uses AJAX version of this method (see ShoppingCartController)
+		// TODO: This should be handled by ShoppingCartController
+		[HttpPost, ActionName("Product")]
+		[ValidateInput(false)]
+		public ActionResult AddProductToCart(int productId, FormCollection form)
+		{
+			var product = _productService.GetProductById(productId);
+			if (product == null || product.Deleted || !product.Published)
+				return RedirectToRoute("HomePage");
+
+			//manually process form
+			ShoppingCartType cartType = ShoppingCartType.ShoppingCart;
+
+			foreach (string formKey in form.AllKeys)
+			{
+				if (formKey.StartsWith("addtocartbutton-"))
+					cartType = ShoppingCartType.ShoppingCart;
+				else if (formKey.StartsWith("addtowishlistbutton-"))
+					cartType = ShoppingCartType.Wishlist;
+			}
+
+			decimal customerEnteredPrice = decimal.Zero;
+			decimal customerEnteredPriceConverted = decimal.Zero;
+
+			if (product.CustomerEntersPrice)
+			{
+				foreach (string formKey in form.AllKeys)
+				{
+					if (formKey.Equals(string.Format("addtocart_{0}.CustomerEnteredPrice", productId), StringComparison.InvariantCultureIgnoreCase))
+					{
+						if (decimal.TryParse(form[formKey], out customerEnteredPrice))
+							customerEnteredPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(customerEnteredPrice, _workContext.WorkingCurrency);
+						break;
+					}
+				}
+			}
+
+			int quantity = 1;
+
+			foreach (string formKey in form.AllKeys)
+			{
+				if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+				{
+					int.TryParse(form[formKey], out quantity);
+					break;
+				}
+			}
+
+			var addToCartWarnings = new List<string>();
+			var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
+
+			string attributes = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService, _downloadService,
+				_catalogSettings, this.Request, addToCartWarnings, false);
+
+			if (product.IsGiftCard)
+			{
+				attributes = form.AddGiftCardAttribute(attributes, product.Id, _productAttributeParser);
+			}
+
+			//save item
+			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+
+			if (addToCartWarnings.Count == 0)
+			{
+				switch (cartType)
+				{
+					case ShoppingCartType.Wishlist:
+						{
+							if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct)
+							{
+								//redirect to the wishlist page
+								return RedirectToRoute("Wishlist");
+							}
+							else
+							{
+								//redisplay the page with "Product has been added to the wishlist" notification message
+								var model = PrepareProductDetailsPageModel(product);
+								this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist"), false);
+
+								//activity log
+								_customerActivityService.InsertActivity("PublicStore.AddToWishlist",
+									_localizationService.GetResource("ActivityLog.PublicStore.AddToWishlist"), product.Name);
+
+								return View(model.ProductTemplateViewPath, model);
+							}
+						}
+					case ShoppingCartType.ShoppingCart:
+					default:
+						{
+							if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
+							{
+								//redirect to the shopping cart page
+								return RedirectToRoute("ShoppingCart");
+							}
+							else
+							{
+								//redisplay the page with "Product has been added to the cart" notification message
+								var model = PrepareProductDetailsPageModel(product);
+								this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"), false);
+
+								//activity log
+								_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart",
+									_localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
+
+								return View(model.ProductTemplateViewPath, model);
+							}
+						}
+				}
+			}
+			else
+			{
+				//Errors
+				foreach (string error in addToCartWarnings)
+					ModelState.AddModelError("", error);
+
+				//If we got this far, something failed, redisplay form
+				var model = PrepareProductDetailsPageModel(product);
+
+				return View(model.ProductTemplateViewPath, model);
+			}
+		}
 
         [ChildActionOnly]
         public ActionResult ProductBreadcrumb(int productId)

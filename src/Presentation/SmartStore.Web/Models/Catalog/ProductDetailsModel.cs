@@ -278,6 +278,7 @@ namespace SmartStore.Web.Models.Catalog
 			public int Quantity { get; set; }
 			public bool HideThumbnail { get; set; }
 			public bool Visible { get; set; }
+			public bool IsBundleItemPricing { get; set; }
 		}
 
 		#endregion

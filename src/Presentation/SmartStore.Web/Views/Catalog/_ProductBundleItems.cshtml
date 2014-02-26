@@ -81,7 +81,7 @@
 
 		@if (item.ProductVariantAttributes.ShouldBeRendered())
 		{
-			<div class="bundle-item-footer">
+			<div class="bundle-item-footer@(item.BundleItem.IsBundleItemPricing ? "" : " hide")">
 				@Html.Partial("_ProductAttributes", item.ProductVariantAttributes, new ViewDataDictionary())
 			</div>
 		}

@@ -162,6 +162,9 @@ namespace SmartStore.Services.Orders
             decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,
 			out int shoppingCartItemId, int? parentItemId = null, ProductBundleItem bundleItem = null);
 
+		void AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
+			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null);
+
         /// <summary>
         /// Updates the shopping cart item
         /// </summary>

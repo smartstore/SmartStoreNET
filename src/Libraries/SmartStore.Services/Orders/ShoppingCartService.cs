@@ -13,6 +13,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
@@ -43,6 +44,8 @@ namespace SmartStore.Services.Orders
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IDownloadService _downloadService;
+		private readonly CatalogSettings _catalogSettings;
 
         #endregion
 
@@ -83,7 +86,9 @@ namespace SmartStore.Services.Orders
             IPermissionService permissionService, 
             IAclService aclService,
 			IStoreMappingService storeMappingService,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService,
+			IDownloadService downloadService,
+			CatalogSettings catalogSettings)
         {
             this._sciRepository = sciRepository;
             this._workContext = workContext;
@@ -103,6 +108,8 @@ namespace SmartStore.Services.Orders
             this._aclService = aclService;
 			this._storeMappingService = storeMappingService;
 			this._genericAttributeService = genericAttributeService;
+			this._downloadService = downloadService;
+			this._catalogSettings = catalogSettings;
         }
 
         #endregion
@@ -814,7 +821,10 @@ namespace SmartStore.Services.Orders
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            foreach (var sci in shoppingCart.Where(a => a.ShoppingCartType == shoppingCartType))
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
+				return null;		// too complex
+
+            foreach (var sci in shoppingCart.Where(a => a.ShoppingCartType == shoppingCartType && a.ParentItemId == null))
             {
                 if (sci.ProductId == product.Id && sci.Product.ProductTypeId == product.ProductTypeId)
                 {
@@ -921,7 +931,12 @@ namespace SmartStore.Services.Orders
 			_customerService.ResetCheckoutData(customer, storeId);
 
 			var cart = customer.GetCartItems(shoppingCartType, storeId);
-            var shoppingCartItem = FindShoppingCartItemInTheCart(cart, shoppingCartType, product, selectedAttributes, customerEnteredPrice);
+			ShoppingCartItem shoppingCartItem = null;
+
+			if (bundleItem == null)
+			{
+				shoppingCartItem = FindShoppingCartItemInTheCart(cart, shoppingCartType, product, selectedAttributes, customerEnteredPrice);
+			}
 
             if (shoppingCartItem != null)
             {
@@ -1004,6 +1019,43 @@ namespace SmartStore.Services.Orders
 
             return warnings;
         }
+
+		public virtual void AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
+			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null)
+		{
+			int newCartItemId;
+			string selectedAttributes = "";
+
+			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
+
+			selectedAttributes = form.CreateSelectedAttributesXml(product.Id, attributes,
+				_productAttributeParser, _localizationService, _downloadService, _catalogSettings, null, warnings, true);
+
+			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
+			{
+				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
+				return;
+			}
+
+			if (product.IsGiftCard)
+				selectedAttributes = form.AddGiftCardAttribute(selectedAttributes, product.Id, _productAttributeParser);
+
+			warnings.AddRange(
+				AddToCart(_workContext.CurrentCustomer, product, cartType, _storeContext.CurrentStore.Id,
+					selectedAttributes, customerEnteredPrice, quantity, addRequiredProducts, out newCartItemId, parentCartItemId, bundleItem)
+			);
+
+			if (product.ProductType == ProductType.BundledProduct && warnings.Count <= 0 && newCartItemId != 0 && bundleItem == null)
+			{
+				foreach (var item in _productService.GetBundleItems(product.Id))
+				{
+					AddToCart(warnings, item.Product, form, cartType, decimal.Zero, item.Quantity, false, newCartItemId, item);
+				}
+
+				if (warnings.Count > 0)
+					DeleteShoppingCartItem(newCartItemId);
+			}
+		}
 
         /// <summary>
         /// Updates the shopping cart item

@@ -1054,47 +1054,6 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
 
-		private void AddProductToCart(List<string> warnings, Product product, FormCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
-			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null)
-		{
-			int newCartItemId;
-			string selectedAttributes = "";
-			bool isBundlePricing = (bundleItem != null && !bundleItem.BundleProduct.BundlePerItemPricing);
-
-			if (!isBundlePricing)	// it is safer to check that... per definition no selectable attributes here
-			{
-				var attributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
-
-				selectedAttributes = form.CreateSelectedAttributesXml(product.Id, attributes,
-					_productAttributeParser, _localizationService, _downloadService, _catalogSettings, null, warnings, true);
-			}
-
-			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
-			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
-				return;
-			}
-
-			if (product.IsGiftCard)
-				selectedAttributes = form.AddGiftCardAttribute(selectedAttributes, product.Id, _productAttributeParser);
-
-			warnings.AddRange(
-				_shoppingCartService.AddToCart(_workContext.CurrentCustomer, product, cartType, _storeContext.CurrentStore.Id,
-					selectedAttributes, customerEnteredPrice, quantity, addRequiredProducts, out newCartItemId, parentCartItemId, bundleItem)
-			);
-
-			if (product.ProductType == ProductType.BundledProduct && warnings.Count <= 0 && newCartItemId != 0 && bundleItem == null)
-			{
-				foreach (var item in _productService.GetBundleItems(product.Id))
-				{
-					AddProductToCart(warnings, item.Product, form, cartType, decimal.Zero, item.Quantity, false, newCartItemId, item);
-				}
-
-				if (warnings.Count > 0)
-					_shoppingCartService.DeleteShoppingCartItem(newCartItemId);
-			}
-		}
-
         #endregion
 
         #region Shopping cart
@@ -1173,7 +1132,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //now let's try adding product to the cart (now including product attribute validation, etc)
-			AddProductToCart(addToCartWarnings, product, null, shoppingCartType, decimal.Zero, qtyToAdd, true);
+			_shoppingCartService.AddToCart(addToCartWarnings, product, null, shoppingCartType, decimal.Zero, qtyToAdd, true);
 
             if (addToCartWarnings.Count > 0)
             {
@@ -1256,7 +1215,7 @@ namespace SmartStore.Web.Controllers
             var cartType = (ShoppingCartType)shoppingCartTypeId;
 			var addToCartWarnings = new List<string>();
 
-			AddProductToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
 
             #region Return result
 

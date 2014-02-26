@@ -216,6 +216,7 @@
     <Compile Include="Events\ISubscriptionService.cs" />
     <Compile Include="Events\SubscriptionService.cs" />
     <Compile Include="ExportImport\DataSegmenter.cs" />
+    <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Filter\FilterCriteria.cs" />
     <Compile Include="Filter\FilterExtensions.cs" />
     <Compile Include="Filter\FilterMisc.cs" />

@@ -15,8 +15,8 @@
     <div class="attributes">
         <dl>
             @foreach (var attribute in Model)
-            {
-                string controlId = string.Format("product_attribute_{0}_{1}_{2}", attribute.ProductId, attribute.ProductAttributeId, attribute.Id);
+			{
+				string controlId = string.Format("product_attribute_{0}_{1}_{2}_{3}", attribute.ProductId, attribute.BundleItemId, attribute.ProductAttributeId, attribute.Id);
                 string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
 				string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
 				

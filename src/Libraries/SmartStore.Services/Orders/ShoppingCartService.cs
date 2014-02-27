@@ -1025,11 +1025,12 @@ namespace SmartStore.Services.Orders
 		{
 			int newCartItemId;
 			string selectedAttributes = "";
+			int bundleItemId = (bundleItem == null ? 0 : bundleItem.Id);
 
 			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-			selectedAttributes = form.CreateSelectedAttributesXml(product.Id, attributes,
-				_productAttributeParser, _localizationService, _downloadService, _catalogSettings, null, warnings, true);
+			selectedAttributes = form.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _localizationService, _downloadService,
+				_catalogSettings, null, warnings, true, bundleItemId);
 
 			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
 			{
@@ -1038,7 +1039,9 @@ namespace SmartStore.Services.Orders
 			}
 
 			if (product.IsGiftCard)
-				selectedAttributes = form.AddGiftCardAttribute(selectedAttributes, product.Id, _productAttributeParser);
+			{
+				selectedAttributes = form.AddGiftCardAttribute(selectedAttributes, product.Id, _productAttributeParser, bundleItemId);
+			}
 
 			warnings.AddRange(
 				AddToCart(_workContext.CurrentCustomer, product, cartType, _storeContext.CurrentStore.Id,

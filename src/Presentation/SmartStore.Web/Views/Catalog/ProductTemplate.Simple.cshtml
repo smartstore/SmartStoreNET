@@ -228,7 +228,7 @@
                         <!-- giftcard infos -->                    
                         @{
                             var dataDictGiftCard = new ViewDataDictionary();
-                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
+                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
                             if (Model.GiftCard.IsGiftCard)
                             {
                                 <div class="giftcard-infos line">

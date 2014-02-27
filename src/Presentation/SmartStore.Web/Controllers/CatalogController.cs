@@ -1282,6 +1282,7 @@ namespace SmartStore.Web.Controllers
 			bool isBundle = (product.ProductType == ProductType.BundledProduct);
 			bool isBundleItemPricing = (productBundleItem != null && productBundleItem.BundleProduct.BundlePerItemPricing);
 			bool isBundlePricing = (productBundleItem != null && !productBundleItem.BundleProduct.BundlePerItemPricing);
+			int bundleItemId = (productBundleItem == null ? 0 : productBundleItem.Id);
 
             bool hasSelectedAttributes = (selectedAttributes.Count > 0);
             List<ProductVariantAttributeValue> selectedAttributeValues = null;
@@ -1306,6 +1307,7 @@ namespace SmartStore.Web.Controllers
 					{
 						Id = attribute.Id,
 						ProductId = attribute.ProductId,
+						BundleItemId = bundleItemId,
 						ProductAttributeId = attribute.ProductAttributeId,
 						Alias = attribute.ProductAttribute.Alias,
 						Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
@@ -1406,8 +1408,8 @@ namespace SmartStore.Web.Controllers
 				{
 					// merge with combination data if there's a match
 					var warnings = new List<string>();
-					string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser,
-						_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
+					string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService,
+						_downloadService, _catalogSettings, this.Request, warnings, true, bundleItemId);
 
 					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
 
@@ -2278,17 +2280,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var addToCartWarnings = new List<string>();
-			var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-			string attributes = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService, _downloadService,
-				_catalogSettings, this.Request, addToCartWarnings, false);
-
-			if (product.IsGiftCard)
-			{
-				attributes = form.AddGiftCardAttribute(attributes, product.Id, _productAttributeParser);
-			}
-
-			//save item
 			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
 
 			if (addToCartWarnings.Count == 0)

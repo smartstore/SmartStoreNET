@@ -13,19 +13,19 @@ namespace SmartStore
 {
 	public static class NameValueCollectionExtensions
 	{
-		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productId = 0)
+		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productId = 0, int bundleItemId = 0)
 		{
 			if (productId == 0)
 				return "product_attribute_{0}_{1}".FormatWith(productAttributeId, attributeId);
 			else
-				return "product_attribute_{0}_{1}_{2}".FormatWith(productId, productAttributeId, attributeId);
+				return "product_attribute_{0}_{1}_{2}_{3}".FormatWith(productId, bundleItemId, productAttributeId, attributeId);
 		}
 
-		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productId = 0)
+		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productId = 0, int bundleItemId = 0)
 		{
 			if (productAttributeId != 0 && attributeId != 0 && valueId != 0)
 			{
-				string name = AttributeFormatedName(productAttributeId, attributeId, productId);
+				string name = AttributeFormatedName(productAttributeId, attributeId, productId, bundleItemId);
 
 				collection.Add(name, valueId.ToString());
 			}
@@ -53,7 +53,7 @@ namespace SmartStore
 		/// <param name="formatWithProductId">how the name of the controls are formatted. frontend includes productId, backend does not.</param>
 		public static string CreateSelectedAttributesXml(this NameValueCollection collection, int productId, IList<ProductVariantAttribute> variantAttributes,
 			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings,
-			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true)
+			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true, int bundleItemId = 0)
 		{
 			if (collection == null)
 				return "";
@@ -63,7 +63,7 @@ namespace SmartStore
 
 			foreach (var attribute in variantAttributes)
 			{
-				controlId = AttributeFormatedName(attribute.ProductAttributeId, attribute.Id, formatWithProductId ? productId : 0);
+				controlId = AttributeFormatedName(attribute.ProductAttributeId, attribute.Id, formatWithProductId ? productId : 0, bundleItemId);
 
 				switch (attribute.AttributeControlType)
 				{
@@ -178,7 +178,7 @@ namespace SmartStore
 			return selectedAttributes;
 		}
 
-		public static string AddGiftCardAttribute(this NameValueCollection collection, string attributes, int productId, IProductAttributeParser productAttributeParser)
+		public static string AddGiftCardAttribute(this NameValueCollection collection, string attributes, int productId, IProductAttributeParser productAttributeParser, int bundleItemId = 0)
 		{
 			string recipientName = "";
 			string recipientEmail = "";
@@ -188,7 +188,7 @@ namespace SmartStore
 
 			string strProductId = "";
 			if (productId != 0)
-				strProductId = "_" + productId.ToString();
+				strProductId = "_{0}_{1}".FormatWith(productId, bundleItemId);
 
 			foreach (string formKey in collection.AllKeys)
 			{

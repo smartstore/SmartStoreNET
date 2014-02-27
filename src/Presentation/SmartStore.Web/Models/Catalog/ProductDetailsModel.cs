@@ -216,6 +216,7 @@ namespace SmartStore.Web.Models.Catalog
 			}
 
 			public int ProductId { get; set; }
+			public int BundleItemId { get; set; }
 
 			public int ProductAttributeId { get; set; }
 

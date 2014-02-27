@@ -121,7 +121,7 @@
                         @Html.Partial("_BackInStockSubscription", Model)
                         @{
 							var dataDictGiftCard = new ViewDataDictionary();
-							dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
+							dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
 							@Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
                         }
                         @{

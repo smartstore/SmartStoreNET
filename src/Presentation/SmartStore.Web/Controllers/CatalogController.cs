@@ -38,15 +38,10 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Filter;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Data;
-using System.Data.Entity.Infrastructure;
-using StackExchange.Profiling;
-using System.Threading.Tasks;
 using SmartStore.Services.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
-// codehint: end sm-add
 
 namespace SmartStore.Web.Controllers
 {
@@ -1389,7 +1384,7 @@ namespace SmartStore.Web.Controllers
 							defaultValue = pvaModel.Values.First();
 
 						if (defaultValue != null)
-							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id);
+							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 					}
 
 					model.ProductVariantAttributes.Add(pvaModel);

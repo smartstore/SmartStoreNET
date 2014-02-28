@@ -81,7 +81,7 @@ namespace SmartStore.Web.Framework.Localization
         /// </returns>
         public override RouteData GetRouteData(HttpContextBase httpContext)
         {
-            if (DataSettingsHelper.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
+            if (DataSettings.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(httpContext.Request);
                 if (helper.IsLocalizedUrl())
@@ -106,7 +106,7 @@ namespace SmartStore.Web.Framework.Localization
         {
             VirtualPathData data = base.GetVirtualPath(requestContext, values);
 
-            if (data != null && DataSettingsHelper.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
+            if (data != null && DataSettings.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
                 string cultureCode;

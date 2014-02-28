@@ -217,11 +217,9 @@
     <Compile Include="Events\AppRegisterGlobalFiltersEvent.cs" />
     <Compile Include="Events\AppInitScheduledTasksEvent.cs" />
     <Compile Include="Events\AppEndRequestEvent.cs" />
-    <Compile Include="Data\BaseDataProviderManager.cs" />
+    <Compile Include="Data\DataProviderFactory.cs" />
     <Compile Include="Data\IDataProvider.cs" />
     <Compile Include="Data\DataSettings.cs" />
-    <Compile Include="Data\DataSettingsHelper.cs" />
-    <Compile Include="Data\DataSettingsManager.cs" />
     <Compile Include="Domain\Blogs\BlogExtensions.cs" />
     <Compile Include="Domain\Catalog\ManufacturerTemplate.cs" />
     <Compile Include="Domain\Catalog\CategoryTemplate.cs" />

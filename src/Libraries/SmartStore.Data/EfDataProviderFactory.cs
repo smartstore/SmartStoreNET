@@ -4,18 +4,20 @@ using SmartStore.Core.Data;
 
 namespace SmartStore.Data
 {
-    public partial class EfDataProviderManager : BaseDataProviderManager
+    public partial class EfDataProviderFactory : DataProviderFactory
     {
-        public EfDataProviderManager(DataSettings settings):base(settings)
+        public EfDataProviderFactory(DataSettings settings)
+			: base(settings)
         {
         }
 
         public override IDataProvider LoadDataProvider()
         {
-
             var providerName = Settings.DataProvider;
-            if (String.IsNullOrWhiteSpace(providerName))
-                throw new SmartException("Data Settings doesn't contain a providerName");
+			if (providerName.IsEmpty())
+			{
+				throw new SmartException("Data Settings doesn't contain a providerName");
+			}
 
             switch (providerName.ToLowerInvariant())
             {
@@ -24,7 +26,7 @@ namespace SmartStore.Data
                 case "sqlce":
                     return new SqlCeDataProvider();
                 default:
-                    throw new SmartException(string.Format("Not supported dataprovider name: {0}", providerName));
+                    throw new SmartException(string.Format("Unsupported dataprovider name: {0}", providerName));
             }
         }
 

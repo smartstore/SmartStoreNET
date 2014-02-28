@@ -4,7 +4,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Data
 {
-    public static class Extensions
+    public static class BaseEntityExtensions
     {
         /// <summary>
         /// Get unproxied entity type

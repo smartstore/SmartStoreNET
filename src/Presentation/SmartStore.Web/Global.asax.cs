@@ -89,7 +89,7 @@ namespace SmartStore.Web
             // initialize engine context
             EngineContext.Initialize(false);
 
-            bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
+            bool databaseInstalled = DataSettings.DatabaseIsInstalled();
 
             // model binders
             ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
@@ -152,7 +152,7 @@ namespace SmartStore.Web
         {
             string result = string.Empty;
             
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
             {
                 custom = custom.ToLower();
                 
@@ -193,7 +193,7 @@ namespace SmartStore.Web
 			if (webHelper.IsStaticResource(this.Request))
 				return;
 
-            if (DataSettingsHelper.DatabaseIsInstalled() && 
+            if (DataSettings.DatabaseIsInstalled() && 
                 EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
                 MiniProfiler.Start();
@@ -207,7 +207,7 @@ namespace SmartStore.Web
 			if (webHelper.IsStaticResource(this.Request))
 				return;
 
-            if (DataSettingsHelper.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
+            if (DataSettings.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
                 // stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
                 MiniProfiler.Stop();
@@ -245,7 +245,7 @@ namespace SmartStore.Web
             if (exc == null)
                 return;
             
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
             
             try

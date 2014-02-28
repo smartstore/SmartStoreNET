@@ -8,15 +8,11 @@ namespace SmartStore.Core.Data
     /// </summary>
     public interface IDataProvider
     {
-        /// <summary>
-        /// Initialize database
-        /// </summary>
-        void InitDatabase();
 
         /// <summary>
         /// A value indicating whether this data provider supports stored procedures
         /// </summary>
-        bool StoredProceduredSupported { get; }
+        bool StoredProceduresSupported { get; }
 
         /// <summary>
         /// Gets a support database parameter object (used by stored procedures)

@@ -8,24 +8,25 @@ using System.IO;
 using System.Text;
 using System.Web.Hosting;
 using SmartStore.Data.Initializers;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data
 {
-    public class SqlServerDataProvider : BaseEfDataProvider
+	public class SqlServerDataProvider : IEfDataProvider
     {
         /// <summary>
         /// Get connection factory
         /// </summary>
         /// <returns>Connection factory</returns>
-        public override IDbConnectionFactory GetConnectionFactory()
+        public virtual IDbConnectionFactory GetConnectionFactory()
         {
             return new SqlConnectionFactory();
         }
 
         /// <summary>
-        /// Set database initializer
+        /// Get database initializer
         /// </summary>
-        public override void SetDatabaseInitializer()
+		public virtual IDatabaseInitializer<SmartObjectContext> GetDatabaseInitializer()
         {
             //pass some table names to ensure that we have current version installed
             var tablesToValidate = new[] {"Customer", "Discount", "Order", "Product", "ShoppingCartItem"};
@@ -33,13 +34,12 @@ namespace SmartStore.Data
             //custom commands (stored proedures, indexes)
 
             var customCommands = new List<string>();
-            //use webHelper.MapPath instead of HostingEnvironment.MapPath which is not available in unit tests
-            customCommands.AddRange(ParseCommands(HostingEnvironment.MapPath("~/App_Data/SqlServer.Indexes.sql"), false));
-            //use webHelper.MapPath instead of HostingEnvironment.MapPath which is not available in unit tests
-            customCommands.AddRange(ParseCommands(HostingEnvironment.MapPath("~/App_Data/SqlServer.StoredProcedures.sql"), false));
+            customCommands.AddRange(ParseCommands(CommonHelper.MapPath("~/App_Data/SqlServer.Indexes.sql"), false));
+			customCommands.AddRange(ParseCommands(CommonHelper.MapPath("~/App_Data/SqlServer.StoredProcedures.sql"), false));
             
             var initializer = new CreateTablesIfNotExist<SmartObjectContext>(tablesToValidate, customCommands.ToArray());
-            Database.SetInitializer(initializer);
+
+			return initializer;
         }
 
         protected virtual string[] ParseCommands(string filePath, bool throwExceptionIfNonExists)
@@ -96,7 +96,7 @@ namespace SmartStore.Data
         /// <summary>
         /// A value indicating whether this data provider supports stored procedures
         /// </summary>
-        public override bool StoredProceduredSupported
+        public bool StoredProceduresSupported
         {
             get { return true; }
         }
@@ -105,7 +105,7 @@ namespace SmartStore.Data
         /// Gets a support database parameter object (used by stored procedures)
         /// </summary>
         /// <returns>Parameter</returns>
-        public override DbParameter GetParameter()
+        public DbParameter GetParameter()
         {
             return new SqlParameter();
         }

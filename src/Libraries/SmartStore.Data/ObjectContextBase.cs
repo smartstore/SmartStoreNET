@@ -19,13 +19,12 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core.Infrastructure;
 
-// codehint: sm-add (whole file)
-
 namespace SmartStore.Data
 {
     /// <summary>
     /// Object context
     /// </summary>
+	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
         #region Fields
@@ -37,6 +36,14 @@ namespace SmartStore.Data
         #endregion
 
         #region Ctor
+
+		/// <summary>
+		/// Parameterless constructor for tooling support, e.g. EF Migrations.
+		/// </summary>
+		protected ObjectContextBase()
+			: this(GetConnectionString(), null)
+		{
+		}
 
         protected ObjectContextBase(string nameOrConnectionString, string alias = null)
             : base(nameOrConnectionString)
@@ -406,6 +413,22 @@ namespace SmartStore.Data
         #endregion
 
         #region Utils
+
+		/// <summary>
+		/// Resolves the connection string from the <c>Settings.txt</c> file
+		/// </summary>
+		/// <returns>The connection string</returns>
+		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support.</remarks>
+		protected static string GetConnectionString()
+		{
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				return DataSettings.Current.DataConnectionString;
+			}
+
+			throw Error.Application(@"A connection string could not be resolved for the parameterless constructor of the derived DbContext. 
+									  Either the database is not installed, or the file 'Settings.txt' does not exist or contains invalid content.");
+		}
 
         /// <summary>
         /// Attach an entity to the context or return an already attached entity (if it was already attached)

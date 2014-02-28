@@ -11,7 +11,7 @@ namespace SmartStore.Web.Framework.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)

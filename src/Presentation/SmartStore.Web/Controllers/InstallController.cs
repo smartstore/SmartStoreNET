@@ -23,6 +23,8 @@ using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
 using System.Configuration;
 using SmartStore.Core.Async;
+using System.Data.Entity;
+using SmartStore.Data;
 
 namespace SmartStore.Web.Controllers
 {
@@ -183,7 +185,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
             //set page timeout to 5 minutes
@@ -257,7 +259,7 @@ namespace SmartStore.Web.Controllers
 				x.Completed = false;
 			});
 
-			if (DataSettingsHelper.DatabaseIsInstalled())
+			if (DataSettings.DatabaseIsInstalled())
 			{
 				tcs.SetResult(UpdateResult(x =>
 				{
@@ -389,7 +391,6 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				var settingsManager = new DataSettingsManager();
 				try
 				{
 					string connectionString = null;
@@ -473,18 +474,20 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
-					//save settings
+					// save settings
 					var dataProvider = model.DataProvider;
-					var settings = new DataSettings()
-					{
-						DataProvider = dataProvider,
-						DataConnectionString = connectionString
-					};
-					settingsManager.SaveSettings(settings);
+					var settings = DataSettings.Current;
+					settings.DataProvider = dataProvider;
+					settings.DataConnectionString = connectionString;
+					settings.Save();
 
-					//init data provider
-					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<BaseDataProviderManager>(scope: scope).LoadDataProvider();
-					dataProviderInstance.InitDatabase();
+					// init data provider
+					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<IEfDataProvider>(scope: scope);
+					Database.SetInitializer(dataProviderInstance.GetDatabaseInitializer());
+					// Although obsolete we have no other chance than using this here.
+					// Delegating this to DbConfiguration is not possible during installation.
+#pragma warning disable 618
+					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
 
 					// now resolve installation service
 					var installationService = EngineContext.Current.ContainerManager.Resolve<IInstallationService>(scope: scope);
@@ -597,15 +600,8 @@ namespace SmartStore.Web.Controllers
 				}
 				catch (Exception exception)
 				{
-					//reset cache
-					//DataSettingsHelper.ResetCache();
-
 					//clear provider settings if something got wrong
-					settingsManager.SaveSettings(new DataSettings
-					{
-						DataProvider = null,
-						DataConnectionString = null
-					});
+					DataSettings.Delete();
 
 					var msg = exception.Message;
 					if (exception.InnerException != null)
@@ -641,7 +637,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ChangeLanguage(string language)
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
             _locService.SaveCurrentLanguage(language);
@@ -652,7 +648,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult RestartInstall()
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
             
             //restart application

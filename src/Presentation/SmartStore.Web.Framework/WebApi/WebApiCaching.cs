@@ -50,11 +50,9 @@ namespace SmartStore.Web.Framework.WebApi
 
 						if (dataToStore.Count() > 0)
 						{
-							var dataProviderSettings = (new DataSettingsManager()).LoadSettings();
-
-							if (dataProviderSettings != null && dataProviderSettings.IsValid())
+							if (DataSettings.Current.IsValid())
 							{
-								var dbContext = new SmartObjectContext(dataProviderSettings.DataConnectionString);
+								var dbContext = new SmartObjectContext(DataSettings.Current.DataConnectionString);
 
 								foreach (var user in dataToStore)
 								{

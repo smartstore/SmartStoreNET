@@ -115,7 +115,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         {
             base.InitHelpers();
 
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
             {
 				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();

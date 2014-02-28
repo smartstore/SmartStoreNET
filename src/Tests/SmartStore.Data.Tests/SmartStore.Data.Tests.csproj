@@ -87,6 +87,7 @@
     <Compile Include="Security\AclRecordPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentItemPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
+    <Compile Include="TestDbConfiguration.cs" />
     <Compile Include="Stores\StoreMappingPersistenceTests.cs" />
     <Compile Include="Stores\StorePersistenceTests.cs" />
     <Compile Include="Tasks\ScheduleTaskPersistenceTests.cs" />

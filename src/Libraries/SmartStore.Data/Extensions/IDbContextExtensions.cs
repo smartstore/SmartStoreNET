@@ -5,20 +5,26 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 
-namespace SmartStore.Data {
-    public static class DbContextExtensions {
-        /// <summary>
+namespace SmartStore.Data 
+{
+
+    public static class IDbContextExtensions 
+	{
+        
+		/// <summary>
         /// Loads the database copy.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="context">The context.</param>
         /// <param name="currentCopy">The current copy.</param>
         /// <returns></returns>
-        public static T LoadDatabaseCopy<T>(this IDbContext context, T currentCopy) where T : BaseEntity {
+        public static T LoadDatabaseCopy<T>(this IDbContext context, T currentCopy) where T : BaseEntity 
+		{
             return InnerGetCopy(context, currentCopy, e => e.GetDatabaseValues());
         }
 
-        private static T InnerGetCopy<T>(IDbContext context, T currentCopy, Func<DbEntityEntry<T>, DbPropertyValues> func) where T : BaseEntity {
+        private static T InnerGetCopy<T>(IDbContext context, T currentCopy, Func<DbEntityEntry<T>, DbPropertyValues> func) where T : BaseEntity 
+		{
             //Get the database context
             DbContext dbContext = CastOrThrow(context);
 
@@ -46,14 +52,17 @@ namespace SmartStore.Data {
         /// <param name="currentCopy">The current copy.</param>
         /// <param name="dbContext">The db context.</param>
         /// <returns></returns>
-        private static DbEntityEntry<T> GetEntityOrReturnNull<T>(T currentCopy, DbContext dbContext) where T : BaseEntity {
+        private static DbEntityEntry<T> GetEntityOrReturnNull<T>(T currentCopy, DbContext dbContext) where T : BaseEntity 
+		{
             return dbContext.ChangeTracker.Entries<T>().Where(e => e.Entity == currentCopy).FirstOrDefault();
         }
 
-        private static DbContext CastOrThrow(IDbContext context) {
+        private static DbContext CastOrThrow(IDbContext context) 
+		{
             DbContext output = (context as DbContext);
 
-            if(output == null) {
+            if(output == null) 
+			{
                 throw new InvalidOperationException("Context does not support operation.");
             }
 
@@ -67,7 +76,8 @@ namespace SmartStore.Data {
         /// <param name="context">The context.</param>
         /// <param name="currentCopy">The current copy.</param>
         /// <returns></returns>
-        public static T LoadOriginalCopy<T>(this IDbContext context, T currentCopy) where T : BaseEntity {
+        public static T LoadOriginalCopy<T>(this IDbContext context, T currentCopy) where T : BaseEntity 
+		{
             return InnerGetCopy(context, currentCopy, e => e.OriginalValues);
         }
     }

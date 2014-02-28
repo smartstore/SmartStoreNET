@@ -18,29 +18,13 @@ namespace SmartStore.Plugin.Feed.Froogle
             builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerHttpRequest();
 
             //data layer
-            var dataSettingsManager = new DataSettingsManager();
-            var dataProviderSettings = dataSettingsManager.LoadSettings();
+            //register named context
+			builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
+                .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)
+                .InstancePerHttpRequest();
 
-            if (dataProviderSettings != null && dataProviderSettings.IsValid())
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new GoogleProductObjectContext(dataProviderSettings.DataConnectionString))
-                    .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(dataProviderSettings.DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-            else
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new GoogleProductObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
+			builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
+                .InstancePerHttpRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<GoogleProductRecord>>()

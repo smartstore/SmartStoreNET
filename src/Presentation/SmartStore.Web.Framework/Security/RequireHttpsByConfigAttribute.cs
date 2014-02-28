@@ -29,7 +29,7 @@ namespace SmartStore.Web.Framework.Security
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             var currentConnectionSecured = filterContext.HttpContext.Request.IsSecureConnection();

@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework.Seo
         public override RouteData GetRouteData(HttpContextBase httpContext)
         {
             RouteData data = base.GetRouteData(httpContext);
-            if (data != null && DataSettingsHelper.DatabaseIsInstalled())
+            if (data != null && DataSettings.DatabaseIsInstalled())
             {
                 var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
                 var slug = data.Values["generic_se_name"] as string;

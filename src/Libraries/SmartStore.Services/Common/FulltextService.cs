@@ -44,7 +44,7 @@ namespace SmartStore.Services.Common
         /// <returns>Result</returns>
         public virtual bool IsFullTextSupported()
         {
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {
                 //stored procedures are enabled and supported by the database. 
                 var result = _dbContext.SqlQuery<int>("EXEC [FullText_IsSupported]");
@@ -62,7 +62,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         public virtual void EnableFullText()
         {
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {
                 //stored procedures are enabled and supported by the database.
                 _dbContext.ExecuteSqlCommand("EXEC [FullText_Enable]", true);
@@ -78,7 +78,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         public virtual void DisableFullText()
         {
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {
                 //stored procedures are enabled and supported by the database.
                 _dbContext.ExecuteSqlCommand("EXEC [FullText_Disable]", true);

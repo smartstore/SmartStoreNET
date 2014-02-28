@@ -13,8 +13,6 @@ namespace SmartStore.Data.Tests
         [SetUp]
         public void SetUp()
 		{
-#pragma warning disable 0618
-			Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
             context = new SmartObjectContext(GetTestDbName());
             context.Database.Delete();
             context.Database.Create();

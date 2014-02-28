@@ -18,17 +18,15 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
             builder.RegisterType<TaxRateService>().As<ITaxRateService>().InstancePerHttpRequest();
 
             //data layer
-            var dataSettingsManager = new DataSettingsManager();
-            var dataProviderSettings = dataSettingsManager.LoadSettings();
 
-            if (dataProviderSettings != null && dataProviderSettings.IsValid())
+			if (DataSettings.Current.IsValid())
             {
                 //register named context
-                builder.Register<IDbContext>(c => new TaxRateObjectContext(dataProviderSettings.DataConnectionString))
+                builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
                     .Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
                     .InstancePerHttpRequest();
 
-                builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(dataProviderSettings.DataConnectionString))
+				builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
                     .InstancePerHttpRequest();
             }
             else

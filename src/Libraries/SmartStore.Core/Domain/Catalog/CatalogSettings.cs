@@ -26,35 +26,35 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowGtin { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display weight of a product
         /// </summary>
         public bool ShowWeight { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display dimensions of a product
         /// </summary>
         public bool ShowDimensions { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display the delivery time of a product
         /// </summary>
         public bool ShowDeliveryTimesInProductLists { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display the delivery time of a product
         /// </summary>
         public bool ShowDeliveryTimesInProductDetail { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display the base price of a product
         /// </summary>
         public bool ShowBasePriceInProductLists { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display price adjustment of a product variant combination
+        /// </summary>
+        public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether product sorting is enabled

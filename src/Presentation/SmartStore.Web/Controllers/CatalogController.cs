@@ -1361,6 +1361,10 @@ namespace SmartStore.Web.Controllers
 
 								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 							}
+
+                            if(!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+                                pvaValueModel.PriceAdjustment = "";
+
 						}
 					}
 
@@ -1432,6 +1436,9 @@ namespace SmartStore.Web.Controllers
 						{
 							if (selectedAttributeValues.FirstOrDefault(v => v.Id == value.Id) != null)
 								value.IsPreSelected = true;
+
+                            if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+                                value.PriceAdjustment = "";
 						}
 					}
 				}

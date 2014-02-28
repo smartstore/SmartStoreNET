@@ -57,6 +57,7 @@
 * (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 * Added an option to display the short description of products within the order summary
+* Added an option to turn off the display of variant price adjustments
 
 ##SmartStore.NET 1.2.1.0#
 

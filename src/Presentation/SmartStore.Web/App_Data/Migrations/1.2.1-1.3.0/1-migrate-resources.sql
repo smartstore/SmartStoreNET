@@ -194,8 +194,8 @@ SET @resources='
 		<Value lang="de">Bestimmt ob die Kurzbeschreibungen der Produkte im Warenkorb angezeigt werden sollen</Value>
 	</LocaleResource>
 	
-	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf"><Value lang="de"></Value></LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.List.DownloadPdf">
+		<Value>Download catalog as pdf file</Value>
 		<Value lang="de">Katalog als PDF downloaden</Value>
 	</LocaleResource>
 
@@ -206,6 +206,16 @@ SET @resources='
 	<LocaleResource Name="Mobile.DetailImages.Prev">
 		<Value>Previous</Value>
 		<Value lang="de">Zurück</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment">
+		<Value>Show variant combination price adjustments</Value>
+		<Value lang="de">Mehr- und Minderpreise bei Variant-Kombinationen anzeigen</Value>
+	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment.Hint">
+		<Value>Determines whether variant combination price adjustments should be displayed.</Value>
+		<Value lang="de">Bestimmt ob Mehr- und Minderpreise bei Variant-Kombinationen angezeigt werden.</Value>
 	</LocaleResource>
 	
 </Language>

@@ -121,10 +121,10 @@
             {
                 <div class="enter-address-body">
                     @{
-                var dataDictAddress = new ViewDataDictionary();
-                //Merge ModelState (required for validation)
-                dataDictAddress.ModelState.Merge(ViewData.ModelState);
-                dataDictAddress.TemplateInfo.HtmlFieldPrefix = "NewAddress";
+                        var dataDictAddress = new ViewDataDictionary();
+                        //Merge ModelState (required for validation)
+                        dataDictAddress.ModelState.Merge(ViewData.ModelState);
+                        dataDictAddress.TemplateInfo.HtmlFieldPrefix = "NewAddress";
                         @Html.Partial("_CreateOrUpdateAddress", Model.NewAddress, dataDictAddress)              
                     }
                 </div>

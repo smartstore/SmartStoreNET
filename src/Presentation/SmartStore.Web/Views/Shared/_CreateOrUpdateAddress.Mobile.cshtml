@@ -36,58 +36,34 @@
     </script>
 }
 @Html.HiddenFor(model => model.Id)
-<div>
-    @Html.LabelFor(model => model.FirstName)
-    @Html.EditorFor(model => model.FirstName)
-    @Html.ValidationMessageFor(model => model.FirstName)
-</div>
-<div>
-    @Html.LabelFor(model => model.LastName)
-    @Html.EditorFor(model => model.LastName)
-    @Html.ValidationMessageFor(model => model.LastName)
-</div>
-<div>
-    @Html.LabelFor(model => model.Email)
-    @Html.EditorFor(model => model.Email)
-    @Html.ValidationMessageFor(model => model.Email)
-</div>
+
 @if (Model.CompanyEnabled)
 {
     <div>
-        @Html.LabelFor(model => model.Company)
+        @Html.LabelFor(model => model.Company, new { @class = "control-label" + (Model.CompanyRequired ? " required" : ""), @for = "Company" })
         @Html.EditorFor(model => model.Company)
         @Html.ValidationMessageFor(model => model.Company)
     </div>
 }
-@if (Model.CountryEnabled)
-{
-    <div>
-        @Html.LabelFor(model => model.CountryId)
-        @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries)
-        @Html.ValidationMessageFor(model => model.CountryId)
-    </div>
-}
-
-@if (Model.CountryEnabled && Model.StateProvinceEnabled)
-{
-    <div>
-        @Html.LabelFor(model => model.StateProvinceId)
-        @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
-        @Html.ValidationMessageFor(model => model.StateProvinceId)
-    </div>
-}
-@if (Model.CityEnabled)
-{
-    <div>
-        @Html.LabelFor(model => model.City)
-        @Html.EditorFor(model => model.City)
-        @Html.ValidationMessageFor(model => model.City)
-    </div>
-}
+<div>
+    @Html.LabelFor(model => model.FirstName, new { @class = "control-label required", @for = "FirstName" })
+    @Html.EditorFor(model => model.FirstName)
+    @Html.ValidationMessageFor(model => model.FirstName)
+</div>
+<div>
+    @Html.LabelFor(model => model.LastName, new { @class = "control-label required", @for = "LastName" })
+    @Html.EditorFor(model => model.LastName)
+    @Html.ValidationMessageFor(model => model.LastName)
+</div>
+<div>
+    @Html.LabelFor(model => model.Email, new { @class = "control-label required", @for = "Email" })
+    @Html.EditorFor(model => model.Email)
+    @Html.ValidationMessageFor(model => model.Email)
+</div>
 @if (Model.StreetAddressEnabled)
 {
     <div>
-        @Html.LabelFor(model => model.Address1)
+        @Html.LabelFor(model => model.Address1, new { @class = "control-label" + (Model.StreetAddressRequired ? " required" : ""), @for = "Address1" })
         @Html.EditorFor(model => model.Address1)
         @Html.ValidationMessageFor(model => model.Address1)
     </div>
@@ -95,7 +71,7 @@
 @if (Model.StreetAddress2Enabled)
 {
     <div>
-        @Html.LabelFor(model => model.Address2)
+        @Html.LabelFor(model => model.Address2, new { @class = "control-label" + (Model.StreetAddress2Required ? " required" : ""), @for = "Address2" })
         @Html.EditorFor(model => model.Address2)
         @Html.ValidationMessageFor(model => model.Address2)
     </div>
@@ -103,15 +79,39 @@
 @if (Model.ZipPostalCodeEnabled)
 {
     <div>
-        @Html.LabelFor(model => model.ZipPostalCode)
+        @Html.LabelFor(model => model.ZipPostalCode, new { @class = "control-label" + (Model.ZipPostalCodeRequired ? " required" : ""), @for = "ZipPostalCode" })
         @Html.EditorFor(model => model.ZipPostalCode)
         @Html.ValidationMessageFor(model => model.ZipPostalCode)
+    </div>
+}
+@if (Model.CityEnabled)
+{
+    <div>
+        @Html.LabelFor(model => model.City, new { @class = "control-label" + (Model.CityRequired ? " required" : ""), @for = "City" })
+        @Html.EditorFor(model => model.City)
+        @Html.ValidationMessageFor(model => model.City)
+    </div>
+}
+@if (Model.CountryEnabled)
+{
+    <div>
+        @Html.LabelFor(model => model.CountryId, new { @class = "control-label required", @for = "CountryId" })
+        @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries)
+        @Html.ValidationMessageFor(model => model.CountryId)
+    </div>
+}
+@if (Model.CountryEnabled && Model.StateProvinceEnabled)
+{
+    <div>
+        @Html.LabelFor(model => model.StateProvinceId, new { @class = "control-label", @for = "StateProvinceId" })
+        @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
+        @Html.ValidationMessageFor(model => model.StateProvinceId)
     </div>
 }
 @if (Model.PhoneEnabled)
 {
     <div>
-        @Html.LabelFor(model => model.PhoneNumber)
+        @Html.LabelFor(model => model.PhoneNumber, new { @class = "control-label" + (Model.PhoneRequired ? " required" : ""), @for = "PhoneNumber" })
         @Html.EditorFor(model => model.PhoneNumber)
         @Html.ValidationMessageFor(model => model.PhoneNumber)
     </div>
@@ -119,7 +119,7 @@
 @if (Model.FaxEnabled)
 {
     <div>
-        @Html.LabelFor(model => model.FaxNumber)
+        @Html.LabelFor(model => model.FaxNumber, new { @class = "control-label" + (Model.FaxRequired ? " required" : ""), @for = "FaxNumber" })
         @Html.EditorFor(model => model.FaxNumber)
         @Html.ValidationMessageFor(model => model.FaxNumber)
     </div>

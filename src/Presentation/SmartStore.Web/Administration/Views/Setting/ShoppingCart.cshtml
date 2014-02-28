@@ -234,5 +234,15 @@
             </td>
         </tr>
 
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowBasePrice)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowBasePrice)
+                @Html.ValidationMessageFor(model => model.ShowBasePrice)
+            </td>
+        </tr>
+
     </table>
 }

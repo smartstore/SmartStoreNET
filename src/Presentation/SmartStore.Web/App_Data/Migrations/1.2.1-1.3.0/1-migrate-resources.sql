@@ -212,11 +212,21 @@ SET @resources='
 		<Value>Show variant combination price adjustments</Value>
 		<Value lang="de">Mehr- und Minderpreise bei Variant-Kombinationen anzeigen</Value>
 	</LocaleResource>
-	
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment.Hint">
 		<Value>Determines whether variant combination price adjustments should be displayed.</Value>
 		<Value lang="de">Bestimmt ob Mehr- und Minderpreise bei Variant-Kombinationen angezeigt werden.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowBasePrice">
+		<Value>Display base price</Value>
+		<Value lang="de">Grundpreis anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowBasePrice.Hint">
+		<Value>Determines whether base price should be displayed in the shopping cart.</Value>
+		<Value lang="de">Bestimmt ob der Grundpreis im Warenkorb angezeigt werden soll.</Value>
+	</LocaleResource>
+	
+	
 	
 </Language>
 '

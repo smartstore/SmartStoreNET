@@ -228,7 +228,8 @@ namespace SmartStore.Web.Controllers
 				Quantity = sci.Quantity,
 				IsShipEnabled = sci.Product.IsShipEnabled,
 				ShortDesc = sci.Product.ShortDescription,
-				ProductType = sci.Product.ProductType
+				ProductType = sci.Product.ProductType,
+                BasePrice = sci.Product.GetBasePriceInfo(_localizationService, _priceFormatter)
 			};
 
 			if (sci.BundleItem != null)
@@ -535,16 +536,15 @@ namespace SmartStore.Web.Controllers
 
             #region Simple properties
 
-            //codehint:sm-add
             model.MediaDimensions = _mediaSettings.CartThumbPictureSize;
 			model.BundleThumbSize = _mediaSettings.CartThumbBundleItemPictureSize;
             model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
             model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
+            model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
             model.IsEditable = isEditable;
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
             model.ShowSku = _catalogSettings.ShowProductSku;
-            //codehint: sm-edit
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
             model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)

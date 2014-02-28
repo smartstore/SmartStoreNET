@@ -58,6 +58,7 @@
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 * Added an option to display the short description of products within the order summary
 * Added an option to turn off the display of variant price adjustments
+* #277 Show BasePrice (PAnGv) in cart also
 
 ##SmartStore.NET 1.2.1.0#
 

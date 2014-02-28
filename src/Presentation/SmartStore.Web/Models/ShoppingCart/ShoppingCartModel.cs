@@ -43,13 +43,12 @@ namespace SmartStore.Web.Models.ShoppingCart
         public GiftCardBoxModel GiftCardBox { get; set; }
         public OrderReviewDataModel OrderReviewData { get; set; }
 
-        //codehint: sm-add
         public int MediaDimensions { get; set; }
 		public int BundleThumbSize { get; set; }
         public bool DisplayDeliveryTime { get; set; }
         public bool DisplayShortDesc { get; set; }
+        public bool DisplayBasePrice { get; set; }
         
-
         public IList<string> ButtonPaymentMethodActionNames { get; set; }
         public IList<string> ButtonPaymentMethodControllerNames { get; set; }
         public IList<RouteValueDictionary> ButtonPaymentMethodRouteValues { get; set; }
@@ -102,6 +101,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string DeliveryTimeHexValue { get; set; }
 
             public string ShortDesc { get; set; }
+
+            public string BasePrice { get; set; }
 
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }

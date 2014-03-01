@@ -225,9 +225,12 @@ SET @resources='
 		<Value>Determines whether base price should be displayed in the shopping cart.</Value>
 		<Value lang="de">Bestimmt ob der Grundpreis im Warenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
-	
-	
-	
+
+	<LocaleResource Name="Admin.Configuration.Currencies.Fields.CurrencyCode.Hint">
+		<Value>The three letter ISO 4217 currency code.</Value>
+		<Value lang="de">Der aus drei Buchstaben bestehende ISO 4217 Währungscode.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

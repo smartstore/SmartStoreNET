@@ -18,8 +18,8 @@ namespace SmartStore.Core.Infrastructure
 			TypeDescriptor.AddAttributes(typeof(ShippingOption), new TypeConverterAttribute(typeof(ShippingOptionTypeConverter)));
 			TypeDescriptor.AddAttributes(typeof(List<ShippingOption>), new TypeConverterAttribute(typeof(ShippingOptionListTypeConverter)));
 			TypeDescriptor.AddAttributes(typeof(IList<ShippingOption>), new TypeConverterAttribute(typeof(ShippingOptionListTypeConverter)));
-			TypeDescriptor.AddAttributes(typeof(List<ProductBundleData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
-			TypeDescriptor.AddAttributes(typeof(IList<ProductBundleData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
+			TypeDescriptor.AddAttributes(typeof(List<ProductBundleItemOrderData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
+			TypeDescriptor.AddAttributes(typeof(IList<ProductBundleItemOrderData>), new TypeConverterAttribute(typeof(ProductBundleDataListTypeConverter)));
 		}
 
 		public int Order

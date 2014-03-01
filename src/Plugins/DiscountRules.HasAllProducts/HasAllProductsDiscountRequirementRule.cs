@@ -81,7 +81,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts
                                  //parsing error; exit;
                                  return false;
 
-                             if (sci.ProductId == restrictedProductId && quantityMin <= sci.Quantity && sci.Quantity <= quantityMax)
+                             if (sci.Item.ProductId == restrictedProductId && quantityMin <= sci.Item.Quantity && sci.Item.Quantity <= quantityMax)
                              {
                                  found1 = true;
                                  break;
@@ -100,7 +100,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts
                                  //parsing error; exit;
                                  return false;
 
-                             if (sci.ProductId == restrictedProductId && sci.Quantity == quantity)
+                             if (sci.Item.ProductId == restrictedProductId && sci.Item.Quantity == quantity)
                              {
                                  found1 = true;
                                  break;
@@ -111,7 +111,7 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts
                     {
                         //the first way (the quantity is not specified)
                         int restrictedProductId = int.Parse(restrictedProduct);
-                        if (sci.ProductId == restrictedProductId)
+                        if (sci.Item.ProductId == restrictedProductId)
                         {
                             found1 = true;
                             break;

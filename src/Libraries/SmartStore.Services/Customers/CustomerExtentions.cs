@@ -221,7 +221,7 @@ namespace SmartStore.Services.Customers
 
 			return count;
 		}
-		public static List<ShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null, bool orderById = false)
+		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null, bool orderById = false)
 		{
 			var rawItems = customer.ShoppingCartItems.Filter(cartType, storeId);
 
@@ -231,11 +231,6 @@ namespace SmartStore.Services.Customers
 			var organizedItems = rawItems.ToList().Organize();
 
 			return organizedItems.ToList();
-		}
-		public static ShoppingCartItem GetCartItem(this Customer customer, ShoppingCartType cartType, int cartItemId)
-		{
-			var item = customer.ShoppingCartItems.FirstOrDefault(x => x.Id == cartItemId && x.ShoppingCartType == cartType);
-			return item;
 		}
 
 		#endregion

@@ -1624,19 +1624,19 @@ namespace SmartStore.Admin.Controllers
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
-					var store = _storeService.GetStoreById(sci.StoreId); 
+					var store = _storeService.GetStoreById(sci.Item.StoreId); 
                     var sciModel = new ShoppingCartItemModel()
                     {
-                        Id = sci.Id,
+                        Id = sci.Item.Id,
 						Store = store != null ? store.Name : "Unknown",
-						ProductId = sci.ProductId,
-                        Quantity = sci.Quantity,
-						ProductName = sci.Product.Name,
-						ProductTypeName = sci.Product.GetProductTypeLabel(_localizationService),
-						ProductTypeLabelHint = sci.Product.ProductTypeLabelHint,
-                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
-                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
-                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.UpdatedOnUtc, DateTimeKind.Utc)
+						ProductId = sci.Item.ProductId,
+                        Quantity = sci.Item.Quantity,
+						ProductName = sci.Item.Product.Name,
+						ProductTypeName = sci.Item.Product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = sci.Item.Product.ProductTypeLabelHint,
+                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
+                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
+                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.Item.UpdatedOnUtc, DateTimeKind.Utc)
                     };
                     return sciModel;
                 }),

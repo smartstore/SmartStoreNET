@@ -996,24 +996,24 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Adjusts inventory
 		/// </summary>
-		/// <param name="cartItem">Shopping cart item</param>
+		/// <param name="sci">Shopping cart item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(ShoppingCartItem cartItem, bool decrease)
+		public virtual void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
 		{
-			if (cartItem == null)
+			if (sci == null)
 				throw new ArgumentNullException("cartItem");
 
-			if (cartItem.Product.ProductType == ProductType.BundledProduct && cartItem.Product.BundlePerItemShoppingCart)
+			if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShoppingCart)
 			{
-				if (cartItem.ChildItems == null)
+				if (sci.ChildItems == null)
 					return;
 
-				foreach (var item in cartItem.ChildItems.Where(x => x.Id != cartItem.Id))
-					AdjustInventory(item, decrease);
+				foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
+					AdjustInventory(child, decrease);
 			}
 			else
 			{
-				AdjustInventory(cartItem.Product, decrease, cartItem.Quantity, cartItem.AttributesXml);
+				AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
 			}
 		}
 
@@ -1346,7 +1346,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="cart">Shopping cart</param>
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
-        public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<ShoppingCartItem> cart, int numberOfProducts)
+		public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts)
         {
             var result = new List<Product>();
 
@@ -1359,14 +1359,14 @@ namespace SmartStore.Services.Catalog
             var cartProductIds = new List<int>();
             foreach (var sci in cart)
             {
-                int prodId = sci.ProductId;
+                int prodId = sci.Item.ProductId;
                 if (!cartProductIds.Contains(prodId))
                     cartProductIds.Add(prodId);
             }
 
             foreach (var sci in cart)
             {
-                var crossSells = GetCrossSellProductsByProductId1(sci.ProductId);
+                var crossSells = GetCrossSellProductsByProductId1(sci.Item.ProductId);
                 foreach (var crossSell in crossSells)
                 {
                     //validate that this product is not added to result yet
@@ -1645,7 +1645,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="bundleProductId">Product identifier</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
-		public virtual IList<ProductBundleItem> GetBundleItems(int bundleProductId, bool showHidden = false)
+		public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
 		{
 			var query =
 				from pbi in _productBundleItemRepository.Table
@@ -1654,9 +1654,11 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			var bundleItems = query.ToList();
+			var bundleItemData = new List<ProductBundleItemData>();
 
-			return bundleItems;
+			query.ToList().Each(x => bundleItemData.Add(new ProductBundleItemData(x)));
+
+			return bundleItemData;
 		}
 
 		#endregion

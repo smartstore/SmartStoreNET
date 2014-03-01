@@ -178,7 +178,7 @@ namespace SmartStore.Services.Payments
         /// <param name="cart">Shoping cart</param>
         /// <param name="paymentMethodSystemName">Payment method system name</param>
         /// <returns>Additional handling fee</returns>
-        public virtual decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart, string paymentMethodSystemName)
+		public virtual decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart, string paymentMethodSystemName)
         {
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)

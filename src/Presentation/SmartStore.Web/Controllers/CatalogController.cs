@@ -426,7 +426,7 @@ namespace SmartStore.Web.Controllers
 							{
 								#region Simple product
 
-								IList<ProductBundleItem> bundleItems = null;
+								IList<ProductBundleItemData> bundleItems = null;
 								bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
 								if (isBundlePerItemPricing)
@@ -1001,7 +1001,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
 		protected ProductDetailsModel PrepareProductDetailsPageModel(Product product, bool isAssociatedProduct = false,
-			ProductBundleItem productBundleItem = null, IList<ProductBundleItem> productBundleItems = null, FormCollection selectedAttributes = null)
+			ProductBundleItemData productBundleItem = null, IList<ProductBundleItemData> productBundleItems = null, FormCollection selectedAttributes = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1057,7 +1057,7 @@ namespace SmartStore.Web.Controllers
                 return template.ViewPath;
             });
 
-			IList<ProductBundleItem> bundleItems = null;
+			IList<ProductBundleItemData> bundleItems = null;
             ProductVariantAttributeCombination combination = null;
             var combinationImageIds = new List<int>();
 
@@ -1079,21 +1079,22 @@ namespace SmartStore.Web.Controllers
 			{
 				bundleItems = _productService.GetBundleItems(product.Id);
 
-				foreach (var bundleItem in bundleItems.Where(x => x.Product.CanBeBundleItem()))
+				foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
-					var bundledProductModel = PrepareProductDetailsPageModel(bundleItem.Product, false, bundleItem);
+					var item = itemData.Item;
+					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData);
 
-					bundledProductModel.BundleItem.Id = bundleItem.Id;
-					bundledProductModel.BundleItem.Quantity = bundleItem.Quantity;
-					bundledProductModel.BundleItem.HideThumbnail = bundleItem.HideThumbnail;
-					bundledProductModel.BundleItem.Visible = bundleItem.Visible;
-					bundledProductModel.BundleItem.IsBundleItemPricing = bundleItem.BundleProduct.BundlePerItemPricing;
+					bundledProductModel.BundleItem.Id = item.Id;
+					bundledProductModel.BundleItem.Quantity = item.Quantity;
+					bundledProductModel.BundleItem.HideThumbnail = item.HideThumbnail;
+					bundledProductModel.BundleItem.Visible = item.Visible;
+					bundledProductModel.BundleItem.IsBundleItemPricing = item.BundleProduct.BundlePerItemPricing;
 
-					string bundleItemName = bundleItem.GetLocalized(x => x.Name);
+					string bundleItemName = item.GetLocalized(x => x.Name);
 					if (bundleItemName.HasValue())
 						bundledProductModel.Name = bundleItemName;
 
-					string bundleItemShortDescription = bundleItem.GetLocalized(x => x.ShortDescription);
+					string bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
 					if (bundleItemShortDescription.HasValue())
 						bundledProductModel.ShortDescription = bundleItemShortDescription;
 
@@ -1174,7 +1175,7 @@ namespace SmartStore.Web.Controllers
 
         [NonAction]
         protected void PrepareProductDetailsPictureModel(ProductDetailsPictureModel model, IList<Picture> pictures, string name, List<int> allCombinationImageIds,
-			bool isAssociatedProduct, ProductBundleItem bundleItem = null, ProductVariantAttributeCombination combination = null)
+			bool isAssociatedProduct, ProductBundleItemData bundleItem = null, ProductVariantAttributeCombination combination = null)
         {
             model.Name = name;
             model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
@@ -1259,8 +1260,8 @@ namespace SmartStore.Web.Controllers
 
         /// <param name="selectedAttributes">Attributes explicitly selected by user or by query string.</param>
         [NonAction]
-		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, bool isAssociatedProduct = false, ProductBundleItem productBundleItem = null,
-			IList<ProductBundleItem> productBundleItems = null, FormCollection selectedAttributes = null, int selectedQuantity = 1)
+		protected ProductDetailsModel PrepareProductDetailModel(ProductDetailsModel model, Product product, bool isAssociatedProduct = false, ProductBundleItemData productBundleItem = null,
+			IList<ProductBundleItemData> productBundleItems = null, FormCollection selectedAttributes = null, int selectedQuantity = 1)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -1275,9 +1276,9 @@ namespace SmartStore.Web.Controllers
             decimal preSelectedWeightAdjustment = decimal.Zero;
             bool displayPrices = _permissionService.Authorize(StandardPermissionProvider.DisplayPrices);
 			bool isBundle = (product.ProductType == ProductType.BundledProduct);
-			bool isBundleItemPricing = (productBundleItem != null && productBundleItem.BundleProduct.BundlePerItemPricing);
-			bool isBundlePricing = (productBundleItem != null && !productBundleItem.BundleProduct.BundlePerItemPricing);
-			int bundleItemId = (productBundleItem == null ? 0 : productBundleItem.Id);
+			bool isBundleItemPricing = (productBundleItem != null && productBundleItem.Item.BundleProduct.BundlePerItemPricing);
+			bool isBundlePricing = (productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemPricing);
+			int bundleItemId = (productBundleItem == null ? 0 : productBundleItem.Item.Id);
 
             bool hasSelectedAttributes = (selectedAttributes.Count > 0);
             List<ProductVariantAttributeValue> selectedAttributeValues = null;
@@ -1448,7 +1449,7 @@ namespace SmartStore.Web.Controllers
 
             #region Properties
 
-			if (productBundleItem != null && !productBundleItem.BundleProduct.BundlePerItemShoppingCart)
+			if (productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemShoppingCart)
 			{
 				model.IsAvailable = true;
 				model.StockAvailability = "";
@@ -2807,8 +2808,9 @@ namespace SmartStore.Web.Controllers
             var pictureModel = new ProductDetailsPictureModel();
             var m = new ProductDetailsModel();
             var product = _productService.GetProductById(productId);
-			var bundleItem = _productService.GetBundleItemById(bundleItemId);
-			IList<ProductBundleItem> bundleItems = null;
+			var bItem = _productService.GetBundleItemById(bundleItemId);
+			IList<ProductBundleItemData> bundleItems = null;
+			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
 
             // quantity required for tier prices
             string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
@@ -2820,9 +2822,9 @@ namespace SmartStore.Web.Controllers
 				bundleItems = _productService.GetBundleItems(product.Id);
 				if (form.Count > 0)
 				{
-					foreach (var item in bundleItems)
+					foreach (var itemData in bundleItems)
 					{
-						var tempModel = PrepareProductDetailsPageModel(item.Product, false, item, null, form);
+						var tempModel = PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
 					}
 				}
 			}
@@ -2832,9 +2834,9 @@ namespace SmartStore.Web.Controllers
 
 			if (bundleItem != null)		// update bundle item thumbnail
 			{
-				if (!bundleItem.HideThumbnail)
+				if (!bundleItem.Item.HideThumbnail)
 				{
-					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.ProductId);
+					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
 					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}

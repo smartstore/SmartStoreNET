@@ -73,7 +73,7 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        decimal GetShoppingCartItemWeight(ShoppingCartItem shoppingCartItem);
+		decimal GetShoppingCartItemWeight(OrganizedShoppingCartItem shoppingCartItem);
 
 
         /// <summary>
@@ -81,14 +81,14 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        decimal GetShoppingCartItemTotalWeight(ShoppingCartItem shoppingCartItem);
+		decimal GetShoppingCartItemTotalWeight(OrganizedShoppingCartItem shoppingCartItem);
 
         /// <summary>
         /// Gets shopping cart weight
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Shopping cart weight</returns>
-        decimal GetShoppingCartTotalWeight(IList<ShoppingCartItem> cart);
+		decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart);
         
         /// <summary>
         /// Create shipment package from shopping cart
@@ -96,7 +96,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
         /// <returns>Shipment package</returns>
-        GetShippingOptionRequest CreateShippingOptionRequest(IList<ShoppingCartItem> cart, Address shippingAddress);
+		GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart, Address shippingAddress);
 
         /// <summary>
         ///  Gets available shipping options
@@ -106,7 +106,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
-        GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart, Address shippingAddress,
+		GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress,
 			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0);
     }
 }

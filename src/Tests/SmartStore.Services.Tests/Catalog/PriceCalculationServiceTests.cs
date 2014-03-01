@@ -381,7 +381,9 @@ namespace SmartStore.Services.Tests.Catalog
 				Quantity = 2,
 			};
 
-			_priceCalcService.GetUnitPrice(sci1, false).ShouldEqual(12.34);
+			var item = new OrganizedShoppingCartItem(sci1);
+
+			_priceCalcService.GetUnitPrice(item, false).ShouldEqual(12.34);
 		}
 
         [Test]
@@ -408,7 +410,9 @@ namespace SmartStore.Services.Tests.Catalog
 				Quantity = 2,
 			};
 
-			_priceCalcService.GetSubTotal(sci1, false).ShouldEqual(24.68);
+			var item = new OrganizedShoppingCartItem(sci1);
+
+			_priceCalcService.GetSubTotal(item, false).ShouldEqual(24.68);
 		}
     }
 }

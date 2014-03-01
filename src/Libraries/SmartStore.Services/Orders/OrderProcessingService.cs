@@ -554,7 +554,7 @@ namespace SmartStore.Services.Orders
 				var storeId = _storeContext.CurrentStore.Id;
                 
                 //load and validate customer shopping cart
-                IList<ShoppingCartItem> cart = null;
+                IList<OrganizedShoppingCartItem> cart = null;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     //load shopping cart
@@ -581,9 +581,9 @@ namespace SmartStore.Services.Orders
                     //validate individual cart items
                     foreach (var sci in cart)
                     {
-                        var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.ShoppingCartType,
-							sci.Product, processPaymentRequest.StoreId, sci.AttributesXml,
-                            sci.CustomerEnteredPrice, sci.Quantity, false, childItems: sci.ChildItems);
+                        var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.Item.ShoppingCartType,
+							sci.Item.Product, processPaymentRequest.StoreId, sci.Item.AttributesXml,
+                            sci.Item.CustomerEnteredPrice, sci.Item.Quantity, false, childItems: sci.ChildItems);
                         if (sciWarnings.Count > 0)
                         {
                             var warningsSb = new StringBuilder();
@@ -1045,21 +1045,21 @@ namespace SmartStore.Services.Orders
                                 decimal taxRate = decimal.Zero;
                                 decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
                                 decimal scSubTotal = _priceCalculationService.GetSubTotal(sc, true);
-                                decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.Product, scUnitPrice, true, customer, out taxRate);
-                                decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.Product, scUnitPrice, false, customer, out taxRate);
-                                decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Product, scSubTotal, true, customer, out taxRate);
-                                decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Product, scSubTotal, false, customer, out taxRate);
+                                decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, true, customer, out taxRate);
+                                decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, false, customer, out taxRate);
+                                decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, true, customer, out taxRate);
+                                decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, false, customer, out taxRate);
 
                                 //discounts
                                 Discount scDiscount = null;
                                 decimal discountAmount = _priceCalculationService.GetDiscountAmount(sc, out scDiscount);
-                                decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Product, discountAmount, true, customer, out taxRate);
-                                decimal discountAmountExclTax = _taxService.GetProductPrice(sc.Product, discountAmount, false, customer, out taxRate);
+                                decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, true, customer, out taxRate);
+                                decimal discountAmountExclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, false, customer, out taxRate);
                                 if (scDiscount != null && !appliedDiscounts.ContainsDiscount(scDiscount))
                                     appliedDiscounts.Add(scDiscount);
 
                                 //attributes
-                                string attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Product, sc.AttributesXml, customer);
+                                string attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Item.Product, sc.Item.AttributesXml, customer);
 
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
 
@@ -1068,14 +1068,14 @@ namespace SmartStore.Services.Orders
                                 {
                                     OrderItemGuid = Guid.NewGuid(),
                                     Order = order,
-                                    ProductId = sc.ProductId,
+                                    ProductId = sc.Item.ProductId,
                                     UnitPriceInclTax = scUnitPriceInclTax,
                                     UnitPriceExclTax = scUnitPriceExclTax,
                                     PriceInclTax = scSubTotalInclTax,
                                     PriceExclTax = scSubTotalExclTax,
                                     AttributeDescription = attributeDescription,
-                                    AttributesXml = sc.AttributesXml,
-                                    Quantity = sc.Quantity,
+                                    AttributesXml = sc.Item.AttributesXml,
+                                    Quantity = sc.Item.Quantity,
                                     DiscountAmountInclTax = discountAmountInclTax,
                                     DiscountAmountExclTax = discountAmountExclTax,
                                     DownloadCount = 0,
@@ -1084,18 +1084,18 @@ namespace SmartStore.Services.Orders
                                     ItemWeight = itemWeight,
                                 };
 
-								if (sc.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
+								if (sc.Item.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
 								{
-									var listBundleData = new List<ProductBundleData>();
+									var listBundleData = new List<ProductBundleItemOrderData>();
 
 									foreach (var childItem in sc.ChildItems)
 									{
-										decimal bundleItemSubTotal = _taxService.GetProductPrice(childItem.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
+										decimal bundleItemSubTotal = _taxService.GetProductPrice(childItem.Item.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
 
-										string attributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Product, childItem.AttributesXml, order.Customer,
+										string attributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Item.Product, childItem.Item.AttributesXml, order.Customer,
 											renderPrices: false, allowHyperlinks: false);
 
-										childItem.BundleItem.ToBundleData(listBundleData, bundleItemSubTotal, childItem.AttributesXml, attributesInfo);
+										childItem.BundleItemData.ToOrderData(listBundleData, bundleItemSubTotal, childItem.Item.AttributesXml, attributesInfo);
 									}
 
 									orderItem.SetBundleData(listBundleData);
@@ -1105,19 +1105,19 @@ namespace SmartStore.Services.Orders
                                 _orderService.UpdateOrder(order);
 
                                 //gift cards
-                                if (sc.Product.IsGiftCard)
+                                if (sc.Item.Product.IsGiftCard)
                                 {
                                     string giftCardRecipientName, giftCardRecipientEmail,
                                         giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-                                    _productAttributeParser.GetGiftCardAttribute(sc.AttributesXml,
+                                    _productAttributeParser.GetGiftCardAttribute(sc.Item.AttributesXml,
                                         out giftCardRecipientName, out giftCardRecipientEmail,
                                         out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
 
-                                    for (int i = 0; i < sc.Quantity; i++)
+                                    for (int i = 0; i < sc.Item.Quantity; i++)
                                     {
                                         var gc = new GiftCard()
                                         {
-                                            GiftCardType = sc.Product.GiftCardType,
+                                            GiftCardType = sc.Item.Product.GiftCardType,
                                             PurchasedWithOrderItem = orderItem,
                                             Amount = scUnitPriceExclTax,
                                             IsGiftCardActivated = false,
@@ -1139,7 +1139,7 @@ namespace SmartStore.Services.Orders
                             }
 
                             //clear shopping cart
-                            cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci, false));
+                            cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
                         }
                         else
                         {
@@ -2563,7 +2563,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order sub-total amount is not reached</returns>
-        public virtual bool ValidateMinOrderSubtotalAmount(IList<ShoppingCartItem> cart)
+        public virtual bool ValidateMinOrderSubtotalAmount(IList<OrganizedShoppingCartItem> cart)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -2592,7 +2592,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order total amount is not reached</returns>
-        public virtual bool ValidateMinOrderTotalAmount(IList<ShoppingCartItem> cart)
+		public virtual bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");

@@ -1829,7 +1829,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var bundleItems = _productService.GetBundleItems(productId, true);
+			var bundleItems = _productService.GetBundleItems(productId, true).Select(x => x.Item);
 
 			var bundleItemsModel = bundleItems.Select(x =>
 				{

@@ -29,7 +29,7 @@ namespace SmartStore.Services.Tests.Payments
         /// </summary>
         /// <param name="cart">Shoping cart</param>
         /// <returns>Additional handling fee</returns>
-        public override decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
         {
             return decimal.Zero;
         }

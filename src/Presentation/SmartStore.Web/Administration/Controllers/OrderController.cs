@@ -1709,16 +1709,16 @@ namespace SmartStore.Admin.Controllers
 
 				if (product.ProductType == ProductType.BundledProduct)
 				{
-					var listBundleData = new List<ProductBundleData>();
+					var listBundleData = new List<ProductBundleItemOrderData>();
 					var bundleItems = _productService.GetBundleItems(product.Id);
 
 					foreach (var bundleItem in bundleItems)
 					{
 						decimal taxRate;
-						decimal finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Quantity);
-						decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Product, finalPrice, out taxRate);
+						decimal finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
+						decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, finalPrice, out taxRate);
 
-						bundleItem.ToBundleData(listBundleData, bundleItemSubTotalWithDiscountBase);
+						bundleItem.ToOrderData(listBundleData, bundleItemSubTotalWithDiscountBase);
 					}
 
 					orderItem.SetBundleData(listBundleData);

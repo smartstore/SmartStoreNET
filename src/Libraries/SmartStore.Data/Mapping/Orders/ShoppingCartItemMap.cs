@@ -15,9 +15,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.Ignore(sci => sci.ShoppingCartType);
             this.Ignore(sci => sci.IsFreeShipping);
             this.Ignore(sci => sci.IsShipEnabled);
-            this.Ignore(sci => sci.AdditionalShippingCharge);
             this.Ignore(sci => sci.IsTaxExempt);
-			this.Ignore(sci => sci.ChildItems);
 
             this.HasRequired(sci => sci.Customer)
                 .WithMany(c => c.ShoppingCartItems)

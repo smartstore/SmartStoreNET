@@ -360,11 +360,15 @@ namespace SmartStore.Services.Catalog
 			return (product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload);
 		}
 
-		public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
+		public static bool IsValid(this ProductBundleItemData bundleItemData)
 		{
-			if (bundleItem != null && value != null && bundleItem.FilterAttributes)
+			return (bundleItemData != null && bundleItemData.Item != null);
+		}
+		public static bool FilterOut(this ProductBundleItemData bundleItemData, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
+		{
+			if (bundleItemData.IsValid() && value != null && bundleItemData.Item.FilterAttributes)
 			{
-				filter = bundleItem.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+				filter = bundleItemData.Item.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
 
 				return (filter == null);
 			}
@@ -390,34 +394,39 @@ namespace SmartStore.Services.Catalog
 			return null;
 		}
 		
-		public static ProductBundleData ToBundleData(this ProductBundleItem bundleItem, decimal priceWithDiscount = decimal.Zero, string attributesXml = null, string attributesInfo = null)
+		public static ProductBundleItemOrderData ToOrderData(this ProductBundleItemData bundleItemData, decimal priceWithDiscount = decimal.Zero, 
+			string attributesXml = null, string attributesInfo = null)
 		{
-			string bundleItemName = bundleItem.GetLocalized(x => x.Name);
+			if (!bundleItemData.IsValid())
+				return null;
 
-			var bundleData = new ProductBundleData()
+			var item = bundleItemData.Item;
+			string bundleItemName = item.GetLocalized(x => x.Name);
+
+			var bundleData = new ProductBundleItemOrderData()
 			{
-				BundleItemId = bundleItem.Id,
-				ProductId = bundleItem.ProductId,
-				Sku = bundleItem.Product.Sku,
-				ProductName = (bundleItemName ?? bundleItem.Product.GetLocalized(x => x.Name)),
-				ProductSeName = bundleItem.Product.GetSeName(),
-				VisibleIndividually = bundleItem.Product.VisibleIndividually,
-				Quantity = bundleItem.Quantity,
-				DisplayOrder = bundleItem.DisplayOrder,
+				BundleItemId = item.Id,
+				ProductId = item.ProductId,
+				Sku = item.Product.Sku,
+				ProductName = (bundleItemName ?? item.Product.GetLocalized(x => x.Name)),
+				ProductSeName = item.Product.GetSeName(),
+				VisibleIndividually = item.Product.VisibleIndividually,
+				Quantity = item.Quantity,
+				DisplayOrder = item.DisplayOrder,
 				PriceWithDiscount = priceWithDiscount,
 				AttributesXml = attributesXml,
 				AttributesInfo = attributesInfo,
-				PerItemShoppingCart = bundleItem.BundleProduct.BundlePerItemShoppingCart
+				PerItemShoppingCart = item.BundleProduct.BundlePerItemShoppingCart
 			};
 
 			return bundleData;
 		}
-		public static void ToBundleData(this ProductBundleItem bundleItem, IList<ProductBundleData> bundleData, decimal priceWithDiscount = decimal.Zero,
+		public static void ToOrderData(this ProductBundleItemData bundleItemData, IList<ProductBundleItemOrderData> bundleData, decimal priceWithDiscount = decimal.Zero,
 			string attributesXml = null, string attributesInfo = null)
 		{
-			var item = bundleItem.ToBundleData(priceWithDiscount, attributesXml, attributesInfo);
+			var item = bundleItemData.ToOrderData(priceWithDiscount, attributesXml, attributesInfo);
 
-			if (item.ProductId != 0 && item.BundleItemId != 0)
+			if (item != null && item.ProductId != 0 && item.BundleItemId != 0)
 				bundleData.Add(item);
 		}
     }

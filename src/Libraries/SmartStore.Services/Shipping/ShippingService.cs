@@ -233,22 +233,22 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        public virtual decimal GetShoppingCartItemWeight(ShoppingCartItem shoppingCartItem)
+		public virtual decimal GetShoppingCartItemWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
             decimal weight = decimal.Zero;
-            if (shoppingCartItem.Product != null)
+            if (shoppingCartItem.Item.Product != null)
             {
                 decimal attributesTotalWeight = decimal.Zero;
 
-                if (!String.IsNullOrEmpty(shoppingCartItem.AttributesXml))
+                if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
-                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
+                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
                     foreach (var pvaValue in pvaValues)
                         attributesTotalWeight += pvaValue.WeightAdjustment;
                 }
-                weight = shoppingCartItem.Product.Weight + attributesTotalWeight;
+                weight = shoppingCartItem.Item.Product.Weight + attributesTotalWeight;
             }
             return weight;
         }
@@ -258,12 +258,12 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        public virtual decimal GetShoppingCartItemTotalWeight(ShoppingCartItem shoppingCartItem)
+		public virtual decimal GetShoppingCartItemTotalWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Quantity;
+            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
             return totalWeight;
         }
 
@@ -272,7 +272,7 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Shopping cart weight</returns>
-        public virtual decimal GetShoppingCartTotalWeight(IList<ShoppingCartItem> cart)
+		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart)
         {
             Customer customer = cart.GetCustomer();
 
@@ -301,14 +301,14 @@ namespace SmartStore.Services.Shipping
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
         /// <returns>Shipment package</returns>
-        public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<ShoppingCartItem> cart,
+		public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart,
             Address shippingAddress)
         {
             var request = new GetShippingOptionRequest();
             request.Customer = cart.GetCustomer();
-            request.Items = new List<ShoppingCartItem>();
+            request.Items = new List<OrganizedShoppingCartItem>();
             foreach (var sc in cart)
-                if (sc.IsShipEnabled)
+                if (sc.Item.IsShipEnabled)
                     request.Items.Add(sc);
             request.ShippingAddress = shippingAddress;
             request.CountryFrom = null;
@@ -326,7 +326,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
-        public virtual GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart,
+		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart,
 			Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)

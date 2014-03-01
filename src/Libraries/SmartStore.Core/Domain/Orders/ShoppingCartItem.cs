@@ -95,8 +95,6 @@ namespace SmartStore.Core.Domain.Orders
 		/// </summary>
 		public virtual ProductBundleItem BundleItem { get; set; }
 
-		public IList<ShoppingCartItem> ChildItems { get; set; }
-
         /// <summary>
         /// Gets a value indicating whether the shopping cart item is free shipping
         /// </summary>
@@ -122,32 +120,6 @@ namespace SmartStore.Core.Domain.Orders
 				if (product != null)
 					return product.IsShipEnabled;
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets the additional shipping charge
-        /// </summary> 
-        public decimal AdditionalShippingCharge
-        {
-            get
-            {
-                decimal additionalShippingCharge = decimal.Zero;
-				var product = this.Product;
-
-				if (product != null)
-				{
-					if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemShipping)
-					{
-						if (ChildItems != null)
-							ChildItems.Each(x => additionalShippingCharge += (x.AdditionalShippingCharge * x.Quantity));
-					}
-					else
-					{
-						additionalShippingCharge = product.AdditionalShippingCharge * Quantity;
-					}
-				}
-                return additionalShippingCharge;
             }
         }
 

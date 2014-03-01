@@ -107,7 +107,7 @@ namespace SmartStore.Services.Orders
         /// <param name="appliedDiscount">Applied discount</param>
         /// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
         /// <param name="subTotalWithDiscount">Sub total (with discount)</param>
-        public virtual void GetShoppingCartSubTotal(IList<ShoppingCartItem> cart,
+		public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             out decimal discountAmount, out Discount appliedDiscount,
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
         {
@@ -135,7 +135,7 @@ namespace SmartStore.Services.Orders
         /// <param name="appliedDiscount">Applied discount</param>
         /// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
         /// <param name="subTotalWithDiscount">Sub total (with discount)</param>
-        public virtual void GetShoppingCartSubTotal(IList<ShoppingCartItem> cart,
+		public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             bool includingTax,
             out decimal discountAmount, out Discount appliedDiscount,
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
@@ -156,7 +156,7 @@ namespace SmartStore.Services.Orders
         /// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
         /// <param name="subTotalWithDiscount">Sub total (with discount)</param>
         /// <param name="taxRates">Tax rates (of order sub total)</param>
-        public virtual void GetShoppingCartSubTotal(IList<ShoppingCartItem> cart,
+        public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             bool includingTax,
             out decimal discountAmount, out Discount appliedDiscount,
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount,
@@ -183,8 +183,8 @@ namespace SmartStore.Services.Orders
                 decimal taxRate = decimal.Zero;
                 decimal sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
 
-                decimal sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Product, sciSubTotal, false, customer, out taxRate);
-                decimal sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Product, sciSubTotal, true, customer, out taxRate);
+                decimal sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
+                decimal sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
                 subTotalExclTaxWithoutDiscount += sciExclTax;
                 subTotalInclTaxWithoutDiscount += sciInclTax;
 
@@ -350,18 +350,27 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Additional shipping charge</returns>
-        public virtual decimal GetShoppingCartAdditionalShippingCharge(IList<ShoppingCartItem> cart)
+		public virtual decimal GetShoppingCartAdditionalShippingCharge(IList<OrganizedShoppingCartItem> cart)
         {
-            decimal additionalShippingCharge = decimal.Zero;
-
-            bool isFreeShipping = IsFreeShipping(cart);
-            if (isFreeShipping)
+            if (IsFreeShipping(cart))
                 return decimal.Zero;
 
-            foreach (var sci in cart)
-                if (sci.IsShipEnabled && !sci.IsFreeShipping)
-                    additionalShippingCharge += sci.AdditionalShippingCharge;
+			decimal additionalShippingCharge = decimal.Zero;
 
+			foreach (var sci in cart)
+			{
+				if (sci.Item.IsShipEnabled && !sci.Item.IsFreeShipping && sci.Item.Product != null)
+				{
+					if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
+					{
+						sci.ChildItems.Each(x => additionalShippingCharge += (x.Item.Product.AdditionalShippingCharge * x.Item.Quantity));
+					}
+					else
+					{
+						additionalShippingCharge += sci.Item.Product.AdditionalShippingCharge * sci.Item.Quantity;
+					}
+				}
+			}
             return additionalShippingCharge;
         }
 
@@ -370,7 +379,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>A value indicating whether shipping is free</returns>
-        public virtual bool IsFreeShipping(IList<ShoppingCartItem> cart)
+		public virtual bool IsFreeShipping(IList<OrganizedShoppingCartItem> cart)
         {
             Customer customer = cart.GetCustomer();
             if (customer != null)
@@ -390,7 +399,7 @@ namespace SmartStore.Services.Orders
             bool allItemsAreFreeShipping = true;
             foreach (var sc in cart)
             {
-                if (sc.IsShipEnabled && !sc.IsFreeShipping)
+                if (sc.Item.IsShipEnabled && !sc.Item.IsFreeShipping)
                 {
                     allItemsAreFreeShipping = false;
                     break;
@@ -425,7 +434,7 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-        public virtual decimal AdjustShippingRate(decimal shippingRate,	IList<ShoppingCartItem> cart, 
+		public virtual decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart, 
 			string shippingMethodName, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount)
         {
             appliedDiscount = null;
@@ -439,13 +448,13 @@ namespace SmartStore.Services.Orders
 			bool ignoreAdditionalShippingCharge = false;
 			ShippingMethod shippingMethod;
 
-			foreach (var item in cart)
+			foreach (var sci in cart)
 			{
-				if (item.Product != null && item.Product.ProductType == ProductType.BundledProduct && item.Product.BundlePerItemShipping)
+				if (sci.Item.Product != null && sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
 				{
-					if (item.ChildItems != null)
+					if (sci.ChildItems != null)
 					{
-						foreach (var childItem in item.ChildItems.Where(x => x.IsShipEnabled && !x.IsFreeShipping))
+						foreach (var childItem in sci.ChildItems.Where(x => x.Item.IsShipEnabled && !x.Item.IsFreeShipping))
 							bundlePerItemShipping += shippingRate;
 					}
 				}
@@ -489,7 +498,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Shipping total</returns>
-        public virtual decimal? GetShoppingCartShippingTotal(IList<ShoppingCartItem> cart)
+		public virtual decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart)
         {
             bool includingTax = false;
             switch (_workContext.TaxDisplayType)
@@ -510,7 +519,7 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
         /// <returns>Shipping total</returns>
-        public virtual decimal? GetShoppingCartShippingTotal(IList<ShoppingCartItem> cart, bool includingTax)
+		public virtual decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax)
         {
             decimal taxRate = decimal.Zero;
             return GetShoppingCartShippingTotal(cart, includingTax, out taxRate);
@@ -523,7 +532,7 @@ namespace SmartStore.Services.Orders
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
         /// <param name="taxRate">Applied tax rate</param>
         /// <returns>Shipping total</returns>
-        public virtual decimal? GetShoppingCartShippingTotal(IList<ShoppingCartItem> cart, bool includingTax,
+		public virtual decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax,
             out decimal taxRate)
         {
             Discount appliedDiscount = null;
@@ -538,7 +547,7 @@ namespace SmartStore.Services.Orders
         /// <param name="taxRate">Applied tax rate</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Shipping total</returns>
-        public virtual decimal? GetShoppingCartShippingTotal(IList<ShoppingCartItem> cart, bool includingTax,
+		public virtual decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax,
             out decimal taxRate, out Discount appliedDiscount)
         {
             decimal? shippingTotal = null;
@@ -660,7 +669,7 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Shopping cart</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating tax</param>
         /// <returns>Tax total</returns>
-        public virtual decimal GetTaxTotal(IList<ShoppingCartItem> cart, bool usePaymentMethodAdditionalFee = true)
+		public virtual decimal GetTaxTotal(IList<OrganizedShoppingCartItem> cart, bool usePaymentMethodAdditionalFee = true)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -676,7 +685,7 @@ namespace SmartStore.Services.Orders
         /// <param name="taxRates">Tax rates</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating tax</param>
         /// <returns>Tax total</returns>
-        public virtual decimal GetTaxTotal(IList<ShoppingCartItem> cart,
+		public virtual decimal GetTaxTotal(IList<OrganizedShoppingCartItem> cart,
             out SortedDictionary<decimal, decimal> taxRates, bool usePaymentMethodAdditionalFee = true)
         {
             if (cart == null)
@@ -805,7 +814,7 @@ namespace SmartStore.Services.Orders
         /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
         /// <returns>Shopping cart total;Null if shopping cart total couldn't be calculated now</returns>
-        public virtual decimal? GetShoppingCartTotal(IList<ShoppingCartItem> cart,
+		public virtual decimal? GetShoppingCartTotal(IList<OrganizedShoppingCartItem> cart,
             bool ignoreRewardPonts = false, bool usePaymentMethodAdditionalFee = true)
         {
             decimal discountAmount = decimal.Zero;
@@ -831,7 +840,7 @@ namespace SmartStore.Services.Orders
         /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
         /// <returns>Shopping cart total;Null if shopping cart total couldn't be calculated now</returns>
-        public virtual decimal? GetShoppingCartTotal(IList<ShoppingCartItem> cart,
+		public virtual decimal? GetShoppingCartTotal(IList<OrganizedShoppingCartItem> cart,
             out decimal discountAmount, out Discount appliedDiscount,
             out List<AppliedGiftCard> appliedGiftCards,
             out int redeemedRewardPoints, out decimal redeemedRewardPointsAmount,

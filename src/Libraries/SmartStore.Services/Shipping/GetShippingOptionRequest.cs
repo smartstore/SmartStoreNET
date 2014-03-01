@@ -13,7 +13,7 @@ namespace SmartStore.Services.Shipping
     {
         public GetShippingOptionRequest()
         {
-            this.Items = new List<ShoppingCartItem>();
+            this.Items = new List<OrganizedShoppingCartItem>();
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Gets or sets a shopping cart items
         /// </summary>
-        public IList<ShoppingCartItem> Items { get; set; }
+        public IList<OrganizedShoppingCartItem> Items { get; set; }
 
         /// <summary>
         /// Gets or sets a shipping address
@@ -57,9 +57,9 @@ namespace SmartStore.Services.Shipping
             decimal totalWidth = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var product = shoppingCartItem.Product;
+                var product = shoppingCartItem.Item.Product;
                 if (product != null)
-                    totalWidth += product.Width * shoppingCartItem.Quantity;
+                    totalWidth += product.Width * shoppingCartItem.Item.Quantity;
             }
             return totalWidth;
         }
@@ -73,9 +73,9 @@ namespace SmartStore.Services.Shipping
             decimal totalLength = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var product = shoppingCartItem.Product;
+                var product = shoppingCartItem.Item.Product;
                 if (product != null)
-                    totalLength += product.Length * shoppingCartItem.Quantity;
+                    totalLength += product.Length * shoppingCartItem.Item.Quantity;
             }
             return totalLength;
         }
@@ -89,9 +89,9 @@ namespace SmartStore.Services.Shipping
             decimal totalHeight = decimal.Zero;
             foreach (var shoppingCartItem in this.Items)
             {
-                var product = shoppingCartItem.Product;
+                var product = shoppingCartItem.Item.Product;
                 if (product != null)
-                    totalHeight += product.Height * shoppingCartItem.Quantity;
+                    totalHeight += product.Height * shoppingCartItem.Item.Quantity;
             }
             return totalHeight;
         }

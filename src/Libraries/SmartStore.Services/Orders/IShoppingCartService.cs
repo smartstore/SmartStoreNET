@@ -87,7 +87,7 @@ namespace SmartStore.Services.Orders
 		/// <param name="bundleItem">Product bundle item</param>
 		/// <returns>Warnings</returns>
 		IList<string> GetBundleItemWarnings(ProductBundleItem bundleItem);
-		IList<string> GetBundleItemWarnings(IList<ShoppingCartItem> cartItems);
+		IList<string> GetBundleItemWarnings(IList<OrganizedShoppingCartItem> cartItems);
 
         /// <summary>
         /// Validates shopping cart item
@@ -114,7 +114,7 @@ namespace SmartStore.Services.Orders
 			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
             bool getStandardWarnings = true, bool getAttributesWarnings = true,
             bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true,
-			bool getBundleWarnings = true, ProductBundleItem bundleItem = null, IList<ShoppingCartItem> childItems = null);
+			bool getBundleWarnings = true, ProductBundleItem bundleItem = null, IList<OrganizedShoppingCartItem> childItems = null);
 
         /// <summary>
         /// Validates whether this shopping cart is valid
@@ -123,7 +123,7 @@ namespace SmartStore.Services.Orders
         /// <param name="checkoutAttributes">Checkout attributes</param>
         /// <param name="validateCheckoutAttributes">A value indicating whether to validate checkout attributes</param>
         /// <returns>Warnings</returns>
-        IList<string> GetShoppingCartWarnings(IList<ShoppingCartItem> shoppingCart,
+		IList<string> GetShoppingCartWarnings(IList<OrganizedShoppingCartItem> shoppingCart,
             string checkoutAttributes, bool validateCheckoutAttributes);
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace SmartStore.Services.Orders
         /// <param name="selectedAttributes">Selected attributes</param>
         /// <param name="customerEnteredPrice">Price entered by a customer</param>
         /// <returns>Found shopping cart item</returns>
-        ShoppingCartItem FindShoppingCartItemInTheCart(IList<ShoppingCartItem> shoppingCart,
+		OrganizedShoppingCartItem FindShoppingCartItemInTheCart(IList<OrganizedShoppingCartItem> shoppingCart,
             ShoppingCartType shoppingCartType,
 			Product product,
             string selectedAttributes = "",
@@ -183,6 +183,6 @@ namespace SmartStore.Services.Orders
         /// <param name="toCustomer">To customer</param>
         void MigrateShoppingCart(Customer fromCustomer, Customer toCustomer);
 
-		IList<string> Copy(ShoppingCartItem item, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
+		IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
     }
 }

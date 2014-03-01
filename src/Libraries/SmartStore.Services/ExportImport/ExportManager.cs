@@ -459,7 +459,7 @@ namespace SmartStore.Services.ExportImport
 
 				xmlWriter.WriteStartElement("ProductBundleItems");
 				var bundleItems = _productService.GetBundleItems(product.Id, true);
-				foreach (var bundleItem in bundleItems)
+				foreach (var bundleItem in bundleItems.Select(x => x.Item))
 				{
 					xmlWriter.WriteStartElement("ProductBundleItem");
 
@@ -900,7 +900,7 @@ namespace SmartStore.Services.ExportImport
 
 					if (p.ProductType == ProductType.BundledProduct)
 					{
-						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Product.Sku));
+						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Item.Product.Sku));
 					}
 
 					worksheet.Cells[row, col].Value = bundleItemSkus;

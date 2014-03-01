@@ -517,7 +517,7 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var bundledItem in bundledItems)
 			{
-				var newBundledItem = bundledItem.Clone();
+				var newBundledItem = bundledItem.Item.Clone();
 				newBundledItem.BundleProductId = productCopy.Id;
 				newBundledItem.CreatedOnUtc = utcNow;
 				newBundledItem.UpdatedOnUtc = utcNow;

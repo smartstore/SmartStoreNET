@@ -126,7 +126,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             decimal subTotal = decimal.Zero;
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {
-                if (shoppingCartItem.IsFreeShipping || !shoppingCartItem.IsShipEnabled)
+                if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
                     continue;
                 subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
             }

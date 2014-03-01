@@ -119,7 +119,7 @@ namespace SmartStore.Web.Controllers
         #region Utilities
 
         [NonAction]
-        protected bool IsPaymentWorkflowRequired(IList<ShoppingCartItem> cart, bool ignoreRewardPoints = false)
+		protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
         {
             bool result = true;
 
@@ -191,7 +191,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected CheckoutShippingMethodModel PrepareShippingMethodModel(IList<ShoppingCartItem> cart)
+		protected CheckoutShippingMethodModel PrepareShippingMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutShippingMethodModel();
 
@@ -264,7 +264,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<ShoppingCartItem> cart)
+		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutPaymentMethodModel();
 
@@ -354,7 +354,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<ShoppingCartItem> cart)
+		protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutConfirmModel();
             //min order amount validation
@@ -429,12 +429,12 @@ namespace SmartStore.Web.Controllers
             foreach (var sci in cart)
             {
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
-                    sci.ShoppingCartType,
-                    sci.Product,
-					sci.StoreId,
-                    sci.AttributesXml,
-                    sci.CustomerEnteredPrice,
-                    sci.Quantity,
+                    sci.Item.ShoppingCartType,
+                    sci.Item.Product,
+					sci.Item.StoreId,
+                    sci.Item.AttributesXml,
+                    sci.Item.CustomerEnteredPrice,
+                    sci.Item.Quantity,
                     false, childItems: sci.ChildItems);
                 if (sciWarnings.Count > 0)
                     return RedirectToRoute("ShoppingCart");

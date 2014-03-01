@@ -1054,7 +1054,7 @@ namespace SmartStore.Services.Common
 				{
 					int pNum = 1;
 
-					foreach (var item in _productService.GetBundleItems(product.Id))
+					foreach (var item in _productService.GetBundleItems(product.Id).Select(x => x.Item))
 					{
 						doc.Add(new Paragraph("{0}-{1}. {2}".FormatWith(productNumber, pNum, item.GetLocalizedName(lang.Id)), font));
 

@@ -108,7 +108,10 @@ namespace SmartStore.Services.Tests.Shipping
                     Width = 4.5M
                 }
             };
-            _shippingService.GetShoppingCartItemTotalWeight(sci).ShouldEqual(4.5M);
+
+			var item = new OrganizedShoppingCartItem(sci);
+
+            _shippingService.GetShoppingCartItemTotalWeight(item).ShouldEqual(4.5M);
         }
 
         [Test]
@@ -138,7 +141,11 @@ namespace SmartStore.Services.Tests.Shipping
                     Width = 14.5M
                 }
             };
-            var cart = new List<ShoppingCartItem>() { sci1, sci2 };
+
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
             _shippingService.GetShoppingCartTotalWeight(cart).ShouldEqual(50.5M);
         }
     }

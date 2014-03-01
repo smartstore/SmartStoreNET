@@ -241,13 +241,13 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order sub-total amount is not reached</returns>
-        bool ValidateMinOrderSubtotalAmount(IList<ShoppingCartItem> cart);
+		bool ValidateMinOrderSubtotalAmount(IList<OrganizedShoppingCartItem> cart);
 
         /// <summary>
         /// Valdiate minimum order total amount
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order total amount is not reached</returns>
-        bool ValidateMinOrderTotalAmount(IList<ShoppingCartItem> cart);
+		bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart);
     }
 }

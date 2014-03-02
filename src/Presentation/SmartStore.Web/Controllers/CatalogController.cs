@@ -1363,9 +1363,8 @@ namespace SmartStore.Web.Controllers
 								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 							}
 
-                            if(!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+                            if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
                                 pvaValueModel.PriceAdjustment = "";
-
 						}
 					}
 
@@ -1594,13 +1593,7 @@ namespace SmartStore.Web.Controllers
                         {
                             if (selectedAttributeValues != null)
                             {
-                                foreach (var attributeValue in selectedAttributeValues)
-                                {
-                                    taxRate = decimal.Zero;
-                                    decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValue.PriceAdjustment, out taxRate);
-
-                                    attributesTotalPriceBase = decimal.Add(attributesTotalPriceBase, priceAdjustmentBase);
-                                }
+								selectedAttributeValues.Each(x => attributesTotalPriceBase += x.PriceAdjustment);
                             }
                             else
                             {

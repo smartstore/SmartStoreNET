@@ -505,9 +505,9 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var associatedProduct in associatedProducts)
 				{
-					var associatedProductCopy = CopyProduct(associatedProduct, string.Format("{0} {1}", copyOf, associatedProduct.Name),
-						isPublished, copyImages, false);
+					var associatedProductCopy = CopyProduct(associatedProduct, string.Format("{0} {1}", copyOf, associatedProduct.Name), isPublished, copyImages, false);
 					associatedProductCopy.ParentGroupedProductId = productCopy.Id;
+
 					_productService.UpdateProduct(productCopy);
 				}
 			}
@@ -515,14 +515,22 @@ namespace SmartStore.Services.Catalog
 			// bundled products
 			var bundledItems = _productService.GetBundleItems(product.Id, true);
 
-			foreach (var bundledItem in bundledItems)
+			foreach (var bundleItem in bundledItems)
 			{
-				var newBundledItem = bundledItem.Item.Clone();
-				newBundledItem.BundleProductId = productCopy.Id;
-				newBundledItem.CreatedOnUtc = utcNow;
-				newBundledItem.UpdatedOnUtc = utcNow;
+				var newBundleItem = bundleItem.Item.Clone();
+				newBundleItem.BundleProductId = productCopy.Id;
+				newBundleItem.CreatedOnUtc = utcNow;
+				newBundleItem.UpdatedOnUtc = utcNow;
 
-				_productService.InsertBundleItem(newBundledItem);
+				_productService.InsertBundleItem(newBundleItem);
+
+				foreach (var itemFilter in bundleItem.Item.AttributeFilters)
+				{
+					var newItemFilter = itemFilter.Clone();
+					newItemFilter.BundleItemId = newBundleItem.Id;
+
+					_productAttributeService.InsertProductBundleItemAttributeFilter(newItemFilter);
+				}
 			}
 
             return productCopy;

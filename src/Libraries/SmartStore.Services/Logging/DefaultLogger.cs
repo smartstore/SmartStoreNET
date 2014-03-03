@@ -6,7 +6,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
-using SmartStore.Data;
 
 namespace SmartStore.Services.Logging
 {
@@ -16,6 +15,8 @@ namespace SmartStore.Services.Logging
     public partial class DefaultLogger : ILogger
     {
         #region Fields
+
+		private const int _deleteNumberOfEntries = 1000;
 
         private readonly IRepository<Log> _logRepository;
         private readonly IWebHelper _webHelper;
@@ -82,23 +83,51 @@ namespace SmartStore.Services.Logging
         /// </summary>
         public virtual void ClearLog()
         {
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
-            {
-                //although it's not a stored procedure we use it to ensure that a database supports them
-                //we cannot wait until EF team has it implemented - http://data.uservoice.com/forums/72025-entity-framework-feature-suggestions/suggestions/1015357-batch-cud-support
+			try
+			{
+				_dbContext.ExecuteSqlCommand("TRUNCATE TABLE [Log]");
+			}
+			catch (Exception)
+			{
+				try
+				{
+					for (int i = 0; i < 100000; ++i)
+					{
+						if (_dbContext.ExecuteSqlCommand("Delete Top ({0}) From [Log]", false, null, _deleteNumberOfEntries) < _deleteNumberOfEntries)
+							break;
+					}
+				}
+				catch (Exception) { }
 
-
-                //do all databases support "Truncate command"?
-                //TODO: do not hard-code the table name
-                _dbContext.ExecuteSqlCommand("TRUNCATE TABLE [Log]");
-            }
-            else
-            {
-                var log = _logRepository.Table.ToList();
-                foreach (var logItem in log)
-                    _logRepository.Delete(logItem);
-            }
+				try
+				{
+					_dbContext.ExecuteSqlCommand("DBCC CHECKIDENT('Log', RESEED, 0)");
+				}
+				catch (Exception)
+				{
+					try
+					{
+						_dbContext.ExecuteSqlCommand("Alter Table [Log] Alter Column [Id] Identity(1,1)");
+					}
+					catch (Exception) { }
+				}
+			}
         }
+
+		public virtual void ClearLog(DateTime toUtc, LogLevel logLevel)
+		{
+			try
+			{
+				string sqlDelete = "Delete Top ({0}) From [Log] Where LogLevelId < {1} And CreatedOnUtc <= {2}";
+
+				for (int i = 0; i < 100000; ++i)
+				{
+					if (_dbContext.ExecuteSqlCommand(sqlDelete, false, null, _deleteNumberOfEntries, (int)logLevel, toUtc) < _deleteNumberOfEntries)
+						break;
+				}
+			}
+			catch (Exception) { }
+		}
 
         /// <summary>
         /// Gets all log items

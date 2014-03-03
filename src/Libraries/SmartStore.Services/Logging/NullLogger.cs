@@ -46,6 +46,10 @@ namespace SmartStore.Services.Logging
         {
         }
 
+		public void ClearLog(DateTime toUtc, LogLevel logLevel)
+		{
+		}
+
         /// <summary>
         /// Gets all log items
         /// </summary>

@@ -57,12 +57,38 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type Id
+		/// </summary>
+		[DataMember]
+		public int TypeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the linked product Id
+		/// </summary>
+		[DataMember]
+		public int LinkedProductId { get; set; }
         
         /// <summary>
         /// Gets the product variant attribute
         /// </summary>
 		[DataMember]
 		public virtual ProductVariantAttribute ProductVariantAttribute { get; set; }
-    }
 
+		/// <summary>
+		/// Gets or sets the product attribute value type
+		/// </summary>
+		public ProductVariantAttributeValueType ValueType
+		{
+			get
+			{
+				return (ProductVariantAttributeValueType)this.TypeId;
+			}
+			set
+			{
+				this.TypeId = (int)value;
+			}
+		}
+    }
 }

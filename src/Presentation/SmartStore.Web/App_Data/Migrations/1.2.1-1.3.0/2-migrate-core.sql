@@ -104,3 +104,20 @@ BEGIN
 	ALTER TABLE [QueuedEmail] ADD [ReplyToName] nvarchar(500) NULL
 END
 GO
+
+-- product linkage
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariantAttributeValue]') and NAME='TypeId')
+BEGIN
+	EXEC ('ALTER TABLE [ProductVariantAttributeValue] ADD [TypeId] int NULL')
+	EXEC ('UPDATE [ProductVariantAttributeValue] SET [TypeId] = 0 WHERE [TypeId] IS NULL')
+	EXEC ('ALTER TABLE [ProductVariantAttributeValue] ALTER COLUMN [TypeId] int NOT NULL')
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[ProductVariantAttributeValue]') and NAME='LinkedProductId')
+BEGIN
+	EXEC ('ALTER TABLE [ProductVariantAttributeValue] ADD [LinkedProductId] int NULL')
+	EXEC ('UPDATE [ProductVariantAttributeValue] SET [LinkedProductId] = 0 WHERE [LinkedProductId] IS NULL')
+	EXEC ('ALTER TABLE [ProductVariantAttributeValue] ALTER COLUMN [LinkedProductId] int NOT NULL')
+END
+GO

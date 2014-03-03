@@ -236,8 +236,9 @@ namespace SmartStore.Web.Controllers
 			{
 				model.BundlePerItemPricing = item.BundleItem.BundleProduct.BundlePerItemPricing;
 				model.BundlePerItemShoppingCart = item.BundleItem.BundleProduct.BundlePerItemShoppingCart;
+
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
-					renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: false);
 
 				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
 				if (bundleItemName.HasValue())

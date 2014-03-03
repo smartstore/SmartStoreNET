@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using Newtonsoft.Json;
-using Telerik.Web.Mvc;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Plugins;
@@ -109,10 +108,19 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExpirationDays")]
 		public int ExpirationDays { get; set; }
 
-		public string GridEditUrl {
-			get {
-				if (_gridEditUrl == null) {
-					UrlHelper uh = new UrlHelper(HttpContext.Current.Request.RequestContext);
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportShipping")]
+		public bool ExportShipping { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportBasePrice")]
+		public bool ExportBasePrice { get; set; }
+
+		public string GridEditUrl
+		{
+			get
+			{
+				if (_gridEditUrl == null)
+				{
+					var uh = new UrlHelper(HttpContext.Current.Request.RequestContext);
 					_gridEditUrl = uh.Action("GoogleProductEdit", "FeedFroogle", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", "" } });
 				}
 				return _gridEditUrl;
@@ -149,6 +157,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				DescriptionToPlainText = settings.DescriptionToPlainText;
 				StoreId = settings.StoreId;
 				ExpirationDays = settings.ExpirationDays;
+				ExportShipping = settings.ExportShipping;
+				ExportBasePrice = settings.ExportBasePrice;
 			}
 			else
 			{
@@ -177,6 +187,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.DescriptionToPlainText = DescriptionToPlainText;
 				settings.StoreId = StoreId;
 				settings.ExpirationDays = ExpirationDays;
+				settings.ExportShipping = ExportShipping;
+				settings.ExportBasePrice = ExportBasePrice;
 			}
 		}
     }

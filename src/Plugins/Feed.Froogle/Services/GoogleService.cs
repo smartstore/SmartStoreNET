@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Stores;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using SmartStore.Web.Framework;
+using SmartStore.Services.Directory;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -31,6 +32,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IStoreService _storeService;
 		private readonly ICategoryService _categoryService;
+		private readonly IMeasureService _measureService;
+		private readonly MeasureSettings _measureSettings;
 
 		public GoogleService(
 			IRepository<GoogleProductRecord> gpRepository,
@@ -38,7 +41,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			IManufacturerService manufacturerService,
 			IStoreService storeService,
 			ICategoryService categoryService,
-			FroogleSettings settings)
+			FroogleSettings settings,
+			IMeasureService measureService,
+			MeasureSettings measureSettings)
         {
             this._gpRepository = gpRepository;
 			this._productService = productService;
@@ -46,6 +51,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			this._storeService = storeService;
 			this._categoryService = categoryService;
 			this.Settings = settings;
+			this._measureService = measureService;
+			this._measureSettings = measureSettings;
 
 			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
 			{
@@ -202,6 +209,76 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return "";
 		}
+		private bool BasePriceSupported(int baseAmount, string unit)
+		{
+			if (baseAmount == 1 || baseAmount == 10 || baseAmount == 100)
+				return true;
+
+			if (baseAmount == 75 && unit == "cl")
+				return true;
+
+			if ((baseAmount == 50 || baseAmount == 1000) && unit == "kg")
+				return true;
+
+			return false;
+		}
+		private string BasePriceUnits(string value)
+		{
+			const string defaultValue = "kg";
+
+			if (value.IsNullOrEmpty())
+				return defaultValue;
+
+			// TODO: Product.BasePriceMeasureUnit should be localized
+			switch (value.ToLower())
+			{
+				case "mg":
+				case "milligramm":
+				case "milligram":
+					return "mg";
+				case "g":
+				case "gramm":
+				case "gram":
+					return "g";
+				case "kg":
+				case "kilogramm":
+				case "kilogram":
+					return "kg";
+
+				case "ml":
+				case "milliliter":
+				case "millilitre":
+					return "ml";
+				case "cl":
+				case "zentiliter":
+				case "centilitre":
+					return "cl";
+				case "l":
+				case "liter":
+				case "litre":
+					return "l";
+				case "cbm":
+				case "kubikmeter":
+				case "cubic metre":
+					return "cbm";
+
+				case "cm":
+				case "zentimeter":
+				case "centimetre":
+					return "cm";
+				case "m":
+				case "meter":
+					return "m";
+
+				case "qm²":
+				case "quadratmeter":
+				case "square metre":
+					return "sqm";
+
+				default:
+					return defaultValue;
+			}
+		}
 		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
 		{
 			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
@@ -297,6 +374,37 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (Settings.ExpirationDays > 0)
 			{
 				writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(Settings.ExpirationDays).ToString("yyyy-MM-dd"));
+			}
+
+			if (Settings.ExportShipping)
+			{
+				string weightInfo, weight = Helper.DecimalUsFormat(product.Weight);
+				string systemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
+
+				if (systemKey.IsCaseInsensitiveEqual("gram"))
+					weightInfo = weight + " g";
+				else if (systemKey.IsCaseInsensitiveEqual("lb"))
+					weightInfo = weight + " lb";
+				else if (systemKey.IsCaseInsensitiveEqual("ounce"))
+					weightInfo = weight + " oz";
+				else
+					weightInfo = weight + " kg";
+
+				writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
+			}
+
+			if (Settings.ExportBasePrice && product.BasePriceHasValue)
+			{
+				string measureUnit = BasePriceUnits(product.BasePriceMeasureUnit);
+
+				if (BasePriceSupported(product.BasePriceBaseAmount ?? 0, measureUnit))
+				{
+					string basePriceMeasure = "{0} {1}".FormatWith(Helper.DecimalUsFormat(product.BasePriceAmount ?? decimal.Zero), measureUnit);
+					string basePriceBaseMeasure = "{0} {1}".FormatWith(product.BasePriceBaseAmount, measureUnit);
+
+					writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
+					writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
+				}
 			}
 
 			return null;

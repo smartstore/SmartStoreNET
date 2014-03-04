@@ -783,6 +783,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public int TypeId { get; set; }
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.TypeId")]
 			public string TypeName { get; set; }
+			public string TypeNameLabelHint { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId")]
 			public int LinkedProductId { get; set; }

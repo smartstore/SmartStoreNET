@@ -3065,6 +3065,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				Data = values.Select(x =>
 				{
+					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
+
 					return new ProductModel.ProductVariantAttributeValueModel()
 					{
 						Id = x.Id,
@@ -3080,7 +3082,9 @@ namespace SmartStore.Admin.Controllers
 						DisplayOrder = x.DisplayOrder,
 						TypeId = x.TypeId,
 						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-						LinkedProductId = x.LinkedProductId
+						TypeNameLabelHint = x.ValueTypeLabelHint,
+						LinkedProductId = x.LinkedProductId,
+						LinkedProductName = (linkedProduct == null ? "" : linkedProduct.GetLocalized(p => p.Name))
 					};
 				}),
 				Total = values.Count()
@@ -3175,6 +3179,8 @@ namespace SmartStore.Admin.Controllers
 			if (pvav == null)
 				return RedirectToAction("List", "Product");
 
+			var linkedProduct = _productService.GetProductById(pvav.LinkedProductId);
+
 			var model = new ProductModel.ProductVariantAttributeValueModel()
 			{
 				ProductVariantAttributeId = pvav.ProductVariantAttributeId,
@@ -3188,7 +3194,9 @@ namespace SmartStore.Admin.Controllers
 				DisplayOrder = pvav.DisplayOrder,
 				TypeId = pvav.TypeId,
 				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-				LinkedProductId = pvav.LinkedProductId
+				TypeNameLabelHint = pvav.ValueTypeLabelHint,
+				LinkedProductId = pvav.LinkedProductId,
+				LinkedProductName = (linkedProduct == null ? "" : linkedProduct.GetLocalized(p => p.Name))
 			};
 			//locales
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>

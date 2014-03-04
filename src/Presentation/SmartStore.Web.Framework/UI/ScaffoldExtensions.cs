@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.WebPages;
 using Telerik.Web.Mvc.UI.Fluent;
 using SmartStore.Core.Infrastructure;
@@ -13,12 +12,10 @@ namespace SmartStore.Web.Framework.UI
     /// </summary>
     public static class ScaffoldExtensions
     {
-
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)
         {
             return "<i class='icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
         }
-
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
             return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
@@ -32,16 +29,15 @@ namespace SmartStore.Web.Framework.UI
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
 
-				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, helper.Encode(name));
+				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, name);
 			}
 			else
 			{
-				namePart = "<span><#= {0} #></span>".FormatInvariant(helper.Encode(name));
+				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
 			}
 
 			return "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
 		}
-
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
 			string namePart = null;
@@ -58,6 +54,34 @@ namespace SmartStore.Web.Framework.UI
 			}
 
 			return new HelperResult(writer => writer.Write("<span class='label label-smnet label-{0}'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+		}
+
+		public static string LabeledVariantAttributeValueName<T>(this HtmlHelper<T> helper)
+		{
+			string result =
+				"<span class='label label-smnet label-<#= TypeNameLabelHint #>'><#= TypeName #></span>" +
+				"<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
+				"<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" +
+				"<span><#= Name #></span>" +
+				"<# } else { #>" +
+				"<span><#= Name #></span>" +
+				"<# } #>";
+
+			return result;
+		}
+		public static HelperResult LabeledVariantAttributeValueName<T>(this HtmlHelper<T> helper, string name, string colorSquaresRgb, string typeName, string typeLabelHint)
+		{
+			string colorSquares = "";
+
+			if (colorSquaresRgb.HasValue())
+			{
+				colorSquares = "<span class=\"color-container\"><span class=\"color\" style=\"background:{0}\">&nbsp;</span></span>".FormatInvariant(colorSquaresRgb);
+			}
+
+			string result = "<span class='label label-smnet label-{0}'>{1}</span>{2}<span>{3}</span>".FormatInvariant(
+				typeLabelHint, typeName, colorSquares, helper.Encode(name));
+
+			return new HelperResult(writer => writer.Write(result));
 		}
 
         public static string RichEditorFlavor(this HtmlHelper helper)
@@ -77,7 +101,6 @@ namespace SmartStore.Web.Framework.UI
         {
             return builder.Text(T("Admin.Common.Delete").Text);
         }
-
     }
 }
 

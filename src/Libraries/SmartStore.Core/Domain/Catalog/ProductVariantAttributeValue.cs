@@ -90,5 +90,21 @@ namespace SmartStore.Core.Domain.Catalog
 				this.TypeId = (int)value;
 			}
 		}
+
+		public string ValueTypeLabelHint
+		{
+			get
+			{
+				switch (ValueType)
+				{
+					case ProductVariantAttributeValueType.Simple:
+						return "smnet-hide";
+					case ProductVariantAttributeValueType.ProductLinkage:
+						return "warning";
+					default:
+						return "";
+				}
+			}
+		}
     }
 }

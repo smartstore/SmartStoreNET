@@ -29,8 +29,6 @@
                             })
                             .Columns(columns =>
                             {
-                                //columns.Bound(x => x.Name)
-                                //    .Width(300);
                                 columns
                                     .Bound(x => x.Name)
                                     .Template(@<text>
@@ -50,19 +48,15 @@
                                         "<span class=\"color-label\"><#= Name #></span>" +
                                         "<# } #>"
                                         )
-                                        
                                     .Width(300);
 
-                                //TODO display localized values here
                                 columns.Bound(x => x.Alias)
                                     .Width(200);
-                                columns.Bound(x => x.PriceAdjustment)
+                                columns.Bound(x => x.PriceAdjustmentString)
                                     .Width(100)
-                                    .Format("{0:G29}")
                                     .Centered();
-                                columns.Bound(x => x.WeightAdjustment)
+                                columns.Bound(x => x.WeightAdjustmentString)
                                     .Width(100)
-                                    .Format("{0:G29}")
                                     .Centered();
                                 columns.Bound(x => x.IsPreSelected)
                                     .Width(100)
@@ -75,7 +69,7 @@
                                 columns.Bound(x => x.Id)
                                     .Width(50)
                                     .Centered()
-                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productvariantattribute-form', 800, 350, true); return false;\" class='t-button' />")
+                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productvariantattribute-form', 800, 600, true); return false;\" class='t-button' />")
                                     .Title(T("Admin.Common.Edit").Text);
                                 columns.Command(commands =>
                                 {
@@ -93,7 +87,7 @@
     </tr>
     <tr>
         <td style="padding-top: 12px">
-            <button class="btn btn-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 800, 350, true); return false;">
+            <button class="btn btn-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 800, 600, true); return false;">
                 <i class="icon-plus"></i>
                 @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")
             </button>

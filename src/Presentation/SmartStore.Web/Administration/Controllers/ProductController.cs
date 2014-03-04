@@ -3073,9 +3073,14 @@ namespace SmartStore.Admin.Controllers
 						Alias = x.Alias,
 						ColorSquaresRgb = x.ColorSquaresRgb,
 						PriceAdjustment = x.PriceAdjustment,
+						PriceAdjustmentString = (x.ValueType == ProductVariantAttributeValueType.Simple ? x.PriceAdjustment.ToString("G29") : ""),
 						WeightAdjustment = x.WeightAdjustment,
+						WeightAdjustmentString = (x.ValueType == ProductVariantAttributeValueType.Simple ? x.WeightAdjustment.ToString("G29") : ""),
 						IsPreSelected = x.IsPreSelected,
 						DisplayOrder = x.DisplayOrder,
+						TypeId = x.TypeId,
+						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
+						LinkedProductId = x.LinkedProductId
 					};
 				}),
 				Total = values.Count()
@@ -3143,7 +3148,9 @@ namespace SmartStore.Admin.Controllers
 					PriceAdjustment = model.PriceAdjustment,
 					WeightAdjustment = model.WeightAdjustment,
 					IsPreSelected = model.IsPreSelected,
-					DisplayOrder = model.DisplayOrder
+					DisplayOrder = model.DisplayOrder,
+					TypeId = model.TypeId,
+					LinkedProductId = model.LinkedProductId
 				};
 
 				_productAttributeService.InsertProductVariantAttributeValue(pvav);
@@ -3178,7 +3185,10 @@ namespace SmartStore.Admin.Controllers
 				PriceAdjustment = pvav.PriceAdjustment,
 				WeightAdjustment = pvav.WeightAdjustment,
 				IsPreSelected = pvav.IsPreSelected,
-				DisplayOrder = pvav.DisplayOrder
+				DisplayOrder = pvav.DisplayOrder,
+				TypeId = pvav.TypeId,
+				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
+				LinkedProductId = pvav.LinkedProductId
 			};
 			//locales
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -3223,6 +3233,8 @@ namespace SmartStore.Admin.Controllers
 				pvav.WeightAdjustment = model.WeightAdjustment;
 				pvav.IsPreSelected = model.IsPreSelected;
 				pvav.DisplayOrder = model.DisplayOrder;
+				pvav.TypeId = model.TypeId;
+				pvav.LinkedProductId = model.LinkedProductId;
 				_productAttributeService.UpdateProductVariantAttributeValue(pvav);
 
 				UpdateLocales(pvav, model);
@@ -3379,7 +3391,7 @@ namespace SmartStore.Admin.Controllers
 				//	pvacModel.AttributesXml = "<b>{0}</b>".FormatWith(pvacModel.AttributesXml);
 
 				//warnings
-				var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, x.Product, x.AttributesXml);
+				var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, x.Product, x.AttributesXml);
 				pvacModel.Warnings.AddRange(warnings);
 
 				return pvacModel;
@@ -3450,7 +3462,7 @@ namespace SmartStore.Admin.Controllers
 			string attributeXml = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService,
 				_downloadService, _catalogSettings, this.Request, warnings, false);
 
-			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, product, attributeXml));
+			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 
 			if (null != _productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml))
 			{
@@ -3562,7 +3574,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var product = _productService.GetProductById(productId);
 				if (product != null)
-					warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(ShoppingCartType.ShoppingCart, product, attributeXml));
+					warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 			}
 
 			if (warnings.Count > 0)

@@ -1,20 +1,70 @@
 ﻿@model ProductModel.ProductVariantAttributeValueModel
 
+@using SmartStore.Core.Domain.Catalog;
 @using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProductVariantAttributeId)
 
+<script type="text/javascript">
+	@if (ViewBag.RefreshPage == true)
+	{
+		<text>
+		try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+		catch (e){} 
+		window.close();
+		</text>
+	}
 
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-}
+	$(document).ready(function () {
+        
+		$('#@Html.FieldIdFor(model => model.TypeId)').change(function () {
+			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.TypeId)').val();
+
+			if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.Simple)') {
+				$('#group-linked-product').hide();
+				$('#group-price-adjustment').show();
+				$('#group-weight-adjustment').show();
+			}
+			else if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.ProductLinkage)') {
+				$('#group-linked-product').show();
+				$('#group-price-adjustment').hide();
+				$('#group-weight-adjustment').hide();
+			}
+		}).trigger('change');
+
+	});
+</script>
+
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TypeId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.TypeId, ((ProductVariantAttributeValueType)Model.TypeId).ToSelectList())
+            @Html.ValidationMessageFor(model => model.TypeId)
+        </td>
+    </tr>
+    <tr id="group-linked-product">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.LinkedProductId)
+        </td>
+        <td class="adminData">
+			@Html.HiddenFor(model => model.LinkedProductId)
+			<span id="linked-product-name">@Model.LinkedProductName</span>
+            @Html.ValidationMessageFor(model => model.LinkedProductId)
+
+			<button type="submit" class="btn"
+				onclick="javascript:OpenWindow('', 1000, 800, true); return false;">
+				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct")
+			</button>
+        </td>
+    </tr>
+</table>
+
+<p></p>
 
 @(Html.LocalizedEditor<ProductModel.ProductVariantAttributeValueModel, ProductModel.ProductVariantAttributeValueLocalizedModel>("productattributevalue-localized",
 @<table class="adminContent">
@@ -70,7 +120,7 @@
         </td>
     </tr>
     }
-    <tr>
+    <tr id="group-price-adjustment">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.PriceAdjustment)
         </td>
@@ -79,7 +129,7 @@
             @Html.ValidationMessageFor(model => model.PriceAdjustment)
         </td>
     </tr>
-    <tr>
+	<tr id="group-weight-adjustment">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.WeightAdjustment)
         </td>

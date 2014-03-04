@@ -471,12 +471,13 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Validates shopping cart item attributes
         /// </summary>
+		/// <param name="customer">The customer</param>
         /// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
 		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
-        public virtual IList<string> GetShoppingCartItemAttributeWarnings(ShoppingCartType shoppingCartType,
+		public virtual IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, string selectedAttributes, ProductBundleItem bundleItem = null)
         {
             if (product == null)
@@ -544,6 +545,38 @@ namespace SmartStore.Services.Orders
                     }
                 }
             }
+
+			if (warnings.Count == 0)
+			{
+				var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(selectedAttributes);
+				foreach (var pvaValue in pvaValues)
+				{
+					if (pvaValue.ValueType ==  ProductVariantAttributeValueType.ProductLinkage)
+					{
+						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+						if (linkedProduct != null)
+						{
+							var linkageWarnings = GetShoppingCartItemWarnings(customer, shoppingCartType, linkedProduct, _storeContext.CurrentStore.Id,
+								"", decimal.Zero, 1, false, true, true, true, true);
+
+							foreach (var linkageWarning in linkageWarnings)
+							{
+								string msg = _localizationService.GetResource("ShoppingCart.ProductLinkageAttributeWarning").FormatWith(
+									pvaValue.ProductVariantAttribute.ProductAttribute.GetLocalized(a => a.Name),
+									pvaValue.GetLocalized(a => a.Name),
+									linkageWarning);
+
+								warnings.Add(msg);
+							}
+						}
+						else
+						{
+							string msg = _localizationService.GetResource("ShoppingCart.ProductLinkageProductNotLoading").FormatWith(pvaValue.LinkedProductId);
+							warnings.Add(msg);
+						}
+					}
+				}
+			}
 
             return warnings;
         }
@@ -681,7 +714,7 @@ namespace SmartStore.Services.Orders
 
             //selected attributes
             if (getAttributesWarnings)
-                warnings.AddRange(GetShoppingCartItemAttributeWarnings(shoppingCartType, product, selectedAttributes, bundleItem));
+                warnings.AddRange(GetShoppingCartItemAttributeWarnings(customer, shoppingCartType, product, selectedAttributes, bundleItem));
 
             //gift cards
             if (getGiftCardWarnings)

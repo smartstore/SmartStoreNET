@@ -230,6 +230,43 @@ SET @resources='
 		<Value>The three letter ISO 4217 currency code.</Value>
 		<Value lang="de">Der aus drei Buchstaben bestehende ISO 4217 Währungscode.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVariantAttributeValueType.Simple">
+		<Value>Simple</Value>
+		<Value lang="de">Einfach</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVariantAttributeValueType.ProductLinkage">
+		<Value>Product</Value>
+		<Value lang="de">Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.TypeId">
+		<Value>Type</Value>
+		<Value lang="de">Typ</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.TypeId.Hint">
+		<Value>The type of the attribute value.</Value>
+		<Value lang="de">Der Typ des Attributwertes.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId">
+		<Value>Linked product</Value>
+		<Value lang="de">Verknüpftes Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct">
+		<Value>Link</Value>
+		<Value lang="de">Verknüpfen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId.Hint">
+		<Value>The product with which this attribute value is linked.</Value>
+		<Value lang="de">Das Produkt mit dem dieser Attributwert verknüpft ist.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.ProductLinkageAttributeWarning">
+		<Value>{0}. {1}. {2}</Value>
+		<Value lang="de">{0}. {1}. {2}</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.ProductLinkageProductNotLoading">
+		<Value>The linked product with the ID {0} cannot be loaded.</Value>
+		<Value lang="de">Das verknüpfte Product mit der ID kann nicht geladen werden.</Value>
+	</LocaleResource>
 
 </Language>
 '

@@ -62,12 +62,13 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Validates shopping cart item attributes
         /// </summary>
+		/// <param name="customer">The customer</param>
         /// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
 		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
-        IList<string> GetShoppingCartItemAttributeWarnings(ShoppingCartType shoppingCartType,
+		IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
 			Product product, string selectedAttributes, ProductBundleItem bundleItem = null);
 
         /// <summary>

@@ -3257,7 +3257,12 @@ namespace SmartStore.Admin.Controllers
 				pvav.IsPreSelected = model.IsPreSelected;
 				pvav.DisplayOrder = model.DisplayOrder;
 				pvav.TypeId = model.TypeId;
-				pvav.LinkedProductId = model.LinkedProductId;
+
+				if (pvav.ValueType == ProductVariantAttributeValueType.Simple)
+					pvav.LinkedProductId = 0;
+				else
+					pvav.LinkedProductId = model.LinkedProductId;
+
 				_productAttributeService.UpdateProductVariantAttributeValue(pvav);
 
 				UpdateLocales(pvav, model);
@@ -3285,6 +3290,103 @@ namespace SmartStore.Admin.Controllers
 			_productAttributeService.DeleteProductVariantAttributeValue(pvav);
 
 			return ProductAttributeValueList(productVariantAttributeId, command);
+		}
+
+		public ActionResult ProductAttributeValueLinkagePopup()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var model = new ProductModel.ProductVariantAttributeValueModel.AddProductLinkageModel();
+
+			//categories
+			var allCategories = _categoryService.GetAllCategories(showHidden: true);
+			var mappedCategories = allCategories.ToDictionary(x => x.Id);
+			foreach (var c in allCategories)
+			{
+				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+			}
+
+			//manufacturers
+			foreach (var m in _manufacturerService.GetAllManufacturers(true))
+			{
+				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+			}
+
+			//stores
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+			{
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
+
+			//product types
+			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
+			return View(model);
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult ProductAttributeValueLinkagePopupList(GridCommand command, ProductModel.ProductVariantAttributeValueModel.AddProductLinkageModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var searchContext = new ProductSearchContext()
+			{
+				CategoryIds = new List<int>() { model.SearchCategoryId },
+				ManufacturerId = model.SearchManufacturerId,
+				StoreId = model.SearchStoreId,
+				Keywords = model.SearchProductName,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				ShowHidden = true,
+				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
+			};
+
+			var products = _productService.SearchProducts(searchContext);
+
+			var gridModel = new GridModel();
+			gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
+			gridModel.Total = products.TotalCount;
+
+			return new JsonResult
+			{
+				Data = gridModel
+			};
+		}
+
+		[HttpPost]
+		[FormValueRequired("save")]
+		public ActionResult ProductAttributeValueLinkagePopup(ProductModel.ProductVariantAttributeValueModel.AddProductLinkageModel model, string openerProductId, string openerProductName)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			ViewBag.RefreshPage = true;
+			ViewBag.openerProductId = openerProductId;
+			ViewBag.openerProductName = openerProductName;
+
+			var linkedProduct = _productService.GetProductById(model.ProductId);
+
+			if (linkedProduct == null)
+			{
+				ViewBag.productId = 0;
+				ViewBag.productName = "";
+			}
+			else
+			{
+				ViewBag.productId = linkedProduct.Id;
+				ViewBag.productName = linkedProduct.Name;
+			}
+			return View(model);
 		}
 
 		#endregion

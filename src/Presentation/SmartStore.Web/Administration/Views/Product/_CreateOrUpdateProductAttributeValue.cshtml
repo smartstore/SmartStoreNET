@@ -12,13 +12,13 @@
 	{
 		<text>
 		try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-		catch (e){} 
+		catch (e){}
 		window.close();
 		</text>
 	}
 
 	$(document).ready(function () {
-        
+
 		$('#@Html.FieldIdFor(model => model.TypeId)').change(function () {
 			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.TypeId)').val();
 
@@ -34,7 +34,20 @@
 			}
 		}).trigger('change');
 
+		$('#remove-product-linkage').click(function () {
+			$('#linked-product-name').empty();
+			$('#@Html.FieldIdFor(model => model.LinkedProductId)').val('0');
+			toggleLinkageButtons();
+		});
+
+		toggleLinkageButtons();
 	});
+
+	function toggleLinkageButtons() {
+		var unlinked = ($('#@Html.FieldIdFor(model => model.LinkedProductId)').val() === '0');
+		$('#add-product-linkage').toggle(unlinked);
+		$('#remove-product-linkage').toggle(!unlinked);
+	}
 </script>
 
 <table class="adminContent">
@@ -53,12 +66,16 @@
         </td>
         <td class="adminData">
 			@Html.HiddenFor(model => model.LinkedProductId)
-			<span id="linked-product-name" class="avm">@Model.LinkedProductName</span>&nbsp;
+			<span id="linked-product-name" class="btn-label-left">@Model.LinkedProductName</span>
 
-			<button type="submit" class="btn"
-				onclick="javascript:OpenWindow('', 1000, 800, true); return false;">
-				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct")
+			<button id="add-product-linkage" type="button" class="btn"
+				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueLinkagePopup", "Product", new { openerProductId = Html.FieldIdFor(model => model.LinkedProductId), openerProductName = "linked-product-name" }))', 1000, 800, true); return false;">
+				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
 			</button>
+			<button id="remove-product-linkage" type="button" class="btn">
+				<i class="icon-remove"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
+			</button>
+
             @Html.ValidationMessageFor(model => model.LinkedProductId)
         </td>
     </tr>

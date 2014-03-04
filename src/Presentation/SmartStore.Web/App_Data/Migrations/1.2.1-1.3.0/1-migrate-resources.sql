@@ -255,10 +255,18 @@ SET @resources='
 		<Value>The product with which this attribute value is linked.</Value>
 		<Value lang="de">Das Produkt mit dem dieser Attributwert verknüpft ist.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct">
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew">
+		<Value>Add product linkage</Value>
+		<Value lang="de">Produktverknüpfung hinzufügen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct">
 		<Value>Link</Value>
 		<Value lang="de">Verknüpfen</Value>
-	</LocaleResource>	
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct">
+		<Value>Remove link</Value>
+		<Value lang="de">Verknüpfung aufheben</Value>
+	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.ProductLinkageAttributeWarning">
 		<Value>{0}. {1}. {2}</Value>
 		<Value lang="de">{0}. {1}. {2}</Value>

@@ -247,18 +247,18 @@ SET @resources='
 		<Value>The type of the attribute value.</Value>
 		<Value lang="de">Der Typ des Attributwertes.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId">
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct">
 		<Value>Linked product</Value>
 		<Value lang="de">Verknüpftes Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.Hint">
+		<Value>The product with which this attribute value is linked.</Value>
+		<Value lang="de">Das Produkt mit dem dieser Attributwert verknüpft ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct">
 		<Value>Link</Value>
 		<Value lang="de">Verknüpfen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId.Hint">
-		<Value>The product with which this attribute value is linked.</Value>
-		<Value lang="de">Das Produkt mit dem dieser Attributwert verknüpft ist.</Value>
-	</LocaleResource>
+	</LocaleResource>	
 	<LocaleResource Name="ShoppingCart.ProductLinkageAttributeWarning">
 		<Value>{0}. {1}. {2}</Value>
 		<Value lang="de">{0}. {1}. {2}</Value>

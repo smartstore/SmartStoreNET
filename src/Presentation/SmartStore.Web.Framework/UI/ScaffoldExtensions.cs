@@ -36,10 +36,15 @@ namespace SmartStore.Web.Framework.UI
 				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
 			}
 
-			return "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			string result = "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			
+			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
+			if (id == 0 && name.IsNullOrEmpty())
+				return null;
+
 			string namePart = null;
 
 			if (id != 0)

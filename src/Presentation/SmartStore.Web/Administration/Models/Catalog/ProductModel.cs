@@ -785,9 +785,12 @@ namespace SmartStore.Admin.Models.Catalog
 			public string TypeName { get; set; }
 			public string TypeNameLabelHint { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProductId")]
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct")]
 			public int LinkedProductId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct")]
 			public string LinkedProductName { get; set; }
+			public string LinkedProductTypeName { get; set; }
+			public string LinkedProductTypeLabelHint { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
 		}

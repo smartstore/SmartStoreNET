@@ -53,13 +53,13 @@
         </td>
         <td class="adminData">
 			@Html.HiddenFor(model => model.LinkedProductId)
-			<span id="linked-product-name">@Model.LinkedProductName</span>
-            @Html.ValidationMessageFor(model => model.LinkedProductId)
+			<span id="linked-product-name" class="avm">@Model.LinkedProductName</span>&nbsp;
 
 			<button type="submit" class="btn"
 				onclick="javascript:OpenWindow('', 1000, 800, true); return false;">
 				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkProduct")
 			</button>
+            @Html.ValidationMessageFor(model => model.LinkedProductId)
         </td>
     </tr>
 </table>

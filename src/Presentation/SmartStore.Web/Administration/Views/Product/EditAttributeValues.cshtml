@@ -29,11 +29,15 @@
                             })
                             .Columns(columns =>
                             {
-								columns
-									.Bound(x => x.Name)
+								columns.Bound(x => x.Name)
+									.ReadOnly()
 									.Template(x => @Html.LabeledVariantAttributeValueName(x.Name, x.ColorSquaresRgb, x.TypeName, x.TypeNameLabelHint))
 									.ClientTemplate(@Html.LabeledVariantAttributeValueName());
-                                columns.Bound(x => x.Alias);
+								columns.Bound(x => x.Alias);
+								columns.Bound(x => x.LinkedProductName)
+									.ReadOnly()
+									.Template(x => @Html.LabeledProductName(x.LinkedProductId, x.LinkedProductName, x.LinkedProductTypeName, x.LinkedProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
                                 columns.Bound(x => x.PriceAdjustmentString)
                                     .Width(80)
                                     .Centered();

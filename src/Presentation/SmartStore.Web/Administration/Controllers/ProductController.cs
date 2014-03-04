@@ -3067,7 +3067,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
 
-					return new ProductModel.ProductVariantAttributeValueModel()
+					var model = new ProductModel.ProductVariantAttributeValueModel()
 					{
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
@@ -3083,9 +3083,17 @@ namespace SmartStore.Admin.Controllers
 						TypeId = x.TypeId,
 						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
 						TypeNameLabelHint = x.ValueTypeLabelHint,
-						LinkedProductId = x.LinkedProductId,
-						LinkedProductName = (linkedProduct == null ? "" : linkedProduct.GetLocalized(p => p.Name))
+						LinkedProductId = x.LinkedProductId
 					};
+
+					if (linkedProduct != null)
+					{
+						model.LinkedProductName = linkedProduct.GetLocalized(p => p.Name);
+						model.LinkedProductTypeName = linkedProduct.GetProductTypeLabel(_localizationService);
+						model.LinkedProductTypeLabelHint = linkedProduct.ProductTypeLabelHint;
+					}
+
+					return model;
 				}),
 				Total = values.Count()
 			};
@@ -3195,9 +3203,16 @@ namespace SmartStore.Admin.Controllers
 				TypeId = pvav.TypeId,
 				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
 				TypeNameLabelHint = pvav.ValueTypeLabelHint,
-				LinkedProductId = pvav.LinkedProductId,
-				LinkedProductName = (linkedProduct == null ? "" : linkedProduct.GetLocalized(p => p.Name))
+				LinkedProductId = pvav.LinkedProductId
 			};
+
+			if (linkedProduct != null)
+			{
+				model.LinkedProductName = linkedProduct.GetLocalized(p => p.Name);
+				model.LinkedProductTypeName = linkedProduct.GetProductTypeLabel(_localizationService);
+				model.LinkedProductTypeLabelHint = linkedProduct.ProductTypeLabelHint;
+			}
+
 			//locales
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{

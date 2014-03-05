@@ -4,6 +4,7 @@ using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Html;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -20,32 +21,38 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkContext _workContext;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IPriceCalculationService _priceCalculationService;
         private readonly ICurrencyService _currencyService;
         private readonly ILocalizationService _localizationService;
         private readonly ITaxService _taxService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IDownloadService _downloadService;
         private readonly IWebHelper _webHelper;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
 
         public ProductAttributeFormatter(IWorkContext workContext,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
+			IPriceCalculationService priceCalculationService,
             ICurrencyService currencyService,
             ILocalizationService localizationService,
             ITaxService taxService,
             IPriceFormatter priceFormatter,
             IDownloadService downloadService,
-            IWebHelper webHelper)
+            IWebHelper webHelper,
+			ShoppingCartSettings shoppingCartSettings)
         {
             this._workContext = workContext;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
+			this._priceCalculationService = priceCalculationService;
             this._currencyService = currencyService;
             this._localizationService = localizationService;
             this._taxService = taxService;
             this._priceFormatter = priceFormatter;
             this._downloadService = downloadService;
             this._webHelper = webHelper;
+			this._shoppingCartSettings = shoppingCartSettings;
         }
 
         /// <summary>
@@ -157,12 +164,16 @@ namespace SmartStore.Services.Catalog
                                 var pvaValue = _productAttributeService.GetProductVariantAttributeValueById(pvaId);
                                 if (pvaValue != null)
                                 {
-                                    pvaAttribute = string.Format("{0}: {1}", pva.ProductAttribute.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id), pvaValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id));
+                                    pvaAttribute = string.Format("{0}: {1}", pva.ProductAttribute.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id),
+										pvaValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id));
+
                                     if (renderPrices)
                                     {
                                         decimal taxRate = decimal.Zero;
-                                        decimal priceAdjustmentBase = _taxService.GetProductPrice(product, pvaValue.PriceAdjustment, customer, out taxRate);
+										decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+										decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out taxRate);
                                         decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
+
                                         if (priceAdjustmentBase > 0)
                                         {
                                             string priceAdjustmentStr = _priceFormatter.FormatPrice(priceAdjustment, false, false);
@@ -174,6 +185,12 @@ namespace SmartStore.Services.Catalog
                                             pvaAttribute += string.Format(" [-{0}]", priceAdjustmentStr);
                                         }
                                     }
+
+									if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
+										pvaValue.Quantity > 1)
+									{
+										pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
+									}
                                 }
                                 //encode (if required)
                                 if (htmlEncode)

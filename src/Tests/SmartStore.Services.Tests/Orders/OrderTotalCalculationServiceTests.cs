@@ -44,6 +44,7 @@ namespace SmartStore.Services.Tests.Orders
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
         IProductAttributeParser _productAttributeParser;
+		IProductService _productService;
         IPriceCalculationService _priceCalcService;
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
@@ -73,14 +74,14 @@ namespace SmartStore.Services.Tests.Orders
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_productService = MockRepository.GenerateMock<IProductService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
-				 _discountService, _categoryService, _productAttributeParser,
-				 _shoppingCartSettings, _catalogSettings);
+				 _discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings);
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
@@ -97,6 +98,7 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingMethodRepository,
                 _logger,
                 _productAttributeParser,
+				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,

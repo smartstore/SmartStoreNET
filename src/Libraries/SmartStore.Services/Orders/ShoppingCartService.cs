@@ -475,10 +475,11 @@ namespace SmartStore.Services.Orders
         /// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="quantity">Quantity</param>
 		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
 		public virtual IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
-			Product product, string selectedAttributes, ProductBundleItem bundleItem = null)
+			Product product, string selectedAttributes, int quantity = 1, ProductBundleItem bundleItem = null)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -557,7 +558,7 @@ namespace SmartStore.Services.Orders
 						if (linkedProduct != null)
 						{
 							var linkageWarnings = GetShoppingCartItemWarnings(customer, shoppingCartType, linkedProduct, _storeContext.CurrentStore.Id,
-								"", decimal.Zero, 1, false, true, true, true, true);
+								"", decimal.Zero, quantity * pvaValue.Quantity, false, true, true, true, true);
 
 							foreach (var linkageWarning in linkageWarnings)
 							{
@@ -714,7 +715,7 @@ namespace SmartStore.Services.Orders
 
             //selected attributes
             if (getAttributesWarnings)
-                warnings.AddRange(GetShoppingCartItemAttributeWarnings(customer, shoppingCartType, product, selectedAttributes, bundleItem));
+                warnings.AddRange(GetShoppingCartItemAttributeWarnings(customer, shoppingCartType, product, selectedAttributes, quantity, bundleItem));
 
             //gift cards
             if (getGiftCardWarnings)

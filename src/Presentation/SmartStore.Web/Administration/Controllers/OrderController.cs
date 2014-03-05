@@ -1679,7 +1679,7 @@ namespace SmartStore.Admin.Controllers
             #endregion
 
             //warnings
-            warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(order.Customer, ShoppingCartType.ShoppingCart, product, attributes));
+            warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(order.Customer, ShoppingCartType.ShoppingCart, product, attributes, quantity));
             warnings.AddRange(_shoppingCartService.GetShoppingCartItemGiftCardWarnings(ShoppingCartType.ShoppingCart, product, attributes));
 
             if (warnings.Count == 0)
@@ -1704,7 +1704,8 @@ namespace SmartStore.Admin.Controllers
                     DiscountAmountExclTax = decimal.Zero,
                     DownloadCount = 0,
                     IsDownloadActivated = false,
-                    LicenseDownloadId = 0
+                    LicenseDownloadId = 0,
+					ProductCost = _priceCalculationService.GetProductCost(product, attributes)
                 };
 
 				if (product.ProductType == ProductType.BundledProduct)

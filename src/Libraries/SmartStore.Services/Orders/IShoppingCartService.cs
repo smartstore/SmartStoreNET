@@ -66,10 +66,11 @@ namespace SmartStore.Services.Orders
         /// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="quantity">Quantity</param>
 		/// <param name="bundleItem">Product bundle item</param>
         /// <returns>Warnings</returns>
 		IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
-			Product product, string selectedAttributes, ProductBundleItem bundleItem = null);
+			Product product, string selectedAttributes, int quantity = 1, ProductBundleItem bundleItem = null);
 
         /// <summary>
         /// Validates shopping cart item (gift card)

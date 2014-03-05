@@ -135,3 +135,17 @@ BEGIN
 	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'shoppingcartsettings.showlinkedattributevaluequantity', N'false', 0)
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[OrderItem]') and NAME='ProductCost')
+BEGIN
+	EXEC ('ALTER TABLE [OrderItem] ADD [ProductCost] decimal(18,4) NULL')
+	
+	EXEC ('
+		UPDATE [OrderItem] SET [OrderItem].[ProductCost] = p.[ProductCost] FROM [OrderItem] oi
+		INNER JOIN [Product] p ON oi.[ProductId] = p.[Id]
+	')
+	
+	EXEC ('UPDATE [OrderItem] SET [ProductCost] = 0 WHERE [ProductCost] IS NULL')
+	EXEC ('ALTER TABLE [OrderItem] ALTER COLUMN [ProductCost] decimal(18,4) NOT NULL')
+END
+GO

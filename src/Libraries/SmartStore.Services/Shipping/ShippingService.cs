@@ -15,12 +15,10 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Shipping
 {
-    /// <summary>
-    /// Shipping service
-    /// </summary>
     public partial class ShippingService : IShippingService
     {
         #region Fields
@@ -29,6 +27,7 @@ namespace SmartStore.Services.Shipping
         private readonly ICacheManager _cacheManager;
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
@@ -36,7 +35,7 @@ namespace SmartStore.Services.Shipping
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
 
         #endregion
 
@@ -49,6 +48,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="shippingMethodRepository">Shipping method repository</param>
         /// <param name="logger">Logger</param>
         /// <param name="productAttributeParser">Product attribute parser</param>
+		/// <param name="productService">Product service</param>
         /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
 		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="localizationService">Localization service</param>
@@ -61,6 +61,7 @@ namespace SmartStore.Services.Shipping
             IRepository<ShippingMethod> shippingMethodRepository,
             ILogger logger,
             IProductAttributeParser productAttributeParser,
+			IProductService productService,
             ICheckoutAttributeParser checkoutAttributeParser,
 			IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
@@ -74,6 +75,7 @@ namespace SmartStore.Services.Shipping
             this._shippingMethodRepository = shippingMethodRepository;
             this._logger = logger;
             this._productAttributeParser = productAttributeParser;
+			this._productService = productService;
             this._checkoutAttributeParser = checkoutAttributeParser;
 			this._genericAttributeService = genericAttributeService;
             this._localizationService = localizationService;
@@ -237,7 +239,9 @@ namespace SmartStore.Services.Shipping
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
+
             decimal weight = decimal.Zero;
+
             if (shoppingCartItem.Item.Product != null)
             {
                 decimal attributesTotalWeight = decimal.Zero;
@@ -245,9 +249,22 @@ namespace SmartStore.Services.Shipping
                 if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
                     var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
-                    foreach (var pvaValue in pvaValues)
-                        attributesTotalWeight += pvaValue.WeightAdjustment;
+
+					foreach (var pvaValue in pvaValues)
+					{
+						if (pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+						{
+							var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+							if (linkedProduct != null)
+								attributesTotalWeight += (linkedProduct.Weight * pvaValue.Quantity);
+						}
+						else
+						{
+							attributesTotalWeight += pvaValue.WeightAdjustment;
+						}
+					}
                 }
+
                 weight = shoppingCartItem.Item.Product.Weight + attributesTotalWeight;
             }
             return weight;

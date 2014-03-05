@@ -20,6 +20,7 @@ namespace SmartStore.Services.Catalog
         private readonly IDiscountService _discountService;
         private readonly ICategoryService _categoryService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductService _productService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -28,6 +29,7 @@ namespace SmartStore.Services.Catalog
             IDiscountService discountService,
 			ICategoryService categoryService,
             IProductAttributeParser productAttributeParser,
+			IProductService productService,
 			ShoppingCartSettings shoppingCartSettings, 
             CatalogSettings catalogSettings)
         {
@@ -36,6 +38,7 @@ namespace SmartStore.Services.Catalog
             this._discountService = discountService;
             this._categoryService = categoryService;
             this._productAttributeParser = productAttributeParser;
+			this._productService = productService;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
         }
@@ -312,6 +315,32 @@ namespace SmartStore.Services.Catalog
 			return (result < decimal.Zero ? decimal.Zero : result);
 		}
 
+		/// <summary>
+		/// Gets the product cost
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="attributesXml">Shopping cart item attributes in XML</param>
+		/// <returns>Product cost</returns>
+		public virtual decimal GetProductCost(Product product, string attributesXml)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			decimal result = product.ProductCost;
+
+			_productAttributeParser
+				.ParseProductVariantAttributeValues(attributesXml)
+				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.Each(x =>
+				{
+					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
+
+					if (linkedProduct != null)
+						result += (linkedProduct.ProductCost * x.Quantity);
+				});
+
+			return result;
+		}
 
         /// <summary>
         /// Gets discount amount
@@ -520,7 +549,33 @@ namespace SmartStore.Services.Catalog
 				totalDiscountAmount = Math.Round(totalDiscountAmount, 2);
 			return totalDiscountAmount;
         }
-        
+
+		/// <summary>
+		/// Gets the price adjustment of a variant attribute value
+		/// </summary>
+		/// <param name="attributeValue">Product variant attribute value</param>
+		/// <returns>Price adjustment of a variant attribute value</returns>
+		public virtual decimal GetProductVariantAttributeValuePriceAdjustment(ProductVariantAttributeValue attributeValue)
+		{
+			if (attributeValue == null)
+				throw new ArgumentNullException("attributeValue");
+
+			if (attributeValue.ValueType == ProductVariantAttributeValueType.Simple)
+				return attributeValue.PriceAdjustment;
+
+			if (attributeValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+			{
+				var linkedProduct = _productService.GetProductById(attributeValue.LinkedProductId);
+
+				if (linkedProduct != null)
+				{
+					var productPrice = GetFinalPrice(linkedProduct, true);
+					return productPrice;
+				}
+			}
+			return decimal.Zero;
+		}
+
         #endregion
     }
 }

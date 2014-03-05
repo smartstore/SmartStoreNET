@@ -1346,7 +1346,8 @@ namespace SmartStore.Web.Controllers
 							if (displayPrices && !isBundlePricing)
 							{
 								decimal taxRate = decimal.Zero;
-								decimal priceAdjustmentBase = _taxService.GetProductPrice(product, pvaValue.PriceAdjustment, out taxRate);
+								decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+								decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
 
 								if (priceAdjustmentBase > decimal.Zero)

@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tests.Shipping
         IRepository<ShippingMethod> _shippingMethodRepository;
         ILogger _logger;
         IProductAttributeParser _productAttributeParser;
+		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
         ShippingSettings _shippingSettings;
         IEventPublisher _eventPublisher;
@@ -44,6 +45,7 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
 
             var cacheManager = new NullCache();
@@ -62,6 +64,7 @@ namespace SmartStore.Services.Tests.Shipping
                 _shippingMethodRepository, 
                 _logger,
                 _productAttributeParser,
+				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,

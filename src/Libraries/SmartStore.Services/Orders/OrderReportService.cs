@@ -385,7 +385,6 @@ namespace SmartStore.Services.Orders
             bool dontSearchEmail = String.IsNullOrEmpty(billingEmail);
             var query = from orderItem in _orderItemRepository.Table
                         join o in _orderRepository.Table on orderItem.OrderId equals o.Id
-                        join p in _productRepository.Table on orderItem.ProductId equals p.Id
 						where (storeId == 0 || storeId == o.StoreId) &&
 							  (!startTimeUtc.HasValue || startTimeUtc.Value <= o.CreatedOnUtc) &&
                               (!endTimeUtc.HasValue || endTimeUtc.Value >= o.CreatedOnUtc) &&
@@ -393,11 +392,10 @@ namespace SmartStore.Services.Orders
                               (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
                               (!shippingStatusId.HasValue || shippingStatusId == o.ShippingStatusId) &&
                               (!o.Deleted) &&
-                              (!p.Deleted) &&
                               (dontSearchEmail || (o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail)))
-                        select new { orderItem = orderItem, p };
-            
-			var productCost = Convert.ToDecimal(query.Sum(o => (decimal?)o.p.ProductCost * o.orderItem.Quantity));
+                        select orderItem;
+
+			var productCost = Convert.ToDecimal(query.Sum(orderItem => (decimal?)orderItem.ProductCost * orderItem.Quantity));
 
 			var reportSummary = GetOrderAverageReportLine(storeId, os, ps, ss, startTimeUtc, endTimeUtc, billingEmail);
 			var profit = reportSummary.SumOrders - reportSummary.SumTax - productCost;

@@ -6,6 +6,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Events;
@@ -28,6 +29,7 @@ namespace SmartStore.Services.Tests.Catalog
 		IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilter;
         IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
+		IPriceCalculationService _priceCalculationService;
         IEventPublisher _eventPublisher;
         IPictureService _pictureService;
 
@@ -39,6 +41,7 @@ namespace SmartStore.Services.Tests.Catalog
         IDownloadService _downloadService;
         IWebHelper _webHelper;
         IProductAttributeFormatter _productAttributeFormatter;
+		ShoppingCartSettings _shoppingCartSettings;
 
         ProductAttribute pa1, pa2, pa3;
         ProductVariantAttribute pva1_1, pva2_1, pva3_1;
@@ -199,16 +202,20 @@ namespace SmartStore.Services.Tests.Catalog
             _priceFormatter = MockRepository.GenerateMock<IPriceFormatter>();
             _downloadService = MockRepository.GenerateMock<IDownloadService>();
             _webHelper = MockRepository.GenerateMock<IWebHelper>();
+			_priceCalculationService = MockRepository.GenerateMock<IPriceCalculationService>();
+			_shoppingCartSettings = MockRepository.GenerateMock<ShoppingCartSettings>();
 
             _productAttributeFormatter = new ProductAttributeFormatter(_workContext,
                 _productAttributeService,
                 _productAttributeParser,
+				_priceCalculationService,
                 _currencyService,
                 _localizationService,
                 _taxService,
                 _priceFormatter,
                 _downloadService,
-                _webHelper);
+                _webHelper,
+				_shoppingCartSettings);
         }
 
         //[Test]

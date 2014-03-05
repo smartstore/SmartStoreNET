@@ -1132,6 +1132,15 @@ namespace SmartStore.Services.Catalog
                     break;
             }
 
+			var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml);
+
+			attributeValues.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage).Each(x =>
+			{
+				var linkedProduct = GetProductById(x.LinkedProductId);
+				if (linkedProduct != null)
+					AdjustInventory(linkedProduct, decrease, quantity * x.Quantity, "");
+			});
+
             //TODO send back in stock notifications?
             //if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
             //    product.BackorderMode == BackorderMode.NoBackorders &&

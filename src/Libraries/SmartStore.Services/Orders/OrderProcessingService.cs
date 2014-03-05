@@ -1082,6 +1082,7 @@ namespace SmartStore.Services.Orders
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
                                     ItemWeight = itemWeight,
+									ProductCost = _priceCalculationService.GetProductCost(sc.Item.Product, sc.Item.AttributesXml)
                                 };
 
 								if (sc.Item.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
@@ -1166,7 +1167,8 @@ namespace SmartStore.Services.Orders
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
                                     ItemWeight = orderItem.ItemWeight,
-									BundleData = orderItem.BundleData
+									BundleData = orderItem.BundleData,
+									ProductCost = orderItem.ProductCost
                                 };
                                 order.OrderItems.Add(newOrderItem);
                                 _orderService.UpdateOrder(order);

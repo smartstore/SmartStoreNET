@@ -82,6 +82,14 @@ namespace SmartStore.Services.Catalog
 			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null);
 
 		/// <summary>
+		/// Gets the product cost
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="attributesXml">Shopping cart item attributes in XML</param>
+		/// <returns>Product cost</returns>
+		decimal GetProductCost(Product product, string attributesXml);
+
+		/// <summary>
 		/// Gets discount amount
 		/// </summary>
 		/// <param name="product">Product</param>
@@ -172,6 +180,12 @@ namespace SmartStore.Services.Catalog
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(OrganizedShoppingCartItem shoppingCartItem, out Discount appliedDiscount);
-        
+
+		/// <summary>
+		/// Gets the price adjustment of a variant attribute value
+		/// </summary>
+		/// <param name="attributeValue">Product variant attribute value</param>
+		/// <returns>Price adjustment of a variant attribute value</returns>
+		decimal GetProductVariantAttributeValuePriceAdjustment(ProductVariantAttributeValue attributeValue);
     }
 }

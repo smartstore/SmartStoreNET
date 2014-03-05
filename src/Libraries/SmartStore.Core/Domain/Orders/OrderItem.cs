@@ -97,6 +97,11 @@ namespace SmartStore.Core.Domain.Orders
 		/// </summary>
 		public string BundleData { get; set; }
 
+		/// <summary>
+		/// Gets or sets the original product cost
+		/// </summary>
+		public decimal ProductCost { get; set; }
+
         /// <summary>
         /// Gets the order
         /// </summary>

@@ -353,8 +353,9 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("WeightAdjustment", null, productVariantAttributeValue.WeightAdjustment.ToString());
 						xmlWriter.WriteElementString("IsPreSelected", null, productVariantAttributeValue.IsPreSelected.ToString());
 						xmlWriter.WriteElementString("DisplayOrder", null, productVariantAttributeValue.DisplayOrder.ToString());
-						xmlWriter.WriteElementString("TypeId", null, productVariantAttributeValue.TypeId.ToString());
+						xmlWriter.WriteElementString("ValueTypeId", null, productVariantAttributeValue.ValueTypeId.ToString());
 						xmlWriter.WriteElementString("LinkedProductId", null, productVariantAttributeValue.LinkedProductId.ToString());
+						xmlWriter.WriteElementString("Quantity", null, productVariantAttributeValue.Quantity.ToString());
 					}
 					xmlWriter.WriteEndElement();
 

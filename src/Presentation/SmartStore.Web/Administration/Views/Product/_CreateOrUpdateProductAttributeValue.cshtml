@@ -19,16 +19,18 @@
 
 	$(document).ready(function () {
 
-		$('#@Html.FieldIdFor(model => model.TypeId)').change(function () {
-			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.TypeId)').val();
+		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
+			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.ValueTypeId)').val();
 
 			if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.Simple)') {
 				$('#group-linked-product').hide();
+				$('#group-quantity').hide();
 				$('#group-price-adjustment').show();
 				$('#group-weight-adjustment').show();
 			}
 			else if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.ProductLinkage)') {
 				$('#group-linked-product').show();
+				$('#group-quantity').show();
 				$('#group-price-adjustment').hide();
 				$('#group-weight-adjustment').hide();
 			}
@@ -53,11 +55,11 @@
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TypeId)
+            @Html.SmartLabelFor(model => model.ValueTypeId)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(model => model.TypeId, ((ProductVariantAttributeValueType)Model.TypeId).ToSelectList())
-            @Html.ValidationMessageFor(model => model.TypeId)
+            @Html.DropDownListFor(model => model.ValueTypeId, ((ProductVariantAttributeValueType)Model.ValueTypeId).ToSelectList())
+            @Html.ValidationMessageFor(model => model.ValueTypeId)
         </td>
     </tr>
     <tr id="group-linked-product">
@@ -66,17 +68,26 @@
         </td>
         <td class="adminData">
 			@Html.HiddenFor(model => model.LinkedProductId)
-			<span id="linked-product-name" class="btn-label-left">@Model.LinkedProductName</span>
+			<div id="linked-product-name">@Model.LinkedProductName</div>
 
-			<button id="add-product-linkage" type="button" class="btn"
+			<button id="add-product-linkage" type="button" class="btn btn-below"
 				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueLinkagePopup", "Product", new { openerProductId = Html.FieldIdFor(model => model.LinkedProductId), openerProductName = "linked-product-name" }))', 1000, 800, true); return false;">
 				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
 			</button>
-			<button id="remove-product-linkage" type="button" class="btn">
+			<button id="remove-product-linkage" type="button" class="btn btn-below">
 				<i class="icon-remove"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
 			</button>
 
             @Html.ValidationMessageFor(model => model.LinkedProductId)
+        </td>
+    </tr>
+    <tr id="group-quantity">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Quantity)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Quantity)
+            @Html.ValidationMessageFor(model => model.Quantity)
         </td>
     </tr>
 </table>

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
-using SmartStore.Admin.Models.Stores;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -25,7 +24,6 @@ using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Customers;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Orders;
@@ -35,7 +33,6 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Data;
 using System.Threading;
-using SmartStore.Core.Infrastructure;
 using Autofac;
 using SmartStore.Core.Async;
 
@@ -1915,6 +1912,9 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
+			ViewBag.RefreshPage = false;
+			ViewBag.CloseWindow = false;
+
 			return View(model);
 		}
 
@@ -1925,6 +1925,8 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
+			bool closeWindow = true;
+
 			if (model.SelectedProductIds != null)
 			{
 				var products = _productService.GetProductsByIds(model.SelectedProductIds);
@@ -1932,23 +1934,34 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var product in products.Where(x => x.CanBeBundleItem()))
 				{
-					var bundleItem = new ProductBundleItem()
-					{
-						ProductId = product.Id,
-						BundleProductId = model.ProductId,
-						Quantity = 1,
-						Visible = true,
-						Published = true,
-						DisplayOrder = products.IndexOf(product) + 1,
-						CreatedOnUtc = utcNow,
-						UpdatedOnUtc = utcNow
-					};
+					var attributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-					_productService.InsertBundleItem(bundleItem);
+					if (attributes.Count > 0 && attributes.Any(a => a.ProductVariantAttributeValues.Any(v => v.ValueType == ProductVariantAttributeValueType.ProductLinkage)))
+					{
+						this.ErrorNotification(_localizationService.GetResource("Admin.Catalog.Products.BundleItems.NoAttributeWithProductLinkage"));
+						closeWindow = false;
+					}
+					else
+					{
+						var bundleItem = new ProductBundleItem()
+						{
+							ProductId = product.Id,
+							BundleProductId = model.ProductId,
+							Quantity = 1,
+							Visible = true,
+							Published = true,
+							DisplayOrder = products.IndexOf(product) + 1,
+							CreatedOnUtc = utcNow,
+							UpdatedOnUtc = utcNow
+						};
+
+						_productService.InsertBundleItem(bundleItem);
+					}
 				}
 			}
 
 			ViewBag.RefreshPage = true;
+			ViewBag.CloseWindow = closeWindow;
 			ViewBag.btnId = btnId;
 			ViewBag.formId = formId;
 			return View(model);
@@ -3080,10 +3093,11 @@ namespace SmartStore.Admin.Controllers
 						WeightAdjustmentString = (x.ValueType == ProductVariantAttributeValueType.Simple ? x.WeightAdjustment.ToString("G29") : ""),
 						IsPreSelected = x.IsPreSelected,
 						DisplayOrder = x.DisplayOrder,
-						TypeId = x.TypeId,
+						ValueTypeId = x.ValueTypeId,
 						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
 						TypeNameLabelHint = x.ValueTypeLabelHint,
-						LinkedProductId = x.LinkedProductId
+						LinkedProductId = x.LinkedProductId,
+						Quantity = x.Quantity
 					};
 
 					if (linkedProduct != null)
@@ -3112,12 +3126,13 @@ namespace SmartStore.Admin.Controllers
 			if (pva == null)
 				throw new ArgumentException("No product variant attribute found with the specified id");
 
-			var model = new ProductModel.ProductVariantAttributeValueModel();
-			model.ProductVariantAttributeId = productAttributeAttributeId;
-
-			//color squares
-			model.DisplayColorSquaresRgb = pva.AttributeControlType == AttributeControlType.ColorSquares;
-			model.ColorSquaresRgb = "#000000";
+			var model = new ProductModel.ProductVariantAttributeValueModel()
+			{
+				ProductVariantAttributeId = productAttributeAttributeId,
+				DisplayColorSquaresRgb = pva.AttributeControlType == AttributeControlType.ColorSquares,
+				ColorSquaresRgb = "#000000",
+				Quantity = 1
+			};
 
 			//locales
 			AddLocales(_languageService, model.Locales);
@@ -3161,8 +3176,9 @@ namespace SmartStore.Admin.Controllers
 					WeightAdjustment = model.WeightAdjustment,
 					IsPreSelected = model.IsPreSelected,
 					DisplayOrder = model.DisplayOrder,
-					TypeId = model.TypeId,
-					LinkedProductId = model.LinkedProductId
+					ValueTypeId = model.ValueTypeId,
+					LinkedProductId = model.LinkedProductId,
+					Quantity = model.Quantity
 				};
 
 				_productAttributeService.InsertProductVariantAttributeValue(pvav);
@@ -3200,10 +3216,11 @@ namespace SmartStore.Admin.Controllers
 				WeightAdjustment = pvav.WeightAdjustment,
 				IsPreSelected = pvav.IsPreSelected,
 				DisplayOrder = pvav.DisplayOrder,
-				TypeId = pvav.TypeId,
+				ValueTypeId = pvav.ValueTypeId,
 				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
 				TypeNameLabelHint = pvav.ValueTypeLabelHint,
-				LinkedProductId = pvav.LinkedProductId
+				LinkedProductId = pvav.LinkedProductId,
+				Quantity = pvav.Quantity
 			};
 
 			if (linkedProduct != null)
@@ -3256,7 +3273,8 @@ namespace SmartStore.Admin.Controllers
 				pvav.WeightAdjustment = model.WeightAdjustment;
 				pvav.IsPreSelected = model.IsPreSelected;
 				pvav.DisplayOrder = model.DisplayOrder;
-				pvav.TypeId = model.TypeId;
+				pvav.ValueTypeId = model.ValueTypeId;
+				pvav.Quantity = model.Quantity;
 
 				if (pvav.ValueType == ProductVariantAttributeValueType.Simple)
 					pvav.LinkedProductId = 0;

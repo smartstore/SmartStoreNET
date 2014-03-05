@@ -668,9 +668,10 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ReturnRequestActions, mo => mo.Ignore())
                 .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore());
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
-            Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
-                .ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
-                .ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
+			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
+				.ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
+				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
+				.ForMember(dest => dest.ShowLinkedAttributeValueQuantity, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
                 .ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore())

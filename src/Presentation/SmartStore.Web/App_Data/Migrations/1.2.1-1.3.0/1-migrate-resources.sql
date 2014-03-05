@@ -239,11 +239,11 @@ SET @resources='
 		<Value>Product</Value>
 		<Value lang="de">Produkt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.TypeId">
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ValueTypeId">
 		<Value>Type</Value>
 		<Value lang="de">Typ</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.TypeId.Hint">
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ValueTypeId.Hint">
 		<Value>The type of the attribute value.</Value>
 		<Value lang="de">Der Typ des Attributwertes.</Value>
 	</LocaleResource>
@@ -274,6 +274,22 @@ SET @resources='
 	<LocaleResource Name="ShoppingCart.ProductLinkageProductNotLoading">
 		<Value>The linked product with the ID {0} cannot be loaded.</Value>
 		<Value lang="de">Das verknüpfte Product mit der ID kann nicht geladen werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.BundleItems.NoAttributeWithProductLinkage">
+		<Value>Products with attribute values of type "product" cannot be part of a bundle.</Value>
+		<Value lang="de">Produkte, die Attributwerte vom Typ "Produkt" haben, können nicht Bestandteil eines Bundles sein.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity">
+		<Value>Quantity</Value>
+		<Value lang="de">Menge</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity.Hint">
+		<Value>The quantity of the linked product.</Value>
+		<Value lang="de">Die Menge des verknüpften Produktes.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity.GreaterOrEqualToOne">
+		<Value>The quantity value must be greater or equal to 1.</Value>
+		<Value lang="de">Der Mengenwert muss größer oder gleich 1 sein.</Value>
 	</LocaleResource>
 
 </Language>

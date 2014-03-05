@@ -62,14 +62,20 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the type Id
 		/// </summary>
 		[DataMember]
-		public int TypeId { get; set; }
+		public int ValueTypeId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the linked product Id
 		/// </summary>
 		[DataMember]
 		public int LinkedProductId { get; set; }
-        
+
+		/// <summary>
+		/// Gets or sets the quantity for the linked product
+		/// </summary>
+		[DataMember]
+		public int Quantity { get; set; }
+
         /// <summary>
         /// Gets the product variant attribute
         /// </summary>
@@ -83,11 +89,11 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			get
 			{
-				return (ProductVariantAttributeValueType)this.TypeId;
+				return (ProductVariantAttributeValueType)this.ValueTypeId;
 			}
 			set
 			{
-				this.TypeId = (int)value;
+				this.ValueTypeId = (int)value;
 			}
 		}
 

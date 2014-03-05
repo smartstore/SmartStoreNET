@@ -385,8 +385,9 @@ namespace SmartStore.Services.Catalog
 						WeightAdjustment = productVariantAttributeValue.WeightAdjustment,
 						IsPreSelected = productVariantAttributeValue.IsPreSelected,
 						DisplayOrder = productVariantAttributeValue.DisplayOrder,
-						TypeId = productVariantAttributeValue.TypeId,
-						LinkedProductId = productVariantAttributeValue.LinkedProductId
+						ValueTypeId = productVariantAttributeValue.ValueTypeId,
+						LinkedProductId = productVariantAttributeValue.LinkedProductId,
+						Quantity = productVariantAttributeValue.Quantity,
 					};
 					_productAttributeService.InsertProductVariantAttributeValue(pvavCopy);
 

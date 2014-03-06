@@ -1134,7 +1134,10 @@ namespace SmartStore.Services.Catalog
 
 			var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml);
 
-			attributeValues.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage).Each(x =>
+			attributeValues
+				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.ToList()
+				.Each(x =>
 			{
 				var linkedProduct = GetProductById(x.LinkedProductId);
 				if (linkedProduct != null)

@@ -493,7 +493,7 @@ namespace SmartStore.Services.Catalog
 					if (pvaValues != null)
 					{
 						foreach (var pvaValue in pvaValues)
-							attributesTotalPrice += pvaValue.PriceAdjustment;
+							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
 					}
 
 					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
@@ -538,7 +538,7 @@ namespace SmartStore.Services.Catalog
                 var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
                 foreach (var pvaValue in pvaValues)
                 {
-                    attributesTotalPrice += pvaValue.PriceAdjustment;
+                    attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
                 }
 
 				decimal productDiscountAmount = GetDiscountAmount(product, customer, attributesTotalPrice, shoppingCartItem.Item.Quantity, out appliedDiscount);

@@ -1594,7 +1594,7 @@ namespace SmartStore.Web.Controllers
                         {
                             if (selectedAttributeValues != null)
                             {
-								selectedAttributeValues.Each(x => attributesTotalPriceBase += x.PriceAdjustment);
+								selectedAttributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x));
                             }
                             else
                             {

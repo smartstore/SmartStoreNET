@@ -18,6 +18,7 @@
 * New setting to suppress the search for SKUs
 * Shipment list can be filtered by tracking number
 * #238 Working currency in context of request domain
+* Cross-linkage of products through variant attribute values
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long

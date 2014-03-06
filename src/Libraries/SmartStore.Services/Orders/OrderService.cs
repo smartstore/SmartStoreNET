@@ -171,11 +171,11 @@ namespace SmartStore.Services.Orders
         /// <param name="orderGuid">Search by order GUID (Global unique identifier) or part of GUID. Leave empty to load all orders.</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
         /// <returns>Order collection</returns>
 		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId,
-			DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize)
+			DateTime? startTime, DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null)
         {
             int? orderStatusId = null;
             if (os.HasValue)
@@ -206,6 +206,11 @@ namespace SmartStore.Services.Orders
                 query = query.Where(o => shippingStatusId.Value == o.ShippingStatusId);
             if (!String.IsNullOrEmpty(billingEmail))
                 query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
+			if (billingName.HasValue())
+				query = query.Where(o => o.BillingAddress != null && (
+					(!String.IsNullOrEmpty(o.BillingAddress.LastName) && o.BillingAddress.LastName.Contains(billingName)) || 
+					(!String.IsNullOrEmpty(o.BillingAddress.FirstName) && o.BillingAddress.FirstName.Contains(billingName))
+				));
             if (orderNumber.HasValue())
                 query = query.Where(o => o.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
             query = query.Where(o => !o.Deleted);

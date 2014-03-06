@@ -27,6 +27,9 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string CustomerEmail { get; set; }
 
+		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
+		public string CustomerName { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.OrderStatus")]
         public int OrderStatusId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.List.PaymentStatus")]

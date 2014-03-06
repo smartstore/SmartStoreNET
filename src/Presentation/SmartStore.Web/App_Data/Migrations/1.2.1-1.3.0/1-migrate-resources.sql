@@ -291,6 +291,15 @@ SET @resources='
 		<Value>The quantity value must be greater or equal to 1.</Value>
 		<Value lang="de">Der Mengenwert muss größer oder gleich 1 sein.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Orders.List.CustomerName">
+		<Value>Customer name</Value>
+		<Value lang="de">Kundenname</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.List.CustomerName.Hint">
+		<Value>Filter order list by customer name.</Value>
+		<Value lang="de">Auftragsliste nach dem Kundennamen filtern.</Value>
+	</LocaleResource>
 
 </Language>
 '

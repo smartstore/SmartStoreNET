@@ -66,11 +66,11 @@ namespace SmartStore.Services.Orders
         /// <param name="orderGuid">Search by order GUID (Global unique identifier) or part of GUID. Leave empty to load all records.</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
         /// <returns>Order collection</returns>
 		IPagedList<Order> SearchOrders(int storeId, int customerId,
-			DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize);
+			DateTime? startTime, DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+			string billingName, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingEmail = null);
 
         /// <summary>
         /// Gets all orders by affiliate identifier

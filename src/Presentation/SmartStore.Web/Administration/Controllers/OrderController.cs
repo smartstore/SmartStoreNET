@@ -686,7 +686,8 @@ namespace SmartStore.Admin.Controllers
 
             //load orders
 			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatus,
-                paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize);
+                paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+
             var gridModel = new GridModel<OrderModel>
             {
                 Data = orders.Select(x =>

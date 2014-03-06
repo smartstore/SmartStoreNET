@@ -51,6 +51,14 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.CustomerName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.OrderStatusId)
             </td>
             <td class="adminData">
@@ -238,7 +246,8 @@
             var searchModel = {
                     StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
                     EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
-                    CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+            		CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+            		CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
                     OrderStatusId: $('#@Html.FieldIdFor(model => model.OrderStatusId)').val(),
                     PaymentStatusId: $('#@Html.FieldIdFor(model => model.PaymentStatusId)').val(),
             		ShippingStatusId: $('#@Html.FieldIdFor(model => model.ShippingStatusId)').val(),

@@ -62,6 +62,7 @@
 * Added an option to turn off the display of variant price adjustments
 * #277 Show BasePrice (PAnGv) in cart also
 * GMC feed plugin: Export configurable shipping weight and base price info
+* #280 Filter orders by customer name
 
 ##SmartStore.NET 1.2.1.0#
 

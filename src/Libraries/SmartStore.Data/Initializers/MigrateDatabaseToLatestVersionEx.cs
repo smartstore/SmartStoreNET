@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations.Infrastructure;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,34 +24,36 @@ namespace SmartStore.Data.Initializers
 		where TContext : DbContext
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
-		private readonly DataSettings _dataSettings;
+		private readonly string _connectionString;
 		private readonly string[] _sqlFiles;
 		private DbMigrationsConfiguration _config;
 
+		#region Ctor
+
 		public MigrateDatabaseToLatestVersionEx()
+			: this(null, null)
 		{
 		}
 
-		public MigrateDatabaseToLatestVersionEx(DataSettings dataSettings)
+		public MigrateDatabaseToLatestVersionEx(string connectionString)
+			: this(connectionString, null)
 		{
-			Guard.ArgumentNotNull(() => dataSettings);
-			this._dataSettings = dataSettings;
 		}
 
 		public MigrateDatabaseToLatestVersionEx(string[] sqlFiles)
+			: this(null, sqlFiles)
 		{
-			Guard.ArgumentNotNull(() => sqlFiles);
+		}
+		public MigrateDatabaseToLatestVersionEx(string connectionString, string[] sqlFiles)
+		{
+			this._connectionString = connectionString;
 			this._sqlFiles = sqlFiles;
 		}
 
-		public MigrateDatabaseToLatestVersionEx(DataSettings dataSettings, string[] sqlFiles)
-		{
-			Guard.ArgumentNotNull(() => dataSettings);
-			Guard.ArgumentNotNull(() => sqlFiles);
-			this._dataSettings = dataSettings;
-			this._sqlFiles = sqlFiles;
-		}
-		
+		#endregion
+
+		#region Interface members
+
 		/// <summary>
 		/// Initializes the database.
 		/// </summary>
@@ -61,9 +64,10 @@ namespace SmartStore.Data.Initializers
 			if (_config == null)
 			{
 				_config = new TConfig();
-				if (_dataSettings != null && _dataSettings.IsValid())
+				if (_connectionString.HasValue())
 				{
-					_config.TargetDatabase = new DbConnectionInfo(_dataSettings.DataConnectionString, _dataSettings.ProviderInvariantName);
+					var dbContextInfo = new DbContextInfo(typeof(TContext));
+					_config.TargetDatabase = new DbConnectionInfo(_connectionString, dbContextInfo.ConnectionProviderName);
 				}
 			}
 
@@ -80,16 +84,23 @@ namespace SmartStore.Data.Initializers
 				}
 			}
 
-			//var compat = context.Database.CompatibleWithModel(false);
-			//bool compat2 = false;
-			//try
-			//{
-			//	compat2 = context.Database.CompatibleWithModel(true);
-			//}
-			//catch { }
-
 			// create or migrate the database now
-			migrator.Update();
+			try
+			{
+				migrator.Update();
+			}
+			catch (AutomaticMigrationsDisabledException)
+			{
+				if (context is SmartObjectContext)
+				{
+					throw;
+				}
+
+				// DbContexts in plugin assemblies tend to produce
+				// this error, but obviously without any negative side-effect.
+				// Therefore catch and forget!
+				// TODO: (MC) investigate this and implement a cleaner solution
+			}
 
 			if (newDb)
 			{
@@ -101,6 +112,9 @@ namespace SmartStore.Data.Initializers
 			}
 		}
 
+		#endregion
+
+		#region Utils
 
 		/// <summary>
 		/// Seeds the specified context.
@@ -109,6 +123,8 @@ namespace SmartStore.Data.Initializers
 		protected virtual void Seed(TContext context)
 		{
 		}
+
+		#endregion
 
 		#region Sql File Handling
 

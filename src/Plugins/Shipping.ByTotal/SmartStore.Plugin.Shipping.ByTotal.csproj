@@ -116,6 +116,11 @@
     </Compile>
     <Compile Include="ByTotalShippingComputationMethod.cs" />
     <Compile Include="Controllers\ShippingByTotalController.cs" />
+    <Compile Include="Data\Migrations\201403072202413_Initial.cs" />
+    <Compile Include="Data\Migrations\201403072202413_Initial.Designer.cs">
+      <DependentUpon>201403072202413_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="Data\ShippingByTotalObjectContext.cs" />
     <Compile Include="Data\ShippingByTotalRecordMap.cs" />
     <Compile Include="DependencyRegistrar.cs" />
@@ -151,6 +156,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\201403072202413_Initial.resx">
+      <DependentUpon>201403072202413_Initial.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\ShippingByTotal\Configure.cshtml" />
     <None Include="packages.config" />
     <None Include="web.config" />

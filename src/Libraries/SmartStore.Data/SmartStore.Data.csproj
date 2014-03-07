@@ -117,9 +117,9 @@
     <Compile Include="Mapping\Stores\StoreMap.cs" />
     <Compile Include="Mapping\Stores\StoreMappingMap.cs" />
     <Compile Include="Mapping\Themes\ThemeVariableMap.cs" />
-    <Compile Include="Migrations\201403010028232_InitialCreate.cs" />
-    <Compile Include="Migrations\201403010028232_InitialCreate.Designer.cs">
-      <DependentUpon>201403010028232_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201403010028232_Initial.cs" />
+    <Compile Include="Migrations\201403010028232_Initial.Designer.cs">
+      <DependentUpon>201403010028232_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectContextBase.cs" />
@@ -227,8 +227,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403010028232_InitialCreate.resx">
-      <DependentUpon>201403010028232_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403010028232_Initial.resx">
+      <DependentUpon>201403010028232_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

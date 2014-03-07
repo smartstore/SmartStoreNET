@@ -1,19 +1,20 @@
-namespace SmartStore.Data.Migrations
+namespace SmartStore.Plugin.Shipping.ByTotal.Data.Migrations
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SmartObjectContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<ShippingByTotalObjectContext>
     {
-		public Configuration()
+        public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-			ContextKey = "SmartStore.Core";
+            MigrationsDirectory = @"Data\Migrations";
+			ContextKey = "SmartStore.ShippingByTotal";
         }
 
-        protected override void Seed(SmartObjectContext context)
+        protected override void Seed(ShippingByTotalObjectContext context)
         {
             //  This method will be called after migrating to the latest version.
 

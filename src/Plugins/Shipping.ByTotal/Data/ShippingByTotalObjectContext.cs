@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Data;
 using SmartStore.Data.Initializers;
+using SmartStore.Plugin.Shipping.ByTotal.Data.Migrations;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Data
 {
@@ -19,7 +21,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
 
 		static ShippingByTotalObjectContext()
 		{
-			Database.SetInitializer<ShippingByTotalObjectContext>(null);
+			Database.SetInitializer(new MigrateDatabaseToLatestVersionEx<ShippingByTotalObjectContext, Configuration>());
 		}
 
 		/// <summary>
@@ -49,12 +51,10 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
         /// </summary>
         public void Install()
         {
-			//create table
-			var dbScript = CreateDatabaseScript();
-			Database.ExecuteSqlCommand(dbScript);
-			SaveChanges();
-
-			//this.Database.Initialize(false);
+			////create table
+			//var dbScript = CreateDatabaseScript();
+			//Database.ExecuteSqlCommand(dbScript);
+			//SaveChanges();
         }
 
         /// <summary>
@@ -62,9 +62,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
         /// </summary>
         public void Uninstall()
         {
-			var dbScript = "DROP TABLE ShippingByTotal";
-			Database.ExecuteSqlCommand(dbScript);
-			SaveChanges();
+			//var dbScript = "DROP TABLE ShippingByTotal";
+			//Database.ExecuteSqlCommand(dbScript);
+			//SaveChanges();
+
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update("0");
         }
 
     }

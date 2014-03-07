@@ -1110,7 +1110,7 @@
     <Content Include="Content\bootstrap\js\bootstrap-typeahead.js" />
     <Content Include="Content\files\ExportImport\Index.htm" />
     <Content Include="Content\files\Index.htm" />
-    <None Include="Content\bootstrap\custom\image-gallery.less" />
+    <Content Include="Content\bootstrap\custom\image-gallery.less" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-image-gallery.js" />
     <Content Include="Content\bootstrap\custom\images\loading.gif" />
     <Content Include="Content\fileupload\fileupload.css" />

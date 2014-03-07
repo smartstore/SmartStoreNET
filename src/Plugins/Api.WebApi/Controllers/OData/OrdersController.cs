@@ -80,6 +80,14 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			return entity.Shipments.AsQueryable();
 		}
 
+		[WebApiQueryable]
+		public IQueryable<OrderItem> GetOrderItems(int key)
+		{
+			var entity = GetExpandedEntity<ICollection<OrderItem>>(key, x => x.OrderItems);
+
+			return entity.OrderItems.AsQueryable();
+		}
+
 		// actions
 
 		[HttpPost]
@@ -153,6 +161,5 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			});
 			return entity;
 		}
-
 	}
 }

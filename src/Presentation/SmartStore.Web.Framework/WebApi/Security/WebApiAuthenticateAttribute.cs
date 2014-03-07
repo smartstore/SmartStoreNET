@@ -1,5 +1,4 @@
 ﻿using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Infrastructure;
@@ -14,6 +13,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
@@ -21,7 +21,6 @@ namespace SmartStore.Web.Framework.WebApi.Security
 	public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
 	{
 		private readonly IWorkContext _workContext;
-		private readonly IRepository<Customer> _customerRepository;
 		private readonly IPermissionService _permissionService;
 
 		protected HmacAuthentication _hmac = new HmacAuthentication();
@@ -31,7 +30,6 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			var engine = EngineContext.Current;
 
 			_workContext = engine.Resolve<IWorkContext>();
-			_customerRepository = engine.Resolve<IRepository<Customer>>();
 			_permissionService = engine.Resolve<IPermissionService>();
 		}
 
@@ -91,6 +89,19 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			{
 				exc.Dump();
 			}
+		}
+		protected virtual Customer GetCustomer(int customerId)
+		{
+			Customer customer = null;
+			try
+			{
+				customer = EngineContext.Current.Resolve<ICustomerService>().GetCustomerById(customerId);
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+			return customer;
 		}
 		protected virtual HmacResult IsAuthenticated(HttpActionContext actionContext, DateTime now, WebApiControllingCacheData cacheControllingData, out Customer customer)
 		{
@@ -161,7 +172,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (signatureProvider != signatureConsumer)
 				return HmacResult.InvalidSignature;
 
-			customer = _customerRepository.GetById(apiUser.CustomerId);
+			customer = GetCustomer(apiUser.CustomerId);
 			if (customer == null)
 				return HmacResult.UserUnknown;
 

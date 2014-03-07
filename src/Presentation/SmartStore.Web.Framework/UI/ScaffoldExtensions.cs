@@ -61,10 +61,10 @@ namespace SmartStore.Web.Framework.UI
 			return new HelperResult(writer => writer.Write("<span class='label label-smnet label-{0}'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
 		}
 
-		public static string LabeledVariantAttributeValueName<T>(this HtmlHelper<T> helper)
+		public static string VariantAttributeValueName<T>(this HtmlHelper<T> helper)
 		{
 			string result =
-				"<span class='label label-smnet label-<#= TypeNameLabelHint #>'><#= TypeName #></span>" +
+				"<i class='<#= TypeNameClass #>' title='<#= TypeName #>'></i>" +
 				"<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
 				"<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" +
 				"<span><#= Name #></span>" +
@@ -74,7 +74,7 @@ namespace SmartStore.Web.Framework.UI
 
 			return result;
 		}
-		public static HelperResult LabeledVariantAttributeValueName<T>(this HtmlHelper<T> helper, string name, string colorSquaresRgb, string typeName, string typeLabelHint)
+		public static HelperResult VariantAttributeValueName<T>(this HtmlHelper<T> helper, string name, string colorSquaresRgb, string typeName, string typeNameClass)
 		{
 			string colorSquares = "";
 
@@ -83,8 +83,8 @@ namespace SmartStore.Web.Framework.UI
 				colorSquares = "<span class=\"color-container\"><span class=\"color\" style=\"background:{0}\">&nbsp;</span></span>".FormatInvariant(colorSquaresRgb);
 			}
 
-			string result = "<span class='label label-smnet label-{0}'>{1}</span>{2}<span>{3}</span>".FormatInvariant(
-				typeLabelHint, typeName, colorSquares, helper.Encode(name));
+			string result = "<i class='{0}' title='{1}'></i>{2}<span>{3}</span>".FormatInvariant(
+				typeNameClass, typeName, colorSquares, helper.Encode(name));
 
 			return new HelperResult(writer => writer.Write(result));
 		}

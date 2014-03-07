@@ -31,8 +31,8 @@
                             {
 								columns.Bound(x => x.Name)
 									.ReadOnly()
-									.Template(x => @Html.LabeledVariantAttributeValueName(x.Name, x.ColorSquaresRgb, x.TypeName, x.TypeNameLabelHint))
-									.ClientTemplate(@Html.LabeledVariantAttributeValueName());
+									.Template(x => @Html.VariantAttributeValueName(x.Name, x.ColorSquaresRgb, x.TypeName, x.TypeNameClass))
+									.ClientTemplate(@Html.VariantAttributeValueName());
 								columns.Bound(x => x.Alias);
 								columns.Bound(x => x.LinkedProductName)
 									.ReadOnly()

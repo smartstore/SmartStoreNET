@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Web.Hosting;
 using SmartStore.Data.Initializers;
+using SmartStore.Data.Migrations;
 using SmartStore.Utilities;
 
 namespace SmartStore.Data
@@ -37,7 +38,8 @@ namespace SmartStore.Data
             customCommands.AddRange(ParseCommands(CommonHelper.MapPath("~/App_Data/SqlServer.Indexes.sql"), false));
 			customCommands.AddRange(ParseCommands(CommonHelper.MapPath("~/App_Data/SqlServer.StoredProcedures.sql"), false));
             
-            var initializer = new CreateTablesIfNotExist<SmartObjectContext>(tablesToValidate, customCommands.ToArray());
+            //var initializer = new CreateTablesIfNotExist<SmartObjectContext>(tablesToValidate, customCommands.ToArray());
+			var initializer = new MigrateDatabaseToLatestVersionEx<SmartObjectContext, Configuration>(new string[] { "Indexes.sql", "Indexes.SqlServer.sql", "StoredProcedures.sql" });
 
 			return initializer;
         }
@@ -109,5 +111,10 @@ namespace SmartStore.Data
         {
             return new SqlParameter();
         }
-    }
+
+		public string ProviderInvariantName
+		{
+			get { return "System.Data.SqlClient"; }
+		}
+	}
 }

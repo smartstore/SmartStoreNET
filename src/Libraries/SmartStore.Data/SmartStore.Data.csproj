@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\EFMigrations\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,6 +107,7 @@
     <Compile Include="Initializers\CreateCeDatabaseIfNotExists.cs" />
     <Compile Include="Initializers\DropCreateCeDatabaseAlways.cs" />
     <Compile Include="Initializers\DropCreateCeDatabaseIfModelChanges.cs" />
+    <Compile Include="Initializers\MigrateDatabaseToLatestVersionEx.cs" />
     <Compile Include="Initializers\SqlCeInitializer.cs" />
     <Compile Include="Initializers\CreateTablesIfNotExist.cs" />
     <Compile Include="EfDataProviderFactory.cs" />
@@ -107,6 +117,11 @@
     <Compile Include="Mapping\Stores\StoreMap.cs" />
     <Compile Include="Mapping\Stores\StoreMappingMap.cs" />
     <Compile Include="Mapping\Themes\ThemeVariableMap.cs" />
+    <Compile Include="Migrations\201403010028232_InitialCreate.cs" />
+    <Compile Include="Migrations\201403010028232_InitialCreate.Designer.cs">
+      <DependentUpon>201403010028232_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectContextBase.cs" />
     <Compile Include="Mapping\Catalog\BackInStockSubscriptionMap.cs" />
     <Compile Include="Mapping\Catalog\ManufacturerTemplateMap.cs" />
@@ -210,6 +225,18 @@
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201403010028232_InitialCreate.resx">
+      <DependentUpon>201403010028232_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Indexes.sql" />
+    <EmbeddedResource Include="Sql\StoredProcedures.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Indexes.SqlServer.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

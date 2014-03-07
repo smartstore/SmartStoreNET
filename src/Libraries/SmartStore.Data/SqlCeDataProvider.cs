@@ -2,7 +2,9 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
+using SmartStore.Core.Data;
 using SmartStore.Data.Initializers;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data
 {
@@ -22,7 +24,8 @@ namespace SmartStore.Data
         /// </summary>
 		public virtual IDatabaseInitializer<SmartObjectContext> GetDatabaseInitializer()
         {
-            var initializer = new CreateCeDatabaseIfNotExists<SmartObjectContext>();
+            //var initializer = new CreateCeDatabaseIfNotExists<SmartObjectContext>();
+			var initializer = new MigrateDatabaseToLatestVersionEx<SmartObjectContext, Configuration>(new string[]{ "Indexes.sql" });
 			return initializer;
         }
 
@@ -42,5 +45,10 @@ namespace SmartStore.Data
         {
             return new SqlParameter();
         }
+
+		public string ProviderInvariantName
+		{
+			get { return "System.Data.SqlServerCe.4.0"; }
+		}
     }
 }

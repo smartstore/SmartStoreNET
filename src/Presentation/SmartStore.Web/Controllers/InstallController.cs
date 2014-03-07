@@ -264,7 +264,7 @@ namespace SmartStore.Web.Controllers
 				tcs.SetResult(UpdateResult(x =>
 				{
 					x.Success = true;
-					x.RedirectUrl = Url.RouteUrl("HomePage");
+					x.RedirectUrl = Url.Action("Index", "Home");
 				}));
 				return t;
 			}
@@ -594,7 +594,7 @@ namespace SmartStore.Web.Controllers
 					{
 						x.Completed = true;
 						x.Success = true;
-						x.RedirectUrl = Url.RouteUrl("HomePage");
+						x.RedirectUrl = Url.Action("Index", "Home");
 					}));
 					return t;
 				}
@@ -651,12 +651,12 @@ namespace SmartStore.Web.Controllers
             if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
             
-            //restart application
+            // Restart application
             var webHelper = EngineContext.Current.Resolve<IWebHelper>();
             webHelper.RestartAppDomain();
 
-            //Redirect to home page
-            return RedirectToRoute("HomePage");
+            // Redirect to home page
+            return RedirectToAction("Index", "Home");
         }
 
         #endregion

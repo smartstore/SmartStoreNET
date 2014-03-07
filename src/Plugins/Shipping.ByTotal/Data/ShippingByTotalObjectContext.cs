@@ -3,18 +3,33 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Data;
+using SmartStore.Data.Initializers;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Data
 {
-    /// <summary>
+	
+	/// <summary>
     /// Object context
     /// </summary>
     public class ShippingByTotalObjectContext : ObjectContextBase
     {
-        //public const string ALIASKEY = "sm_object_context_tax_country_state_zip";
-        public const string ALIASKEY = "sm_object_context_shipping_by_total"; 
-        
+        public const string ALIASKEY = "sm_object_context_shipping_by_total";
+
+		static ShippingByTotalObjectContext()
+		{
+			Database.SetInitializer<ShippingByTotalObjectContext>(null);
+		}
+
+		/// <summary>
+		/// For tooling support, e.g. EF Migrations
+		/// </summary>
+		public ShippingByTotalObjectContext()
+			: base()
+		{
+		}
+
         public ShippingByTotalObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString, ALIASKEY)
         {
@@ -34,10 +49,12 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
         /// </summary>
         public void Install()
         {
-            //create table
-            var dbScript = CreateDatabaseScript();
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
+			//create table
+			var dbScript = CreateDatabaseScript();
+			Database.ExecuteSqlCommand(dbScript);
+			SaveChanges();
+
+			//this.Database.Initialize(false);
         }
 
         /// <summary>
@@ -45,9 +62,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
         /// </summary>
         public void Uninstall()
         {
-            var dbScript = "DROP TABLE ShippingByTotal";
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
+			var dbScript = "DROP TABLE ShippingByTotal";
+			Database.ExecuteSqlCommand(dbScript);
+			SaveChanges();
         }
 
     }

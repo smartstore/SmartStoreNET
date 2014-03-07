@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using System.Transactions;
+using SmartStore.Core.Data;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Initializers
 {
@@ -21,29 +25,57 @@ namespace SmartStore.Data.Initializers
                 throw new ArgumentNullException("context");
             }
             var replacedContext = ReplaceSqlCeConnection(context);
-
+			
             bool databaseExists;
             using (new TransactionScope(TransactionScopeOption.Suppress))
             {
                 databaseExists = replacedContext.Database.Exists();
             }
 
-            if (databaseExists)
-            {
-                // If there is no metadata either in the model or in the databaase, then
-                // we assume that the database matches the model because the common cases for
-                // these scenarios are database/model first and/or an existing database.
-                if (!context.Database.CompatibleWithModel(throwIfNoMetadata: false))
-                {
-                    throw new InvalidOperationException(string.Format("The model backing the '{0}' context has changed since the database was created. Either manually delete/update the database, or call Database.SetInitializer with an IDatabaseInitializer instance. For example, the DropCreateDatabaseIfModelChanges strategy will automatically delete and recreate the database, and optionally seed it with new data.", context.GetType().Name));
-                }
-            }
-            else
-            {
-                context.Database.Create();
-                Seed(context);
-                context.SaveChanges();
-            }
+			var config = new Configuration
+			{
+				TargetDatabase = new DbConnectionInfo(replacedContext.Database.Connection.ConnectionString, "System.Data.SqlServerCe.4.0")
+			};
+
+			var migrator = new DbMigrator(config);
+			migrator.Update();
+
+			//if (databaseExists)
+			//{
+			//	// If there is no metadata either in the model or in the database, then
+			//	// we assume that the database matches the model because the common case for
+			//	// these scenarios are database/model first and/or an existing database.
+			//	////if (!context.Database.CompatibleWithModel(throwIfNoMetadata: false))
+			//	////{
+			//	////	throw new InvalidOperationException(string.Format("The model backing the '{0}' context has changed since the database was created. Either manually delete/update the database, or call Database.SetInitializer with an IDatabaseInitializer instance. For example, the DropCreateDatabaseIfModelChanges strategy will automatically delete and recreate the database, and optionally seed it with new data.", context.GetType().Name));
+			//	////}
+
+			//	//bool migrate = false;
+			//	//try
+			//	//{
+			//	//	migrate = !replacedContext.Database.CompatibleWithModel(true);
+			//	//}
+			//	//catch (NotSupportedException)
+			//	//{
+			//	//	// if there are no metadata for migration
+			//	//	migrate = true;
+			//	//}
+
+			//	//if (migrate)
+			//	//{
+			//	//	var migrator = new DbMigrator(config);
+			//	//	migrator.Update();
+			//	//}
+			//}
+			//else
+			//{
+			//	context.Database.Create();
+			//	Seed(context);
+			//	context.SaveChanges();
+
+			//	//var migrator = new DbMigrator(config);
+			//	//migrator.Update();
+			//}
         }
 
         #endregion

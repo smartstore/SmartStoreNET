@@ -419,9 +419,9 @@ namespace SmartStore.Data
 		/// </summary>
 		/// <returns>The connection string</returns>
 		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support.</remarks>
-		protected static string GetConnectionString()
+		public static string GetConnectionString()
 		{
-			if (DataSettings.DatabaseIsInstalled())
+			if (DataSettings.Current.IsValid())
 			{
 				return DataSettings.Current.DataConnectionString;
 			}

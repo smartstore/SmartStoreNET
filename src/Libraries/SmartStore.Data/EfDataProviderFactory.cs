@@ -6,7 +6,12 @@ namespace SmartStore.Data
 {
     public partial class EfDataProviderFactory : DataProviderFactory
     {
-        public EfDataProviderFactory(DataSettings settings)
+		public EfDataProviderFactory()
+			: this(DataSettings.Current)
+		{
+		}
+		
+		public EfDataProviderFactory(DataSettings settings)
 			: base(settings)
         {
         }

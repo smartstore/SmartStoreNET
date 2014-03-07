@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\Presentation\SmartStore.Web\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -107,7 +116,6 @@
     </Compile>
     <Compile Include="ByTotalShippingComputationMethod.cs" />
     <Compile Include="Controllers\ShippingByTotalController.cs" />
-    <Compile Include="Data\EfStartUpTask.cs" />
     <Compile Include="Data\ShippingByTotalObjectContext.cs" />
     <Compile Include="Data\ShippingByTotalRecordMap.cs" />
     <Compile Include="DependencyRegistrar.cs" />

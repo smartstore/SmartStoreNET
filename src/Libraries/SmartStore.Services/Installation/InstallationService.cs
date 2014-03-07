@@ -1724,7 +1724,7 @@ namespace SmartStore.Services.Installation
 			InstallStores();
 		}
 
-        public virtual void InstallData(InstallDataContext context /* codehint: sm-edit */)
+        public virtual void InstallData(InstallDataContext context)
         {
             Guard.ArgumentNotNull(context.Language, "Language");
             Guard.ArgumentNotNull(context.InstallData, "InstallData");

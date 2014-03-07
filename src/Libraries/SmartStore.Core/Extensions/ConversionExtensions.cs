@@ -36,7 +36,7 @@ namespace SmartStore
 
         public static object Convert(this object value, Type to)
         {
-            return value.Convert(to, CultureInfo.CurrentCulture);
+            return value.Convert(to, CultureInfo.InvariantCulture);
         }
 
         public static object Convert(this object value, Type to, CultureInfo culture)
@@ -174,7 +174,7 @@ namespace SmartStore
 
         public static bool TryConvert<T>(this object value, out T convertedValue)
         {
-            return value.TryConvert<T>(CultureInfo.CurrentCulture, out convertedValue);
+            return value.TryConvert<T>(CultureInfo.InvariantCulture, out convertedValue);
         }
 
         public static bool TryConvert<T>(this object value, CultureInfo culture, out T convertedValue)
@@ -187,7 +187,7 @@ namespace SmartStore
 
         public static bool TryConvert(this object value, Type to, out object convertedValue)
         {
-            return value.TryConvert(to, CultureInfo.CurrentCulture, out convertedValue);
+            return value.TryConvert(to, CultureInfo.InvariantCulture, out convertedValue);
         }
 
         public static bool TryConvert(this object value, Type to, CultureInfo culture, out object convertedValue)

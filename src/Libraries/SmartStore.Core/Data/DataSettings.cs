@@ -16,6 +16,7 @@ namespace SmartStore.Core.Data
 		private static readonly ReaderWriterLockSlim s_rwLock = new ReaderWriterLockSlim();
 		private static DataSettings s_current = null;
 		private static Func<DataSettings> s_settingsFactory = new Func<DataSettings>(() => new DataSettings());
+		private static bool? s_installed = null;
 
 		protected const char SEPARATOR = ':';
 		protected const string FILENAME = "Settings.txt";
@@ -62,7 +63,12 @@ namespace SmartStore.Core.Data
 
 		public static bool DatabaseIsInstalled()
 		{
-			return Current.IsValid();
+			if (!s_installed.HasValue)
+			{
+				s_installed = Current.IsValid();
+			}
+
+			return s_installed.Value;
 		}
 
 		public static void Reload()
@@ -70,6 +76,7 @@ namespace SmartStore.Core.Data
 			using (s_rwLock.GetWriteLock())
 			{
 				s_current = null;
+				s_installed = null;
 			}
 		}
 
@@ -80,6 +87,7 @@ namespace SmartStore.Core.Data
 				string filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), FILENAME);
 				File.Delete(filePath);
 				s_current = null;
+				s_installed = null;
 			}
 		}
 
@@ -91,6 +99,18 @@ namespace SmartStore.Core.Data
 		{ 
 			get; 
 			set; 
+		}
+
+		public string ProviderInvariantName
+		{
+			get
+			{
+				if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
+					return "System.Data.SqlClient";
+
+				// SqlCe should always be the default provider
+				return "System.Data.SqlServerCe.4.0";
+			}
 		}
 
         public string DataConnectionString 
@@ -149,6 +169,7 @@ namespace SmartStore.Core.Data
 				this.RawDataSettings.Clear();
 				this.DataProvider = null;
 				this.DataConnectionString = null;
+				s_installed = null;
 			}
 		}
 

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Shipping.ByWeight.Data;
+using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
 using SmartStore.Plugin.Shipping.ByWeight.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
@@ -178,9 +180,6 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         /// </summary>
         public override void Install()
         {
-            //database objects
-            _objectContext.Install();
-
             //locales
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
             
@@ -192,8 +191,8 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         /// </summary>
         public override void Uninstall()
         {
-            //database objects
-            _objectContext.Uninstall();
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update(DbMigrator.InitialDatabase);
 
             //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);

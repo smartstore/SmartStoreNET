@@ -7,7 +7,10 @@ namespace SmartStore.Data.Migrations
     {
 		public override void Up()
         {
-            CreateTable(
+			if (DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
+				return;
+			
+			CreateTable(
                 "dbo.ProductBundleItemAttributeFilter",
                 c => new
                     {

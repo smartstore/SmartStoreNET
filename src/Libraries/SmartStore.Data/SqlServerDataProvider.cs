@@ -39,7 +39,10 @@ namespace SmartStore.Data
 			customCommands.AddRange(ParseCommands(CommonHelper.MapPath("~/App_Data/SqlServer.StoredProcedures.sql"), false));
             
             //var initializer = new CreateTablesIfNotExist<SmartObjectContext>(tablesToValidate, customCommands.ToArray());
-			var initializer = new MigrateDatabaseToLatestVersionEx<SmartObjectContext, Configuration>(new string[] { "Indexes.sql", "Indexes.SqlServer.sql", "StoredProcedures.sql" });
+			var initializer = new MigrateDatabaseToLatestVersionEx<SmartObjectContext, Configuration>(
+				new[] {"Customer", "Discount", "Order", "Product", "ShoppingCartItem"},
+				new[] { "Indexes.sql", "Indexes.SqlServer.sql", "StoredProcedures.sql" }
+				);
 
 			return initializer;
         }

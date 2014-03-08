@@ -21,7 +21,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
 
 		static ShippingByTotalObjectContext()
 		{
-			Database.SetInitializer(new MigrateDatabaseToLatestVersionEx<ShippingByTotalObjectContext, Configuration>());
+			Database.SetInitializer(new MigrateDatabaseToLatestVersionEx<ShippingByTotalObjectContext, Configuration>(new[] { "ShippingByTotal" }, null));
 		}
 
 		/// <summary>
@@ -44,30 +44,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
             //disable EdmMetadata generation
             //modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
             base.OnModelCreating(modelBuilder);
-        }
-
-        /// <summary>
-        /// Install
-        /// </summary>
-        public void Install()
-        {
-			////create table
-			//var dbScript = CreateDatabaseScript();
-			//Database.ExecuteSqlCommand(dbScript);
-			//SaveChanges();
-        }
-
-        /// <summary>
-        /// Uninstall
-        /// </summary>
-        public void Uninstall()
-        {
-			//var dbScript = "DROP TABLE ShippingByTotal";
-			//Database.ExecuteSqlCommand(dbScript);
-			//SaveChanges();
-
-			var migrator = new DbMigrator(new Configuration());
-			migrator.Update("0");
         }
 
     }

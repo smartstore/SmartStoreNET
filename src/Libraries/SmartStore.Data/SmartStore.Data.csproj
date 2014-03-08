@@ -99,6 +99,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="DbMigrationContext.cs" />
+    <Compile Include="Extensions\DbMigrationExtensions.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
     <Compile Include="Extensions\BaseEntityExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />

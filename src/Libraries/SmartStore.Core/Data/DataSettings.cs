@@ -113,6 +113,14 @@ namespace SmartStore.Core.Data
 			}
 		}
 
+		public bool IsSqlServer
+		{
+			get
+			{
+				return this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver");
+			}
+		}
+
         public string DataConnectionString 
 		{ 
 			get; 

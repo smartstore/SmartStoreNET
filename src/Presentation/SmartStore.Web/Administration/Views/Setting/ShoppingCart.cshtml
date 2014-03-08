@@ -202,9 +202,7 @@
                 @Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
                 @Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
             </td>
-        </tr>    
-        
-        @*codehint: sm-add*@
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
@@ -233,7 +231,6 @@
                 @Html.ValidationMessageFor(model => model.ShowShortDesc)
             </td>
         </tr>
-
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowBasePrice)
@@ -243,6 +240,14 @@
                 @Html.ValidationMessageFor(model => model.ShowBasePrice)
             </td>
         </tr>
-
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueQuantity)
+                @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+        </tr>
     </table>
 }

@@ -56,6 +56,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to display quantity of linked product at attribute values
+		/// </summary>
+		public bool ShowLinkedAttributeValueQuantity { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether product sorting is enabled
         /// </summary>

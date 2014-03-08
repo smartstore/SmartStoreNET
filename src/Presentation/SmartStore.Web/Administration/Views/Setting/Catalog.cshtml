@@ -626,6 +626,15 @@
                 @Html.ValidationMessageFor(model => model.ShowVariantCombinationPriceAdjustment)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueQuantity)
+                @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+        </tr>
     </table>
 }    
 @helper TabProductSearchSettings()

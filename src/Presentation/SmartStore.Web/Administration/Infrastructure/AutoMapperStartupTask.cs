@@ -670,8 +670,7 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
 				.ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
-				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
-				.ForMember(dest => dest.ShowLinkedAttributeValueQuantity, mo => mo.Ignore());
+				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
                 .ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore())

@@ -1361,6 +1361,11 @@ namespace SmartStore.Web.Controllers
 									preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
 								}
 
+								if (_catalogSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+								{
+									pvaValueModel.QuantityInfo = pvaValue.Quantity;
+								}
+
 								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 							}
 

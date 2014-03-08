@@ -793,6 +793,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity")]
 			public int Quantity { get; set; }
+			public string QuantityInfo { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
 

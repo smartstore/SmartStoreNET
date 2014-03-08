@@ -300,6 +300,23 @@ SET @resources='
 		<Value>Filter order list by customer name.</Value>
 		<Value lang="de">Auftragsliste nach dem Kundennamen filtern.</Value>
 	</LocaleResource>
+	
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity">
+		<Value>Show quantity of linked product</Value>
+		<Value lang="de">Menge verknüpfter Produkte anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity.Hint">
+		<Value>Determine whether the quantity of linked products to appear at a variant attribute value.</Value>
+		<Value lang="de">Bestimmt, ob bei Werten von Variantattributen die Menge von verknüpften Produkten angezeigt werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity">
+		<Value>Show quantity of linked product</Value>
+		<Value lang="de">Menge verknüpfter Produkte anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity.Hint">
+		<Value>Determine whether the quantity of linked products to appear at a variant attribute value.</Value>
+		<Value lang="de">Bestimmt, ob bei Werten von Variantattributen die Menge von verknüpften Produkten angezeigt werden soll.</Value>
+	</LocaleResource>
 
 </Language>
 '

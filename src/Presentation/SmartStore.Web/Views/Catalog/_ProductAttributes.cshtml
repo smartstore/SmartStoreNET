@@ -44,9 +44,7 @@
                         }
                         @foreach (var pvaValue in attribute.Values)
                         {
-                            <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected)>@pvaValue.Name
-                                @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
-                            </option>
+                            <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected)>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
                         }
                     </select>
                         }
@@ -58,7 +56,7 @@
                             {
                                 <label for="@(controlId)_@(pvaValue.Id)" class="radio">
 									<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
-                                        @pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
+                                        @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
                                 </label>
                             }
 
@@ -70,7 +68,7 @@
                             {       
                                 <label for="@(controlId)_@(pvaValue.Id)" class="checkbox">                             
 									<input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
-                                        @pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
+                                        @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
                                 </label>
                             }
                             //codehint: sm-edit end
@@ -194,12 +192,12 @@
                             {
                                 <li @(pvaValue.IsPreSelected ? @Html.Raw(" class=\"selected-value\"") : null)>
                                     <label for="@(controlId)_@(pvaValue.Id)">
-                                        <span class="color-container tooltip-toggle" title="@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)">
-                                            <span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
-                                        </span>
+										<span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
+											<span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
+										</span>
                                         <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@Html.Raw(disabled) />
                                         @*uncomment below to display attribute value name*@
-                                        @*<span class="name">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</span>*@
+                                        @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
                                     </label>
                                 </li>
                             }

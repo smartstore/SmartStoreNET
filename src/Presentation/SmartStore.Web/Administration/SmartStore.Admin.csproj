@@ -182,6 +182,7 @@
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
+    <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />

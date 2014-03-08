@@ -174,6 +174,12 @@ namespace SmartStore.Services.Catalog
 										decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out taxRate);
                                         decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
 
+										if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
+											pvaValue.Quantity > 1)
+										{
+											pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
+										}
+
                                         if (priceAdjustmentBase > 0)
                                         {
                                             string priceAdjustmentStr = _priceFormatter.FormatPrice(priceAdjustment, false, false);
@@ -185,12 +191,6 @@ namespace SmartStore.Services.Catalog
                                             pvaAttribute += string.Format(" [-{0}]", priceAdjustmentStr);
                                         }
                                     }
-
-									if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
-										pvaValue.Quantity > 1)
-									{
-										pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
-									}
                                 }
                                 //encode (if required)
                                 if (htmlEncode)

@@ -3105,6 +3105,9 @@ namespace SmartStore.Admin.Controllers
 						model.LinkedProductName = linkedProduct.GetLocalized(p => p.Name);
 						model.LinkedProductTypeName = linkedProduct.GetProductTypeLabel(_localizationService);
 						model.LinkedProductTypeLabelHint = linkedProduct.ProductTypeLabelHint;
+
+						if (model.Quantity > 1)
+							model.QuantityInfo = " × {0}".FormatWith(model.Quantity);
 					}
 
 					return model;
@@ -3228,6 +3231,9 @@ namespace SmartStore.Admin.Controllers
 				model.LinkedProductName = linkedProduct.GetLocalized(p => p.Name);
 				model.LinkedProductTypeName = linkedProduct.GetProductTypeLabel(_localizationService);
 				model.LinkedProductTypeLabelHint = linkedProduct.ProductTypeLabelHint;
+
+				if (model.Quantity > 1)
+					model.QuantityInfo = " × {0}".FormatWith(model.Quantity);
 			}
 
 			//locales

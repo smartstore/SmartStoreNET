@@ -7,6 +7,7 @@
 @using System.Globalization;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Security;
+@using SmartStore.Web.Extensions;
 @{
     var hidePrices = !EngineContext.Current.Resolve<IPermissionService>().Authorize(StandardPermissionProvider.DisplayPrices);
 }
@@ -46,9 +47,7 @@
                             }
                             @foreach (var pvaValue in attribute.Values)
                             {
-                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@pvaValue.Name
-                                    @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
-                                </option>
+                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
                             }
                         </select>
                             }
@@ -61,7 +60,7 @@
                             {
                                 <li>
                                     <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
-                                    <label for="@(controlId)_@(pvaValue.Id)">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</label>
+                                    <label for="@(controlId)_@(pvaValue.Id)">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</label>
                                 </li>
                             }
                         </ul>
@@ -74,7 +73,7 @@
                             {
                                 <li>
                                     <input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
-                                    <label for="@(controlId)_@(pvaValue.Id)">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</label>
+                                    <label for="@(controlId)_@(pvaValue.Id)">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</label>
                                 </li>
                             }
                         </ul>

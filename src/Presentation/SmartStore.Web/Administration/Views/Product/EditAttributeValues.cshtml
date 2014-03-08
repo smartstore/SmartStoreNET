@@ -2,6 +2,7 @@
 
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Admin.Extensions;
 
 @{    
     //page title
@@ -31,7 +32,7 @@
                             {
 								columns.Bound(x => x.Name)
 									.ReadOnly()
-									.Template(x => @Html.VariantAttributeValueName(x.Name, x.ColorSquaresRgb, x.TypeName, x.TypeNameClass))
+									.Template(x => @Html.VariantAttributeValueName(x))
 									.ClientTemplate(@Html.VariantAttributeValueName());
 								columns.Bound(x => x.Alias);
 								columns.Bound(x => x.LinkedProductName)

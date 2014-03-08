@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Data.SqlServerCe;
 using System.IO;
 
-namespace SmartStore.Data.Initializers
+namespace SmartStore.Data.Setup
 {
     public abstract class SqlCeInitializer<T> : IDatabaseInitializer<T> where T : DbContext
     {

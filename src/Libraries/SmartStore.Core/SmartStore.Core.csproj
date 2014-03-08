@@ -156,6 +156,7 @@
     <Compile Include="Data\Impex\ImportProgressInfo.cs" />
     <Compile Include="Data\Impex\ImportResult.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
+    <Compile Include="Data\SqlFileTokenizer.cs" />
     <Compile Include="Domain\Catalog\ProductBundleData.cs" />
     <Compile Include="Domain\Catalog\ProductBundleItemAttributeFilter.cs" />
     <Compile Include="Domain\Catalog\ProductBundleItem.cs" />

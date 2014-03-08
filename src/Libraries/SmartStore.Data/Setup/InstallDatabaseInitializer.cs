@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Utilities;
 
-namespace SmartStore.Data.Initializers
+namespace SmartStore.Data.Setup
 {
 	
 	/// <summary>
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
-	///     to update the database to the latest version.
+	///     to setup and seed the database.
 	/// </summary>
-	public class MigrateDatabaseToLatestVersionEx<TContext, TConfig> : IDatabaseInitializer<TContext> 
+	public class InstallDatabaseInitializer<TContext, TConfig> : IDatabaseInitializer<TContext> 
 		where TContext : DbContext
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
@@ -31,27 +31,27 @@ namespace SmartStore.Data.Initializers
 
 		#region Ctor
 
-		public MigrateDatabaseToLatestVersionEx()
+		public InstallDatabaseInitializer()
 			: this(null, null, null)
 		{
 		}
 
-		public MigrateDatabaseToLatestVersionEx(string connectionString)
+		public InstallDatabaseInitializer(string connectionString)
 			: this(connectionString, null, null)
 		{
 		}
 
-		public MigrateDatabaseToLatestVersionEx(string[] sqlFiles)
+		public InstallDatabaseInitializer(string[] sqlFiles)
 			: this(null, null, sqlFiles)
 		{
 		}
 
-		public MigrateDatabaseToLatestVersionEx(string[] tablesToCheck, string[] sqlFiles)
+		public InstallDatabaseInitializer(string[] tablesToCheck, string[] sqlFiles)
 			: this(null, tablesToCheck, sqlFiles)
 		{
 		}
 
-		public MigrateDatabaseToLatestVersionEx(string connectionString, string[] tablesToCheck, string[] sqlFiles)
+		public InstallDatabaseInitializer(string connectionString, string[] tablesToCheck, string[] sqlFiles)
 		{
 			this._connectionString = connectionString;
 			this._tablesToCheck = tablesToCheck;

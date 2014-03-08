@@ -6,7 +6,7 @@ using System.Transactions;
 using SmartStore.Core.Data;
 using SmartStore.Data.Migrations;
 
-namespace SmartStore.Data.Initializers
+namespace SmartStore.Data.Setup
 {
     /// <summary>
     /// An implementation of IDatabaseInitializer that will recreate and optionally re-seed the

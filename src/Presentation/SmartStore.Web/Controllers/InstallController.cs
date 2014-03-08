@@ -21,10 +21,12 @@ using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
-using System.Configuration;
+//using System.Configuration;
 using SmartStore.Core.Async;
 using System.Data.Entity;
 using SmartStore.Data;
+using SmartStore.Data.Setup;
+using System.Configuration;
 
 namespace SmartStore.Web.Controllers
 {
@@ -483,11 +485,19 @@ namespace SmartStore.Web.Controllers
 
 					// init data provider
 					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<IEfDataProvider>(scope: scope);
-					Database.SetInitializer(dataProviderInstance.GetDatabaseInitializer());
 					// Although obsolete we have no other chance than using this here.
 					// Delegating this to DbConfiguration is not possible during installation.
 #pragma warning disable 618
 					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
+
+					//// TODO: set InstallDatabaseInitializer and call Initialize()
+					//// [...]
+					//var context = new SmartObjectContext();
+					////var initializer = new InstallDatabaseInitializer<SmartObjectContext, Configuration>(
+					////	new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" },
+					////	new[] { "Indexes.sql", "Indexes.SqlServer.sql", "StoredProcedures.sql" });
+					////Database.SetInitializer<SmartObjectContext>(initializer);
+					//context.Database.Initialize(true);
 
 					// now resolve installation service
 					var installationService = EngineContext.Current.ContainerManager.Resolve<IInstallationService>(scope: scope);

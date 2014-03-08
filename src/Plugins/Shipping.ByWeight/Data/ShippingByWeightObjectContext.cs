@@ -4,7 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using SmartStore.Data;
-using SmartStore.Data.Initializers;
+using SmartStore.Data.Setup;
 using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
 
 namespace SmartStore.Plugin.Shipping.ByWeight.Data
@@ -18,7 +18,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data
         
 		static ShippingByWeightObjectContext()
 		{
-			Database.SetInitializer(new MigrateDatabaseToLatestVersionEx<ShippingByWeightObjectContext, Configuration>(new[] { "ShippingByWeight" }, null));
+			Database.SetInitializer(new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>(new[] { "ShippingByWeight" }));
 		}
 
 		/// <summary>

@@ -5,7 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 
-namespace SmartStore.Data
+namespace SmartStore.Data.Setup
 {
 	
 	public class DbMigrationContext

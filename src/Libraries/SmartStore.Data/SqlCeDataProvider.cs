@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using SmartStore.Core.Data;
-using SmartStore.Data.Initializers;
+using SmartStore.Data.Setup;
 using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data
@@ -17,16 +17,6 @@ namespace SmartStore.Data
         public virtual IDbConnectionFactory GetConnectionFactory()
         {
             return new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
-        }
-
-        /// <summary>
-        /// Get database initializer
-        /// </summary>
-		public virtual IDatabaseInitializer<SmartObjectContext> GetDatabaseInitializer()
-        {
-            //var initializer = new CreateCeDatabaseIfNotExists<SmartObjectContext>();
-			var initializer = new MigrateDatabaseToLatestVersionEx<SmartObjectContext, Configuration>(new string[]{ "Indexes.sql" });
-			return initializer;
         }
 
         /// <summary>

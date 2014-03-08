@@ -12,9 +12,5 @@ namespace SmartStore.Data
         /// <returns>Connection factory</returns>
         IDbConnectionFactory GetConnectionFactory();
 
-        /// <summary>
-        /// Set database initializer
-        /// </summary>
-        IDatabaseInitializer<SmartObjectContext> GetDatabaseInitializer();
     }
 }

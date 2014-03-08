@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Transactions;
 
-namespace SmartStore.Data.Initializers
+namespace SmartStore.Data.Setup
 {
+
     /// <summary>
-    /// An implementation of IDatabaseInitializer that will always recreate and optionally re-seed the
-    /// database the first time that a context is used in the app domain.
+    /// An implementation of IDatabaseInitializer that will <b>DELETE</b>, recreate, and optionally re-seed the
+    /// database only if the model has changed since the database was created.  This is achieved by writing a
+    /// hash of the store model to the database when it is created and then comparing that hash with one
+    /// generated from the current model.
     /// To seed the database, create a derived class and override the Seed method.
     /// </summary>
-    /// <typeparam name="TContext">The type of the context.</typeparam>
-    public class DropCreateCeDatabaseAlways<TContext> : SqlCeInitializer<TContext> where TContext : DbContext
+    public class DropCreateCeDatabaseIfModelChanges<TContext> : SqlCeInitializer<TContext> where TContext : DbContext
     {
         #region Strategy implementation
 
@@ -23,13 +26,28 @@ namespace SmartStore.Data.Initializers
             {
                 throw new ArgumentNullException("context");
             }
+
             var replacedContext = ReplaceSqlCeConnection(context);
 
-            if (replacedContext.Database.Exists())
+            bool databaseExists;
+            using (new TransactionScope(TransactionScopeOption.Suppress))
             {
+                databaseExists = replacedContext.Database.Exists();
+            }
+
+            if (databaseExists)
+            {
+                if (context.Database.CompatibleWithModel(throwIfNoMetadata: true))
+                {
+                    return;
+                }
+
                 replacedContext.Database.Delete();
             }
+
+            // Database didn't exist or we deleted it, so we now create it again.
             context.Database.Create();
+
             Seed(context);
             context.SaveChanges();
         }
@@ -49,4 +67,5 @@ namespace SmartStore.Data.Initializers
 
         #endregion
     }
+
 }

@@ -1,7 +1,9 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
+	using SmartStore.Core.Data;
+	using SmartStore.Data.Setup;
     
     public partial class Initial : DbMigration
     {
@@ -9,7 +11,9 @@ namespace SmartStore.Data.Migrations
         {
 			if (DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
 				return;
-			
+
+			#region auto generated
+
 			CreateTable(
                 "dbo.ProductBundleItemAttributeFilter",
                 c => new
@@ -1755,12 +1759,37 @@ namespace SmartStore.Data.Migrations
                 .ForeignKey("dbo.Product", t => t.ProductId, cascadeDelete: true)
                 .Index(t => t.Id)
                 .Index(t => t.ProductId);
-            
-        }
+
+			#endregion
+
+			#region Custom
+
+			this.SqlFile("Indexes.sql");
+			if (DataSettings.Current.IsSqlServer)
+			{
+				this.SqlFile("Indexes.SqlServer.sql");
+				this.SqlFile("StoredProcedures.sql");
+			}
+
+			#endregion
+		}
         
         public override void Down()
-        {
-            DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
+		{
+			#region Custom
+
+			this.SqlFile("Indexes.Reverse.sql");
+			if (DataSettings.Current.IsSqlServer)
+			{
+				this.SqlFile("Indexes.SqlServer.Reverse.sql");
+				this.SqlFile("StoredProcedures.Reverse.sql");
+			}
+
+			#endregion
+
+			#region auto generated
+
+			DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
             DropForeignKey("dbo.ProductReview", "Id", "dbo.CustomerContent");
             DropForeignKey("dbo.PollVotingRecord", "PollAnswerId", "dbo.PollAnswer");
             DropForeignKey("dbo.PollVotingRecord", "Id", "dbo.CustomerContent");
@@ -2049,6 +2078,8 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.Product");
             DropTable("dbo.ProductBundleItem");
             DropTable("dbo.ProductBundleItemAttributeFilter");
-        }
+
+			#endregion
+		}
     }
 }

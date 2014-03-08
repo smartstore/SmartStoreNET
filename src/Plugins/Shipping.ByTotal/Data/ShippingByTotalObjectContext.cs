@@ -6,7 +6,7 @@ using System.Data.Entity.Migrations;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Data;
-using SmartStore.Data.Initializers;
+using SmartStore.Data.Setup;
 using SmartStore.Plugin.Shipping.ByTotal.Data.Migrations;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Data
@@ -21,7 +21,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
 
 		static ShippingByTotalObjectContext()
 		{
-			Database.SetInitializer(new MigrateDatabaseToLatestVersionEx<ShippingByTotalObjectContext, Configuration>(new[] { "ShippingByTotal" }, null));
+			Database.SetInitializer(new MigrateDatabaseInitializer<ShippingByTotalObjectContext, Configuration>(new[] { "ShippingByTotal" }));
 		}
 
 		/// <summary>

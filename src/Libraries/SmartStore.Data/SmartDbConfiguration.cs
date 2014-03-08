@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.DependencyResolution;
 using System.Linq;
 using SmartStore.Core.Data;
-using SmartStore.Data.Initializers;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
 {
@@ -24,7 +24,6 @@ namespace SmartStore.Data
 			if (provider != null)
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
-				base.SetDatabaseInitializer(provider.GetDatabaseInitializer());
 			}
 		}
 	}

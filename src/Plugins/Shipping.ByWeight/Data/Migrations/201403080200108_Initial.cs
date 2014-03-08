@@ -3,6 +3,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 	using SmartStore.Data;
+	using SmartStore.Data.Setup;
     
     public partial class Initial : DbMigration
     {

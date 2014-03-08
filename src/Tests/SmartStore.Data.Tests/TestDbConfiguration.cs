@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.DependencyResolution;
 using System.Linq;
 using SmartStore.Core.Data;
-using SmartStore.Data.Initializers;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data.Tests
 {

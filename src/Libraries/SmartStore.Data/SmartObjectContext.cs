@@ -8,6 +8,8 @@ using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Reflection;
 using SmartStore.Core.Data;
+using SmartStore.Data.Migrations;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
 {
@@ -17,6 +19,16 @@ namespace SmartStore.Data
     /// </summary>
 	public class SmartObjectContext : ObjectContextBase
     {
+
+		static SmartObjectContext()
+		{
+			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, Configuration>(
+				new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" });
+			Database.SetInitializer<SmartObjectContext>(initializer);
+
+			// TODO: SQLCE
+			//var initializer = new MigrateDatabaseInitializer<SmartObjectContext, Configuration>(new string[] { "Indexes.sql" });
+		}
 
 		/// <summary>
 		/// For tooling support, e.g. EF Migrations

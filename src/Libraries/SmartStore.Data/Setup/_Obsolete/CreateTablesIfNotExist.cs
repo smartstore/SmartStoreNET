@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Transactions;
 
-namespace SmartStore.Data.Initializers
+namespace SmartStore.Data.Setup
 {
     public class CreateTablesIfNotExist<TContext> : IDatabaseInitializer<TContext> where TContext : DbContext
     {

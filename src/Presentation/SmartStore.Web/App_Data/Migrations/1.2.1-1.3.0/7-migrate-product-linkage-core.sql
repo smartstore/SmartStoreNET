@@ -24,7 +24,19 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'shoppingcartsettings.showlinkedattributevaluequantity')
 BEGIN
-	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'shoppingcartsettings.showlinkedattributevaluequantity', N'false', 0)
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'shoppingcartsettings.showlinkedattributevaluequantity', N'True', 0)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'catalogsettings.showlinkedattributevaluequantity')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'catalogsettings.showlinkedattributevaluequantity', N'True', 0)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'catalogsettings.showlinkedattributevalueimage')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId]) VALUES (N'catalogsettings.showlinkedattributevalueimage', N'True', 0)
 END
 GO
 

@@ -56,6 +56,9 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity")]
 		public bool ShowLinkedAttributeValueQuantity { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueImage")]
+		public bool ShowLinkedAttributeValueImage { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
         public bool ShowDeliveryTimesInProductLists { get; set; }
 

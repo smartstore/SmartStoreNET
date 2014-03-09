@@ -44,7 +44,7 @@
                         }
                         @foreach (var pvaValue in attribute.Values)
                         {
-                            <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected)>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
+                            <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected) @Html.Attr("data-imageurl", pvaValue.ImageUrl, pvaValue.ImageUrl.HasValue())>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
                         }
                     </select>
                         }

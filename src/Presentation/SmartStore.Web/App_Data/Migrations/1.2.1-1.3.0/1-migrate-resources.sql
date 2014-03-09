@@ -317,6 +317,14 @@ SET @resources='
 		<Value>Determine whether the quantity of linked products to appear at a variant attribute value.</Value>
 		<Value lang="de">Bestimmt, ob bei Werten von Variantattributen die Menge von verknüpften Produkten angezeigt werden soll.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueImage">
+		<Value>Show image of linked product</Value>
+		<Value lang="de">Bild zu verknüpften Produkten anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueImage.Hint">
+		<Value>Determine whether the image of linked products to appear at a variant attribute value.</Value>
+		<Value lang="de">Bestimmt, ob bei Werten von Variantattributen das Bild von verknüpften Produkten angezeigt werden soll.</Value>
+	</LocaleResource>
 
 </Language>
 '

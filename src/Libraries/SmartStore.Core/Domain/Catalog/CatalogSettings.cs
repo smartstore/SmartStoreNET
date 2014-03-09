@@ -61,6 +61,11 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		public bool ShowLinkedAttributeValueQuantity { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to display the image of linked product at attribute values
+		/// </summary>
+		public bool ShowLinkedAttributeValueImage { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether product sorting is enabled
         /// </summary>

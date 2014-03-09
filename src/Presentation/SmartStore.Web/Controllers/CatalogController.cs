@@ -1340,8 +1340,6 @@ namespace SmartStore.Web.Controllers
 							if (hasSelectedAttributes)
 								pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
 
-							pvaModel.Values.Add(pvaValueModel);
-
 							// display price if allowed
 							if (displayPrices && !isBundlePricing)
 							{
@@ -1369,8 +1367,19 @@ namespace SmartStore.Web.Controllers
 								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 							}
 
-                            if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
-                                pvaValueModel.PriceAdjustment = "";
+							if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							{
+								pvaValueModel.PriceAdjustment = "";
+							}
+
+							if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+							{
+								var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
+								if (linkagePicture != null)
+									pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
+							}
+
+							pvaModel.Values.Add(pvaValueModel);
 						}
 					}
 

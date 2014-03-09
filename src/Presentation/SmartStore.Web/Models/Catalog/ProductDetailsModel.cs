@@ -268,6 +268,7 @@ namespace SmartStore.Web.Models.Catalog
 			public decimal PriceAdjustmentValue { get; set; }
 			public int QuantityInfo { get; set; }
 			public bool IsPreSelected { get; set; }
+			public string ImageUrl { get; set; }
 		}
 
 		public partial class ProductBundleItemModel : EntityModelBase

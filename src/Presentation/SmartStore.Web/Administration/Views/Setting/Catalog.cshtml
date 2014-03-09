@@ -635,6 +635,15 @@
                 @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowLinkedAttributeValueImage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueImage)
+                @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueImage)
+            </td>
+        </tr>
     </table>
 }    
 @helper TabProductSearchSettings()

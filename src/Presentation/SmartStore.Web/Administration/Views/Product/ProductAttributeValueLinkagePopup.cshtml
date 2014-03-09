@@ -23,7 +23,8 @@
     <script type="text/javascript">
 		try {
 			window.opener.document.getElementById('@(ViewBag.openerProductId)').value = '@(ViewBag.productId)';
-			window.opener.document.getElementById('@(ViewBag.openerProductName)').innerHTML = '@(ViewBag.productName)';
+			window.opener.document.getElementById('@(ViewBag.openerProductName)').value = '@(ViewBag.productName)';
+			window.opener.document.getElementById('linked-product-name').innerHTML = '@(ViewBag.productName)';
 			window.opener.toggleLinkageButtons();
 		}
 		catch (e){} 

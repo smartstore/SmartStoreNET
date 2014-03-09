@@ -68,7 +68,7 @@
                         </a>
                     </li>
                     <li>
-                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common")">
+                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl })">
                             <i class="icon-refresh"></i>
                             @T("Admin.Header.RestartApplication")
                         </a>

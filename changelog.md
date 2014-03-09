@@ -63,6 +63,7 @@
 * #277 Show BasePrice (PAnGv) in cart also
 * GMC feed plugin: Export configurable shipping weight and base price info
 * #280 Filter orders by customer name
+* #190 App Restart: stay on current page
 
 ##SmartStore.NET 1.2.1.0#
 

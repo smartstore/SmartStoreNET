@@ -182,6 +182,7 @@
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
+    <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
@@ -1192,6 +1193,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

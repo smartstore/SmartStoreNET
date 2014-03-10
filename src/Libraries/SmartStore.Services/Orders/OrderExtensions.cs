@@ -168,17 +168,17 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
-		public static List<ProductBundleData> GetBundleData(this OrderItem orderItem)
+		public static List<ProductBundleItemOrderData> GetBundleData(this OrderItem orderItem)
 		{
 			if (orderItem != null && orderItem.BundleData.HasValue())
 			{
-				var data = orderItem.BundleData.Convert<List<ProductBundleData>>();
+				var data = orderItem.BundleData.Convert<List<ProductBundleItemOrderData>>();
 				return data;
 			}
-			return new List<ProductBundleData>();
+			return new List<ProductBundleItemOrderData>();
 		}
 
-		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleData> bundleData)
+		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleItemOrderData> bundleData)
 		{
 			string rawData = null;
 

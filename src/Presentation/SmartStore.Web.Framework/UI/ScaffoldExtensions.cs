@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.WebPages;
 using Telerik.Web.Mvc.UI.Fluent;
 using SmartStore.Core.Infrastructure;
@@ -13,12 +12,10 @@ namespace SmartStore.Web.Framework.UI
     /// </summary>
     public static class ScaffoldExtensions
     {
-
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)
         {
             return "<i class='icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
         }
-
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
             return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
@@ -32,18 +29,22 @@ namespace SmartStore.Web.Framework.UI
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
 
-				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, helper.Encode(name));
+				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, name);
 			}
 			else
 			{
-				namePart = "<span><#= {0} #></span>".FormatInvariant(helper.Encode(name));
+				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
 			}
 
-			return "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			string result = "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			
+			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}
-
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
+			if (id == 0 && name.IsNullOrEmpty())
+				return null;
+
 			string namePart = null;
 
 			if (id != 0)
@@ -77,7 +78,6 @@ namespace SmartStore.Web.Framework.UI
         {
             return builder.Text(T("Admin.Common.Delete").Text);
         }
-
     }
 }
 

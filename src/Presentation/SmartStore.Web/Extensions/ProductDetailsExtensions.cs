@@ -51,6 +51,18 @@ namespace SmartStore.Web.Extensions
 			}
 			return null;
 		}
+		public static string GetAttributeValueInfo(this ProductDetailsModel.ProductVariantAttributeValueModel model)
+		{
+			string result = "";
+
+			if (model.PriceAdjustment.HasValue())
+				result = " [{0}]".FormatWith(model.PriceAdjustment);
+
+			if (model.QuantityInfo > 1)
+				return " × {1}".FormatWith(result, model.QuantityInfo) + result;
+
+			return result;
+		}
 
 		public static bool ShouldBeRendered(this ProductDetailsModel.ProductVariantAttributeModel variantAttribute)
 		{

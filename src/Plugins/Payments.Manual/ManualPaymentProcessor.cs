@@ -79,7 +79,7 @@ namespace SmartStore.Plugin.Payments.Manual
         /// Gets additional handling fee
         /// </summary>
         /// <returns>Additional handling fee</returns>
-        public override decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
         {
 			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
 				_manualPaymentSettings.AdditionalFee, _manualPaymentSettings.AdditionalFeePercentage);

@@ -20,6 +20,7 @@ namespace SmartStore.Services.Catalog
         private readonly IDiscountService _discountService;
         private readonly ICategoryService _categoryService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductService _productService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -28,6 +29,7 @@ namespace SmartStore.Services.Catalog
             IDiscountService discountService,
 			ICategoryService categoryService,
             IProductAttributeParser productAttributeParser,
+			IProductService productService,
 			ShoppingCartSettings shoppingCartSettings, 
             CatalogSettings catalogSettings)
         {
@@ -36,6 +38,7 @@ namespace SmartStore.Services.Catalog
             this._discountService = discountService;
             this._categoryService = categoryService;
             this._productAttributeParser = productAttributeParser;
+			this._productService = productService;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
         }
@@ -247,7 +250,7 @@ namespace SmartStore.Services.Catalog
             decimal additionalCharge, 
             bool includeDiscounts, 
             int quantity,
-			ProductBundleItem bundleItem = null)
+			ProductBundleItemData bundleItem = null)
         {
             //initial price
 			decimal result = product.Price;
@@ -258,7 +261,7 @@ namespace SmartStore.Services.Catalog
                 result = specialPrice.Value;
 
             //tier prices
-			if (product.HasTierPrices && bundleItem == null)
+			if (product.HasTierPrices && !bundleItem.IsValid())
             {
 				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity);
                 if (tierPrice.HasValue)
@@ -292,8 +295,8 @@ namespace SmartStore.Services.Catalog
 		/// <param name="quantity">Shopping cart item quantity</param>
 		/// <param name="bundleItem">A product bundle item</param>
 		/// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, IList<ProductBundleItem> bundleItems,
-			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItem bundleItem = null)
+		public virtual decimal GetFinalPrice(Product product, IList<ProductBundleItemData> bundleItems,
+			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null)
 		{
 			if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem);
@@ -302,16 +305,42 @@ namespace SmartStore.Services.Catalog
 
 			if (bundleItems != null)
 			{
-				foreach (var item in bundleItems)
+				foreach (var data in bundleItems.Where(x => x.IsValid()))
 				{
-					var bundleItemPrice = GetFinalPrice(item.Product, customer, item.AdditionalCharge, includeDiscounts, 1, item);
-					result = result + decimal.Multiply(bundleItemPrice, item.Quantity);
+					var bundleItemPrice = GetFinalPrice(data.Item.Product, customer, data.AdditionalCharge, includeDiscounts, 1, data);
+					result = result + decimal.Multiply(bundleItemPrice, data.Item.Quantity);
 				}
 			}
 
 			return (result < decimal.Zero ? decimal.Zero : result);
 		}
 
+		/// <summary>
+		/// Gets the product cost
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="attributesXml">Shopping cart item attributes in XML</param>
+		/// <returns>Product cost</returns>
+		public virtual decimal GetProductCost(Product product, string attributesXml)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			decimal result = product.ProductCost;
+
+			_productAttributeParser
+				.ParseProductVariantAttributeValues(attributesXml)
+				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.Each(x =>
+				{
+					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
+
+					if (linkedProduct != null)
+						result += (linkedProduct.ProductCost * x.Quantity);
+				});
+
+			return result;
+		}
 
         /// <summary>
         /// Gets discount amount
@@ -382,27 +411,30 @@ namespace SmartStore.Services.Catalog
             decimal additionalCharge,
             int quantity,
             out Discount appliedDiscount,
-			ProductBundleItem bundleItem = null)
+			ProductBundleItemData bundleItem = null)
         {
             appliedDiscount = null;
             decimal appliedDiscountAmount = decimal.Zero;
 
-			if (bundleItem == null)
+			if (bundleItem.IsValid())
+			{
+				if (bundleItem.Item.Discount.HasValue && bundleItem.Item.BundleProduct.BundlePerItemPricing)
+				{
+					appliedDiscount = new Discount()
+					{
+						UsePercentage = bundleItem.Item.DiscountPercentage,
+						DiscountPercentage = bundleItem.Item.Discount.Value,
+						DiscountAmount = bundleItem.Item.Discount.Value
+					};
+				}
+			}
+			else
 			{
 				//we don't apply discounts to products with price entered by a customer
 				if (product.CustomerEntersPrice)
 					return appliedDiscountAmount;
 
 				appliedDiscount = GetPreferredDiscount(product, customer, additionalCharge, quantity);
-			}
-			else if (bundleItem.Discount.HasValue && bundleItem.BundleProduct.BundlePerItemPricing)
-			{
-				appliedDiscount = new Discount()
-				{
-					UsePercentage = bundleItem.DiscountPercentage,
-					DiscountPercentage = bundleItem.Discount.Value,
-					DiscountAmount = bundleItem.Discount.Value
-				};
 			}
 
             if (appliedDiscount != null)
@@ -421,9 +453,9 @@ namespace SmartStore.Services.Catalog
         /// <param name="shoppingCartItem">The shopping cart item</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for price computation</param>
         /// <returns>Shopping cart item sub total</returns>
-        public virtual decimal GetSubTotal(ShoppingCartItem shoppingCartItem, bool includeDiscounts)
+        public virtual decimal GetSubTotal(OrganizedShoppingCartItem shoppingCartItem, bool includeDiscounts)
         {
-            return GetUnitPrice(shoppingCartItem, includeDiscounts) * shoppingCartItem.Quantity;
+            return GetUnitPrice(shoppingCartItem, includeDiscounts) * shoppingCartItem.Item.Quantity;
         }
 
         /// <summary>
@@ -432,39 +464,39 @@ namespace SmartStore.Services.Catalog
         /// <param name="shoppingCartItem">The shopping cart item</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for price computation</param>
         /// <returns>Shopping cart unit price (one item)</returns>
-        public virtual decimal GetUnitPrice(ShoppingCartItem shoppingCartItem, bool includeDiscounts)
+		public virtual decimal GetUnitPrice(OrganizedShoppingCartItem shoppingCartItem, bool includeDiscounts)
         {
 			decimal finalPrice = decimal.Zero;
-            var customer = shoppingCartItem.Customer;
-			var product = shoppingCartItem.Product;
+            var customer = shoppingCartItem.Item.Customer;
+			var product = shoppingCartItem.Item.Product;
 
             if (product != null)
             {
 				if (product.CustomerEntersPrice)
                 {
-                    finalPrice = shoppingCartItem.CustomerEnteredPrice;
+                    finalPrice = shoppingCartItem.Item.CustomerEnteredPrice;
                 }
 				else if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 				{
 					if (shoppingCartItem.ChildItems != null)
 					{
-						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItem != null).Select(x => x.BundleItem).ToList();
+						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItemData.IsValid()).Select(x => x.BundleItemData).ToList();
 
-						finalPrice = GetFinalPrice(product, bundleItems, customer, decimal.Zero, includeDiscounts, shoppingCartItem.Quantity);
+						finalPrice = GetFinalPrice(product, bundleItems, customer, decimal.Zero, includeDiscounts, shoppingCartItem.Item.Quantity);
 					}
 				}
                 else
                 {
 					decimal attributesTotalPrice = decimal.Zero;
 
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
+					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 					if (pvaValues != null)
 					{
 						foreach (var pvaValue in pvaValues)
-							attributesTotalPrice += pvaValue.PriceAdjustment;
+							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
 					}
 
-					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Quantity, shoppingCartItem.BundleItem);
+					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
                 }
             }
 
@@ -481,7 +513,7 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="shoppingCartItem">The shopping cart item</param>
         /// <returns>Discount amount</returns>
-        public virtual decimal GetDiscountAmount(ShoppingCartItem shoppingCartItem)
+		public virtual decimal GetDiscountAmount(OrganizedShoppingCartItem shoppingCartItem)
         {
             Discount appliedDiscount;
             return GetDiscountAmount(shoppingCartItem, out appliedDiscount);
@@ -493,31 +525,57 @@ namespace SmartStore.Services.Catalog
         /// <param name="shoppingCartItem">The shopping cart item</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Discount amount</returns>
-        public virtual decimal GetDiscountAmount(ShoppingCartItem shoppingCartItem, out Discount appliedDiscount)
+		public virtual decimal GetDiscountAmount(OrganizedShoppingCartItem shoppingCartItem, out Discount appliedDiscount)
         {
-            var customer = shoppingCartItem.Customer;
+            var customer = shoppingCartItem.Item.Customer;
             appliedDiscount = null;
 			decimal totalDiscountAmount = decimal.Zero;
-			var product = shoppingCartItem.Product;
+			var product = shoppingCartItem.Item.Product;
 			if (product != null)
             {
                 decimal attributesTotalPrice = decimal.Zero;
 
-                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
+                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
                 foreach (var pvaValue in pvaValues)
                 {
-                    attributesTotalPrice += pvaValue.PriceAdjustment;
+                    attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
                 }
 
-				decimal productDiscountAmount = GetDiscountAmount(product, customer, attributesTotalPrice, shoppingCartItem.Quantity, out appliedDiscount);
-				totalDiscountAmount = productDiscountAmount * shoppingCartItem.Quantity;
+				decimal productDiscountAmount = GetDiscountAmount(product, customer, attributesTotalPrice, shoppingCartItem.Item.Quantity, out appliedDiscount);
+				totalDiscountAmount = productDiscountAmount * shoppingCartItem.Item.Quantity;
             }
             
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				totalDiscountAmount = Math.Round(totalDiscountAmount, 2);
 			return totalDiscountAmount;
         }
-        
+
+		/// <summary>
+		/// Gets the price adjustment of a variant attribute value
+		/// </summary>
+		/// <param name="attributeValue">Product variant attribute value</param>
+		/// <returns>Price adjustment of a variant attribute value</returns>
+		public virtual decimal GetProductVariantAttributeValuePriceAdjustment(ProductVariantAttributeValue attributeValue)
+		{
+			if (attributeValue == null)
+				throw new ArgumentNullException("attributeValue");
+
+			if (attributeValue.ValueType == ProductVariantAttributeValueType.Simple)
+				return attributeValue.PriceAdjustment;
+
+			if (attributeValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+			{
+				var linkedProduct = _productService.GetProductById(attributeValue.LinkedProductId);
+
+				if (linkedProduct != null)
+				{
+					var productPrice = GetFinalPrice(linkedProduct, true) * attributeValue.Quantity;
+					return productPrice;
+				}
+			}
+			return decimal.Zero;
+		}
+
         #endregion
     }
 }

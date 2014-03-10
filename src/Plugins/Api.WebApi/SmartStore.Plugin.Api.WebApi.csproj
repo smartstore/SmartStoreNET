@@ -158,6 +158,7 @@
     <Compile Include="Controllers\OData\LanguagesController.cs" />
     <Compile Include="Controllers\OData\ManufacturersController.cs" />
     <Compile Include="Controllers\OData\OrderNotesController.cs" />
+    <Compile Include="Controllers\OData\OrderItemsController.cs" />
     <Compile Include="Controllers\OData\OrdersController.cs" />
     <Compile Include="Controllers\OData\PicturesController.cs" />
     <Compile Include="Controllers\OData\ProductBundleItemsController.cs" />

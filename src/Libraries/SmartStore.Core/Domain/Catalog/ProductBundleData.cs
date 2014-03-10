@@ -8,7 +8,18 @@ using System.Xml.Serialization;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-	public partial class ProductBundleData
+	public partial class ProductBundleItemData
+	{
+		public ProductBundleItemData(ProductBundleItem item)
+		{
+			Item = item;	// can be null... test with IsValid
+		}
+
+		public ProductBundleItem Item { get; private set; }
+		public decimal AdditionalCharge { get; set; }
+	}
+
+	public partial class ProductBundleItemOrderData
 	{
 		public int BundleItemId { get; set; }
 		public int ProductId { get; set; }
@@ -37,7 +48,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			if (value is string)
 			{
-				List<ProductBundleData> bundleData = null;
+				List<ProductBundleItemOrderData> bundleData = null;
 				string rawValue = value as string;
 
 				if (rawValue.HasValue())
@@ -46,8 +57,8 @@ namespace SmartStore.Core.Domain.Catalog
 					{
 						using (var reader = new StringReader(rawValue))
 						{
-							var xml = new XmlSerializer(typeof(List<ProductBundleData>));
-							bundleData = (List<ProductBundleData>)xml.Deserialize(reader);
+							var xml = new XmlSerializer(typeof(List<ProductBundleItemOrderData>));
+							bundleData = (List<ProductBundleItemOrderData>)xml.Deserialize(reader);
 						}
 					}
 					catch { }
@@ -60,7 +71,7 @@ namespace SmartStore.Core.Domain.Catalog
 		{
 			if (destinationType == typeof(string))
 			{
-				var bundleData = value as List<ProductBundleData>;
+				var bundleData = value as List<ProductBundleItemOrderData>;
 
 				if (bundleData == null)
 					return "";
@@ -68,7 +79,7 @@ namespace SmartStore.Core.Domain.Catalog
 				var sb = new StringBuilder();
 				using (var writer = new StringWriter(sb))
 				{
-					var xml = new XmlSerializer(typeof(List<ProductBundleData>));
+					var xml = new XmlSerializer(typeof(List<ProductBundleItemOrderData>));
 					xml.Serialize(writer, value);
 					return sb.ToString();
 				}

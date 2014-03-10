@@ -36,7 +36,7 @@ namespace SmartStore.Services.Payments
 		/// Gets additional handling fee
 		/// </summary>
 		/// <returns>Additional handling fee</returns>
-		public virtual decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+		public virtual decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
 		{
 			return 0;
 		}

@@ -28,6 +28,7 @@ namespace SmartStore.Services.Logging
         /// Clears a log
         /// </summary>
         void ClearLog();
+		void ClearLog(DateTime toUtc, LogLevel logLevel);
 
         /// <summary>
         /// Gets all log items

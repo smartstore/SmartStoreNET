@@ -44,6 +44,7 @@ namespace SmartStore.Services.Tests.Orders
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
         IProductAttributeParser _productAttributeParser;
+		IProductService _productService;
         IPriceCalculationService _priceCalcService;
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
@@ -73,14 +74,14 @@ namespace SmartStore.Services.Tests.Orders
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_productService = MockRepository.GenerateMock<IProductService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
-				 _discountService, _categoryService, _productAttributeParser,
-				 _shoppingCartSettings, _catalogSettings);
+				 _discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings);
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
@@ -97,6 +98,7 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingMethodRepository,
                 _logger,
                 _productAttributeParser,
+				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,
@@ -166,9 +168,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
@@ -226,9 +231,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
@@ -286,9 +294,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
 			var discount1 = new Discount()
@@ -358,9 +369,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
 			var discount1 = new Discount()
@@ -445,7 +459,11 @@ namespace SmartStore.Services.Tests.Orders
 				}
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2, sci3 };
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+			cart.Add(new OrganizedShoppingCartItem(sci3));
+
 			_orderTotalCalcService.GetShoppingCartAdditionalShippingCharge(cart).ShouldEqual(42.5M);
 		}
 
@@ -480,10 +498,14 @@ namespace SmartStore.Services.Tests.Orders
 					IsShipEnabled = true,
 				}
 			};
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
+
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_orderTotalCalcService.IsFreeShipping(cart).ShouldEqual(true);
 		}
@@ -519,10 +541,14 @@ namespace SmartStore.Services.Tests.Orders
 					IsShipEnabled = true,
 				}
 			};
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
+
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_orderTotalCalcService.IsFreeShipping(cart).ShouldEqual(false);
 		}
@@ -558,7 +584,11 @@ namespace SmartStore.Services.Tests.Orders
 					IsShipEnabled = true,
 				}
 			};
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
+
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
 			var customer = new Customer();
 			var customerRole1 = new CustomerRole()
 			{
@@ -572,8 +602,8 @@ namespace SmartStore.Services.Tests.Orders
 			};
 			customer.CustomerRoles.Add(customerRole1);
 			customer.CustomerRoles.Add(customerRole2);
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_orderTotalCalcService.IsFreeShipping(cart).ShouldEqual(true);
 		}
@@ -629,10 +659,14 @@ namespace SmartStore.Services.Tests.Orders
 				}
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2, sci3 };
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+			cart.Add(new OrganizedShoppingCartItem(sci3));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			decimal taxRate = decimal.Zero;
 			Discount appliedDiscount = null;
@@ -699,10 +733,14 @@ namespace SmartStore.Services.Tests.Orders
 				}
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2, sci3 };
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+			cart.Add(new OrganizedShoppingCartItem(sci3));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			decimal taxRate = decimal.Zero;
 			Discount appliedDiscount = null;
@@ -768,10 +806,14 @@ namespace SmartStore.Services.Tests.Orders
 				}
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2, sci3 };
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+			cart.Add(new OrganizedShoppingCartItem(sci3));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
 			var discount1 = new Discount()
@@ -852,10 +894,14 @@ namespace SmartStore.Services.Tests.Orders
 				}
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2, sci3 };
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+			cart.Add(new OrganizedShoppingCartItem(sci3));
+
 			var customer = new Customer();
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
 			var discount1 = new Discount()
@@ -923,10 +969,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
 
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 
 			_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
@@ -1269,9 +1317,12 @@ namespace SmartStore.Services.Tests.Orders
 				Quantity = 3
 			};
 
-			var cart = new List<ShoppingCartItem>() { sci1, sci2 };
-			cart.ForEach(sci => sci.Customer = customer);
-			cart.ForEach(sci => sci.CustomerId = customer.Id);
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
+			cart.ForEach(sci => sci.Item.Customer = customer);
+			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
 			var discount1 = new Discount()

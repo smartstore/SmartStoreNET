@@ -93,9 +93,9 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Adjusts inventory
 		/// </summary>
-		/// <param name="cartItem">Shopping cart item</param>
+		/// <param name="sci">Shopping cart item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		void AdjustInventory(ShoppingCartItem cartItem, bool decrease);
+		void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease);
 
 		/// <summary>
 		/// Adjusts inventory
@@ -205,7 +205,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="cart">Shopping cart</param>
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
-        IList<Product> GetCrosssellProductsByShoppingCart(IList<ShoppingCartItem> cart, int numberOfProducts);
+		IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts);
 
         #endregion
         
@@ -307,7 +307,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="bundleProductId">Product identifier</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
-		IList<ProductBundleItem> GetBundleItems(int bundleProductId, bool showHidden = false);
+		IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false);
 
 		#endregion
 

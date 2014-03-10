@@ -20,10 +20,10 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
         /// <returns>True if the shopping cart requires shipping; otherwise, false.</returns>
-        public static bool RequiresShipping(this IList<ShoppingCartItem> shoppingCart)
+        public static bool RequiresShipping(this IList<OrganizedShoppingCartItem> shoppingCart)
         {
             foreach (var shoppingCartItem in shoppingCart)
-                if (shoppingCartItem.IsShipEnabled)
+                if (shoppingCartItem.Item.IsShipEnabled)
                     return true;
             return false;
         }
@@ -33,9 +33,9 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
         /// <returns>Result</returns>
-        public static int GetTotalProducts(this IEnumerable<ShoppingCartItem> shoppingCart)
+		public static int GetTotalProducts(this IEnumerable<OrganizedShoppingCartItem> shoppingCart)
         {
-            return shoppingCart.Sum(x => x.Quantity);
+            return shoppingCart.Sum(x => x.Item.Quantity);
         }
 
         /// <summary>
@@ -43,11 +43,11 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
         /// <returns>Result</returns>
-        public static bool IsRecurring(this IList<ShoppingCartItem> shoppingCart)
+		public static bool IsRecurring(this IList<OrganizedShoppingCartItem> shoppingCart)
         {
-            foreach (ShoppingCartItem sci in shoppingCart)
+            foreach (var sci in shoppingCart)
             {
-                var product = sci.Product;
+                var product = sci.Item.Product;
                 if (product != null && product.IsRecurring)
                     return true;
             }
@@ -63,7 +63,7 @@ namespace SmartStore.Services.Orders
         /// <param name="cyclePeriod">Cycle period</param>
         /// <param name="totalCycles">Total cycles</param>
         /// <returns>Error (if exists); otherwise, empty string</returns>
-		public static string GetRecurringCycleInfo(this IList<ShoppingCartItem> shoppingCart, ILocalizationService localizationService,
+		public static string GetRecurringCycleInfo(this IList<OrganizedShoppingCartItem> shoppingCart, ILocalizationService localizationService,
             out int cycleLength, out RecurringProductCyclePeriod cyclePeriod, out int totalCycles)
         {
             string error = "";
@@ -78,10 +78,10 @@ namespace SmartStore.Services.Orders
 
             foreach (var sci in shoppingCart)
             {
-                var product = sci.Product;
+                var product = sci.Item.Product;
                 if (product == null)
                 {
-                    throw new SmartException(string.Format("Product (Id={0}) cannot be loaded", sci.ProductId));
+                    throw new SmartException(string.Format("Product (Id={0}) cannot be loaded", sci.Item.ProductId));
                 }
 
 				string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
@@ -137,12 +137,12 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="shoppingCart">Shopping cart</param>
         /// <returns>Customer of shopping cart</returns>
-        public static Customer GetCustomer(this IList<ShoppingCartItem> shoppingCart)
+        public static Customer GetCustomer(this IList<OrganizedShoppingCartItem> shoppingCart)
         {
             if (shoppingCart.Count == 0)
                 return null;
 
-            return shoppingCart[0].Customer;
+            return shoppingCart[0].Item.Customer;
         }
 
 		public static IEnumerable<ShoppingCartItem> Filter(this IEnumerable<ShoppingCartItem> shoppingCart, ShoppingCartType type, int? storeId = null)
@@ -154,39 +154,42 @@ namespace SmartStore.Services.Orders
 
 			return enumerable;
 		}
-		public static IEnumerable<ShoppingCartItem> Organize(this IList<ShoppingCartItem> shoppingCart)
+		public static IList<OrganizedShoppingCartItem> Organize(this IList<ShoppingCartItem> cart)
 		{
-			if (shoppingCart.Exists(x => x.ParentItemId != null) && !shoppingCart.Exists(x => x.ChildItems != null))
+			var result = new List<OrganizedShoppingCartItem>();
+			var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
+
+			if (cart == null || cart.Count <= 0)
+				return result;
+
+			foreach (var parent in cart.Where(x => x.ParentItemId == null))
 			{
-				var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
+				var parentItem = new OrganizedShoppingCartItem(parent);
 
-				var childItems = shoppingCart.Where(x => x.ParentItemId != null && x.Product.CanBeBundleItem());
+				var childs = cart.Where(x => x.ParentItemId != null && x.ParentItemId == parent.Id && x.Id != parent.Id && 
+					x.ShoppingCartTypeId == parent.ShoppingCartTypeId && x.Product.CanBeBundleItem());
 
-				foreach (var childItem in childItems)
+				foreach (var child in childs)
 				{
-					var parentItem = shoppingCart.FirstOrDefault(x => x.Id == childItem.ParentItemId);
+					var childItem = new OrganizedShoppingCartItem(child);
 
-					if (parentItem != null && parentItem.ShoppingCartTypeId == childItem.ShoppingCartTypeId)
+					if (parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
 					{
-						if (parentItem.Product != null && parentItem.Product.BundlePerItemPricing && childItem.AttributesXml != null && childItem.BundleItem != null)
+						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
+						if (attributeValues != null)
 						{
-							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(childItem.AttributesXml);
-							if (attributeValues != null)
-							{
-								childItem.BundleItem.AdditionalCharge = decimal.Zero;
-								attributeValues.Each(x => childItem.BundleItem.AdditionalCharge += x.PriceAdjustment);
-							}
+							childItem.BundleItemData.AdditionalCharge = decimal.Zero;
+							attributeValues.Each(x => childItem.BundleItemData.AdditionalCharge += x.PriceAdjustment);
 						}
-
-						if (parentItem.ChildItems == null)
-							parentItem.ChildItems = new List<ShoppingCartItem>() { childItem };
-						else
-							parentItem.ChildItems.Add(childItem);
 					}
-				}
-			}
-			return shoppingCart.Where(x => x.ParentItemId == null);
-		}
 
+					parentItem.ChildItems.Add(childItem);
+				}
+
+				result.Add(parentItem);
+			}
+
+			return result;
+		}
     }
 }

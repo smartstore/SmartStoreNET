@@ -20,7 +20,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.Property(orderItem => orderItem.DiscountAmountInclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.DiscountAmountExclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.ItemWeight).HasPrecision(18, 4);
-
+			this.Property(orderItem => orderItem.ProductCost).HasPrecision(18, 4);
 
             this.HasRequired(orderItem => orderItem.Order)
                 .WithMany(o => o.OrderItems)

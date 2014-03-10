@@ -63,6 +63,11 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowShortDesc")]
         public bool ShowShortDesc { get; set; }
-        
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowBasePrice")]
+        public bool ShowBasePrice { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity")]
+		public bool ShowLinkedAttributeValueQuantity { get; set; }
     }
 }

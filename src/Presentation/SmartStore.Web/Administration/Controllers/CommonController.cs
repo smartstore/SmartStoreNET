@@ -666,15 +666,19 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult RestartApplication()
+		public ActionResult RestartApplication(string previousUrl)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-            //restart application
             _webHelper.RestartAppDomain();
+
+			if (previousUrl.HasValue())
+				return Redirect(previousUrl);
+
             return RedirectToAction("Index", "Home");
         }
+
         #endregion
 
         #region Search engine friendly names

@@ -1,11 +1,11 @@
-﻿@{
+﻿@model ProductModel.ProductVariantAttributeValueModel.AddProductLinkageModel
+@{
     Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
 }
-@model ProductModel.AddBundleItemModel
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+	var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
 
-    ViewBag.Title = T("Admin.Catalog.Products.BundleItems.AddNew").Text;
+	ViewBag.Title = T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew").Text;
 }
 
 @using Telerik.Web.Mvc.UI;
@@ -14,39 +14,26 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Catalog.Products.BundleItems.AddNew")
+            @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")
         </div>
-    </div>
+    </div>    
+    
+    if (ViewBag.RefreshPage == true)
+    {
+    <script type="text/javascript">
+		try {
+			window.opener.document.getElementById('@(ViewBag.openerProductId)').value = '@(ViewBag.productId)';
+			window.opener.document.getElementById('@(ViewBag.openerProductName)').value = '@(ViewBag.productName)';
+			window.opener.document.getElementById('linked-product-name').innerHTML = '@(ViewBag.productName)';
+			window.opener.toggleLinkageButtons();
+		}
+		catch (e){} 
+		window.close();
+    </script>
+    }
+
+    @Html.HiddenFor(model => model.ProductId)
 	
-	<div class="alert alert-info fade in">
-		<button class="close" data-dismiss="alert">&#215;</button>
-
-		@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNoteGeneral"))
-
-		@Html.Raw(T("Admin.Catalog.Products.BundleItems." + (Model.IsPerItemPricing ? "AdminNotePerItemPricing" : "AdminNoteBundlePricing")))
-
-		@if (Model.IsPerItemShipping)
-		{
-			@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNotePerItemShipping"))
-		}
-	</div>
-
-	<script type="text/javascript">	
-		@if (ViewBag.RefreshPage)
-		{
-			<text>
-            try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-            catch (e){}
-			</text>
-	    }
-		@if (ViewBag.RefreshPage && ViewBag.CloseWindow)
-		{
-			<text>
-			window.close();
-			</text>
-		}
-	</script>
-
     <table width="100%">
         <tr>
             <td class="adminTitle">
@@ -93,49 +80,49 @@
                 &nbsp;
             </td>
             <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn">
-                    <i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
-                </button>
-            </td>
-        </tr>
-    </table>
-    
-    <p></p>
-    
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel>()
-					.Name("products-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups<#= ProductSelectCheckboxClass #>' />")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center;" });
-						columns.Bound(x => x.Name)
-							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
-						columns.Bound(x => x.Sku);
-						columns.Bound(x => x.Published)
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered()
-							.Width(100);
-					})
-					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("BundleItemAddPopupList", "Product"))
-					.ClientEvents(events => events.OnDataBinding("bundleItem_onDataBinding"))
-					.EnableCustomBinding(true))
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-				<button type="submit" name="save" value="save" class="btn btn-primary btn-below">
-					<i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")
+				<button type="submit" id="search-products" value="search-products" class="btn">
+					<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
 				</button>
             </td>
         </tr>
     </table>
 
+    <p></p>
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel>()
+                    .Name("products-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='button' value='" + @T("Admin.Telerik.GridLocalization.Select").Text + "' onclick='addLinkage(<#= Id #>)' class='t-button' />")
+							.Title(T("Admin.Telerik.GridLocalization.Select").Text)
+                            .Width(50);
+                        columns.Bound(x => x.Name)
+							.Template(x => @Html.LabeledProductName(0, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+                        columns.Bound(x => x.Sku);
+                        columns.Bound(x => x.Published)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered()
+                            .Width(100);
+                    })
+					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductAttributeValueLinkagePopupList", "Product"))
+					.ClientEvents(events => events.OnDataBinding("productLinkage_onDataBinding"))
+					.EnableCustomBinding(true))
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" id="save" name="save" value="@T("Admin.Common.Save")" class="hide" />
+            </td>
+        </tr>
+    </table>
+    
     <script type="text/javascript">
         $(document).ready(function () {
             $('#search-products').click(function () {
@@ -146,14 +133,14 @@
             });
 
             $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-products").click();
-                    return false;
-                }
+            	if (event.keyCode == 13) {
+            		$("#search-products").click();
+            		return false;
+            	}
             });
         });
-
-        function bundleItem_onDataBinding(e) {
+        
+		function productLinkage_onDataBinding(e) {
             var searchModel = {
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
@@ -161,7 +148,12 @@
                 SearchStoreId: $('#SearchStoreId').val(),
                 SearchProductTypeId: $('#SearchProductTypeId').val()
             };
-        	e.data = searchModel;
+            e.data = searchModel;
+        }
+        
+		function addLinkage(productid) {
+            $('#@Html.FieldIdFor(model => model.ProductId)').val(productid);
+            $('#save').click();
         }
     </script>
 }

@@ -267,4 +267,16 @@
 	<LocaleResource Name="ExpirationDays.Validate">
 		<Value>The value must be between 1 and 29 days.</Value>
 	</LocaleResource>
+	<LocaleResource Name="ExportShipping">
+		<Value>Export shipping data</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportShipping.Hint">
+		<Value>Activate this option if you want to export the weight of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice">
+		<Value>Export base price</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice.Hint">
+		<Value>Activate this option if you want to export the base price of the product.</Value>
+	</LocaleResource>
 </Language>

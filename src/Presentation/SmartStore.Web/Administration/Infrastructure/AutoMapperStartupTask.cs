@@ -144,7 +144,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest=> dest.CreatedOnUtc, dt=> dt.Ignore())
                 .ForMember(dest => dest.SentOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailAccount, mo => mo.Ignore())
-                .ForMember(dest => dest.EmailAccountId, mo => mo.Ignore());
+                .ForMember(dest => dest.EmailAccountId, mo => mo.Ignore())
+				.ForMember(dest => dest.ReplyTo, mo => mo.Ignore())
+				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore());
             //campaign
             Mapper.CreateMap<Campaign, CampaignModel>()
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
@@ -264,13 +266,15 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
-				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore());
+				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore());
 			//logs
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.LogLevelHint, mo => mo.Ignore());
             Mapper.CreateMap<LogModel, Log>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
@@ -548,8 +552,15 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.Attributes, mo => mo.Ignore())
 				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
-				.ForMember(dest => dest.IsPerItemPricing, mo => mo.Ignore());
-			Mapper.CreateMap<ProductBundleItemModel, ProductBundleItem>();
+				.ForMember(dest => dest.IsPerItemPricing, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore());
+			Mapper.CreateMap<ProductBundleItemModel, ProductBundleItem>()
+				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
+				.ForMember(dest => dest.Product, mo => mo.Ignore())
+				.ForMember(dest => dest.BundleProduct, mo => mo.Ignore())
+				.ForMember(dest => dest.AttributeFilters, mo => mo.Ignore());
 
             //discounts
             Mapper.CreateMap<Discount, DiscountModel>()
@@ -657,9 +668,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ReturnRequestActions, mo => mo.Ignore())
                 .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore());
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
-            Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
-                .ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
-                .ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
+			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
+				.ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
+				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
                 .ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore())

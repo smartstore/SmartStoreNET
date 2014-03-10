@@ -479,7 +479,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets order items
         /// </summary>
-        public virtual ICollection<OrderItem> OrderItems
+		[DataMember]
+		public virtual ICollection<OrderItem> OrderItems
         {
             get { return _orderItems ?? (_orderItems = new List<OrderItem>()); }
             protected set { _orderItems = value; }

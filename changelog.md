@@ -18,6 +18,7 @@
 * New setting to suppress the search for SKUs
 * Shipment list can be filtered by tracking number
 * #238 Working currency in context of request domain
+* Cross-linkage of products through variant attribute values
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long
@@ -37,6 +38,7 @@
 * Quantity field was shown though the add to cart button was disabled
 * #260 Delivery times translations are not getting applied
 * robots.txt: localizable disallow paths did not contain a trailing slash
+* #296 Fix price adjustment of product variant combinations
 
 ###Improvements###
 * #171: select2 Dropdown too short in OPC
@@ -57,6 +59,12 @@
 * (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 * Added an option to display the short description of products within the order summary
+* Added an option to turn off the display of variant price adjustments
+* #277 Show BasePrice (PAnGv) in cart also
+* GMC feed plugin: Export configurable shipping weight and base price info
+* #280 Filter orders by customer name
+* #190 App Restart: stay on current page
+* Filter orders: Order, payment and shipping status are multi-selectable
 
 ##SmartStore.NET 1.2.1.0#
 

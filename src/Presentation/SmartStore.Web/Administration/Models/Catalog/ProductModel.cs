@@ -635,7 +635,6 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
 			public bool Product2Published { get; set; }
         }
-
         public class AddCrossSellProductModel : ModelBase
         {
             public AddCrossSellProductModel()
@@ -765,17 +764,73 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public decimal PriceAdjustment { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
+			public string PriceAdjustmentString { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.WeightAdjustment")]
 			public decimal WeightAdjustment { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.WeightAdjustment")]
+			public string WeightAdjustmentString { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.IsPreSelected")]
 			public bool IsPreSelected { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder")]
 			public int DisplayOrder { get; set; }
+ 
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ValueTypeId")]
+			public int ValueTypeId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ValueTypeId")]
+			public string TypeName { get; set; }
+			public string TypeNameClass { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct")]
+			public int LinkedProductId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct")]
+			public string LinkedProductName { get; set; }
+			public string LinkedProductTypeName { get; set; }
+			public string LinkedProductTypeLabelHint { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity")]
+			public int Quantity { get; set; }
+			public string QuantityInfo { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
+
+			public class AddProductLinkageModel : ModelBase
+			{
+				public AddProductLinkageModel()
+				{
+					AvailableCategories = new List<SelectListItem>();
+					AvailableManufacturers = new List<SelectListItem>();
+					AvailableStores = new List<SelectListItem>();
+					AvailableProductTypes = new List<SelectListItem>();
+				}
+				public GridModel<ProductModel> Products { get; set; }
+
+				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
+				[AllowHtml]
+				public string SearchProductName { get; set; }
+
+				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
+				public int SearchCategoryId { get; set; }
+
+				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
+				public int SearchManufacturerId { get; set; }
+
+				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+				public int SearchStoreId { get; set; }
+
+				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
+				public int SearchProductTypeId { get; set; }
+
+				public IList<SelectListItem> AvailableCategories { get; set; }
+				public IList<SelectListItem> AvailableManufacturers { get; set; }
+				public IList<SelectListItem> AvailableStores { get; set; }
+				public IList<SelectListItem> AvailableProductTypes { get; set; }
+
+				public int ProductId { get; set; }
+			}
 		}
 
 		public class ProductVariantAttributeValueLocalizedModel : ILocalizedModelLocal

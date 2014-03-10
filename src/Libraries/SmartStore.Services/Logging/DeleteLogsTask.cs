@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Services.Tasks;
 
@@ -24,13 +23,8 @@ namespace SmartStore.Services.Logging
         {
             var olderThanDays = 7; // TODO: move to settings
             var toUtc = DateTime.UtcNow.AddDays(-olderThanDays);
-            // do not delete error and fatal logs
-            var logsToDelete = _logger.GetAllLogs(null, toUtc, null, null, 0, int.MaxValue, 1).Where(x => x.LogLevel < LogLevel.Error);
 
-            foreach (var log in logsToDelete)
-            {
-                _logger.DeleteLog(log);
-            }
+			_logger.ClearLog(toUtc, LogLevel.Error);
         }
     }
 }

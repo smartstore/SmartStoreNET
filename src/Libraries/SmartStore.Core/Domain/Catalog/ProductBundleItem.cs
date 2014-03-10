@@ -94,8 +94,6 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public DateTime UpdatedOnUtc { get; set; }
 
-		public decimal AdditionalCharge { get; set; }
-
 		/// <summary>
 		/// Gets the product
 		/// </summary>
@@ -128,6 +126,7 @@ namespace SmartStore.Core.Domain.Catalog
 				DiscountPercentage = this.DiscountPercentage,
 				Name = this.Name,
 				ShortDescription = this.ShortDescription,
+				FilterAttributes = this.FilterAttributes,
 				HideThumbnail = this.HideThumbnail,
 				Visible = this.Visible,
 				Published = this.Published,

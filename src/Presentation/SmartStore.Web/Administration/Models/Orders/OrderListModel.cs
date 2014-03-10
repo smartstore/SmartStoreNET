@@ -27,12 +27,17 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string CustomerEmail { get; set; }
 
+		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
+		public string CustomerName { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.OrderStatus")]
-        public int OrderStatusId { get; set; }
+		public string OrderStatusIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.PaymentStatus")]
-        public int PaymentStatusId { get; set; }
+        public string PaymentStatusIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.ShippingStatus")]
-        public int ShippingStatusId { get; set; }
+        public string ShippingStatusIds { get; set; }	
 
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int StoreId { get; set; }

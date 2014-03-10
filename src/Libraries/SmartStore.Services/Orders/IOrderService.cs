@@ -59,18 +59,19 @@ namespace SmartStore.Services.Orders
 		/// <param name="customerId">Customer identifier; null to load all orders</param>
         /// <param name="startTime">Order start time; null to load all orders</param>
         /// <param name="endTime">Order end time; null to load all orders</param>
-        /// <param name="os">Order status; null to load all orders</param>
-        /// <param name="ps">Order payment status; null to load all orders</param>
-        /// <param name="ss">Order shippment status; null to load all orders</param>
+		/// <param name="orderStatusIds">Filter by order status</param>
+		/// <param name="paymentStatusIds">Filter by payment status</param>
+		/// <param name="shippingStatusIds">Filter by shipping status</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <param name="orderGuid">Search by order GUID (Global unique identifier) or part of GUID. Leave empty to load all records.</param>
+		/// <param name="orderNumber">Filter by order number</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
         /// <returns>Order collection</returns>
-		IPagedList<Order> SearchOrders(int storeId, int customerId,
-			DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize);
+		IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime,
+			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
+			string billingName, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingEmail = null);
 
         /// <summary>
         /// Gets all orders by affiliate identifier

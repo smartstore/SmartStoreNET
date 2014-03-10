@@ -323,6 +323,15 @@
             @Html.ValidationMessageFor(m => m.CurrencyId)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExpirationDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExpirationDays)
+            @Html.ValidationMessageFor(m => m.ExpirationDays)
+        </td>
+    </tr>
 	<tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(m => m.SpecialPrice)
@@ -332,13 +341,22 @@
             @Html.ValidationMessageFor(m => m.SpecialPrice)
         </td>
     </tr>
-    <tr>
+	<tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(m => m.ExpirationDays)
+            @Html.SmartLabelFor(m => m.ExportShipping)
         </td>
         <td class="adminData">
-            @Html.EditorFor(m => m.ExpirationDays)
-            @Html.ValidationMessageFor(m => m.ExpirationDays)
+            @Html.EditorFor(m => m.ExportShipping)
+            @Html.ValidationMessageFor(m => m.ExportShipping)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportBasePrice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExportBasePrice)
+            @Html.ValidationMessageFor(m => m.ExportBasePrice)
         </td>
     </tr>
     <tr>

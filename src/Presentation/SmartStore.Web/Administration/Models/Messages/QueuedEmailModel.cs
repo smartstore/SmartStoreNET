@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(QueuedEmailValidator))]
-    public class QueuedEmailModel: EntityModelBase
+    public class QueuedEmailModel : EntityModelBase
     {
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Id")]
         public override int Id { get; set; }

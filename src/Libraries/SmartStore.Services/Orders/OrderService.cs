@@ -164,32 +164,22 @@ namespace SmartStore.Services.Orders
 		/// <param name="customerId">Customer identifier; 0 to load all orders</param>
         /// <param name="startTime">Order start time; null to load all orders</param>
         /// <param name="endTime">Order end time; null to load all orders</param>
-        /// <param name="os">Order status; null to load all orders</param>
-        /// <param name="ps">Order payment status; null to load all orders</param>
-        /// <param name="ss">Order shippment status; null to load all orders</param>
+		/// <param name="orderStatusIds">Filter by order status</param>
+		/// <param name="paymentStatusIds">Filter by payment status</param>
+		/// <param name="shippingStatusIds">Filter by shipping status</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <param name="orderGuid">Search by order GUID (Global unique identifier) or part of GUID. Leave empty to load all orders.</param>
+		/// <param name="orderNumber">Filter by order number</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
         /// <returns>Order collection</returns>
-		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId,
-			DateTime? startTime, DateTime? endTime,
-            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize)
+		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime, 
+			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null)
         {
-            int? orderStatusId = null;
-            if (os.HasValue)
-                orderStatusId = (int)os.Value;
-
-            int? paymentStatusId = null;
-            if (ps.HasValue)
-                paymentStatusId = (int)ps.Value;
-
-            int? shippingStatusId = null;
-            if (ss.HasValue)
-                shippingStatusId = (int)ss.Value;
-
             var query = _orderRepository.Table;
+
 			if (storeId > 0)
 				query = query.Where(o => o.StoreId == storeId);
 			if (customerId > 0)
@@ -198,16 +188,25 @@ namespace SmartStore.Services.Orders
                 query = query.Where(o => startTime.Value <= o.CreatedOnUtc);
             if (endTime.HasValue)
                 query = query.Where(o => endTime.Value >= o.CreatedOnUtc);
-            if (orderStatusId.HasValue)
-                query = query.Where(o => orderStatusId.Value == o.OrderStatusId);
-            if (paymentStatusId.HasValue)
-                query = query.Where(o => paymentStatusId.Value == o.PaymentStatusId);
-            if (shippingStatusId.HasValue)
-                query = query.Where(o => shippingStatusId.Value == o.ShippingStatusId);
             if (!String.IsNullOrEmpty(billingEmail))
                 query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
+			if (billingName.HasValue())
+				query = query.Where(o => o.BillingAddress != null && (
+					(!String.IsNullOrEmpty(o.BillingAddress.LastName) && o.BillingAddress.LastName.Contains(billingName)) || 
+					(!String.IsNullOrEmpty(o.BillingAddress.FirstName) && o.BillingAddress.FirstName.Contains(billingName))
+				));
             if (orderNumber.HasValue())
                 query = query.Where(o => o.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
+
+			if (orderStatusIds != null && orderStatusIds.Count() > 0)
+				query = query.Where(x => orderStatusIds.Contains(x.OrderStatusId));
+
+			if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
+				query = query.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
+
+			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
+				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
+
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
 

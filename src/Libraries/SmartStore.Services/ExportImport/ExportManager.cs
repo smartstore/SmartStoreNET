@@ -353,6 +353,9 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("WeightAdjustment", null, productVariantAttributeValue.WeightAdjustment.ToString());
 						xmlWriter.WriteElementString("IsPreSelected", null, productVariantAttributeValue.IsPreSelected.ToString());
 						xmlWriter.WriteElementString("DisplayOrder", null, productVariantAttributeValue.DisplayOrder.ToString());
+						xmlWriter.WriteElementString("ValueTypeId", null, productVariantAttributeValue.ValueTypeId.ToString());
+						xmlWriter.WriteElementString("LinkedProductId", null, productVariantAttributeValue.LinkedProductId.ToString());
+						xmlWriter.WriteElementString("Quantity", null, productVariantAttributeValue.Quantity.ToString());
 					}
 					xmlWriter.WriteEndElement();
 
@@ -459,7 +462,7 @@ namespace SmartStore.Services.ExportImport
 
 				xmlWriter.WriteStartElement("ProductBundleItems");
 				var bundleItems = _productService.GetBundleItems(product.Id, true);
-				foreach (var bundleItem in bundleItems)
+				foreach (var bundleItem in bundleItems.Select(x => x.Item))
 				{
 					xmlWriter.WriteStartElement("ProductBundleItem");
 
@@ -900,7 +903,7 @@ namespace SmartStore.Services.ExportImport
 
 					if (p.ProductType == ProductType.BundledProduct)
 					{
-						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Product.Sku));
+						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Item.Product.Sku));
 					}
 
 					worksheet.Cells[row, col].Value = bundleItemSkus;
@@ -1035,6 +1038,7 @@ namespace SmartStore.Services.ExportImport
                         xmlWriter.WriteElementString("IsDownloadActivated", null, orderItem.IsDownloadActivated.ToString());
                         xmlWriter.WriteElementString("LicenseDownloadId", null, orderItem.LicenseDownloadId.ToString());
 						xmlWriter.WriteElementString("BundleData", null, orderItem.BundleData);
+						xmlWriter.WriteElementString("ProductCost", null, orderItem.ProductCost.ToString());
                         xmlWriter.WriteEndElement();
                     }
                     xmlWriter.WriteEndElement();

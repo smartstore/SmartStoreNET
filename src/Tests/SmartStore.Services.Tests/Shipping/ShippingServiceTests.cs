@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tests.Shipping
         IRepository<ShippingMethod> _shippingMethodRepository;
         ILogger _logger;
         IProductAttributeParser _productAttributeParser;
+		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
         ShippingSettings _shippingSettings;
         IEventPublisher _eventPublisher;
@@ -44,6 +45,7 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
 
             var cacheManager = new NullCache();
@@ -62,6 +64,7 @@ namespace SmartStore.Services.Tests.Shipping
                 _shippingMethodRepository, 
                 _logger,
                 _productAttributeParser,
+				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,
@@ -108,7 +111,10 @@ namespace SmartStore.Services.Tests.Shipping
                     Width = 4.5M
                 }
             };
-            _shippingService.GetShoppingCartItemTotalWeight(sci).ShouldEqual(4.5M);
+
+			var item = new OrganizedShoppingCartItem(sci);
+
+            _shippingService.GetShoppingCartItemTotalWeight(item).ShouldEqual(4.5M);
         }
 
         [Test]
@@ -138,7 +144,11 @@ namespace SmartStore.Services.Tests.Shipping
                     Width = 14.5M
                 }
             };
-            var cart = new List<ShoppingCartItem>() { sci1, sci2 };
+
+			var cart = new List<OrganizedShoppingCartItem>();
+			cart.Add(new OrganizedShoppingCartItem(sci1));
+			cart.Add(new OrganizedShoppingCartItem(sci2));
+
             _shippingService.GetShoppingCartTotalWeight(cart).ShouldEqual(50.5M);
         }
     }

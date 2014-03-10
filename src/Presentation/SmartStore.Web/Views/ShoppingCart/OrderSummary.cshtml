@@ -34,7 +34,13 @@
 				</div>
 			}
 
-			<!-- delivery time -->
+            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
+            {
+                <div class="base-price muted ">
+                    @item.BasePrice
+                </div>
+            }
+
 			@if (Model.DisplayDeliveryTime)
 			{
 				<div class="delivery-time">
@@ -88,7 +94,6 @@
 				{
 					<input name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="qty-input hide" />
 				}
-
 			}
 			else
 			{
@@ -160,6 +165,12 @@
 									@Html.Raw(item.ShortDesc)
 								</div>
 							}
+                            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
+                            {
+                                <div class="base-price muted ">
+                                    @item.BasePrice
+                                </div>
+                            }
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
 								<div class="bundle-item-attribute-info muted">

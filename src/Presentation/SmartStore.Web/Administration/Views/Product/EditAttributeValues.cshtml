@@ -2,6 +2,7 @@
 
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Admin.Extensions;
 
 @{    
     //page title
@@ -29,53 +30,33 @@
                             })
                             .Columns(columns =>
                             {
-                                //columns.Bound(x => x.Name)
-                                //    .Width(300);
-                                columns
-                                    .Bound(x => x.Name)
-                                    .Template(@<text>
-                                        @if(!String.IsNullOrEmpty(item.ColorSquaresRgb)){
-                                            <div><span class="color-container"><span class="color" style="background:@item.ColorSquaresRgb">&nbsp;</span></span><span class="color-label">@item.Name</span></div>
-                                        } 
-                                        else 
-                                        {
-                                            <div>@item.Name</div>
-                                        }
-                                    </text>)
-                                    .ClientTemplate(
-                                        "<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
-                                        "<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" + 
-                                        "<span class=\"color-label\"><#= Name #></span>" +
-                                        "<# } else { #>" +
-                                        "<span class=\"color-label\"><#= Name #></span>" +
-                                        "<# } #>"
-                                        )
-                                        
-                                    .Width(300);
-
-                                //TODO display localized values here
-                                columns.Bound(x => x.Alias)
-                                    .Width(200);
-                                columns.Bound(x => x.PriceAdjustment)
-                                    .Width(100)
-                                    .Format("{0:G29}")
+								columns.Bound(x => x.Name)
+									.ReadOnly()
+									.Template(x => @Html.VariantAttributeValueName(x))
+									.ClientTemplate(@Html.VariantAttributeValueName());
+								columns.Bound(x => x.Alias);
+								columns.Bound(x => x.LinkedProductName)
+									.ReadOnly()
+									.Template(x => @Html.LabeledProductName(x.LinkedProductId, x.LinkedProductName, x.LinkedProductTypeName, x.LinkedProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
+                                columns.Bound(x => x.PriceAdjustmentString)
+                                    .Width(80)
                                     .Centered();
-                                columns.Bound(x => x.WeightAdjustment)
-                                    .Width(100)
-                                    .Format("{0:G29}")
+                                columns.Bound(x => x.WeightAdjustmentString)
+                                    .Width(80)
                                     .Centered();
                                 columns.Bound(x => x.IsPreSelected)
-                                    .Width(100)
+                                    .Width(80)
                                     .Template(item => @Html.SymbolForBool(item.IsPreSelected))
                                     .ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
                                     .Centered();
                                 columns.Bound(x => x.DisplayOrder)
-                                    .Width(100)
+                                    .Width(80)
                                     .Centered();
                                 columns.Bound(x => x.Id)
                                     .Width(50)
                                     .Centered()
-                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productvariantattribute-form', 800, 350, true); return false;\" class='t-button' />")
+                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productvariantattribute-form', 1000, 600, true); return false;\" class='t-button' />")
                                     .Title(T("Admin.Common.Edit").Text);
                                 columns.Command(commands =>
                                 {
@@ -92,12 +73,15 @@
         </td>
     </tr>
     <tr>
-        <td style="padding-top: 12px">
-            <button class="btn btn-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 800, 350, true); return false;">
+        <td>
+            <button class="btn btn-primary btn-below" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" 
+				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productAttributeAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', 1000, 600, true); return false;">
                 <i class="icon-plus"></i>
                 @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")
             </button>
+
             <button type="submit" id="btnRefresh" name="btnRefresh" value="btnRefresh" class="hide" />
+
             <script type="text/javascript">
                 $(document).ready(function () {
                     $('#btnRefresh').click(function () {

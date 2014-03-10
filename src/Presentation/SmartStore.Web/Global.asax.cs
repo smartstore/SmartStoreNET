@@ -29,6 +29,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using Autofac;
 using Autofac.Integration.Mvc;
+using System.IO;
 
 
 namespace SmartStore.Web
@@ -71,14 +72,15 @@ namespace SmartStore.Web
             // register custom bundles
             var bundlePublisher = EngineContext.Current.Resolve<IBundlePublisher>();
             bundlePublisher.RegisterBundles(bundles);
-
-            //// register virtual path provider for theme variables
-            //BundleTable.VirtualPathProvider = new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider);
         }
 
         protected void Application_Start()
         {
-            // we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
+			// adding a process-specific environment path (either bin/x86 or bin/amd64)
+			// ensures that unmanaged native dependencies can be resolved successfully.
+			SetPrivateEnvPath();
+			
+			// we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
 			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
@@ -146,6 +148,13 @@ namespace SmartStore.Web
 			}
 
         }
+
+		private void SetPrivateEnvPath()
+		{
+			string dir = Environment.Is64BitProcess ? "amd64" : "x86";
+			string envPath = String.Concat(Environment.GetEnvironmentVariable("PATH"), ";", Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, dir));
+			Environment.SetEnvironmentVariable("PATH", envPath, EnvironmentVariableTarget.Process);
+		}
 
         public override string GetVaryByCustomString(HttpContext context, string custom)
         {

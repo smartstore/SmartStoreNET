@@ -184,7 +184,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
 
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {
-                if (shoppingCartItem.IsFreeShipping || !shoppingCartItem.IsShipEnabled)
+                if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
                 {
                     continue;
                 }

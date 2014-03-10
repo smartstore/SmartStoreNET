@@ -224,7 +224,7 @@ namespace SmartStore.Services.Orders
         /// <param name="attributes">Attributes in XML format</param>
         /// <param name="cart">Shopping cart items</param>
         /// <returns>Updated attributes in XML format</returns>
-        public virtual string EnsureOnlyActiveAttributes(string attributes, IList<ShoppingCartItem> cart)
+        public virtual string EnsureOnlyActiveAttributes(string attributes, IList<OrganizedShoppingCartItem> cart)
         {
             if (String.IsNullOrEmpty(attributes))
                 return attributes;

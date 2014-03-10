@@ -60,7 +60,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
         /// </summary>
         /// <param name="cart">Shoping cart</param>
         /// <returns>Additional handling fee</returns>
-        public override decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
+		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
         {
 			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
 				_cashOnDeliveryPaymentSettings.AdditionalFee, _cashOnDeliveryPaymentSettings.AdditionalFeePercentage);

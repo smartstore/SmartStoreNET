@@ -304,14 +304,6 @@ namespace SmartStore.Admin.Controllers
                 locale.Name = currency.GetLocalized(x => x.Name, languageId, false, false);
             });
 
-			model.AvailableDomainEndings = new List<SelectListItem>()
-			{
-				new SelectListItem() { Text = ".com", Value = ".com" },
-				new SelectListItem() { Text = ".uk", Value = ".uk" },
-				new SelectListItem() { Text = ".de", Value = ".de" },
-				new SelectListItem() { Text = ".ch", Value = ".ch" }
-			};
-
 			foreach (var ending in model.DomainEndings.SplitSafe(","))
 			{
 				var item = model.AvailableDomainEndings.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual(ending));

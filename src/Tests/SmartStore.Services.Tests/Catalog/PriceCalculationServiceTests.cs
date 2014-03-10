@@ -22,6 +22,7 @@ namespace SmartStore.Services.Tests.Catalog
         IDiscountService _discountService;
         ICategoryService _categoryService;
         IProductAttributeParser _productAttributeParser;
+		IProductService _productService;
         IPriceCalculationService _priceCalcService;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
@@ -42,12 +43,13 @@ namespace SmartStore.Services.Tests.Catalog
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
 
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_productService = MockRepository.GenerateMock<IProductService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext, _discountService,
-                _categoryService, _productAttributeParser, _shoppingCartSettings, _catalogSettings);
+                _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings);
         }
 
         [Test]
@@ -381,7 +383,9 @@ namespace SmartStore.Services.Tests.Catalog
 				Quantity = 2,
 			};
 
-			_priceCalcService.GetUnitPrice(sci1, false).ShouldEqual(12.34);
+			var item = new OrganizedShoppingCartItem(sci1);
+
+			_priceCalcService.GetUnitPrice(item, false).ShouldEqual(12.34);
 		}
 
         [Test]
@@ -408,7 +412,9 @@ namespace SmartStore.Services.Tests.Catalog
 				Quantity = 2,
 			};
 
-			_priceCalcService.GetSubTotal(sci1, false).ShouldEqual(24.68);
+			var item = new OrganizedShoppingCartItem(sci1);
+
+			_priceCalcService.GetSubTotal(item, false).ShouldEqual(24.68);
 		}
     }
 }

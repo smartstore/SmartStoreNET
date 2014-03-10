@@ -1,7 +1,8 @@
-﻿
+﻿using System;
+
 namespace SmartStore.Core.Domain.Catalog
 {
-	public partial class ProductBundleItemAttributeFilter : BaseEntity
+	public partial class ProductBundleItemAttributeFilter : BaseEntity, ICloneable<ProductBundleItemAttributeFilter>
 	{
 		/// <summary>
 		/// Gets or sets the product bundle item identifier
@@ -27,5 +28,22 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets the product bundle item
 		/// </summary>
 		public virtual ProductBundleItem BundleItem { get; set; }
+
+		public ProductBundleItemAttributeFilter Clone()
+		{
+			var filter = new ProductBundleItemAttributeFilter()
+			{
+				BundleItemId = this.BundleItemId,
+				AttributeId = this.AttributeId,
+				AttributeValueId = this.AttributeValueId,
+				IsPreSelected = this.IsPreSelected
+			};
+			return filter;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
 	}
 }

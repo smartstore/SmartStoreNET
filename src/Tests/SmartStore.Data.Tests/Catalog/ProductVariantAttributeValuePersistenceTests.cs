@@ -19,6 +19,7 @@ namespace SmartStore.Data.Tests.Catalog
                 WeightAdjustment = 2.1M,
                 IsPreSelected = true,
                 DisplayOrder = 3,
+				Quantity = 2,
                 ProductVariantAttribute = new ProductVariantAttribute
                 {
                     TextPrompt = "TextPrompt 1",
@@ -42,6 +43,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.WeightAdjustment.ShouldEqual(2.1M);
             fromDb.IsPreSelected.ShouldEqual(true);
             fromDb.DisplayOrder.ShouldEqual(3);
+			fromDb.Quantity.ShouldEqual(2);
 
             fromDb.ProductVariantAttribute.ShouldNotBeNull();
             fromDb.ProductVariantAttribute.TextPrompt.ShouldEqual("TextPrompt 1");

@@ -41,7 +41,7 @@ namespace SmartStore.Services.Payments
         /// <param name="usePercentage">Is fee amount specified as percentage or fixed value?</param>
         /// <returns>Result</returns>
         public static decimal CalculateAdditionalFee(this IPaymentMethod paymentMethod,
-            IOrderTotalCalculationService orderTotalCalculationService, IList<ShoppingCartItem> cart,
+			IOrderTotalCalculationService orderTotalCalculationService, IList<OrganizedShoppingCartItem> cart,
             decimal fee, bool usePercentage)
         {
             if (paymentMethod == null)

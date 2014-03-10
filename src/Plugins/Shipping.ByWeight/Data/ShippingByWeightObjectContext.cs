@@ -18,7 +18,11 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data
         
 		static ShippingByWeightObjectContext()
 		{
-			Database.SetInitializer(new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>(new[] { "ShippingByWeight" }));
+			var initializer = new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>
+			{
+				TablesToCheck = new[] { "ShippingByWeight" }
+			};
+			Database.SetInitializer(initializer);
 		}
 
 		/// <summary>

@@ -5,9 +5,9 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SmartObjectContext>
+    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
     {
-		public Configuration()
+		public MigrationsConfiguration()
         {
             AutomaticMigrationsEnabled = false;
 			ContextKey = "SmartStore.Core";

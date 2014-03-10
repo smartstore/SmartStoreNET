@@ -109,11 +109,12 @@
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
     <Compile Include="Setup\IMigrationSeeder.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
-    <Compile Include="Setup\MigrateDatabaseInitializer2.cs" />
+    <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.cs" />
+    <Compile Include="Setup\MigrateDatabaseInitializer.cs" />
     <Compile Include="Setup\_Obsolete\CreateCeDatabaseIfNotExists.cs" />
     <Compile Include="Setup\_Obsolete\DropCreateCeDatabaseAlways.cs" />
     <Compile Include="Setup\_Obsolete\DropCreateCeDatabaseIfModelChanges.cs" />
-    <Compile Include="Setup\MigrateDatabaseInitializer.cs" />
     <Compile Include="Setup\_Obsolete\SqlCeInitializer.cs" />
     <Compile Include="Setup\_Obsolete\CreateTablesIfNotExist.cs" />
     <Compile Include="EfDataProviderFactory.cs" />
@@ -127,7 +128,7 @@
     <Compile Include="Migrations\201403010028232_Initial.Designer.cs">
       <DependentUpon>201403010028232_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\MigrationsConfiguration.cs" />
     <Compile Include="ObjectContextBase.cs" />
     <Compile Include="Mapping\Catalog\BackInStockSubscriptionMap.cs" />
     <Compile Include="Mapping\Catalog\ManufacturerTemplateMap.cs" />
@@ -245,13 +246,13 @@
     <EmbeddedResource Include="Sql\Indexes.SqlServer.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\Indexes.Reverse.sql" />
+    <EmbeddedResource Include="Sql\Indexes.Inverse.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\Indexes.SqlServer.Reverse.sql" />
+    <EmbeddedResource Include="Sql\Indexes.SqlServer.Inverse.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\StoredProcedures.Reverse.sql" />
+    <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

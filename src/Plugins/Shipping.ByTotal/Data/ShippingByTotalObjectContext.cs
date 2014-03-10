@@ -21,7 +21,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Data
 
 		static ShippingByTotalObjectContext()
 		{
-			Database.SetInitializer(new MigrateDatabaseInitializer<ShippingByTotalObjectContext, Configuration>(new[] { "ShippingByTotal" }));
+			var initializer = new MigrateDatabaseInitializer<ShippingByTotalObjectContext, Configuration>
+			{
+				TablesToCheck = new[] { "ShippingByTotal"}
+			};
+			Database.SetInitializer(initializer);
 		}
 
 		/// <summary>

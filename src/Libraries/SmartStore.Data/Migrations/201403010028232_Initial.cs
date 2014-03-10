@@ -1778,11 +1778,11 @@ namespace SmartStore.Data.Migrations
 		{
 			#region Custom
 
-			this.SqlFile("Indexes.Reverse.sql");
+			this.SqlFile("Indexes.Inverse.sql");
 			if (DataSettings.Current.IsSqlServer)
 			{
-				this.SqlFile("Indexes.SqlServer.Reverse.sql");
-				this.SqlFile("StoredProcedures.Reverse.sql");
+				this.SqlFile("Indexes.SqlServer.Inverse.sql");
+				this.SqlFile("StoredProcedures.Inverse.sql");
 			}
 
 			#endregion

@@ -32,7 +32,7 @@ namespace SmartStore.Data.Setup
                 databaseExists = replacedContext.Database.Exists();
             }
 
-			var config = new Configuration
+			var config = new MigrationsConfiguration
 			{
 				TargetDatabase = new DbConnectionInfo(replacedContext.Database.Connection.ConnectionString, "System.Data.SqlServerCe.4.0")
 			};

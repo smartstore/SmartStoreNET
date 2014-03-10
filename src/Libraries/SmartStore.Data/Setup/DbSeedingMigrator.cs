@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -15,7 +16,7 @@ namespace SmartStore.Data.Setup
 	/// deploying new features and you want to include initial data). Seeders will be executing 
 	/// in the correct order after all migrations have been completed.
 	/// </summary>
-	public class DbSeedingMigrator<TContext> : DbMigrator where TContext : DbContext, new()
+	public class DbSeedingMigrator<TContext> : DbMigrator where TContext : DbContext
 	{
 		private static readonly Regex _migrationIdPattern = new Regex(@"\d{15}_.+");
 		private const string _migrationTypeFormat = "{0}.{1}, {2}";
@@ -32,7 +33,7 @@ namespace SmartStore.Data.Setup
 		/// <summary>
 		/// Migrates the database to the latest version
 		/// </summary>
-		public void RunPendingMigrations()
+		public void RunPendingMigrations(TContext context)
 		{
 			var seeds = new List<IMigrationSeeder<TContext>>();
 
@@ -48,20 +49,32 @@ namespace SmartStore.Data.Setup
 				var migration = CreateMigrationInstanceByMigrationId(migrationId);
 				var migrationSeeder = migration as IMigrationSeeder<TContext>;
 
-				// Call the actual update to execute this migration
-				base.Update(migrationId);
+				try
+				{
+					// Call the actual update to execute this migration
+					base.Update(migrationId);
+				}
+				catch (AutomaticMigrationsDisabledException)
+				{
+					if (context is SmartObjectContext)
+					{
+						throw;
+					}
+
+					// DbContexts in plugin assemblies tend to produce
+					// this error, but obviously without any negative side-effect.
+					// Therefore catch and forget!
+					// TODO: (MC) investigate this and implement a cleaner solution
+				}
 
 				if (migrationSeeder != null)
 					seeds.Add(migrationSeeder);
 			}
 
-			// Create a new datacontext using the generic type provided
-			TContext databaseContext = new TContext();
-
 			// Apply data seeders
 			foreach (var migrationSeeder in seeds)
 			{
-				migrationSeeder.Seed(databaseContext);
+				migrationSeeder.Seed(context);
 			}
 		}
 

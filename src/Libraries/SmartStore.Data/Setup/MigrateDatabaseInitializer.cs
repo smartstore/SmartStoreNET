@@ -15,40 +15,41 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
-	
+
 	/// <summary>
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
 	///     to update the database to the latest version.
 	/// </summary>
-	public class MigrateDatabaseInitializer<TContext, TConfig> : IDatabaseInitializer<TContext> 
-		where TContext : DbContext
+	public class MigrateDatabaseInitializer<TContext, TConfig> : IDatabaseInitializer<TContext>
+		where TContext : DbContext, new()
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
-		private readonly string _connectionString;
-		private IEnumerable<string> _tablesToCheck;
-		private DbMigrationsConfiguration _config;
 
 		#region Ctor
 
 		public MigrateDatabaseInitializer()
-			: this(null, null)
 		{
 		}
 
 		public MigrateDatabaseInitializer(string connectionString)
-			: this(connectionString, null)
 		{
+			this.ConnectionString = connectionString;
 		}
 
-		public MigrateDatabaseInitializer(string[] tablesToCheck)
-			: this(null, tablesToCheck)
+		#endregion
+
+		#region Properties
+
+		public IEnumerable<string> TablesToCheck
 		{
+			get;
+			set;
 		}
 
-		public MigrateDatabaseInitializer(string connectionString, string[] tablesToCheck)
+		public string ConnectionString
 		{
-			this._connectionString = connectionString;
-			this._tablesToCheck = tablesToCheck;
+			get;
+			private set;
 		}
 
 		#endregion
@@ -62,81 +63,50 @@ namespace SmartStore.Data.Setup
 		/// <inheritdoc />
 		public virtual void InitializeDatabase(TContext context)
 		{
-			if (_config == null)
+			if (!context.Database.Exists())
 			{
-				_config = new TConfig();
-				if (_connectionString.HasValue())
+				throw Error.InvalidOperation("Database migration failed becuase the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
+			}
+
+			var config = CreateConfiguration();
+			var migrator = new DbSeedingMigrator<TContext>(config);
+			var tablesExist = CheckTables(context);
+
+			if (tablesExist)
+			{
+				// Tables specific to the model DO exist in the database...
+				var hasHistoryEntry = migrator.GetDatabaseMigrations().Any();
+				if (!hasHistoryEntry)
 				{
-					var dbContextInfo = new DbContextInfo(typeof(TContext));
-					_config.TargetDatabase = new DbConnectionInfo(_connectionString, dbContextInfo.ConnectionProviderName);
+					// ...but there is no entry in the __MigrationHistory table (or __MigrationHistory doesn't exist at all)
+					// We MUST assume that the database was created with a previous SmartStore version
+					// prior integrating EF Migrations.
+					// Running the Migrator with initial DDL would crash in this case as
+					// the db objects exist already. Therefore we set a suppression flag
+					// which we read in the corresposnding InitialMigration to exit early.
+					DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
 				}
 			}
 
-			var newDb = !context.Database.Exists();
-
-			var migrator = new DbMigrator(_config);
-			if (!newDb)
-			{
-				var suppressInitialCreate = false;
-				var tablesExist = CheckTables(context);
-				if (tablesExist)
-				{
-					// Tables specific to the model exist in the database...
-					var noHistoryEntry = !migrator.GetDatabaseMigrations().Any();
-					if (noHistoryEntry)
-					{
-						// ...but there is no entry in the __MigrationHistory table (or __MigrationHistory doesn't exist at all)
-						suppressInitialCreate = true;
-						// ...we MUST assume that the database was created with a previous SmartStore version
-						// prior integrating EF Migrations.
-						// Running the Migrator with initial DDL would crash in this case as
-						// the db objects exist already. Therefore we set a suppression flag
-						// which we read in the corresposnding InitialMigration to exit early.
-						DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
-					}
-				}
-
-				if (!suppressInitialCreate)
-				{
-					// Obviously a blank DB...
-					var local = migrator.GetLocalMigrations();
-					var pending = migrator.GetPendingMigrations();
-					if (local.Count() == pending.Count())
-					{
-						// ...and free of Migrations. We have to seed later. 
-						newDb = true;
-					}
-				}
-			}
-
-			// create or migrate the database now
-			try
-			{
-				migrator.Update();
-			}
-			catch (AutomaticMigrationsDisabledException)
-			{
-				if (context is SmartObjectContext)
-				{
-					throw;
-				}
-
-				// DbContexts in plugin assemblies tend to produce
-				// this error, but obviously without any negative side-effect.
-				// Therefore catch and forget!
-				// TODO: (MC) investigate this and implement a cleaner solution
-			}
-
-			if (newDb)
-			{
-				// seed data
-				Seed(context);
-			}
+			// run all pending migrations
+			migrator.RunPendingMigrations(context);
 		}
 
 		#endregion
 
-		#region Utils
+		#region Methods
+
+		protected virtual TConfig CreateConfiguration()
+		{
+			var config = new TConfig();
+			if (this.ConnectionString.HasValue())
+			{
+				var dbContextInfo = new DbContextInfo(typeof(TContext));
+				config.TargetDatabase = new DbConnectionInfo(this.ConnectionString, dbContextInfo.ConnectionProviderName);
+			}
+
+			return config;
+		}
 
 		/// <summary>
 		/// Checks tables existence
@@ -146,20 +116,12 @@ namespace SmartStore.Data.Setup
 		/// </returns>
 		protected bool CheckTables(TContext context)
 		{
-			if (_tablesToCheck == null || !_tablesToCheck.Any())
+			if (this.TablesToCheck == null || !this.TablesToCheck.Any())
 				return true;
 
 			var existingTableNames = new List<string>(context.Database.SqlQuery<string>("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE'"));
-			var result = existingTableNames.Intersect(_tablesToCheck, StringComparer.InvariantCultureIgnoreCase).Count() == 0;
+			var result = existingTableNames.Intersect(this.TablesToCheck, StringComparer.InvariantCultureIgnoreCase).Count() == 0;
 			return !result;
-		}
-
-		/// <summary>
-		/// Seeds the specified context.
-		/// </summary>
-		/// <param name="context">The context.</param>
-		protected virtual void Seed(TContext context)
-		{
 		}
 
 		#endregion

@@ -11,51 +11,29 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Data;
+using SmartStore.Data.Migrations;
 using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
-	
+
 	/// <summary>
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
 	///     to setup and seed the database.
 	/// </summary>
-	public class InstallDatabaseInitializer<TContext, TConfig> : IDatabaseInitializer<TContext> 
-		where TContext : DbContext
-		where TConfig : DbMigrationsConfiguration<TContext>, new()
+	public class InstallDatabaseInitializer : MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration> 
 	{
-		private readonly string _connectionString;
-		private readonly string[] _sqlFiles;
-		private IEnumerable<string> _tablesToCheck;
-		private DbMigrationsConfiguration _config;
 
 		#region Ctor
 
 		public InstallDatabaseInitializer()
-			: this(null, null, null)
+			: base()
 		{
 		}
 
 		public InstallDatabaseInitializer(string connectionString)
-			: this(connectionString, null, null)
+			: base(connectionString)
 		{
-		}
-
-		public InstallDatabaseInitializer(string[] sqlFiles)
-			: this(null, null, sqlFiles)
-		{
-		}
-
-		public InstallDatabaseInitializer(string[] tablesToCheck, string[] sqlFiles)
-			: this(null, tablesToCheck, sqlFiles)
-		{
-		}
-
-		public InstallDatabaseInitializer(string connectionString, string[] tablesToCheck, string[] sqlFiles)
-		{
-			this._connectionString = connectionString;
-			this._tablesToCheck = tablesToCheck;
-			this._sqlFiles = sqlFiles;
 		}
 
 		#endregion
@@ -67,195 +45,30 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		/// <param name="context">The context.</param>
 		/// <inheritdoc />
-		public void InitializeDatabase(TContext context)
+		public override void InitializeDatabase(SmartObjectContext context)
 		{
-			if (_config == null)
-			{
-				_config = new TConfig();
-				if (_connectionString.HasValue())
-				{
-					var dbContextInfo = new DbContextInfo(typeof(TContext));
-					_config.TargetDatabase = new DbConnectionInfo(_connectionString, dbContextInfo.ConnectionProviderName);
-				}
-			}
+			// we don't use DbSeedingMigrator here because we don't care
+			// about Migration seeds during installation.
+			// The installation seeder contains ALL required seed data already.
+			var migrator = new DbMigrator(base.CreateConfiguration());
 
-			var newDb = !context.Database.Exists();
+			// Run all migrations including the initial one
+			migrator.Update();
 
-			var migrator = new DbMigrator(_config);
-			if (!newDb)
-			{
-				var suppressInitialCreate = false;
-				var tablesExist = CheckTables(context);
-				if (tablesExist)
-				{
-					// Tables specific to the model exist in the database...
-					var noHistoryEntry = !migrator.GetDatabaseMigrations().Any();
-					if (noHistoryEntry)
-					{
-						// ...but there is no entry in the __MigrationHistory table (or __MigrationHistory doesn't exist at all)
-						suppressInitialCreate = true;
-						// ...we MUST assume that the database was created with a previous SmartStore version
-						// prior integrating EF Migrations.
-						// Running the Migrator with initial DDL would crash in this case as
-						// the db objects exist already. Therefore we set a suppression flag
-						// which we read in the corresposnding InitialMigration to exit early.
-						DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
-					}
-				}
-
-				if (!suppressInitialCreate)
-				{
-					// Obviously a blank DB...
-					var local = migrator.GetLocalMigrations();
-					var pending = migrator.GetPendingMigrations();
-					if (local.Count() == pending.Count())
-					{
-						// ...and free of Migrations. We have to seed later. 
-						newDb = true;
-					}
-				}
-			}
-
-			// create or migrate the database now
-			try
-			{
-				migrator.Update();
-			}
-			catch (AutomaticMigrationsDisabledException)
-			{
-				if (context is SmartObjectContext)
-				{
-					throw;
-				}
-
-				// DbContexts in plugin assemblies tend to produce
-				// this error, but obviously without any negative side-effect.
-				// Therefore catch and forget!
-				// TODO: (MC) investigate this and implement a cleaner solution
-			}
-
-			if (newDb)
-			{
-				// advanced db init
-				RunSqlFiles(context);
-
-				// seed data
-				Seed(context);
-			}
+			// seed install data
+			this.Seed(context);
 		}
 
 		#endregion
 
-		#region Utils
-
-		/// <summary>
-		/// Checks tables existence
-		/// </summary>
-		/// <returns>
-		/// Returns <c>true</c> if the tables to check exist in the database or the check list is empty.
-		/// </returns>
-		protected bool CheckTables(TContext context)
-		{
-			if (_tablesToCheck == null || !_tablesToCheck.Any())
-				return true;
-
-			var existingTableNames = new List<string>(context.Database.SqlQuery<string>("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE'"));
-			var result = existingTableNames.Intersect(_tablesToCheck, StringComparer.InvariantCultureIgnoreCase).Count() == 0;
-			return !result;
-		}
+		#region Methods
 
 		/// <summary>
 		/// Seeds the specified context.
 		/// </summary>
 		/// <param name="context">The context.</param>
-		protected virtual void Seed(TContext context)
+		protected virtual void Seed(SmartObjectContext context)
 		{
-		}
-
-		#endregion
-
-		#region Sql File Handling
-
-		private void RunSqlFiles(TContext context)
-		{
-			if (_sqlFiles == null || _sqlFiles.Length == 0)
-				return;
-
-			foreach (var file in _sqlFiles)
-			{
-				using (var reader = ReadSqlFile(file))
-				{
-					foreach (var cmd in ParseCommands(reader))
-					{
-						if (cmd.HasValue())
-						{
-							context.Database.ExecuteSqlCommand(cmd);
-						}
-					}
-				}
-			}
-		}
-
-		protected virtual StreamReader ReadSqlFile(string fileName)
-		{
-			Guard.ArgumentNotEmpty(() => fileName);
-
-			if (fileName.StartsWith("~") || fileName.StartsWith("/"))
-			{
-				string path = CommonHelper.MapPath(fileName);
-				if (!File.Exists(path)) 
-				{
-					return StreamReader.Null;
-				}
-
-				return new StreamReader(File.OpenRead(path));
-			}
-
-			// SQL file is obviously an embedded resource
-			// TODO: (MC) add support for assemblies other than SmartStore.Data
-			var asm = Assembly.GetExecutingAssembly();
-			var asmName = asm.FullName.Substring(0, asm.FullName.IndexOf(','));
-			var name = String.Format("{0}.Sql.{1}",
-				asmName,
-				fileName);
-			var stream = asm.GetManifestResourceStream(name);
-			Debug.Assert(stream != null);
-			return new StreamReader(stream);
-		}
-
-		private IEnumerable<string> ParseCommands(TextReader reader)
-		{
-			var statement = string.Empty;
-			while ((statement = ReadNextStatement(reader)) != null)
-			{
-				yield return statement;
-			}
-		}
-
-		private string ReadNextStatement(TextReader reader)
-		{
-			var sb = new StringBuilder();
-
-			string lineOfText;
-
-			while (true)
-			{
-				lineOfText = reader.ReadLine();
-				if (lineOfText == null)
-				{
-					if (sb.Length > 0)
-						return sb.ToString();
-					else
-						return null;
-				}
-
-				if (lineOfText.TrimEnd().ToUpper() == "GO")
-					break;
-
-				sb.Append(lineOfText + Environment.NewLine);
-			}
-
-			return sb.ToString();
 		}
 
 		#endregion

@@ -490,14 +490,11 @@ namespace SmartStore.Web.Controllers
 #pragma warning disable 618
 					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
 
-					//// TODO: set InstallDatabaseInitializer and call Initialize()
-					//// [...]
-					//var context = new SmartObjectContext();
-					////var initializer = new InstallDatabaseInitializer<SmartObjectContext, Configuration>(
-					////	new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" },
-					////	new[] { "Indexes.sql", "Indexes.SqlServer.sql", "StoredProcedures.sql" });
-					////Database.SetInitializer<SmartObjectContext>(initializer);
-					//context.Database.Initialize(true);
+					// TODO: set InstallDatabaseInitializer and call Initialize()
+					// [...]
+					var context = new SmartObjectContext();
+					Database.SetInitializer(new InstallDatabaseInitializer());
+					context.Database.Initialize(true);
 
 					// now resolve installation service
 					var installationService = EngineContext.Current.ContainerManager.Resolve<IInstallationService>(scope: scope);

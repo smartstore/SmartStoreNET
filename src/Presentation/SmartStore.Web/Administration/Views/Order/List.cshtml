@@ -17,10 +17,18 @@
             @T("Admin.Orders")
         </div>
         <div class="options">
-            <a href="@Url.Action("ExportXmlAll")" class="btn">@T("Admin.Common.ExportToXml.All")</a>
-            <button type="submit" id="exportxml-selected" class="btn">@T("Admin.Common.ExportToXml.Selected")</button>
-            <a href="@Url.Action("ExportExcelAll")" class="btn">@T("Admin.Common.ExportToExcel.All")</a>
-            <button type="submit" id="exportexcel-selected" class="btn">@T("Admin.Common.ExportToExcel.Selected")</button>
+			<div class="btn-group pull-right">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					Export
+					<span class="icon-caret-down"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
+					<li><a href="javascript:void(0)" id="exportxml-selected">@T("Admin.Common.ExportToXml.Selected")</a></li>
+					<li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
+					<li><a href="javascript:void(0)" id="exportexcel-selected">@T("Admin.Common.ExportToExcel.Selected")</a></li>
+				</ul>
+			</div>
         </div>
     </div>
     <table width="100%">

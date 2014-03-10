@@ -27,7 +27,7 @@
             </a>
             @if (Model.DisplayPdfDownloadCatalog)
             {
-                <a href="@Url.Action("DownloadCatalogAsPdf")" class="btn">@T("Admin.Catalog.Products.List.DownloadPDF")</a>
+                <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">@T("Admin.Catalog.Products.List.DownloadPDF")</a>
             }
             <div class="btn-group" style="vertical-align: middle">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -246,6 +246,13 @@
                     }
                 }
                 productsGrid_updateMasterCheckbox();
+            });
+
+            $('#PdfDownloadCatalog').click(function (e) {
+            	if (!confirm(_.str.unescapeHTML('@T("Admin.Common.AskToProceed").Text'))) {
+            		e.preventDefault();
+            		return false;
+            	}
             });
         });
 

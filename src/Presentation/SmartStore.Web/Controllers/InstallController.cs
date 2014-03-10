@@ -21,7 +21,6 @@ using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
-//using System.Configuration;
 using SmartStore.Core.Async;
 using System.Data.Entity;
 using SmartStore.Data;

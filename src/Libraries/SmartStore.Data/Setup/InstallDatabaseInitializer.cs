@@ -21,7 +21,7 @@ namespace SmartStore.Data.Setup
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
 	///     to setup and seed the database.
 	/// </summary>
-	public class InstallDatabaseInitializer : MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration> 
+	public class InstallDatabaseInitializer : MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
 	{
 
 		#region Ctor

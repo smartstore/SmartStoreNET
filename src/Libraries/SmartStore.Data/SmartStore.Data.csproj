@@ -98,6 +98,10 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Migrations\201403101616479_Initial.cs" />
+    <Compile Include="Migrations\201403101616479_Initial.Designer.cs">
+      <DependentUpon>201403101616479_Initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
     <Compile Include="Extensions\BaseEntityExtensions.cs" />
@@ -112,11 +116,6 @@
     <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />
     <Compile Include="Setup\SeedData\InvariantSeedData.cs" />
     <Compile Include="Setup\MigrateDatabaseInitializer.cs" />
-    <Compile Include="Setup\_Obsolete\CreateCeDatabaseIfNotExists.cs" />
-    <Compile Include="Setup\_Obsolete\DropCreateCeDatabaseAlways.cs" />
-    <Compile Include="Setup\_Obsolete\DropCreateCeDatabaseIfModelChanges.cs" />
-    <Compile Include="Setup\_Obsolete\SqlCeInitializer.cs" />
-    <Compile Include="Setup\_Obsolete\CreateTablesIfNotExist.cs" />
     <Compile Include="EfDataProviderFactory.cs" />
     <Compile Include="IEfDataProvider.cs" />
     <Compile Include="Mapping\Catalog\ProductBundleItemAttributeFilterMap.cs" />
@@ -124,10 +123,6 @@
     <Compile Include="Mapping\Stores\StoreMap.cs" />
     <Compile Include="Mapping\Stores\StoreMappingMap.cs" />
     <Compile Include="Mapping\Themes\ThemeVariableMap.cs" />
-    <Compile Include="Migrations\201403010028232_Initial.cs" />
-    <Compile Include="Migrations\201403010028232_Initial.Designer.cs">
-      <DependentUpon>201403010028232_Initial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationsConfiguration.cs" />
     <Compile Include="ObjectContextBase.cs" />
     <Compile Include="Mapping\Catalog\BackInStockSubscriptionMap.cs" />
@@ -234,8 +229,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403010028232_Initial.resx">
-      <DependentUpon>201403010028232_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403101616479_Initial.resx">
+      <DependentUpon>201403101616479_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

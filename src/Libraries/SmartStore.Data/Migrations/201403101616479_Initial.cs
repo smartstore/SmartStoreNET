@@ -7,7 +7,7 @@ namespace SmartStore.Data.Migrations
     
     public partial class Initial : DbMigration
     {
-		public override void Up()
+        public override void Up()
         {
 			if (DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
 				return;
@@ -27,7 +27,7 @@ namespace SmartStore.Data.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ProductBundleItem", t => t.BundleItemId, cascadeDelete: true)
                 .Index(t => t.BundleItemId);
-
+            
             CreateTable(
                 "dbo.ProductBundleItem",
                 c => new
@@ -744,7 +744,7 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.BillingAddressId)
                 .Index(t => t.CustomerId)
                 .Index(t => t.ShippingAddressId);
-
+            
             CreateTable(
                 "dbo.DiscountUsageHistory",
                 c => new
@@ -1772,10 +1772,11 @@ namespace SmartStore.Data.Migrations
 			}
 
 			#endregion
+
 		}
         
         public override void Down()
-		{
+        {
 			#region Custom
 
 			this.SqlFile("Indexes.Inverse.sql");
@@ -1786,9 +1787,7 @@ namespace SmartStore.Data.Migrations
 			}
 
 			#endregion
-
-			#region auto generated
-
+			
 			DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
             DropForeignKey("dbo.ProductReview", "Id", "dbo.CustomerContent");
             DropForeignKey("dbo.PollVotingRecord", "PollAnswerId", "dbo.PollAnswer");
@@ -2078,8 +2077,6 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.Product");
             DropTable("dbo.ProductBundleItem");
             DropTable("dbo.ProductBundleItemAttributeFilter");
-
-			#endregion
-		}
+        }
     }
 }

@@ -22,14 +22,11 @@ namespace SmartStore.Data
 
 		static SmartObjectContext()
 		{
-			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration> 
-			{ 
-				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" } 
+			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
+			{
+				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" }
 			};
 			Database.SetInitializer<SmartObjectContext>(initializer);
-
-			// TODO: SQLCE
-			//var initializer = new MigrateDatabaseInitializer<SmartObjectContext, Configuration>(new string[] { "Indexes.sql" });
 		}
 
 		/// <summary>

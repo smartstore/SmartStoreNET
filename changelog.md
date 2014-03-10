@@ -64,6 +64,7 @@
 * GMC feed plugin: Export configurable shipping weight and base price info
 * #280 Filter orders by customer name
 * #190 App Restart: stay on current page
+* Filter orders: Order, payment and shipping status are multi-selectable
 
 ##SmartStore.NET 1.2.1.0#
 

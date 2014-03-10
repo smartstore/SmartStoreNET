@@ -641,18 +641,11 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			//order statuses
             var model = new OrderListModel();
+
             model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.AvailableOrderStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
-
-			//payment statuses
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.AvailablePaymentStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
-
-			//shipping statuses
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
-            model.AvailableShippingStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
 			//stores
 			foreach (var store in _storeService.GetAllStores())
@@ -674,19 +667,15 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+            DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+            DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            DateTime? endDateValue = (model.EndDate == null) ? null 
-                            :(DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+			var orderStatusIds = model.OrderStatusIds.ToIntArray();
+			var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
+			var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
 
-            OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
-            PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
-            ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
-
-            //load orders
-			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatus,
-                paymentStatus, shippingStatus, model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
+                model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
 
             var gridModel = new GridModel<OrderModel>
             {
@@ -711,10 +700,12 @@ namespace SmartStore.Admin.Controllers
 
             //summary report
             //implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
-			var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatus,
-				paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
-			var profit = _orderReportService.ProfitReport(model.StoreId, orderStatus,
-				paymentStatus, shippingStatus, startDateValue, endDateValue, model.CustomerEmail);
+			var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
+				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+
+			var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
+				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+
 		    var aggregator = new OrderModel()
 		    {
                 aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
@@ -2608,7 +2599,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new List<OrderIncompleteReportLineModel>();
             //not paid
-			var psPending = _orderReportService.GetOrderAverageReportLine(0, null, PaymentStatus.Pending, null, null, null, null, true);
+			var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
@@ -2617,7 +2608,7 @@ namespace SmartStore.Admin.Controllers
             });
             
             //not shipped
-			var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, ShippingStatus.NotYetShipped, null, null, null, true);
+			var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
@@ -2625,7 +2616,7 @@ namespace SmartStore.Admin.Controllers
                 Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false)
             });
             //pending
-			var osPending = _orderReportService.GetOrderAverageReportLine(0, OrderStatus.Pending, null, null, null, null, null, true);
+			var osPending = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),

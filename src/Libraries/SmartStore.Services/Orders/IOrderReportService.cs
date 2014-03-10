@@ -17,16 +17,16 @@ namespace SmartStore.Services.Orders
         /// Get order average report
         /// </summary>
 		/// <param name="storeId">Store identifier</param>
-        /// <param name="os">Order status</param>
-        /// <param name="ps">Payment status</param>
-        /// <param name="ss">Shipping status</param>
+		/// <param name="orderStatusIds">Filter by order status</param>
+		/// <param name="paymentStatusIds">Filter by payment status</param>
+		/// <param name="shippingStatusIds">Filter by shipping status</param>
         /// <param name="startTimeUtc">Start date</param>
         /// <param name="endTimeUtc">End date</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <param name="ignoreCancelledOrders">A value indicating whether to ignore cancelled orders</param>
         /// <returns>Result</returns>
-		OrderAverageReportLine GetOrderAverageReportLine(int storeId, OrderStatus? os,
-			PaymentStatus? ps, ShippingStatus? ss, DateTime? startTimeUtc,
+		OrderAverageReportLine GetOrderAverageReportLine(int storeId, int[] orderStatusIds,
+			int[] paymentStatusIds, int[] shippingStatusIds, DateTime? startTimeUtc,
 			DateTime? endTimeUtc, string billingEmail, bool ignoreCancelledOrders = false);
         
         /// <summary>
@@ -86,12 +86,12 @@ namespace SmartStore.Services.Orders
 		/// <param name="storeId">Store identifier</param>
         /// <param name="startTimeUtc">Start date</param>
         /// <param name="endTimeUtc">End date</param>
-        /// <param name="os">Order status; null to load all records</param>
-        /// <param name="ps">Order payment status; null to load all records</param>
-        /// <param name="ss">Shipping status; null to load all records</param>
+		/// <param name="orderStatusIds">Filter by order status</param>
+		/// <param name="paymentStatusIds">Filter by payment status</param>
+		/// <param name="shippingStatusIds">Filter by shipping status</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <returns>Result</returns>
-		decimal ProfitReport(int storeId, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, 
+		decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
             DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail);
     }
 }

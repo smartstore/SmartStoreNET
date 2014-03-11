@@ -19,9 +19,6 @@
                 <a href="@Url.Action("PdfPackagingSlip", new { shipmentId = Model.Id })" class="btn">@T("Admin.Orders.Shipments.PrintPackagingSlip")</a>
             }
             <button type="submit" id="shipment-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
-            <!--
-            <span id="shipment-delete" class="t-button">@T("Admin.Common.Delete")</span>
-            -->
         </div>
     </div>    
     @Html.ValidationSummary(false)

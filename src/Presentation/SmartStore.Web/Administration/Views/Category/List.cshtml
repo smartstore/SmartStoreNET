@@ -12,7 +12,9 @@
         @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToTreeView") + ")", "Tree")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn"><i class="icon-upload"></i> @T("Admin.Common.ExportToXml")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn">
+			<i class="icon-download-alt"></i> @T("Admin.Common.ExportToXml")
+		</a>
     </div>
 </div>
 <table width="100%">

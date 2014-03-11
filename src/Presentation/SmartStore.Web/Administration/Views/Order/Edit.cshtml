@@ -16,12 +16,11 @@
         <div class="options">
             @if (Model.DisplayPdfInvoice)
             {
-                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">@T("Admin.Orders.PdfInvoice")</a>
+                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
+					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
+				</a>
             }
             <button type="submit" id="order-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
-            <!--
-            <span id="order-delete" class="t-button">@T("Admin.Common.Delete")</span>
-            -->
             <input type="submit" id="btnRefreshPage" name="btnRefreshPage" style="display: none" />
         </div>
     </div>
@@ -183,10 +182,13 @@
                 @Html.SmartLabelFor(model => model.OrderStatus)
             </td>
             <td class="adminData">
-                <b> @Model.OrderStatus</b>&nbsp;
+                <b>@Model.OrderStatus</b>
+				&nbsp;
                 @if (Model.CanCancelOrder)
                 {
-                    <input type="submit" name="cancelorder" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" id="cancelorder" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');"  />
+                    <button type="submit" name="cancelorder" id="cancelorder" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.OrderStatus.Cancel")
+					</button>
                 }
             </td>
         </tr>
@@ -606,13 +608,13 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="2">
                 <button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn" style="margin-top:5px;">
-					<i class="icon-edit"></i>&nbsp;@T("Admin.Orders.Fields.EditOrderTotals")
+					<i class="icon-pencil"></i>&nbsp;@T("Admin.Orders.Fields.EditOrderTotals")
 				</button>
-                <input type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" value="@T("Admin.Orders.Fields.SaveOrderTotals")" class="btn btn-primary" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-            </td>
-            <td>
+                <button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-primary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<i class="icon-save"></i>&nbsp;@T("Admin.Orders.Fields.SaveOrderTotals")
+				</button>
                 <button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn">
 					<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.CancelOrderTotals")
 				</button>
@@ -1355,7 +1357,7 @@
 {
     <table class="adminContent">
         <tr>
-            <td class="adminData">
+            <td class="adminData" style="padding:0;">
                 @foreach (var item in Model.Items)
                 {
                     <script type="text/javascript">
@@ -1390,7 +1392,7 @@
                     </script>
 
                 }
-                <table class="table table-bordered table-striped table-hover">
+                <table class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
                     <thead>
                         <tr style="background-color: #666; color: #fff">
                             <th>
@@ -1732,11 +1734,9 @@
             </td>
         </tr>
     </table>  
-    <p style="margin-top:14px;">
-        <strong>
-            @T("Admin.Orders.OrderNotes.AddTitle")
-        </strong>
-    </p>
+    <div class="caption-container">
+        <h3 class="bordered">@T("Admin.Orders.OrderNotes.AddTitle")</h3>
+    </div>
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -1757,10 +1757,13 @@
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td align="left">
-                <button type="button" name="addOrderNote" id="addOrderNote" class="btn"><i class="icon-plus icon-white"></i>
-                    @T("Admin.Orders.OrderNotes.AddButton")</button>
+            <td class="adminTitle">
+				&nbsp;
+			</td>
+            <td class="adminData">
+                <button type="button" name="addOrderNote" id="addOrderNote" class="btn">
+					<i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Orders.OrderNotes.AddButton")
+				</button>
             </td>
         </tr>
     </table>

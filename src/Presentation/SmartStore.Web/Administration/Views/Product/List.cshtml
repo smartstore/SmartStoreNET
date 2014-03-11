@@ -27,7 +27,9 @@
             </a>
             @if (Model.DisplayPdfDownloadCatalog)
             {
-                <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">@T("Admin.Catalog.Products.List.DownloadPDF")</a>
+                <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">
+					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Catalog.Products.List.DownloadPDF")
+				</a>
             }
             <div class="btn-group" style="vertical-align: middle">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -42,7 +44,7 @@
               </ul>
             </div>
             <a id="importexcel" href="#importexcel-window" class="btn" role="button">
-				@T("Admin.Common.ImportFromExcel")
+				<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
 			</a>
             <button type="submit" id="delete-selected" class="btn btn-danger">
 				<i class="icon-trash"></i>
@@ -98,7 +100,9 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToSku)
-                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="t-button">@T("Admin.Common.Go")</button>
+                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
+					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+				</button>
             </td>
         </tr>
         <tr>

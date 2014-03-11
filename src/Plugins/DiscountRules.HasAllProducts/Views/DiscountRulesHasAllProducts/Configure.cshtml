@@ -37,7 +37,12 @@
                 @Html.SmartLabelFor(model => model.Products)
             </td>
             <td class="adminData">
-                <div>@Html.EditorFor(model => model.Products) <button type="button" name="saveHasAllProductsrequirement@(Model.RequirementId)" id="saveHasAllProductsrequirement@(Model.RequirementId)" class="t-button">@T("Admin.Common.Save")</button></div>
+                <div>
+					@Html.EditorFor(model => model.Products)
+					<button type="button" name="saveHasAllProductsrequirement@(Model.RequirementId)" id="saveHasAllProductsrequirement@(Model.RequirementId)" class="btn">
+						<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+					</button>
+				</div>
                 <div id="pnl-save-requirement-result@(Model.RequirementId)" style="display:none;">@T("Admin.Promotions.Discounts.Requirements.Saved")</div>
             </td>
         </tr>

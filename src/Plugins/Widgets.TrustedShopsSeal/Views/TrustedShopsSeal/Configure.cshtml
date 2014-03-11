@@ -77,10 +77,11 @@
             @Html.ValidationMessageFor(model => model.ShopText)
         </td>
     </tr>
-
     <tr>
-        <td>&nbsp;</td>
-        <td style="padding:10px 0">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
             <button type="submit" name="save" value="save" class="btn btn-primary">
 				<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>

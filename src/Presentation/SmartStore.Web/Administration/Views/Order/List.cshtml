@@ -118,7 +118,9 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToNumber)
-                <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">@T("Admin.Common.Go")</button>
+                <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
+					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+				</button>
             </td>
         </tr>
         <tr>

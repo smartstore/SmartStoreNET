@@ -981,7 +981,7 @@ namespace SmartStore.Web.Controllers
 
                 };
 
-                var pic = _pictureService.GetPictureById(manufacturer.Manufacturer.PictureId);
+				var pic = _pictureService.GetPictureById(manufacturer.Manufacturer.PictureId.GetValueOrDefault());
                 if (pic != null)
                 {
                     item.PictureModel = new PictureModel()
@@ -989,7 +989,7 @@ namespace SmartStore.Web.Controllers
                         PictureId = pic.Id, // codehint: sm-add
 						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Manufacturer.Name),
 						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Manufacturer.Name),
-                        ImageUrl = _pictureService.GetPictureUrl(manufacturer.Manufacturer.PictureId),
+						ImageUrl = _pictureService.GetPictureUrl(manufacturer.Manufacturer.PictureId.GetValueOrDefault()),
                     };
                 }
 
@@ -1830,9 +1830,9 @@ namespace SmartStore.Web.Controllers
                     {
                         var pictureModel = new PictureModel()
                         {
-                            PictureId = x.PictureId, // codehint: sm-add
-                            FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId),
-                            ImageUrl = _pictureService.GetPictureUrl(x.PictureId, pictureSize),
+							PictureId = x.PictureId.GetValueOrDefault(),
+							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
+							ImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault(), pictureSize),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
                         };
@@ -1978,9 +1978,9 @@ namespace SmartStore.Web.Controllers
                     {
                         var pictureModel = new PictureModel()
                         {
-                            PictureId = x.PictureId, // codehint: sm-add
-                            FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId),
-                            ImageUrl = _pictureService.GetPictureUrl(x.PictureId, pictureSize),
+							PictureId = x.PictureId.GetValueOrDefault(),
+							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
+							ImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault(), pictureSize),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
 							AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
                         };
@@ -2138,9 +2138,9 @@ namespace SmartStore.Web.Controllers
             {
                 var pictureModel = new PictureModel()
                 {
-                    PictureId = manufacturer.PictureId, // codehint: sm-add
-                    FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId),
-                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId, pictureSize),
+					PictureId = manufacturer.PictureId.GetValueOrDefault(),
+					FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
+					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize),
 					Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
 					AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };
@@ -2411,11 +2411,11 @@ namespace SmartStore.Web.Controllers
                         var m = x.Manufacturer.ToModel();
                         if (preparePictureModel)
                         {
-                            m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId);
-                            var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId);
+							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
                             if (picture != null)
                             {
-                                m.PictureModel.PictureId = x.Manufacturer.PictureId; // codehint: sm-add
+								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
 								m.PictureModel.AlternateText = string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
                             }

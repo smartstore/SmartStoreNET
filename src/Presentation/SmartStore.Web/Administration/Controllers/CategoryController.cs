@@ -131,7 +131,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Category category)
         {
-            var picture = _pictureService.GetPictureById(category.PictureId);
+            var picture = _pictureService.GetPictureById(category.PictureId.GetValueOrDefault());
             if (picture != null)
                 _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(category.Name));
         }
@@ -583,7 +583,7 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                int prevPictureId = category.PictureId;
+				int prevPictureId = category.PictureId.GetValueOrDefault();
                 category = model.ToEntity(category);
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 _categoryService.UpdateCategory(category);

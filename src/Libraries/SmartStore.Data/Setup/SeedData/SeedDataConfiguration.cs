@@ -1,26 +1,28 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using SmartStore.Core.Domain.Localization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using SmartStore.Core.Domain.Localization;
 
-//namespace SmartStore.Setup
-//{
-    
-//	public class SeedDataConfiguration
-//	{
-//		public SeedDataConfiguration()
-//		{
-//			this.SeedSampleData = true;
-//			this.StoreMediaInDB = true;
-//			this.ProgressCallback = (x) => { }; // Noop
-//		}
+namespace SmartStore.Data.Setup
+{
 
-//		public Language Language { get; set; }
-//		public InvariantSeedData InstallData { get; set; }
-//		public bool SeedSampleData { get; set; }
-//		public bool StoreMediaInDB { get; set; }
-//		public Action<int> ProgressCallback { get; set; }
-//	}
+	public class SeedDataConfiguration
+	{
+		public SeedDataConfiguration()
+		{
+			this.SeedSampleData = true;
+			this.StoreMediaInDB = true;
+			this.ProgressCallback = (x) => { }; // Noop
+		}
 
-//}
+		public string DefaultUserName { get; set; }
+		public string DefaultUserPassword { get; set; }
+		public Language Language { get; set; }
+		public InvariantSeedData Data { get; set; }
+		public bool SeedSampleData { get; set; }
+		public bool StoreMediaInDB { get; set; }
+		public Action<int> ProgressCallback { get; set; }
+	}
+
+}

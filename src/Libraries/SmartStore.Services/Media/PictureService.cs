@@ -19,6 +19,7 @@ using ImageResizer.Configuration;
 using StackExchange.Profiling;
 using System.Threading;
 using System.Text;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {   
@@ -170,7 +171,7 @@ namespace SmartStore.Services.Media
         /// <returns>Result</returns>
         public virtual string GetPictureSeName(string name)
         {
-            return SeoExtensions.GetSeName(name, true, false);
+            return SeoHelper.GetSeName(name, true, false);
         }
 
         /// <summary>

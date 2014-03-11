@@ -484,6 +484,7 @@
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
+    <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />

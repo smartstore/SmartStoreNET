@@ -76,6 +76,10 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Scripting.11.0.2100.61\lib\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -98,9 +102,13 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Migrations\201403101616479_Initial.cs" />
-    <Compile Include="Migrations\201403101616479_Initial.Designer.cs">
-      <DependentUpon>201403101616479_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201403102003488_Initial.cs" />
+    <Compile Include="Migrations\201403102003488_Initial.Designer.cs">
+      <DependentUpon>201403102003488_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403102012448_AddPictureProp.cs" />
+    <Compile Include="Migrations\201403102012448_AddPictureProp.Designer.cs">
+      <DependentUpon>201403102012448_AddPictureProp.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
@@ -113,6 +121,11 @@
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
     <Compile Include="Setup\IMigrationSeeder.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
+    <Compile Include="Setup\SeedData\DeDESeedData.cs" />
+    <Compile Include="Setup\SeedData\EnUSSeedData.cs" />
+    <Compile Include="Setup\SeedData\SeedDataPopulator.cs" />
+    <Compile Include="Setup\SeedData\SeedDataException.cs" />
+    <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
     <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />
     <Compile Include="Setup\SeedData\InvariantSeedData.cs" />
     <Compile Include="Setup\MigrateDatabaseInitializer.cs" />
@@ -229,11 +242,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403101616479_Initial.resx">
-      <DependentUpon>201403101616479_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403102003488_Initial.resx">
+      <DependentUpon>201403102003488_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201403102012448_AddPictureProp.resx">
+      <DependentUpon>201403102012448_AddPictureProp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>

@@ -7,7 +7,7 @@ namespace SmartStore.Core.Data
 {
     public interface IDbContext 
     {
-        IDbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
+        DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
 
         int SaveChanges();
 

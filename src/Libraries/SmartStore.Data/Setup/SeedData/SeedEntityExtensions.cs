@@ -6,22 +6,22 @@ using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Services.Installation
+namespace SmartStore.Data.Setup
 {
 
-    public static class InstallationEntityExtensions
+    public static class SeedEntityExtensions
     {
 
         #region fluent extensions
 
-        public static InstallationEntityAlterer<T, TKey> WithKey<T, TKey>(this IList<T> list, Expression<Func<T, TKey>> expression) where T : BaseEntity
+        public static SeedEntityAlterer<T, TKey> WithKey<T, TKey>(this IList<T> list, Expression<Func<T, TKey>> expression) where T : BaseEntity
         {
-            return new InstallationEntityAlterer<T, TKey>(list, expression);
+            return new SeedEntityAlterer<T, TKey>(list, expression);
         }
 
-        public static InstallationSettingsAlterer Alter<TSettings>(this IList<ISettings> list, Action<TSettings> action) where TSettings : class, ISettings, new()
+        public static SeedSettingsAlterer Alter<TSettings>(this IList<ISettings> list, Action<TSettings> action) where TSettings : class, ISettings, new()
         {
-            var alterer = new InstallationSettingsAlterer(list);
+            var alterer = new SeedSettingsAlterer(list);
             return alterer.Alter<TSettings>(action);
         }
 
@@ -29,11 +29,11 @@ namespace SmartStore.Services.Installation
 
         #region fluent classes
 
-        public class InstallationSettingsAlterer
+        public class SeedSettingsAlterer
         {
             private readonly Dictionary<Type, ISettings> _settingsMap; // for faster access!
 
-            public InstallationSettingsAlterer(IList<ISettings> settings)
+            public SeedSettingsAlterer(IList<ISettings> settings)
             {
                 // fetch all types from list and build a key/value map for faster access.
                 _settingsMap = new Dictionary<Type, ISettings>(settings.Count);
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Installation
                 }
             }
 
-            public InstallationSettingsAlterer Alter<TSettings>(Action<TSettings> action) where TSettings : class, ISettings, new()
+            public SeedSettingsAlterer Alter<TSettings>(Action<TSettings> action) where TSettings : class, ISettings, new()
             {
                 ISettings setting = null;
                 if (_settingsMap.TryGetValue(typeof(TSettings), out setting))
@@ -57,12 +57,12 @@ namespace SmartStore.Services.Installation
         }
 
 
-        public class InstallationEntityAlterer<T, TKey> where T : BaseEntity
+        public class SeedEntityAlterer<T, TKey> where T : BaseEntity
         {
             private readonly Dictionary<TKey, T> _entityMap; // for faster access!
             private readonly IList<T> _entities;
 
-            public InstallationEntityAlterer(IList<T> list, Expression<Func<T, TKey>> keyExpression)
+            public SeedEntityAlterer(IList<T> list, Expression<Func<T, TKey>> keyExpression)
             {
                 _entities = list;
 
@@ -78,7 +78,7 @@ namespace SmartStore.Services.Installation
                 
             }
 
-            public InstallationEntityAlterer<T, TKey> Alter(TKey key, Action<T> action)
+            public SeedEntityAlterer<T, TKey> Alter(TKey key, Action<T> action)
             {
                 T entity = default(T);
                 if (_entityMap.TryGetValue(key, out entity)) 
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Installation
                 return this;
             }
 
-            public InstallationEntityAlterer<T, TKey> Remove(TKey key)
+            public SeedEntityAlterer<T, TKey> Remove(TKey key)
             {
                 T entity = default(T);
                 if (_entityMap.TryGetValue(key, out entity))

@@ -139,10 +139,10 @@ namespace SmartStore.Data
             return ((IObjectContextAdapter)this).ObjectContext.CreateDatabaseScript();
         }
 
-        public new IDbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity
-        {
-            return base.Set<TEntity>();
-        }
+		public new DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity
+		{
+			return base.Set<TEntity>();
+		}
 
         public virtual IList<TEntity> ExecuteStoredProcedureList<TEntity>(string commandText, params object[] parameters) where TEntity : BaseEntity, new()
         {

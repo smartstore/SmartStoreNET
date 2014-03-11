@@ -37,7 +37,7 @@ namespace SmartStore.Web.Controllers
             if (!product.HasSampleDownload)
                 return Content("Product variant doesn't have a sample download.");
 
-            var download = _downloadService.GetDownloadById(product.SampleDownloadId);
+			var download = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
             if (download == null)
                 return Content("Sample download is not available any more.");
 

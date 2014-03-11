@@ -121,7 +121,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Manufacturer manufacturer)
         {
-            var picture = _pictureService.GetPictureById(manufacturer.PictureId);
+			var picture = _pictureService.GetPictureById(manufacturer.PictureId.GetValueOrDefault());
             if (picture != null)
                 _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(manufacturer.Name));
         }
@@ -359,7 +359,7 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                int prevPictureId = manufacturer.PictureId;
+				int prevPictureId = manufacturer.PictureId.GetValueOrDefault();
                 manufacturer = model.ToEntity(manufacturer);
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
                 _manufacturerService.UpdateManufacturer(manufacturer);
@@ -369,7 +369,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(manufacturer, model);
                 //delete an old picture (if deleted or updated)
-                if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId)
+				if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId.GetValueOrDefault())
                 {
                     var prevPicture = _pictureService.GetPictureById(prevPictureId);
                     if (prevPicture != null)

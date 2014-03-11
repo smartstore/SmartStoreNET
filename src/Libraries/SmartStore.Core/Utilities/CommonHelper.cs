@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Web.Hosting;
 
 namespace SmartStore.Utilities
@@ -8,7 +10,8 @@ namespace SmartStore.Utilities
 
     public static partial class CommonHelper
     {
-        /// <summary>
+		
+		/// <summary>
         /// Generate random digit code
         /// </summary>
         /// <param name="length">Length</param>
@@ -91,5 +94,6 @@ namespace SmartStore.Utilities
 		{
 			return File.Exists(Path.Combine(dir.FullName, "SmartStoreNET.sln"));
 		}
+
     }
 }

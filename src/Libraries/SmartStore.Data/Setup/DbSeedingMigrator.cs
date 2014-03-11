@@ -35,7 +35,9 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		public void RunPendingMigrations(TContext context)
 		{
-			var seeds = new List<IMigrationSeeder<TContext>>();
+			var coreSeeders = new List<IMigrationSeeder<SmartObjectContext>>();
+			var externalSeeders = new List<IMigrationSeeder<TContext>>();
+			var isCoreMigration = context is SmartObjectContext;
 
 			// Apply migrations
 			foreach (var migrationId in GetPendingMigrations())
@@ -46,8 +48,20 @@ namespace SmartStore.Data.Setup
 				if (!IsValidMigrationId(migrationId))
 					continue;
 
+				// Resolve and instantiate the DbMigration instance from the assembly
 				var migration = CreateMigrationInstanceByMigrationId(migrationId);
-				var migrationSeeder = migration as IMigrationSeeder<TContext>;
+				
+				// Seeders for the core DbContext must be run in any case 
+				// (e.g. for Resource or Setting updates even from external plugins)
+				IMigrationSeeder<SmartObjectContext> coreSeeder = migration as IMigrationSeeder<SmartObjectContext>;
+				IMigrationSeeder<TContext> externalSeeder = null;
+
+				if (!isCoreMigration)
+				{
+					// Context specific seeders should only be resolved
+					// when origin is external (e.g. a Plugin)
+					externalSeeder = migration as IMigrationSeeder<TContext>;
+				}
 
 				try
 				{
@@ -67,14 +81,27 @@ namespace SmartStore.Data.Setup
 					// TODO: (MC) investigate this and implement a cleaner solution
 				}
 
-				if (migrationSeeder != null)
-					seeds.Add(migrationSeeder);
+				if (coreSeeder != null)
+					coreSeeders.Add(coreSeeder);
+
+				if (externalSeeder != null)
+					externalSeeders.Add(externalSeeder);
 			}
 
-			// Apply data seeders
-			foreach (var migrationSeeder in seeds)
+			// Apply core data seeders first
+			if (coreSeeders.Any())
 			{
-				migrationSeeder.Seed(context);
+				var coreContext = isCoreMigration ? context as SmartObjectContext : new SmartObjectContext();
+				foreach (var seeder in coreSeeders)
+				{
+					seeder.Seed(coreContext);
+				}
+			}
+
+			// Apply external data seeders
+			foreach (var seeder in externalSeeders)
+			{
+				seeder.Seed(context);
 			}
 		}
 

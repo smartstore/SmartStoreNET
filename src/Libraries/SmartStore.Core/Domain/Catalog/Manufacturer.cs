@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -52,7 +53,13 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the parent picture identifier
         /// </summary>
 		[DataMember]
-		public int PictureId { get; set; }
+		public int? PictureId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the picture
+		/// </summary>
+		[DataMember]
+		public virtual Picture Picture { get; set; }
 
         /// <summary>
         /// Gets or sets the page size

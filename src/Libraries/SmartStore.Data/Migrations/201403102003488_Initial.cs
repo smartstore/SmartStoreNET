@@ -1,14 +1,14 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
-	using System.Data.Entity.Migrations;
+    using System;
+    using System.Data.Entity.Migrations;
 	using SmartStore.Core.Data;
 	using SmartStore.Data.Setup;
     
     public partial class Initial : DbMigration
     {
         public override void Up()
-        {
+		{
 			if (DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
 				return;
 
@@ -820,6 +820,7 @@ namespace SmartStore.Data.Migrations
                         LicenseDownloadId = c.Int(),
                         ItemWeight = c.Decimal(precision: 18, scale: 4),
                         BundleData = c.String(),
+                        ProductCost = c.Decimal(nullable: false, precision: 18, scale: 4),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Order", t => t.OrderId, cascadeDelete: true)
@@ -1053,6 +1054,9 @@ namespace SmartStore.Data.Migrations
                         WeightAdjustment = c.Decimal(nullable: false, precision: 18, scale: 4),
                         IsPreSelected = c.Boolean(nullable: false),
                         DisplayOrder = c.Int(nullable: false),
+                        ValueTypeId = c.Int(nullable: false),
+                        LinkedProductId = c.Int(nullable: false),
+                        Quantity = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Product_ProductAttribute_Mapping", t => t.ProductVariantAttributeId, cascadeDelete: true)
@@ -1776,7 +1780,7 @@ namespace SmartStore.Data.Migrations
 		}
         
         public override void Down()
-        {
+		{
 			#region Custom
 
 			this.SqlFile("Indexes.Inverse.sql");
@@ -1787,7 +1791,9 @@ namespace SmartStore.Data.Migrations
 			}
 
 			#endregion
-			
+
+			#region auto generated
+
 			DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
             DropForeignKey("dbo.ProductReview", "Id", "dbo.CustomerContent");
             DropForeignKey("dbo.PollVotingRecord", "PollAnswerId", "dbo.PollAnswer");
@@ -2077,6 +2083,8 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.Product");
             DropTable("dbo.ProductBundleItem");
             DropTable("dbo.ProductBundleItemAttributeFilter");
-        }
+
+			#endregion
+		}
     }
 }

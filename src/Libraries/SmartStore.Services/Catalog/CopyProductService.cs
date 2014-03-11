@@ -84,7 +84,7 @@ namespace SmartStore.Services.Catalog
 
 			// product download & sample download
 			int downloadId = product.DownloadId;
-			int sampleDownloadId = product.SampleDownloadId;
+			int sampleDownloadId = product.SampleDownloadId.GetValueOrDefault();
 
 			if (product.IsDownload)
 			{
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Catalog
 
 				if (product.HasSampleDownload)
 				{
-					var sampleDownload = _downloadService.GetDownloadById(product.SampleDownloadId);
+					var sampleDownload = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
 					if (sampleDownload != null)
 					{
 						var sampleDownloadCopy = new Download()

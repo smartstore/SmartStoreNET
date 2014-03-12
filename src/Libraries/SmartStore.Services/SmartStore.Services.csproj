@@ -234,10 +234,6 @@
     <Compile Include="Filter\FilterService.cs" />
     <Compile Include="Filter\IFilterService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
-    <Compile Include="Installation\_Old\InstallationEntityExtensions.cs" />
-    <Compile Include="Installation\_Old\InstallationException.cs" />
-    <Compile Include="Installation\_Old\InstallDataContext.cs" />
-    <Compile Include="Installation\_Old\InvariantInstallationData.cs" />
     <Compile Include="ICommonServices.cs" />
     <Compile Include="Localization\LocalizedEntityPostDeleteHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
@@ -286,8 +282,6 @@
     <Compile Include="Directory\IStateProvinceService.cs" />
     <Compile Include="ExportImport\IExportManager.cs" />
     <Compile Include="ExportImport\IImportManager.cs" />
-    <Compile Include="Installation\_Old\IInstallationService.cs" />
-    <Compile Include="Installation\_Old\InstallationService.cs" />
     <Compile Include="Localization\LocalizationExtentions.cs" />
     <Compile Include="Directory\MeasureService.cs" />
     <Compile Include="Logging\CustomerActivityService.cs" />

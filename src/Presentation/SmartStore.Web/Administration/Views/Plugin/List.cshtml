@@ -123,23 +123,18 @@
                         <div class="plugin-actions">
 
 							<i class="icon-edit"></i>
-							<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
-								@T("Admin.Common.Edit")
-							</a>
+							<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">@T("Admin.Common.Edit")</a>
 
                             @if (plugin.ConfigurationUrl.HasValue())
                             {
                                 <i class="icon-cog"></i>
-                                <a class="plugin-configure" href="@plugin.ConfigurationUrl">
-                                    @T("Admin.Configuration.Plugins.Fields.Configure")
-                                </a>
+                                <a class="plugin-configure" href="@plugin.ConfigurationUrl">@T("Admin.Configuration.Plugins.Fields.Configure")</a>
                             }
                             @if (plugin.Installed)
                             {
                                 <i class="icon-refresh"></i>
                                 <a class="plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
-                                    @T("Admin.Configuration.Plugins.Resources.Update")
-                                </a>
+                                    @T("Admin.Configuration.Plugins.Resources.Update")</a>
                             }
                         </div>
 
@@ -333,8 +328,8 @@
                     '@Url.Content("~/Admin/Plugin/EditPopup")',
                     $(this).data("systemname")
                 ),
-                800,
-                350,
+                1000,
+                480,
                 true
             );
             return false;

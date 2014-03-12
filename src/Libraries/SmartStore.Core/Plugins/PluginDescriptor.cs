@@ -127,7 +127,7 @@ namespace SmartStore.Core.Plugins
         /// Gets the plugin description
         /// </summary>
 		[DataMember]
-		public string Description { get; internal set; }
+		public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the version

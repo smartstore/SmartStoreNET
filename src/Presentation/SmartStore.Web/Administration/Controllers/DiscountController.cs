@@ -86,7 +86,7 @@ namespace SmartStore.Admin.Controllers
             {
                 model.AvailableDiscountRequirementRules.Add(new SelectListItem()
                 {
-                    Text = discountRule.PluginDescriptor.GetLocalizedFriendlyName(_localizationService), //discountRule.PluginDescriptor.FriendlyName,
+					Text = discountRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
                     Value = discountRule.PluginDescriptor.SystemName
                 });
             }
@@ -129,7 +129,7 @@ namespace SmartStore.Admin.Controllers
                         model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo()
                         {
                             DiscountRequirementId = dr.Id,
-                            RuleName = drr.PluginDescriptor.GetLocalizedFriendlyName(_localizationService),
+							RuleName = drr.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
                             ConfigurationUrl = GetRequirementUrlInternal(drr, discount, dr.Id)
                         });
                     }
@@ -359,7 +359,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("Discount requirement rule could not be loaded");
 
             string url = GetRequirementUrlInternal(discountRequirementRule, discount, discountRequirementId);
-			string ruleName = discountRequirementRule.PluginDescriptor.GetLocalizedFriendlyName(_localizationService);
+			string ruleName = discountRequirementRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName");
 
             return Json(new { url = url, ruleName = ruleName }, JsonRequestBehavior.AllowGet);
         }

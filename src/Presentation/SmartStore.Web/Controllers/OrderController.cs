@@ -152,7 +152,7 @@ namespace SmartStore.Web.Controllers
 
             //payment method
             var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-            model.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id) : order.PaymentMethodSystemName;
+			model.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : order.PaymentMethodSystemName;
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)

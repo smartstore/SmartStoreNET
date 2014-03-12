@@ -19,6 +19,7 @@
 * Shipment list can be filtered by tracking number
 * #238 Working currency in context of request domain
 * Cross-linkage of products through variant attribute values
+* #295 Display short description for payment plugins
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long

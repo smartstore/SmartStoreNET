@@ -12,6 +12,8 @@ namespace SmartStore.Services.Localization
     /// </summary>
     public partial interface ILocalizationService
     {
+		void ClearCache();
+
         /// <summary>
         /// Deletes a locale string resource
         /// </summary>

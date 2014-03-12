@@ -23,7 +23,8 @@ namespace SmartStore.Web.Models.Checkout
         {
             public string PaymentMethodSystemName { get; set; }
             public string Name { get; set; }
-            public string BrandUrl { get; set; } // codehint: sm-add
+			public string Description { get; set; }
+            public string BrandUrl { get; set; }
             public string Fee { get; set; }
             public bool Selected { get; set; }
         }

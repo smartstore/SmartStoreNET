@@ -80,6 +80,11 @@ namespace SmartStore.Services.Localization
 
         #region Methods
 
+		public virtual void ClearCache()
+		{
+			_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+		}
+
         /// <summary>
         /// Deletes a locale string resource
         /// </summary>

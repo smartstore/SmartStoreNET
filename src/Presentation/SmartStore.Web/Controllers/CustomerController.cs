@@ -320,7 +320,7 @@ namespace SmartStore.Web.Controllers
                     Id = ear.Id,
                     Email = ear.Email,
                     ExternalIdentifier = ear.ExternalIdentifier,
-                    AuthMethodName = authMethod.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id)
+                    AuthMethodName = authMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id)
                 });
             }
 

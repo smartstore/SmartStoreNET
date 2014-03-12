@@ -295,7 +295,8 @@ namespace SmartStore.Web.Controllers
                 
                 var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel()
                 {
-                    Name = pm.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id),
+					Name = pm.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id),
+					Description = pm.GetLocalizedValue(_localizationService, "Description", _workContext.WorkingLanguage.Id),
                     PaymentMethodSystemName = pm.PluginDescriptor.SystemName,
                 };
 

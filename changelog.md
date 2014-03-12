@@ -1,15 +1,15 @@
 #Release Notes#
 
-##SmartStore.NET 1.3.0.0#
+##SmartStore.NET 2.0.0#
 
 ###Highlights###
-* #112 Web-Api plugin
-* #106 Implement 'Bundle Products'
+* #106 Bundle Products
+* #112 WebApi plugin
 * Improved product structure without product variant entity
 
 ###New Features###
-* #175 IPayment plugin: Implemented deactivation of specific credit card types
 * #137 Shipping method option to ignore additional shipping charges
+* #175 IPayment plugin: Implemented deactivation of specific credit card types
 * #191 Implemented new scheduled task _Delete logs_
 * Added support for _SummerNote_ HTML editor (experimental)
 * (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
@@ -20,6 +20,7 @@
 * #238 Working currency in context of request domain
 * Cross-linkage of products through variant attribute values
 * #295 Display short description for payment plugins
+* Entity Framework code-based Migrations now fully supported in application core and all relevant plugins (no need to manually run SQL scripts anymore in order to update to newer version).
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long

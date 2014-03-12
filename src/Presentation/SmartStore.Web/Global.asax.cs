@@ -106,7 +106,6 @@ namespace SmartStore.Web
 			// Routes
 			RegisterRoutes(RouteTable.Routes, installed);
 
-			// XXXXXXX
 			if (installed)
 			{
 				// remove all view engines...

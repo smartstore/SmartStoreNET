@@ -556,19 +556,23 @@ namespace SmartStore.Web.Controllers
 
 					var pluginsCount = plugins.Count;
 					var idx = 0;
-					foreach (var plugin in plugins)
-					{
-						try
+
+					using (var dbScope = new DbContextScope(autoDetectChanges: false)) {
+						foreach (var plugin in plugins)
 						{
-							idx++;
-							UpdateResult(x => x.ProgressMessage = _locService.GetResource("Installing plugin {0} of {1}").FormatInvariant(idx, pluginsCount));
-							plugin.Install();
-						}
-						catch
-						{
-							if (plugin.PluginDescriptor.Installed)
+							try
 							{
-								PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
+								idx++;
+								UpdateResult(x => x.ProgressMessage = _locService.GetResource("Installing plugin {0} of {1}").FormatInvariant(idx, pluginsCount));
+								plugin.Install();
+								dbScope.Commit();
+							}
+							catch
+							{
+								if (plugin.PluginDescriptor.Installed)
+								{
+									PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
+								}
 							}
 						}
 					}

@@ -13,9 +13,9 @@ namespace SmartStore.Core.Data
         public DbContextScope(IDbContext ctx = null, bool? autoDetectChanges = null, bool? proxyCreation = null, bool? validateOnSave = null)
         {
 			_ctx = ctx ?? EngineContext.Current.Resolve<IDbContext>();
-            _autoDetectChangesEnabled = ctx.AutoDetectChangesEnabled;
-            _proxyCreationEnabled = ctx.ProxyCreationEnabled;
-            _validateOnSaveEnabled = ctx.ValidateOnSaveEnabled;
+			_autoDetectChangesEnabled = _ctx.AutoDetectChangesEnabled;
+			_proxyCreationEnabled = _ctx.ProxyCreationEnabled;
+			_validateOnSaveEnabled = _ctx.ValidateOnSaveEnabled;
             
             if (autoDetectChanges.HasValue)
 				_ctx.AutoDetectChangesEnabled = autoDetectChanges.Value;

@@ -40,7 +40,7 @@
         OnComplete = "Installation.onComplete",
         OnFailure = "Installation.onFailure",
         OnSuccess = "Installation.onSuccess"
-    }, new { @class = "form-horizontal" }))
+    }, new { @class = "form-horizontal", autocomplete = "on" }))
     {
 
         <script type="text/javascript">
@@ -413,7 +413,7 @@
                     });
 
                     // start the checkprogress interval
-                    progressIntervall = window.setInterval(checkProgress, 2000);
+                    progressIntervall = window.setInterval(checkProgress, 1500);
 
                     $("#install-button").attr("disabled", "disabled");
 

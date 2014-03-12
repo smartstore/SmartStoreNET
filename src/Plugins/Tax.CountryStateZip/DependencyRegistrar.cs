@@ -17,28 +17,13 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
         {
             builder.RegisterType<TaxRateService>().As<ITaxRateService>().InstancePerHttpRequest();
 
-            //data layer
+			//register named context
+			builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
+				.Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
+				.InstancePerHttpRequest();
 
-			if (DataSettings.Current.IsValid())
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
-                    .Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-				builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-            else
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new TaxRateObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
+			builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
+				.InstancePerHttpRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<TaxRate>>()

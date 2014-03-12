@@ -44,7 +44,7 @@ namespace SmartStore.Data.Setup
 		{
 		}
 
-		internal void Initialize(SmartObjectContext context)
+		public void Initialize(SmartObjectContext context)
 		{
 			this._ctx = context;
 
@@ -4189,211 +4189,45 @@ namespace SmartStore.Data.Setup
 			{
 				new PdfSettings
 				{
-					Enabled = true,
-					LetterPageSizeEnabled = false,
-					RenderOrderNotes = true,
-					FontFileName = "OpenSans-Regular.ttf",
 				},
 				new CommonSettings
 				{
-					UseSystemEmailForContactUsForm = false,
-					UseStoredProceduresIfSupported = true,
-					SitemapEnabled = true,
-					SitemapIncludeCategories = true,
-					SitemapIncludeManufacturers = true,
-					SitemapIncludeProducts = false,
-					SitemapIncludeTopics = true,
-					DisplayJavaScriptDisabledWarning = false,
-					UseFullTextSearch = false,
-					FullTextMode = FulltextSearchMode.ExactMatch,
-                    
 				},
 				new SeoSettings()
 				{
-					PageTitleSeparator = ". ",
-					PageTitleSeoAdjustment = PageTitleSeoAdjustment.PagenameAfterStorename,
-					DefaultTitle = "Your store",
-					DefaultMetaKeywords = "",
-					DefaultMetaDescription = "",
-					ConvertNonWesternChars = false,
-					AllowUnicodeCharsInUrls = true,
-					ReservedUrlRecordSlugs = new List<string>() { "admin", "install", "recentlyviewedproducts", "newproducts", "compareproducts", "clearcomparelist", "setproductreviewhelpfulness", "login", "register", "logout", "cart", "wishlist", "emailwishlist", "checkout", "onepagecheckout", "contactus", "passwordrecovery", "subscribenewsletter", "blog", "boards", "inboxupdate", "sentupdate", "news", "sitemap", "sitemapseo", "search", "config", "api", "odata" },
-					ExtraRobotsDisallows = new List<string>()
 				},
 				new SocialSettings()
 				{
-					ShowSocialLinksInFooter = true,
-					FacebookLink = "#",
-					GooglePlusLink = "#",
-					TwitterLink = "#",
-					PinterestLink = "#",
 				},
 				new AdminAreaSettings()
 				{
-					GridPageSize = 15,
-					DisplayProductPictures = true,
-					RichEditorFlavor = "RichEditor"
 				},
 				new CatalogSettings()
 				{
-					ShowProductSku = false,
-					ShowManufacturerPartNumber = false,
-					AllowProductSorting = true,
-					AllowProductViewModeChanging = true,
-					DefaultViewMode = "grid",
-					ShowProductsFromSubcategories = false,
-					ShowCategoryProductNumber = false,
-					ShowCategoryProductNumberIncludingSubcategories = false,
-					CategoryBreadcrumbEnabled = true,
-					ShowShareButton = true,
-					PageShareCode = "<!-- AddThis Button BEGIN --><div class=\"addthis_toolbox addthis_default_style \"><a class=\"addthis_button_preferred_1\"></a><a class=\"addthis_button_preferred_2\"></a><a class=\"addthis_button_preferred_3\"></a><a class=\"addthis_button_preferred_4\"></a><a class=\"addthis_button_compact\"></a><a class=\"addthis_counter addthis_bubble_style\"></a></div><script type=\"text/javascript\">var addthis_config = {\"data_track_addressbar\":false};</script><script type=\"text/javascript\" src=\"//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-50f6c18f03ecbb2f\"></script><!-- AddThis Button END -->",
-					ProductReviewsMustBeApproved = false,
-					DefaultProductRatingValue = 5,
-					AllowAnonymousUsersToReviewProduct = false,
-					NotifyStoreOwnerAboutNewProductReviews = true,
-					EmailAFriendEnabled = true,
-					AskQuestionEnabled = true,
-					AllowAnonymousUsersToEmailAFriend = false,
-					RecentlyViewedProductsNumber = 6,
-					RecentlyViewedProductsEnabled = true,
-					RecentlyAddedProductsNumber = 10,
-					RecentlyAddedProductsEnabled = true,
-					CompareProductsEnabled = true,
-					ProductSearchAutoCompleteEnabled = true,
-					ProductSearchAutoCompleteNumberOfProducts = 10,
-					ProductSearchTermMinimumLength = 3,
-					ShowProductImagesInSearchAutoComplete = false,
-					ShowBestsellersOnHomepage = false,
-					NumberOfBestsellersOnHomepage = 6,
-					SearchPageProductsPerPage = 6,
-					ProductsAlsoPurchasedEnabled = true,
-					ProductsAlsoPurchasedNumber = 6,
-					EnableDynamicPriceUpdate = false,
-					NumberOfProductTags = 15,
-					ProductsByTagPageSize = 12,
-					IncludeShortDescriptionInCompareProducts = false,
-					IncludeFullDescriptionInCompareProducts = false,
-					UseSmallProductBoxOnHomePage = true,
-					IncludeFeaturedProductsInNormalLists = false,
-					DisplayTierPricesWithDiscounts = true,
-					IgnoreDiscounts = false,
-					IgnoreFeaturedProducts = false,
-					DefaultPageSizeOptions = "12, 18, 36, 72, 150",
-
-					//DefaultCategoryPageSizeOptions = "12, 18, 36, 72, 150", // codehint: sm-delete
-					//DefaultManufacturerPageSizeOptions = "12, 18, 36, 72, 150", // codehint: sm-delete
-					ProductsByTagAllowCustomersToSelectPageSize = true,
-					ProductsByTagPageSizeOptions = "12, 18, 36, 72, 150",
-					MaximumBackInStockSubscriptions = 200,
-					FileUploadMaximumSizeBytes = 1024 * 200, //200KB
-					ManufacturersBlockItemsToDisplay = 5,
-					DisplayAllImagesNumber = 6,	// codehint: sm-add
-					ShowColorSquaresInLists = true,
-					ShowDiscountSign = true
 				},
 				new LocalizationSettings()
 				{
-					DefaultAdminLanguageId = _ctx.Set<Language>().First().Id,
-					UseImagesForLanguageSelection = true,
-					SeoFriendlyUrlsForLanguagesEnabled = false,
-					DetectBrowserUserLanguage = false,
-					DefaultLanguageRedirectBehaviour = DefaultLanguageRedirectBehaviour.StripSeoCode,
-					InvalidLanguageRedirectBehaviour = InvalidLanguageRedirectBehaviour.ReturnHttp404
+					DefaultAdminLanguageId = _ctx.Set<Language>().First().Id
 				},
 				new CustomerSettings()
 				{
-					UsernamesEnabled = true,
-					CheckUsernameAvailabilityEnabled = false,
-					AllowUsersToChangeUsernames = false,
-					DefaultPasswordFormat = PasswordFormat.Hashed,
-					HashedPasswordFormat = "SHA1",
-					PasswordMinLength = 6,
-					UserRegistrationType = UserRegistrationType.Standard,
-					AllowCustomersToUploadAvatars = false,
-					AvatarMaximumSizeBytes = 20000,
-					DefaultAvatarEnabled = true,
-					ShowCustomersLocation = false,
-					ShowCustomersJoinDate = false,
-					AllowViewingProfiles = false,
-					NotifyNewCustomerRegistration = false,
-					HideDownloadableProductsTab = false,
-					HideBackInStockSubscriptionsTab = false,
-					DownloadableProductsValidateUser = false,
-					CustomerNameFormat = CustomerNameFormat.ShowUsernames,
-					GenderEnabled = true,
-					DateOfBirthEnabled = true,
-					CompanyEnabled = true,
-					StreetAddressEnabled = false,
-					StreetAddress2Enabled = false,
-					ZipPostalCodeEnabled = false,
-					CityEnabled = false,
-					CountryEnabled = false,
-					StateProvinceEnabled = false,
-					PhoneEnabled = false,
-					FaxEnabled = false,
-					NewsletterEnabled = true,
-					HideNewsletterBlock = false,
-					OnlineCustomerMinutes = 20,
-					StoreLastVisitedPage = true,
 				},
 				new AddressSettings()
 				{
-					CompanyEnabled = true,
-					StreetAddressEnabled = true,
-					StreetAddressRequired = true,
-					StreetAddress2Enabled = true,
-					ZipPostalCodeEnabled = true,
-					ZipPostalCodeRequired = true,
-					CityEnabled = true,
-					CityRequired = true,
-					CountryEnabled = true,
-					StateProvinceEnabled = true,
-					PhoneEnabled = true,
-					PhoneRequired = true,
-					FaxEnabled = true,
 				},
 				new MediaSettings()
 				{
-					AvatarPictureSize = 85,
-					ProductThumbPictureSize = 100,
-					ProductDetailsPictureSize = 300,
-					ProductThumbPictureSizeOnProductDetailsPage = 70,
-					AssociatedProductPictureSize = 125,
-					BundledProductPictureSize = 70,
-					CategoryThumbPictureSize = 125,
-					ManufacturerThumbPictureSize = 125,
-					CartThumbPictureSize = 80,
-					CartThumbBundleItemPictureSize = 32,
-					MiniCartThumbPictureSize = 32,
-					AutoCompleteSearchThumbPictureSize = 20,
-					MaximumImageSize = 1280,
-					DefaultPictureZoomEnabled = true,
-					PictureZoomType = "window",
-					DefaultImageQuality = 90,
-					MultipleThumbDirectories = true
 				},
 				new StoreInformationSettings()
 				{
-					StoreClosed = false,
-					StoreClosedAllowForAdmins = true,
-					DisplayMiniProfilerInPublicStore = false
 				},
 				new RewardPointsSettings()
 				{
-					Enabled = false,
-					ExchangeRate = 1,
-					PointsForRegistration = 0,
-					PointsForPurchases_Amount = 10,
-					PointsForPurchases_Points = 1,
-					PointsForPurchases_Awarded = OrderStatus.Complete,
-					PointsForPurchases_Canceled = OrderStatus.Cancelled,
 				},
 				new CurrencySettings()
 				{
 					PrimaryStoreCurrencyId = _ctx.Set<Currency>().First().Id,
 					PrimaryExchangeRateCurrencyId = _ctx.Set<Currency>().First().Id,
-					AutoUpdateEnabled = false,
-					LastUpdateTime = 0
 				},
 				new MeasureSettings()
 				{
@@ -4402,63 +4236,18 @@ namespace SmartStore.Data.Setup
 				},
 				new MessageTemplatesSettings()
 				{
-					CaseInvariantReplacement = false,
-					Color1 = "#3A87AD",
-					Color2 = "#F7F7F7",
-					Color3 = "#F5F5F5",
 				},
 				new ShoppingCartSettings()
 				{
-					DisplayCartAfterAddingProduct = false,
-					DisplayWishlistAfterAddingProduct = false,
-					MaximumShoppingCartItems = 1000,
-					MaximumWishlistItems = 1000,
-					AllowOutOfStockItemsToBeAddedToWishlist = false,
-					MoveItemsFromWishlistToCart = true,
-					ShowProductImagesOnShoppingCart = true,
-					ShowProductBundleImagesOnShoppingCart = true,
-					ShowProductImagesOnWishList = true,
-					ShowProductBundleImagesOnWishList = true,
-					ShowDiscountBox = true,
-					ShowGiftCardBox = true,
-					CrossSellsNumber = 8,
-					EmailWishlistEnabled = true,
-					AllowAnonymousUsersToEmailWishlist = false,
-					MiniShoppingCartEnabled = true,
-					ShowProductImagesInMiniShoppingCart = true,
-					MiniShoppingCartProductNumber = 5,
-					RoundPricesDuringCalculation = true,
-					ShowConfirmOrderLegalHint = false
 				},
 				new OrderSettings()
 				{
-					IsReOrderAllowed = true,
-					MinOrderSubtotalAmount = 0,
-					MinOrderTotalAmount = 0,
-					AnonymousCheckoutAllowed = true,
-					TermsOfServiceEnabled = true,
-					OnePageCheckoutEnabled = false,
-					ReturnRequestsEnabled = true,
-					ReturnRequestActions = new List<string>() { "Repair", "Replacement", "Store Credit" },
-					ReturnRequestReasons = new List<string>() { "Received Wrong Product", "Wrong Product Ordered", "There Was A Problem With The Product" },
-					NumberOfDaysReturnRequestAvailable = 365,
-					MinimumOrderPlacementInterval = 30,
 				},
 				new SecuritySettings()
 				{
-					ForceSslForAllPages = false,
-					EncryptionKey = CommonHelper.GenerateRandomDigitCode(16),
-					AdminAreaAllowedIpAddresses = null
 				},
 				new ShippingSettings()
 				{
-					ActiveShippingRateComputationMethodSystemNames = new List<string>() { "Shipping.FixedRate" },
-					FreeShippingOverXEnabled = false,
-					FreeShippingOverXValue = decimal.Zero,
-					FreeShippingOverXIncludingTax = false,
-					EstimateShippingEnabled = true,
-					DisplayShipmentEventsToCustomers = false,
-					ReturnValidOptionsIfThereAreAny = true,
 				},
 				new PaymentSettings()
 				{
@@ -4468,89 +4257,19 @@ namespace SmartStore.Data.Setup
 						"Payments.Manual",
 						"Payments.PayInStore",
 						"Payments.Prepayment"
-					},
-					AllowRePostingPayments = true,
-					BypassPaymentMethodSelectionIfOnlyOne = true,
+					}
 				},
 				new TaxSettings()
 				{
-					TaxBasedOn = TaxBasedOn.BillingAddress,
-					TaxDisplayType = TaxDisplayType.ExcludingTax,
-					ActiveTaxProviderSystemName = "Tax.FixedRate",
-					DefaultTaxAddressId = 0,
-					DisplayTaxSuffix = true,
-					DisplayTaxRates = false,
-					PricesIncludeTax = true,
-					AllowCustomersToSelectTaxDisplayType = false,
-					HideZeroTax = false,
-					HideTaxInOrderSummary = false,
-					ShippingIsTaxable = false,
-					ShippingPriceIncludesTax = false,
-					ShippingTaxClassId = 0,
-					PaymentMethodAdditionalFeeIsTaxable = false,
-					PaymentMethodAdditionalFeeIncludesTax = false,
-					PaymentMethodAdditionalFeeTaxClassId = 0,
-					EuVatEnabled = false,
-					EuVatShopCountryId = 0,
-					EuVatAllowVatExemption = true,
-					EuVatUseWebService = false,
-					EuVatEmailAdminWhenNewVatSubmitted = false,
-					ShowLegalHintsInFooter = true, 
-					ShowLegalHintsInProductDetails = true,
-					ShowLegalHintsInProductList = true
 				},
 				new BlogSettings()
 				{
-					Enabled = true,
-					PostsPageSize = 10,
-					AllowNotRegisteredUsersToLeaveComments = true,
-					NotifyAboutNewBlogComments = false,
-					NumberOfTags = 15,
-					ShowHeaderRssUrl = false,
 				},
 				new NewsSettings()
 				{
-					Enabled = true,
-					AllowNotRegisteredUsersToLeaveComments = true,
-					NotifyAboutNewNewsComments = false,
-					ShowNewsOnMainPage = true,
-					MainPageNewsCount = 3,
-					NewsArchivePageSize = 10,
-					ShowHeaderRssUrl = false,
 				},
 				new ForumSettings()
 				{
-					ForumsEnabled = true,
-					RelativeDateTimeFormattingEnabled = true,
-					AllowCustomersToDeletePosts = false,
-					AllowCustomersToEditPosts = false,
-					AllowCustomersToManageSubscriptions = false,
-					AllowGuestsToCreatePosts = false,
-					AllowGuestsToCreateTopics = false,
-					TopicSubjectMaxLength = 450,
-					PostMaxLength = 4000,
-					StrippedTopicMaxLength = 45,
-					TopicsPageSize = 10,
-					PostsPageSize = 10,
-					SearchResultsPageSize = 10,
-					LatestCustomerPostsPageSize = 10,
-					ShowCustomersPostCount = true,
-					ForumEditor = EditorType.BBCodeEditor,
-					SignaturesEnabled = true,
-					AllowPrivateMessages = false,
-					ShowAlertForPM = false,
-					PrivateMessagesPageSize = 10,
-					ForumSubscriptionsPageSize = 10,
-					NotifyAboutPrivateMessages = false,
-					PMSubjectMaxLength = 450,
-					PMTextMaxLength = 4000,
-					HomePageActiveDiscussionsTopicCount = 5,
-					ActiveDiscussionsPageTopicCount = 50,
-					ActiveDiscussionsFeedEnabled = false,
-					ActiveDiscussionsFeedCount = 25,
-					ForumFeedsEnabled = false,
-					ForumFeedCount = 10,
-					ForumSearchTermMinimumLength = 3,
 				},
 				new EmailAccountSettings()
 				{
@@ -4558,19 +4277,10 @@ namespace SmartStore.Data.Setup
 				},
 				new ContentSliderSettings()
 				{
-					IsActive = true,
-					ContentSliderHeight = "300px",
 					BackgroundPictureId = imgContentSliderBg.Id,
-					Slides = new List<ContentSliderSlideSettings>(),
 				},
 				new ThemeSettings()
 				{
-					BundleOptimizationEnabled = 0,
-					DefaultDesktopTheme = "Alpha",
-					DefaultMobileTheme = "Mobile",
-					AllowCustomerToSelectTheme = true,
-					MobileDevicesSupported = true,
-					EmulateMobileDevice = false,
 				}
 			};
 

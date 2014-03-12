@@ -102,13 +102,9 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Migrations\201403102003488_Initial.cs" />
-    <Compile Include="Migrations\201403102003488_Initial.Designer.cs">
-      <DependentUpon>201403102003488_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403102012448_AddPictureProp.cs" />
-    <Compile Include="Migrations\201403102012448_AddPictureProp.Designer.cs">
-      <DependentUpon>201403102012448_AddPictureProp.cs</DependentUpon>
+    <Compile Include="Migrations\201403112331027_Initial.cs" />
+    <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
+      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
@@ -119,11 +115,8 @@
     <Compile Include="Extensions\SqlDataReaderExtensions.cs" />
     <Compile Include="Setup\DbSeedingMigrator.cs" />
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
-    <Compile Include="Setup\IMigrationSeeder.cs" />
+    <Compile Include="Setup\IDataSeeder.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
-    <Compile Include="Setup\SeedData\DeDESeedData.cs" />
-    <Compile Include="Setup\SeedData\EnUSSeedData.cs" />
-    <Compile Include="Setup\SeedData\SeedDataPopulator.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
     <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />
@@ -150,6 +143,7 @@
     <Compile Include="Mapping\Shipping\ShipmentMap.cs" />
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
+    <Compile Include="Setup\SmartObjectContextExtensions.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
@@ -242,14 +236,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403102003488_Initial.resx">
-      <DependentUpon>201403102003488_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403112331027_Initial.resx">
+      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403102012448_AddPictureProp.resx">
-      <DependentUpon>201403102012448_AddPictureProp.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>

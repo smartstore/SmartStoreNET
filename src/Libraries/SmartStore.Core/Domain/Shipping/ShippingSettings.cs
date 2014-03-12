@@ -7,7 +7,9 @@ namespace SmartStore.Core.Domain.Shipping
     {
         public ShippingSettings()
         {
-            ActiveShippingRateComputationMethodSystemNames = new List<string>();
+			ActiveShippingRateComputationMethodSystemNames = new List<string>() { "Shipping.FixedRate" };
+			EstimateShippingEnabled = true;
+			ReturnValidOptionsIfThereAreAny = true;
         }
 
         /// <summary>

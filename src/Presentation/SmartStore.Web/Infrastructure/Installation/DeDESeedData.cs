@@ -1,6 +1,4 @@
-﻿// codehint: sm-add (file)
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
@@ -27,49 +25,21 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Installation;
-using SmartStore.Services.Media;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
 
-    public class DeDEInstallationData : InvariantInstallationData
+    public class DeDESeedData : InvariantSeedData
     {
 
-        private readonly IPictureService _pictureService;
-        private readonly string _sampleImagesPath;
-        private readonly IRepository<Currency> _currencyRepository;
-        private readonly IRepository<MeasureDimension> _measureDimensionRepository;
-        private readonly IRepository<MeasureWeight> _measureWeightRepository;
-        private readonly IRepository<Category> _categoryRepository;
-        private readonly IRepository<Language> _languageRepository;
-        private readonly IRepository<Country> _countryRepository;
-        private readonly IRepository<UrlRecord> _urlRecordRepository;
-        private readonly IRepository<PollAnswer> _pollAnswerRepository;
-        private readonly IRepository<TaxCategory> _taxCategoryRepository;
-        private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
-
-        public DeDEInstallationData()
+		public DeDESeedData()
         {
-            //pictures
-            this._pictureService = EngineContext.Current.Resolve<IPictureService>();
-            this._sampleImagesPath = EngineContext.Current.Resolve<IWebHelper>().MapPath("~/content/samples/");
-
-            this._currencyRepository = EngineContext.Current.Resolve<IRepository<Currency>>();
-            this._measureDimensionRepository = EngineContext.Current.Resolve<IRepository<MeasureDimension>>();
-            this._measureWeightRepository = EngineContext.Current.Resolve<IRepository<MeasureWeight>>();
-            this._categoryRepository = EngineContext.Current.Resolve<IRepository<Category>>();
-            this._languageRepository = EngineContext.Current.Resolve<IRepository<Language>>();
-            this._countryRepository = EngineContext.Current.Resolve<IRepository<Country>>();
-            this._urlRecordRepository = EngineContext.Current.Resolve<IRepository<UrlRecord>>();
-            this._pollAnswerRepository = EngineContext.Current.Resolve<IRepository<PollAnswer>>();
-            this._taxCategoryRepository = EngineContext.Current.Resolve<IRepository<TaxCategory>>();
-            this._deliveryTimeRepository = EngineContext.Current.Resolve<IRepository<DeliveryTime>>();
         }
 
         protected override void Alter(Customer entity)
@@ -398,7 +368,7 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entity);
             string addressThreeLetterIsoCode = "DEU";
-            var cCountry = _countryRepository.Where(x => x.ThreeLetterIsoCode == addressThreeLetterIsoCode);
+			var cCountry = base.DbContext.Set<Country>().Where(x => x.ThreeLetterIsoCode == addressThreeLetterIsoCode);
             
             entity.FirstName = "Max";
             entity.LastName ="Mustermann";
@@ -2138,25 +2108,16 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(settings);
 
             settings
-                .Alter<CommonSettings>(x =>
-                {
-                    // [...]
-                })
-                .Alter<StoreInformationSettings>(x =>
-                {
-                    // [...]
-                })
-
                 .Alter<MeasureSettings>(x =>
                 {
-                    x.BaseDimensionId = _measureDimensionRepository.Table.Where(m => m.SystemKeyword == "m").Single().Id;
-                    x.BaseWeightId = _measureWeightRepository.Table.Where(m => m.SystemKeyword == "kg").Single().Id;
+                    x.BaseDimensionId = base.DbContext.Set<MeasureDimension>().Where(m => m.SystemKeyword == "m").Single().Id;
+                    x.BaseWeightId = base.DbContext.Set<MeasureWeight>().Where(m => m.SystemKeyword == "kg").Single().Id;
                 })
 
                 .Alter<CurrencySettings>(x =>
                 {
-                    x.PrimaryStoreCurrencyId = _currencyRepository.Table.Where(c => c.CurrencyCode == "EUR").Single().Id;
-                    x.PrimaryExchangeRateCurrencyId = _currencyRepository.Table.Where(c => c.CurrencyCode == "EUR").Single().Id;
+                    x.PrimaryStoreCurrencyId = base.DbContext.Set<Currency>().Where(c => c.CurrencyCode == "EUR").Single().Id;
+                    x.PrimaryExchangeRateCurrencyId = base.DbContext.Set<Currency>().Where(c => c.CurrencyCode == "EUR").Single().Id;
                 })
 
                 .Alter<SeoSettings>(x =>
@@ -2175,18 +2136,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.EstimateShippingEnabled = false;
                 })
-
-				//.Alter<PaymentSettings>(x =>
-				//{
-				//	x.ActivePaymentMethodSystemNames = new List<string>() 
-				//	{ 
-				//		"Payments.CashOnDelivery",
-				//		"Payments.Manual",
-				//		"Payments.PayInStore",
-				//		"Payments.Prepayment"
-				//	};
-				//})
-
                 .Alter<TaxSettings>(x =>
                 {
                     x.TaxBasedOn = TaxBasedOn.ShippingAddress;
@@ -2194,9 +2143,9 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.DisplayTaxSuffix = true;
                     x.ShippingIsTaxable = true;
                     x.ShippingPriceIncludesTax = false;
-                    x.ShippingTaxClassId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ShippingTaxClassId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
                     x.EuVatEnabled = true;
-                    x.EuVatShopCountryId = _countryRepository.Table.Where(c => c.TwoLetterIsoCode == "DE").Single().Id;
+                    x.EuVatShopCountryId = base.DbContext.Set<Country>().Where(c => c.TwoLetterIsoCode == "DE").Single().Id;
                     x.EuVatAllowVatExemption = true;
                     x.EuVatUseWebService = false;
                     x.EuVatEmailAdminWhenNewVatSubmitted = true;
@@ -2205,14 +2154,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                 #region ContentSliderSettings
                 .Alter<ContentSliderSettings>(x =>
                 {
-                    //x.ValidateSeName("", x.Name, true)
-                    var slide1PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "iphone.png"), "image/png", "", true, false).Id;
-                    var slide2PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "music.png"), "image/png", "", true, false).Id;
-                    var slide3PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "packshot-net.png"), "image/png", "", true, false).Id;
-                    
-                    //var slide1Url = _urlRecordRepository.Table.Select(p => (p.EntityName == "Product") && (p.Slug == "Apple-iPhone-5-32-GB")).
+					var slidePics = base.DbContext.Set<Picture>().ToList();
 
-                    //_productRepository.Table.Select(p => p.MetaTitle == "Apple iPhone 5 32 GB").u 
+					var slide1PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-1")).First().Id;
+					var slide2PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-2")).First().Id;
+					var slide3PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-3")).First().Id;
 
                     //slide 1
                     x.Slides.Add(new ContentSliderSlideSettings
@@ -2980,43 +2926,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Software";
                 });
-                
-
-            //entities = new List<ProductAttribute>()
-            //{
-            //    new ProductAttribute
-            //    {
-            //        Name = "Farbe",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "eigener Text",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "HDD",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "OS",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "Prozessor",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "RAM",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "Größe",
-            //    },
-            //    new ProductAttribute
-            //    {
-            //        Name = "Software",
-            //    },
-            //};
 
         }
 
@@ -3109,16 +3018,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override void Alter(IList<Product> entities)
         {
-            var pictureService = EngineContext.Current.Resolve<IPictureService>();
-            var sampleImagesPath = EngineContext.Current.Resolve<IWebHelper>().MapPath("~/content/samples/");
-
             base.Alter(entities);
 
             try
             {
 				entities.WithKey(x => x.MetaTitle)
 				# region category Gift Cards
-.Alter("$5 Virtual Gift Card", x =>
+				.Alter("$5 Virtual Gift Card", x =>
 				{
 					x.Name = "5 € Geschenkgutschein";
 					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
@@ -3126,7 +3032,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3139,7 +3045,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3152,7 +3058,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Geschenkgutscheine").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3162,14 +3068,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#region Bücher
 
 				#region SPIEGEL-Bestseller
-.Alter("Überman: The novel", x =>
+				.Alter("Überman: The novel", x =>
 				{
 					x.Name = "Überman: Der Roman";
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 					x.Price = 16.99M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3184,7 +3090,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3193,18 +3099,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				#region Kochen & Genießen
 
-.Alter("Best Grilling Recipes", x =>
+				.Alter("Best Grilling Recipes", x =>
 				{
 					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Kochen und Genießen").Single(),
 						DisplayOrder = 1,
 					});
 					x.Price = 16.99M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3224,8 +3130,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					//x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 
 					x.Price = 27.00M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3240,7 +3146,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Kochen und Genießen").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Kochen und Genießen").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3248,14 +3154,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion Kochen & Genießen
 
 				#region Books : cars and motorcycles
-.Alter("Car of superlatives", x =>
+				.Alter("Car of superlatives", x =>
 				{
 					x.Name = "Autos der Superlative: Die Stärksten, die Ersten, die Schönsten, Die Schnellsten";
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Für manche ist das Auto nur ein nützliches Fortbewegungsmittel.<br> Für alle anderen gibt es 'Autos - Das ultimative Handbuch' des Technik-Kenners Michael Dörflinger. Mit authentischen Bildern, allen wichtigen Daten und jeder Menge Infos präsentiert es die schnellsten, die innovativsten, die stärksten, die ungewöhnlichsten und die erfolgreichsten Exemplare der Automobilgeschichte. Ein umfassendes Handbuch zum gezielten Nachschlagen und ausgiebigen Schmökern. </p>";
 					x.Price = 14.95M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3270,7 +3176,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3281,8 +3187,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Motorräder stehen wie kein anderes Fortbewegungsmittel für den großen Traum von Freiheit und Abenteuer. Dieser reich illustrierte Bildatlas porträtiert in brillanten Farbfotografien und informativen Texten die berühmtesten Zweiräder der Motorradgeschichte weltweit. Von der urtümlichen Dampfmaschine unter dem Fahrradsattel des ausgehenden 19. Jahrhunderts bis hin zu den kraftstrotzenden, mit modernster Elektronik und Computertechnik ausgestatteten Superbikes unserer Tage zeichnet er ein eindrucksvolles Bild der Entwicklung und Fabrikation edler und rasanter Motorräder. Dem Mythos des motorisierten Zweirads wird dabei ebenso nachgegangen wie dem Motorrad als modernem Lifestyle-Produkt unserer Zeit. Länderspezifische Besonderheiten, firmenhistorische Hintergrundinformationen sowie spannende Geschichten und Geschichtliches über die Menschen, die eine der wegweisendsten Erfindungen der letzten Jahrhunderte vorantrieben und weiterentwickelten, machen diesen umfangreichen Bildband zu einem unvergleichlichen Nachschlagewerk für jeden Motorradliebhaber und Technikbegeisterten. </p> <p> • Umfassende Geschichte der legendärsten Modelle aller bedeutenden Motorradhersteller weltweit<br> • Mit mehr als 350 brillanten Farbaufnahmen und fesselnden Hintergrundtexten<br> • Mit informativen Zeichnungen, beeindruckenden Detailaufnahmen und erläuternden Info-Kästen<br> </p> <p> Inhalt • 1817 1913: Die Anfänge einer Erfolgsgeschichte<br> • 1914 1945: Massenmobilität<br> • 1946 1990: Kampf um den Weltmarkt<br> • Ab 1991: Das moderne Motorrad<br> • Kultobjekt Motorrad: Von der Fortbewegung zum Lifestyle<br> </p>";
 					x.Price = 14.99M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3297,7 +3203,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3308,8 +3214,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Marken, Modelle, Meilensteine<br> Das Auto - für manche ein Gebrauchsgegenstand, für andere Ausdruck des Lebensstils, Kultobjekt und große Leidenschaft. Nur wenige Erfindungen haben das Leben so verändert wie die des Automobils vor gut 125 Jahren - ein Grund mehr für diese umfangreiche Chronik. Das Auto-Buch lässt die Geschichte des Automobils lebendig werden. Es stellt über 1200 wichtige Modelle vor - von Karl Benz' Motorwagen über legendäre Kultautos bis zu modernsten Hybridfahrzeugen. Es erklärt die Meilensteine der Motortechnik und porträtiert die großen Marken und ihre Konstrukteure. Steckbriefe vom Kleinwagen bis zur Limousine und schicken Rennwagen jeder Epoche laden zum Stöbern und Entdecken ein. Der umfassendste und bestbebildert Bildband auf dem Markt - darüber freut sich jeder Autoliebhaber! </p> <p> Gebundene Ausgabe: 360 Seiten<br> Verlag: Dorling Kindersley Verlag (27. September 2012)<br> Sprache: Deutsch<br> ISBN-10: 3831022062<br> ISBN-13: 978-3831022069<br> Größe und/oder Gewicht: 30,6 x 25,8 x 2,8 cm<br> </p>";
 					x.Price = 29.95M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3324,7 +3230,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3335,8 +3241,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Spiralbindung";
 					x.FullDescription = "<p> Großformat: 48,5 x 34 cm.<br> Dieser imposante Bildkalender mit silberner Ringbindung begeistert mit eindrucksvollen Aufnahmen von exklusiven Sportwagen. Wer Autos nicht nur als reine Nutzfahrzeuge begreift, findet hier die begehrtesten Statussymbole überhaupt: Die schnellen Fahrzeuge sind wirkungsvoll auf den gestochen scharfen, farbintensiven Fotos in Szene gesetzt und vermitteln Freiheit, Geschwindigkeit, Stärke und höchste technische Vollkommenheit. </p> <p> Angefangen vom 450 PS-starken Maserati GranTurismo MC Stradale über den stilvoll-luxuriösen Aston Martin Virage Volante bis zu dem nur in geringen Stückzahlen produzierten Mosler MT900S Photon begleiten die schnellen Flitzer mit Stil und Eleganz durch die Monate. Neben dem Kalendarium lenkt ein weiteres Foto den Blick auf sehenswerte Details. Dazu gibt es die wesentlichen Informationen zu jedem Sportwagen in englischer Sprache. Nach Ablauf des Jahres sind die hochwertigen Fotos eingerahmt ein absoluter Blickfang an der Wand eines jeden Liebhabers schneller Autos. Auch als Geschenk ist dieser schöne Jahresbegleiter wunderbar geeignet. 12 Kalenderblätter, neutrales und dezent gehaltenes Kalendarium. Gedruckt auf Papier aus nachhaltiger Forstwirtschaft. </p> <p> Für Freunde von luxuriösen Oldtimern ebenfalls bei ALPHA EDITION erhältlich: der großformatige Classic Cars Bildkalender 2013: ISBN 9783840733376. </p> <p> Produktinformation<br> Spiralbindung: 14 Seiten<br> Verlag: Alpha Edition (1. Juni 2012)<br> Sprache: Deutsch<br> ISBN-10: 3840733383<br> ISBN-13: 978-3840733383<br> Größe und/oder Gewicht: 48,8 x 34,2 x 0,6 cm<br> </p>";
 					x.Price = 16.95M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3351,7 +3257,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3362,8 +3268,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
 					x.Price = 44.90M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3378,7 +3284,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Bücher").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3397,8 +3303,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
 					x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
 					x.Price = 589.00M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3413,7 +3319,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Desktop Computer").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3425,8 +3331,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "SONDERANGEBOT: Zusätzliche 50 € Rabatt auf alle Dell OptiPlex Desktops ab einem Wert von 549 €. Online-Coupon: W8DWQ0ZRKTM1, gültig bis 4.12.2013";
 					x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
 					x.Price = 419.00M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3441,7 +3347,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Desktop Computer").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Desktop Computer").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3459,8 +3365,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie        <br> Systemtyp: Netbook       <br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1                <br> Leere Steckplätze: 0, 1                <br> Display                                    <br> Typ: 22.6 cm ( 8.9\" )                          <br> Auflösung: 1024 x 600 ( WSVGA )                    <br> Breitwand: Ja                                          <br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite                                         <br> Batterie                                                                 <br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden                             <br> Kapazität: 2600 mAh, 2200 mAh                                                    <br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen           <br> Herstellergarantie                                                                       <br> Service & Support:                                                                           <br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr            <br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr                                                  <br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr                                                 <br> Reisegarantie - 1 Jahr                                                                                       <br> Navigation                                                                                                       <br> Empfänger: GPS                                                                                                       <br> </p>";
 
 					x.Price = 210.60M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3475,7 +3381,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Notebook").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Notebook").Single(),
 						DisplayOrder = 1,
 					});
 				})
@@ -3493,8 +3399,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Apple iPhone 5 32 GB Simlock frei Neu Schwarz/Graphit";
 					x.FullDescription = "<p> Neues Design.<br> Mit 7,6 mm und 112 g2 hat das iPhone 5 ein bemerkenswert dünnes und leichtes Design. Es ist aus eloxiertem Aluminium gefertigt. Die abgeschrägten Kanten wurden präzise mit einem Diamanten geschnitten.  </p>  <p>  Brillantes 4\" Retina Display.<br> Jetzt siehst du alles noch lebendiger und detailreicher. Und obwohl das Display größer ist, hat es die gleiche Breite wie das iPhone 4S und lässt sich daher ebenso leicht mit einer Hand bedienen.  </p>  <p>  Leistungsstarker A6 Chip.   <br> Verglichen mit dem A5 Chip hat er die bis zu doppelte CPU- und Grafikleistung. Und trotz seiner Geschwindigkeit hat das iPhone 5 eine fantastische Batterielaufzeit.  </p>";
 					x.Price = 579.00M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3509,7 +3415,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Smartphones").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Smartphones").Single(),
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
@@ -3535,7 +3441,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
@@ -3561,7 +3467,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
@@ -3588,8 +3494,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "C001.617.26.037.00";
 					x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
 					x.Price = 479.00M;
-					x.DeliveryTime = _deliveryTimeRepository.Table.Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = _taxCategoryRepository.Table.Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3604,7 +3510,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductCategories.Clear();
 					x.ProductCategories.Add(new ProductCategory()
 					{
-						Category = this._categoryRepository.Table.Where(c => c.Name == "Uhren").Single(),
+						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Uhren").Single(),
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
@@ -3615,11 +3521,9 @@ namespace SmartStore.Web.Infrastructure.Installation
             }
             catch (Exception ex)
             {
-                throw new InstallationException("AlterProduct", ex);
+				throw new SeedDataException("AlterProduct", ex);
             }
         }
-
-
 
         protected override void Alter(IList<ForumGroup> entities)
         {
@@ -3780,15 +3684,15 @@ namespace SmartStore.Web.Infrastructure.Installation
                 x.Title = "Online Rabatt Coupon";
                 x.Body = "<p><p>Sparen Sie mit unseren Online-Coupons bares Geld!</p></p>";
                 x.Tags = "Geld, Rabatt, Coupon";
-                x.Language = _languageRepository.Table.FirstOrDefault();
+                x.Language = base.DbContext.Set<Language>().FirstOrDefault();
             })
 
             .Alter("Customer Service - Client Service", x =>
             {
-                x.Title = "Kundendienst -  Service";
+                x.Title = "Kundendienst - Unser Service";
                 x.Body = "<p>Bei uns wird Service GROSS geschrieben! Auch nach Ihrem Einkauf bei uns können Sie mit uns Rechnen!<br></p>";
                 x.Tags = "Shopsystem, SmartStore.NET, asp.net, sample tag, Service";
-                x.Language = _languageRepository.Table.FirstOrDefault();
+				x.Language = base.DbContext.Set<Language>().FirstOrDefault();
             });
             
 
@@ -3796,7 +3700,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override void Alter(IList<NewsItem> entities)
         {
-            var defaultLanguage = _languageRepository.Table.FirstOrDefault();
+			var defaultLanguage = base.DbContext.Set<Language>().FirstOrDefault();
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
@@ -3819,7 +3723,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override void Alter(IList<Poll> entities)
         {
-            var defaultLanguage = _languageRepository.Table.FirstOrDefault();
+			var defaultLanguage = base.DbContext.Set<Language>().FirstOrDefault();
             base.Alter(entities);
 
             entities.WithKey(x => x.DisplayOrder)
@@ -3881,7 +3785,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override void Alter(IList<PollAnswer> entities)
         {
-            var defaultLanguage = _languageRepository.Table.FirstOrDefault();
+            var defaultLanguage = base.DbContext.Set<DeliveryTime>().FirstOrDefault();
             base.Alter(entities);
 
             entities.WithKey(x => x.DisplayOrder)

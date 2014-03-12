@@ -5,7 +5,19 @@ namespace SmartStore.Core.Domain.Orders
 {
     public class OrderSettings : ISettings
     {
-        /// <summary>
+		public OrderSettings()
+		{
+			IsReOrderAllowed = true;
+			AnonymousCheckoutAllowed = true;
+			TermsOfServiceEnabled = true;
+			ReturnRequestsEnabled = true;
+			ReturnRequestActions = new List<string>() { "Repair", "Replacement", "Store Credit" };
+			ReturnRequestReasons = new List<string>() { "Received Wrong Product", "Wrong Product Ordered", "There Was A Problem With The Product" };
+			NumberOfDaysReturnRequestAvailable = 365;
+			MinimumOrderPlacementInterval = 30;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether customer can make re-order
         /// </summary>
         public bool IsReOrderAllowed { get; set; }

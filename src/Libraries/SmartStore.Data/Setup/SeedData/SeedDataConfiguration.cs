@@ -13,7 +13,7 @@ namespace SmartStore.Data.Setup
 		{
 			this.SeedSampleData = true;
 			this.StoreMediaInDB = true;
-			this.ProgressCallback = (x) => { }; // Noop
+			this.ProgressMessageCallback = (x) => { }; // Noop
 		}
 
 		public string DefaultUserName { get; set; }
@@ -22,7 +22,7 @@ namespace SmartStore.Data.Setup
 		public InvariantSeedData Data { get; set; }
 		public bool SeedSampleData { get; set; }
 		public bool StoreMediaInDB { get; set; }
-		public Action<int> ProgressCallback { get; set; }
+		public Action<string> ProgressMessageCallback { get; set; }
 	}
 
 }

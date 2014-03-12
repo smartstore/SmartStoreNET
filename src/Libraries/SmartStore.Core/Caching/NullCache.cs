@@ -7,6 +7,13 @@ namespace SmartStore.Core.Caching
     public partial class NullCache : ICacheManager
     {
 
+		private readonly static ICacheManager s_instance = new NullCache();
+
+		public static ICacheManager Instance
+		{
+			get { return s_instance; }
+		}
+
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = 60)
         {
             return acquirer();

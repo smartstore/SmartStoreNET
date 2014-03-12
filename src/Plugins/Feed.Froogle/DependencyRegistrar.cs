@@ -17,7 +17,6 @@ namespace SmartStore.Plugin.Feed.Froogle
         {
             builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerHttpRequest();
 
-            //data layer
             //register named context
 			builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
                 .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)

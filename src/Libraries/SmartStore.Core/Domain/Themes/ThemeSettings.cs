@@ -9,6 +9,13 @@ namespace SmartStore.Core.Domain.Themes
 {
     public class ThemeSettings : ISettings
     {
+		public ThemeSettings()
+		{
+			DefaultDesktopTheme = "Alpha";
+			DefaultMobileTheme = "Mobile";
+			AllowCustomerToSelectTheme = true;
+			MobileDevicesSupported = true;
+		}
 
         /// <summary>
         /// Gets or sets a value indicating whether

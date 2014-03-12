@@ -120,7 +120,11 @@ namespace SmartStore.Data
 
             if (this.AutoCommitEnabled)
             {
-                _context.SaveChanges();
+				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
+				{
+					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+				}
+				_context.SaveChanges();
             }
             else
             {

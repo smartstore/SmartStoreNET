@@ -104,3 +104,53 @@ BEGIN
 	ALTER TABLE [QueuedEmail] ADD [ReplyToName] nvarchar(500) NULL
 END
 GO
+
+-- From Migration "AddNavProps"
+ALTER TABLE [Product] ALTER COLUMN [SampleDownloadId] [int] NULL
+GO
+
+ALTER TABLE [Category] ALTER COLUMN [PictureId] [int] NULL
+GO
+
+ALTER TABLE [Manufacturer] ALTER COLUMN [PictureId] [int] NULL
+GO
+
+Update [Product] SET SampleDownloadId = null WHERE SampleDownloadId = 0
+Update [Category] SET PictureId = null WHERE PictureId = 0
+Update [Manufacturer] SET PictureId = null WHERE PictureId = 0
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('[Category]') and NAME='IX_PictureId')
+BEGIN
+	CREATE INDEX [IX_PictureId] ON [Category]([PictureId])
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('[Manufacturer]') and NAME='IX_PictureId')
+BEGIN
+	CREATE INDEX [IX_PictureId] ON [Manufacturer]([PictureId])
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('[Product]') and NAME='IX_SampleDownloadId')
+BEGIN
+	CREATE INDEX [IX_SampleDownloadId] ON [Product]([SampleDownloadId])
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[Category_Picture]') AND parent_object_id = OBJECT_ID(N'[Category]'))
+BEGIN
+	ALTER TABLE [Category] WITH CHECK ADD CONSTRAINT [Category_Picture] FOREIGN KEY ([PictureId]) REFERENCES [Picture] ([Id])
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[FK_dbo.Manufacturer_dbo.Picture_PictureId]') AND parent_object_id = OBJECT_ID(N'[Manufacturer]'))
+BEGIN
+	ALTER TABLE [Manufacturer]  WITH CHECK ADD CONSTRAINT [FK_dbo.Manufacturer_dbo.Picture_PictureId] FOREIGN KEY([PictureId]) REFERENCES [dbo].[Picture] ([Id])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'FK_dbo.Product_dbo.Download_SampleDownloadId' AND type = 'F')
+BEGIN
+	ALTER TABLE [Product] WITH CHECK ADD CONSTRAINT [FK_dbo.Product_dbo.Download_SampleDownloadId] FOREIGN KEY ([SampleDownloadId]) REFERENCES [Download] ([Id])
+END
+GO

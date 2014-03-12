@@ -358,9 +358,12 @@
                         console.log(data);
 
                         if (!data.Completed) {
-                            if (data.Progress !== undefined && data.Progress > -1 && data.Progress <= 100) {
-                                $("#install-progress").html(data.Progress + "%");
-                            }
+                        	if (data.ProgressMessage !== undefined && _.isString(data.ProgressMessage) && data.ProgressMessage) {
+                        		$("#install-progress").html(data.ProgressMessage);
+                        	}
+                        }
+                        else {
+                        	$("#install-progress").html("");
                         }
                     },
                     error: function () {
@@ -397,6 +400,8 @@
                 validationSummary.addClass("in");
                 $.scrollTo(validationSummary, 800, { offset: -10 });
                 $("#install-button").removeAttr("disabled");
+
+                $("#install-progress").html("");
             }
 
             return {
@@ -404,7 +409,7 @@
                 onStart: function (context) {
 
                     $.throbber.show({
-                        message: '<span id="install-message">@ILS.GetResource("Installing")' + '&nbsp;<span id="install-progress">0%</span></span>'
+                        message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>'
                     });
 
                     // start the checkprogress interval
@@ -419,7 +424,8 @@
                     finalizeInstallation(data.Success);
 
                     if (data.Success) {
-                        $("#install-message").html("@ILS.GetResource("Common.StartShop")");
+                    	$("#install-message").html("@ILS.GetResource("Common.StartShop")");
+                    	$("#install-progress").html("");
                         setLocation(data.RedirectUrl);
                     }
                     else {
@@ -437,6 +443,7 @@
                 onComplete: function () {
                     window.clearInterval(progressIntervall);
                     $("#install-button").removeAttr("disabled");
+                    $("#install-progress").html("");
                 }
 
             };

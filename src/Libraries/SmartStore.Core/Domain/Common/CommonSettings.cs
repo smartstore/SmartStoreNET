@@ -5,7 +5,17 @@ namespace SmartStore.Core.Domain.Common
 {
     public class CommonSettings : ISettings
     {
-        public bool UseSystemEmailForContactUsForm { get; set; }
+		public CommonSettings()
+		{
+			UseStoredProceduresIfSupported = true;
+			SitemapEnabled = true;
+			SitemapIncludeCategories = true;
+			SitemapIncludeManufacturers = true;
+			SitemapIncludeTopics = true;
+			FullTextMode = FulltextSearchMode.ExactMatch;
+		}
+		
+		public bool UseSystemEmailForContactUsForm { get; set; }
 
         public bool UseStoredProceduresIfSupported { get; set; }
 

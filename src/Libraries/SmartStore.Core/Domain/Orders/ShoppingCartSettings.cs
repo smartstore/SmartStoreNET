@@ -4,7 +4,26 @@ namespace SmartStore.Core.Domain.Orders
 {
     public class ShoppingCartSettings : ISettings
     {
-        /// <summary>
+		public ShoppingCartSettings()
+		{
+			MaximumShoppingCartItems = 1000;
+			MaximumWishlistItems = 1000;
+			MoveItemsFromWishlistToCart = true;
+			ShowProductImagesOnShoppingCart = true;
+			ShowProductBundleImagesOnShoppingCart = true;
+			ShowProductImagesOnWishList = true;
+			ShowProductBundleImagesOnWishList = true;
+			ShowDiscountBox = true;
+			ShowGiftCardBox = true;
+			CrossSellsNumber = 8;
+			EmailWishlistEnabled = true;
+			MiniShoppingCartEnabled = true;
+			ShowProductImagesInMiniShoppingCart = true;
+			MiniShoppingCartProductNumber = 5;
+			RoundPricesDuringCalculation = true;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether a custoemr should be redirected to the shopping cart page after adding a product to the cart/wishlist
         /// </summary>
         public bool DisplayCartAfterAddingProduct { get; set; }

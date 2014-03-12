@@ -382,16 +382,19 @@
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\GenericUrlRouteProvider.cs" />
-    <Compile Include="Infrastructure\Installation\DeDEInstallationData.cs">
+    <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
+    <Compile Include="Infrastructure\Installation\EnUSSeedData.cs" />
+    <Compile Include="Infrastructure\Installation\_Old\DeDEInstallationData.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Infrastructure\Installation\EnUSInstallationData.cs">
+    <Compile Include="Infrastructure\Installation\_Old\EnUSInstallationData.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\Installation\InstallationAppLanguageMetadata.cs" />
     <Compile Include="Infrastructure\Installation\IInstallationLocalizationService.cs" />
     <Compile Include="Infrastructure\Installation\InstallationLanguage.cs" />
     <Compile Include="Infrastructure\Installation\InstallationLocalizationService.cs" />
+    <Compile Include="Infrastructure\Installation\InstallDataSeeder.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="Models\Blogs\BlogPostListModel.cs" />
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
@@ -551,8 +554,6 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\SqlServer.StoredProcedures.sql" />
-    <Content Include="App_Data\SqlServer.Indexes.sql" />
     <Content Include="Content\2012.2.607\Default\editor.png" />
     <Content Include="Content\2012.2.607\Default\imagebrowser.png" />
     <Content Include="Content\2012.2.607\Default\loading.gif" />
@@ -2357,9 +2358,6 @@
     <Content Include="Content\samples\product_PokerFace_1.zip" />
     <Content Include="Content\samples\product_SingleLadies_1.zip" />
     <Content Include="App_Data\GeoIP.dat" />
-    <None Include="App_Data\Resources.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Views\Customer\Login.cshtml" />
     <Content Include="Views\Customer\Register.cshtml" />
     <Content Include="Views\Customer\RegisterResult.cshtml" />

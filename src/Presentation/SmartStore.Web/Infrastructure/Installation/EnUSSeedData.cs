@@ -1,61 +1,33 @@
-﻿// codehint: sm-add (file)
-
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Configuration;
-using SmartStore.Services.Installation;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Services.Media;       
-using SmartStore.Core.Infrastructure;  
-using SmartStore.Core;                 
 using SmartStore.Core.Domain.Cms;
-using System.IO;
-using SmartStore.Core.Data;
-using SmartStore.Services.Localization;   
+using SmartStore.Core.Domain.Media;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
 
-    public class EnUSInstallationData : InvariantInstallationData
+    public class EnUSSeedData : InvariantSeedData
     {
-        private readonly IPictureService _pictureService;
-        private readonly string _sampleImagesPath;
 
-        //public EnUSInstallationData(IRepository<Currency> currencyRepository)
-        public EnUSInstallationData()
+		public EnUSSeedData()
         {
-            //pictures
-            this._pictureService = EngineContext.Current.Resolve<IPictureService>();
-            this._sampleImagesPath = EngineContext.Current.Resolve<IWebHelper>().MapPath("~/content/samples/");
         }
-
 
         protected override void Alter(IList<ISettings> settings)
         {
             base.Alter(settings);
 
             settings
-                .Alter<CommonSettings>(x =>
-                {
-                    // [...]
-                })
-                .Alter<StoreInformationSettings>(x =>
-                {
-                    // [...]
-                })
                 .Alter<ContentSliderSettings>(x =>
                 {
+					var slidePics = base.DbContext.Set<Picture>().ToList();
 
-                    var slide1PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "iphone.png"), "image/png", "", true, false).Id;
-                    var slide2PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "music.png"), "image/png", "", true, false).Id;
-                    var slide3PicId = _pictureService.InsertPicture(File.ReadAllBytes(_sampleImagesPath + "packshot-net.png"), "image/png", "", true, false).Id;
+					var slide1PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-1")).First().Id;
+					var slide2PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-2")).First().Id;
+					var slide3PicId = slidePics.Where(p => p.SeoFilename == base.GetSeName("slide-3")).First().Id;
 
                     //slide 1
                     x.Slides.Add(new ContentSliderSlideSettings
@@ -71,7 +43,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                         Published = true,
                         LanguageCulture = "en-US",
                         PictureId = slide1PicId,
-                        //PictureUrl = _pictureService.GetPictureUrl(slide1PicId),
                         Button1 = new ContentSliderButtonSettings
                         {
                             Published = true,
@@ -103,7 +74,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                         Published = true,
                         LanguageCulture = "en-US",
                         PictureId = slide2PicId,
-                        //PictureUrl = _pictureService.GetPictureUrl(slide2PicId),
                         Button1 = new ContentSliderButtonSettings
                         {
                             Published = true,
@@ -135,7 +105,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                         Published = true,
                         LanguageCulture = "en-US",
                         PictureId = slide3PicId,
-                        //PictureUrl = _pictureService.GetPictureUrl(slide3PicId),
                         Button1 = new ContentSliderButtonSettings
                         {
                             Published = true,

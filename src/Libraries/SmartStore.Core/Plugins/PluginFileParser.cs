@@ -133,7 +133,7 @@ namespace SmartStore.Core.Plugins
                     case "SystemName":
                         descriptor.SystemName = value;
                         break;
-                    case "Description": // codehint: sm-add
+                    case "Description":
                         descriptor.Description = value;
                         break;
                     case "Version":

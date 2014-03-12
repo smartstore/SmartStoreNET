@@ -579,7 +579,7 @@ namespace SmartStore.Services.Configuration
 				try
 				{
 					string sqlDelete = "Delete From Setting Where Name Like '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
-					result = EngineContext.Current.Resolve<IDbContext>().ExecuteSqlCommand(sqlDelete);
+					result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
 
                     // cache
                     _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);

@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using SmartStore.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Plugin.Tax.CountryStateZip.Data.Migrations;
 
 namespace SmartStore.Plugin.Tax.CountryStateZip.Data
 {
@@ -14,10 +16,26 @@ namespace SmartStore.Plugin.Tax.CountryStateZip.Data
     {
         public const string ALIASKEY = "sm_object_context_tax_country_state_zip";
 
+		static TaxRateObjectContext()
+		{
+			var initializer = new MigrateDatabaseInitializer<TaxRateObjectContext, Configuration>
+			{
+				TablesToCheck = new[] { "TaxRate" }
+			};
+			Database.SetInitializer(initializer);
+		}
+
+		/// <summary>
+		/// For tooling support, e.g. EF Migrations
+		/// </summary>
+		public TaxRateObjectContext()
+			: base()
+		{
+		}
+
         public TaxRateObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString, ALIASKEY)
         {
-            //((IObjectContextAdapter) this).ObjectContext.ContextOptions.LazyLoadingEnabled = true;
         }
 
 
@@ -28,28 +46,6 @@ namespace SmartStore.Plugin.Tax.CountryStateZip.Data
             //disable EdmMetadata generation
             //modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
             base.OnModelCreating(modelBuilder);
-        }
-
-        /// <summary>
-        /// Install
-        /// </summary>
-        public void Install()
-        {
-            //create the table
-            var dbScript = CreateDatabaseScript();
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
-        }
-
-        /// <summary>
-        /// Uninstall
-        /// </summary>
-        public void Uninstall()
-        {
-            //drop the table
-            var dbScript = "DROP TABLE TaxRate";
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
         }
 
     }

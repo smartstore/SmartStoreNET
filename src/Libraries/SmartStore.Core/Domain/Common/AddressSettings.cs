@@ -5,7 +5,24 @@ namespace SmartStore.Core.Domain.Common
 {
     public class AddressSettings : ISettings
     {
-        /// <summary>
+		public AddressSettings()
+		{
+			CompanyEnabled = true;
+			StreetAddressEnabled = true;
+			StreetAddressRequired = true;
+			StreetAddress2Enabled = true;
+			ZipPostalCodeEnabled = true;
+			ZipPostalCodeRequired = true;
+			CityEnabled = true;
+			CityRequired = true;
+			CountryEnabled = true;
+			StateProvinceEnabled = true;
+			PhoneEnabled = true;
+			PhoneRequired = true;
+			FaxEnabled = true;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled
         /// </summary>
         public bool CompanyEnabled { get; set; }

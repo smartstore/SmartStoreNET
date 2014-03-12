@@ -9,6 +9,41 @@ namespace SmartStore.Core.Domain.Catalog
         public CatalogSettings()
         {
             FileUploadAllowedExtensions = new List<string>();
+			AllowProductSorting = true;
+			AllowProductViewModeChanging = true;
+			DefaultViewMode = "grid";
+			CategoryBreadcrumbEnabled = true;
+			ShowShareButton = true;
+			PageShareCode = "<!-- AddThis Button BEGIN --><div class=\"addthis_toolbox addthis_default_style \"><a class=\"addthis_button_preferred_1\"></a><a class=\"addthis_button_preferred_2\"></a><a class=\"addthis_button_preferred_3\"></a><a class=\"addthis_button_preferred_4\"></a><a class=\"addthis_button_compact\"></a><a class=\"addthis_counter addthis_bubble_style\"></a></div><script type=\"text/javascript\">var addthis_config = {\"data_track_addressbar\":false};</script><script type=\"text/javascript\" src=\"//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-50f6c18f03ecbb2f\"></script><!-- AddThis Button END -->";
+			DefaultProductRatingValue = 5;
+			NotifyStoreOwnerAboutNewProductReviews = true;
+			EmailAFriendEnabled = true;
+			AskQuestionEnabled = true;
+			RecentlyViewedProductsNumber = 6;
+			RecentlyViewedProductsEnabled = true;
+			RecentlyAddedProductsNumber = 10;
+			RecentlyAddedProductsEnabled = true;
+			CompareProductsEnabled = true;
+			ProductSearchAutoCompleteEnabled = true;
+			ProductSearchAutoCompleteNumberOfProducts = 10;
+			ProductSearchTermMinimumLength = 3;
+			NumberOfBestsellersOnHomepage = 6;
+			SearchPageProductsPerPage = 6;
+			ProductsAlsoPurchasedEnabled = true;
+			ProductsAlsoPurchasedNumber = 6;
+			NumberOfProductTags = 15;
+			ProductsByTagPageSize = 12;
+			UseSmallProductBoxOnHomePage = true;
+			DisplayTierPricesWithDiscounts = true;
+			DefaultPageSizeOptions = "12, 18, 36, 72, 150";
+			ProductsByTagAllowCustomersToSelectPageSize = true;
+			ProductsByTagPageSizeOptions = "12, 18, 36, 72, 150";
+			MaximumBackInStockSubscriptions = 200;
+			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
+			ManufacturersBlockItemsToDisplay = 5;
+			DisplayAllImagesNumber = 6;	// codehint: sm-add
+			ShowColorSquaresInLists = true;
+			ShowDiscountSign = true;
         }
 
         /// <summary>

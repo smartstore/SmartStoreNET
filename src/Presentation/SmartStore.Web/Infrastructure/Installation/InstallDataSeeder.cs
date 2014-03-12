@@ -1,117 +1,67 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
-using System.Threading;
-using System.Globalization;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using SmartStore.Core;
-using SmartStore.Core.Configuration;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Domain.News;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.IO;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Data;
 using SmartStore.Core.Caching;
-using SmartStore.Utilities.Threading;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Utilities;
 using SmartStore.Core.Domain.Configuration;
-using System.ComponentModel;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
+using SmartStore.Data.Setup;
+using SmartStore.Services.Events;
+using SmartStore.Services.Common;
+using SmartStore.Services.Media;
+using SmartStore.Services.Logging;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 
-namespace SmartStore.Data.Setup
+namespace SmartStore.Web.Infrastructure.Installation
 {
-    public partial class SeedDataPopulator
+    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
         #region Fields & Constants
 
-		private readonly SmartObjectContext _ctx;
+		private SmartObjectContext _ctx;
         private SeedDataConfiguration _config;
         private InvariantSeedData _data;
+		private ISettingService _settingService;
+		private IGenericAttributeService _gaService;
+		private IPictureService _pictureService;
+		private ILocalizationService _locService;
+		private IUrlRecordService _urlRecordService;
 		private int _defaultStoreId;
 
         #endregion Fields & Constants
 
         #region Ctor
 
-		public SeedDataPopulator(SmartObjectContext dbContext, SeedDataConfiguration configuration)
+		public InstallDataSeeder(SeedDataConfiguration configuration)
         {
-			Guard.ArgumentNotNull(() => dbContext);
 			Guard.ArgumentNotNull(() => configuration);
 
 			Guard.ArgumentNotNull(configuration.Language, "Language");
 			Guard.ArgumentNotNull(configuration.Data, "SeedData");
 
-			_ctx = dbContext;
 			_config = configuration;
 			_data = configuration.Data;
-
-			_data.Initialize(_ctx);
         }
 
         #endregion Ctor
 
-        #region Utilities
-
-		private void PopulatePictures()
-		{
-			var pictures = _data.Pictures();
-			SaveRange(pictures);
-
-			if (_config.StoreMediaInDB)
-				return;
-
-			foreach (var picture in pictures)
-			{
-				var buffer = picture.PictureBinary;
-				picture.PictureBinary = new byte[0];
-
-				string lastPart = MimeTypes.MapMimeTypeToExtension(picture.MimeType);
-				string fileName = string.Format("{0}-0.{1}", picture.Id.ToString("0000000"), lastPart);
-				File.WriteAllBytes(GetPictureLocalPath(fileName), buffer);
-			}
-
-			_ctx.SaveChanges();
-		}
-
-		/// <summary>
-		/// Copied over from <see cref="PictureService" /> to avoid dependency wiring
-		/// </summary>
-		private string GetPictureLocalPath(string fileName)
-		{
-			var imagesDirectoryPath = CommonHelper.MapPath("~/Media/");
-			var filePath = Path.Combine(imagesDirectoryPath, fileName);
-			return filePath;
-		}
+        #region Populate
 
 		private void PopulateStores()
 		{
@@ -135,7 +85,7 @@ namespace SmartStore.Data.Setup
                     rate = _data.FixedTaxRates[i];
                 }
                 i++;
-                SetSetting(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", id), rate, false);
+                this.SettingService.SetSetting(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", id), rate);
             }
 
 			_ctx.SaveChanges();
@@ -159,22 +109,23 @@ namespace SmartStore.Data.Setup
 				locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
             }
 
-			//// TODO: REF (Start)
-			//var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+			var localizationService = this.LocalizationService;
 
-			//// save resources
-			//foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
-			//{
-			//	var doc = new XmlDocument();
-			//	doc.Load(filePath);
+			// save resources
+			foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
+			{
+				var doc = new XmlDocument();
+				doc.Load(filePath);
 
-			//	doc = localizationService.FlattenResourceFile(doc);
+				doc = localizationService.FlattenResourceFile(doc);
 
-			//	// now we have a parsed XML file (the same structure as exported language packs)
-			//	// let's save resources
-			//	localizationService.ImportResourcesFromXml(language, doc);
-			//}
-			//// TODO: REF (End)
+				// now we have a parsed XML file (the same structure as exported language packs)
+				// let's save resources
+				localizationService.ImportResourcesFromXml(language, doc);
+
+				// no need to call SaveChanges() here, as the above call makes it
+				// already without AutoDetectChanges(), so it's fast.
+			}
         }
 
 		private void PopulateCurrencies()
@@ -219,16 +170,17 @@ namespace SmartStore.Data.Setup
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));
             Save(adminUser);
 
-			////set default customer name
-			SaveGenericAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
-			SaveGenericAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
+			// Set default customer name
+			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
+			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
+			_ctx.SaveChanges();
 
-            //search engine (crawler) built-in user
+            // search engine (crawler) built-in user
             var customer = _data.SearchEngineUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
 
-            //built-in user for background tasks
+            // Built-in user for background tasks
             customer = _data.BackgroundTaskUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
@@ -238,31 +190,46 @@ namespace SmartStore.Data.Setup
         {
 			var adminUser = _ctx.Set<Customer>().Where(x => x.Email == _config.DefaultUserName).Single();
 
-			// Generate a cryptographic random number
-			var rng = new RNGCryptoServiceProvider();
-			var buff = new byte[5];
-			rng.GetBytes(buff);
+			var encryptionService = new EncryptionService(new SecuritySettings());
 
-			string saltKey = Convert.ToBase64String(buff);
+			string saltKey = encryptionService.CreateSaltKey(5);
 			adminUser.PasswordSalt = saltKey;
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
+			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
-			string saltAndPassword = String.Concat(_config.DefaultUserPassword, saltKey);
-			var algorithm = HashAlgorithm.Create("SHA1");
-			var hashByteArray = algorithm.ComputeHash(Encoding.UTF8.GetBytes(saltAndPassword));
-
-			adminUser.Password = BitConverter.ToString(hashByteArray).Replace("-", "");			
-
+			SetModified(adminUser);
 			_ctx.SaveChanges();
         }
 
 		private void PopulateSettings()
         {
-            var settings = _data.Settings();
-            foreach (var setting in settings)
-            {
-				SaveSettingClass(setting);
-            }
+			var method = typeof(ISettingService).GetMethods().FirstOrDefault(x =>
+			{
+				if (x.Name == "SaveSetting")
+				{
+					var parameters = x.GetParameters();
+					return parameters[0].ParameterType.Name == "T" && parameters[1].ParameterType.Equals(typeof(int));
+				}
+				return false;
+			});
+
+			var settings = _data.Settings();
+			foreach (var setting in settings)
+			{
+				Type settingType = setting.GetType();
+				Type settingServiceType = typeof(ISettingService);
+
+				var settingService = this.SettingService;
+				if (settingService != null)
+				{
+					var genericMethod = method.MakeGenericMethod(settingType);
+					int storeId = (settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0);
+
+					genericMethod.Invoke(settingService, new object[] { setting, storeId });
+				}
+			}
+
+			_ctx.SaveChanges();
         }
 
 		private void PopulateCategories()
@@ -277,7 +244,7 @@ namespace SmartStore.Data.Setup
                     EntityId = x.Id,
                     EntityName = "Category",
                     LanguageId = 0,
-                    Slug = SeoHelper.GetSeName(x.Name, true, false),
+                    Slug = ValidateSeName(x, x.Name),
                     IsActive = true
                 });
             });
@@ -292,7 +259,7 @@ namespace SmartStore.Data.Setup
                     EntityId = x.Id,
                     EntityName = "Category",
                     LanguageId = 0,
-					Slug = SeoHelper.GetSeName(x.Name, true, false),
+					Slug = ValidateSeName(x, x.Name),
                     IsActive = true
                 });
             });
@@ -310,7 +277,7 @@ namespace SmartStore.Data.Setup
                     EntityId = x.Id,
                     EntityName = "Manufacturer",
                     LanguageId = 0,
-					Slug = SeoHelper.GetSeName(x.Name, true, false),
+					Slug = ValidateSeName(x, x.Name),
                     IsActive = true
                 });
             });
@@ -328,7 +295,7 @@ namespace SmartStore.Data.Setup
                     EntityId = x.Id,
                     EntityName = "Product",
                     LanguageId = 0,
-					Slug = SeoHelper.GetSeName(x.Name, true, false),
+					Slug = ValidateSeName(x, x.Name),
                     IsActive = true
                 });
             });
@@ -346,7 +313,7 @@ namespace SmartStore.Data.Setup
                     EntityId = x.Id,
                     EntityName = "BlogPost",
                     LanguageId = x.LanguageId,
-					Slug = SeoHelper.GetSeName(x.Title, true, false),
+					Slug = ValidateSeName(x, x.Title),
                     IsActive = true
                 });
             });
@@ -365,7 +332,7 @@ namespace SmartStore.Data.Setup
                     EntityName = "NewsItem",
                     LanguageId = x.LanguageId,
                     IsActive = true,
-					Slug = SeoHelper.GetSeName(x.Title, true, false)
+					Slug = ValidateSeName(x, x.Title)
                 });
             });
         }
@@ -398,82 +365,19 @@ namespace SmartStore.Data.Setup
 			Save(product);
         }
 
-		private void Save<TEntity>(TEntity entity) where TEntity : BaseEntity
+		private void MovePictures()
 		{
-			_ctx.Set<TEntity>().Add(entity);
-			_ctx.SaveChanges();
-		}
-
-		private void SaveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : BaseEntity
-		{
-			_ctx.Set<TEntity>().AddRange(entities);
-			_ctx.SaveChanges();
-		}
-
-		public virtual void SaveSettingClass(object settings)
-		{
-			Type t = settings.GetType();
-			
-			if (t.HasAttribute<JsonPersistAttribute>(true))
+			if (!_config.StoreMediaInDB)
 			{
-				string key = t.Namespace + "." + t.Name;
-				var rawSettings = JsonConvert.SerializeObject(settings);
-				SetSetting(key, rawSettings);
-				return;
+				// All pictures have initially been stored in the DB.
+				// Move the binaries to disk
+				var pics = _ctx.Set<Picture>().ToList();
+				foreach (var pic in pics)
+				{
+					this.PictureService.UpdatePicture(pic.Id, pic.PictureBinary, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+				}
+				_ctx.SaveChanges();
 			}
-
-			foreach (var prop in t.GetProperties())
-			{
-				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
-					continue;
-
-				if (!TypeDescriptor.GetConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
-					continue;
-
-				string key = t.Name + "." + prop.Name;
-				// Duck typing is not supported in C#. That's why we're using dynamic type
-				dynamic value = prop.GetValue(settings);
-
-				SetSetting(key, value ?? "", false);
-			}
-
-			_ctx.SaveChanges();
-		}
-
-		private void SetSetting<T>(string key, T value, bool save = true)
-		{
-			key = key.Trim().ToLowerInvariant();
-			string valueStr = TypeDescriptor.GetConverter(typeof(T)).ConvertToInvariantString(value);
-			
-			var setting = new Setting()
-			{
-				Name = key,
-				Value = valueStr
-			};
-
-			if (save)
-			{
-				Save(setting);
-			}
-			else
-			{
-				_ctx.Set<Setting>().Add(setting);
-			}
-		}
-
-		private void SaveGenericAttribute<TPropType>(BaseEntity entity, string key, TPropType value)
-		{
-			string valueStr = value.Convert<string>();
-			string keyGroup = entity.GetUnproxiedEntityType().Name;
-			var prop = new GenericAttribute()
-			{
-				EntityId = entity.Id,
-				Key = key,
-				KeyGroup = keyGroup,
-				Value = valueStr
-			};
-			Save(prop);
 		}
 
         #endregion
@@ -488,19 +392,138 @@ namespace SmartStore.Data.Setup
             }
         }
 
+		protected SmartObjectContext DataContext
+		{
+			get
+			{
+				return _ctx;
+			}
+		}
+
+
+		protected ISettingService SettingService
+		{
+			get
+			{
+				if (_settingService == null)
+				{
+					var rs = new EfRepository<Setting>(_ctx);
+					rs.AutoCommitEnabled = false;
+
+					_settingService = new SettingService(NullCache.Instance, NullEventPublisher.Instance, rs);
+				}
+
+				return _settingService;
+			}
+		}
+
+		protected IGenericAttributeService GenericAttributeService
+		{
+			get
+			{
+				if (_gaService == null)
+				{
+					var rs = new EfRepository<GenericAttribute>(_ctx);
+					rs.AutoCommitEnabled = false;
+
+					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance);
+				}
+
+				return _gaService;
+			}
+		}
+
+		protected IPictureService PictureService
+		{
+			get
+			{
+				if (_pictureService == null)
+				{
+					var rs = new EfRepository<Picture>(_ctx);
+					rs.AutoCommitEnabled = false;
+
+					var rsMap = new EfRepository<ProductPicture>(_ctx);
+					rs.AutoCommitEnabled = false;
+					
+					var mediaSettings = new MediaSettings();
+					var webHelper = new WebHelper(null);
+
+					_pictureService = new PictureService(
+						rs, 
+						rsMap,
+						this.SettingService,
+						webHelper,
+						NullLogger.Instance,
+						NullEventPublisher.Instance,
+						mediaSettings,
+						new ImageResizerService(),
+						new ImageCache(mediaSettings, webHelper));
+				}
+
+				return _pictureService;
+			}
+		}
+
+		protected ILocalizationService LocalizationService
+		{
+			get
+			{
+				if (_locService == null)
+				{
+					var rsLanguage = new EfRepository<Language>(_ctx);
+					rsLanguage.AutoCommitEnabled = false;
+
+					var rsStoreMapping = new EfRepository<StoreMapping>(_ctx);
+					rsStoreMapping.AutoCommitEnabled = false;
+
+					var rsResources = new EfRepository<LocaleStringResource>(_ctx);
+					rsResources.AutoCommitEnabled = false;
+
+					var locSettings = new LocalizationSettings();
+
+					var languageService = new LanguageService(
+						NullCache.Instance, 
+						rsLanguage,
+						rsStoreMapping,
+						this.SettingService,
+						locSettings,
+						NullEventPublisher.Instance);
+
+					_locService = new LocalizationService(
+						NullCache.Instance,
+						NullLogger.Instance,
+						null /* IWorkContext: not needed during install */,
+						rsResources,
+						languageService,
+						locSettings,
+						NullEventPublisher.Instance);
+				}
+
+				return _locService;
+			}
+		}
+
         #endregion Properties
 
         #region Methods
 
-        public virtual void Seed()
+        public virtual void Seed(SmartObjectContext context)
         {
-            _ctx.Configuration.AutoDetectChangesEnabled = false;
+			Guard.ArgumentNotNull(() => context);
+
+			_ctx = context;
+			_data.Initialize(_ctx);
+			
+			_ctx.Configuration.AutoDetectChangesEnabled = false;
 			_ctx.Configuration.ValidateOnSaveEnabled = false;
 
-            // special mandatory (non-visible) settings
-			SetSetting("Media.Images.StoreInDB", _config.StoreMediaInDB);
+			_config.ProgressMessageCallback("Creating required data");
 
-			Populate("PopulatePictures", PopulatePictures);
+            // special mandatory (non-visible) settings
+			this.SettingService.SetSetting("Media.Images.StoreInDB", _config.StoreMediaInDB);
+			_ctx.SaveChanges();
+
+			Populate("PopulatePictures", _data.Pictures());
 			Populate("PopulateStores", PopulateStores);
 			Populate("InstallLanguages", () => PopulateLanguage(_config.Language));
 			Populate("PopulateMeasureDimensions", _data.MeasureDimensions());
@@ -525,6 +548,8 @@ namespace SmartStore.Data.Setup
 
             if (_config.SeedSampleData)
             {
+				_config.ProgressMessageCallback("Creating sample data");
+
 				Populate("PopulateSpecificationAttributes", _data.SpecificationAttributes());
 				Populate("PopulateProductAttributes", _data.ProductAttributes());
 				Populate("PopulateCategories", PopulateCategories);
@@ -538,9 +563,34 @@ namespace SmartStore.Data.Setup
 				Populate("PopulateNews", PopulateNews);
 				Populate("PopulatePolls", _data.Polls());
             }
+
+			Populate("MovePictures", MovePictures);
         }
 
-		private void Populate<TEntity>(string stage, IEnumerable<TEntity> entities) where TEntity : BaseEntity
+        #endregion
+
+		#region Utils
+
+		private void SetModified<TEntity>(TEntity entity) 
+			where TEntity : BaseEntity
+		{
+			_ctx.Set<TEntity>().Attach(entity);
+			_ctx.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+		}
+
+		private string ValidateSeName<TEntity>(TEntity entity, string name)
+			where TEntity : BaseEntity, ISlugSupported
+		{
+			if (_urlRecordService == null)
+			{
+				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false });
+			}
+
+			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, new SeoSettings());
+		}
+
+		private void Populate<TEntity>(string stage, IEnumerable<TEntity> entities) 
+			where TEntity : BaseEntity
 		{
 			try
 			{
@@ -564,7 +614,19 @@ namespace SmartStore.Data.Setup
 			}
 		}
 
-        #endregion methods
-    }
+		private void Save<TEntity>(TEntity entity) where TEntity : BaseEntity
+		{
+			_ctx.Set<TEntity>().Add(entity);
+			_ctx.SaveChanges();
+		}
+
+		private void SaveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : BaseEntity
+		{
+			_ctx.Set<TEntity>().AddRange(entities);
+			_ctx.SaveChanges();
+		}
+
+		#endregion
+	}
         
 } 

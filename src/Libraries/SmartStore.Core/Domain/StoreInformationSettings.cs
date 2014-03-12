@@ -3,8 +3,13 @@
 namespace SmartStore.Core.Domain
 {
     public class StoreInformationSettings : ISettings
-    {        
-        /// <summary>
+    {
+		public StoreInformationSettings()
+		{
+			StoreClosedAllowForAdmins = true;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether store is closed
         /// </summary>
         public bool StoreClosed { get; set; }

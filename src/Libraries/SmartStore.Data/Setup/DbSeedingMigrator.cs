@@ -35,8 +35,8 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		public void RunPendingMigrations(TContext context)
 		{
-			var coreSeeders = new List<IMigrationSeeder<SmartObjectContext>>();
-			var externalSeeders = new List<IMigrationSeeder<TContext>>();
+			var coreSeeders = new List<IDataSeeder<SmartObjectContext>>();
+			var externalSeeders = new List<IDataSeeder<TContext>>();
 			var isCoreMigration = context is SmartObjectContext;
 
 			// Apply migrations
@@ -53,14 +53,14 @@ namespace SmartStore.Data.Setup
 				
 				// Seeders for the core DbContext must be run in any case 
 				// (e.g. for Resource or Setting updates even from external plugins)
-				IMigrationSeeder<SmartObjectContext> coreSeeder = migration as IMigrationSeeder<SmartObjectContext>;
-				IMigrationSeeder<TContext> externalSeeder = null;
+				IDataSeeder<SmartObjectContext> coreSeeder = migration as IDataSeeder<SmartObjectContext>;
+				IDataSeeder<TContext> externalSeeder = null;
 
 				if (!isCoreMigration)
 				{
 					// Context specific seeders should only be resolved
 					// when origin is external (e.g. a Plugin)
-					externalSeeder = migration as IMigrationSeeder<TContext>;
+					externalSeeder = migration as IDataSeeder<TContext>;
 				}
 
 				try

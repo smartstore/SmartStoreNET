@@ -1,6 +1,8 @@
-﻿using System.Web.Routing;
+﻿using System.Data.Entity.Migrations;
+using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Tax.CountryStateZip.Data;
+using SmartStore.Plugin.Tax.CountryStateZip.Data.Migrations;
 using SmartStore.Plugin.Tax.CountryStateZip.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Tax;
@@ -68,9 +70,6 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
         /// </summary>
         public override void Install()
         {
-            //database objects
-            _objectContext.Install();
-
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
             
             base.Install();
@@ -81,11 +80,11 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
         /// </summary>
         public override void Uninstall()
         {
-            //database objects
-            _objectContext.Uninstall();
-
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
             _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Tax.CountryStateZip", false);
+
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

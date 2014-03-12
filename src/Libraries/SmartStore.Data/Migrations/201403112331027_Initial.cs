@@ -1,18 +1,18 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
 	using SmartStore.Core.Data;
 	using SmartStore.Data.Setup;
     
     public partial class Initial : DbMigration
     {
         public override void Up()
-		{
+        {
 			if (DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
 				return;
 
-			#region auto generated
+			#region auto-generated
 
 			CreateTable(
                 "dbo.ProductBundleItemAttributeFilter",
@@ -93,7 +93,7 @@ namespace SmartStore.Data.Migrations
                         DownloadExpirationDays = c.Int(),
                         DownloadActivationTypeId = c.Int(nullable: false),
                         HasSampleDownload = c.Boolean(nullable: false),
-                        SampleDownloadId = c.Int(nullable: false),
+                        SampleDownloadId = c.Int(),
                         HasUserAgreement = c.Boolean(nullable: false),
                         UserAgreementText = c.String(maxLength: 4000),
                         IsRecurring = c.Boolean(nullable: false),
@@ -155,7 +155,9 @@ namespace SmartStore.Data.Migrations
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.DeliveryTime", t => t.DeliveryTimeId)
-                .Index(t => t.DeliveryTimeId);
+                .ForeignKey("dbo.Download", t => t.SampleDownloadId)
+                .Index(t => t.DeliveryTimeId)
+                .Index(t => t.SampleDownloadId);
             
             CreateTable(
                 "dbo.Discount",
@@ -189,7 +191,7 @@ namespace SmartStore.Data.Migrations
                         MetaDescription = c.String(maxLength: 4000),
                         MetaTitle = c.String(maxLength: 400),
                         ParentCategoryId = c.Int(nullable: false),
-                        PictureId = c.Int(nullable: false),
+                        PictureId = c.Int(),
                         PageSize = c.Int(nullable: false),
                         AllowCustomersToSelectPageSize = c.Boolean(nullable: false),
                         PageSizeOptions = c.String(maxLength: 200),
@@ -204,7 +206,36 @@ namespace SmartStore.Data.Migrations
                         CreatedOnUtc = c.DateTime(nullable: false),
                         UpdatedOnUtc = c.DateTime(nullable: false),
                     })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Picture", t => t.PictureId)
+                .Index(t => t.PictureId);
+            
+            CreateTable(
+                "dbo.Picture",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        PictureBinary = c.Binary(),
+                        MimeType = c.String(nullable: false, maxLength: 40),
+                        SeoFilename = c.String(maxLength: 300),
+                        IsNew = c.Boolean(nullable: false),
+                    })
                 .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.Product_Picture_Mapping",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        ProductId = c.Int(nullable: false),
+                        PictureId = c.Int(nullable: false),
+                        DisplayOrder = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Picture", t => t.PictureId, cascadeDelete: true)
+                .ForeignKey("dbo.Product", t => t.ProductId, cascadeDelete: true)
+                .Index(t => t.PictureId)
+                .Index(t => t.ProductId);
             
             CreateTable(
                 "dbo.DiscountRequirement",
@@ -282,7 +313,7 @@ namespace SmartStore.Data.Migrations
                         MetaKeywords = c.String(maxLength: 400),
                         MetaDescription = c.String(maxLength: 4000),
                         MetaTitle = c.String(maxLength: 400),
-                        PictureId = c.Int(nullable: false),
+                        PictureId = c.Int(),
                         PageSize = c.Int(nullable: false),
                         AllowCustomersToSelectPageSize = c.Boolean(nullable: false),
                         PageSizeOptions = c.String(maxLength: 200),
@@ -294,34 +325,9 @@ namespace SmartStore.Data.Migrations
                         CreatedOnUtc = c.DateTime(nullable: false),
                         UpdatedOnUtc = c.DateTime(nullable: false),
                     })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.Product_Picture_Mapping",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        ProductId = c.Int(nullable: false),
-                        PictureId = c.Int(nullable: false),
-                        DisplayOrder = c.Int(nullable: false),
-                    })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Picture", t => t.PictureId, cascadeDelete: true)
-                .ForeignKey("dbo.Product", t => t.ProductId, cascadeDelete: true)
-                .Index(t => t.PictureId)
-                .Index(t => t.ProductId);
-            
-            CreateTable(
-                "dbo.Picture",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        PictureBinary = c.Binary(),
-                        MimeType = c.String(nullable: false, maxLength: 40),
-                        SeoFilename = c.String(maxLength: 300),
-                        IsNew = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id);
+                .ForeignKey("dbo.Picture", t => t.PictureId)
+                .Index(t => t.PictureId);
             
             CreateTable(
                 "dbo.CustomerContent",
@@ -1063,6 +1069,22 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.ProductVariantAttributeId);
             
             CreateTable(
+                "dbo.Download",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        DownloadGuid = c.Guid(nullable: false),
+                        UseDownloadUrl = c.Boolean(nullable: false),
+                        DownloadUrl = c.String(maxLength: 4000),
+                        DownloadBinary = c.Binary(),
+                        ContentType = c.String(maxLength: 4000),
+                        Filename = c.String(maxLength: 4000),
+                        Extension = c.String(maxLength: 4000),
+                        IsNew = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.TierPrice",
                 c => new
                     {
@@ -1336,22 +1358,6 @@ namespace SmartStore.Data.Migrations
                         SystemKeyword = c.String(nullable: false, maxLength: 100),
                         Name = c.String(nullable: false, maxLength: 200),
                         Enabled = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.Download",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        DownloadGuid = c.Guid(nullable: false),
-                        UseDownloadUrl = c.Boolean(nullable: false),
-                        DownloadUrl = c.String(maxLength: 4000),
-                        DownloadBinary = c.Binary(),
-                        ContentType = c.String(maxLength: 4000),
-                        Filename = c.String(maxLength: 4000),
-                        Extension = c.String(maxLength: 4000),
-                        IsNew = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -1776,7 +1782,6 @@ namespace SmartStore.Data.Migrations
 			}
 
 			#endregion
-
 		}
         
         public override void Down()
@@ -1792,7 +1797,7 @@ namespace SmartStore.Data.Migrations
 
 			#endregion
 
-			#region auto generated
+			#region auto-generated
 
 			DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
             DropForeignKey("dbo.ProductReview", "Id", "dbo.CustomerContent");
@@ -1823,6 +1828,7 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.ProductBundleItem", "BundleProductId", "dbo.Product");
             DropForeignKey("dbo.TierPrice", "ProductId", "dbo.Product");
             DropForeignKey("dbo.TierPrice", "CustomerRoleId", "dbo.CustomerRole");
+            DropForeignKey("dbo.Product", "SampleDownloadId", "dbo.Download");
             DropForeignKey("dbo.ProductVariantAttributeValue", "ProductVariantAttributeId", "dbo.Product_ProductAttribute_Mapping");
             DropForeignKey("dbo.Product_ProductAttribute_Mapping", "ProductAttributeId", "dbo.ProductAttribute");
             DropForeignKey("dbo.Product_ProductAttribute_Mapping", "ProductId", "dbo.Product");
@@ -1877,10 +1883,9 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.StateProvince", "CountryId", "dbo.Country");
             DropForeignKey("dbo.ShippingMethodRestrictions", "Country_Id", "dbo.Country");
             DropForeignKey("dbo.ShippingMethodRestrictions", "ShippingMethod_Id", "dbo.ShippingMethod");
-            DropForeignKey("dbo.Product_Picture_Mapping", "ProductId", "dbo.Product");
-            DropForeignKey("dbo.Product_Picture_Mapping", "PictureId", "dbo.Picture");
             DropForeignKey("dbo.Product_Manufacturer_Mapping", "ProductId", "dbo.Product");
             DropForeignKey("dbo.Product_Manufacturer_Mapping", "ManufacturerId", "dbo.Manufacturer");
+            DropForeignKey("dbo.Manufacturer", "PictureId", "dbo.Picture");
             DropForeignKey("dbo.Product_Category_Mapping", "ProductId", "dbo.Product");
             DropForeignKey("dbo.Product_Category_Mapping", "CategoryId", "dbo.Category");
             DropForeignKey("dbo.Product", "DeliveryTimeId", "dbo.DeliveryTime");
@@ -1889,6 +1894,9 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.Discount_AppliedToProducts", "Discount_Id", "dbo.Discount");
             DropForeignKey("dbo.Discount_AppliedToCategories", "Category_Id", "dbo.Category");
             DropForeignKey("dbo.Discount_AppliedToCategories", "Discount_Id", "dbo.Discount");
+            DropForeignKey("dbo.Category", "PictureId", "dbo.Picture");
+            DropForeignKey("dbo.Product_Picture_Mapping", "ProductId", "dbo.Product");
+            DropForeignKey("dbo.Product_Picture_Mapping", "PictureId", "dbo.Picture");
             DropIndex("dbo.ProductReview", new[] { "ProductId" });
             DropIndex("dbo.ProductReview", new[] { "Id" });
             DropIndex("dbo.PollVotingRecord", new[] { "PollAnswerId" });
@@ -1918,6 +1926,7 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.ProductBundleItem", new[] { "BundleProductId" });
             DropIndex("dbo.TierPrice", new[] { "ProductId" });
             DropIndex("dbo.TierPrice", new[] { "CustomerRoleId" });
+            DropIndex("dbo.Product", new[] { "SampleDownloadId" });
             DropIndex("dbo.ProductVariantAttributeValue", new[] { "ProductVariantAttributeId" });
             DropIndex("dbo.Product_ProductAttribute_Mapping", new[] { "ProductAttributeId" });
             DropIndex("dbo.Product_ProductAttribute_Mapping", new[] { "ProductId" });
@@ -1972,10 +1981,9 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.StateProvince", new[] { "CountryId" });
             DropIndex("dbo.ShippingMethodRestrictions", new[] { "Country_Id" });
             DropIndex("dbo.ShippingMethodRestrictions", new[] { "ShippingMethod_Id" });
-            DropIndex("dbo.Product_Picture_Mapping", new[] { "ProductId" });
-            DropIndex("dbo.Product_Picture_Mapping", new[] { "PictureId" });
             DropIndex("dbo.Product_Manufacturer_Mapping", new[] { "ProductId" });
             DropIndex("dbo.Product_Manufacturer_Mapping", new[] { "ManufacturerId" });
+            DropIndex("dbo.Manufacturer", new[] { "PictureId" });
             DropIndex("dbo.Product_Category_Mapping", new[] { "ProductId" });
             DropIndex("dbo.Product_Category_Mapping", new[] { "CategoryId" });
             DropIndex("dbo.Product", new[] { "DeliveryTimeId" });
@@ -1984,6 +1992,9 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.Discount_AppliedToProducts", new[] { "Discount_Id" });
             DropIndex("dbo.Discount_AppliedToCategories", new[] { "Category_Id" });
             DropIndex("dbo.Discount_AppliedToCategories", new[] { "Discount_Id" });
+            DropIndex("dbo.Category", new[] { "PictureId" });
+            DropIndex("dbo.Product_Picture_Mapping", new[] { "ProductId" });
+            DropIndex("dbo.Product_Picture_Mapping", new[] { "PictureId" });
             DropTable("dbo.ProductReview");
             DropTable("dbo.PollVotingRecord");
             DropTable("dbo.NewsComment");
@@ -2012,7 +2023,6 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.MessageTemplate");
             DropTable("dbo.EmailAccount");
             DropTable("dbo.Campaign");
-            DropTable("dbo.Download");
             DropTable("dbo.ActivityLogType");
             DropTable("dbo.ActivityLog");
             DropTable("dbo.Forums_PrivateMessage");
@@ -2033,6 +2043,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.StoreMapping");
             DropTable("dbo.Store");
             DropTable("dbo.TierPrice");
+            DropTable("dbo.Download");
             DropTable("dbo.ProductVariantAttributeValue");
             DropTable("dbo.ProductAttribute");
             DropTable("dbo.Product_ProductAttribute_Mapping");
@@ -2071,13 +2082,13 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.Address");
             DropTable("dbo.Customer");
             DropTable("dbo.CustomerContent");
-            DropTable("dbo.Picture");
-            DropTable("dbo.Product_Picture_Mapping");
             DropTable("dbo.Manufacturer");
             DropTable("dbo.Product_Manufacturer_Mapping");
             DropTable("dbo.Product_Category_Mapping");
             DropTable("dbo.DeliveryTime");
             DropTable("dbo.DiscountRequirement");
+            DropTable("dbo.Product_Picture_Mapping");
+            DropTable("dbo.Picture");
             DropTable("dbo.Category");
             DropTable("dbo.Discount");
             DropTable("dbo.Product");

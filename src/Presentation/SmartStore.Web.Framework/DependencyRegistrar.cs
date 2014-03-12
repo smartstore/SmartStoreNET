@@ -31,7 +31,6 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Installation;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -84,9 +83,6 @@ namespace SmartStore.Web.Framework
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
-
-			// installation
-			builder.RegisterType<InstallationService>().As<IInstallationService>().InstancePerHttpRequest();
 
             // web helper
             builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerHttpRequest();

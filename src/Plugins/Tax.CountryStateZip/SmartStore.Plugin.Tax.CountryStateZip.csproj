@@ -41,7 +41,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\EFMigrations\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -115,7 +115,11 @@
     </Compile>
     <Compile Include="Controllers\TaxCountryStateZipController.cs" />
     <Compile Include="CountryStateZipTaxProvider.cs" />
-    <Compile Include="Data\EfStartUpTask.cs" />
+    <Compile Include="Data\Migrations\201403112350417_Initial.cs" />
+    <Compile Include="Data\Migrations\201403112350417_Initial.Designer.cs">
+      <DependentUpon>201403112350417_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="Data\TaxRateMap.cs" />
     <Compile Include="Data\TaxRateObjectContext.cs" />
     <Compile Include="DependencyRegistrar.cs" />
@@ -151,6 +155,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\201403112350417_Initial.resx">
+      <DependentUpon>201403112350417_Initial.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\TaxCountryStateZip\Configure.cshtml" />
   </ItemGroup>
   <ItemGroup>

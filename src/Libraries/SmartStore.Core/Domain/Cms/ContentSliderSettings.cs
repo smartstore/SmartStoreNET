@@ -10,7 +10,9 @@ namespace SmartStore.Core.Domain.Cms
     {
         public ContentSliderSettings() 
         {
-            this.Slides = new List<ContentSliderSlideSettings>();
+            Slides = new List<ContentSliderSlideSettings>();
+			IsActive = true;
+			ContentSliderHeight = "300px";
         }
 
         public bool IsActive { get; set; }

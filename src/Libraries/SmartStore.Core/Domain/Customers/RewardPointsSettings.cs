@@ -5,7 +5,16 @@ namespace SmartStore.Core.Domain.Customers
 {
     public class RewardPointsSettings : ISettings
     {
-        /// <summary>
+		public RewardPointsSettings()
+		{
+			ExchangeRate = 1;
+			PointsForPurchases_Amount = 10;
+			PointsForPurchases_Points = 1;
+			PointsForPurchases_Awarded = OrderStatus.Complete;
+			PointsForPurchases_Canceled = OrderStatus.Cancelled;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether Reward Points Program is enabled
         /// </summary>
         public bool Enabled { get; set; }

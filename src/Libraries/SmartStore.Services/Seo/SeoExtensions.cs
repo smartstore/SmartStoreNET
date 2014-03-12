@@ -196,64 +196,76 @@ namespace SmartStore.Services.Seo
         /// <param name="name">User-friendly name used to generate sename</param>
         /// <param name="ensureNotEmpty">Ensreu that sename is not empty</param>
         /// <returns>Valid sename</returns>
-		/// codehint: sm-edit
         public static string ValidateSeName<T>(this T entity, string seName, string name, bool ensureNotEmpty, int? languageId = null)
              where T : BaseEntity, ISlugSupported
         {
-            if (entity == null)
-                throw new ArgumentNullException("entity");
+			return entity.ValidateSeName(
+				seName, 
+				name,
+				ensureNotEmpty, 
+				EngineContext.Current.Resolve<IUrlRecordService>(), 
+				EngineContext.Current.Resolve<SeoSettings>(), 
+				languageId);
+        }
 
-            //use name if sename is not specified
-            if (String.IsNullOrWhiteSpace(seName) && !String.IsNullOrWhiteSpace(name))
-                seName = name;
+		public static string ValidateSeName<T>(this T entity, string seName, string name, bool ensureNotEmpty, IUrlRecordService urlRecordService, SeoSettings seoSettings, int? languageId = null)
+			where T : BaseEntity, ISlugSupported
+		{
+			Guard.ArgumentNotNull(() => urlRecordService);
+			Guard.ArgumentNotNull(() => seoSettings);
 
-            //validation
-            seName = GetSeName(seName);
+			if (entity == null)
+				throw new ArgumentNullException("entity");
 
-            //max length
+			//use name if sename is not specified
+			if (String.IsNullOrWhiteSpace(seName) && !String.IsNullOrWhiteSpace(name))
+				seName = name;
+
+			//validation
+			seName = GetSeName(seName);
+
+			//max length
 			seName = seName.Truncate(400);
 
-            if (String.IsNullOrWhiteSpace(seName))
-            {
-                if (ensureNotEmpty)
-                {
-                    //use entity identifier as sename if empty
-                    seName = entity.Id.ToString();
-                }
-                else
-                {
-                    //return. no need for further processing
-                    return seName;
-                }
-            }
+			if (String.IsNullOrWhiteSpace(seName))
+			{
+				if (ensureNotEmpty)
+				{
+					//use entity identifier as sename if empty
+					seName = entity.Id.ToString();
+				}
+				else
+				{
+					//return. no need for further processing
+					return seName;
+				}
+			}
 
-            //ensure this sename is not reserved yet
-            string entityName = typeof(T).Name;
-            var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
-            var seoSettings = EngineContext.Current.Resolve<SeoSettings>();
-            int i = 2;
-            var tempSeName = seName;
-            while (true)
-            {
-                //check whether such slug already exists (and that is not the current product)
-                var urlRecord = urlRecordService.GetBySlug(tempSeName);
-                var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
+			//ensure this sename is not reserved yet
+			string entityName = typeof(T).Name;
+			int i = 2;
+			var tempSeName = seName;
+			while (true)
+			{
+				//check whether such slug already exists (and that is not the current product)
+				var urlRecord = urlRecordService.GetBySlug(tempSeName);
+				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
 				if (!reserved1 && urlRecord != null && languageId.HasValue)	// codehint: sm-add
 					reserved1 = (urlRecord.LanguageId != languageId.Value);
 
-                //and it's not in the list of reserved slugs
-                var reserved2 = seoSettings.ReservedUrlRecordSlugs.Contains(tempSeName, StringComparer.InvariantCultureIgnoreCase);
-                if (!reserved1 && !reserved2)
-                    break;
+				//and it's not in the list of reserved slugs
+				var reserved2 = seoSettings.ReservedUrlRecordSlugs.Contains(tempSeName, StringComparer.InvariantCultureIgnoreCase);
+				if (!reserved1 && !reserved2)
+					break;
 
-                tempSeName = string.Format("{0}-{1}", seName, i);
-                i++;
-            }
-            seName = tempSeName;
+				tempSeName = string.Format("{0}-{1}", seName, i);
+				i++;
+			}
+			seName = tempSeName;
 
-            return seName;
-        }
+			return seName;
+		}
 
 
         /// <summary>

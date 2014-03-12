@@ -126,7 +126,6 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets the plugin description
         /// </summary>
-        /// <remarks>codehint:sm-add</remarks>
 		[DataMember]
 		public string Description { get; internal set; }
 

@@ -9,6 +9,7 @@ using System.Web.Hosting;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core
 {
@@ -185,7 +186,7 @@ namespace SmartStore.Core
                 result = "http://" + httpHost.EnsureEndsWith("/");
             }
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
             {
                 if (useSsl)
                 {
@@ -361,18 +362,7 @@ namespace SmartStore.Core
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
         public virtual string MapPath(string path)
         {
-            if (HostingEnvironment.IsHosted)
-            {
-                //hosted
-                return HostingEnvironment.MapPath(path);
-            }
-            else
-            {
-                //not hosted. For example, run in unit tests
-                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                path = path.Replace("~/", "").TrimStart('/').Replace('/', '\\');
-                return Path.Combine(baseDirectory, path);
-            }
+			return CommonHelper.MapPath(path, false);
         }
         
         /// <summary>

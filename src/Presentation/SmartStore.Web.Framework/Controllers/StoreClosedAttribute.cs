@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Controllers
             if (filterContext.IsChildAction)
                 return;
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             var storeInformationSettings = EngineContext.Current.Resolve<StoreInformationSettings>();

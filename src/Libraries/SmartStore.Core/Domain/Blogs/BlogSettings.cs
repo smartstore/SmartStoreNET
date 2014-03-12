@@ -5,7 +5,15 @@ namespace SmartStore.Core.Domain.Blogs
 {
     public class BlogSettings : ISettings
     {
-        /// <summary>
+		public BlogSettings()
+		{
+			Enabled = true;
+			PostsPageSize = 10;
+			AllowNotRegisteredUsersToLeaveComments = true;
+			NumberOfTags = 15;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether blog is enabled
         /// </summary>
         public bool Enabled { get; set; }

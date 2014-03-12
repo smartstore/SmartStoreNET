@@ -95,7 +95,7 @@ namespace SmartStore.Services.Catalog
 			return _cacheManager.Get(key, () =>
 			{
 
-				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
 				{
 					//stored procedures are enabled and supported by the database. 
 					//It's much faster than the LINQ implementation below 

@@ -11,7 +11,7 @@ namespace SmartStore.Services.Helpers
         public string DefaultStoreTimeZoneId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers are allowed to select theirs time zone
+        /// Gets or sets a value indicating whether customers are allowed to select their time zone
         /// </summary>
         public bool AllowCustomersToSetTimeZone { get; set; }
     }

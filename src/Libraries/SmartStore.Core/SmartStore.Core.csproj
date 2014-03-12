@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\EFMigrations\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -147,6 +156,7 @@
     <Compile Include="Data\Impex\ImportProgressInfo.cs" />
     <Compile Include="Data\Impex\ImportResult.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
+    <Compile Include="Data\SqlFileTokenizer.cs" />
     <Compile Include="Domain\Catalog\ProductBundleData.cs" />
     <Compile Include="Domain\Catalog\ProductBundleItemAttributeFilter.cs" />
     <Compile Include="Domain\Catalog\ProductBundleItem.cs" />
@@ -219,11 +229,9 @@
     <Compile Include="Events\AppRegisterGlobalFiltersEvent.cs" />
     <Compile Include="Events\AppInitScheduledTasksEvent.cs" />
     <Compile Include="Events\AppEndRequestEvent.cs" />
-    <Compile Include="Data\BaseDataProviderManager.cs" />
+    <Compile Include="Data\DataProviderFactory.cs" />
     <Compile Include="Data\IDataProvider.cs" />
     <Compile Include="Data\DataSettings.cs" />
-    <Compile Include="Data\DataSettingsHelper.cs" />
-    <Compile Include="Data\DataSettingsManager.cs" />
     <Compile Include="Domain\Blogs\BlogExtensions.cs" />
     <Compile Include="Domain\Catalog\ManufacturerTemplate.cs" />
     <Compile Include="Domain\Catalog\CategoryTemplate.cs" />
@@ -476,6 +484,7 @@
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
+    <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />

@@ -5,7 +5,25 @@ namespace SmartStore.Core.Domain.Customers
 {
     public class CustomerSettings : ISettings
     {
-        /// <summary>
+		public CustomerSettings()
+		{
+			UsernamesEnabled = true;
+			DefaultPasswordFormat = PasswordFormat.Hashed;
+			HashedPasswordFormat = "SHA1";
+			PasswordMinLength = 6;
+			UserRegistrationType = UserRegistrationType.Standard;
+			AvatarMaximumSizeBytes = 20000;
+			DefaultAvatarEnabled = true;
+			CustomerNameFormat = CustomerNameFormat.ShowUsernames;
+			GenderEnabled = true;
+			DateOfBirthEnabled = true;
+			CompanyEnabled = true;
+			NewsletterEnabled = true;
+			OnlineCustomerMinutes = 20;
+			StoreLastVisitedPage = true;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether usernames are used instead of emails
         /// </summary>
         public bool UsernamesEnabled { get; set; }

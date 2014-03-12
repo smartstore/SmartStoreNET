@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using SmartStore.Services.Installation;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -20,6 +20,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         // codehint: sm-add
         IEnumerable<InstallationAppLanguageMetadata> GetAvailableAppLanguages();
-        Lazy<InvariantInstallationData, InstallationAppLanguageMetadata> GetAppLanguage(string culture);
+        Lazy<InvariantSeedData, InstallationAppLanguageMetadata> GetAppLanguage(string culture);
     }
 }

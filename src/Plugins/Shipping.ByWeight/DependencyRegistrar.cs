@@ -17,32 +17,16 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         {
             builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().InstancePerHttpRequest();
 
-            //data layer
-            var dataSettingsManager = new DataSettingsManager();
-            var dataProviderSettings = dataSettingsManager.LoadSettings();
+            // data layer
+            // register named context
+            builder.Register<IDbContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
+                .Named<IDbContext>(ShippingByWeightObjectContext.ALIASKEY)
+                .InstancePerHttpRequest();
 
-            if (dataProviderSettings != null && dataProviderSettings.IsValid())
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new ShippingByWeightObjectContext(dataProviderSettings.DataConnectionString))
-                    .Named<IDbContext>(ShippingByWeightObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
+			builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
+                .InstancePerHttpRequest();
 
-                builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(dataProviderSettings.DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-            else
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new ShippingByWeightObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .Named<IDbContext>(ShippingByWeightObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-
-            //override required repository with our custom context
+            // override required repository with our custom context
             builder.RegisterType<EfRepository<ShippingByWeightRecord>>()
                 .As<IRepository<ShippingByWeightRecord>>()
                 .WithParameter(ResolvedParameter.ForNamed<IDbContext>(ShippingByWeightObjectContext.ALIASKEY))

@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\EFMigrations\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
@@ -87,6 +96,7 @@
     <Compile Include="Security\AclRecordPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentItemPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
+    <Compile Include="TestDbConfiguration.cs" />
     <Compile Include="Stores\StoreMappingPersistenceTests.cs" />
     <Compile Include="Stores\StorePersistenceTests.cs" />
     <Compile Include="Tasks\ScheduleTaskPersistenceTests.cs" />

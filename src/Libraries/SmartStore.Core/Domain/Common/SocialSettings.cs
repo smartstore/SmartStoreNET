@@ -4,7 +4,16 @@ namespace SmartStore.Core.Domain.Common
 {
     public class SocialSettings : ISettings
     {
-        /// <summary>
+		public SocialSettings()
+		{
+			ShowSocialLinksInFooter = true;
+			FacebookLink = "#";
+			GooglePlusLink = "#";
+			TwitterLink = "#";
+			PinterestLink = "#";
+		}
+		
+		/// <summary>
         /// Gets or sets the value that determines whether social links should be show in the footer
         /// </summary>
         public bool ShowSocialLinksInFooter { get; set; }

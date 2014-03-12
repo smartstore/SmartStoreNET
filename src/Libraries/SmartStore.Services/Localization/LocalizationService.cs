@@ -39,7 +39,6 @@ namespace SmartStore.Services.Localization
         private readonly ILogger _logger;
         private readonly ILanguageService _languageService;
         private readonly ICacheManager _cacheManager;
-        private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
@@ -65,7 +64,6 @@ namespace SmartStore.Services.Localization
             ILogger logger, IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
             ILanguageService languageService,
-            IDataProvider dataProvider, IDbContext dbContext,
             LocalizationSettings localizationSettings, IEventPublisher eventPublisher)
         {
             this._cacheManager = cacheManager;
@@ -73,10 +71,7 @@ namespace SmartStore.Services.Localization
             this._workContext = workContext;
             this._lsrRepository = lsrRepository;
             this._languageService = languageService;
-            this._dataProvider = dataProvider;
-            this._dbContext = dbContext;
-            this._dataProvider = dataProvider;
-            this._dbContext = dbContext;
+			this._dbContext = lsrRepository.Context;
             this._localizationSettings = localizationSettings;
             this._eventPublisher = eventPublisher;
         }
@@ -391,7 +386,6 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Import language resources from XML file
 		/// </summary>
-		/// <remarks>codehint: sm-edit</remarks>
 		/// <param name="language">Language</param>
 		/// <param name="xmlDocument">XML document</param>
 		/// <param name="rootKey">Prefix for resource key name</param>

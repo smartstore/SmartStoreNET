@@ -8,7 +8,7 @@ using System.Web;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Installation;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -20,11 +20,11 @@ namespace SmartStore.Web.Infrastructure.Installation
         private const string LanguageCookieName = "sm.installation.lang";
 
         private IList<InstallationLanguage> _availableLanguages;
-        private IEnumerable<Lazy<InvariantInstallationData, InstallationAppLanguageMetadata>> _installDatas;
+        private IEnumerable<Lazy<InvariantSeedData, InstallationAppLanguageMetadata>> _seedDatas;
 
-        public InstallationLocalizationService(IEnumerable<Lazy<InvariantInstallationData, InstallationAppLanguageMetadata>> installDatas /* codehint: sm-add */)
+		public InstallationLocalizationService(IEnumerable<Lazy<InvariantSeedData, InstallationAppLanguageMetadata>> seedDatas)
         {
-            this._installDatas = installDatas;
+            this._seedDatas = seedDatas;
         }
 
         public string GetResource(string resourceName)
@@ -87,16 +87,16 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         public virtual IEnumerable<InstallationAppLanguageMetadata> GetAvailableAppLanguages()
         {
-            foreach (var data in _installDatas)
+            foreach (var data in _seedDatas)
             {
                 yield return data.Metadata;
             }
         }
 
-        public Lazy<InvariantInstallationData, InstallationAppLanguageMetadata> GetAppLanguage(string culture)
+        public Lazy<InvariantSeedData, InstallationAppLanguageMetadata> GetAppLanguage(string culture)
         {
             Guard.ArgumentNotEmpty(culture, "culture");
-            return _installDatas.FirstOrDefault(x => x.Metadata.Culture == culture);
+            return _seedDatas.FirstOrDefault(x => x.Metadata.Culture == culture);
         }
 
         public virtual IList<InstallationLanguage> GetAvailableLanguages()

@@ -5,7 +5,7 @@ using Autofac.Integration.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Services.Installation;
+using SmartStore.Data.Setup;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Installation;
@@ -31,10 +31,9 @@ namespace SmartStore.Web.Infrastructure
             // installation localization service
             builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerHttpRequest();
 
-            // codehint: sm-add
             // register app languages for installation
-            builder.RegisterType<EnUSInstallationData>()
-                .As<InvariantInstallationData>()
+			builder.RegisterType<EnUSSeedData>()
+                .As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>
                 { 
                     m.For(em => em.Culture, "en-US");
@@ -43,8 +42,8 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.FlagImageFileName, "us.png");
                 })
                 .InstancePerHttpRequest();
-            builder.RegisterType<DeDEInstallationData>()
-                .As<InvariantInstallationData>()
+            builder.RegisterType<DeDESeedData>()
+				.As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>
                 {
                     m.For(em => em.Culture, "de-DE");

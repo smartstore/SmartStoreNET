@@ -98,8 +98,6 @@
 
 		<ItemGroup>
 			<PluginFiles Include="$(WebPluginsFolder)\**\*" />
-			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.sql" />
-			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.txt" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
@@ -125,9 +123,6 @@
 
 		<!-- copy the plugins to the stage directory -->
 		<Copy SourceFiles="@(PluginFiles)" DestinationFolder="$(StageFolder)\Plugins\%(RecursiveDir)" />
-		
-		<!-- copy the migration sql scripts to the stage directory -->
-		<Copy SourceFiles="@(MigrationFiles)" DestinationFolder="$(StageFolder)\App_Data\Migrations\%(RecursiveDir)" />
 
 		<!-- publish SmartStore.Admin -->
 		<MSBuild Projects="$(WebFolder)\Administration\SmartStore.Admin.csproj"

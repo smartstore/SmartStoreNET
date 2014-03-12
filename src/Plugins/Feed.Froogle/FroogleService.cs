@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data.Entity.Migrations;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.Froogle.Data;
+using SmartStore.Plugin.Feed.Froogle.Data.Migrations;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -61,8 +63,6 @@ namespace SmartStore.Plugin.Feed.Froogle
 			};
             _settingService.SaveSetting(settings);
 
-            _objectContext.Install();
-
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
 			_googleService.Helper.ScheduleTaskInsert();
@@ -77,11 +77,12 @@ namespace SmartStore.Plugin.Feed.Froogle
         {
             _settingService.DeleteSetting<FroogleSettings>();
 
-            _objectContext.Uninstall();
-
 			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
 			_googleService.Helper.ScheduleTaskDelete();
+
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

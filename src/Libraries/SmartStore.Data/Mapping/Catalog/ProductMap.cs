@@ -35,6 +35,11 @@ namespace SmartStore.Data.Mapping.Catalog
 				.WithMany()
 				.HasForeignKey(p => p.DeliveryTimeId)
 				.WillCascadeOnDelete(false);
+
+			this.HasOptional(p => p.SampleDownload)
+				.WithMany()
+				.HasForeignKey(p => p.SampleDownloadId)
+				.WillCascadeOnDelete(false);
 			
 			this.Ignore(p => p.ProductType);
 			this.Ignore(p => p.ProductTypeLabelHint);

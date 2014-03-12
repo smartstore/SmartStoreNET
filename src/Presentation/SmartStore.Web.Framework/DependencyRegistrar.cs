@@ -31,7 +31,6 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Installation;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -84,9 +83,6 @@ namespace SmartStore.Web.Framework
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
-
-			// installation
-			builder.RegisterType<InstallationService>().As<IInstallationService>().InstancePerHttpRequest();
 
             // web helper
             builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerHttpRequest();
@@ -228,23 +224,15 @@ namespace SmartStore.Web.Framework
 		
 		protected override void Load(ContainerBuilder builder)
 		{
-			var dataSettingsManager = new DataSettingsManager();
-			var dataProviderSettings = dataSettingsManager.LoadSettings();
-			builder.Register(c => dataSettingsManager.LoadSettings()).As<DataSettings>().SingleInstance();
-			builder.Register(x => new EfDataProviderManager(x.Resolve<DataSettings>())).As<BaseDataProviderManager>().SingleInstance();
+			builder.Register(c => DataSettings.Current).As<DataSettings>().InstancePerDependency();
+			builder.Register(x => new EfDataProviderFactory(x.Resolve<DataSettings>())).As<DataProviderFactory>().InstancePerDependency();
 
+			builder.Register(x => x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();
+			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
-			builder.Register(x => (IEfDataProvider)x.Resolve<BaseDataProviderManager>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();
-			builder.Register(x => (IEfDataProvider)x.Resolve<BaseDataProviderManager>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
-
-			string dbContextParam = string.Empty;
-			if (dataProviderSettings != null && dataProviderSettings.IsValid())
+			if (DataSettings.Current.IsValid())
 			{
-				var efDataProviderManager = new EfDataProviderManager(dataSettingsManager.LoadSettings());
-				var dataProvider = (IEfDataProvider)efDataProviderManager.LoadDataProvider();
-				dataProvider.InitConnectionFactory();
-
-				builder.Register<IDbContext>(c => new SmartObjectContext(dataProviderSettings.DataConnectionString))
+				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
 					.InstancePerHttpRequest()
 					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
 
@@ -257,7 +245,7 @@ namespace SmartStore.Web.Framework
 			}
 			else
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(dataSettingsManager.LoadSettings().DataConnectionString)).InstancePerHttpRequest();
+				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString)).InstancePerHttpRequest();
 			}
 
 			builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerHttpRequest();

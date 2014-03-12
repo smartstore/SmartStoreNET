@@ -42,8 +42,7 @@ namespace SmartStore.Services.Configuration
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="eventPublisher">Event publisher</param>
         /// <param name="settingRepository">Setting repository</param>
-        public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher,
-            IRepository<Setting> settingRepository)
+        public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher, IRepository<Setting> settingRepository)
         {
             this._cacheManager = cacheManager;
             this._eventPublisher = eventPublisher;
@@ -167,7 +166,6 @@ namespace SmartStore.Services.Configuration
 			return settings;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		private void SaveSettingsJson<T>(T settings)
 		{
 			Type t = typeof(T);
@@ -405,7 +403,6 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store identifier</param>
 		public virtual void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
-			// codehint: sm-add
 			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
 			{
 				SaveSettingsJson<T>(settings);
@@ -582,7 +579,7 @@ namespace SmartStore.Services.Configuration
 				try
 				{
 					string sqlDelete = "Delete From Setting Where Name Like '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
-					result = EngineContext.Current.Resolve<IDbContext>().ExecuteSqlCommand(sqlDelete);
+					result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
 
                     // cache
                     _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);

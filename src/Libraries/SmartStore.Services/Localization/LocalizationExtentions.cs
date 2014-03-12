@@ -338,7 +338,6 @@ namespace SmartStore.Services.Localization
         /// <param name="languageId">Language identifier</param>
         /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
         /// <returns>Localized value</returns>
-        // codehint: sm-add
         public static string GetLocalizedDescription(this PluginDescriptor descriptor, ILocalizationService localizationService, int languageId = 0, bool returnDefaultValue = true)
         {
             if (localizationService == null)

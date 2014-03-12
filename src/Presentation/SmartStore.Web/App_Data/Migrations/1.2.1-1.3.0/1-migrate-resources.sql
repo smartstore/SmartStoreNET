@@ -348,7 +348,6 @@ FROM
 CROSS APPLY
 	R.rref.nodes('Value') AS V(vref)
 
-
 --do it for each existing language
 DECLARE @ExistingLanguageID int
 DECLARE @ExistingSeoCode nvarchar(2)

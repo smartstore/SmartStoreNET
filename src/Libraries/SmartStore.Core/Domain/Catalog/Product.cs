@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
@@ -282,7 +283,13 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the sample download identifier
 		/// </summary>
 		[DataMember]
-		public int SampleDownloadId { get; set; }
+		public int? SampleDownloadId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the sample download
+		/// </summary>
+		[DataMember]
+		public Download SampleDownload { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the product has user agreement

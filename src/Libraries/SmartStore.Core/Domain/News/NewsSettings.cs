@@ -5,7 +5,16 @@ namespace SmartStore.Core.Domain.News
 {
     public class NewsSettings : ISettings
     {
-        /// <summary>
+		public NewsSettings()
+		{
+			Enabled = true;
+			AllowNotRegisteredUsersToLeaveComments = true;
+			ShowNewsOnMainPage = true;
+			MainPageNewsCount = 3;
+			NewsArchivePageSize = 10;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether news are enabled
         /// </summary>
         public bool Enabled { get; set; }

@@ -5,7 +5,20 @@ namespace SmartStore.Core.Domain.Tax
 {
     public class TaxSettings : ISettings
     {
-        /// <summary>
+		public TaxSettings()
+		{
+			TaxBasedOn = TaxBasedOn.BillingAddress;
+			TaxDisplayType = TaxDisplayType.ExcludingTax;
+			ActiveTaxProviderSystemName = "Tax.FixedRate";
+			DisplayTaxSuffix = true;
+			PricesIncludeTax = true;
+			EuVatAllowVatExemption = true;
+			ShowLegalHintsInFooter = true; 
+			ShowLegalHintsInProductDetails = true;
+			ShowLegalHintsInProductList = true;
+		}
+		
+		/// <summary>
         /// Tax based on
         /// </summary>
         public TaxBasedOn TaxBasedOn { get; set; }

@@ -16,13 +16,15 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Installation;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
-using System.Configuration;
 using SmartStore.Core.Async;
+using System.Data.Entity;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
+using System.Configuration;
 
 namespace SmartStore.Web.Controllers
 {
@@ -32,8 +34,6 @@ namespace SmartStore.Web.Controllers
         #region Fields
 
         private readonly IInstallationLocalizationService _locService;
-        private float _totalSteps;
-        private float _currentStep;
 
         #endregion
 
@@ -68,13 +68,6 @@ namespace SmartStore.Web.Controllers
             return result;
         }
 
-        private void IncreaseProgress()
-        {
-            _currentStep++;
-            int progress = (int)(((_currentStep / _totalSteps) * 100) / 2) + 50;
-            UpdateResult(x => x.Progress = progress);
-        }
-
         /// <summary>
         /// Checks if the specified database exists, returns true if database exists
         /// </summary>
@@ -85,7 +78,7 @@ namespace SmartStore.Web.Controllers
         {
             try
             {
-                //just try to connect
+                // just try to connect
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -107,7 +100,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected string CreateDatabase(string connectionString, string collation)
         {
-            try
+			try
             {
                 //parse database name
                 var builder = new SqlConnectionStringBuilder(connectionString);
@@ -183,7 +176,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
             //set page timeout to 5 minutes
@@ -253,16 +246,16 @@ namespace SmartStore.Web.Controllers
 
 			UpdateResult(x =>
 			{
-				x.Progress = 0;
+				x.ProgressMessage = _locService.GetResource("Checking Requirements");
 				x.Completed = false;
 			});
 
-			if (DataSettingsHelper.DatabaseIsInstalled())
+			if (DataSettings.DatabaseIsInstalled())
 			{
 				tcs.SetResult(UpdateResult(x =>
 				{
 					x.Success = true;
-					x.RedirectUrl = Url.RouteUrl("HomePage");
+					x.RedirectUrl = Url.Action("Index", "Home");
 				}));
 				return t;
 			}
@@ -389,7 +382,9 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				var settingsManager = new DataSettingsManager();
+				SmartObjectContext dbContext = null;
+				var shouldDeleteDbOnFailure = false;
+
 				try
 				{
 					string connectionString = null;
@@ -423,7 +418,7 @@ namespace SmartStore.Web.Controllers
 								//create database
 								var collation = model.UseCustomCollation ? model.Collation : "";
 								var errorCreatingDatabase = CreateDatabase(connectionString, collation);
-								if (!String.IsNullOrEmpty(errorCreatingDatabase))
+								if (errorCreatingDatabase.HasValue())
 								{
 									tcs.SetResult(UpdateResult(x =>
 									{
@@ -436,9 +431,11 @@ namespace SmartStore.Web.Controllers
 								}
 								else
 								{
-									//Database cannot be created sometimes. Weird! Seems to be Entity Framework issue
-									//that's just wait 3 seconds
+									// Database cannot be created sometimes. Weird! Seems to be Entity Framework issue
+									// that's just wait 3 seconds
 									Thread.Sleep(3000);
+
+									shouldDeleteDbOnFailure = true;
 								}
 							}
 						}
@@ -460,41 +457,38 @@ namespace SmartStore.Web.Controllers
 					}
 					else
 					{
-						//SQL CE
+						// SQL CE
 						string databaseFileName = "SmartStore.Db.sdf";
 						string databasePath = @"|DataDirectory|\" + databaseFileName;
 						connectionString = "Data Source=" + databasePath + ";Persist Security Info=False";
 
-						//drop database if exists
+						// drop database if exists
 						string databaseFullPath = HostingEnvironment.MapPath("~/App_Data/") + databaseFileName;
 						if (System.IO.File.Exists(databaseFullPath))
 						{
 							System.IO.File.Delete(databaseFullPath);
 						}
+
+						shouldDeleteDbOnFailure = true;
 					}
 
-					//save settings
+					// save settings
 					var dataProvider = model.DataProvider;
-					var settings = new DataSettings()
-					{
-						DataProvider = dataProvider,
-						DataConnectionString = connectionString
-					};
-					settingsManager.SaveSettings(settings);
+					var settings = DataSettings.Current;
+					settings.DataProvider = dataProvider;
+					settings.DataConnectionString = connectionString;
+					settings.Save();
 
-					//init data provider
-					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<BaseDataProviderManager>(scope: scope).LoadDataProvider();
-					dataProviderInstance.InitDatabase();
+					// init data provider
+					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<IEfDataProvider>(scope: scope);
+					// Although obsolete we have no other chance than using this here.
+					// Delegating this to DbConfiguration is not possible during installation.
+#pragma warning disable 618
+					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
 
-					// now resolve installation service
-					var installationService = EngineContext.Current.ContainerManager.Resolve<IInstallationService>(scope: scope);
-
-					// infrastructure is store dependend, means default store needs to be created first
-					installationService.InstallEarlyRequiredData();
-
-					// resolve installdata instance from primary language
-					var lazyLang = _locService.GetAppLanguage(model.PrimaryLanguage);
-					if (lazyLang == null)
+					// resolve SeedData instance from primary language
+					var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);
+					if (lazyLanguage == null)
 					{
 						tcs.SetResult(UpdateResult(x =>
 						{
@@ -506,32 +500,40 @@ namespace SmartStore.Web.Controllers
 						return t;
 					}
 
-					// codehint: sm-add
-					// create Language Object from lazyLang
-					var rsLanguages = EngineContext.Current.ContainerManager.Resolve<IRepository<Language>>(scope: scope);
-					// create a proxied type, resources cannot be saved otherwise
-					var primaryLanguage = rsLanguages.Create();
-					primaryLanguage.Name = lazyLang.Metadata.Name;
-					primaryLanguage.LanguageCulture = lazyLang.Metadata.Culture;
-					primaryLanguage.UniqueSeoCode = lazyLang.Metadata.UniqueSeoCode;
-					primaryLanguage.FlagImageFileName = lazyLang.Metadata.FlagImageFileName;
+					// create the DataContext
+					dbContext = new SmartObjectContext();
 
-					var installContext = new InstallDataContext
+					// IMPORTANT: Migration would run way too early otherwise
+					Database.SetInitializer<SmartObjectContext>(null);
+
+					// create Language domain object from lazyLanguage
+					var languages = dbContext.Set<Language>();
+					var primaryLanguage = languages.Create(); // create a proxied type, resources cannot be saved otherwise
+					primaryLanguage.Name = lazyLanguage.Metadata.Name;
+					primaryLanguage.LanguageCulture = lazyLanguage.Metadata.Culture;
+					primaryLanguage.UniqueSeoCode = lazyLanguage.Metadata.UniqueSeoCode;
+					primaryLanguage.FlagImageFileName = lazyLanguage.Metadata.FlagImageFileName;
+
+					// Build the seed configuration model
+					var seedConfiguration = new SeedDataConfiguration
 					{
 						DefaultUserName = model.AdminEmail,
 						DefaultUserPassword = model.AdminPassword,
-						InstallSampleData = model.InstallSampleData,
-						InstallData = lazyLang.Value,
+						SeedSampleData = model.InstallSampleData,
+						Data = lazyLanguage.Value,
 						Language = primaryLanguage,
 						StoreMediaInDB = model.MediaStorage == "db",
-						ProgressCallback = p => UpdateResult(x => x.Progress = (p / 2))
+						ProgressMessageCallback = msg => UpdateResult(x => x.ProgressMessage = _locService.GetResource(msg))
 					};
-					installationService.InstallData(installContext);
 
-					//reset cache
-					//DataSettingsHelper.ResetCache();
+					var seeder = new InstallDataSeeder(seedConfiguration);
+					Database.SetInitializer(new InstallDatabaseInitializer(seeder));
 
-					//install plugins
+					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
+					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Building Database"));
+					dbContext.Database.Initialize(true);
+
+					// install plugins
 					PluginManager.MarkAllPluginsAsUninstalled();
 					var pluginFinder = EngineContext.Current.ContainerManager.Resolve<IPluginFinder>(scope: scope);
 					var plugins = pluginFinder.GetPlugins<IPlugin>(false)
@@ -552,31 +554,28 @@ namespace SmartStore.Web.Controllers
 						plugins = plugins.Where(x => !pluginsIgnoredDuringInstallation.Contains(x.PluginDescriptor.SystemName, StringComparer.OrdinalIgnoreCase)).ToList();
 					}
 
-					_totalSteps = plugins.Count;
-					_currentStep = 0;
-
+					var pluginsCount = plugins.Count;
+					var idx = 0;
 					foreach (var plugin in plugins)
 					{
 						try
 						{
+							idx++;
+							UpdateResult(x => x.ProgressMessage = _locService.GetResource("Installing plugin {0} of {1}").FormatInvariant(idx, pluginsCount));
 							plugin.Install();
 						}
-						catch /*(Exception ex)*/
+						catch
 						{
-							//System.Diagnostics.Debug.Write(ex.Message);
 							if (plugin.PluginDescriptor.Installed)
 							{
 								PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
 							}
 						}
-						finally
-						{
-							IncreaseProgress();
-						}
 					}
 
-					//register default permissions
-					//var permissionProviders = EngineContext.Current.Resolve<ITypeFinder>().FindClassesOfType<IPermissionProvider>();
+					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Finalizing installation"));
+
+					// Register default permissions
 					var permissionProviders = new List<Type>();
 					permissionProviders.Add(typeof(StandardPermissionProvider));
 					foreach (var providerType in permissionProviders)
@@ -584,33 +583,41 @@ namespace SmartStore.Web.Controllers
 						dynamic provider = Activator.CreateInstance(providerType);
 						EngineContext.Current.ContainerManager.Resolve<IPermissionService>(scope: scope).InstallPermissions(provider);
 					}
-					_currentStep = _totalSteps;
 
 					// SUCCESS: Redirect to home page
 					tcs.SetResult(UpdateResult(x =>
 					{
 						x.Completed = true;
 						x.Success = true;
-						x.RedirectUrl = Url.RouteUrl("HomePage");
+						x.RedirectUrl = Url.Action("Index", "Home");
 					}));
 					return t;
 				}
 				catch (Exception exception)
 				{
-					//reset cache
-					//DataSettingsHelper.ResetCache();
+					// Clear provider settings if something got wrong
+					DataSettings.Delete();
 
-					//clear provider settings if something got wrong
-					settingsManager.SaveSettings(new DataSettings
+					// Delete Db if it was auto generated
+					if (dbContext != null && shouldDeleteDbOnFailure)
 					{
-						DataProvider = null,
-						DataConnectionString = null
-					});
+						try
+						{
+							dbContext.Database.Delete();
+						}
+						catch { }
+					}
 
 					var msg = exception.Message;
-					if (exception.InnerException != null)
+					var realException = exception;
+					while (realException.InnerException != null)
 					{
-						msg += " (" + exception.InnerException.Message + ")";
+						realException = realException.InnerException;
+					}
+
+					if (!Object.Equals(exception, realException))
+					{
+						msg += " (" + realException.Message + ")";
 					}
 
 					tcs.SetResult(UpdateResult(x =>
@@ -621,6 +628,13 @@ namespace SmartStore.Web.Controllers
 						x.RedirectUrl = null;
 					}));
 					return t;
+				}
+				finally
+				{
+					if (dbContext != null)
+					{
+						dbContext.Dispose();
+					}
 				}
 			}
 		}
@@ -641,7 +655,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ChangeLanguage(string language)
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
             _locService.SaveCurrentLanguage(language);
@@ -652,15 +666,15 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult RestartInstall()
         {
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
             
-            //restart application
+            // Restart application
             var webHelper = EngineContext.Current.Resolve<IWebHelper>();
             webHelper.RestartAppDomain();
 
-            //Redirect to home page
-            return RedirectToRoute("HomePage");
+            // Redirect to home page
+            return RedirectToAction("Index", "Home");
         }
 
         #endregion
@@ -668,19 +682,12 @@ namespace SmartStore.Web.Controllers
 
     public class InstallationResult : ICloneable<InstallationResult>
     {
-        private int _progress = -1;
-
         public InstallationResult()
         {
             this.Errors = new List<string>();
         }
 
-        public int Progress
-        {
-            get { return Math.Min(100, _progress); }
-            set { _progress = value; }
-        }
-
+		public string ProgressMessage { get; set; }
         public bool Completed { get; set; }
         public bool Success { get; set; }
         public string RedirectUrl { get; set; }
@@ -694,7 +701,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var clone = new InstallationResult 
 			{ 
-				_progress = this._progress,
+				ProgressMessage = this.ProgressMessage,
 				Completed = this.Completed,
 				RedirectUrl = this.RedirectUrl,
 				Success = this.Success

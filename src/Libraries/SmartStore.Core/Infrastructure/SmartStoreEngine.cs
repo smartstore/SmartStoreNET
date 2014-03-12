@@ -81,7 +81,7 @@ namespace SmartStore.Core.Infrastructure
         /// <param name="config">Config</param>
         public void Initialize(SmartStoreConfig config)
         {
-            bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
+            bool databaseInstalled = DataSettings.DatabaseIsInstalled();
 			if (databaseInstalled)
 			{
 				//startup tasks

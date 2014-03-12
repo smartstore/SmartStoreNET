@@ -7,6 +7,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Domain
     /// </summary>
     public partial class ShippingByTotalRecord : BaseEntity
     {
+		
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>

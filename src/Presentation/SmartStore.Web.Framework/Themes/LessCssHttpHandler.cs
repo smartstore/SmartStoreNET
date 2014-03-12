@@ -33,7 +33,7 @@ namespace SmartStore.Web.Framework.Themes
 
         private bool IsThemeableRequest()
         {
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+			if (!DataSettings.DatabaseIsInstalled())
             {
                 return false;
             }

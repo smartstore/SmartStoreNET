@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\Presentation\SmartStore.Web\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.3.3.0\lib\net40\Autofac.dll</HintPath>
@@ -108,9 +117,13 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\FeedFroogleController.cs" />
-    <Compile Include="Data\EfStartUpTask.cs" />
     <Compile Include="Data\GoogleProductObjectContext.cs" />
     <Compile Include="Data\GoogleProductRecordMap.cs" />
+    <Compile Include="Data\Migrations\201403112356126_Initial.cs" />
+    <Compile Include="Data\Migrations\201403112356126_Initial.Designer.cs">
+      <DependentUpon>201403112356126_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Domain\GoogleProductRecord.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
@@ -147,6 +160,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\201403112356126_Initial.resx">
+      <DependentUpon>201403112356126_Initial.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\FeedFroogle\Configure.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -5,36 +5,46 @@ using System.Data.Entity.Infrastructure;
 
 namespace SmartStore
 {
-	/// <remarks>codehint: sm-add</remarks>
+
 	public static class DbContextExtensions
 	{
-		public static bool ColumnExists(this DbContext context, string tableName, string columnName) {
-			if (context != null && tableName.HasValue() && columnName.HasValue()) {
+		
+		public static bool ColumnExists(this DbContext context, string tableName, string columnName) 
+		{
+			if (context != null && tableName.HasValue() && columnName.HasValue()) 
+			{
 				//string sql = @"Select column_name From INFORMATION_SCHEMA.COLUMNS Where table_name = @tableName And column_name = @columnName";
 		
 				//string col = ((IObjectContextAdapter)context).ObjectContext.ExecuteStoreQuery<string>(sql,
 				//	new SqlParameter("@tableName", tableName), new SqlParameter("@columnName", columnName)).FirstOrDefault();
 
 				string sql = @"Select column_name From INFORMATION_SCHEMA.COLUMNS Where table_name = {0} And column_name = {1}";
-
 				string col = ((IObjectContextAdapter)context).ObjectContext.ExecuteStoreQuery<string>(sql, tableName, columnName).FirstOrDefault();
-
 				return col.HasValue();
 			}
+
 			return false;
 		}
-		public static void ColumnEnsure(this DbContext context, string tableName, string columnName, string columnDataType) {
-			if (!context.ColumnExists(tableName, columnName)) {
+
+		public static void ColumnEnsure(this DbContext context, string tableName, string columnName, string columnDataType) 
+		{
+			if (!context.ColumnExists(tableName, columnName)) 
+			{
 				//context.Database.ExecuteSqlCommand("ALTER TABLE dbo.[{0}] ADD {1} {2}".FormatWith(tableName, columnName, columnDataType));
 				context.Database.ExecuteSqlCommand("ALTER TABLE {0} ADD {1} {2}".FormatWith(tableName, columnName, columnDataType));
 			}
 		}
-		public static void ColumnDelete(this DbContext context, string tableName, string columnName) {
-			if (context.ColumnExists(tableName, columnName)) {
+
+		public static void ColumnDelete(this DbContext context, string tableName, string columnName) 
+		{
+			if (context.ColumnExists(tableName, columnName)) 
+			{
 				context.Database.ExecuteSqlCommand("ALTER TABLE {0} DROP COLUMN {1}".FormatWith(tableName, columnName));
 			}
 		}
-		public static bool DatabaseExists(this DbContext context, string databaseName) {
+
+		public static bool DatabaseExists(this DbContext context, string databaseName)
+		{
 			if (context != null && databaseName.HasValue()) {
 				//string sql = @"Select database_id From sys.databases Where Name = @databaseName";
 
@@ -46,14 +56,19 @@ namespace SmartStore
 
 				return databaseID > 0;
 			}
+
 			return false;
 		}
 
-		public static int InsertInto(this DbContext context, string sql, params object[] parameters) {
+		public static int InsertInto(this DbContext context, string sql, params object[] parameters) 
+		{
 			return (int)context.Database.SqlQuery<decimal>(sql + "; SELECT @@IDENTITY;", parameters).FirstOrDefault();
 		}
-		public static int Execute(this DbContext context, string sql, params object[] parameters) {
+
+		public static int Execute(this DbContext context, string sql, params object[] parameters) 
+		{
 			return context.Database.ExecuteSqlCommand(sql, parameters);
 		}
-	}	// class
+
+	}
 }

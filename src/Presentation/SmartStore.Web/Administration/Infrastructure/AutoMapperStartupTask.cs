@@ -59,7 +59,12 @@ namespace SmartStore.Admin.Infrastructure
         public void Execute()
         {
             //TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
-            
+
+			// special mapper, that avoids DbUpdate exceptions in cases where
+			// optional (nullable) int FK properties are 0 instead of null 
+			// after mapping model > entity.
+			Mapper.CreateMap<int, int?>().ConvertUsing((src) => src == 0 ? (int?)null : src);
+
             //address
             Mapper.CreateMap<Address, AddressModel>()
                 .ForMember(dest => dest.AddressHtml, mo => mo.Ignore())

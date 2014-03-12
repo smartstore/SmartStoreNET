@@ -246,7 +246,7 @@ namespace SmartStore.Web.Controllers
 
 			UpdateResult(x =>
 			{
-				x.ProgressMessage = _locService.GetResource("Checking Requirements");
+				x.ProgressMessage = _locService.GetResource("Progress.CheckingRequirements");
 				x.Completed = false;
 			});
 
@@ -530,7 +530,7 @@ namespace SmartStore.Web.Controllers
 					Database.SetInitializer(new InstallDatabaseInitializer(seeder));
 
 					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
-					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Building Database"));
+					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase"));
 					dbContext.Database.Initialize(true);
 
 					// install plugins
@@ -563,7 +563,7 @@ namespace SmartStore.Web.Controllers
 							try
 							{
 								idx++;
-								UpdateResult(x => x.ProgressMessage = _locService.GetResource("Installing plugin {0} of {1}").FormatInvariant(idx, pluginsCount));
+								UpdateResult(x => x.ProgressMessage = _locService.GetResource("Progress.InstallingPlugins").FormatInvariant(idx, pluginsCount));
 								plugin.Install();
 								dbScope.Commit();
 							}
@@ -577,7 +577,7 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
-					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Finalizing installation"));
+					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Progress.Finalizing"));
 
 					// Register default permissions
 					var permissionProviders = new List<Type>();

@@ -517,7 +517,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.Configuration.AutoDetectChangesEnabled = false;
 			_ctx.Configuration.ValidateOnSaveEnabled = false;
 
-			_config.ProgressMessageCallback("Creating required data");
+			_config.ProgressMessageCallback("Progress.CreatingRequiredData");
 
             // special mandatory (non-visible) settings
 			this.SettingService.SetSetting("Media.Images.StoreInDB", _config.StoreMediaInDB);
@@ -548,7 +548,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
             if (_config.SeedSampleData)
             {
-				_config.ProgressMessageCallback("Creating sample data");
+				_config.ProgressMessageCallback("Progress.CreatingSampleData");
 
 				Populate("PopulateSpecificationAttributes", _data.SpecificationAttributes());
 				Populate("PopulateProductAttributes", _data.ProductAttributes());

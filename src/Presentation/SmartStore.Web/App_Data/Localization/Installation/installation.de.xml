@@ -165,5 +165,24 @@
     <Value>Juhuuu! Die Installation wurde erfolgreich abgeschlossen ;-) Der Shop wird nun gestartet...</Value>
   </LocaleResource>
   
+  <LocaleResource Name="Progress.CheckingRequirements">
+    <Value>Überprüfe Systemvoraussetzungen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.BuildingDatabase">
+    <Value>Erzeuge Datenbank</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.InstallingPlugins">
+    <Value>Installiere Plugin {0} von {1}</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.Finalizing">
+    <Value>Schließe Installation ab</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingRequiredData">
+    <Value>Schreibe erforderliche Daten</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingSampleData">
+    <Value>Schreibe Beispiel Daten</Value>
+  </LocaleResource>
+  
   
 </Language>

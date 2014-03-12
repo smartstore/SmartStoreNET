@@ -162,7 +162,26 @@
     <Value>Alert</Value>
   </LocaleResource>
   <LocaleResource Name="Common.StartShop">
-    <Value>Yippieee! The installation was successfully finished ;-) The Shop is being started now...</Value>
+    <Value>Yippieee! The installation was completed successfully ;-) Your shop is being started now...</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="Progress.CheckingRequirements">
+    <Value>Checking requirements</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.BuildingDatabase">
+    <Value>Building database</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.InstallingPlugins">
+    <Value>Installing plugin {0} of {1}</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.Finalizing">
+    <Value>Finalizing installation</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingRequiredData">
+    <Value>Creating required data</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingSampleData">
+    <Value>Creating sample data</Value>
   </LocaleResource>
   
 </Language>

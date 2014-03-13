@@ -39,7 +39,8 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+		
+		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppRegisterGlobalFiltersEvent {
@@ -108,14 +109,23 @@ namespace SmartStore.Web
 
 			if (installed)
 			{
+				var profilingEnabled = this.ProfilingEnabled;
+				
 				// remove all view engines...
 				ViewEngines.Engines.Clear();
 				// ...except the themeable razor view engine we use
-				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
+				IViewEngine viewEngine = new ThemeableRazorViewEngine();
+				if (profilingEnabled)
+				{
+					// ...and wrap it profiling is active
+					viewEngine = new ProfilingViewEngine(viewEngine);
+					GlobalFilters.Filters.Add(new ProfilingActionFilter());
+				}
+				ViewEngines.Engines.Add(viewEngine);
 
 				// Global filters
 				RegisterGlobalFilters(GlobalFilters.Filters);
-
+				
 				// Bundles
 				RegisterBundles(BundleTable.Bundles);
 
@@ -127,12 +137,6 @@ namespace SmartStore.Web
 				var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
 				var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
 				HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
-
-				// StackExchange profiler
-				if (EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
-				{
-					GlobalFilters.Filters.Add(new ProfilingActionFilter());
-				}
 
 				// start scheduled tasks
 				TaskManager.Instance.Initialize();
@@ -205,10 +209,10 @@ namespace SmartStore.Web
 			if (webHelper.IsStaticResource(this.Request))
 				return;
 
-            if (installed && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
-            {
-                MiniProfiler.Start();
-            }
+			if (installed && ProfilingEnabled)
+			{
+				MiniProfiler.Start();
+			}
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)
@@ -222,9 +226,9 @@ namespace SmartStore.Web
 
 			if (installed)
 			{
-				if (EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
+				if (ProfilingEnabled)
 				{
-					// stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
+					// stop as early as you can
 					MiniProfiler.Stop();
 				}
 
@@ -275,6 +279,15 @@ namespace SmartStore.Web
                 //don't throw new exception if occurs
             }
         }
+
+		protected bool ProfilingEnabled
+		{
+			get
+			{
+				return EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+			}
+		}
+
     }
 
 }

@@ -294,7 +294,6 @@
     <Compile Include="TelerikLocalizationService.cs" />
     <Compile Include="TelerikLocalizationServiceFactory.cs" />
     <Compile Include="Themes\IThemeContext.cs" />
-    <Compile Include="Themes\ThemeableBuildManagerViewEngine .cs" />
     <Compile Include="Themes\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Themes\ThemeableRazorViewEngine.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />

@@ -238,7 +238,7 @@ namespace SmartStore.Web.Framework
                 #region Get language from URL (if possible)
                 if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext != null)
                 {
-                    var helper = new LocalizedUrlHelper(_httpContext.Request, false);
+                    var helper = new LocalizedUrlHelper(_httpContext.Request, true);
                     string seoCode;
                     if (helper.IsLocalizedUrl(out seoCode))
                     {

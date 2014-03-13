@@ -619,7 +619,7 @@ namespace SmartStore.Web.Infrastructure
                             new { controller = "Common", action = "CurrencySelected" },
                             new { customercurrency = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
-            routes.MapLocalizedRoute("ChangeLanguage",
+            routes.MapRoute("ChangeLanguage",
                             "changelanguage/{langid}",
                             new { controller = "Common", action = "SetLanguage" },
                             new { langid = @"\d+" },

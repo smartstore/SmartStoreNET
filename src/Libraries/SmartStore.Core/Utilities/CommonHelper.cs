@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -93,6 +94,29 @@ namespace SmartStore.Utilities
 		private static bool IsSolutionRoot(DirectoryInfo dir)
 		{
 			return File.Exists(Path.Combine(dir.FullName, "SmartStoreNET.sln"));
+		}
+
+		public static bool TryConvert<T>(object value, out T convertedValue)
+		{
+			return TryConvert<T>(value, CultureInfo.InvariantCulture, out convertedValue);
+		}
+
+		public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
+		{
+			return Misc.TryAction<T>(delegate
+			{
+				return value.Convert<T>(culture);
+			}, out convertedValue);
+		}
+
+		public static bool TryConvert(object value, Type to, out object convertedValue)
+		{
+			return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
+		}
+
+		public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
+		{
+			return Misc.TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
 		}
 
     }

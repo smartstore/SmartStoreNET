@@ -276,10 +276,7 @@ namespace SmartStore.Web.Controllers
 					//raw connection string
 					if (string.IsNullOrEmpty(model.DatabaseConnectionString))
 					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("ConnectionStringRequired"));
-						});
+						UpdateResult(x => x.Errors.Add(_locService.GetResource("ConnectionStringRequired")));
 					}
 
 					try
@@ -289,10 +286,7 @@ namespace SmartStore.Web.Controllers
 					}
 					catch
 					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("ConnectionStringWrongFormat"));
-						});
+						UpdateResult(x => x.Errors.Add(_locService.GetResource("ConnectionStringWrongFormat")));
 					}
 				}
 				else
@@ -300,18 +294,12 @@ namespace SmartStore.Web.Controllers
 					//values
 					if (string.IsNullOrEmpty(model.SqlServerName))
 					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("SqlServerNameRequired"));
-						});
+						UpdateResult(x => x.Errors.Add(_locService.GetResource("SqlServerNameRequired")));
 					}
 
 					if (string.IsNullOrEmpty(model.SqlDatabaseName))
 					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("DatabaseNameRequired"));
-						});
+						UpdateResult(x => x.Errors.Add(_locService.GetResource("DatabaseNameRequired")));
 					}
 
 					//authentication type
@@ -320,18 +308,12 @@ namespace SmartStore.Web.Controllers
 						//SQL authentication
 						if (string.IsNullOrEmpty(model.SqlServerUsername))
 						{
-							UpdateResult(x =>
-							{
-								x.Errors.Add(_locService.GetResource("SqlServerUsernameRequired"));
-							});
+							UpdateResult(x => x.Errors.Add(_locService.GetResource("SqlServerUsernameRequired")));
 						}
 
 						if (string.IsNullOrEmpty(model.SqlServerPassword))
 						{
-							UpdateResult(x =>
-							{
-								x.Errors.Add(_locService.GetResource("SqlServerPasswordRequired"));
-							});
+							UpdateResult(x => x.Errors.Add(_locService.GetResource("SqlServerPasswordRequired")));
 						}
 					}
 				}
@@ -351,10 +333,7 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
 				{
-					UpdateResult(x =>
-					{
-						x.Errors.Add(string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), WindowsIdentity.GetCurrent().Name, dir));
-					});
+					UpdateResult(x => x.Errors.Add(string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), WindowsIdentity.GetCurrent().Name, dir)));
 				}
 			}
 
@@ -363,10 +342,7 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
 				{
-					UpdateResult(x =>
-					{
-						x.Errors.Add(string.Format(_locService.GetResource("ConfigureFilePermissions"), WindowsIdentity.GetCurrent().Name, file));
-					});
+					UpdateResult(x => x.Errors.Add(string.Format(_locService.GetResource("ConfigureFilePermissions"), WindowsIdentity.GetCurrent().Name, file)));
 				}
 			}
 
@@ -529,8 +505,8 @@ namespace SmartStore.Web.Controllers
 					var seeder = new InstallDataSeeder(seedConfiguration);
 					Database.SetInitializer(new InstallDatabaseInitializer(seeder));
 
-					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
 					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase"));
+					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
 					dbContext.Database.Initialize(true);
 
 					// install plugins

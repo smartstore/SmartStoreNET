@@ -27,6 +27,8 @@ using SmartStore.Services.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using System.Data.Entity.Migrations;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -126,7 +128,77 @@ namespace SmartStore.Web.Infrastructure.Installation
 				// no need to call SaveChanges() here, as the above call makes it
 				// already without AutoDetectChanges(), so it's fast.
 			}
+
+			ExecutePendingResourceMigrations(locPath);
         }
+
+		private void ExecutePendingResourceMigrations(string resPath)
+		{
+			string headPath = Path.Combine(resPath, "head.txt");
+			if (!File.Exists(headPath))
+				return;
+
+			string resHead = File.ReadAllText(headPath);
+			if (!MigratorUtils.IsValidMigrationId(resHead))
+				return;
+			
+			var migrator = new DbMigrator(new MigrationsConfiguration());
+			var migrations = GetPendingResourceMigrations(migrator, resHead);
+
+			foreach (var id in migrations)
+			{
+				if (MigratorUtils.IsAutomaticMigration(id))
+					continue;
+
+				if (!MigratorUtils.IsValidMigrationId(id))
+					continue;
+
+				// Resolve and instantiate the DbMigration instance from the assembly
+				var migration = MigratorUtils.CreateMigrationInstanceByMigrationId(id, migrator.Configuration);
+
+				var provider = migration as ILocaleResourcesProvider;
+				if (provider == null)
+					continue;
+
+				var builder = new LocaleResourcesBuilder();
+				provider.AlterLocaleResources(builder);
+
+				var resEntries = builder.Build();
+				foreach (var entry in resEntries)
+				{
+					// TBD [...]
+				}
+
+				// TBD [...]
+			}
+		}
+
+		private IEnumerable<string> GetPendingResourceMigrations(DbMigrator migrator, string resHead)
+		{
+			var local = migrator.GetLocalMigrations();
+			var atHead = false;
+
+			if (local.Last().IsCaseInsensitiveEqual(resHead))
+				yield break;
+
+			foreach (var id in local)
+			{
+				if (!atHead)
+				{
+					if (!id.IsCaseInsensitiveEqual(resHead))
+					{
+						continue;
+					}
+					else
+					{
+						atHead = true;
+						continue;
+					}
+				}
+
+				yield return id;
+			}
+		}
 
 		private void PopulateCurrencies()
         {

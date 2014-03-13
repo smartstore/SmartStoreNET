@@ -116,7 +116,10 @@
     <Compile Include="Setup\DbSeedingMigrator.cs" />
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
     <Compile Include="Setup\IDataSeeder.cs" />
+    <Compile Include="Setup\ILocaleResourcesProvider.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
+    <Compile Include="Setup\LocaleResourcesBuilder.cs" />
+    <Compile Include="Setup\MigratorUtils.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
     <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />

@@ -172,29 +172,6 @@ namespace SmartStore
             #endregion
         }
 
-        public static bool TryConvert<T>(this object value, out T convertedValue)
-        {
-            return value.TryConvert<T>(CultureInfo.InvariantCulture, out convertedValue);
-        }
-
-        public static bool TryConvert<T>(this object value, CultureInfo culture, out T convertedValue)
-        {
-            return Misc.TryAction<T>(delegate
-            {
-                return value.Convert<T>(culture);
-            }, out convertedValue);
-        }
-
-        public static bool TryConvert(this object value, Type to, out object convertedValue)
-        {
-            return value.TryConvert(to, CultureInfo.InvariantCulture, out convertedValue);
-        }
-
-        public static bool TryConvert(this object value, Type to, CultureInfo culture, out object convertedValue)
-        {
-            return Misc.TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
-        }
-
         #endregion
 
         #region int

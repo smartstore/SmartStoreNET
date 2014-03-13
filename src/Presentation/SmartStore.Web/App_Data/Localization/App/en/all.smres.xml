@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Language Name="English" head="Initial">
+<Language Name="English" head="201403112331027_Initial">
 	<LocaleResource Name="AboutUs">
 		<Value>About us</Value>
 	</LocaleResource>

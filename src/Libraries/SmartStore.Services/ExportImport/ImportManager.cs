@@ -11,6 +11,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -536,7 +537,7 @@ namespace SmartStore.Services.ExportImport
 		private DateTime? OADateToUtcDate(object value)
 		{
 			double oaDate;
-			if (value.TryConvert<double>(out oaDate) && oaDate != 0)
+			if (CommonHelper.TryConvert<double>(value, out oaDate) && oaDate != 0)
 			{
 				return DateTime.FromOADate(Convert.ToDouble(oaDate));
 			}

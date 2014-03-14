@@ -457,10 +457,12 @@ namespace SmartStore.Web.Controllers
 
 					// init data provider
 					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<IEfDataProvider>(scope: scope);
+					
 					// Although obsolete we have no other chance than using this here.
 					// Delegating this to DbConfiguration is not possible during installation.
-#pragma warning disable 618
+					#pragma warning disable 618
 					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
+					#pragma warning restore 618
 
 					// resolve SeedData instance from primary language
 					var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);
@@ -503,7 +505,7 @@ namespace SmartStore.Web.Controllers
 					};
 
 					var seeder = new InstallDataSeeder(seedConfiguration);
-					Database.SetInitializer(new InstallDatabaseInitializer(seeder));
+					Database.SetInitializer(new InstallDatabaseInitializer() { DataSeeders = new[] { seeder } });
 
 					UpdateResult(x => x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase"));
 					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally

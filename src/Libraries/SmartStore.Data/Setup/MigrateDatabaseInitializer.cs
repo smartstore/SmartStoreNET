@@ -40,6 +40,12 @@ namespace SmartStore.Data.Setup
 
 		#region Properties
 
+		public IEnumerable<IDataSeeder<TContext>> DataSeeders
+		{
+			get;
+			set;
+		}
+
 		public IEnumerable<string> TablesToCheck
 		{
 			get;
@@ -89,12 +95,32 @@ namespace SmartStore.Data.Setup
 			}
 
 			// run all pending migrations
-			migrator.RunPendingMigrations(context);
+			var appliedCount = migrator.RunPendingMigrations(context);
+
+			if (appliedCount > 0)
+			{
+				Seed(context);
+			}
+
+			// not needed anymore
+			this.DataSeeders = null;
 		}
 
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Seeds the specified context.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		protected virtual void Seed(TContext context)
+		{
+			if (this.DataSeeders == null)
+				return;
+
+			this.DataSeeders.Each((x) => x.Seed(context));
+		}
 
 		protected virtual TConfig CreateConfiguration()
 		{
@@ -125,6 +151,7 @@ namespace SmartStore.Data.Setup
 		}
 
 		#endregion
+
 
 	}
 

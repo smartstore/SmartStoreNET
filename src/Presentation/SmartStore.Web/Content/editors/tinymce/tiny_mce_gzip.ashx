@@ -209,7 +209,7 @@ public class Handler : IHttpHandler {
 			sr.Close();
 
 			return content;
-		} catch (Exception ex) {
+		} catch {
 			// Ignore any errors
 		}
 

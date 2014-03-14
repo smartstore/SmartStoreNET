@@ -30,11 +30,14 @@ namespace SmartStore.Data.Setup
 		/// <summary>
 		/// Migrates the database to the latest version
 		/// </summary>
-		public void RunPendingMigrations(TContext context)
+		/// <returns>The number of applied migrations</returns>
+		public int RunPendingMigrations(TContext context)
 		{
 			var coreSeeders = new List<IDataSeeder<SmartObjectContext>>();
 			var externalSeeders = new List<IDataSeeder<TContext>>();
 			var isCoreMigration = context is SmartObjectContext;
+
+			int result = 0;
 
 			// Apply migrations
 			foreach (var migrationId in GetPendingMigrations())
@@ -64,6 +67,7 @@ namespace SmartStore.Data.Setup
 				{
 					// Call the actual update to execute this migration
 					base.Update(migrationId);
+					result++;
 				}
 				catch (AutomaticMigrationsDisabledException)
 				{
@@ -100,6 +104,8 @@ namespace SmartStore.Data.Setup
 			{
 				seeder.Seed(context);
 			}
+
+			return result;
 		}
 
 	}

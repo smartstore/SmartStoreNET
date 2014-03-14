@@ -199,14 +199,20 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
         public ILifetimeScope Scope()
         {
-            try
-            {
-				return AutofacDependencyResolver.Current.RequestLifetimeScope ?? Container;
-            }
-            catch
-            {
-                return Container;
-            }
+			ILifetimeScope scope = null;
+			try
+			{
+				scope = AutofacDependencyResolver.Current.RequestLifetimeScope;
+			}
+			catch { }
+
+			if (scope == null)
+			{
+				// really hackisch. But strange things are going on ?? :-)
+				scope = _container.BeginLifetimeScope("AutofacWebRequest");
+			}
+
+			return scope ?? _container;
         }
 
     }

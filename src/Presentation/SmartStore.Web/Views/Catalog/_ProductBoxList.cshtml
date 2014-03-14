@@ -81,7 +81,7 @@
 
                     @if (Model.ShowDeliveryTimes)
                     {
-                        if (Model.DeliveryTime != null && Model.IsShipEnabled)
+                        if (Model.DeliveryTimeName.HasValue() && Model.IsShipEnabled)
                         {
                             <tr class="delivery-time">
                                 <td class="attr-label">
@@ -92,7 +92,7 @@
                                 @if(Model.DisplayDeliveryTimeAccordingToStock)
                                 {
                                     <td>
-                                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTime.ColorHexValue" title="@Model.DeliveryTime.Name"></span>
+                                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
                                     </td>
                                 }
                                 else {

@@ -23,26 +23,16 @@ namespace SmartStore.Data.Setup
 	/// </summary>
 	public class InstallDatabaseInitializer : MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
 	{
-		#region Fields
-
-		private readonly IDataSeeder<SmartObjectContext> _seeder;
-
-		#endregion
-
 		#region Ctor
 
-		public InstallDatabaseInitializer(IDataSeeder<SmartObjectContext> seeder)
+		public InstallDatabaseInitializer()
 			: base()
 		{
-			Guard.ArgumentNotNull(() => seeder);
-			_seeder = seeder;
 		}
 
-		public InstallDatabaseInitializer(IDataSeeder<SmartObjectContext> seeder, string connectionString)
+		public InstallDatabaseInitializer(string connectionString)
 			: base(connectionString)
 		{
-			Guard.ArgumentNotNull(() => seeder);
-			_seeder = seeder;
 		}
 
 		#endregion
@@ -66,19 +56,6 @@ namespace SmartStore.Data.Setup
 
 			// seed install data
 			this.Seed(context);
-		}
-
-		#endregion
-
-		#region Methods
-
-		/// <summary>
-		/// Seeds the specified context.
-		/// </summary>
-		/// <param name="context">The context.</param>
-		protected virtual void Seed(SmartObjectContext context)
-		{
-			_seeder.Seed(context);
 		}
 
 		#endregion

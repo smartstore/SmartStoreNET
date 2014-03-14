@@ -361,10 +361,6 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll">
-      <Link>AutoMapper.Net4.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\images\ajax-progress-2.gif" />
     <Content Include="Content\images\ajax_loader_small.gif" />
     <Content Include="Content\images\ap-catalog-white.png" />

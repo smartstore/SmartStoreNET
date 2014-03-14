@@ -212,16 +212,6 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.bg-BG.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.bg-BG.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.da-DK.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.da-DK.resx</DependentUpon>
-    </Compile>
     <Compile Include="App_GlobalResources\EditorLocalization.de-DE.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -237,56 +227,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditorLocalization.en-US.resx</DependentUpon>
     </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.fr-FR.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.fr-FR.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.nl-NL.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.nl-NL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.pl-PL.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.pl-PL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.pt-BR.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.pt-BR.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.pt-PT.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.pt-PT.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.ru-RU.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.ru-RU.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.uk-UA.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.uk-UA.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.zh-CN.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.zh-CN.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.bg-BG.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.bg-BG.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.da-DK.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.da-DK.resx</DependentUpon>
-    </Compile>
     <Compile Include="App_GlobalResources\GridLocalization.de-DE.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -301,51 +241,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GridLocalization.en-US.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.es-ES.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.es-ES.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.fr-FR.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.fr-FR.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.nl-NL.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.nl-NL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.pl-PL.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.pl-PL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.pt-BR.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.pt-BR.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.pt-PT.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.pt-PT.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.ru-RU.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.ru-RU.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.uk-UA.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.uk-UA.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.zh-CN.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.zh-CN.resx</DependentUpon>
     </Compile>
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
@@ -1753,7 +1648,6 @@
     <Content Include="Content\fonts\Fontastic.ttf" />
     <Content Include="Content\fonts\Fontastic.woff" />
     <None Include="Content\fonts\raw\IcoMoon Session.json" />
-    <None Include="Properties\PublishProfiles\fghrtzht.pubxml" />
     <Content Include="Content\jquery.pnotify.default.css" />
     <Content Include="Content\jquery.pnotify.default.icons.css" />
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />
@@ -2087,6 +1981,49 @@
     <Content Include="Themes\Mobile\Content\styles.css" />
     <Content Include="Themes\Mobile\preview.png" />
     <Content Include="Themes\print.css" />
+    <Content Include="Views\Catalog\BackInStockSubscribePopup.Mobile.cshtml" />
+    <Content Include="Views\Catalog\CategoryNavigation.Mobile.cshtml" />
+    <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.Mobile.cshtml" />
+    <Content Include="Views\Catalog\CompareProducts.Mobile.cshtml" />
+    <Content Include="Views\Catalog\CompareProductsButton.Mobile.cshtml" />
+    <Content Include="Views\Catalog\HomepageProducts.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ManufacturerAll.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ManufacturerNavigation.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductAskQuestionButton.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductEmailAFriend.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductReviewOverview.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductReviews.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductsAlsoPurchased.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductsByTag.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductTagsAll.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductTemplate.Grouped.Mobile.cshtml" />
+    <Content Include="Views\Catalog\ProductTemplate.Simple.Mobile.cshtml" />
+    <Content Include="Views\Catalog\RecentlyAddedProducts.Mobile.cshtml" />
+    <Content Include="Views\Catalog\RecentlyViewedProducts.Mobile.cshtml" />
+    <Content Include="Views\Catalog\RelatedProducts.Mobile.cshtml" />
+    <Content Include="Views\Catalog\Search.Mobile.cshtml" />
+    <Content Include="Views\Catalog\SearchBox.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_AddToCart.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_BackInStockSubscription.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_GiftCardInfo.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_ProductAttributes.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_ProductBox.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_ProductDetailsPictures.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_ProductPrice.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_ProductReviewHelpfulness.Mobile.cshtml" />
+    <Content Include="Views\Catalog\_SKU_Man_Stock.cshtml" />
+    <Content Include="Views\Shared\BsImageDialog.cshtml" />
+    <Content Include="Views\Shared\ConfigureTheme.cshtml" />
+    <Content Include="Views\Shared\Header.Mobile.cshtml" />
+    <Content Include="Views\Shared\_Checkout.cshtml" />
+    <Content Include="Views\Shared\_CreateOrUpdateAddress.cshtml" />
+    <Content Include="Views\Shared\_CreateOrUpdateAddress.Mobile.cshtml" />
+    <Content Include="Views\Shared\_Notifications.Mobile.cshtml" />
+    <Content Include="Views\Shared\_Print.cshtml" />
+    <Content Include="Views\Shared\_Root.Head.Mobile.cshtml" />
+    <Content Include="Views\Shared\_Root.Mobile.cshtml" />
+    <Content Include="Views\Shared\_RootPopup.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -2097,7 +2034,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Shared\Header.cshtml" />
-    <Content Include="Views\Shared\_RootPopup.cshtml" />
     <Content Include="Views\Customer\_ExternalAuthentication.AssociateMessage.cshtml" />
     <Content Include="Views\ExternalAuthentication\ExternalMethods.cshtml" />
     <Content Include="Views\Customer\_ExternalAuthentication.Errors.cshtml" />
@@ -2115,7 +2051,6 @@
     <Content Include="Views\Checkout\OpcPaymentMethods.cshtml" />
     <Content Include="Views\Checkout\OpcPaymentInfo.cshtml" />
     <Content Include="Views\Checkout\OpcConfirmOrder.cshtml" />
-    <Content Include="Views\Shared\_Print.cshtml" />
     <Content Include="Views\Shared\LanguageAttributes.cshtml" />
     <Content Include="Views\Customer\_CheckUsernameAvailability.cshtml" />
     <Content Include="Views\Boards\ActiveDiscussionsSmall.cshtml" />
@@ -2123,7 +2058,6 @@
     <Content Include="Views\Catalog\BackInStockSubscribePopup.cshtml" />
     <Content Include="Views\Customer\BackInStockSubscriptions.cshtml" />
     <Content Include="App_Data\Pdf\FreeSerif.ttf" />
-    <Content Include="Views\Shared\_Root.Mobile.cshtml" />
     <Content Include="Views\Home\Index.Mobile.cshtml" />
     <Content Include="Themes\Mobile\theme.config">
       <SubType>Designer</SubType>
@@ -2131,27 +2065,9 @@
     <Content Include="Themes\Mobile\Views\Shared\Head.Mobile.cshtml" />
     <Content Include="Themes\Mobile\Views\Web.config" />
     <Content Include="Views\Common\StoreThemeSelector.cshtml" />
-    <Content Include="Views\Catalog\CategoryNavigation.Mobile.cshtml" />
-    <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_ProductBox.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductTemplate.Grouped.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductTemplate.Simple.Mobile.cshtml" />
     <Content Include="Views\Catalog\ProductEmailAFriendButton.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductReviewOverview.Mobile.cshtml" />
-    <Content Include="Views\Catalog\SearchBox.Mobile.cshtml" />
-    <Content Include="Views\Catalog\Search.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ManufacturerNavigation.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductsByTag.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_ProductDetailsPictures.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_ProductAttributes.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_GiftCardInfo.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_ProductPrice.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_AddToCart.Mobile.cshtml" />
     <Content Include="Views\ShoppingCart\Cart.Mobile.cshtml" />
     <Content Include="Views\ShoppingCart\Wishlist.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductReviews.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductEmailAFriend.Mobile.cshtml" />
     <Content Include="Views\Common\HeaderLinks.Mobile.cshtml" />
     <Content Include="Views\Common\InfoBlock.Mobile.cshtml" />
     <Content Include="Views\Common\ContactUs.Mobile.cshtml" />
@@ -2170,13 +2086,9 @@
     <Content Include="Views\Customer\Addresses.Mobile.cshtml" />
     <Content Include="Views\Customer\AddressAdd.Mobile.cshtml" />
     <Content Include="Views\Customer\AddressEdit.Mobile.cshtml" />
-    <Content Include="Views\Shared\_CreateOrUpdateAddress.Mobile.cshtml" />
     <Content Include="Views\Customer\ChangePassword.Mobile.cshtml" />
     <Content Include="Views\Customer\Avatar.Mobile.cshtml" />
     <Content Include="Views\Customer\UserAgreement.Mobile.cshtml" />
-    <Content Include="Views\Catalog\RecentlyViewedProducts.Mobile.cshtml" />
-    <Content Include="Views\Catalog\RecentlyAddedProducts.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ManufacturerAll.Mobile.cshtml" />
     <Content Include="Views\Customer\DownloadableProducts.Mobile.cshtml" />
     <Content Include="Views\Customer\RewardPoints.Mobile.cshtml" />
     <Content Include="Views\Customer\ReturnRequests.Mobile.cshtml" />
@@ -2217,8 +2129,6 @@
     <Content Include="Views\PrivateMessages\ViewPM.Mobile.cshtml" />
     <Content Include="Views\PrivateMessages\Inbox.Mobile.cshtml" />
     <Content Include="Views\PrivateMessages\SentItems.Mobile.cshtml" />
-    <Content Include="Views\Catalog\RelatedProducts.Mobile.cshtml" />
-    <Content Include="Views\Catalog\ProductsAlsoPurchased.Mobile.cshtml" />
     <Content Include="Views\Customer\MyAccount.Mobile.cshtml" />
     <Content Include="Views\Customer\BackInStockSubscriptions.Mobile.cshtml" />
     <Content Include="Views\Customer\ForumSubscriptions.Mobile.cshtml" />
@@ -2228,10 +2138,6 @@
     <Content Include="Views\Boards\_ForumPost.Mobile.cshtml" />
     <Content Include="Views\Boards\_CreateUpdateTopic.Mobile.cshtml" />
     <Content Include="Views\Boards\_CreateUpdatePost.Mobile.cshtml" />
-    <Content Include="Views\Catalog\CompareProductsButton.Mobile.cshtml" />
-    <Content Include="Views\Catalog\CompareProducts.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_BackInStockSubscription.Mobile.cshtml" />
-    <Content Include="Views\Catalog\BackInStockSubscribePopup.Mobile.cshtml" />
     <Content Include="Views\Common\ConfigButton.Mobile.cshtml" />
     <Content Include="Views\Common\Config.Mobile.cshtml" />
     <Content Include="Views\Common\LanguageSelector.Mobile.cshtml" />
@@ -2239,10 +2145,8 @@
     <Content Include="Views\Common\CurrencySelector.Mobile.cshtml" />
     <Content Include="Views\Common\Config.cshtml" />
     <Content Include="Views\Customer\MyAccount.cshtml" />
-    <Content Include="Views\Catalog\HomepageProducts.Mobile.cshtml" />
     <Content Include="Views\Shared\_Notifications.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
-    <Content Include="Views\Catalog\ProductTagsAll.Mobile.cshtml" />
     <Content Include="Views\ShoppingCart\_ButtonPaymentMethod.cshtml" />
     <Content Include="Views\ShoppingCart\_DiscountBox.cshtml" />
     <Content Include="Views\ShoppingCart\_DiscountBox.Mobile.cshtml" />
@@ -2266,7 +2170,6 @@
     <Content Include="Views\Common\StoreClosed.cshtml" />
     <Content Include="Views\Common\StoreClosed.Mobile.cshtml" />
     <Content Include="Views\Catalog\ProductDetailReviews.cshtml" />
-    <Content Include="Views\Shared\BsImageDialog.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\BlockInput.cshtml" />
     <Content Include="Views\Catalog\_ProductListOptions.cshtml" />
     <Content Include="Views\Common\ShippingInfo.cshtml" />
@@ -2275,13 +2178,11 @@
     <Content Include="Views\Common\PaymentInfo.Mobile.cshtml" />
     <Content Include="Views\Catalog\_ProductBoxList.cshtml" />
     <Content Include="Views\Catalog\_ProductBoxCompact.cshtml" />
-    <Content Include="Views\Shared\_Checkout.cshtml" />
     <Content Include="Views\Filter\Products.cshtml" />
     <Content Include="Views\Filter\ProductsMultiSelect.cshtml" />
     <Content Include="Views\Home\ContentSlider.cshtml" />
     <Content Include="Views\Checkout\OpcTerms.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
-    <Content Include="Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Views\Common\PageNotFound.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -2289,10 +2190,8 @@
     <Content Include="Views\Shared\ConditionalComments.cshtml" />
     <Content Include="Views\Catalog\ProductAskQuestion.cshtml" />
     <Content Include="Views\Catalog\ProductAskQuestionButton.cshtml" />
-    <Content Include="Views\Catalog\ProductAskQuestionButton.Mobile.cshtml" />
     <Content Include="Views\Topic\TopicWidget.cshtml" />
     <Content Include="Views\Shared\_ClientRes.cshtml" />
-    <Content Include="Views\Shared\Header.Mobile.cshtml" />
     <Content Include="Views\Catalog\_ProductBundleItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -2360,7 +2259,6 @@
     <Content Include="Views\Customer\Addresses.cshtml" />
     <Content Include="Views\Customer\AddressAdd.cshtml" />
     <Content Include="Views\Customer\AddressEdit.cshtml" />
-    <Content Include="Views\Shared\_CreateOrUpdateAddress.cshtml" />
     <Content Include="Views\Customer\RewardPoints.cshtml" />
     <Content Include="Views\Customer\ChangePassword.cshtml" />
     <Content Include="Views\Customer\Avatar.cshtml" />
@@ -2383,7 +2281,6 @@
     <Content Include="Views\Catalog\_ProductPrice.cshtml" />
     <Content Include="Views\Catalog\_AddToCart.cshtml" />
     <Content Include="Views\Catalog\_DownloadSample.cshtml" />
-    <Content Include="Views\Catalog\_SKU_Man_Stock.cshtml" />
     <Content Include="Views\Catalog\_ProductAttributes.cshtml" />
     <Content Include="Views\ShoppingCart\Cart.cshtml" />
     <Content Include="Views\Catalog\CrossSellProducts.cshtml" />
@@ -2481,11 +2378,8 @@
     <Content Include="Views\Customer\ForumSubscriptions.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.Mobile.cshtml" />
-    <Content Include="Views\Catalog\_ProductReviewHelpfulness.Mobile.cshtml" />
     <Content Include="Views\Common\JavaScriptDisabledWarning.cshtml" />
     <Content Include="Views\Shared\_Root.Head.cshtml" />
-    <Content Include="Views\Shared\_Root.Head.Mobile.cshtml" />
-    <Content Include="Views\Shared\_Notifications.Mobile.cshtml" />
     <Content Include="Views\Topic\TopicBlock.Mobile.cshtml" />
     <Content Include="Content\bootstrap\accordion.less" />
     <Content Include="Content\bootstrap\alerts.less" />
@@ -2538,63 +2432,9 @@
     <Content Include="Content\editors\tinymce\tiny_mce_gzip.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.zh-CN.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.zh-CN.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.uk-UA.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.uk-UA.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.ru-RU.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.ru-RU.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App_GlobalResources\GridLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.pt-PT.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.pt-PT.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.pt-BR.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.pt-BR.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.pl-PL.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.pl-PL.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.nl-NL.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.nl-NL.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.fr-FR.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.fr-FR.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.es-ES.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.es-ES.designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -2610,69 +2450,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.da-DK.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.da-DK.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.bg-BG.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.bg-BG.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.zh-CN.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.zh-CN.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.uk-UA.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.uk-UA.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.ru-RU.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.ru-RU.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App_GlobalResources\EditorLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>EditorLocalization.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.pt-PT.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.pt-PT.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.pt-BR.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.pt-BR.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.pl-PL.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.pl-PL.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.nl-NL.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.nl-NL.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.fr-FR.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.fr-FR.designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -2685,18 +2465,6 @@
     <Content Include="App_GlobalResources\EditorLocalization.de-DE.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>EditorLocalization.de-DE.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.da-DK.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.da-DK.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.bg-BG.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.bg-BG.designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <PropertyGroup>
@@ -2728,10 +2496,35 @@
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <ProjectExtensions>
+    <!--VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:59776/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio-->
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:53678/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

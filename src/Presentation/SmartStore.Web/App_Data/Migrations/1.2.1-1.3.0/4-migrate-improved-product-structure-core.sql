@@ -1738,9 +1738,21 @@ ALTER TABLE [Product]
 ALTER COLUMN [HasSampleDownload] bit NOT NULL
 GO
 
-ALTER TABLE [Product]
-ALTER COLUMN [SampleDownloadId] int NOT NULL
+Update [Product] SET SampleDownloadId = null WHERE SampleDownloadId = 0
 GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('[Product]') and NAME='IX_SampleDownloadId')
+BEGIN
+	CREATE INDEX [IX_SampleDownloadId] ON [Product]([SampleDownloadId])
+END
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'FK_dbo.Product_dbo.Download_SampleDownloadId' AND type = 'F')
+BEGIN
+	ALTER TABLE [Product] WITH CHECK ADD CONSTRAINT [FK_dbo.Product_dbo.Download_SampleDownloadId] FOREIGN KEY ([SampleDownloadId]) REFERENCES [Download] ([Id])
+END
+GO
+--ALTER TABLE [Product]
+--ALTER COLUMN [SampleDownloadId] int NOT NULL
+--GO
 
 ALTER TABLE [Product]
 ALTER COLUMN [HasUserAgreement] bit NOT NULL

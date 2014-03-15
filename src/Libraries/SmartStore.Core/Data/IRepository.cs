@@ -81,6 +81,13 @@ namespace SmartStore.Core.Data
         /// <returns>A new query object to which the expansion was applied.</returns>
         IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path);
 
+		/// <summary>
+		/// Gets a value indicating whether the given entity was modified since it has been attached to the context
+		/// </summary>
+		/// <param name="entity">The entity to check</param>
+		/// <returns><c>true</c> if the entity was modified, <c>false</c> otherwise</returns>
+		bool IsModified(T entity);
+
         /// <summary>
         /// Gets a list of modified properties for the specified entity
         /// </summary>

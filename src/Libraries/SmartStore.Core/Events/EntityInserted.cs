@@ -5,7 +5,7 @@ namespace SmartStore.Core.Events
     /// A container for entities that have been inserted.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EntityInserted<T> where T : BaseEntity
+    public class EntityInserted<T> : ComparableObject<T> where T : BaseEntity
     {
 
         public EntityInserted(T entity)
@@ -13,6 +13,7 @@ namespace SmartStore.Core.Events
             this.Entity = entity;
         }
 
+		[ObjectSignature]
         public T Entity { get; private set; }
     }
 }

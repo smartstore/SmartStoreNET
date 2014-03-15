@@ -319,41 +319,52 @@ namespace SmartStore.Core
         /// </remarks>
         public virtual bool IsStaticResource(HttpRequest request)
         {
-            if (request == null)
-                throw new ArgumentNullException("request");
-
-            string path = request.Path;
-            string extension = VirtualPathUtility.GetExtension(path);
-
-            if (extension == null) return false;
-
-            switch (extension.ToLower())
-            {
-                case ".axd":
-                case ".ashx":
-                case ".bmp":
-                case ".css":
-                case ".gif":
-                case ".htm":
-                case ".html":
-                case ".ico":
-                case ".jpeg":
-                case ".jpg":
-                case ".js":
-                case ".png":
-                case ".rar":
-                case ".zip":
-                case ".woff":
-                case ".eot":
-                case ".svg":
-                case ".otf":
-                case ".ttf":
-                case ".less":
-                    return true;
-            }
-
-            return false;
+			return IsStaticResourceRequested(new HttpRequestWrapper(request));
         }
+
+		public static bool IsStaticResourceRequested(HttpRequest request)
+		{
+			return IsStaticResourceRequested(new HttpRequestWrapper(request));
+		}
+
+		public static bool IsStaticResourceRequested(HttpRequestBase request)
+		{
+			if (request == null)
+				throw new ArgumentNullException("request");
+
+			string path = request.Path;
+			string extension = VirtualPathUtility.GetExtension(path);
+
+			if (extension == null)
+				return false;
+
+			switch (extension.ToLower())
+			{
+				case ".axd":
+				case ".ashx":
+				case ".bmp":
+				case ".css":
+				case ".gif":
+				case ".htm":
+				case ".html":
+				case ".ico":
+				case ".jpeg":
+				case ".jpg":
+				case ".js":
+				case ".png":
+				case ".rar":
+				case ".zip":
+				case ".woff":
+				case ".eot":
+				case ".svg":
+				case ".otf":
+				case ".ttf":
+				case ".less":
+					return true;
+			}
+
+			return false;
+		}
         
         /// <summary>
         /// Maps a virtual path to a physical disk path.

@@ -20,7 +20,8 @@ namespace SmartStore.Web.Infrastructure.Cache
     /// <summary>
 	/// Model cache event consumer (used for caching of presentation layer models)
     /// </summary>
-    public partial class ModelCacheEventConsumer: 
+    [AsyncConsumer]
+	public partial class ModelCacheEventConsumer: 
         //languages
         IConsumer<EntityInserted<Language>>,
         IConsumer<EntityUpdated<Language>>,
@@ -577,7 +578,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         }
         public void HandleEvent(EntityUpdated<Product> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);

@@ -225,10 +225,8 @@
     <Compile Include="Domain\Shipping\Shipment.cs" />
     <Compile Include="Domain\Tasks\ScheduleTask.cs" />
     <Compile Include="Domain\Messages\Events.cs" />
-    <Compile Include="Events\AppBeginRequestEvent.cs" />
     <Compile Include="Events\AppRegisterGlobalFiltersEvent.cs" />
     <Compile Include="Events\AppInitScheduledTasksEvent.cs" />
-    <Compile Include="Events\AppEndRequestEvent.cs" />
     <Compile Include="Data\DataProviderFactory.cs" />
     <Compile Include="Data\IDataProvider.cs" />
     <Compile Include="Data\DataSettings.cs" />

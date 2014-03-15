@@ -35,6 +35,7 @@ using SmartStore.Core.Data;
 using System.Threading;
 using Autofac;
 using SmartStore.Core.Async;
+using SmartStore.Services.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -575,7 +576,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     product.ProductTags.Add(productTag);
                    _productService.UpdateProduct(product);
-                }
+                }	
             }
         }
         #endregion
@@ -899,9 +900,9 @@ namespace SmartStore.Admin.Controllers
                     _productService.AdjustInventory(product, true, 0, string.Empty);
                 }
 
-                //activity log
+                // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
-                
+
                 SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id, selectedTab = selectedTab }) : RedirectToAction("List");
             }

@@ -302,10 +302,16 @@ namespace SmartStore.Services.Catalog
         /// Updates the product
         /// </summary>
         /// <param name="product">Product</param>
-        public virtual void UpdateProduct(Product product)
+		public virtual void UpdateProduct(Product product, bool publishEvent = true)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
+
+			bool modified = false;
+			if (publishEvent)
+			{
+				modified = _productRepository.IsModified(product);
+			}
 
             //update
             _productRepository.Update(product);
@@ -314,7 +320,10 @@ namespace SmartStore.Services.Catalog
 			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(product);
+			if (publishEvent && modified)
+			{
+				_eventPublisher.EntityUpdated(product);
+			}
         }
 
 

@@ -18,8 +18,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 		{
 			Guard.ArgumentNotNull(() => context);
 
-			//context.EndRequest += OnEndRequest;
-			// IMPORTANT: call this manually in Global.asax
+			context.EndRequest += OnEndRequest;
 		}
 
 		public static void OnEndRequest(object sender, EventArgs e)

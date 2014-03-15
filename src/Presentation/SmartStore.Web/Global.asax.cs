@@ -185,21 +185,10 @@ namespace SmartStore.Web
         {
 			var installed = DataSettings.DatabaseIsInstalled();
 
-			if (installed)
-			{
-				// must be at head, because the BizUrlMapper must also handle static html files
-				EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppBeginRequestEvent
-				{
-					Context = HttpContext.Current
-				});
-			}
-
 			// ignore static resources
-			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-			if (webHelper.IsStaticResource(this.Request))
+			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 			
-
 			if (installed && ProfilingEnabled)
 			{
 				MiniProfiler.Start();
@@ -208,11 +197,12 @@ namespace SmartStore.Web
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
+			// Don't resolve dependencies from now on.
+			
 			var installed = DataSettings.DatabaseIsInstalled();
 			
 			// ignore static resources
-			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-			if (webHelper.IsStaticResource(this.Request))
+			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 
 			if (installed)
@@ -222,21 +212,7 @@ namespace SmartStore.Web
 					// stop as early as you can
 					MiniProfiler.Stop();
 				}
-
-				EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppEndRequestEvent
-				{
-					Context = HttpContext.Current
-				});
 			}
-
-			//// dispose registered resources:
-			//// AutofacRequestLifetimeHttpModule disposes resources before this Application_EndRequest method is called
-			//// and as a result the code above would throw an exception
-			//try
-			//{
-			//	AutofacRequestLifetimeHttpModule.OnEndRequest(sender, e);
-			//}
-			//catch { }
         }
 		
         protected void Application_AuthenticateRequest(object sender, EventArgs e)

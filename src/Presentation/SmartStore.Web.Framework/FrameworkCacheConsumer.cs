@@ -16,6 +16,7 @@ using SmartStore.Services.Events;
 namespace SmartStore.Web.Framework
 {
 
+	[AsyncConsumer]
     public class FrameworkCacheConsumer :
         IConsumer<EntityInserted<ThemeVariable>>,
         IConsumer<EntityUpdated<ThemeVariable>>,

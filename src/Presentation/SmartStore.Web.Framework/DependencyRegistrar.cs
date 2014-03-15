@@ -386,20 +386,36 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 			builder.RegisterType<SubscriptionService>().As<ISubscriptionService>().SingleInstance();
-			
+			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
+			builder.RegisterGeneric(typeof(DefaultConsumerFactory<>)).As(typeof(IConsumerFactory<>)).InstancePerDependency();
+
 			// Register event consumers
-			var consumers = _typeFinder.FindClassesOfType(typeof(IConsumer<>));
-			foreach (var consumer in consumers)
+			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer<>));
+			foreach (var consumerType in consumerTypes)
 			{
-				builder.RegisterType(consumer).As(consumer.FindInterfaces((type, criteria) =>
-				{
-					var isMatch = type.IsGenericType && ((Type)criteria).IsAssignableFrom(type.GetGenericTypeDefinition());
-					return isMatch;
-				}, typeof(IConsumer<>)))
-					.InstancePerHttpRequest();
+				Type[] implementedInterfaces = consumerType.FindInterfaces(IsConsumerInterface, typeof(IConsumer<>));
+
+				var registration = builder.RegisterType(consumerType).As(implementedInterfaces);
+
+				var isActive = PluginManager.IsActivePluginAssembly(consumerType.Assembly);
+				var shouldExecuteAsync = consumerType.GetAttribute<AsyncConsumerAttribute>(false) != null;
+
+				registration.WithMetadata<EventConsumerMetadata>(m => {
+					m.For(em => em.IsActive, shouldExecuteAsync);
+					m.For(em => em.ExecuteAsync, isActive);
+				});
+
+				if (!shouldExecuteAsync)
+					registration.InstancePerHttpRequest();
+
 			}
+		}
+
+		private static bool IsConsumerInterface(Type type, object criteria)
+		{
+			var isMatch = type.IsGenericType && ((Type)criteria).IsAssignableFrom(type.GetGenericTypeDefinition());
+			return isMatch;
 		}
 	}
 

@@ -169,6 +169,21 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
+		public bool IsModified(T entity)
+		{
+			Guard.ArgumentNotNull(() => entity);
+			var ctx = InternalContext;
+			var entry = ctx.Entry(entity);
+
+			if (entry != null)
+			{
+				var modified = entry.State == System.Data.Entity.EntityState.Modified;
+				return modified;
+			}
+
+			return false;
+		}
+
         public IDictionary<string, object> GetModifiedProperties(T entity)
         {
             var props = new Dictionary<string, object>();

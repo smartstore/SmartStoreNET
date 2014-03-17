@@ -12,80 +12,108 @@ namespace SmartStore.Services
 {
 	public class CommonServices : ICommonServices
 	{
+		private readonly Lazy<ICacheManager> _cache;
+		private readonly Lazy<IDbContext> _dbContext;
+		private readonly Lazy<IStoreContext> _storeContext;
+		private readonly Lazy<IWebHelper> _webHelper;
+		private readonly Lazy<IWorkContext> _workContext;
+		private readonly Lazy<IEventPublisher> _eventPublisher;
+		private readonly Lazy<ILocalizationService> _localization;
+		private readonly Lazy<ILogger> _logger;
+		private readonly Lazy<ICustomerActivityService> _customerActivity;
+		
 		public CommonServices(
-			ICacheManager cache,
-			IDbContext dbContext,
-			IStoreContext storeContext,
-			IWebHelper webHelper,
-			IWorkContext workContext,
-			IEventPublisher eventPublisher,
-			ILocalizationService localization,
-			ILogger logger,
-			ICustomerActivityService customerActivity)
+			Lazy<ICacheManager> cache,
+			Lazy<IDbContext> dbContext,
+			Lazy<IStoreContext> storeContext,
+			Lazy<IWebHelper> webHelper,
+			Lazy<IWorkContext> workContext,
+			Lazy<IEventPublisher> eventPublisher,
+			Lazy<ILocalizationService> localization,
+			Lazy<ILogger> logger,
+			Lazy<ICustomerActivityService> customerActivity)
 		{
-			this.Cache = cache;
-			this.DbContext = dbContext;
-			this.StoreContext = storeContext;
-			this.WebHelper = webHelper;
-			this.WorkContext = workContext;
-			this.EventPublisher = eventPublisher;
-			this.Localization = localization;
-			this.Logger = logger;
-			this.CustomerActivity = customerActivity;
+			this._cache = cache;
+			this._dbContext = dbContext;
+			this._storeContext = storeContext;
+			this._webHelper = webHelper;
+			this._workContext = workContext;
+			this._eventPublisher = eventPublisher;
+			this._localization = localization;
+			this._logger = logger;
+			this._customerActivity = customerActivity;
 		}
 		
 		public ICacheManager Cache
 		{
-			get;
-			private set;
+			get
+			{
+				return _cache.Value;
+			}
 		}
 
 		public IDbContext DbContext
 		{
-			get;
-			private set;
+			get
+			{
+				return _dbContext.Value;
+			}
 		}
 
 		public IStoreContext StoreContext
 		{
-			get;
-			private set;
+			get
+			{
+				return _storeContext.Value;
+			}
 		}
 
 		public IWebHelper WebHelper
 		{
-			get;
-			private set;
+			get
+			{
+				return _webHelper.Value;
+			}
 		}
 
 		public IWorkContext WorkContext
 		{
-			get;
-			private set;
+			get
+			{
+				return _workContext.Value;
+			}
 		}
 
 		public IEventPublisher EventPublisher
 		{
-			get;
-			private set;
+			get
+			{
+				return _eventPublisher.Value;
+			}
 		}
 
 		public ILocalizationService Localization
 		{
-			get;
-			private set;
+			get
+			{
+				return _localization.Value;
+			}
 		}
 
 		public ILogger Logger
 		{
-			get;
-			private set;
+			get
+			{
+				return _logger.Value;
+			}
 		}
 
 		public ICustomerActivityService CustomerActivity
 		{
-			get;
-			private set;
+			get
+			{
+				return _customerActivity.Value;
+			}
 		}
 	}
 }

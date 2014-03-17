@@ -372,6 +372,13 @@ namespace SmartStore.Web.Framework
 				.Named<ICacheManager>("request")
 				.WithParameter(ResolvedParameter.ForNamed<ICache>("request"))
 				.InstancePerHttpRequest();
+
+			// Register resolving delegate
+			builder.Register<Func<string, ICacheManager>>(c =>
+			{
+				var cc = c.Resolve<IComponentContext>();
+				return named => cc.ResolveNamed<ICacheManager>(named);
+			});
 		}
 	}
 

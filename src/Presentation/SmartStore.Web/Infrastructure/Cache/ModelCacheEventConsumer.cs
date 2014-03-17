@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Caching;
+﻿using System;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Configuration;
@@ -20,7 +21,6 @@ namespace SmartStore.Web.Infrastructure.Cache
     /// <summary>
 	/// Model cache event consumer (used for caching of presentation layer models)
     /// </summary>
-    [AsyncConsumer]
 	public partial class ModelCacheEventConsumer: 
         //languages
         IConsumer<EntityInserted<Language>>,
@@ -425,10 +425,9 @@ namespace SmartStore.Web.Infrastructure.Cache
 
         private readonly ICacheManager _cacheManager;
         
-        public ModelCacheEventConsumer()
+        public ModelCacheEventConsumer(Func<string, ICacheManager> cache)
         {
-            //TODO inject static cache manager using constructor
-			this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("static");
+			this._cacheManager = cache("static");
         }
 
         //languages

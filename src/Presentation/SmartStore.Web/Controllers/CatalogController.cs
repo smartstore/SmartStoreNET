@@ -322,7 +322,7 @@ namespace SmartStore.Web.Controllers
 				var model = new ProductOverviewModel()
 				{
 					Id = product.Id,
-					Name = product.GetLocalized(x => x.Name),
+					Name = product.GetLocalized(x => x.Name).EmptyNull(),
 					ShortDescription = product.GetLocalized(x => x.ShortDescription),
 					FullDescription = product.GetLocalized(x => x.FullDescription),
 					SeName = product.GetSeName()

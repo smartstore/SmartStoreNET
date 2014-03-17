@@ -55,6 +55,9 @@ namespace SmartStore.Services.Events
 					consumers = newFactory.GetConsumers(true);
 					foreach (var consumer in consumers)
 					{
+						if (!PluginManager.IsActivePluginAssembly(consumer.GetType().Assembly))
+							continue;
+						
 						consumer.HandleEvent(eventMessage);
 					}
 				}).ContinueWith(t =>
@@ -83,6 +86,9 @@ namespace SmartStore.Services.Events
 
 		private void PublishEvent<T>(IConsumer<T> x, T eventMessage)
 		{
+			if (!PluginManager.IsActivePluginAssembly(x.GetType().Assembly))
+				return;
+			
 			try
 			{
 				x.HandleEvent(eventMessage);
@@ -115,30 +121,5 @@ namespace SmartStore.Services.Events
 			}
 		}
 
-        private static void PublishToConsumer<T>(IConsumer<T> x, T eventMessage)
-        {
-            if (!PluginManager.IsActivePluginAssembly(x.GetType().Assembly)) 
-            {
-                return;
-            }
-
-            try
-            {
-                x.HandleEvent(eventMessage);
-            }
-            catch (Exception exc)
-            {
-                var logger = EngineContext.Current.Resolve<ILogger>();
-                //we put in to nested try-catch to prevent possible cyclic (if some error occurs)
-                try
-                {
-                    logger.Error(exc.Message, exc);
-                }
-                catch (Exception)
-                {
-                    //do nothing
-                }
-            }
-        }
     }
 }

@@ -9,12 +9,15 @@ using Fasterflect;
 using System.Xml;
 using SmartStore.Core.Data;
 using SmartStore.Utilities;
+using System.Collections.Concurrent;
 
 namespace SmartStore.Services.Localization
 {
     public static class LocalizationExtentions
     {
-        /// <summary>
+		private static readonly ConcurrentDictionary<LambdaExpression, object> _compiledExpressions = new ConcurrentDictionary<LambdaExpression, object>();
+		
+		/// <summary>
         /// Get localized property of an entity
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
@@ -61,7 +64,7 @@ namespace SmartStore.Services.Localization
             bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true)
             where T : BaseEntity, ILocalizedEntity
         {
-            if (entity == null)
+			if (entity == null)
                 throw new ArgumentNullException("entity");
 
             var member = keySelector.Body as MemberExpression;
@@ -111,11 +114,9 @@ namespace SmartStore.Services.Localization
             //set default value if required
             if (String.IsNullOrEmpty(resultStr) && returnDefaultValue)
             {
-                // codehint: sm-edit
+				var localizer = (Func<T, TPropType>)_compiledExpressions.GetOrAdd(keySelector, exp => exp.Compile());
                 //var localizer = keySelector.Compile();
-                //result = localizer(entity);
-                result = ((TPropType)propInfo.Get(entity));
-                
+                result = localizer(entity);
             }
             
             return result;

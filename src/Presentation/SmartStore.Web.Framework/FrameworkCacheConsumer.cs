@@ -16,7 +16,6 @@ using SmartStore.Services.Events;
 namespace SmartStore.Web.Framework
 {
 
-	[AsyncConsumer]
     public class FrameworkCacheConsumer :
         IConsumer<EntityInserted<ThemeVariable>>,
         IConsumer<EntityUpdated<ThemeVariable>>,
@@ -54,29 +53,27 @@ namespace SmartStore.Web.Framework
         public const string STORE_LANGUAGE_MAP_KEY = "sm.fw.storelangmap";
 
         private readonly ICacheManager _cacheManager;
+		private readonly ICacheManager _aspCache;
 
-        public FrameworkCacheConsumer()
+		public FrameworkCacheConsumer(Func<string, ICacheManager> cache)
         {
-            // TODO inject static cache manager using constructor
-			this._cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("static");
+			this._cacheManager = cache("static");
+			this._aspCache = cache("aspnet");
         }
 
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
         {
-			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
-            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
         {
-			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
-            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
         {
-			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
-            cacheManager.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
 

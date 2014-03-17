@@ -133,8 +133,6 @@ namespace SmartStore.Admin.Controllers
 				}
             });
 
-            //var rootNode = PrepareAdminMenu();
-
             return PartialView(rootNode);
         }
 

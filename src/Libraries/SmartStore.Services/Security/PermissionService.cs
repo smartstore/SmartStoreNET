@@ -29,7 +29,7 @@ namespace SmartStore.Services.Security
 
         #region Fields
 
-        private readonly IRepository<PermissionRecord> _permissionPecordRepository;
+        private readonly IRepository<PermissionRecord> _permissionRecordRepository;
 		private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly ICustomerService _customerService;
         private readonly IWorkContext _workContext;
@@ -42,17 +42,17 @@ namespace SmartStore.Services.Security
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="permissionPecordRepository">Permission repository</param>
+        /// <param name="permissionRecordRepository">Permission repository</param>
         /// <param name="customerService">Customer service</param>
         /// <param name="workContext">Work context</param>
         /// <param name="cacheManager">Cache manager</param>
         public PermissionService(
-			IRepository<PermissionRecord> permissionPecordRepository,
+			IRepository<PermissionRecord> permissionRecordRepository,
 			IRepository<CustomerRole> customerRoleRepository,
             ICustomerService customerService,
             IWorkContext workContext, ICacheManager cacheManager)
         {
-            this._permissionPecordRepository = permissionPecordRepository;
+            this._permissionRecordRepository = permissionRecordRepository;
 			this._customerRoleRepository = customerRoleRepository;
             this._customerService = customerService;
             this._workContext = workContext;
@@ -98,7 +98,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Delete(permission);
+            _permissionRecordRepository.Delete(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -113,7 +113,7 @@ namespace SmartStore.Services.Security
             if (permissionId == 0)
                 return null;
 
-            return _permissionPecordRepository.GetById(permissionId);
+            return _permissionRecordRepository.GetById(permissionId);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SmartStore.Services.Security
             if (String.IsNullOrWhiteSpace(systemName))
                 return null;
 
-            var query = from pr in _permissionPecordRepository.Table
+            var query = from pr in _permissionRecordRepository.Table
                         where  pr.SystemName == systemName
                         orderby pr.Id
                         select pr;
@@ -141,7 +141,7 @@ namespace SmartStore.Services.Security
         /// <returns>Permissions</returns>
         public virtual IList<PermissionRecord> GetAllPermissionRecords()
         {
-            var query = from pr in _permissionPecordRepository.Table
+            var query = from pr in _permissionRecordRepository.Table
                         orderby pr.Name
                         select pr;
             var permissions = query.ToList();
@@ -157,7 +157,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Insert(permission);
+            _permissionRecordRepository.Insert(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -171,7 +171,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Update(permission);
+            _permissionRecordRepository.Update(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -182,11 +182,11 @@ namespace SmartStore.Services.Security
         /// <param name="permissionProvider">Permission provider</param>
         public virtual void InstallPermissions(IPermissionProvider permissionProvider)
         {
-			using (var scope = new DbContextScope(_permissionPecordRepository.Context, autoDetectChanges: false))
+			using (var scope = new DbContextScope(_permissionRecordRepository.Context, autoDetectChanges: false))
 			{
 				try
 				{
-					_permissionPecordRepository.AutoCommitEnabled = false;
+					_permissionRecordRepository.AutoCommitEnabled = false;
 					_customerRoleRepository.AutoCommitEnabled = false;
 
 					//install new permissions
@@ -243,7 +243,7 @@ namespace SmartStore.Services.Security
 				}
 				finally
 				{
-					_permissionPecordRepository.AutoCommitEnabled = true;
+					_permissionRecordRepository.AutoCommitEnabled = true;
 					_customerRoleRepository.AutoCommitEnabled = true;
 				}
 			}

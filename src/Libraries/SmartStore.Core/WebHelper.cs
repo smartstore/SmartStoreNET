@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Hosting;
 using SmartStore.Core.Data;
@@ -19,6 +20,7 @@ namespace SmartStore.Core
     public partial class WebHelper : IWebHelper
     {
 		private static AspNetHostingPermissionLevel? s_trustLevel = null;
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled);
 		
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -307,7 +309,7 @@ namespace SmartStore.Core
         /// <param name="request">HTTP Request</param>
         /// <returns>True if the request targets a static resource file.</returns>
         /// <remarks>
-        /// These are the file extensions considered to be static resources:
+        /// These are - among others - the file extensions considered to be static resources:
         /// .css
         ///	.gif
         /// .png 
@@ -329,41 +331,16 @@ namespace SmartStore.Core
 
 		public static bool IsStaticResourceRequested(HttpRequestBase request)
 		{
-			if (request == null)
-				throw new ArgumentNullException("request");
-
-			string path = request.Path;
-			string extension = VirtualPathUtility.GetExtension(path);
-
-			if (extension == null)
-				return false;
-
-			switch (extension.ToLower())
+			Guard.ArgumentNotNull(() => request);
+			
+			var handler = request.RequestContext.HttpContext.Handler;;
+			if (handler == null)
 			{
-				case ".axd":
-				case ".ashx":
-				case ".bmp":
-				case ".css":
-				case ".gif":
-				case ".htm":
-				case ".html":
-				case ".ico":
-				case ".jpeg":
-				case ".jpg":
-				case ".js":
-				case ".png":
-				case ".rar":
-				case ".zip":
-				case ".woff":
-				case ".eot":
-				case ".svg":
-				case ".otf":
-				case ".ttf":
-				case ".less":
-					return true;
+				// No handler means: obviously static.
+				return true;
 			}
 
-			return false;
+			return s_staticExts.IsMatch(request.Path);
 		}
         
         /// <summary>

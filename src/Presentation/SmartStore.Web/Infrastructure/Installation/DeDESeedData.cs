@@ -2893,7 +2893,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
             //entities.Clear();
 
-            entities.WithKey(x => x.Description)
+            entities.WithKey(x => x.Alias)
                 .Alter("Color", x =>
                 {
                     x.Name = "Farbe";

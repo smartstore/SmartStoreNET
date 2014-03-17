@@ -5617,46 +5617,194 @@ namespace SmartStore.Data.Setup
 				new ProductAttribute
 				{
 					Name = "Color",
-					Description = "Color",
+					Alias = "Color",
 				},
 				new ProductAttribute
 				{
 					Name = "Custom Text",
-					Description = "Custom Text",
+					Alias = "Custom Text",
 				},
 				new ProductAttribute
 				{
 					Name = "HDD",
-					Description = "HDD",
+					Alias = "HDD",
 				},
 				new ProductAttribute
 				{
 					Name = "OS",
-					Description = "OS",
+					Alias = "OS",
 				},
 				new ProductAttribute
 				{
 					Name = "Processor",
-					Description = "Processor",
+					Alias = "Processor",
 				},
 				new ProductAttribute
 				{
 					Name = "RAM",
-					Description = "RAM",
+					Alias = "RAM",
 				},
 				new ProductAttribute
 				{
 					Name = "Size",
-					Description = "Size"
+					Alias = "Size"
 				},
 				new ProductAttribute
 				{
 					Name = "Software",
-					Description = "Software",
+					Alias = "Software",
 				},
+				new ProductAttribute
+				{
+					Name = "Game",
+					Alias = "Game"
+				}
 			};
 
 			this.Alter(entities);
+			return entities;
+		}
+
+		public IList<ProductVariantAttribute> ProductVariantAttributes()
+		{
+			var entities = new List<ProductVariantAttribute>();
+
+			#region attributeDualshock3ControllerColor
+
+			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Color");
+
+			var attributeDualshock3ControllerColor = new ProductVariantAttribute()
+			{
+				Product = productPs3,
+				ProductAttribute = attributeColor,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Black",
+				Alias = "black",
+				IsPreSelected = true,
+				DisplayOrder = 1,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "White",
+				Alias = "white",
+				PriceAdjustment = 10.0M,
+				DisplayOrder = 2,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			entities.Add(attributeDualshock3ControllerColor);
+
+			#endregion attributeDualshock3ControllerColor
+
+			#region attributePs3OneGameFree
+
+			var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
+			var attributeGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Game");
+
+			var attributePs3OneGameFree = new ProductVariantAttribute()
+			{
+				Product = productPs3OneGameFree,
+				ProductAttribute = attributeGames,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Assassin's Creed III",
+				Alias = "Assassin's Creed III",
+				DisplayOrder = 1,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.ProductLinkage,
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3").Id
+			});
+
+			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Watch Dogs",
+				Alias = "Watch Dogs",
+				DisplayOrder = 2,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.ProductLinkage,
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
+			});
+
+			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Prince of Persia \"The Forgotten Sands\"",
+				Alias = "Prince of Persia \"The Forgotten Sands\"",
+				DisplayOrder = 3,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.ProductLinkage,
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+			});
+
+			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Driver San Francisco",
+				Alias = "Driver San Francisco",
+				DisplayOrder = 4,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.ProductLinkage,
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-driversanfrancisco").Id
+			});
+
+			entities.Add(attributePs3OneGameFree);
+
+			#endregion attributePs3OneGameFree
+
+			this.Alter(entities);
+			return entities;
+		}
+
+		public IList<ProductVariantAttributeCombination> ProductVariantAttributeCombinations()
+		{
+			var entities = new List<ProductVariantAttributeCombination>();
+
+			string attributeXml = "<Attributes><ProductVariantAttribute ID=\"{0}\"><ProductVariantAttributeValue><Value>{1}</Value></ProductVariantAttributeValue></ProductVariantAttribute></Attributes>";
+
+			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
+			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
+
+			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Color");
+			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attributeColor.Id);
+			var attributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColor.Id).ToList();
+
+			entities.Add(new ProductVariantAttributeCombination()
+			{
+				Product = productPs3,
+				Sku = productPs3.Sku + "-B",
+				AttributesXml = attributeXml.FormatWith(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "black").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+			});
+
+			entities.Add(new ProductVariantAttributeCombination()
+			{
+				Product = productPs3,
+				Sku = productPs3.Sku + "-W",
+				AttributesXml = attributeXml.FormatWith(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "white").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-white")).Id.ToString()
+			});
+
 			return entities;
 		}
 
@@ -5830,7 +5978,6 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-
 		public IList<Category> CategoriesFirstLevel()
 		{
 			// pictures
@@ -5873,7 +6020,21 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Computers"
 			};
 
-
+			var categoryGaming = new Category
+			{
+				Name = "Gaming",
+				Alias = "Gaming",
+				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+				PageSize = 12,
+				AllowCustomersToSelectPageSize = true,
+				PageSizeOptions = "12,18,36,72,150",
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.jpg"), "image/jpeg", GetSeName("Gaming")),
+				Published = true,
+				DisplayOrder = 3,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Gaming"
+			};
 
 			var categoryCellPhones = new Category
 			{
@@ -5886,7 +6047,7 @@ namespace SmartStore.Data.Setup
 				//ParentCategoryId = categoryElectronics.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cell_phones.jpeg"), "image/jpeg", GetSeName("Cell phones")),
 				Published = true,
-				DisplayOrder = 3,
+				DisplayOrder = 4,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Cell phones"
@@ -5916,7 +6077,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift_cards.jpeg"), "image/jpeg", GetSeName("Gift Cards")),
 				Published = true,
-				DisplayOrder = 11,
+				DisplayOrder = 12,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Gift cards"
@@ -5941,13 +6102,12 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Category>
 			{
-			   categoryBooks, categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGiftCards, categoryWatches
+			   categoryBooks, categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming, categoryGiftCards, categoryWatches
 			};
 
 			this.Alter(entities);
 			return entities;
 		}
-
 
 		public IList<Category> CategoriesSecondLevel()
 		{
@@ -6026,6 +6186,40 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Notebooks"
 			};
 
+			var categoryGamingAccessories = new Category
+			{
+				Name = "Gaming Accessories",
+				Alias = "Gaming Accessories",
+				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+				PageSize = 12,
+				AllowCustomersToSelectPageSize = true,
+				PageSizeOptions = "12,18,36,72,150",
+				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.jpg"), "image/jpeg", GetSeName("Gaming Accessories")),
+				Published = true,
+				DisplayOrder = 2,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Gaming Accessories"
+			};
+
+			var categoryGamingGames = new Category
+			{
+				Name = "Games",
+				Alias = "Games",
+				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+				PageSize = 12,
+				AllowCustomersToSelectPageSize = true,
+				PageSizeOptions = "12,18,36,72,150",
+				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/jpeg", GetSeName("Games")),
+				Published = true,
+				DisplayOrder = 3,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Games"
+			};
+
 			//var categorySoftware = new Category
 			//{
 			//    Name = "Software",
@@ -6046,7 +6240,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Category>
 			{
-				categoryBooksSpiegel, categoryBooksCookAndEnjoy, categoryDesktops, categoryNotebooks
+				categoryBooksSpiegel, categoryBooksCookAndEnjoy, categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
 			};
 
 			this.Alter(entities);
@@ -6355,10 +6549,48 @@ namespace SmartStore.Data.Setup
 
 			#endregion Certina
 
+			#region Sony
+
+			var manufacturerSony = new Manufacturer
+			{
+				Name = "Sony",
+				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+				PageSize = 12,
+				AllowCustomersToSelectPageSize = true,
+				PageSizeOptions = "12,18,36,72,150",
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-logo.jpg"), "image/pjpeg", GetSeName("Sony")),
+				Published = true,
+				DisplayOrder = 2,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
+
+			#endregion Sony
+
+			#region Ubisoft
+
+			var manufacturerUbisoft = new Manufacturer
+			{
+				Name = "Ubisoft",
+				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+				PageSize = 12,
+				AllowCustomersToSelectPageSize = true,
+				PageSizeOptions = "12,18,36,72,150",
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-logo.jpg"), "image/pjpeg", GetSeName("Ubisoft")),
+				Published = true,
+				DisplayOrder = 2,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
+
+			#endregion Ubisoft
+
 			var entities = new List<Manufacturer>
 			{
 			  manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
-			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, manufacturerHP, manufacturerAcer };
+			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
+			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft
+			};
 
 			this.Alter(entities);
 			return entities;
@@ -6375,8 +6607,10 @@ namespace SmartStore.Data.Setup
 			var sampleDownloadsPath = this._sampleDownloadsPath;
 
 			//templates
-			var productTemplateSimple = this.ProductTemplates().FirstOrDefault(pt => pt.ViewPath == "ProductTemplate.Simple");
-			var productTemplateGrouped = this.ProductTemplates().FirstOrDefault(pt => pt.ViewPath == "ProductTemplate.Grouped");
+			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
+			var productTemplateGrouped = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Grouped");
+
+			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
 
 			#endregion definitions
 
@@ -6964,7 +7198,6 @@ namespace SmartStore.Data.Setup
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Fast Cars",
-				ShowOnHomePage = true,
 				Price = 16.95M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
@@ -7492,7 +7725,6 @@ namespace SmartStore.Data.Setup
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Antonio Vivaldi: spring",
-				ShowOnHomePage = true,
 				Price = 1.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
@@ -7709,18 +7941,627 @@ namespace SmartStore.Data.Setup
 
 			#endregion watches
 
+			#region gaming
+
+			var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
+			var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
+			var categoryGaming = this._ctx.Set<Category>().First(c => c.Alias == "Gaming");
+			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
+			var categoryGamingGames = this._ctx.Set<Category>().First(c => c.Alias == "Games");
+
+			#region bundlePs3AssassinCreed
+
+			var productPs3 = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS399000",
+				Name = "Playstation 3 Super Slim",
+				ShortDescription = "The Sony PlayStation 3 is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
+				FullDescription = "<ul><li>PowerPC-base Core @3.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @3.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256KB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Playstation 3 Super Slim",
+				Price = 189.00M,
+				OldPrice = 199.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productPs3.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productPs3.ProductCategories.Add(new ProductCategory() { Category = categoryGaming,	DisplayOrder = 4 });
+
+			productPs3.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-black.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-black"),
+				DisplayOrder = 1
+			});
+			productPs3.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-white.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-white"),
+				DisplayOrder = 2
+			});
+
+
+			var productDualshock3Controller = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS399004",
+				Name = "DUALSHOCK 3 Wireless Controller",
+				ShortDescription = "Equipped with SIXAXIS™ motion sensing technology and pressure sensors in each action button, the DUALSHOCK®3 wireless controller for the PlayStation®3 provides the most intuitive game play experience.",
+				FullDescription = "<ul><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : 5.56\"(w) x 8.5\"(h) x 3.63\" (d)</li></ul></li></ul>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "DUALSHOCK 3 Wireless Controller",
+				Price = 54.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productDualshock3Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productDualshock3Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 1 });
+
+			productDualshock3Controller.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-Dualshock3WirelessCont.jpg"), "image/jpeg", GetSeName(productDualshock3Controller.Name)),
+				DisplayOrder = 1
+			});
+
+
+			var productAssassinsCreed3 = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Ubi-acreed3",
+				Name = "Assassin's Creed III",
+				ShortDescription = "Third-person action-adventure title set.",
+				FullDescription = "Assassin's Creed III is set in an open world and presented from the third-person perspective with a primary focus on using Desmond and Connor's combat and stealth abilities to eliminate targets and explore the environment. Connor is able to freely explore 18th-century Boston, New York and the American frontier to complete side missions away from the primary storyline. The game also features a multiplayer component, allowing players to compete online to complete solo and team based objectives including assassinations and evading pursuers. Ubisoft developed a new game engine, Anvil Next, for the game.",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Assassin's Creed III",
+				Price = 49.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productAssassinsCreed3.ProductManufacturers.Add(new ProductManufacturer() {	Manufacturer = manuUbisoft,	DisplayOrder = 1 });
+			productAssassinsCreed3.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 4 });
+
+			productAssassinsCreed3.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-assassins-creed-3.jpg"), "image/jpeg", GetSeName("Assassin Creed 3")),
+				DisplayOrder = 1
+			});
+
+
+			var productBundlePs3AssassinCreed = new Product()
+			{
+				ProductType = ProductType.BundledProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS399105",
+				Name = "PlayStation 3 Assassin's Creed III Bundle",
+				ShortDescription = "500GB PlayStation®3 system, 2 × DUALSHOCK®3 wireless controller and Assassin's Creed® III.",
+				FullDescription = 
+					"<ul><li><h4>Processor</h4><ul><li>Processor Technology : Cell Broadband Engine™</li></ul></li><li><h4>General</h4><ul><li>Communication : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T IEEE 802.11 b/g Wi-Fi<br tabindex=\"0\">Bluetooth 2.0 (EDR)</li><li>Inputs and Outputs : USB 2.0 X 2</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : RSX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : 256MB XDR Main RAM<br>256MB GDDR3 VRAM</li></ul></li><li><h4>Power</h4><ul><li>Power Consumption (in Operation) : Approximately 250 watts</li></ul></li><li><h4>Storage</h4><ul><li>Storage Capacity : 2.5' Serial ATA (500GB)</li></ul></li><li><h4>Video</h4><ul><li>Resolution : 480i, 480p, 720p, 1080i, 1080p (24p/60p)</li></ul></li><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : Approximately 11.42\" (W) x 2.56\" (H) x 11.42\" (D) (290mm x 65mm x 290mm)</li><li>Weight (Approx.) : Approximately 7.055 lbs (3.2 kg)</li></ul></li></ul>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "PlayStation 3 Assassin's Creed III Bundle",
+				Price = 269.97M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime,
+				ShowOnHomePage = true,
+				BundleTitleText = "Bundle includes",
+				BundlePerItemPricing = true,
+				BundlePerItemShoppingCart = true
+			};
+
+			productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 1 });
+
+			productBundlePs3AssassinCreed.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-PS3AssassinsCreedBundle.jpg"), "image/jpeg", GetSeName(productBundlePs3AssassinCreed.Name)),
+				DisplayOrder = 1
+			});
+
+			#endregion bundlePs3AssassinCreed
+
+			#region bundlePs4
+
+			var productPs4 = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS410034",
+				Name = "PlayStation 4",
+				ShortDescription = "The best place to play. Working with some of the most creative minds in the industry, PlayStation®4 delivers breathtaking and unique gaming experiences.",
+				FullDescription = "<p><h4>The power to perform.</h4><div>PlayStation®4 was designed from the ground up to ensure that game creators can unleash their imaginations to develop the very best games and deliver new play experiences never before possible. With ultra-fast customized processors and 8GB of high-performance unified system memory, PS4™ is the home to games with rich, high-fidelity graphics and deeply immersive experiences that shatter expectations.</div></p><p><ul><li><h4>Processor</h4><ul><li>Processor Technology : Low power x86-64 AMD 'Jaguar', 8 cores</li></ul></li><li><h4>Software</h4><ul><li>Processor : Single-chip custom processor</li></ul></li><li><h4>Display</h4><ul><li>Display Technology : HDMI<br />Digital Output (optical)</li></ul></li><li><h4>General</h4><ul><li>Ethernet ports x speed : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T); IEEE 802.11 b/g/n; Bluetooth® 2.1 (EDR)</li><li>Hard disk : Built-in</li></ul></li><li><h4>General Specifications</h4><ul><li>Video : BD 6xCAV<br />DVD 8xCAV</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : 1.84 TFLOPS, AMD Radeon™ Graphics Core Next engine</li></ul></li><li><h4>Interface</h4><ul><li>I/O Port : Super-Speed USB (USB 3.0), AUX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : GDDR5 8GB</li></ul></li></ul></p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "PlayStation 4",
+				Price = 399.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 3,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productPs4.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productPs4.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 5 });
+
+			productPs4.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4.jpg"), "image/jpeg", GetSeName(productPs4.Name)),
+				DisplayOrder = 1
+			});
+
+
+			var productDualshock4Controller = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS410037",
+				Name = "DUALSHOCK 4 Wireless Controller",
+				ShortDescription = "Combining classic controls with innovative new ways to play, the DUALSHOCK®4 wireless controller is an evolutionary controller for a new era of gaming.",
+				FullDescription = "<p>Keys / Switches : PS button, SHARE button, OPTIONS button, Directional buttons (Up/Down/Left/Right), Action buttons (Triangle, Circle, Cross, Square), R1/L1/R2/L2/R3/L3, Right stick, Left stick, Touch Pad Button. The DualShock 4 is currently available in Jet Black, Magma Red, and Wave Blue.</p><p>The DualShock 4 features the following buttons: PS button, SHARE button, OPTIONS button, directional buttons, action buttons (triangle, circle, cross, square), shoulder buttons (R1/L1), triggers (R2/L2), analog stick click buttons (L3/R3) and a touch pad click button.[25] These mark several changes from the DualShock 3 and other previous PlayStation controllers. The START and SELECT buttons have been merged into a single OPTIONS button.[25][27] A dedicated SHARE button will allow players to upload video from their gameplay experiences.[25] The joysticks and triggers have been redesigned based on developer input.[25] with the ridged surface of the joysticks now featuring an outer ring surrounding the concave dome caps.</p><p>The DualShock 4 is backward compatible with the PlayStation 3, but only via a microUSB cable. Backward compatibility is not supported via Bluetooth.</p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "DUALSHOCK 4 Wireless Controller",
+				Price = 59.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productDualshock4Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 2 });
+
+			productDualshock4Controller.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-Dualshock4WirelessCont.jpg"), "image/jpeg", GetSeName(productDualshock4Controller.Name)),
+				DisplayOrder = 1
+			});
+
+
+			var productPs4Camera = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS410040",
+				Name = "PlayStation 4 Camera",
+				ShortDescription = "Play, challenge and share your epic gaming moments with PlayStation®Camera and your PS4™. Multiplayer is enhanced through immediate, crystal clear audio and picture-in-picture video sharing.",
+				FullDescription = "<ul><li>When combined with the DualShock 4 Wireless Controller's light bar, the evolutionary 3D depth-sensing technology in the PlayStation Camera allows it to precisely track a player's position in the room.</li><li>From navigational voice commands to facial recognition, the PlayStation Camera adds incredible innovation to your gaming.</li><li>Automatically integrate a picture-in-picture video of yourself during gameplay broadcasts, and challenge your friends during play.</li><li>Never leave a friend hanging or miss a chance to taunt your opponents with voice chat that keeps the conversation going, whether it's between rounds, between games, or just while kicking back.</li></ul>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "PlayStation 4 Camera",
+				Price = 59.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productPs4Camera.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productPs4Camera.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 3 });
+
+			productPs4Camera.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4-camera.jpg"), "image/jpeg", GetSeName(productPs4Camera.Name)),
+				DisplayOrder = 1
+			});
+
+
+			var productBundlePs4 = new Product()
+			{
+				ProductType = ProductType.BundledProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS410099",
+				Name = "PlayStation 4 Bundle",
+				ShortDescription = "PlayStation®4 system, DUALSHOCK®4 wireless controller and PS4 camera.",
+				FullDescription =
+					"<p><h4>The best place to play</h4><div>PlayStation 4 is the best place to play with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. Combining unparalleled content, immersive gaming experiences, all of your favorite digital entertainment apps, and PlayStation exclusives, PS4 centers on gamers, enabling them to play when, where and how they want. PS4 enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs.</div></p><p><h4>Gamer focused, developer inspired</h4><div>The PS4 system focuses on the gamer, ensuring that the very best games and the most immersive experiences are possible on the platform. The PS4 system enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs. The PS4 system is centered around a powerful custom chip that contains eight x86-64 cores and a state of the art 1.84 TFLOPS graphics processor with 8 GB of ultra-fast GDDR5 unified system memory, easing game creation and increasing the richness of content achievable on the platform. The end result is new games with rich, high-fidelity graphics and deeply immersive experiences.</div></p><p><h4>Personalized, curated content</h4><div>The PS4 system has the ability to learn about your preferences. It will learn your likes and dislikes, allowing you to discover content pre-loaded and ready to go on your console in your favorite game genres or by your favorite creators. Players also can look over game-related information shared by friends, view friends’ gameplay with ease, or obtain information about recommended content, including games, TV shows and movies.</div></p><p><h4>New DUALSHOCK controller</h4><div>DUALSHOCK 4 features new innovations to deliver more immersive gaming experiences, including a highly sensitive six-axis sensor as well as a touch pad located on the top of the controller, which offers gamers completely new ways to play and interact with games.</div></p><p><h4>Shared game experiences</h4><div>Engage in endless personal challenges with your community and share your epic triumphs with the press of a button. Simply hit the SHARE button on the controller, scan through the last few minutes of gameplay, tag it and return to the game—the video uploads as you play. The PS4 system also enhances social spectating by enabling you to broadcast your gameplay in real-time.</div></p><p><h4>Remote play</h4><div>Remote Play on the PS4 system fully unlocks the PlayStation Vita system’s potential, making it the ultimate companion device. With the PS Vita system, gamers will be able to seamlessly play a range of PS4 titles on the beautiful 5-inch display over Wi-Fi access points in a local area network.</div></p><p><h4>PlayStation app</h4><div>The PlayStation App will enable iPhone, iPad, and Android-based smartphones and tablets to become second screens for the PS4 system. Once installed on these devices, players can view in-game items, purchase PS4 games and download them directly to the console at home, or remotely watch the gameplay of other gamers playing on their devices.</div></p><p><h4>PlayStation Plus</h4><div>Built to bring games and gamers together and fuel the next generation of gaming, PlayStation Plus helps you discover a world of exceptional gaming experiences. PlayStation Plus is a membership service that takes your gaming experience to the next level. Each month members receive an Instant Game Collection of top rated blockbuster and innovative Indie games, which they can download direct to their console.</div></p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "PlayStation 4 Bundle",
+				Price = 429.99M,
+				OldPrice = 449.99M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime,
+				BundleTitleText = "Bundle includes"
+			};
+
+			productBundlePs4.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productBundlePs4.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 2 });
+
+			productBundlePs4.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4-bundle.jpg"), "image/jpeg", GetSeName(productBundlePs4.Name)),
+				DisplayOrder = 1
+			});
+
+			#endregion bundlePs4
+
+			#region groupAccessories
+
+			var productGroupAccessories = new Product()
+			{
+				ProductType = ProductType.GroupedProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-GroupAccessories",
+				Name = "Accessories for unlimited gaming experience",
+				ShortDescription = "The future of gaming is now with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. The brilliant culmination of the most creative minds in the industry, PlayStation®4 delivers a unique gaming environment that will take your breath away.",
+				FullDescription = "<ul><li>Immerse yourself in a new world of gameplay with powerful graphics and speed.</li><li>Eliminate lengthy load times of saved games with Suspend mode.</li><li>Immediately play digital titles without waiting for them to finish downloading thanks to background downloading and updating capability.</li><li>Instantly share images and videos of your favorite gameplay moments on Facebook with the SHARE button on the DUALSHOCK®4 controller.</li><li>Broadcast while you play in real-time through Ustream.</li></ul>",
+				ProductTemplateId = productTemplateGrouped.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Accessories for unlimited gaming experience",
+				Price = 0.0M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 3,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				ShowOnHomePage = true
+			};
+
+			productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productGroupAccessories.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 3 });
+
+			productGroupAccessories.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.jpg"), "image/jpeg", GetSeName(productGroupAccessories.Name)),
+				DisplayOrder = 1
+			});
+
+			#endregion groupAccessories
+
+			#region Ps3PlusOneGame
+
+			var productWatchDogs = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Ubi-watchdogs",
+				Name = "Watch Dogs",
+				ShortDescription = "Hack and control the city – Use the city systems as weapons: traffic lights, security cameras, movable bridges, gas pipes, electricity grid and more.",
+				FullDescription = "<p>In today's hyper-connected world, Chicago has the country’s most advanced computer system – one which controls almost every piece of city technology and holds key information on all of the city's residents.</p><p>You play as Aiden Pearce, a brilliant hacker but also a former thug, whose criminal past lead to a violent family tragedy. Now on the hunt for those who hurt your family, you'll be able to monitor and hack all who surround you while manipulating the city's systems to stop traffic lights, download personal information, turn off the electrical grid and more.</p><p>Use the city of Chicago as your ultimate weapon and exact your own style of revenge.</p><p>Monitor the masses – Everyone leaves a digital shadow - access all data on anyone and use it to your advantage.</p><p>State of the art graphics</p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Watch Dogs",
+				Price = 49.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productWatchDogs.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
+			productWatchDogs.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 1 });
+
+			productWatchDogs.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-watchdogs.jpg"), "image/jpeg", GetSeName(productWatchDogs.Name)),
+				DisplayOrder = 1
+			});
+
+
+			var productPrinceOfPersia = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Ubi-princepersia",
+				Name = "Prince of Persia \"The Forgotten Sands\"",
+				ShortDescription = "Play the epic story of the heroic Prince as he fights and outwits his enemies in order to save his kingdom.",
+				FullDescription = "<p>This game marks the return to the Prince of Persia® Sands of Time storyline. Prince of Persia: The Forgotten Sands™ will feature many of the fan-favorite elements from the original series as well as new gameplay innovations that gamers have come to expect from Prince of Persia.</p><p>Experience the story, setting, and gameplay in this return to the Sands of Time universe as we follow the original Prince of Persia through a new untold chapter.</p><p>Created by Ubisoft Montreal, the team that brought you various Prince of Persia® and Assassin’s Creed® games, Prince of Persia The Forgotten Sands™ has been over 2 years in the making.</p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Prince of Persia",
+				Price = 39.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
+			productPrinceOfPersia.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 2 });
+
+			productPrinceOfPersia.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-prince-of-persia.jpg"), "image/jpeg", GetSeName(productPrinceOfPersia.Name)),
+				DisplayOrder = 1
+			});
+
+			var productDriverSanFrancisco = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Ubi-driversanfrancisco",
+				Name = "Driver San Francisco",
+				ShortDescription = "Developed by Ubisoft Reflections, creators of the original DRIVER title, DRIVER SAN FRANCISCO is the return of the established action driving video game series that has sold 14 million copies worldwide. Players will race through the iconic streets of San Francisco and beyond in the largest open-world environment to date spanning over 200 square miles.",
+				FullDescription = "<p>With crime lord Charles Jericho now on the loose, San Francisco faces a terrible threat. Only one man can stand against him. He has driven the streets of a hundred cities and spent his whole life putting criminals behind bars. But to take Jericho down, there can be no turning back, and he knows that this may very well be his last ride. His name is John Tanner. He is the DRIVER.</p><p>An innovative gameplay feature enables players to seamlessly SHIFT between over 130 licensed muscle and super cars to keep them constantly in the heart of the action. With its timeless atmosphere, unique car handling and renewed playability, DRIVER SAN FRANCISCO revitalizes the classic free-roaming, cinematic car chase experience for the current generation of video game platforms.</p><p><h4>THE TRUE CAR CHASE EXPERIENCE</h4>Rediscover the cinematic driving sensations of DRIVER: loose suspension, long drifts, Hollywood-style crashes and high-speed pursuits in dense traffic. Drive over 130 fully destructible muscle and super cars with realistic handling and customization features that take fast-action driving to the next level.</p><p><h4>RELENTLESS MANHUNT</h4>Uncover a thrilling character-driven storyline in which personal revenge fuels Tanner’s relentless manhunt for Jericho. Follow Tanner's survival race across San Francisco and beyond to discover how this chase will bring him to a point of no return.</p><p><h4>SHIFT</h4>As Tanner recovers from a terrible crash, he realizes he has acquired a new ability, SHIFT, enabling him to instantly change vehicles and take control. Experience unprecedented intensity, diversity and freedom; SHIFT into a faster car, deploy civilian vehicles to destroy your enemies and even take control of your opponents’ car to force their demise. SHIFT also allows for thrilling new Multi-player modes within the game.</p><p><h4>A CAR CHASE PLAYGROUND</h4>Drive on more than 200 square miles of road network, over the Golden Gate Bridge, and through iconic locations of San Francisco. SHIFT from one car to the next and dip into the lives of different residents, a head-spinning array of characters, each with a unique perspective on a city under siege.</p><p><h4>MULTIPLAYER MAYHEM</h4>Experience 10 different addictive multi-player modes, including 6 on-line modes where the SHIFT feature allows players to be anywhere at any time. Ram, tail and overtake your friends in offline split-screen or online modes.</p><p><h4>…AND MORE</h4>Record your best stunts and chases with the Director replay mode to edit and share your movies. Test your driving skills with 20 challenging races and 80 “dares” spread all across the city. Listen to over 60 music tracks with songs from famous artists, not to mention the original memorable DRIVER theme.</p>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "Driver San Francisco",
+				Price = 39.90M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productDriverSanFrancisco.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
+			productDriverSanFrancisco.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 3 });
+
+			productDriverSanFrancisco.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-driver-san-francisco.jpg"), "image/jpeg", GetSeName(productDriverSanFrancisco.Name)),
+				DisplayOrder = 1
+			});
+
+			var productPs3OneGame = new Product()
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Sku = "Sony-PS310111",
+				Name = "PlayStation 3 plus game cheaper",
+				ShortDescription = "Our special offer: PlayStation 3 plus one game of your choise cheaper.",
+				FullDescription = "<ul><li>PowerPC-base Core @3.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @3.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256KB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				CreatedOnUtc = DateTime.UtcNow,
+				UpdatedOnUtc = DateTime.UtcNow,
+				MetaTitle = "PlayStation 3 plus game cheaper",
+				Price = 160.00M,
+				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 3,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				AllowBackInStockSubscriptions = false,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			productPs3OneGame.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+			productPs3OneGame.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 6 });
+
+			productPs3OneGame.ProductPictures.Add(new ProductPicture()
+			{
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-plus-game.jpg"), "image/jpeg", GetSeName(productPs3OneGame.Name)),
+				DisplayOrder = 1
+			});
+
+			#endregion Ps3PlusOneGame
+
+			#endregion gaming
+
+
 			var entities = new List<Product>
 			{
 				product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone5, 
-				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize
+				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
+				productPs3, productDualshock3Controller, productAssassinsCreed3, productBundlePs3AssassinCreed,
+				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
+				productGroupAccessories,
+				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
 			};
 
 			this.Alter(entities);
 			return entities;
 		}
 
+		public IList<ProductBundleItem> ProductBundleItems()
+		{
+			#region gaming
+
+			var utcNow = DateTime.UtcNow;
+			var bundlePs3AssassinCreed = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
+
+			var bundleItemPs3AssassinCreed1 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs3AssassinCreed,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000"),
+				Quantity = 1,
+				Discount = 20.0M,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 1,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+			var bundleItemPs3AssassinCreed2 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs3AssassinCreed,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399004"),
+				Quantity = 2,
+				Discount = 30.0M,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 2,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+			var bundleItemPs3AssassinCreed3 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs3AssassinCreed,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3"),
+				Quantity = 1,
+				Discount = 20.0M,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 3,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+
+			var bundlePs4 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410099");
+
+			var bundleItemPs41 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs4,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410034"),
+				Quantity = 1,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 1,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+			var bundleItemPs42 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs4,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410037"),
+				Quantity = 1,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 2,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+			var bundleItemPs43 = new ProductBundleItem()
+			{
+				BundleProduct = bundlePs4,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410040"),
+				Quantity = 1,
+				Visible = true,
+				Published = true,
+				DisplayOrder = 3,
+				CreatedOnUtc = utcNow,
+				UpdatedOnUtc = utcNow
+			};
+
+			#endregion gaming
+
+			var entities = new List<ProductBundleItem>
+			{
+				bundleItemPs3AssassinCreed1, bundleItemPs3AssassinCreed2, bundleItemPs3AssassinCreed3,
+				bundleItemPs41, bundleItemPs42, bundleItemPs43
+			};
+
+			this.Alter(entities);
+			return entities;
+		}
+
+		public void AssignGroupedProducts(IList<Product> savedProducts)
+		{
+			int productGamingAccessoriesId = savedProducts.First(x => x.Sku == "Sony-GroupAccessories").Id;
+			var gamingAccessoriesSkus = new List<string>() { "Sony-PS399004", "Ubi-acreed3", "Sony-PS410037", "Sony-PS410040" };
+
+			savedProducts
+				.Where(x => gamingAccessoriesSkus.Contains(x.Sku))
+				.ToList()
+				.Each(x =>
+				{
+					x.ParentGroupedProductId = productGamingAccessoriesId;
+
+					_ctx.Set<Product>().Attach(x);
+					_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
+				});
+
+			_ctx.SaveChanges();			
+		}
 
 		#region ForumGroups
 		public IList<ForumGroup> ForumGroups()
@@ -8192,6 +9033,10 @@ namespace SmartStore.Data.Setup
 		{
 		}
 
+		protected virtual void Alter(IList<ProductVariantAttribute> entities)
+		{
+		}
+
 		protected virtual void Alter(IList<Category> entities)
 		{
 		}
@@ -8233,6 +9078,10 @@ namespace SmartStore.Data.Setup
 		}
 
 		protected virtual void Alter(IList<ProductTag> entities)
+		{
+		}
+
+		protected virtual void Alter(IList<ProductBundleItem> entities)
 		{
 		}
 

@@ -371,6 +371,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     IsActive = true
                 });
             });
+
+			_data.AssignGroupedProducts(products);
         }
 
         private void PopulateBlogPosts()
@@ -627,6 +629,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulateCategories", PopulateCategories);
 				Populate("PopulateManufacturers", PopulateManufacturers);
 				Populate("PopulateProducts", PopulateProducts);
+				Populate("PopulateProductBundleItems", _data.ProductBundleItems());
+				Populate("PopulateProductVariantAttributes", _data.ProductVariantAttributes());
+				Populate("ProductVariantAttributeCombinations", _data.ProductVariantAttributeCombinations());
 				Populate("PopulateProductTags", _data.ProductTags());
 				Populate("PopulateForumsGroups", _data.ForumGroups());
 				Populate("PopulateForums", _data.Forums());
@@ -634,6 +639,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulateBlogPosts", PopulateBlogPosts);
 				Populate("PopulateNews", PopulateNews);
 				Populate("PopulatePolls", _data.Polls());
+
+				this.SettingService.SetSetting<bool>("catalogsettings.showvariantcombinationpriceadjustment", true, 0, false);
+				this.SettingService.SetSetting<bool>("catalogsettings.showlinkedattributevalueimage", true, 0, false);
+				this.SettingService.SetSetting<bool>("catalogsettings.enabledynamicpriceupdate", true, 0, true);
+				_ctx.SaveChanges();
             }
 
 			Populate("MovePictures", MovePictures);

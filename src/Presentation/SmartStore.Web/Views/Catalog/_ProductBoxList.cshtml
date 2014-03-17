@@ -81,7 +81,7 @@
 
                     @if (Model.ShowDeliveryTimes)
                     {
-                        if (Model.DeliveryTimeName.HasValue() && Model.IsShipEnabled)
+                        if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
                         {
                             <tr class="delivery-time">
                                 <td class="attr-label">

@@ -11,8 +11,17 @@ namespace SmartStore.Data.Setup
 
 		#region Resource seeding
 
-		public static void UpdateLocaleResources(this SmartObjectContext ctx)
+		public static void MigrateLocaleResources(this SmartObjectContext ctx, Action<LocaleResourcesBuilder> fn, bool updateTouchedResources = false)
 		{
+			Guard.ArgumentNotNull(() => ctx);
+			Guard.ArgumentNotNull(() => fn);
+
+			var builder = new LocaleResourcesBuilder();
+			fn(builder);
+			var entries = builder.Build();
+
+			var migrator = new LocaleResourcesMigrator(ctx);
+			migrator.Migrate(entries, updateTouchedResources);
 		}
 
 		#endregion

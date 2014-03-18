@@ -2,6 +2,8 @@
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using NUnit.Framework;
+using SmartStore.Data.Migrations;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data.Tests
 {
@@ -11,11 +13,12 @@ namespace SmartStore.Data.Tests
         protected SmartObjectContext context;
 
         [SetUp]
-        public void SetUp()
+        public virtual void SetUp()
 		{
-            context = new SmartObjectContext(GetTestDbName());
-            context.Database.Delete();
-            context.Database.Create();
+			context = new SmartObjectContext(GetTestDbName());
+			context.Database.Delete();
+			Database.SetInitializer(new TestDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>(GetTestDbName()));
+			context.Database.Initialize(true);
         }
 
         protected string GetTestDbName()
@@ -47,5 +50,11 @@ namespace SmartStore.Data.Tests
             var fromDb = context.Set<T>().Find(id);
             return fromDb;
         }
+
+		protected void ReloadContext()
+		{
+			context.Dispose();
+			context = new SmartObjectContext(GetTestDbName());
+		}
     }
 }

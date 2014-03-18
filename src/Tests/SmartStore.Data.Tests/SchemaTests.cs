@@ -11,8 +11,8 @@ namespace SmartStore.Data.Tests
         [Test]
         public void Can_generate_schema()
         {
-            Database.SetInitializer<SmartObjectContext>(null);
             var ctx = new SmartObjectContext("Test");
+			Database.SetInitializer<SmartObjectContext>(null);
             string result = ctx.CreateDatabaseScript();
             result.ShouldNotBeNull();
             Console.Write(result);

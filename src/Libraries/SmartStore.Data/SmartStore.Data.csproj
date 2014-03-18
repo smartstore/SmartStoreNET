@@ -119,6 +119,7 @@
     <Compile Include="Setup\ILocaleResourcesProvider.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
     <Compile Include="Setup\LocaleResourcesBuilder.cs" />
+    <Compile Include="Setup\LocaleResourcesMigrator.cs" />
     <Compile Include="Setup\MigratorUtils.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
     <Compile Include="Setup\SmartObjectContextExtensions.cs" />
+    <Compile Include="Setup\TestDatabaseInitializer.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />

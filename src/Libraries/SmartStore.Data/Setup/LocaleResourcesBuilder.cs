@@ -25,17 +25,33 @@ namespace SmartStore.Data.Setup
 	{
 		private readonly List<LocaleResourceEntry> _entries = new List<LocaleResourceEntry>();
 
+		/// <summary>
+		/// Deletes one or many locale resources in any language from the database
+		/// </summary>
+		/// <param name="keys">The key(s) of the resources to delete</param>
 		public void Delete(params string[] keys)
 		{
 			keys.Each(x => _entries.Add(new LocaleResourceEntry { Key = x, Important = true }));
 		}
 
+		/// <summary>
+		/// Deletes one or many locale resources in the specified language from the database
+		/// </summary>
+		/// <param name="lang">The language identifier</param>
+		/// <param name="keys">The key(s) of the resources to delete</param>
 		public void DeleteFor(string lang, params string[] keys)
 		{
 			Guard.ArgumentNotEmpty(() => lang);
+			lang = lang.NullEmpty();
+
 			keys.Each(x => _entries.Add(new LocaleResourceEntry { Key = x, Lang = lang, Important = true }));
 		}
 
+		/// <summary>
+		/// Adds or updates locale resources
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
 		public IResourceAddBuilder AddOrUpdate(string key)
 		{
 			Guard.ArgumentNotEmpty(() => key);
@@ -48,12 +64,17 @@ namespace SmartStore.Data.Setup
 			return new ResourceAddBuilder(key, fn);
 		}
 
+		internal void Reset()
+		{
+			_entries.Clear();
+		}
+
 		internal IEnumerable<LocaleResourceEntry> Build()
 		{
 			return _entries.OrderByDescending(x => x.Important).ThenBy(x => x.Lang);
 		}
 
-		#region Nested classes
+		#region Nested builder for AddOrUpdate
 
 		internal class ResourceAddBuilder : IResourceAddBuilder
 		{
@@ -72,7 +93,7 @@ namespace SmartStore.Data.Setup
 			public IResourceAddBuilder Value(string lang, string value)
 			{
 				Guard.ArgumentNotEmpty(() => value);
-				_fn(value, lang);
+				_fn(value, lang.NullEmpty());
 				return this;
 			}
 		}

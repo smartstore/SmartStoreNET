@@ -161,15 +161,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 					continue;
 
 				var builder = new LocaleResourcesBuilder();
-				provider.AlterLocaleResources(builder);
-
+				provider.MigrateLocaleResources(builder);
+				
 				var resEntries = builder.Build();
-				foreach (var entry in resEntries)
-				{
-					// TBD [...]
-				}
-
-				// TBD [...]
+				var resMigrator = new LocaleResourcesMigrator(_ctx);
+				resMigrator.Migrate(resEntries);
 			}
 		}
 

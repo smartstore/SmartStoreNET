@@ -10,6 +10,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -47,6 +48,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IExportManager _exportManager;
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
+		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -62,7 +64,9 @@ namespace SmartStore.Admin.Controllers
             IDiscountService discountService, IPermissionService permissionService,
 			IAclService aclService, IStoreService storeService, IStoreMappingService storeMappingService,
             IExportManager exportManager, IWorkContext workContext,
-            ICustomerActivityService customerActivityService, AdminAreaSettings adminAreaSettings,
+            ICustomerActivityService customerActivityService,
+			IDateTimeHelper dateTimeHelper,
+			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings)
         {
             this._categoryService = categoryService;
@@ -83,6 +87,7 @@ namespace SmartStore.Admin.Controllers
             this._exportManager = exportManager;
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
+			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
         }
@@ -154,7 +159,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected void PrepareDiscountModel(CategoryModel model, Category category, bool excludeProperties)
+        protected void PrepareCategoryModel(CategoryModel model, Category category, bool excludeProperties)
         {
             if (model == null)
                 throw new ArgumentNullException("model");
@@ -166,6 +171,12 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
             }
+
+			if (category != null)
+			{
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(category.CreatedOnUtc, DateTimeKind.Utc);
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
+			}
         }
 
         [NonAction]
@@ -444,8 +455,7 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales);
             //templates
             PrepareTemplatesModel(model);
-            //discounts
-            PrepareDiscountModel(model, null, true);
+            PrepareCategoryModel(model, null, true);
             //ACL
             PrepareAclModel(model, null, false);
 			//Stores
@@ -516,8 +526,8 @@ namespace SmartStore.Admin.Controllers
                 else
                     model.ParentCategoryId = 0;
             }
-            //discounts
-            PrepareDiscountModel(model, null, true);
+
+            PrepareCategoryModel(model, null, true);
             //ACL
             PrepareAclModel(model, null, true);
 			//Stores
@@ -560,8 +570,7 @@ namespace SmartStore.Admin.Controllers
             });
             //templates
             PrepareTemplatesModel(model);
-            //discounts
-            PrepareDiscountModel(model, category, false);
+            PrepareCategoryModel(model, category, false);
             //ACL
             PrepareAclModel(model, category, false);
 			//Stores
@@ -649,8 +658,7 @@ namespace SmartStore.Admin.Controllers
             }
             //templates
             PrepareTemplatesModel(model);
-            //discounts
-            PrepareDiscountModel(model, category, true);
+            PrepareCategoryModel(model, category, true);
             //ACL
             PrepareAclModel(model, category, true);
 			//Stores

@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -42,6 +43,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -56,6 +58,7 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IExportManager exportManager, IWorkContext workContext,
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
+			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings, CatalogSettings catalogSettings)
         {
             this._categoryService = categoryService;
@@ -73,6 +76,7 @@ namespace SmartStore.Admin.Controllers
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
+			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
         }
@@ -144,7 +148,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[NonAction]
-		private void PrepareStoresMappingModel(ManufacturerModel model, Manufacturer manufacturer, bool excludeProperties)
+		private void PrepareManufacturerModel(ManufacturerModel model, Manufacturer manufacturer, bool excludeProperties)
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
@@ -153,6 +157,7 @@ namespace SmartStore.Admin.Controllers
 				.GetAllStores()
 				.Select(s => s.ToModel())
 				.ToList();
+
 			if (!excludeProperties)
 			{
 				if (manufacturer != null)
@@ -163,6 +168,12 @@ namespace SmartStore.Admin.Controllers
 				{
 					model.SelectedStoreIds = new int[0];
 				}
+			}
+
+			if (manufacturer != null)
+			{
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
 			}
 		}
 
@@ -267,8 +278,7 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales);
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, null, false);
+			PrepareManufacturerModel(model, null, false);
             //default values
             model.PageSize = 12; // codehint: sm-edit > 4;
             model.Published = true;
@@ -311,8 +321,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, null, true);
+			PrepareManufacturerModel(model, null, true);
 
             return View(model);
         }
@@ -340,8 +349,7 @@ namespace SmartStore.Admin.Controllers
             });
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, manufacturer, false);
+			PrepareManufacturerModel(model, manufacturer, false);
 
             return View(model);
         }
@@ -391,8 +399,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, manufacturer, true);
+			PrepareManufacturerModel(model, manufacturer, true);
 
             return View(model);
         }

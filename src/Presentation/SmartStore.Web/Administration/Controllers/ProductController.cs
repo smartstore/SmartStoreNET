@@ -344,6 +344,9 @@ namespace SmartStore.Admin.Controllers
 					model.AssociatedToProductId = product.ParentGroupedProductId;
 					model.AssociatedToProductName = parentGroupedProduct.Name;
 				}
+
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc);
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
 			}
 
 			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;

@@ -84,7 +84,7 @@ namespace SmartStore.Services.Catalog
 
 			// product download & sample download
 			int downloadId = product.DownloadId;
-			int sampleDownloadId = product.SampleDownloadId.GetValueOrDefault();
+			int? sampleDownloadId = product.SampleDownloadId;
 
 			if (product.IsDownload)
 			{

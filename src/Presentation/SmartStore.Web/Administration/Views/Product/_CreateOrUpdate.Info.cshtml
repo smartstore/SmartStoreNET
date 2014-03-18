@@ -625,6 +625,28 @@
 				@Html.ValidationMessageFor(model => model.Published)
 			</td>
 		</tr>
+		@if(Model.CreatedOn.HasValue)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CreatedOn)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.CreatedOn)
+				</td>
+			</tr>
+		}
+		@if(Model.UpdatedOn.HasValue)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UpdatedOn)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.UpdatedOn)
+				</td>
+			</tr>
+		}
 	</table>
 
 	<table class="adminContent" id="group-required-other-products">

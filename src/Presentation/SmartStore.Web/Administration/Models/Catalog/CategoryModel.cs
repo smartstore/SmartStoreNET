@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -92,6 +93,12 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+		[SmartResourceDisplayName("Common.CreatedOn")]
+		public DateTime? CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime? UpdatedOn { get; set; }
         
         public IList<CategoryLocalizedModel> Locales { get; set; }
 

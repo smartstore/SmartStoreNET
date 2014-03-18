@@ -289,6 +289,12 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
         public bool Published { get; set; }
 
+		[SmartResourceDisplayName("Common.CreatedOn")]
+		public DateTime? CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime? UpdatedOn { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleTitleText")]
 		public string BundleTitleText { get; set; }
 

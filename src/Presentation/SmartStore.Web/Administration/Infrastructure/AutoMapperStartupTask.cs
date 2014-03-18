@@ -171,19 +171,21 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<TopicModel, Topic>();
 
             //category
-            Mapper.CreateMap<Category, CategoryModel>()
-                .ForMember(dest => dest.AvailableCategoryTemplates, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.Breadcrumb, mo => mo.Ignore())
-                .ForMember(dest => dest.ParentCategoryBreadcrumb, mo => mo.Ignore()) // codehint: sm-edit
-                .ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
-                .ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
-                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+			Mapper.CreateMap<Category, CategoryModel>()
+				.ForMember(dest => dest.AvailableCategoryTemplates, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.Breadcrumb, mo => mo.Ignore())
+				.ForMember(dest => dest.ParentCategoryBreadcrumb, mo => mo.Ignore()) // codehint: sm-edit
+				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore());
             Mapper.CreateMap<CategoryModel, Category>()
                 .ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
@@ -191,13 +193,15 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
             //manufacturer
-            Mapper.CreateMap<Manufacturer, ManufacturerModel>()
-                .ForMember(dest => dest.AvailableManufacturerTemplates, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+			Mapper.CreateMap<Manufacturer, ManufacturerModel>()
+				.ForMember(dest => dest.AvailableManufacturerTemplates, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
+				.ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore());
             Mapper.CreateMap<ManufacturerModel, Manufacturer>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
@@ -227,6 +231,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
 				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
 				.ForMember(dest => dest.BaseWeightIn, mo => mo.Ignore())
 				.ForMember(dest => dest.NumberOfAvailableProductAttributes, mo => mo.Ignore())

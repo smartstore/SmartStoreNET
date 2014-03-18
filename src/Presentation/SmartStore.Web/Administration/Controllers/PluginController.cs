@@ -80,13 +80,13 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-        protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor)
+        protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)
         {
             var pluginModel = pluginDescriptor.ToModel();
 
             pluginModel.Group = _localizationService.GetResource("Plugins.KnownGroup." + pluginDescriptor.Group);
-			pluginModel.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName", 0, false);
-			pluginModel.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description", 0, false);
+			pluginModel.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName", 0, forList);
+			pluginModel.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description", 0, forList);
 
             //locales
             AddLocales(_languageService, pluginModel.Locales, (locale, languageId) =>
@@ -324,7 +324,7 @@ namespace SmartStore.Admin.Controllers
                 //No plugin found with the specified id
                 return RedirectToAction("List");
 
-            var model = PreparePluginModel(pluginDescriptor);
+            var model = PreparePluginModel(pluginDescriptor, false);
 
             return View(model);
         }

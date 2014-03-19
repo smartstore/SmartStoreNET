@@ -106,7 +106,10 @@ END
 GO
 
 -- From Migration "AddNavProps"
-ALTER TABLE [Product] ALTER COLUMN [SampleDownloadId] [int] NULL
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id=object_id('[Product]') and NAME='SampleDownloadId')
+BEGIN
+	ALTER TABLE [Product] ALTER COLUMN [SampleDownloadId] [int] NULL
+END
 GO
 
 ALTER TABLE [Category] ALTER COLUMN [PictureId] [int] NULL

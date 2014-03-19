@@ -403,6 +403,27 @@ namespace SmartStore.Web.Controllers
             return interval.TotalSeconds > _orderSettings.MinimumOrderPlacementInterval;
         }
 
+		private bool IsValidPaymentForm(IPaymentMethod paymentMethod, FormCollection form)
+		{
+			var paymentControllerType = paymentMethod.GetControllerType();
+			var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
+			var warnings = paymentController.ValidatePaymentForm(form);
+				
+			foreach (var warning in warnings)
+			{
+				ModelState.AddModelError("", warning);
+			}
+
+			if (ModelState.IsValid)
+			{
+				var paymentInfo = paymentController.GetPaymentInfo(form);
+				_httpContext.Session["OrderPaymentInfo"] = paymentInfo;
+
+				return true;
+			}
+			return false;
+		}
+
         #endregion
 
         #region Methods (multistep checkout)
@@ -808,14 +829,18 @@ namespace SmartStore.Web.Controllers
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
-            //model
-            var model = PreparePaymentInfoModel(paymentMethod);
-
             RouteInfo routeinfo = paymentMethod.GetPaymentInfoHandlerRoute();
             if (routeinfo != null)
             {
                 return new RedirectToRouteResult(routeinfo.RouteValues);
             }
+
+			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod, new FormCollection()))
+			{
+				return RedirectToRoute("CheckoutConfirm");
+			}
+
+			var model = PreparePaymentInfoModel(paymentMethod);
 
             return View(model);
         }
@@ -851,19 +876,10 @@ namespace SmartStore.Web.Controllers
             if (paymentMethod == null)
                 return RedirectToRoute("CheckoutPaymentMethod");
 
-            var paymentControllerType = paymentMethod.GetControllerType();
-            var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
-            var warnings = paymentController.ValidatePaymentForm(form);
-            foreach (var warning in warnings)
-                ModelState.AddModelError("", warning);
-            if (ModelState.IsValid)
-            {
-                //get payment info
-                var paymentInfo = paymentController.GetPaymentInfo(form);
-                //session save
-                _httpContext.Session["OrderPaymentInfo"] = paymentInfo;
-                return RedirectToRoute("CheckoutConfirm");
-            }
+			if (IsValidPaymentForm(paymentMethod, form))
+			{
+				return RedirectToRoute("CheckoutConfirm");
+			}
 
             //If we got this far, something failed, redisplay form
             //model

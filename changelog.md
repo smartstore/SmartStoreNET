@@ -21,6 +21,7 @@
 * Cross-linkage of products through variant attribute values
 * #295 Display short description for payment plugins
 * Entity Framework code-based Migrations now fully supported in application core and all relevant plugins (no need to manually run SQL scripts anymore in order to update to newer version).
+* Setting to skip the payment info page during checkout.
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long

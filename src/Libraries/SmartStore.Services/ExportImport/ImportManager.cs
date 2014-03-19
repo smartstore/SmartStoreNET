@@ -8,7 +8,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Data;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;

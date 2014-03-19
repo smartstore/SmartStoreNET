@@ -11,7 +11,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Seo;
 using ImageResizer;

@@ -4,7 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Common;
 

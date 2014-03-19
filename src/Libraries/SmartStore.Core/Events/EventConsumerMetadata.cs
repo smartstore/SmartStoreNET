@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Services.Events
+namespace SmartStore.Core.Events
 {
 	public class EventConsumerMetadata
 	{

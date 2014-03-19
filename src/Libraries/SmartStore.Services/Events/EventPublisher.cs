@@ -11,6 +11,7 @@ using SmartStore.Core.Async;
 using SmartStore.Collections;
 using Autofac;
 using System.Diagnostics;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Events
 {
@@ -49,9 +50,6 @@ namespace SmartStore.Services.Events
 					consumers = newFactory.GetConsumers(true);
 					foreach (var consumer in consumers)
 					{
-						if (!PluginManager.IsActivePluginAssembly(consumer.GetType().Assembly))
-							continue;
-						
 						consumer.HandleEvent(eventMessage);
 					}
 				}).ContinueWith(t =>
@@ -73,16 +71,10 @@ namespace SmartStore.Services.Events
 			{
 				PublishEvent(consumer, eventMessage);
 			}
-			
-			//var subscriptions = _subscriptionService.GetSubscriptions<T>();
-			//subscriptions.Each(x => PublishToConsumer(x, eventMessage));
         }
 
 		private void PublishEvent<T>(IConsumer<T> x, T eventMessage)
 		{
-			if (!PluginManager.IsActivePluginAssembly(x.GetType().Assembly))
-				return;
-			
 			try
 			{
 				x.HandleEvent(eventMessage);

@@ -39,7 +39,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Filter;
 using SmartStore.Core.Data;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
 

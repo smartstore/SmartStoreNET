@@ -20,7 +20,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Utilities;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Data.Setup;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Common;
 using SmartStore.Services.Media;
 using SmartStore.Services.Logging;

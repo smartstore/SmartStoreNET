@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Stores

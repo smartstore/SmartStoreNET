@@ -1,5 +1,5 @@
 ﻿
-namespace SmartStore.Services.Events
+namespace SmartStore.Core.Events
 {
 	public class NullEventPublisher : IEventPublisher
 	{

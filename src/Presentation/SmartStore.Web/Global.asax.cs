@@ -22,7 +22,6 @@ using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Themes;
 using StackExchange.Profiling;
 using StackExchange.Profiling.MVCHelpers;
-using SmartStore.Services.Events;
 using SmartStore.Core.Events;
 using System.Web;
 using SmartStore.Core.Domain.Themes;
@@ -40,7 +39,8 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
-		
+		private bool _profilingEnabled = false;
+
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
@@ -188,8 +188,10 @@ namespace SmartStore.Web
 			// ignore static resources
 			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
-			
-			if (installed && ProfilingEnabled)
+
+			_profilingEnabled = EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+
+			if (installed && _profilingEnabled)
 			{
 				MiniProfiler.Start();
 			}
@@ -207,7 +209,7 @@ namespace SmartStore.Web
 
 			if (installed)
 			{
-				if (ProfilingEnabled)
+				if (_profilingEnabled)
 				{
 					// stop as early as you can
 					MiniProfiler.Stop();

@@ -18,6 +18,7 @@ using Microsoft.SqlServer;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Data
 {
@@ -29,9 +30,7 @@ namespace SmartStore.Data
     {
         #region Fields
 
-        private IEnumerable<IHook> _hooks;
         private IList<IPreActionHook> _preHooks;
-        private IList<IPostActionHook> _postHooks;
 
         #endregion
 
@@ -48,82 +47,81 @@ namespace SmartStore.Data
         protected ObjectContextBase(string nameOrConnectionString, string alias = null)
             : base(nameOrConnectionString)
         {
-            //((IObjectContextAdapter) this).ObjectContext.ContextOptions.LazyLoadingEnabled = true;
-            //base.Configuration.ProxyCreationEnabled = false;
-
             this._preHooks = new List<IPreActionHook>();
-            this._postHooks = new List<IPostActionHook>();
-
             this.Alias = null;
+			this.EventPublisher = NullEventPublisher.Instance;
         }
 
         #endregion
 
-        #region Hooks
+		#region Properties
 
-		public IEnumerable<IHook> Hooks
+		public IEventPublisher EventPublisher
 		{
-			get
-			{
-				return _hooks ?? Enumerable.Empty<IHook>();
-			}
-			set
-			{
-				if (value != null)
-				{
-					this._preHooks = value.OfType<IPreActionHook>().ToList();
-					this._postHooks = value.OfType<IPostActionHook>().ToList();
-				}
-				else
-				{
-					this._preHooks.Clear();
-					this._postHooks.Clear();
-				}
-				_hooks = value;
-			}
+			get;
+			set;
 		}
 
-        /// <summary>
-        /// Executes the pre action hooks, filtered by <paramref name="requiresValidation"/>.
-        /// </summary>
-        /// <param name="modifiedEntries">The modified entries to execute hooks for.</param>
-        /// <param name="requiresValidation">if set to <c>true</c> executes hooks that require validation, otherwise executes hooks that do NOT require validation.</param>
-        private void ExecutePreActionHooks(IEnumerable<HookedEntityEntry> modifiedEntries, bool requiresValidation)
-        {
-            foreach (var entityEntry in modifiedEntries)
-            {
-                var entry = entityEntry; // Prevents access to modified closure
+		#endregion
 
-                foreach (
-                    var hook in
-                        _preHooks.Where(x => x.HookStates == entry.PreSaveState && x.RequiresValidation == requiresValidation))
-                {
-                    var metadata = new HookEntityMetadata(entityEntry.PreSaveState);
-                    hook.HookObject(entityEntry.Entity, metadata);
+		#region Hooks
 
-                    if (metadata.HasStateChanged)
-                    {
-                        entityEntry.PreSaveState = metadata.State;
-                    }
-                }
-            }
-        }
+		private void PerformPreSaveActions(out IList<DbEntityEntry> modifiedEntries, out HookedEntityEntry[] modifiedHookEntries)
+		{
+			modifiedHookEntries = null;
 
-        /// <summary>
-        /// Executes the post action hooks.
-        /// </summary>
-        /// <param name="modifiedEntries">The modified entries to execute hooks for.</param>
-        private void ExecutePostActionHooks(IEnumerable<HookedEntityEntry> modifiedEntries)
-        {
-            foreach (var entityEntry in modifiedEntries)
-            {
-                foreach (var hook in _postHooks.Where(x => x.HookStates == entityEntry.PreSaveState))
-                {
-                    var metadata = new HookEntityMetadata(entityEntry.PreSaveState);
-                    hook.HookObject(entityEntry.Entity, metadata);
-                }
-            }
-        }
+			modifiedEntries = this.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+				.ToList();
+
+			if (this.HooksEnabled)
+			{
+				modifiedHookEntries = modifiedEntries
+								.Select(x => new HookedEntityEntry()
+								{
+									Entity = x.Entity,
+									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
+								})
+								.ToArray();
+
+				// Regardless of validation (possible fixing validation errors too)
+				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = false });
+			}
+
+			if (this.Configuration.ValidateOnSaveEnabled)
+			{
+				var results = from entry in this.ChangeTracker.Entries()
+							  where this.ShouldValidateEntity(entry)
+							  let validationResult = entry.GetValidationResult()
+							  where !validationResult.IsValid
+							  select validationResult;
+
+				if (results.Any())
+				{
+
+					var fail = new DbEntityValidationException(FormatValidationExceptionMessage(results), results);
+					//Debug.WriteLine(fail.Message, fail);
+					throw fail;
+				}
+			}
+
+			if (this.HooksEnabled)
+			{
+				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = true });
+			}
+
+			IgnoreMergedData(modifiedEntries, true);
+		}
+
+		private void PerformPostSaveActions(IList<DbEntityEntry> modifiedEntries, HookedEntityEntry[] modifiedHookEntries)
+		{
+			IgnoreMergedData(modifiedEntries, false);
+
+			if (this.HooksEnabled)
+			{
+				this.EventPublisher.Publish(new PostActionHookEvent { ModifiedEntries = modifiedHookEntries });
+			}
+		}
 
         protected virtual bool HooksEnabled
         {
@@ -244,16 +242,15 @@ namespace SmartStore.Data
 
 			try
 			{
-				var dataSettings = EngineContext.Current.Resolve<DataSettings>();
-				bool isSqlServerCompact = dataSettings.DataProvider.IsCaseInsensitiveEqual("sqlce");
+				bool isSqlServer = DataSettings.Current.IsSqlServer;
 
-				if (isSqlServerCompact)
+				if (!isSqlServer)
 				{
 					result = ExecuteSqlCommand(sql);
 				}
 				else
 				{
-					using (var sqlConnection = new SqlConnection(dataSettings.DataConnectionString))
+					using (var sqlConnection = new SqlConnection(GetConnectionString()))
 					{
 						var serverConnection = new ServerConnection(sqlConnection);
 						var server = new Server(serverConnection);
@@ -286,9 +283,8 @@ namespace SmartStore.Data
         public override int SaveChanges()
         {
 			IList<DbEntityEntry> modifiedEntries;
-			bool hooksEnabled;
 			HookedEntityEntry[] modifiedHookEntries;
-			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
+			PerformPreSaveActions(out modifiedEntries, out modifiedHookEntries);
 
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
@@ -296,7 +292,7 @@ namespace SmartStore.Data
             int result = this.Commit();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
-			PerformPostSaveActions(modifiedEntries, hooksEnabled, modifiedHookEntries);
+			PerformPostSaveActions(modifiedEntries, modifiedHookEntries);
 
             return result;
         }
@@ -304,9 +300,8 @@ namespace SmartStore.Data
 		public override Task<int> SaveChangesAsync()
 		{
 			IList<DbEntityEntry> modifiedEntries;
-			bool hooksEnabled;
 			HookedEntityEntry[] modifiedHookEntries;
-			PerformPreSaveActions(out modifiedEntries, out hooksEnabled, out modifiedHookEntries);
+			PerformPreSaveActions(out modifiedEntries, out modifiedHookEntries);
 
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
@@ -316,7 +311,7 @@ namespace SmartStore.Data
 			result.ContinueWith((t) =>
 			{
 				this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
-				PerformPostSaveActions(modifiedEntries, hooksEnabled, modifiedHookEntries);
+				PerformPostSaveActions(modifiedEntries, modifiedHookEntries);
 			});
 
 			return result;
@@ -462,7 +457,7 @@ namespace SmartStore.Data
 						entityWithPossibleMergedData.MergedDataIgnore = ignore;
 				}
 			}
-			catch (Exception) { }
+			catch { }
 		}
 
         #endregion
@@ -526,67 +521,6 @@ namespace SmartStore.Data
 			});
 
 			return tcs.Task;
-		}
-
-		private void PerformPreSaveActions(out IList<DbEntityEntry> modifiedEntries, out bool hooksEnabled, out HookedEntityEntry[] modifiedHookEntries)
-		{
-			modifiedHookEntries = null;
-			hooksEnabled = this.HooksEnabled && (_preHooks.Count > 0 || _postHooks.Count > 0);
-
-			modifiedEntries = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
-				.ToList();
-
-			if (hooksEnabled)
-			{
-				modifiedHookEntries = modifiedEntries
-								.Select(x => new HookedEntityEntry()
-								{
-									Entity = x.Entity,
-									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
-								})
-								.ToArray();
-
-				if (_preHooks.Count > 0)
-				{
-					// Regardless of validation (possible fixing validation errors too)
-					ExecutePreActionHooks(modifiedHookEntries, false);
-				}
-			}
-
-			if (this.Configuration.ValidateOnSaveEnabled)
-			{
-				var results = from entry in this.ChangeTracker.Entries()
-							  where this.ShouldValidateEntity(entry)
-							  let validationResult = entry.GetValidationResult()
-							  where !validationResult.IsValid
-							  select validationResult;
-
-				if (results.Any())
-				{
-
-					var fail = new DbEntityValidationException(FormatValidationExceptionMessage(results), results);
-					//Debug.WriteLine(fail.Message, fail);
-					throw fail;
-				}
-			}
-
-			if (hooksEnabled && _preHooks.Count > 0)
-			{
-				ExecutePreActionHooks(modifiedHookEntries, true);
-			}
-
-			IgnoreMergedData(modifiedEntries, true);
-		}
-
-		private void PerformPostSaveActions(IList<DbEntityEntry> modifiedEntries, bool hooksEnabled, HookedEntityEntry[] modifiedHookEntries)
-		{
-			IgnoreMergedData(modifiedEntries, false);
-
-			if (hooksEnabled && _postHooks.Count > 0)
-			{
-				ExecutePostActionHooks(modifiedHookEntries);
-			}
 		}
 
 		#endregion

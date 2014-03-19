@@ -18,7 +18,7 @@ using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Mvc;
 using System.IO;
 using System.Text;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 

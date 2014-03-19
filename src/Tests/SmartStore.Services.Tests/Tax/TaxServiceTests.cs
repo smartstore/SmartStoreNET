@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;

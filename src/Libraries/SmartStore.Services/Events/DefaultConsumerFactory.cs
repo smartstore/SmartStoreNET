@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Events
 {

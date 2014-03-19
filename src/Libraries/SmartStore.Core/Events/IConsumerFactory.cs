@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SmartStore.Services.Events
+namespace SmartStore.Core.Events
 {
 
 	public interface IConsumerFactory<T>

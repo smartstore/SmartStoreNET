@@ -326,20 +326,14 @@ namespace SmartStore.Core
 
 		public static bool IsStaticResourceRequested(HttpRequest request)
 		{
-			return IsStaticResourceRequested(new HttpRequestWrapper(request));
+			Guard.ArgumentNotNull(() => request);
+			return s_staticExts.IsMatch(request.Path);
 		}
 
 		public static bool IsStaticResourceRequested(HttpRequestBase request)
 		{
+			// unit testable
 			Guard.ArgumentNotNull(() => request);
-			
-			var handler = request.RequestContext.HttpContext.Handler;;
-			if (handler == null)
-			{
-				// No handler means: obviously static.
-				return true;
-			}
-
 			return s_staticExts.IsMatch(request.Path);
 		}
         

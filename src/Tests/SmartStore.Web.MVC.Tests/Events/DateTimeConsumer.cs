@@ -1,5 +1,5 @@
 ﻿using System;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Web.MVC.Tests.Events
 {

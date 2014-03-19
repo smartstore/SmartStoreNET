@@ -3,7 +3,7 @@ using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;

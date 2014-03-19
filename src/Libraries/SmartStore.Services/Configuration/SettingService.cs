@@ -8,7 +8,7 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;

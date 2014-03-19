@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;

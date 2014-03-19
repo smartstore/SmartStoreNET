@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Services.Events
+namespace SmartStore.Core.Events
 {
 	[AttributeUsage(AttributeTargets.Class, Inherited=true, AllowMultiple=false)]
 	public class AsyncConsumerAttribute : Attribute

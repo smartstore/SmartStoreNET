@@ -14,7 +14,6 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Events;
 
 namespace SmartStore.Web.Infrastructure.Cache
 {

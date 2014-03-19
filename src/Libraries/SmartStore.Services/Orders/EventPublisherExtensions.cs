@@ -1,5 +1,5 @@
 ﻿using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Orders
 {

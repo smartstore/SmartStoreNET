@@ -11,7 +11,6 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
-using SmartStore.Services.Events;
 
 namespace SmartStore.Web.Framework
 {

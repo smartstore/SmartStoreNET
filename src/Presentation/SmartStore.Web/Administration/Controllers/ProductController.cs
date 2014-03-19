@@ -35,7 +35,7 @@ using SmartStore.Core.Data;
 using System.Threading;
 using Autofac;
 using SmartStore.Core.Async;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {

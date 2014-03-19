@@ -11,7 +11,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Data;
 using SmartStore.Services.Logging;
 using SmartStore.Core.Plugins;

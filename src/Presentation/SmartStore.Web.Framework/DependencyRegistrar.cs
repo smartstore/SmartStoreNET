@@ -11,7 +11,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -64,6 +64,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Core.Email;
 using Autofac.Features.Metadata;
+using SmartStore.Services.Events;
 
 namespace SmartStore.Web.Framework
 {
@@ -233,14 +234,16 @@ namespace SmartStore.Web.Framework
 			if (DataSettings.Current.IsValid())
 			{
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
-					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+					.PropertiesAutowired(PropertyWiringOptions.None)
 					.InstancePerHttpRequest();
 
 				// register DB Hooks (only when app was installed properly)
 				var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
 				foreach (var hook in hooks)
 				{
-					builder.RegisterType(hook).As(typeof(IHook)).InstancePerHttpRequest();
+					var registration = builder.RegisterType(hook).As(typeof(IHook)).InstancePerHttpRequest();
+					string stage = typeof(IPreActionHook).IsAssignableFrom(hook) ? "pre" : "post";
+					registration.WithMetadata("stage", stage);
 				}
 			}
 			else
@@ -315,7 +318,7 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<LanguageService>().As<ILanguageService>().WithRequestCache().InstancePerHttpRequest();
+			builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerHttpRequest();
 			
 			builder.RegisterType<TelerikLocalizationServiceFactory>().As<Telerik.Web.Mvc.Infrastructure.ILocalizationServiceFactory>().InstancePerHttpRequest();
 			builder.RegisterType<LocalizationService>().As<ILocalizationService>()
@@ -411,8 +414,8 @@ namespace SmartStore.Web.Framework
 				var shouldExecuteAsync = consumerType.GetAttribute<AsyncConsumerAttribute>(false) != null;
 
 				registration.WithMetadata<EventConsumerMetadata>(m => {
-					m.For(em => em.IsActive, shouldExecuteAsync);
-					m.For(em => em.ExecuteAsync, isActive);
+					m.For(em => em.IsActive, isActive);
+					m.For(em => em.ExecuteAsync, shouldExecuteAsync);
 				});
 
 				if (!shouldExecuteAsync)

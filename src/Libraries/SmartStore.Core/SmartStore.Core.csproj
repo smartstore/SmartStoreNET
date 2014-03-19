@@ -139,6 +139,7 @@
     <Compile Include="Data\EntityState.cs" />
     <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
     <Compile Include="Data\Hooks\HookEntityMetadata.cs" />
+    <Compile Include="Data\Hooks\HooksEventConsumer.cs" />
     <Compile Include="Data\Hooks\IHook.cs" />
     <Compile Include="Data\Hooks\IPostActionHook .cs" />
     <Compile Include="Data\Hooks\IPreActionHook.cs" />
@@ -184,6 +185,12 @@
     <Compile Include="Email\IEmailSender.cs" />
     <Compile Include="Email\IEmailSenderExtensions.cs" />
     <Compile Include="Email\SmtpContext.cs" />
+    <Compile Include="Events\AsyncConsumerAttribute.cs" />
+    <Compile Include="Events\EventConsumerMetadata.cs" />
+    <Compile Include="Events\IConsumer.cs" />
+    <Compile Include="Events\IConsumerFactory.cs" />
+    <Compile Include="Events\IEventPublisher.cs" />
+    <Compile Include="Events\NullEventPublisher.cs" />
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
@@ -225,8 +232,8 @@
     <Compile Include="Domain\Shipping\Shipment.cs" />
     <Compile Include="Domain\Tasks\ScheduleTask.cs" />
     <Compile Include="Domain\Messages\Events.cs" />
-    <Compile Include="Events\AppRegisterGlobalFiltersEvent.cs" />
-    <Compile Include="Events\AppInitScheduledTasksEvent.cs" />
+    <Compile Include="Events\CommonMessages\AppRegisterGlobalFiltersEvent.cs" />
+    <Compile Include="Events\CommonMessages\AppInitScheduledTasksEvent.cs" />
     <Compile Include="Data\DataProviderFactory.cs" />
     <Compile Include="Data\IDataProvider.cs" />
     <Compile Include="Data\DataSettings.cs" />
@@ -242,9 +249,9 @@
     <Compile Include="Domain\Polls\PollAnswer.cs" />
     <Compile Include="Domain\Polls\Poll.cs" />
     <Compile Include="Domain\Orders\BestsellersReportLine.cs" />
-    <Compile Include="Events\EntityDeleted.cs" />
-    <Compile Include="Events\EntityInserted.cs" />
-    <Compile Include="Events\EntityUpdated.cs" />
+    <Compile Include="Events\CommonMessages\EntityDeleted.cs" />
+    <Compile Include="Events\CommonMessages\EntityInserted.cs" />
+    <Compile Include="Events\CommonMessages\EntityUpdated.cs" />
     <Compile Include="Extensions\ConversionExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />

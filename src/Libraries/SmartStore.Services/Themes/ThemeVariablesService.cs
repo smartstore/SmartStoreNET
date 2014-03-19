@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Data;
 using SmartStore.Core.Themes;
 using SmartStore.Core.Caching;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using System.Xml;
 
 namespace SmartStore.Services.Themes

@@ -44,6 +44,7 @@ namespace SmartStore.Web.Framework
         private readonly ICacheManager _cacheManager;
         private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
+		private readonly Lazy<ITaxService> _taxService;
 
         private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
@@ -51,7 +52,7 @@ namespace SmartStore.Web.Framework
         private Currency _cachedCurrency;
         private Customer _originalCustomerIfImpersonated; 
 
-        public WebWorkContext(ICacheManager cacheManager,
+        public WebWorkContext(Func<string, ICacheManager> cacheManager,
             HttpContextBase httpContext,
             ICustomerService customerService,
 			IStoreContext storeContext,
@@ -60,10 +61,10 @@ namespace SmartStore.Web.Framework
             ICurrencyService currencyService,
 			IGenericAttributeService attrService,
             TaxSettings taxSettings, CurrencySettings currencySettings,
-            LocalizationSettings localizationSettings,
+            LocalizationSettings localizationSettings, Lazy<ITaxService> taxService,
             IWebHelper webHelper, IStoreService storeService, ISettingService settingService)
         {
-            this._cacheManager = cacheManager;
+			this._cacheManager = cacheManager("static");
             this._httpContext = httpContext;
             this._customerService = customerService;
 			this._storeContext = storeContext;
@@ -72,6 +73,7 @@ namespace SmartStore.Web.Framework
 			this._attrService = attrService;
             this._currencyService = currencyService;
             this._taxSettings = taxSettings;
+			this._taxService = taxService;
             this._currencySettings = currencySettings;
             this._localizationSettings = localizationSettings;
             this._webHelper = webHelper;
@@ -109,7 +111,7 @@ namespace SmartStore.Web.Framework
             }
         }
 
-        public Lazy<ITaxService> TaxService { get; set; }
+        //public Lazy<ITaxService> TaxService { get; set; }
 
         /// <summary>
         /// Gets or sets the current customer
@@ -464,7 +466,7 @@ namespace SmartStore.Web.Framework
 
             if (!taxDisplayType.HasValue && _taxSettings.EuVatEnabled)
             {
-                if (customer != null && TaxService.Value.IsVatExempt(null, customer))
+				if (customer != null && _taxService.Value.IsVatExempt(null, customer))
                 {
                     taxDisplayType = (int)TaxDisplayType.ExcludingTax;
                 }

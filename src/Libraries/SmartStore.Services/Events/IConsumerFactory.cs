@@ -17,10 +17,5 @@ namespace SmartStore.Services.Events
 
 		bool HasAsyncConsumer { get; }
 	}
-	
-	public interface ISubscriptionService
-    {
-        IList<IConsumer<T>> GetSubscriptions<T>();
-    }
 
 }

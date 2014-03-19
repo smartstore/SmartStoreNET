@@ -77,8 +77,8 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        // Autowired Dependency (is a proptery dependency to avoid circularity)
-        public virtual IProductAttributeParser AttributeParser { get; set; }
+		//// Autowired Dependency (is a proptery dependency to avoid circularity)
+		//public virtual IProductAttributeParser AttributeParser { get; set; }
 
         #region Methods
 
@@ -556,7 +556,7 @@ namespace SmartStore.Services.Catalog
 					string attrXml = "";
 					foreach (var x in values) 
                     {
-						attrXml = this.AttributeParser.AddProductAttribute(attrXml, attributes[values.IndexOf(x)], x.Id.ToString());
+						attrXml = attributes[values.IndexOf(x)].AddProductAttribute(attrXml, x.Id.ToString());
 					}
 
 					var combination = new ProductVariantAttributeCombination()

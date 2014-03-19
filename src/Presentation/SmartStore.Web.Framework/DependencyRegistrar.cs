@@ -63,6 +63,7 @@ using Module = Autofac.Module;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Core.Email;
+using Autofac.Features.Metadata;
 
 namespace SmartStore.Web.Framework
 {
@@ -70,12 +71,11 @@ namespace SmartStore.Web.Framework
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-			
 			// modules
 			builder.RegisterModule(new DbModule(typeFinder));
+			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new LocalizationModule());
 			builder.RegisterModule(new LoggingModule());
-			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new EventModule(typeFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
@@ -91,7 +91,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<PluginFinder>().As<IPluginFinder>().SingleInstance(); // xxx (http)
 
             // work context
-            builder.RegisterType<WebWorkContext>().As<IWorkContext>().WithStaticCache().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies).InstancePerHttpRequest();
+            builder.RegisterType<WebWorkContext>().As<IWorkContext>().WithStaticCache().InstancePerHttpRequest();
 			
 			// store context
 			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerHttpRequest();
@@ -106,7 +106,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<PriceFormatter>().As<IPriceFormatter>().InstancePerHttpRequest();
             builder.RegisterType<ProductAttributeFormatter>().As<IProductAttributeFormatter>().InstancePerLifetimeScope();
             builder.RegisterType<ProductAttributeParser>().As<IProductAttributeParser>().InstancePerHttpRequest();
-            builder.RegisterType<ProductAttributeService>().As<IProductAttributeService>().InstancePerHttpRequest().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies); // codehint: sm-edit (Autowiring)
+            builder.RegisterType<ProductAttributeService>().As<IProductAttributeService>().InstancePerHttpRequest();
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerHttpRequest();
             builder.RegisterType<CopyProductService>().As<ICopyProductService>().InstancePerHttpRequest();
             builder.RegisterType<SpecificationAttributeService>().As<ISpecificationAttributeService>().InstancePerHttpRequest();
@@ -148,7 +148,7 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerHttpRequest();
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerHttpRequest();
-            builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance(); // xxx (http)
+            builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
             builder.RegisterType<PictureService>().As<IPictureService>().InstancePerHttpRequest();
 
             builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerHttpRequest();
@@ -207,7 +207,7 @@ namespace SmartStore.Web.Framework
 
         public int Order
         {
-            get { return 0; }
+            get { return -100; }
         }
     }
 
@@ -233,8 +233,7 @@ namespace SmartStore.Web.Framework
 			if (DataSettings.Current.IsValid())
 			{
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
-					.InstancePerHttpRequest()
-					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+					.InstancePerHttpRequest();
 
 				// register DB Hooks (only when app was installed properly)
 				var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
@@ -315,24 +314,24 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerHttpRequest();
+			builder.RegisterType<LanguageService>().As<ILanguageService>().WithRequestCache().InstancePerHttpRequest();
 			
 			builder.RegisterType<TelerikLocalizationServiceFactory>().As<Telerik.Web.Mvc.Infrastructure.ILocalizationServiceFactory>().InstancePerHttpRequest();
 			builder.RegisterType<LocalizationService>().As<ILocalizationService>()
-				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static")) // pass StaticCache as ICache (cache settings between requests)
+				.WithStaticCache() // pass StaticCache as ICache (cache settings between requests)
 				.InstancePerHttpRequest();
 
 			builder.RegisterType<Text>().As<IText>().InstancePerHttpRequest();
 
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>()
-				.WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static")) // pass StaticCache as ICache (cache settings between requests)
+				.WithStaticCache() // pass StaticCache as ICache (cache settings between requests)
 				.InstancePerHttpRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{
 			var userProperty = FindUserProperty(registration.Activator.LimitType);
-
+			
 			if (userProperty == null)
 				return;
 
@@ -353,27 +352,30 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<StaticCache>().As<ICache>().Named<ICache>("static").SingleInstance();
-			builder.RegisterType<RequestCache>().As<ICache>().Named<ICache>("request").InstancePerHttpRequest();
-			builder.RegisterType<AspNetCache>().As<ICache>().Named<ICache>("aspnet").InstancePerHttpRequest();
+			builder.RegisterType<StaticCache>().As<ICache>().Keyed<ICache>(typeof(StaticCache)).SingleInstance();
+			builder.RegisterType<AspNetCache>().As<ICache>().Keyed<ICache>(typeof(AspNetCache)).InstancePerHttpRequest();
+			builder.RegisterType<RequestCache>().As<ICache>().Keyed<ICache>(typeof(RequestCache)).InstancePerHttpRequest();
 
-			builder.RegisterType<DefaultCacheManager>()
+			builder.RegisterType<CacheManager<StaticCache>>()
 				.As<ICacheManager>()
 				.Named<ICacheManager>("static")
-				.WithParameter(ResolvedParameter.ForNamed<ICache>("static"))
-				.InstancePerHttpRequest();
-			builder.RegisterType<DefaultCacheManager>()
+				.InstancePerDependency();
+			builder.RegisterType<CacheManager<AspNetCache>>()
 				.As<ICacheManager>()
 				.Named<ICacheManager>("aspnet")
-				.WithParameter(ResolvedParameter.ForNamed<ICache>("aspnet"))
-				.InstancePerHttpRequest();
-			builder.RegisterType<DefaultCacheManager>()
+				.InstancePerDependency();
+			builder.RegisterType<CacheManager<RequestCache>>()
 				.As<ICacheManager>()
 				.Named<ICacheManager>("request")
-				.WithParameter(ResolvedParameter.ForNamed<ICache>("request"))
-				.InstancePerHttpRequest();
+				.InstancePerDependency();
 
 			// Register resolving delegate
+			builder.Register<Func<Type, ICache>>(c =>
+			{
+				var cc = c.Resolve<IComponentContext>();
+				return keyed => cc.ResolveKeyed<ICache>(keyed);
+			});
+
 			builder.Register<Func<string, ICacheManager>>(c =>
 			{
 				var cc = c.Resolve<IComponentContext>();
@@ -393,7 +395,6 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<SubscriptionService>().As<ISubscriptionService>().SingleInstance();
 			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 			builder.RegisterGeneric(typeof(DefaultConsumerFactory<>)).As(typeof(IConsumerFactory<>)).InstancePerDependency();
 

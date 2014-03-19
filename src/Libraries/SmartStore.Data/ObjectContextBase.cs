@@ -61,27 +61,27 @@ namespace SmartStore.Data
 
         #region Hooks
 
-        public IEnumerable<IHook> Hooks
-        {
-            get
-            {
-                return _hooks ?? Enumerable.Empty<IHook>();
-            }
-            set
-            {
-                if (value != null)
-                {
-                    this._preHooks = value.OfType<IPreActionHook>().ToList();
-                    this._postHooks = value.OfType<IPostActionHook>().ToList();
-                }
-                else
-                {
-                    this._preHooks.Clear();
-                    this._postHooks.Clear();
-                }
-                _hooks = value;
-            }
-        }
+		//public IEnumerable<IHook> Hooks
+		//{
+		//	get
+		//	{
+		//		return _hooks ?? Enumerable.Empty<IHook>();
+		//	}
+		//	set
+		//	{
+		//		if (value != null)
+		//		{
+		//			this._preHooks = value.OfType<IPreActionHook>().ToList();
+		//			this._postHooks = value.OfType<IPostActionHook>().ToList();
+		//		}
+		//		else
+		//		{
+		//			this._preHooks.Clear();
+		//			this._postHooks.Clear();
+		//		}
+		//		_hooks = value;
+		//	}
+		//}
 
         /// <summary>
         /// Executes the pre action hooks, filtered by <paramref name="requiresValidation"/>.

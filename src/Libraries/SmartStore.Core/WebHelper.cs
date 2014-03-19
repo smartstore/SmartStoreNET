@@ -545,7 +545,8 @@ namespace SmartStore.Core
                 //full trust
                 HttpRuntime.UnloadAppDomain();
 
-                TryWriteGlobalAsax();
+				// not a good idea with optimized compilation!
+                //TryWriteGlobalAsax();
             }
             else
             {

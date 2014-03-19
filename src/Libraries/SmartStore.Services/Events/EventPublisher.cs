@@ -16,19 +16,13 @@ namespace SmartStore.Services.Events
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly ISubscriptionService _subscriptionService;
 		private readonly ConcurrentDictionary<object, Timer> _queue = new ConcurrentDictionary<object, Timer>();
-
-        public EventPublisher(ISubscriptionService subscriptionService)
-        {
-            _subscriptionService = subscriptionService;
-        }
 
         public void Publish<T>(T eventMessage)
         {
 			if (eventMessage != null)
 			{
-				// Enable event throttling by allowing the very same event to be published only all 100 ms.
+				// Enable event throttling by allowing the very same event to be published only all 150 ms.
 				Timer timer;
 				if (_queue.TryGetValue(eventMessage, out timer))
 				{

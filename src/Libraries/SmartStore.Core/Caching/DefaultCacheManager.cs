@@ -5,29 +5,19 @@ using System.Text.RegularExpressions;
 namespace SmartStore.Core.Caching
 {
 
-    public partial class DefaultCacheManager : ICacheManager
+    public partial class CacheManager<TCache> : ICacheManager where TCache : ICache
     {
         private readonly ICache _cache;
 
-        public DefaultCacheManager(ICache cache)
+        public CacheManager(Func<Type, ICache> fn)
         {
-            this._cache = cache;
+            this._cache = fn(typeof(TCache));
         }
 
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = 60)
         {
             return _cache.Get(key, acquirer, cacheTime);
         }
-
-        //public T Get<T>(string key)
-        //{
-        //    return default(T);
-        //}
-
-        //public void Set(string key, object data, int cacheTime)
-        //{
-        //    // ...
-        //}
 
         public bool Contains(string key)
         {

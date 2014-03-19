@@ -16,15 +16,15 @@ namespace SmartStore.Web.Infrastructure
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            //we cache presentation models between requests
-			builder.RegisterType<BlogController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<CatalogController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<CountryController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<CommonController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<NewsController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<PollController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<ShoppingCartController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
-			builder.RegisterType<TopicController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("static"));
+			//we cache presentation models between requests
+			builder.RegisterType<BlogController>().WithStaticCache();
+			builder.RegisterType<CatalogController>().WithStaticCache();
+			builder.RegisterType<CountryController>().WithStaticCache();
+			builder.RegisterType<CommonController>().WithStaticCache();
+			builder.RegisterType<NewsController>().WithStaticCache();
+			builder.RegisterType<PollController>().WithStaticCache();
+			builder.RegisterType<ShoppingCartController>().WithStaticCache();
+			builder.RegisterType<TopicController>().WithStaticCache();
 
             builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerHttpRequest();
             

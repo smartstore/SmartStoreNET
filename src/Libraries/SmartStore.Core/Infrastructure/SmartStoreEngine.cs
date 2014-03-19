@@ -112,10 +112,6 @@ namespace SmartStore.Core.Infrastructure
             return ContainerManager.Resolve(type);
         }
 
-        public Array ResolveAll(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
 
         public T[] ResolveAll<T>()
         {
@@ -137,5 +133,6 @@ namespace SmartStore.Core.Infrastructure
         }
 
         #endregion
-    }
+
+	}
 }

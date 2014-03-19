@@ -16,6 +16,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using System;
 
 namespace SmartStore.Services.Tests.Catalog
 {

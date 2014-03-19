@@ -233,6 +233,7 @@ namespace SmartStore.Web.Framework
 			if (DataSettings.Current.IsValid())
 			{
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
+					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
 					.InstancePerHttpRequest();
 
 				// register DB Hooks (only when app was installed properly)

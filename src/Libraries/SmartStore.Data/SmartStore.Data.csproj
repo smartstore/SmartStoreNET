@@ -107,6 +107,8 @@
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
       <DependentUpon>201403112331027_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Setup\Builder\SettingsBuilder.cs" />
+    <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
     <Compile Include="Extensions\BaseEntityExtensions.cs" />
@@ -119,8 +121,8 @@
     <Compile Include="Setup\IDataSeeder.cs" />
     <Compile Include="Setup\ILocaleResourcesProvider.cs" />
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
-    <Compile Include="Setup\LocaleResourcesBuilder.cs" />
-    <Compile Include="Setup\LocaleResourcesMigrator.cs" />
+    <Compile Include="Setup\Builder\LocaleResourcesBuilder.cs" />
+    <Compile Include="Setup\Builder\LocaleResourcesMigrator.cs" />
     <Compile Include="Setup\MigratorUtils.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
@@ -148,7 +150,7 @@
     <Compile Include="Mapping\Shipping\ShipmentMap.cs" />
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
-    <Compile Include="Setup\SmartObjectContextExtensions.cs" />
+    <Compile Include="Setup\Builder\SmartObjectContextExtensions.cs" />
     <Compile Include="Setup\TestDatabaseInitializer.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />

@@ -29,7 +29,18 @@ namespace SmartStore.Data.Setup
 
 		#region Settings seeding
 
-		// [...]
+		public static void MigrateSettings(this SmartObjectContext ctx, Action<SettingsBuilder> fn)
+		{
+			Guard.ArgumentNotNull(() => ctx);
+			Guard.ArgumentNotNull(() => fn);
+
+			var builder = new SettingsBuilder();
+			fn(builder);
+			var entries = builder.Build();
+
+			var migrator = new SettingsMigrator(ctx);
+			migrator.Migrate(entries);
+		}
 
 		#endregion
 

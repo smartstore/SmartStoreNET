@@ -18,10 +18,6 @@ namespace SmartStore.Core.Domain.Catalog
     {
         private ICollection<Discount> _appliedDiscounts;
 
-		//// XXX
-		//public string MigrateTest { get; set; }
-		//// XXX
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>

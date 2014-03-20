@@ -150,7 +150,7 @@
     <Compile Include="Mapping\Shipping\ShipmentMap.cs" />
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
-    <Compile Include="Setup\Builder\SmartObjectContextExtensions.cs" />
+    <Compile Include="Setup\Builder\BuilderDbContextExtensions.cs" />
     <Compile Include="Setup\TestDatabaseInitializer.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />

@@ -6,10 +6,10 @@ using System.Text;
 namespace SmartStore.Data.Setup
 {
 
-	public static class SmartObjectContextExtensions
+	public static class BuilderDbContextExtensions
 	{
 
-		#region Resource seeding
+		#region Resource building
 
 		public static void MigrateLocaleResources(this SmartObjectContext ctx, Action<LocaleResourcesBuilder> fn, bool updateTouchedResources = false)
 		{
@@ -27,7 +27,7 @@ namespace SmartStore.Data.Setup
 		#endregion
 
 
-		#region Settings seeding
+		#region Settings building
 
 		public static void MigrateSettings(this SmartObjectContext ctx, Action<SettingsBuilder> fn)
 		{

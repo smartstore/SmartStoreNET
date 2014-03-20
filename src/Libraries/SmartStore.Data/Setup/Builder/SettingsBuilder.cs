@@ -10,7 +10,7 @@ namespace SmartStore.Data.Setup
 	{
 		public string Key { get; set; }
 		public string Value { get; set; }
-		public bool Important { get; set; }
+		public bool KeyIsGroup { get; set; }
 	}
 
 	public class SettingsBuilder : IHideObjectMembers
@@ -23,7 +23,7 @@ namespace SmartStore.Data.Setup
 		/// <param name="keys">The key(s) of the settings to delete</param>
 		public void Delete(params string[] keys)
 		{
-			//keys.Each(x => _entries.Add(new SettingEntry { Key = x, Important = true }));
+			keys.Each(x => _entries.Add(new SettingEntry { Key = x.TrimSafe() }));
 		}
 
 		/// <summary>
@@ -32,15 +32,19 @@ namespace SmartStore.Data.Setup
 		/// <param name="keys">The group/prefix (actually the settings class name)</param>
 		public void DeleteGroup(string group)
 		{
-			//keys.Each(x => _entries.Add(new SettingEntry { Key = x, Important = true }));
+			Guard.ArgumentNotEmpty(() => group);
+			_entries.Add(new SettingEntry { Key = group.Trim(), KeyIsGroup = true });
 		}
 
 		/// <summary>
 		/// Adds a setting if it doesn't exist yet.
 		/// </summary>
-		public void Add(string key, string value)
+		public void Add<TValue>(string key, TValue value)
 		{
-			// [...]
+			Guard.ArgumentNotEmpty(() => key);
+
+			var valueStr = value.Convert<string>();
+			_entries.Add(new SettingEntry { Key = key.Trim(), Value = valueStr });
 		}
 
 		internal void Reset()
@@ -50,7 +54,7 @@ namespace SmartStore.Data.Setup
 
 		internal IEnumerable<SettingEntry> Build()
 		{
-			return _entries.OrderByDescending(x => x.Important);
+			return _entries.Where(x => x.Key.HasValue());
 		}
 	}
 

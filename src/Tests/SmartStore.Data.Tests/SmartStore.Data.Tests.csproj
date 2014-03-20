@@ -95,7 +95,7 @@
     <Compile Include="Catalog\ProductTagPersistenceTests.cs" />
     <Compile Include="Polls\PollPersistenceTests.cs" />
     <Compile Include="Security\AclRecordPersistenceTests.cs" />
-    <Compile Include="Setup\LocaleResourcesBuilderTests.cs" />
+    <Compile Include="Setup\MigrateBuilderTests.cs" />
     <Compile Include="Shipping\ShipmentItemPersistenceTests.cs" />
     <Compile Include="Shipping\ShipmentPersistenceTests.cs" />
     <Compile Include="TestDbConfiguration.cs" />

@@ -57,6 +57,9 @@ Example of a complete request header:
 
 Response HTTP header fields
 ------
+**SmartStore-Net-Api-Version**: The highest API version supported by the server (unsigned integer) and the version of the installed API plugin (floating-point value). The API version is only increased when there is a fundamental break in API development without the ability of downward compatibility. The plugin version is typically increased when the API has been extended, for example when new ressouces were added. 
+Example: `1 1.0`
+
 **SmartStore-Net-Api-Date**: The current server date and time in ISO-8601 UTC. Example: `2013-11-11T14:35:33.7772907Z`
 
 **SmartStore-Net-Api-MaxTop**: The maximum value for OData $top option. Required for client driven paging.
@@ -416,6 +419,10 @@ Note that you cannot use a path `/Orders(145)/ShippingAddress` to update an addr
 #### Get product with name *SmartStore eBay SmartSeller*
 
     GET http://localhost:1260/odata/v1/Products?$top=1&$filter=Name eq 'SmartStore eBay SmartSeller'
+
+#### Get child products of group product with ID 210
+
+    GET http://localhost:1260/odata/v1/Products?$top=120&$filter=ParentGroupedProductId eq 210
 
 #### Get email address of customer with ID 1
 

@@ -180,8 +180,8 @@ namespace SmartStore.Admin.Controllers
             {
                 deliveryTime = model.ToEntity(deliveryTime);
                 
-                //locales
                 UpdateLocales(deliveryTime, model);
+				_deliveryTimeService.UpdateDeliveryTime(deliveryTime);
 
                 SuccessNotification(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");

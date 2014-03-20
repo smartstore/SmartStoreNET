@@ -40,5 +40,6 @@ namespace SmartStore.Services.Directory
         /// <param name="currency">DeliveryTime</param>
         void InsertDeliveryTime(DeliveryTime deliveryTime);
 
+		void UpdateDeliveryTime(DeliveryTime deliveryTime);
     }
 }

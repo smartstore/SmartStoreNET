@@ -14,6 +14,10 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		{
 			Service.InsertDeliveryTime(entity);
 		}
+		protected override void Update(DeliveryTime entity)
+		{
+			Service.UpdateDeliveryTime(entity);
+		}
 		protected override void Delete(DeliveryTime entity)
 		{
 			Service.DeleteDeliveryTime(entity);

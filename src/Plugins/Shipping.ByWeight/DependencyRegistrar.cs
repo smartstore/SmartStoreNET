@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().InstancePerHttpRequest();
+			builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().WithRequestCache().InstancePerHttpRequest();
 
             // data layer
             // register named context

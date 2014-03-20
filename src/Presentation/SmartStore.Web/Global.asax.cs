@@ -114,7 +114,7 @@ namespace SmartStore.Web
 				IViewEngine viewEngine = new ThemeableRazorViewEngine();
 				if (profilingEnabled)
 				{
-					// ...and wrap it profiling is active
+					// ...and wrap if profiling is active
 					viewEngine = new ProfilingViewEngine(viewEngine);
 					GlobalFilters.Filters.Add(new ProfilingActionFilter());
 				}
@@ -189,7 +189,7 @@ namespace SmartStore.Web
 			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 
-			_profilingEnabled = EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+			_profilingEnabled = this.ProfilingEnabled;
 
 			if (installed && _profilingEnabled)
 			{
@@ -211,7 +211,7 @@ namespace SmartStore.Web
 			{
 				if (_profilingEnabled)
 				{
-					// stop as early as you can
+					// stop mini profiler
 					MiniProfiler.Stop();
 				}
 			}

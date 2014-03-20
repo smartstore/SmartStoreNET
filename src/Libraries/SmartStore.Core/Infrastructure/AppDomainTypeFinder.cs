@@ -223,7 +223,7 @@ namespace SmartStore.Core.Infrastructure
         /// <returns>A list of assemblies that should be loaded by the SmartStore factory.</returns>
         public virtual IList<Assembly> GetAssemblies()
         {
-            var addedAssemblyNames = new List<string>();
+			var addedAssemblyNames = new List<string>();
             var assemblies = new List<Assembly>();
 
             if (LoadAppDomainAssemblies)

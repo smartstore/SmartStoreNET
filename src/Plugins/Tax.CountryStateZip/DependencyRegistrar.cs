@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            builder.RegisterType<TaxRateService>().As<ITaxRateService>().InstancePerHttpRequest();
+			builder.RegisterType<TaxRateService>().As<ITaxRateService>().WithRequestCache().InstancePerHttpRequest();
 
 			//register named context
 			builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))

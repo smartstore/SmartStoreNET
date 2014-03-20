@@ -19,7 +19,7 @@ namespace SmartStore.Data.Setup
 			var builder = new LocaleResourcesBuilder();
 			fn(builder);
 			var entries = builder.Build();
-
+			 
 			var migrator = new LocaleResourcesMigrator(ctx);
 			migrator.Migrate(entries, updateTouchedResources);
 		}

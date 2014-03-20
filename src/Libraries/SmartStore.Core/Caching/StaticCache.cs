@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Runtime.Caching;
+using SmartStore.Utilities;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Caching
 {
     
     public partial class StaticCache : ICache
     {
-        private readonly static object s_lock = new object();
 		private ObjectCache _cache;
 
         protected ObjectCache Cache
@@ -31,38 +33,22 @@ namespace SmartStore.Core.Caching
             }
         }
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime)
+		public object Get(string key)
         {
-            if (Cache.Contains(key))
-            {
-                return (T)Cache.Get(key);
-            }
-            else
-            {
-				lock (s_lock)
-                { 
-                    if (!Cache.Contains(key))
-                    {
-						var value = acquirer();
-                        if (value != null)
-                        {
-                            var cacheItem = new CacheItem(key, value);
-                            CacheItemPolicy policy = null;
-                            if (cacheTime.GetValueOrDefault() > 0)
-                            {
-                                policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime.Value) };
-                            }
-
-                            Cache.Add(cacheItem, policy);
-                        }
-
-                        return value;
-                    }
-                }
-
-                return (T)Cache.Get(key);
-            }
+			return Cache.Get(key);
         }
+
+		public void Set(string key, object value, int? cacheTime)
+		{
+			var cacheItem = new CacheItem(key, value);
+			CacheItemPolicy policy = null;
+			if (cacheTime.GetValueOrDefault() > 0)
+			{
+				policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime.Value) };
+			}
+
+			Cache.Add(cacheItem, policy);
+		}
 
         public bool Contains(string key)
         {
@@ -74,6 +60,10 @@ namespace SmartStore.Core.Caching
             Cache.Remove(key);
         }
 
-    }
+		public bool IsSingleton
+		{
+			get { return true; }
+		}
+	}
 
 }

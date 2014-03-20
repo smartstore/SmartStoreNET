@@ -1807,6 +1807,7 @@ namespace SmartStore.Web.Controllers
             }
 
 
+			var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
 
             //subcategories
@@ -1821,18 +1822,18 @@ namespace SmartStore.Web.Controllers
                         Name = subCatName,
                         SeName = x.GetSeName(),
                     };
-
+					
                     //prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, 
-						_workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore.Id);
+					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore.Id);
                     subCatModel.PictureModel = _cacheManager.Get(categoryPictureCacheKey, () =>
                     {
-                        var pictureModel = new PictureModel()
+						var picture = _pictureService.GetPictureById(x.PictureId.GetValueOrDefault());
+						var pictureModel = new PictureModel()
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
-							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
-							ImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault(), pictureSize),
+							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
+							ImageUrl = _pictureService.GetPictureUrl(picture, targetSize: pictureSize),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
                         };
@@ -1846,28 +1847,44 @@ namespace SmartStore.Web.Controllers
 
 
 
-            //featured products
-            //Question: should we use '_catalogSettings.ShowProductsFromSubcategories' setting for displaying featured products?
-            if (!_catalogSettings.IgnoreFeaturedProducts && _categoryService.GetTotalNumberOfFeaturedProducts(categoryId) > 0)
+            // Featured products
+            if (!_catalogSettings.IgnoreFeaturedProducts)
             {
-                var ctx = new ProductSearchContext();
+				IPagedList<Product> featuredProducts = null;
+				
+				string cacheKey = ModelCacheEventConsumer.CATEGORY_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(categoryId, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
+				var hasFeaturedProductsCache = _cacheManager.Get<bool?>(cacheKey);
 
-                if (category.Id > 0)
-                    ctx.CategoryIds.Add(category.Id);
-                ctx.FeaturedProducts = true;
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
+				var ctx = new ProductSearchContext();
+				if (category.Id > 0)
+					ctx.CategoryIds.Add(category.Id);
+				ctx.FeaturedProducts = true;
+				ctx.LanguageId = _workContext.WorkingLanguage.Id;
+				ctx.OrderBy = ProductSortingEnum.Position;
+				ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;
-                ctx.Origin = categoryId.ToString();
+				ctx.Origin = categoryId.ToString();
 
-                var featuredProducts = _productService.SearchProducts(ctx);
+				if (!hasFeaturedProductsCache.HasValue)
+				{
+					featuredProducts = _productService.SearchProducts(ctx);
+					hasFeaturedProductsCache = featuredProducts.TotalCount > 0;
+					_cacheManager.Set(cacheKey, hasFeaturedProductsCache, 240);
+				}
 
-                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
+				if (hasFeaturedProductsCache.Value && featuredProducts == null)
+				{
+					featuredProducts = _productService.SearchProducts(ctx);
+				}
+
+				if (featuredProducts != null)
+				{
+					model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
+				}
             }
 
-            //products
+            // Products
             if (filter.HasValue())
             {	// codehint: sm-add (new filter)
                 var context = new FilterProductContext
@@ -2050,22 +2067,42 @@ namespace SmartStore.Web.Controllers
                     maxPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(selectedPriceRange.To.Value, _workContext.WorkingCurrency);
             }
 
-            //featured products
-            if (!_catalogSettings.IgnoreFeaturedProducts && _manufacturerService.GetTotalNumberOfFeaturedProducts(manufacturerId) > 0)
-            {
-                var ctx = new ProductSearchContext();
-                ctx.ManufacturerId = manufacturer.Id;
-                ctx.FeaturedProducts = true;
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
+			var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+			// Featured products
+			if (!_catalogSettings.IgnoreFeaturedProducts)
+			{
+				IPagedList<Product> featuredProducts = null;
+
+				string cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(manufacturerId, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
+				var hasFeaturedProductsCache = _cacheManager.Get<bool?>(cacheKey);
+
+				var ctx = new ProductSearchContext();
+				ctx.ManufacturerId = manufacturer.Id;
+				ctx.FeaturedProducts = true;
+				ctx.LanguageId = _workContext.WorkingLanguage.Id;
+				ctx.OrderBy = ProductSortingEnum.Position;
+				ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;
 
-                var featuredProducts = _productService.SearchProducts(ctx);
+				if (!hasFeaturedProductsCache.HasValue)
+				{
+					featuredProducts = _productService.SearchProducts(ctx);
+					hasFeaturedProductsCache = featuredProducts.TotalCount > 0;
+					_cacheManager.Set(cacheKey, hasFeaturedProductsCache, 240);
+				}
 
-                model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
-            }
+				if (hasFeaturedProductsCache.Value && featuredProducts == null)
+				{
+					featuredProducts = _productService.SearchProducts(ctx);
+				}
+
+				if (featuredProducts != null)
+				{
+					model.FeaturedProducts = PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
+				}
+			}
 
             //products
             var ctx2 = new ProductSearchContext();

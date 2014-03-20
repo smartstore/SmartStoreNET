@@ -16,15 +16,19 @@ namespace SmartStore.Core.Caching
         IEnumerable<KeyValuePair<string, object>> Entries { get; }
 
         /// <summary>
-        /// Gets a cache item associated with the specified key or adds the item
-        /// if it doesn't exist in the cache.
+        /// Gets a cache item associated with the specified key
         /// </summary>
-        /// <typeparam name="T">The type of the item to get or add</typeparam>
         /// <param name="key">The cache item key</param>
-        /// <param name="acquirer">Func which returns value to be added to the cache</param>
-        /// <param name="cacheTime">Expiration time in minutes</param>
         /// <returns>Cached item value</returns>
-        T Get<T>(string key, Func<T> acquirer, int? cacheTime);
+        object Get(string key);
+
+		/// <summary>
+		/// Adds the cache item with the specified key
+		/// </summary>
+		/// <param name="key">Key</param>
+		/// <param name="data">Data</param>
+		/// <param name="cacheTime">Cache time in minutes</param>
+		void Set(string key, object value, int? cacheTime);
 
         /// <summary>
         /// Gets a value indicating whether an item associated with the specified key exists in the cache
@@ -38,6 +42,11 @@ namespace SmartStore.Core.Caching
         /// </summary>
         /// <param name="key">/key</param>
         void Remove(string key);
+
+		/// <summary>
+		/// Gets a value indicating whether reads and writes to this cache should be thread safe
+		/// </summary>
+		bool IsSingleton { get; }
 
     }
 

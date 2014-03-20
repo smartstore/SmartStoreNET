@@ -16,22 +16,14 @@ namespace SmartStore.Core.Caching
         /// <param name="cacheTime">Expiration time in minutes</param>
         /// <returns>Cached item value</returns>
         T Get<T>(string key, Func<T> acquirer, int? cacheTime = null);
-        
-        ///// <summary>
-        ///// Gets or sets the value associated with the specified key.
-        ///// </summary>
-        ///// <typeparam name="T">Type</typeparam>
-        ///// <param name="key">The key of the value to get.</param>
-        ///// <returns>The value associated with the specified key.</returns>
-        //T Get<T>(string key);
 
-        ///// <summary>
-        ///// Adds the specified key and object to the cache.
-        ///// </summary>
-        ///// <param name="key">key</param>
-        ///// <param name="data">Data</param>
-        ///// <param name="cacheTime">Cache time</param>
-        //void Set(string key, object data, int cacheTime);
+		/// <summary>
+		/// Adds a cache item with the specified key
+		/// </summary>
+		/// <param name="key">Key</param>
+		/// <param name="value">Value</param>
+		/// <param name="cacheTime">Cache time in minutes</param>
+		void Set(string key, object value, int? cacheTime = null);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

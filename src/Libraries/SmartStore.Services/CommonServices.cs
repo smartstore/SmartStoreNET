@@ -23,7 +23,7 @@ namespace SmartStore.Services
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		
 		public CommonServices(
-			Lazy<ICacheManager> cache,
+			Func<string, Lazy<ICacheManager>> cache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
 			Lazy<IWebHelper> webHelper,
@@ -33,7 +33,7 @@ namespace SmartStore.Services
 			Lazy<ILogger> logger,
 			Lazy<ICustomerActivityService> customerActivity)
 		{
-			this._cache = cache;
+			this._cache = cache("static");
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
 			this._webHelper = webHelper;

@@ -35,36 +35,26 @@ namespace SmartStore.Core.Caching
             }
         }
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime)
+		public object Get(string key)
         {
             if (_context is FakeHttpContext)
-                return default(T);
+                return null;
             
-            key = BuildKey(key);
-
-            var entry = _context.Cache.Get(key);
-
-            if (entry != null)
-            {
-                return (T)entry;
-            }
-            else
-            {
-                var value = acquirer();
-                if (value != null)
-                {
-                    var absoluteExpiration = Cache.NoAbsoluteExpiration;
-                    if (cacheTime.GetValueOrDefault() > 0)
-                    {
-                        absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
-                    }
-
-                    _context.Cache.Insert(key, value, null, absoluteExpiration, Cache.NoSlidingExpiration);
-                }
-                
-                return value;
-            }
+			return _context.Cache.Get(BuildKey(key));
         }
+
+		public void Set(string key, object value, int? cacheTime)
+		{
+			key = BuildKey(key);
+
+			var absoluteExpiration = Cache.NoAbsoluteExpiration;
+			if (cacheTime.GetValueOrDefault() > 0)
+			{
+				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
+			}
+
+			_context.Cache.Insert(key, value, null, absoluteExpiration, Cache.NoSlidingExpiration);
+		}
 
         public bool Contains(string key)
         {
@@ -86,6 +76,11 @@ namespace SmartStore.Core.Caching
         {
             return key.HasValue() ? REGION_NAME + key : null;
         }
+
+		public bool IsSingleton
+		{
+			get { return false; }
+		}
 
     }
 

@@ -19,6 +19,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -26,7 +27,7 @@ namespace SmartStore.Services.Tests.Catalog
     public class PriceFormatterTests : ServiceTest
     {
         IRepository<Currency> _currencyRepo;
-		IRepository<StoreMapping> _storeMappingRepo;
+		IStoreMappingService _storeMappingService;
         ICurrencyService _currencyService;
         CurrencySettings _currencySettings;
         IWorkContext _workContext;
@@ -69,10 +70,10 @@ namespace SmartStore.Services.Tests.Catalog
             _currencyRepo = MockRepository.GenerateMock<IRepository<Currency>>();
             _currencyRepo.Expect(x => x.Table).Return(new List<Currency>() { currency1, currency2 }.AsQueryable());
 
-			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
 
             var pluginFinder = new PluginFinder();
-			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingRepo,
+			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingService,
                 _currencySettings, pluginFinder, null);
             
             _taxSettings = new TaxSettings();

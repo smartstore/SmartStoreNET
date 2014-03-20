@@ -29,6 +29,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using System.Data.Entity.Migrations;
 using SmartStore.Data.Migrations;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -543,21 +544,20 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsLanguage = new EfRepository<Language>(_ctx);
 					rsLanguage.AutoCommitEnabled = false;
 
-					var rsStoreMapping = new EfRepository<StoreMapping>(_ctx);
-					rsStoreMapping.AutoCommitEnabled = false;
-
 					var rsResources = new EfRepository<LocaleStringResource>(_ctx);
 					rsResources.AutoCommitEnabled = false;
+
+					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null);
 
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
 						NullCache.Instance, 
 						rsLanguage,
-						rsStoreMapping,
 						this.SettingService,
 						locSettings,
-						NullEventPublisher.Instance);
+						NullEventPublisher.Instance,
+						storeMappingService);
 
 					_locService = new LocalizationService(
 						NullCache.Instance,

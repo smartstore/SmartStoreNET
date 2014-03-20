@@ -384,6 +384,12 @@ namespace SmartStore.Web.Framework
 				var cc = c.Resolve<IComponentContext>();
 				return named => cc.ResolveNamed<ICacheManager>(named);
 			});
+
+			builder.Register<Func<string, Lazy<ICacheManager>>>(c =>
+			{
+				var cc = c.Resolve<IComponentContext>();
+				return named => cc.ResolveNamed<Lazy<ICacheManager>>(named);
+			});
 		}
 	}
 

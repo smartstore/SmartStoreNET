@@ -8,6 +8,8 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
@@ -37,6 +39,8 @@ namespace SmartStore.Services.Catalog
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
+		private readonly IStoreMappingService _storeMappingService;
+		private readonly IAclService _aclService;
         private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
 
         #endregion
@@ -64,6 +68,8 @@ namespace SmartStore.Services.Catalog
             IWorkContext workContext,
 			IStoreContext storeContext,
             IEventPublisher eventPublisher,
+			IStoreMappingService storeMappingService,
+			IAclService aclService,
             Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters)
         {
             this._cacheManager = cacheManager;
@@ -75,6 +81,8 @@ namespace SmartStore.Services.Catalog
             this._workContext = workContext;
 			this._storeContext = storeContext;
             this._eventPublisher = eventPublisher;
+			this._storeMappingService = storeMappingService;
+			this._aclService = aclService;
             this._navigationFilters = navigationFilters;
         }
 
@@ -393,14 +401,24 @@ namespace SmartStore.Services.Catalog
                             orderby pc.DisplayOrder
                             select pc;
 
-                if (!showHidden)
-                {
-                    query = ApplyHiddenProductCategoriesFilter(query);
-					query = query.OrderBy(pc => pc.DisplayOrder);
-                }
-
-                var productCategories = query.ToList();
-                return productCategories;
+				var allProductCategories = query.ToList();
+				var result = new List<ProductCategory>();
+				if (!showHidden)
+				{
+					foreach (var pc in allProductCategories)
+					{
+						// ACL (access control list) and store mapping
+						var category = pc.Category;
+						if (_aclService.Authorize(category) && _storeMappingService.Authorize(category))
+							result.Add(pc);
+					}
+				}
+				else
+				{
+					// No filtering
+					result.AddRange(allProductCategories);
+				}
+				return result;
             });
         }
 
@@ -435,24 +453,6 @@ namespace SmartStore.Services.Catalog
                     select pcGroup.FirstOrDefault();
 
 			return query;
-        }
-
-        /// <summary>
-        /// Get a total number of featured products by category identifier
-        /// </summary>
-        /// <param name="categoryId">Category identifier</param>
-        /// <returns>Number of featured products</returns>
-        public virtual int GetTotalNumberOfFeaturedProducts(int categoryId)
-        {
-            if (categoryId == 0)
-                return 0;
-
-            var query = from pc in _productCategoryRepository.Table
-                        where pc.CategoryId == categoryId &&
-                              pc.IsFeaturedProduct
-                        select pc;
-            var result = query.Count();
-            return result;
         }
 
         /// <summary>

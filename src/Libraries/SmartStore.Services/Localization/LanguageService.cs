@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Localization
 {
@@ -16,7 +17,7 @@ namespace SmartStore.Services.Localization
     public partial class LanguageService : ILanguageService
     {
         #region Constants
-        private const string LANGUAGES_ALL_KEY = "SmartStore.language.all-{0}-{1}";
+        private const string LANGUAGES_ALL_KEY = "SmartStore.language.all-{0}";
         private const string LANGUAGES_COUNT = "SmartStore.language.count-{0}";
         private const string LANGUAGES_BY_CULTURE_KEY = "SmartStore.language.culture-{0}";
         private const string LANGUAGES_BY_SEOCODE_KEY = "SmartStore.language.seocode-{0}";
@@ -27,7 +28,7 @@ namespace SmartStore.Services.Localization
         #region Fields
 
         private readonly IRepository<Language> _languageRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly ICacheManager _cacheManager;
         private readonly ISettingService _settingService;
         private readonly LocalizationSettings _localizationSettings;
@@ -47,17 +48,17 @@ namespace SmartStore.Services.Localization
         /// <param name="eventPublisher">Event published</param>
         public LanguageService(ICacheManager cacheManager,
             IRepository<Language> languageRepository,
-			IRepository<StoreMapping> storeMappingRepository,
             ISettingService settingService,
             LocalizationSettings localizationSettings,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			IStoreMappingService storeMappingService)
         {
             this._cacheManager = cacheManager;
             this._languageRepository = languageRepository;
-			this._storeMappingRepository = storeMappingRepository;
             this._settingService = settingService;
             this._localizationSettings = localizationSettings;
             this._eventPublisher = eventPublisher;
+			this._storeMappingService = storeMappingService;
         }
 
         #endregion
@@ -104,35 +105,24 @@ namespace SmartStore.Services.Localization
         /// <returns>Language collection</returns>
 		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
         {
-            string key = string.Format(LANGUAGES_ALL_KEY, showHidden, storeId);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = _languageRepository.Table;
-                if (!showHidden)
-                    query = query.Where(l => l.Published);
-                query = query.OrderBy(l => l.DisplayOrder);
+			string key = string.Format(LANGUAGES_ALL_KEY, showHidden);
+			var languages = _cacheManager.Get(key, () =>
+			{
+				var query = _languageRepository.Table;
+				if (!showHidden)
+					query = query.Where(l => l.Published);
+				query = query.OrderBy(l => l.DisplayOrder);
+				return query.ToList();
+			});
 
-				//Store mapping
-				if (storeId > 0)
-				{
-					query = from l in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = l.Id, c2 = "Language" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into l_sm
-							from sm in l_sm.DefaultIfEmpty()
-							where !l.LimitedToStores || storeId == sm.StoreId
-							select l;
-
-					//only distinct languages (group by ID)
-					query = from l in query
-							group l by l.Id	into lGroup
-							orderby lGroup.Key
-							select lGroup.FirstOrDefault();
-					query = query.OrderBy(l => l.DisplayOrder);
-				}
-
-                var languages = query.ToList();
-                return languages;
-            });
+			//store mapping
+			if (storeId > 0)
+			{
+				languages = languages
+					.Where(l => _storeMappingService.Authorize(l, storeId))
+					.ToList();
+			}
+			return languages;
         }
 
         /// <summary>

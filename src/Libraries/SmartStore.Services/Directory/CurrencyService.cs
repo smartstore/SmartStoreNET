@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Directory
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Services.Directory
     public partial class CurrencyService : ICurrencyService
     {
         #region Constants
-        private const string CURRENCIES_ALL_KEY = "SmartStore.currency.all-{0}-{1}";
+        private const string CURRENCIES_ALL_KEY = "SmartStore.currency.all-{0}";
         private const string CURRENCIES_PATTERN_KEY = "SmartStore.currency.";
         private const string CURRENCIES_BY_ID_KEY = "SmartStore.currency.id-{0}";
         #endregion
@@ -26,7 +27,7 @@ namespace SmartStore.Services.Directory
         #region Fields
 
         private readonly IRepository<Currency> _currencyRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly ICacheManager _cacheManager;
         private readonly CurrencySettings _currencySettings;
         private readonly IPluginFinder _pluginFinder;
@@ -47,14 +48,14 @@ namespace SmartStore.Services.Directory
         /// <param name="eventPublisher">Event published</param>
         public CurrencyService(ICacheManager cacheManager,
             IRepository<Currency> currencyRepository,
-			IRepository<StoreMapping> storeMappingRepository,
+			IStoreMappingService storeMappingService,
             CurrencySettings currencySettings,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher)
         {
             this._cacheManager = cacheManager;
             this._currencyRepository = currencyRepository;
-			this._storeMappingRepository = storeMappingRepository;
+			this._storeMappingService = storeMappingService;
             this._currencySettings = currencySettings;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
@@ -126,35 +127,24 @@ namespace SmartStore.Services.Directory
         /// <returns>Currency collection</returns>
 		public virtual IList<Currency> GetAllCurrencies(bool showHidden = false, int storeId = 0)
         {
-			string key = string.Format(CURRENCIES_ALL_KEY, showHidden, storeId);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = _currencyRepository.Table;
-                if (!showHidden)
-                    query = query.Where(c => c.Published);
-                query = query.OrderBy(c => c.DisplayOrder);
-                var currencies = query.ToList();
+			string key = string.Format(CURRENCIES_ALL_KEY, showHidden);
+			var currencies = _cacheManager.Get(key, () =>
+			{
+				var query = _currencyRepository.Table;
+				if (!showHidden)
+					query = query.Where(c => c.Published);
+				query = query.OrderBy(c => c.DisplayOrder);
+				return query.ToList();
+			});
 
-				//Store mapping
-				if (storeId > 0)
-				{
-					query = from c in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = c.Id, c2 = "Currency" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-							from sm in c_sm.DefaultIfEmpty()
-							where !c.LimitedToStores || storeId == sm.StoreId
-							select c;
-
-					//only distinct languages (group by ID)
-					query = from c in query
-							group c by c.Id	into cGroup
-							orderby cGroup.Key
-							select cGroup.FirstOrDefault();
-					query = query.OrderBy(c => c.DisplayOrder);
-				}
-
-                return currencies;
-            });
+			//store mapping
+			if (storeId > 0)
+			{
+				currencies = currencies
+					.Where(c => _storeMappingService.Authorize(c, storeId))
+					.ToList();
+			}
+			return currencies;
         }
 
         /// <summary>

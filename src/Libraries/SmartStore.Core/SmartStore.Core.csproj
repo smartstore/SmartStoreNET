@@ -275,7 +275,6 @@
     <Compile Include="Fakes\FakeIdentity.cs" />
     <Compile Include="Fakes\FakePrincipal.cs" />
     <Compile Include="BaseEntity.cs" />
-    <Compile Include="Caching\Extensions.cs" />
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />

@@ -133,6 +133,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "sm.pres.manufacturer.navigation";
 
+		/// <summary>
+		/// Indicates whether a manufacturer has featured products
+		/// </summary>
+		/// <remarks>
+		/// {0} : manufacturer id
+		/// {1} : roles of the current user
+		/// {2} : current store ID
+		/// </remarks>
+		public const string MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY = "sm.pres.manufacturer.hasfeaturedproducts-{0}-{1}-{2}";
+		public const string MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "sm.pres.manufacturer.hasfeaturedproducts";
+
         /// <summary>
         /// Key for CategoryNavigationModel caching
         /// </summary>
@@ -155,6 +166,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </remarks>
         public const string CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY = "sm.pres.category.childidentifiers-{0}-{1}-{2}-{3}";
         public const string CATEGORY_CHILD_IDENTIFIERS_PATTERN_KEY = "sm.pres.category.childidentifiers";
+
+		/// <summary>
+		/// Indicates whether a category has featured products
+		/// </summary>
+		/// <remarks>
+		/// {0} : category id
+		/// {1} : roles of the current user
+		/// {2} : current store ID
+		/// </remarks>
+		public const string CATEGORY_HAS_FEATURED_PRODUCTS_KEY = "sm.pres.category.hasfeaturedproducts-{0}-{1}-{2}";
+		public const string CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "sm.pres.category.hasfeaturedproducts";
 
         /// <summary>
         /// Key for ProductBreadcrumbModel caching
@@ -521,14 +543,17 @@ namespace SmartStore.Web.Infrastructure.Cache
         public void HandleEvent(EntityInserted<ProductManufacturer> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
         public void HandleEvent(EntityUpdated<ProductManufacturer> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<ProductManufacturer> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
         
         //categories
@@ -557,16 +582,19 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
         public void HandleEvent(EntityUpdated<ProductCategory> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<ProductCategory> eventMessage)
         {
             _cacheManager.RemoveByPattern(PRODUCT_BREADCRUMB_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CATEGORY_NAVIGATION_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
         }
 
         //products

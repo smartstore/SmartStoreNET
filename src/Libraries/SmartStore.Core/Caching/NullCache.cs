@@ -14,10 +14,15 @@ namespace SmartStore.Core.Caching
 			get { return s_instance; }
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime = 60)
-        {
-            return acquirer();
-        }
+		public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
+		{
+			return default(T);
+		}
+
+
+		public void Set(string key, object value, int? cacheTime = null)
+		{
+		}
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached
@@ -51,5 +56,6 @@ namespace SmartStore.Core.Caching
         public void Clear()
         {
         }
-    }
+
+	}
 }

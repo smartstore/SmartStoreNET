@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web.Http;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
@@ -47,6 +48,11 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		public DeliveryTime GetDeliveryTime(int key)
 		{
 			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+		}
+
+		public Download GetSampleDownload(int key)
+		{
+			return GetExpandedProperty<Download>(key, x => x.SampleDownload);
 		}
 
 		[WebApiQueryable]

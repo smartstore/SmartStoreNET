@@ -288,6 +288,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the sample download
 		/// </summary>
+		[DataMember]
 		public Download SampleDownload { get; set; }
 
 		/// <summary>

@@ -152,6 +152,7 @@
     <Compile Include="Controllers\OData\CountriesController.cs" />
     <Compile Include="Controllers\OData\CurrenciesController.cs" />
     <Compile Include="Controllers\OData\CustomersController.cs" />
+    <Compile Include="Controllers\OData\DownloadsController.cs" />
     <Compile Include="Controllers\OData\DeliveryTimesController.cs" />
     <Compile Include="Controllers\OData\DiscountsController.cs" />
     <Compile Include="Controllers\OData\GenericAttributesController.cs" />

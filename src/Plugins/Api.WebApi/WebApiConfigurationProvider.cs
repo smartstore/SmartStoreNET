@@ -45,6 +45,7 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<Customer>(WebApiOdataEntitySet.Customers);
 			m.EntitySet<DeliveryTime>(WebApiOdataEntitySet.DeliveryTimes);
 			m.EntitySet<Discount>(WebApiOdataEntitySet.Discounts);
+			m.EntitySet<Download>(WebApiOdataEntitySet.Downloads);
 			m.EntitySet<GenericAttribute>(WebApiOdataEntitySet.GenericAttributes);
 			m.EntitySet<Language>(WebApiOdataEntitySet.Languages);
 			m.EntitySet<Manufacturer>(WebApiOdataEntitySet.Manufacturers);
@@ -92,6 +93,7 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string Customers { get { return "Customers"; } }
 		public static string DeliveryTimes { get { return "DeliveryTimes"; } }
 		public static string Discounts { get { return "Discounts"; } }
+		public static string Downloads { get { return "Downloads"; } }
 		public static string GenericAttributes { get { return "GenericAttributes"; } }
 		public static string Languages { get { return "Languages"; } }
 		public static string Manufacturers { get { return "Manufacturers"; } }

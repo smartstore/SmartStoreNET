@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Orders
     /// Represents an order
     /// </summary>
     [DataContract]
-    public partial class Order : BaseEntity
+	public partial class Order : BaseEntity, ISoftDeletable
     {
 
         private ICollection<DiscountUsageHistory> _discountUsageHistory;

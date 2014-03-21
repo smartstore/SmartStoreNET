@@ -19,5 +19,13 @@ namespace SmartStore.Core.Domain.Security
         /// Gets or sets the customer role identifier
         /// </summary>
         public int CustomerRoleId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entry is idle
+		/// </summary>
+		/// <remarks>
+		/// An entry is idle when it's related entity has been soft-deleted
+		/// </remarks>
+		public bool IsIdle { get; set; }
     }
 }

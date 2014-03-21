@@ -46,6 +46,18 @@ namespace SmartStore.Core.Data
         bool ValidateOnSaveEnabled{ get; set; }
         bool HasChanges { get; }
 
+		/// <summary>
+		/// Gets a list of modified properties for the specified entity
+		/// </summary>
+		/// <param name="entity">The entity instance for which to get modified properties for</param>
+		/// <returns>
+		/// A dictionary, where the key is the name of the modified property
+		/// and the value is its ORIGINAL value (which was tracked when the entity
+		/// was attached to the context the first time)
+		/// Returns an empty dictionary if no modification could be detected.
+		/// </returns>
+		IDictionary<string, object> GetModifiedProperties(BaseEntity entity);
+
         /// <summary>
         /// Determines whether the given entity is already attached to the current object context
         /// </summary>

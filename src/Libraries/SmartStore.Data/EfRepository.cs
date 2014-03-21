@@ -186,19 +186,7 @@ namespace SmartStore.Data
 
         public IDictionary<string, object> GetModifiedProperties(T entity)
         {
-            var props = new Dictionary<string, object>();
-
-            var ctx = InternalContext;
-            var entry = ctx.Entry(entity);
-            var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-                                        where entry.Property(p).IsModified
-                                        select p;
-            foreach (var name in modifiedPropertyNames)
-            {
-                props.Add(name, entry.Property(name).OriginalValue);
-            }
-
-            return props;
+			return InternalContext.GetModifiedProperties(entity);
         }
 
         public IDbContext Context

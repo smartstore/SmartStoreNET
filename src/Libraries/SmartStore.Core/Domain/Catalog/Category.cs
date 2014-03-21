@@ -14,7 +14,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a category
     /// </summary>
     [DataContract]
-	public partial class Category : BaseEntity, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
+	public partial class Category : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
     {
         private ICollection<Discount> _appliedDiscounts;
 

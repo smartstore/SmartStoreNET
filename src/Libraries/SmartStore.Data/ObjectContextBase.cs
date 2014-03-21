@@ -66,15 +66,22 @@ namespace SmartStore.Data
 
 		#region Hooks
 
+		private readonly IList<DbEntityEntry> _hookedEntries = new List<DbEntityEntry>();
+
 		private void PerformPreSaveActions(out IList<DbEntityEntry> modifiedEntries, out HookedEntityEntry[] modifiedHookEntries)
 		{
 			modifiedHookEntries = null;
 
 			modifiedEntries = this.ChangeTracker.Entries()
 				.Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+				.Except(_hookedEntries)
 				.ToList();
 
-			if (this.HooksEnabled)
+			// prevents stack overflow
+			_hookedEntries.AddRange(modifiedEntries);
+
+			var hooksEnabled = this.HooksEnabled && modifiedEntries.Any();
+			if (hooksEnabled)
 			{
 				modifiedHookEntries = modifiedEntries
 								.Select(x => new HookedEntityEntry()
@@ -105,10 +112,12 @@ namespace SmartStore.Data
 				}
 			}
 
-			if (this.HooksEnabled)
+			if (hooksEnabled)
 			{
 				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = true });
 			}
+
+			modifiedEntries.Each(x => _hookedEntries.Remove(x));
 
 			IgnoreMergedData(modifiedEntries, true);
 		}
@@ -117,7 +126,7 @@ namespace SmartStore.Data
 		{
 			IgnoreMergedData(modifiedEntries, false);
 
-			if (this.HooksEnabled)
+			if (this.HooksEnabled && modifiedHookEntries != null && modifiedHookEntries.Any())
 			{
 				this.EventPublisher.Publish(new PostActionHookEvent { ModifiedEntries = modifiedHookEntries });
 			}
@@ -269,7 +278,6 @@ namespace SmartStore.Data
 			return result;
 		}
 
-        // codehint: sm-add
         public bool HasChanges
         {
             get
@@ -279,6 +287,22 @@ namespace SmartStore.Data
                            .Any();
             }
         }
+
+		public IDictionary<string, object> GetModifiedProperties(BaseEntity entity)
+		{
+			var props = new Dictionary<string, object>();
+
+			var entry = this.Entry(entity);
+			var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
+										where entry.Property(p).IsModified
+										select p;
+			foreach (var name in modifiedPropertyNames)
+			{
+				props.Add(name, entry.Property(name).OriginalValue);
+			}
+
+			return props;
+		}
 
         public override int SaveChanges()
         {

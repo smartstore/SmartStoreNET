@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Affiliates
     /// Represents an affiliate
     /// </summary>
     [DataContract]
-    public partial class Affiliate : BaseEntity
+	public partial class Affiliate : BaseEntity, ISoftDeletable
     {
 
         [DataMember]

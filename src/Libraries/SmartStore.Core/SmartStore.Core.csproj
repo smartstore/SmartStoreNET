@@ -199,6 +199,7 @@
     <Compile Include="Infrastructure\CommonStartupTask.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
     <Compile Include="IO\MimeTypes.cs" />
+    <Compile Include="ISoftDeletable.cs" />
     <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />
     <Compile Include="Linq\Expanders\LambdaPathExpander.cs" />

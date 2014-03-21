@@ -11,6 +11,7 @@ namespace SmartStore.Data.Mapping.Seo
             this.HasKey(lp => lp.Id);
 
             this.Property(lp => lp.EntityName).IsRequired().HasMaxLength(400);
+			this.Property(x => x.IsIdle).IsRequired();
         }
     }
 }

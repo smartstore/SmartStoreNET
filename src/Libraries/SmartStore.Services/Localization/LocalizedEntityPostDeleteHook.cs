@@ -27,12 +27,7 @@ namespace SmartStore.Services.Localization
             if (baseEntity == null)
                 return;
 
-            var entityType = baseEntity.GetType();
-            if (entityType.AssemblyQualifiedName.StartsWith("System.Data.Entity."))
-            {
-                // it's a proxied type
-                entityType = entityType.BaseType;
-            }
+            var entityType = baseEntity.GetUnproxiedType();
             var localizedEntities = this._localizedEntityService.GetLocalizedProperties(baseEntity.Id, entityType.Name);
 
             localizedEntities.Each(x => this._localizedEntityService.DeleteLocalizedProperty(x));

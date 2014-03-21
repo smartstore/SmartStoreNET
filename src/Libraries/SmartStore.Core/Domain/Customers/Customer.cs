@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Customers
     /// Represents a customer
     /// </summary>
     [DataContract]
-    public partial class Customer : BaseEntity
+	public partial class Customer : BaseEntity, ISoftDeletable
     {
         private ICollection<ExternalAuthenticationRecord> _externalAuthenticationRecords;
         private ICollection<CustomerContent> _customerContent;

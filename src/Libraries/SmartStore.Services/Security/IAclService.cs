@@ -41,6 +41,14 @@ namespace SmartStore.Services.Security
         /// <returns>ACL records</returns>
         IList<AclRecord> GetAclRecords<T>(T entity) where T : BaseEntity, IAclSupported;
 
+		/// <summary>
+		/// Gets ACL records
+		/// </summary>
+		/// <param name="entityName">Name of entity</param>
+		/// <param name="entityId">Id of entity</param>
+		/// <returns>ACL records</returns>
+		IList<AclRecord> GetAclRecordsFor(string entityName, int entityId);
+
         /// <summary>
         /// Inserts an ACL record
         /// </summary>

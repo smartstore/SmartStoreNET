@@ -29,9 +29,15 @@ namespace SmartStore.Core
             return obj != null && Equals(obj.Id, default(int));
         }
 
-        private Type GetUnproxiedType()
+        public Type GetUnproxiedType()
         {
-            return GetType();
+			var t = GetType();
+			if (t.AssemblyQualifiedName.StartsWith("System.Data.Entity."))
+			{
+				// it's a proxied type
+				t = t.BaseType;
+			}
+			return t;
         }
 
         public virtual bool Equals(BaseEntity other)
@@ -70,14 +76,6 @@ namespace SmartStore.Core
         public static bool operator !=(BaseEntity x, BaseEntity y)
         {
             return !(x == y);
-        }
-        protected virtual void SetParent(dynamic child)
-        {
-
-        }
-        protected virtual void SetParentToNull(dynamic child)
-        {
-
         }
     }
 }

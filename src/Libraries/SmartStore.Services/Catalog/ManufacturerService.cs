@@ -66,7 +66,12 @@ namespace SmartStore.Services.Catalog
 			_workContext = workContext;
 			_storeContext = storeContext;
             _eventPublisher = eventPublisher;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
+
         #endregion
 
         #region Methods
@@ -114,14 +119,16 @@ namespace SmartStore.Services.Catalog
 			if (!showHidden)
 			{
 				//Store mapping
-				var currentStoreId = _storeContext.CurrentStore.Id;
-
-				query = from m in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-						from sm in m_sm.DefaultIfEmpty()
-						where !m.LimitedToStores || currentStoreId == sm.StoreId
-						select m;
+				if (!QuerySettings.IgnoreMultiStore)
+				{
+					var currentStoreId = _storeContext.CurrentStore.Id;
+					query = from m in query
+							join sm in _storeMappingRepository.Table
+							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+							from sm in m_sm.DefaultIfEmpty()
+							where !m.LimitedToStores || currentStoreId == sm.StoreId
+							select m;
+				}
 
 				//only distinct manufacturers (group by ID)
 				query = from m in query
@@ -251,16 +258,18 @@ namespace SmartStore.Services.Catalog
 
 				if (!showHidden)
 				{
-					//Store mapping
-					var currentStoreId = _storeContext.CurrentStore.Id;
-
-					query = from pm in query
-							join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-							join sm in _storeMappingRepository.Table
-							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-							from sm in m_sm.DefaultIfEmpty()
-							where !m.LimitedToStores || currentStoreId == sm.StoreId
-							select pm;
+					if (!QuerySettings.IgnoreMultiStore)
+					{
+						//Store mapping
+						var currentStoreId = _storeContext.CurrentStore.Id;
+						query = from pm in query
+								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+								join sm in _storeMappingRepository.Table
+								on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+								from sm in m_sm.DefaultIfEmpty()
+								where !m.LimitedToStores || currentStoreId == sm.StoreId
+								select pm;
+					}
 
 					//only distinct manufacturers (group by ID)
 					query = from pm in query
@@ -301,16 +310,18 @@ namespace SmartStore.Services.Catalog
 
 					if (!showHidden)
 					{
-						//Store mapping
-						var currentStoreId = _storeContext.CurrentStore.Id;
-
-						query = from pm in query
-								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-								join sm in _storeMappingRepository.Table
-								on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-								from sm in m_sm.DefaultIfEmpty()
-								where !m.LimitedToStores || currentStoreId == sm.StoreId
-								select pm;
+						if (!QuerySettings.IgnoreMultiStore)
+						{
+							//Store mapping
+							var currentStoreId = _storeContext.CurrentStore.Id;
+							query = from pm in query
+									join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+									join sm in _storeMappingRepository.Table
+									on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+									from sm in m_sm.DefaultIfEmpty()
+									where !m.LimitedToStores || currentStoreId == sm.StoreId
+									select pm;
+						}
 
 						//only distinct manufacturers (group by ID)
 						query = from pm in query

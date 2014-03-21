@@ -15,7 +15,12 @@ namespace SmartStore.Services.Security
     /// </summary>
     public partial interface IAclService
     {
-        /// <summary>
+		/// <summary>
+		/// Gets a value indicating whether at least one ACL record is in active state system-wide
+		/// </summary>
+		bool HasActiveAcl { get; }
+		
+		/// <summary>
         /// Deletes an ACL record
         /// </summary>
         /// <param name="aclRecord">ACL record</param>

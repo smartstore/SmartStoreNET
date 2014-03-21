@@ -56,7 +56,6 @@ namespace SmartStore.Web.Framework
 		/// <summary>
 		/// IsSingleStoreMode ? 0 : CurrentStore.Id
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		public int CurrentStoreIdIfMultiStoreMode
 		{
 			get

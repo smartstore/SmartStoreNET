@@ -26,6 +26,7 @@ namespace SmartStore.Services.Stores
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICacheManager _cacheManager;
+		private bool? _isSingleStoreMode = null;
 
 		#endregion
 
@@ -142,10 +143,16 @@ namespace SmartStore.Services.Stores
 		/// <summary>
 		/// True if there's only one store. Otherwise False.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual bool IsSingleStoreMode()
 		{
-			return GetAllStores().Count <= 1;
+			if (!_isSingleStoreMode.HasValue)
+			{
+				var query = from s in _storeRepository.Table
+							select s;
+				_isSingleStoreMode = query.Count() <= 1;
+			}
+
+			return _isSingleStoreMode.Value;
 		}
 
 		#endregion

@@ -36,7 +36,11 @@ namespace SmartStore.Services.Blogs
 			_storeMappingRepository = storeMappingRepository;
             _cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -98,7 +102,7 @@ namespace SmartStore.Services.Blogs
                 query = query.Where(b => !b.EndDateUtc.HasValue || b.EndDateUtc >= utcNow);
             }
 
-			if (storeId > 0)
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				//Store mapping
 				query = from bp in query

@@ -26,6 +26,7 @@ namespace SmartStore.Services.Security
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
+		private bool? _hasActiveAcl;
 
         #endregion
 
@@ -43,11 +44,28 @@ namespace SmartStore.Services.Security
             this._cacheManager = cacheManager;
             this._workContext = workContext;
             this._aclRecordRepository = aclRecordRepository;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
-        #region Methods
+        #region Members
+
+		public bool HasActiveAcl 
+		{
+			get
+			{
+				if (!_hasActiveAcl.HasValue)
+				{
+					var query = _aclRecordRepository.Where(x => true /* TODO: IsActive field */);
+					_hasActiveAcl = query.Any();
+				}
+				return _hasActiveAcl.Value;
+			}
+		}
 
         /// <summary>
         /// Deletes an ACL record
@@ -212,6 +230,9 @@ namespace SmartStore.Services.Security
 
             if (customer == null)
                 return false;
+
+			if (QuerySettings.IgnoreAcl)
+				return true;
 
             if (!entity.SubjectToAcl)
                 return true;

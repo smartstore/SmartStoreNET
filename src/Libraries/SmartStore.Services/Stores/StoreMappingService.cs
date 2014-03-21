@@ -45,7 +45,11 @@ namespace SmartStore.Services.Stores
 			this._cacheManager = cacheManager;
 			this._storeContext = storeContext;
 			this._storeMappingRepository = storeMappingRepository;
+
+			this.QuerySettings = DbQuerySettings.Default;
 		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
 		#endregion
 
@@ -214,6 +218,9 @@ namespace SmartStore.Services.Stores
 
 			if (storeId == 0)
 				//return true if no store specified/found
+				return true;
+
+			if (QuerySettings.IgnoreMultiStore)
 				return true;
 
 			if (!entity.LimitedToStores)

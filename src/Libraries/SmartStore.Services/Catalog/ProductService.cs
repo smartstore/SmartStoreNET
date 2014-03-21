@@ -131,7 +131,11 @@ namespace SmartStore.Services.Catalog
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
             this._eventPublisher = eventPublisher;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
         
@@ -436,7 +440,7 @@ namespace SmartStore.Services.Catalog
 
 				var pStoreId = _dataProvider.GetParameter();
 				pStoreId.ParameterName = "StoreId";
-				pStoreId.Value = ctx.StoreId;
+				pStoreId.Value = QuerySettings.IgnoreMultiStore ? 0 : ctx.StoreId;
 				pStoreId.DbType = DbType.Int32;
 
 				var pParentGroupedProductId = _dataProvider.GetParameter();
@@ -799,7 +803,7 @@ namespace SmartStore.Services.Catalog
                         select p;
             }
 
-            if (!ctx.ShowHidden)
+            if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
             {
 				// ACL
                 query = from p in query
@@ -809,7 +813,7 @@ namespace SmartStore.Services.Catalog
                         select p;
             }
 
-			if (ctx.StoreId > 0)
+			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				//Store mapping
 				query = from p in query

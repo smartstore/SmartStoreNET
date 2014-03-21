@@ -252,6 +252,31 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerHttpRequest();
 
+			builder.Register<DbQuerySettings>(c => {
+				var storeService = c.Resolve<IStoreService>();
+				var aclService = c.Resolve<IAclService>();
+
+				return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
+			}).InstancePerHttpRequest();
+		}
+
+		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		{
+			var querySettingsProperty = FindQuerySettingsProperty(registration.Activator.LimitType);
+
+			if (querySettingsProperty == null)
+				return;
+
+			registration.Activated += (sender, e) =>
+			{
+				var querySettings = e.Context.Resolve<DbQuerySettings>();
+				querySettingsProperty.SetValue(e.Instance, querySettings, null);
+			};
+		}
+
+		private static PropertyInfo FindQuerySettingsProperty(Type type)
+		{
+			return type.GetProperty("QuerySettings", typeof(DbQuerySettings));
 		}
 	}
 

@@ -84,7 +84,11 @@ namespace SmartStore.Services.Catalog
 			this._storeMappingService = storeMappingService;
 			this._aclService = aclService;
             this._navigationFilters = navigationFilters;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -182,24 +186,29 @@ namespace SmartStore.Services.Catalog
         protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, bool applyNavigationFilters)
         {
             // ACL (access control list)
-            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
-                .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
-			query = from c in query
-					join acl in _aclRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-					from acl in c_acl.DefaultIfEmpty()
-					where  !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-					select c;
+			if (!QuerySettings.IgnoreAcl)
+			{
+				query = from c in query
+						join acl in _aclRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
+						from acl in c_acl.DefaultIfEmpty()
+						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+						select c;
+			}
 
-			//Store mapping
-			var currentStoreId = _storeContext.CurrentStore.Id;
-			query = from c in query
-					join sm in _storeMappingRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-					from sm in c_sm.DefaultIfEmpty()
-					where !c.LimitedToStores || currentStoreId == sm.StoreId
-					select c;
+			if (!QuerySettings.IgnoreMultiStore)
+			{
+				//Store mapping
+				var currentStoreId = _storeContext.CurrentStore.Id;
+				query = from c in query
+						join sm in _storeMappingRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
+						from sm in c_sm.DefaultIfEmpty()
+						where !c.LimitedToStores || currentStoreId == sm.StoreId
+						select c;
+			}
 
             //only distinct categories (group by ID)
             query = from c in query

@@ -11,5 +11,11 @@ namespace SmartStore.Data.Setup
 		/// Seeds data
 		/// </summary>
 		void Seed(TContext context);
+
+		/// <summary>
+		/// Gets a value indicating whether migration should be completely rolled back
+		/// when an error occurs during migration seeding.
+		/// </summary>
+		bool RollbackOnFailure { get; }
 	}
 }

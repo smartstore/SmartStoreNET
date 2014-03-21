@@ -6,6 +6,8 @@ using System.Data.Entity.Migrations;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Data.Setup
 {
@@ -18,6 +20,7 @@ namespace SmartStore.Data.Setup
 	/// </summary>
 	public class DbSeedingMigrator<TContext> : DbMigrator where TContext : DbContext
 	{
+		private ILogger _logger;
 
 		/// <summary>
 		/// Initializes a new instance of the DbMigrator class.
@@ -25,7 +28,28 @@ namespace SmartStore.Data.Setup
 		/// <param name="configuration">Configuration to be used for the migration process.</param>
 		public DbSeedingMigrator(DbMigrationsConfiguration configuration)
 			: base(configuration)
-		{ }
+		{ 
+		}
+
+		public ILogger Logger
+		{
+			get
+			{
+				if (_logger == null)
+				{
+					try
+					{
+						_logger = EngineContext.Current.Resolve<ILogger>();
+					}
+					catch
+					{
+						_logger = NullLogger.Instance;
+					}
+				}
+
+				return _logger;
+			}
+		}
 
 		/// <summary>
 		/// Migrates the database to the latest version
@@ -33,14 +57,23 @@ namespace SmartStore.Data.Setup
 		/// <returns>The number of applied migrations</returns>
 		public int RunPendingMigrations(TContext context)
 		{
-			var coreSeeders = new List<IDataSeeder<SmartObjectContext>>();
-			var externalSeeders = new List<IDataSeeder<TContext>>();
+			var pendingMigrations = GetPendingMigrations().ToList();
+			if (!pendingMigrations.Any())
+				return 0;
+			
+			var coreSeeders = new List<SeederEntry>();
+			var externalSeeders = new List<SeederEntry>();
 			var isCoreMigration = context is SmartObjectContext;
+			var initialMigration = this.GetDatabaseMigrations().LastOrDefault() ?? "[Initial]";
+			var lastSuccessfulMigration = initialMigration;
+
+			IDataSeeder<SmartObjectContext> coreSeeder = null;
+			IDataSeeder<TContext> externalSeeder = null;
 
 			int result = 0;
 
 			// Apply migrations
-			foreach (var migrationId in GetPendingMigrations())
+			foreach (var migrationId in pendingMigrations)
 			{
 				if (MigratorUtils.IsAutomaticMigration(migrationId))
 					continue;
@@ -53,8 +86,8 @@ namespace SmartStore.Data.Setup
 				
 				// Seeders for the core DbContext must be run in any case 
 				// (e.g. for Resource or Setting updates even from external plugins)
-				IDataSeeder<SmartObjectContext> coreSeeder = migration as IDataSeeder<SmartObjectContext>;
-				IDataSeeder<TContext> externalSeeder = null;
+				coreSeeder = migration as IDataSeeder<SmartObjectContext>;
+				externalSeeder = null;
 
 				if (!isCoreMigration)
 				{
@@ -65,8 +98,8 @@ namespace SmartStore.Data.Setup
 
 				try
 				{
-					// Call the actual update to execute this migration
-					base.Update(migrationId);
+					// Call the actual Update() to execute this migration
+					Update(migrationId);
 					result++;
 				}
 				catch (AutomaticMigrationsDisabledException)
@@ -81,32 +114,79 @@ namespace SmartStore.Data.Setup
 					// Therefore catch and forget!
 					// TODO: (MC) investigate this and implement a cleaner solution
 				}
+				catch (Exception ex)
+				{
+					result = 0;
+					throw new DbMigrationException(lastSuccessfulMigration, migrationId, ex.InnerException ?? ex, false);
+				}
 
 				if (coreSeeder != null)
-					coreSeeders.Add(coreSeeder);
+					coreSeeders.Add(new SeederEntry { 
+						DataSeeder = coreSeeder, 
+						MigrationId = migrationId,
+ 						PreviousMigrationId = lastSuccessfulMigration,
+					});
 
 				if (externalSeeder != null)
-					externalSeeders.Add(externalSeeder);
+					externalSeeders.Add(new SeederEntry { 
+						DataSeeder = externalSeeder, 
+						MigrationId = migrationId,
+						PreviousMigrationId = lastSuccessfulMigration,
+					});
+
+				lastSuccessfulMigration = migrationId;
 			}
 
 			// Apply core data seeders first
+			SmartObjectContext coreContext = null;
 			if (coreSeeders.Any())
 			{
-				var coreContext = isCoreMigration ? context as SmartObjectContext : new SmartObjectContext();
-				foreach (var seeder in coreSeeders)
-				{
-					seeder.Seed(coreContext);
-				}
+				coreContext = isCoreMigration ? context as SmartObjectContext : new SmartObjectContext();
+				RunSeeders<SmartObjectContext>(coreSeeders, coreContext);
 			}
 
 			// Apply external data seeders
-			foreach (var seeder in externalSeeders)
-			{
-				seeder.Seed(context);
-			}
+			RunSeeders<TContext>(externalSeeders, context);
+
+			Logger.Information("Database migration successful: {0} >> {1}".FormatInvariant(initialMigration, lastSuccessfulMigration));
 
 			return result;
 		}
 
+		private void RunSeeders<T>(IEnumerable<SeederEntry> seederEntries, T ctx) where T : DbContext
+		{
+			foreach (var seederEntry in seederEntries)
+			{
+				var seeder = (IDataSeeder<T>)seederEntry.DataSeeder;
+
+				try
+				{
+					seeder.Seed(ctx);
+				}
+				catch (Exception ex)
+				{
+					if (seeder.RollbackOnFailure)
+					{
+						Update(seederEntry.PreviousMigrationId);
+						throw new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
+					}
+
+					Logger.Warning("Seed error in migration '{0}'. The error was ignored because no rollback was requested.".FormatInvariant(seederEntry.MigrationId), ex);
+				}
+			}
+		}
+
+		private void LogError(string initialMigration, string targetMigration, Exception exception)
+		{
+			Logger.Error("Database migration error: {0} >> {1}".FormatInvariant(initialMigration, targetMigration), exception);
+		}
+
+		private class SeederEntry
+		{
+			public string PreviousMigrationId { get; set; }
+			public string MigrationId { get; set; }
+			public object DataSeeder { get; set; }
+		}
 	}
+
 }

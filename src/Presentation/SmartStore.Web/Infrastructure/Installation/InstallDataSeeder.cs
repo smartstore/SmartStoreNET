@@ -590,8 +590,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_config.ProgressMessageCallback("Progress.CreatingRequiredData");
 
             // special mandatory (non-visible) settings
-			this.SettingService.SetSetting("Media.Images.StoreInDB", _config.StoreMediaInDB);
-			_ctx.SaveChanges();
+			_ctx.MigrateSettings(x =>
+			{
+				x.Add("Media.Images.StoreInDB", _config.StoreMediaInDB);
+			});
 
 			Populate("PopulatePictures", _data.Pictures());
 			Populate("PopulateStores", PopulateStores);
@@ -635,15 +637,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulateBlogPosts", PopulateBlogPosts);
 				Populate("PopulateNews", PopulateNews);
 				Populate("PopulatePolls", _data.Polls());
-
-				this.SettingService.SetSetting<bool>("catalogsettings.showvariantcombinationpriceadjustment", true, 0, false);
-				this.SettingService.SetSetting<bool>("catalogsettings.showlinkedattributevalueimage", true, 0, false);
-				this.SettingService.SetSetting<bool>("catalogsettings.enabledynamicpriceupdate", true, 0, true);
-				_ctx.SaveChanges();
             }
 
 			Populate("MovePictures", MovePictures);
         }
+
+		public bool RollbackOnFailure
+		{
+			get { return false; }
+		}
 
         #endregion
 
@@ -705,6 +707,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		}
 
 		#endregion
+
 	}
         
 } 

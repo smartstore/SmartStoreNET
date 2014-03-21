@@ -124,6 +124,7 @@
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Extensions\SqlDataReaderExtensions.cs" />
+    <Compile Include="Setup\DbMigrationException.cs" />
     <Compile Include="Setup\DbSeedingMigrator.cs" />
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
     <Compile Include="Setup\IDataSeeder.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
     <Compile Include="Setup\Builder\LocaleResourcesBuilder.cs" />
     <Compile Include="Setup\Builder\LocaleResourcesMigrator.cs" />
-    <Compile Include="Setup\ISqlCeIncompatible.cs" />
     <Compile Include="Setup\MigratorUtils.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />

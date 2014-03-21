@@ -2,8 +2,9 @@ namespace SmartStore.Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class CurrencyMorePrecision : DbMigration
+	using SmartStore.Data.Setup;
+
+	public partial class CurrencyMorePrecision : DbMigration, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -14,5 +15,18 @@ namespace SmartStore.Data.Migrations
         {
             AlterColumn("dbo.Currency", "Rate", c => c.Decimal(nullable: false, precision: 18, scale: 4));
         }
-    }
+
+		public void Seed(SmartObjectContext context)
+		{
+			context.MigrateSettings(x => {
+				x.Add("catalogsettings.showvariantcombinationpriceadjustment", true);
+				x.Add("catalogsettings.enabledynamicpriceupdate", true);
+			});
+		}
+
+		public bool RollbackOnFailure
+		{
+			get { return false; }
+		}
+	}
 }

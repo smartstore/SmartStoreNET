@@ -219,8 +219,18 @@ namespace SmartStore.Services.Logging
 			{
 				string shortMessage = context.ShortMessage.NaIfEmpty();
 				string fullMessage = context.FullMessage.EmptyNull();
-				string ipAddress = _webHelper.GetCurrentIpAddress();
 				string contentHash = null;
+				string ipAddress = "";
+				string pageUrl = "";
+				string referrerUrl = "";
+
+				try
+				{
+					ipAddress = _webHelper.GetCurrentIpAddress();
+					pageUrl = _webHelper.GetThisPageUrl(true);
+					referrerUrl = _webHelper.GetUrlReferrer();
+				}
+				catch { }
 
 				if (context.HashNotFullMessage || context.HashIpAddress)
 				{
@@ -246,8 +256,8 @@ namespace SmartStore.Services.Logging
 						FullMessage = fullMessage,
 						IpAddress = ipAddress,
 						Customer = context.Customer,
-						PageUrl = _webHelper.GetThisPageUrl(true),
-						ReferrerUrl = _webHelper.GetUrlReferrer(),
+						PageUrl = pageUrl,
+						ReferrerUrl = referrerUrl,
 						CreatedOnUtc = DateTime.UtcNow,
 						ContentHash = contentHash
 					};
@@ -262,8 +272,8 @@ namespace SmartStore.Services.Logging
 					log.LogLevel = context.LogLevel;
 					log.IpAddress = ipAddress;
 					log.Customer = context.Customer;
-					log.PageUrl = _webHelper.GetThisPageUrl(true);
-					log.ReferrerUrl = _webHelper.GetUrlReferrer();
+					log.PageUrl = pageUrl;
+					log.ReferrerUrl = referrerUrl;
 					log.UpdatedOnUtc = DateTime.UtcNow;
 
 					_logRepository.Update(log);

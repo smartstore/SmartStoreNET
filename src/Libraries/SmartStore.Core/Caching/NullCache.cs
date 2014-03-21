@@ -16,7 +16,11 @@ namespace SmartStore.Core.Caching
 
 		public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
 		{
-			return default(T);
+			if (acquirer == null)
+			{
+				return default(T);
+			}
+			return acquirer();
 		}
 
 

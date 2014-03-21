@@ -183,7 +183,7 @@ namespace SmartStore.Web
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-			var installed = DataSettings.DatabaseIsInstalled();
+			//var installed = DataSettings.DatabaseIsInstalled();
 
 			// ignore static resources
 			if (WebHelper.IsStaticResourceRequested(this.Request))
@@ -191,7 +191,7 @@ namespace SmartStore.Web
 
 			_profilingEnabled = this.ProfilingEnabled;
 
-			if (installed && _profilingEnabled)
+			if (_profilingEnabled)
 			{
 				MiniProfiler.Start();
 			}
@@ -201,19 +201,14 @@ namespace SmartStore.Web
         {
 			// Don't resolve dependencies from now on.
 			
-			var installed = DataSettings.DatabaseIsInstalled();
-			
 			// ignore static resources
 			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 
-			if (installed)
+			if (_profilingEnabled)
 			{
-				if (_profilingEnabled)
-				{
-					// stop mini profiler
-					MiniProfiler.Stop();
-				}
+				// stop mini profiler
+				MiniProfiler.Stop();
 			}
         }
 		
@@ -253,7 +248,7 @@ namespace SmartStore.Web
 		{
 			get
 			{
-				return EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+				return DataSettings.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
 			}
 		}
 

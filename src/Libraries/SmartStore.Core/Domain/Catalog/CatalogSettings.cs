@@ -44,6 +44,9 @@ namespace SmartStore.Core.Domain.Catalog
 			DisplayAllImagesNumber = 6;	// codehint: sm-add
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
+			ShowVariantCombinationPriceAdjustment = true;
+			ShowLinkedAttributeValueImage = true;
+			EnableDynamicPriceUpdate = true;
         }
 
         /// <summary>

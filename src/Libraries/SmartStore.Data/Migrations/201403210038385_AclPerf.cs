@@ -24,5 +24,6 @@ namespace SmartStore.Data.Migrations
 			
 			DropColumn("dbo.AclRecord", "IsIdle");
         }
-    }
+
+	}
 }

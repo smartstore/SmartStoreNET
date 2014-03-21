@@ -6,22 +6,27 @@ namespace SmartStore.Core.Logging
 {
     public static class LoggingExtensions
     {
-        public static void Debug(this ILogger logger, string message, Exception exception = null, Customer customer = null)
+        
+		public static void Debug(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
             FilteredLog(logger, LogLevel.Debug, message, exception, customer);
         }
+
         public static void Information(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
             FilteredLog(logger, LogLevel.Information, message, exception, customer);
         }
+
         public static void Warning(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
             FilteredLog(logger, LogLevel.Warning, message, exception, customer);
         }
+
         public static void Error(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
             FilteredLog(logger, LogLevel.Error, message, exception, customer);
         }
+
         public static void Fatal(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
             FilteredLog(logger, LogLevel.Fatal, message, exception, customer);

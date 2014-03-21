@@ -56,12 +56,12 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         public virtual string GetCurrentIpAddress()
         {
-            if (_httpContext != null &&
-                    _httpContext.Request != null &&
-                    _httpContext.Request.UserHostAddress != null)
-                return _httpContext.Request.UserHostAddress;
-            else
-                return string.Empty;
+			if (_httpContext != null && _httpContext.Request != null)
+			{
+				return _httpContext.Request.UserHostAddress.EmptyNull();
+			}
+
+			return string.Empty;
         }
         
         /// <summary>

@@ -2925,9 +2925,31 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Software", x =>
                 {
                     x.Name = "Software";
-                });
-
+                })
+				.Alter("Game", x =>
+				{
+					x.Name = "Spiel";
+				});
         }
+
+		protected override void Alter(IList<ProductVariantAttribute> entities)
+		{
+			base.Alter(entities);
+
+			entities.WithKey(x => x.ProductAttribute.Alias)
+				.Alter("black", x =>
+				{
+					x.ProductAttribute.Name = "Schwarz";
+				})
+				.Alter("white", x =>
+				{
+					x.ProductAttribute.Name = "Weiß";
+				})
+				.Alter("Prince of Persia \"The Forgotten Sands\"", x =>
+				{
+					x.ProductAttribute.Name = "Prince of Persia \"Die vergessene Zeit\"";
+				});
+		}
 
         protected override void Alter(IList<ProductTemplate> entities)
         {
@@ -2965,7 +2987,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.Name = "Products in Grid or Lines";
                 });
         }
-
 
         protected override void Alter(IList<Category> entities)
         {
@@ -3011,10 +3032,16 @@ namespace SmartStore.Web.Infrastructure.Installation
             .Alter("Watches", x =>
             {
                 x.Name = "Uhren";
-            });
-
+            })
+			.Alter("Gaming Accessories", x =>
+			{
+				x.Name = "Zubehör";
+			})
+			.Alter("Games", x =>
+			{
+				x.Name = "Spiele";
+			});
         }
-
 
         protected override void Alter(IList<Product> entities)
         {
@@ -3024,7 +3051,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
 				entities.WithKey(x => x.MetaTitle)
 				# region category Gift Cards
-				.Alter("$5 Virtual Gift Card", x =>
+.Alter("$5 Virtual Gift Card", x =>
 				{
 					x.Name = "5 € Geschenkgutschein";
 					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
@@ -3068,7 +3095,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#region Bücher
 
 				#region SPIEGEL-Bestseller
-				.Alter("Überman: The novel", x =>
+.Alter("Überman: The novel", x =>
 				{
 					x.Name = "Überman: Der Roman";
 					x.ShortDescription = "Gebundene Ausgabe";
@@ -3099,7 +3126,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				#region Kochen & Genießen
 
-				.Alter("Best Grilling Recipes", x =>
+.Alter("Best Grilling Recipes", x =>
 				{
 					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
 					x.ProductCategories.Clear();
@@ -3154,7 +3181,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion Kochen & Genießen
 
 				#region Books : cars and motorcycles
-				.Alter("Car of superlatives", x =>
+.Alter("Car of superlatives", x =>
 				{
 					x.Name = "Autos der Superlative: Die Stärksten, die Ersten, die Schönsten, Die Schnellsten";
 					x.ShortDescription = "Gebundene Ausgabe";
@@ -3514,11 +3541,86 @@ namespace SmartStore.Web.Infrastructure.Installation
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
+				})
+
+				#endregion Certina DS Podium Big Size
+				#endregion watches
+
+				#region gaming
+
+.Alter("Playstation 3 Super Slim", x =>
+				{
+					x.ShortDescription = "Die Sony PlayStation 3 ist die Multi-Media-Console für die nächste Generation digitalem Home-Entertainment. Mit der Blu-Ray-Technologie genießen Sie Filme in HD.";
+					x.FullDescription = "<table cellspacing=\"0\" cellpadding=\"1\"><tbody><tr><td>Prozessortyp&nbsp;</td><td>Cell Processor&nbsp;</td></tr><tr><td>Arbeitsspeicher (RAM)nbsp;</td><td>256 MB&nbsp;</td></tr><tr><td>Grafikchipsatz&nbsp;</td><td>nVidia RSX&nbsp;</td></tr><tr><td>Taktfrequenz&nbsp;</td><td>3.200 MHz&nbsp;</td></tr><tr><td>Abmessungen&nbsp;</td><td>290 x 60 x 230 mm&nbsp;</td></tr><tr><td>Gewicht&nbsp;</td><td>2.100 g&nbsp;</td></tr><tr><td>Speichermedium&nbsp;</td><td>Blu-ray&nbsp;</td></tr><tr><td>Stromverbrauch in Betrieb&nbsp;</td><td>190 Watt&nbsp;</td></tr><tr><td>Plattform&nbsp;</td><td>Playstation 3 (PS3)&nbsp;</td></tr><tr><td>Akku-Laufzeit&nbsp;</td><td>0 h&nbsp;</td></tr><tr><td>Anschlüsse&nbsp;</td><td>2x USB 2.0, AV-Ausgang, digitaler optischer Ausgang (SPDIF), HDMI&nbsp;</td></tr><tr><td>Soundmodi&nbsp;</td><td>AAC, Dolby igital, Dolby Digital Plus, Dolby TrueHD, DTS, DTS-HD, LPCM 7.1-Kanal&nbsp;</td></tr><tr><td>Unterstützte Auflösungen&nbsp;</td><td>576i, 576p, 720p, 1080i, 1080p Full HD&nbsp;</td></tr><tr><td>Serie&nbsp;</td><td>Sony Playstation 3&nbsp;</td></tr><tr><td>Veröffentlichungsjahr&nbsp;</td><td>2012&nbsp;</td></tr><tr><td>Mitgelieferte Hardware&nbsp;</td><td>Dual Shock 3-Controller&nbsp;</td></tr><tr><td>Farbe&nbsp;</td><td>schwarz&nbsp;</td></tr><tr><td>USK-Freigabe&nbsp;</td><td>0 Jahre&nbsp;</td></tr><tr><td>PEGI-Freigabe&nbsp;</td><td>3 Jahre&nbsp;</td></tr><tr><td>RAM-Typ&nbsp;</td><td>XDR-DRAM&nbsp;</td></tr><tr><td>Controller-Akku-Laufzeit&nbsp;</td><td>30 h&nbsp;</td></tr><tr><td>WLAN-Standard&nbsp;</td><td>IEEE 802.11 b/g&nbsp;</td></tr><tr><td>LAN-Standard&nbsp;</td><td>Gigabit Ethernet (10/100/1000 Mbit/s)&nbsp;</td></tr><tr><td>Daten-Kommunikation&nbsp;</td><td>Bluetooth 2.0 + EDR, Netzwerk (Ethernet), WLAN (Wi-Fi)&nbsp;</td></tr><tr><td>Controller-Eigenschaften&nbsp;</td><td>Beschleunigungssensor, Lagesensor (Gyrosensor), Headset-nschluss, Vibration&nbsp;</td></tr><tr><td>Spielsteuerungen&nbsp;</td><td>Bewegungssteuerung, Controller&nbsp;</td></tr><tr><td>Spielfunktionen&nbsp;</td><td>Community, Kindersicherung, Plattformübergreifendes Spielen, Remote Gaming, Sony PlayStation Network, Sony PlayStation Plus, Streaming (DLNA), Streaming (PlayStation Now/Gaikai)&nbsp;</td></tr><tr><td>Marketplace&nbsp;</td><td>Sony PlayStation Store&nbsp;</td></tr><tr><td>Internetfunktionen&nbsp;</td><td>Chat, Video Chat, Voice Chat, Webbrowser&nbsp;</td></tr><tr><td>Multimedia-Funktionen&nbsp;</td><td>Audio-CD-Wiedergabe, Blu-ray-Wiedergabe, DVD-Wiedergabe, Internet-Radio, Video-Wiedergabe&nbsp;</td></tr><tr><td>Streaming-ienste&nbsp;</td><td>Animax, Lovefilm, Maxdome, Mubi, Music on Demand, Sony Music Unlimited, Sony Video Unlimited, TuneIn, VidZone, Video on Demand, Watchever, YouTube&nbsp;</td></tr><tr><td>Ausstattung</td><td>onlinefähig/eingebautes Netzteil/3D-Ready</td></tr><tr><td>Sonstiges</td><td>bis zu 7 kabellose lageempfindliche Controller (Bluetooth) / PSP-Connectivity / keine Abwärtskompatibilität zu PlayStation 2-Spielen / Herunterladen von Filmen von Hollywood Studios aus dem Playstation Network, übertragbar auf PSP / Toploader-Laufwerk / Cross-Plattform-Funktionen (PS3 und PS Vita): Remote Play (Zugriff auf kompatible Inhalte auf PS3), Cross Buy (Spiel für anderes System kostenlos oder günstiger (online) dazukaufen), Cross-Goods (In-Game-Objekte für beide Systeme), Cross-Save (gespeichertes Spiel auf anderem System weiterspielen), Cross-Controller (PS Vita als Controller), Cross-Play (PSV vs. PS3), PlayStation Network-Konto erforderlich / 256 MB GDDR3 Grafikspeicher&nbsp;</td></tr></tbody></table>";
+				})
+				.Alter("DUALSHOCK 3 Wireless Controller", x =>
+				{
+					x.ShortDescription = "Ausgestattet mit SIXAXIS™ Motion-sensing-Technologie und Drucksensoren für jede Aktionsschaltfläche, bietet die DUALSHOCK®3 wireless Controller für die PlayStation ® 3 die intuitivste Gameplay-Erfahrung.";
+					x.FullDescription = "<ul><li><h4>Gewicht und Maße</h4><ul><li>Größe und Gewicht (ca.) : 27 x 23,5 x 4 cm ; 191 g</li></ul></li></ul>";
+				})
+				.Alter("Assassin's Creed III", x =>
+				{
+					x.ShortDescription = "Eliminieren Sie Ihre Gegner mit einem erweiterten Waffenarsenal, darunter Bögen, Pistolen, Tomahawk und die charakteristische Klinge des Assassinenordens. Erkunden Sie dicht bevölkerte Städte entlang der ausgedehnten und gefährlichen Grenze zur Wildnis, wo es von wilden Tieren nur so wimmelt. Eine ganz neue Spielengine zeigt die Brutalität und Schönheit einer Nation während ihres epischen Kampfes um Unabhängigkeit.";
+					x.FullDescription = "<p>Vor dem Hintergrund der Amerikanischen Revolution im späten 18. Jahrhundert präsentiert Assassin’s Creed III einen neuen Helden: Ratohnhaké:ton, der teils uramerikanischer, teils englischer Abstammung ist. Er nennt sich selbst Connor und wird die neue Stimme der Gerechtigkeit im uralten Krieg zwischen Assassinen und Templern. Der Spieler wird zum Assassinen im Krieg um Freiheit und gegen Tyrannei in der aufwändigsten und flüssigsten Kampferfahrung der Reihe. Assassin’s Creed III umfasst die Amerikanische Revolution und nimmt den Spieler mit auf eine Reise durch das lebhafte, ungezähmte Grenzland, vorbei an geschäftigen Kolonialstädten, bis hin zu den erbittert umkämpften und chaotischen Schlachtfeldern, auf denen George Washingtons Kontinentalarmee mit der eindrucksvollen Britischen Armee zusammenstieß.</p><p>Das 18. Jahrhundert in Nordamerika. Nach mehr als 20 Jahren voller Konflikte stehen die 13 amerikanischen Kolonien und die Britische Krone am Rande eines handfesten Krieges. Die Schlachtlinien werden vorbereitet. Blutvergießen ist unvermeidbar. Aus der Asche dieses brennenden Dorfes wird ein neuer Assassine auferstehen. Als Sohn mohikanischer und britischer Vorfahren wird sein Kampf für Freiheit und Gerechtigkeit in den Wirren der Revolution Gestalt annehmen.</p>";
+				})
+				.Alter("PlayStation 3 Assassin's Creed III Bundle", x =>
+				{
+					x.ShortDescription = "500GB PlayStation®3 Console, 2 × DUALSHOCK®3 wireless controller und Assassin's Creed® III.";
+					x.FullDescription = "<table cellspacing=\"0\" cellpadding=\"1\"><tbody><tr><td>Prozessortyp&nbsp;</td><td>Cell Processor&nbsp;</td></tr><tr><td>Arbeitsspeicher (RAM)nbsp;</td><td>256 MB&nbsp;</td></tr><tr><td>Grafikchipsatz&nbsp;</td><td>nVidia RSX&nbsp;</td></tr><tr><td>Taktfrequenz&nbsp;</td><td>3.200 MHz&nbsp;</td></tr><tr><td>Abmessungen&nbsp;</td><td>290 x 60 x 230 mm&nbsp;</td></tr><tr><td>Gewicht&nbsp;</td><td>2.100 g&nbsp;</td></tr><tr><td>Speichermedium&nbsp;</td><td>Blu-ray&nbsp;</td></tr><tr><td>Stromverbrauch in Betrieb&nbsp;</td><td>190 Watt&nbsp;</td></tr><tr><td>Plattform&nbsp;</td><td>Playstation 3 (PS3)&nbsp;</td></tr><tr><td>Akku-Laufzeit&nbsp;</td><td>0 h&nbsp;</td></tr><tr><td>Anschlüsse&nbsp;</td><td>2x USB 2.0, AV-Ausgang, digitaler optischer Ausgang (SPDIF), HDMI&nbsp;</td></tr><tr><td>Soundmodi&nbsp;</td><td>AAC, Dolby igital, Dolby Digital Plus, Dolby TrueHD, DTS, DTS-HD, LPCM 7.1-Kanal&nbsp;</td></tr><tr><td>Unterstützte Auflösungen&nbsp;</td><td>576i, 576p, 720p, 1080i, 1080p Full HD&nbsp;</td></tr><tr><td>Serie&nbsp;</td><td>Sony Playstation 3&nbsp;</td></tr><tr><td>Veröffentlichungsjahr&nbsp;</td><td>2012&nbsp;</td></tr><tr><td>Mitgelieferte Hardware&nbsp;</td><td>Dual Shock 3-Controller&nbsp;</td></tr><tr><td>Farbe&nbsp;</td><td>schwarz&nbsp;</td></tr><tr><td>USK-Freigabe&nbsp;</td><td>0 Jahre&nbsp;</td></tr><tr><td>PEGI-Freigabe&nbsp;</td><td>3 Jahre&nbsp;</td></tr><tr><td>RAM-Typ&nbsp;</td><td>XDR-DRAM&nbsp;</td></tr><tr><td>Controller-Akku-Laufzeit&nbsp;</td><td>30 h&nbsp;</td></tr><tr><td>WLAN-Standard&nbsp;</td><td>IEEE 802.11 b/g&nbsp;</td></tr><tr><td>LAN-Standard&nbsp;</td><td>Gigabit Ethernet (10/100/1000 Mbit/s)&nbsp;</td></tr><tr><td>Daten-Kommunikation&nbsp;</td><td>Bluetooth 2.0 + EDR, Netzwerk (Ethernet), WLAN (Wi-Fi)&nbsp;</td></tr><tr><td>Controller-Eigenschaften&nbsp;</td><td>Beschleunigungssensor, Lagesensor (Gyrosensor), Headset-nschluss, Vibration&nbsp;</td></tr><tr><td>Spielsteuerungen&nbsp;</td><td>Bewegungssteuerung, Controller&nbsp;</td></tr><tr><td>Spielfunktionen&nbsp;</td><td>Community, Kindersicherung, Plattformübergreifendes Spielen, Remote Gaming, Sony PlayStation Network, Sony PlayStation Plus, Streaming (DLNA), Streaming (PlayStation Now/Gaikai)&nbsp;</td></tr><tr><td>Marketplace&nbsp;</td><td>Sony PlayStation Store&nbsp;</td></tr><tr><td>Internetfunktionen&nbsp;</td><td>Chat, Video Chat, Voice Chat, Webbrowser&nbsp;</td></tr><tr><td>Multimedia-Funktionen&nbsp;</td><td>Audio-CD-Wiedergabe, Blu-ray-Wiedergabe, DVD-Wiedergabe, Internet-Radio, Video-Wiedergabe&nbsp;</td></tr><tr><td>Streaming-ienste&nbsp;</td><td>Animax, Lovefilm, Maxdome, Mubi, Music on Demand, Sony Music Unlimited, Sony Video Unlimited, TuneIn, VidZone, Video on Demand, Watchever, YouTube&nbsp;</td></tr><tr><td>Ausstattung</td><td>onlinefähig/eingebautes Netzteil/3D-Ready</td></tr><tr><td>Sonstiges</td><td>bis zu 7 kabellose lageempfindliche Controller (Bluetooth) / PSP-Connectivity / keine Abwärtskompatibilität zu PlayStation 2-Spielen / Herunterladen von Filmen von Hollywood Studios aus dem Playstation Network, übertragbar auf PSP / Toploader-Laufwerk / Cross-Plattform-Funktionen (PS3 und PS Vita): Remote Play (Zugriff auf kompatible Inhalte auf PS3), Cross Buy (Spiel für anderes System kostenlos oder günstiger (online) dazukaufen), Cross-Goods (In-Game-Objekte für beide Systeme), Cross-Save (gespeichertes Spiel auf anderem System weiterspielen), Cross-Controller (PS Vita als Controller), Cross-Play (PSV vs. PS3), PlayStation Network-Konto erforderlich / 256 MB GDDR3 Grafikspeicher&nbsp;</td></tr></tbody></table>";
+				})
+				.Alter("PlayStation 4", x =>
+				{
+					x.ShortDescription = "In Zusammenarbeit mit einigen der kreativsten Köpfe der Industrie entstanden, bietet die PlayStation® 4 atemberaubende und einzigartige Gaming-Erlebnis.";
+					x.FullDescription = "<ul><li>PlayStation 4, die neueste Generation des Entertainment Systems, definiert reichhaltiges und beeindruckendes Gameplay, völlig neu.</li><li>Den Kern der PS4 bilden ein leistungsstarker, eigens entwickelter Chip mit acht x86-Kernen (64 bit) sowie ein hochmoderner optimierter Grafikprozessor.</li><li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht mit dem DualShock 4 Wireless Controller eine erstklassige Bewegungssteuerung.</li><li>Der DualShock 4 bietet als Neuerungen ein Touchpad, eine Share-Taste, einen eingebauten Lautsprecher und einen Headset-Anschluss.</li><li>PS4 integriert Zweitbildschirme, darunter PS Vita, Smartphones und Tablets, damit Spieler ihre Lieblingsinhalte überall hin mitnehmen können.</li></ul>";
+				})
+				.Alter("DUALSHOCK 4 Wireless Controller", x =>
+				{
+					x.ShortDescription = "Durch Kombination klassischer Steuerelemente mit innovativen neuen Möglichkeiten des Spielens, ist der Wireless Controller DUALSHOCK® 4 der evolutionäre Controller für eine neue Ära des Gaming.";
+					x.FullDescription = "<div><div><p>Der DualShock 4 Controller bietet einige neue Features, die völlig neue Wege des Spielens ermöglichen und wohlüberlegt mit Unterstützung aus der Entwickler-Community zusammengestellt wurden. Die “Share”-Taste erlaubt es Ihnen ganz einfach, Gameplay in Echtzeit über Streaming-Seiten wie Ustream zu veröffentlichen. Dort können andere Gamer Spiele kommentieren oder sogar direkt beitreten und aushelfen. Daneben können Sie über die “Share”-Taste Bilder oder Videos zu Facebook hochladen. Auf der Vorderseite des DualShock 4 befindet sich eine LED-Leuchte, die in unterschiedlichen Farben erstrahlen kann, um die Farbe des Charakters im Spiel abzubilden und einen Spieler so leicht zu identifizieren. Die Farben können dem Spieler auch nützliche Informationen liefern, zum Beispiel wenn der Charakter im Spiel Schaden nimmt.</p> <p>Der DualShock 4 wurde zusammen mit einem zweiten Peripherie-Gerät entwickelt, einer Kamera (nicht im Lieferumfang enthalten), die die Tiefe der Umgebung vor ihr wahrnehmen kann und die mithilfe der LED-Leuchte die Position des Controllers im dreidimensionalen Raum bestimmen kann.</p> <p>Der DualShock 4 bietet auf seiner Vorderseite ein Touchpad und somit eine neue Input-Methode. Zusätzlich gibt es einen eingebauten Lautsprecher und einen Headset-Anschluss, um hochklassige Soundeffekte aus den Spielen zu übertragen. Mithilfe eines Headsets (nicht im Lieferumfang enthalten) können Sie während des Online-Gamings mit Ihren Freunden chatten und Soundeffekte aus dem Controller hören können. Der DualShock 4 adaptiert die bekannte Form des kabellosen DualShock 3 Controllers und bietet einige entscheidende Verbesserungen:</p> <ul> <li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht eine erstklassige Bewegungssteuerung.</li> <li>Die Dual-Analogsticks wurden verbessert und bieten eine größere Präzision, ein besseres Material auf den Oberflächen sowie eine verbesserte Form, um eine noch genauere Steuerung zu ermöglichen.</li> <li>Die L2/R2-Tasten oben auf dem Controller wurden abgerundet und sind jetzt einfacher und flüssiger zu bedienen.</li> <li>Eine neue “Options”-Taste kombiniert die Funktionen der “Select”- und “Start”-Tasten auf dem DualShock 3 zur Steuerung der Ingame-Menüs.</li> </ul> <h4>Technische Spezifikationen</h4> <ul> <li>Außenabmessungen Ca. 162 × 52 × 98 mm (B × H × T) (vorläufig) </li><li>Gewicht Ca. 210 g (vorläufig) </li><li><b>Tasten / Schalter:</b> PS-Taste, SHARE-Taste, OPTIONS-Taste, Richtungstasten (oben/unten/links/rechts), Aktionstasten (Dreieck, Kreis, Kreuz, Quadrat), R1/L1/R2/L2-Taste, linker Stick / L3-Taste, rechter Stick / R3-Taste, Pad-Taste </li><li><b>Touchpad:</b> 2-Punkt-Touchpad, Klick-Mechanismus, kapazitiv</li> <li><b>Bewegungssensor:</b> Sechsachsiges Motion-Sensing-System (dreiachsiges Gyroskop, dreiachsiger Beschleunigungssensor) </li><li><b>Sonstige Funktionen:</b> Lichtbalken, Vibration, integrierter MonoLautsprecher</li> <li><b>Anschluss:</b> USB (Micro B), Erweiterungs-Port, Stereo-Kopfhörerbuchse </li><li><b>Wireless-Kommunikation:</b> Bluetooth 2.1+EDR</li> <li><b>Batterie:</b> Typ Eingebauter Lithium-Ionen-Akku</li> <li><b>Spannung:</b> 3,7 V Gleichspannung (vorläufig)</li> <li><b>Kapazität:</b> 1000 mAh (vorläufig)</li> <p></p> <p> <i>Kurzfristige Änderungen des Herstellers vorbehalten.</i> </p> </ul></div><div></div></div>";
+				})
+				.Alter("PlayStation 4 Camera", x =>
+				{
+					x.Name = "PlayStation 4 Kamera";
+					x.ShortDescription = "Eine Kamera, die die Tiefe der Umgebung vor ihr wahrnehmen kann und die mithilfe der LED-Leuchte die Position des Controllers im dreidimensionalen Raum bestimmen kann.";
+					x.FullDescription = "<p>Die neue Kamera besitzt vier Mikrofone mit der eine präzise Geräusch-Erkennung und -Ortung möglich ist und wird den PlayStation Move-Motion-Controller (nicht im Lieferumfang enthalten) mit einer größeren Präzision als je zuvor unterstützen.</p><p><ul><li><b>Farbe:</b> Jet Black</li> <li><b>Außenabmessungen:</b> Ca. 186 × 27 × 27 mm (B × H × T) (vorläufig)</li> <li><b>Gewicht:</b> Ca. 183 g (vorläufig)</li> <li><b>Videopixel:</b> (Maximum) 2 × 1280 × 800 Pixel</li> <li><b>Videobildrate:</b> 1280×800 Pixel bei 60 fps, 640×400 Pixel bei 120 fps, 320×192 Pixel bei 240 fps</li> <li><b>Videoformat:</b> RAW, YUV (unkomprimiert)</li> <li><b>Objektiv:</b> Zwei Objektive, F-Wert/F2.0 Fixfokus</li> <li><b>Erfassungsbereich</b> 30 cm ～ ∞</li> <li><b>Sichtfeld</b> 85°</li> <li><b>Mikrofon:</b> 4-Kanal Mikrofon-Array</li> <li><b>Verbindungsart:</b> Spezieller PS4-Stecker (AUX-Stecker)</li> <li><b>Kabellänge:</b> Ca. 2 m (vorläufig)</li> <p></p><p> <i>Kurzfristige Änderungen des Herstellers vorbehalten.</i> </p></ul></p>";
+				})
+				.Alter("PlayStation 4 Bundle", x =>
+				{
+					x.ShortDescription = "PlayStation®4 Console, DUALSHOCK®4 wireless controller und PS4 Kamera.";
+					x.FullDescription = "<ul><li>PlayStation 4, die neueste Generation des Entertainment Systems, definiert reichhaltiges und beeindruckendes Gameplay, völlig neu.</li><li>Den Kern der PS4 bilden ein leistungsstarker, eigens entwickelter Chip mit acht x86-Kernen (64 bit) sowie ein hochmoderner optimierter Grafikprozessor.</li><li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht mit dem DualShock 4 Wireless Controller eine erstklassige Bewegungssteuerung.</li><li>Der DualShock 4 bietet als Neuerungen ein Touchpad, eine Share-Taste, einen eingebauten Lautsprecher und einen Headset-Anschluss.</li><li>PS4 integriert Zweitbildschirme, darunter PS Vita, Smartphones und Tablets, damit Spieler ihre Lieblingsinhalte überall hin mitnehmen können.</li></ul>";
+				})
+				.Alter("Accessories for unlimited gaming experience", x =>
+				{
+					x.Name = "Zubehör für unbegrenzte Gaming-Erlebnis";
+					x.ShortDescription = "Die Zukunft des Gaming ist jetzt mit dynamischen, verbundenen Spiele, starke Grafikleistung und Geschwindigkeit, intelligente Personalisierung, integrierter sozialer Fähigkeiten und innovative Second-Screen-Funktionen. Der geniale Höhepunkt der kreativsten Köpfe in der Industrie, bietet PlayStation® 4 eine einzigartige Spielumgebung, die Ihnen den Atem rauben wird.";
+					x.FullDescription = "<ul><li>Tauchen Sie ein in eine neue Welt des Spielens mit starker Grafikleistung und Geschwindigkeit.</li><li>Beseitigen Sie längere Ladezeiten der gespeicherte Spiele mit Suspend-Modus.</li><li>Sofortiges spielen ohne zu warten dank Herunterladen und Aktialisierung im Hintergrund.</li><li>Teilen Sie sofort Bilder und Videos Ihrer Lieblings-Gaming-Momente auf Facebook mit dem DUALSHOCK® 4 Controller.</li><li>Ausgestrahlt, während Sie Echtzeit über Ustream spielen.</li></ul>";
+				})
+				.Alter("Watch Dogs", x =>
+				{
+					x.ShortDescription = "Hacken Sie die Stadt und machen Sie sie zu Ihrer Waffe. Bewegen Sie sich dynamisch durch die Stadt, nutzen Sie Abkürzungen durch Gebäude, klettern Sie auf Dächer und über Hindernisse";
+					x.FullDescription = "<p>Es braucht nur eine Fingerbewegung und wir sind mit unseren Freunden verbunden. Wir kaufen die aktuellsten Gadgets und Ausrüstungen. Wir finden heraus, was in der Welt passiert. Aber mit der gleichen Bewegung entsteht ein digitaler Schatten, der sich zunehmend vergrößert. Mit jeder Verbindung hinterlassen wir eine digitale Spur, die jede Bewegung von uns aufzeichnet: unsere Vorlieben sowie unsere Abneigungen. Und es sind nicht nur die Menschen – jede Großstadt ist heutzutage vernetzt. Die städtische Infrastruktur wird von komplexen Systemen überwacht und kontrolliert.</p><p>In Watch Dogs heißt dieses System Central Operating System (ctOS). Es kontrolliert den Großteil der Technologie der Stadt und verfügt über wichtige Informationen über jeden Einwohner. Du spielst Aiden Pearce, einen brillanten Hacker und ehemaligen Gangster, dessen kriminelle Vergangenheit zu einer blutigen Familientragödie führte. Jetzt bist du auf der Jagd nach den Leuten, die deiner Familie Leid zugefügt haben, und du hast die Möglichkeit jeden in deinem Umfeld zu überwachen und zu hacken, indem du alles manipulierst, was mit dem Netzwerk der Stadt verbunden ist. Greife auf die allgegenwärtigen Überwachungskameras zu, lade persönliche Informationen herunter, um eine Zielperson zu finden, kontrolliere Ampeln und öffentliche Verkehrsmittel… und vieles mehr. Nutze die Stadt Chicago als deine ultimative Waffe und nimm auf deine persönliche Art Rache.</p><p><ul> <li><strong>Hacke die Stadt</strong> - <i>Watch Dogs</i> spielt in einer vollständig simulierten Stadt, in der du in Echtzeit die öffentlichen Verkehrsmittel mit deinem Smartphone kontrollieren kannst. Alles, was mit dem ctOS der Stadt verbunden ist, kann zu deiner Waffe werden.</li> <li><strong>Gerechtigkeit der Straße</strong> - In einer Stadt, in der auf Gewalt am besten mit Gewalt geantwortet wird, hast du die Fähigkeiten, um den Kampf auf die Straßen zu bringen. Insgesamt wirst du Zugriff auf ein Arsenal von über 30 traditionellen Waffen haben.</li> <li><strong>Volle Power</strong> - Setze dich hinter das Lenkrad von mehr als 65 Fahrzeugen, jedes ausgestattet mit Handling und Fahrphysik auf dem neusten Stand der Technik, und erkunde die riesige Stadt während du Missionen erfüllst.</li> <li> <strong>Alles unter Kontrolle</strong> - Die komplett neue Disrupt Engine, die eigenes für <i>Watch Dogs</i> programmiert wurde, nutzt fortschrittliche Technologien, um ein beeindruckende Grafik und eine unglaublich realistische Spielerfahrung zu bieten. </li> <li> <strong>Dynamische Navigation</strong> - <i>Watch Dogs</i> bietet dir nicht nur die Möglichkeit das ctOS zu deinem Vorteil zu nutzen, sondern auch deine Umgebung. Nimm Abkürzungen durch Gebäude oder klettere über die Dächer, um dein Ziel in einem realistischen Chicago zu erreichen. </li> </ul></p>";
+				})
+				.Alter("Prince of Persia", x =>
+				{
+					x.Name = "Prince of Persia \"Die vergessene Zeit\"";
+					x.ShortDescription = "Mit Prince of Persia: Die Vergessene Zeit erscheint eine völlig neue Geschichte aus dem Prince of Persia-Universum. Auf den Spieler warten bisher unbekannte Charaktere und neuartige Kräfte, mit denen die Natur und die Zeit kontrolliert werden können. Die Handlung des Spiels ist zwischen Prince of Persia The Sands of Time und Prince of Persia Warrior Within angesiedelt.";
+					x.FullDescription = "<p>Prince of Persia: Die Vergessene Zeit stellt das nächste Kapitel aus dem von Fans geliebten Sands of Time-Universum dar. Nach seinem Abenteuer in Azad reist der Prinz in das Königreich seines Bruders. Doch eine mächtige Armee belagert den königlichen Palast und droht diesen zu vernichten. Um das Königreich vor dem sicheren Untergang zu bewahren, entschließt sich der Prinz, die uralten Kräfte des Sands nutzen – der Beginn eines epischen Abenteuers. Der Prinz muss sich als Anführer beweisen und lernen, dass große Macht oft einen hohen Preis fordert.</p><p>Klassisches Gameplay mit neuen Elementen Prince of Persia: Die Vergessene Zeit handelt von den Ereignissen zwischen Prince of Persia The Sands of Time und Prince of Persia: Warrior Within und eröffnet den Fans ein völlig neues Kapitel der Prince of Persia-Reihe. Dadurch verleiht das Spiel dem Sands of Time-Universum noch mehr Tiefe. Den Prinzen erwarten epische Kämpfe gegen mehrere Feinde gleichzeitig sowie spektakuläre Akrobatikeinlagen in schwindelerregender Höhe und gewaltigen Spielumgebungen. Glücklicherweise verfügt er in über besondere Kräfte, durch die er die Natur und die Zeit kontrollieren kann, denn Prince of Persia: Die Vergessene Zeit wird seine außerordentlichen Talente fordern wie niemals zuvor.</p><p>Prince of Persia: Die Vergessene Zeit entführt den Spieler zu unvergesslichen Schauplätzen, die durch die fortschrittliche und preisgekrönte Anvil-Engine zum Leben erweckt werden. Während vor den Toren des Königreichs ein schrecklicher Krieg tobt, werden die Fähigkeiten des Prinzen wie noch nie zuvor auf die Probe gestellt. Das epische Abenteuer des Prinzen hält etliche atemberaubende Momente bereit, die dem Spieler während des gesamten Abenteuers die Sprache verschlagen werden.</p><p>Herrschaft über die Natur. Da der Prinz die Natur und die Zeit beeinflussen kann, hat er stets die volle Kontrolle über seine Umgebung und einen gewaltigen Vorteil gegenüber seinen Widersachern. Er wird feststellen, dass seine Macht über die Natur in Kombination mit der Fähigkeit, die Zeit zurückzudrehen, ganz besonders durchschlagende Effekte haben kann. Somit eröffnen sich neue Wege und Ansätze Gebiete zu überwinden oder Rätsel zu lösen. Abwechslung und Spannung erwartet den Spieler dabei während des gesamten Abenteuers.</p><p><ul><li><b>Klassisches Gameplay mit neuen Elementen:</b> Den Prinzen erwarten epische Kämpfe gegen mehrere Feinde gleichzeitig sowie spektakuläre Akrobatikeinlagen in schwindelerregender Höhe und gewaltigen Spielumgebungen.</li><li><b>Eine kinoreife Spielerfahrung:</b> Prince of Persia: Die Vergessene Zeit entführt den Spieler zu unvergesslichen Schauplätzen, die durch die fortschrittliche und preisgekrönte Anvil-Engine zum Leben erweckt werden.</li><li><b>Herrschaft über die Natur:</b> Da der Prinz die Natur und die Zeit beeinflussen kann, hat er stets die volle Kontrolle über seine Umgebung und einen gewaltigen Vorteil gegenüber seinen Widersachern.</li><li><b>Rückkehr der beliebten Serie:</b> Prince of Persia: Die Vergessene Zeit handelt von den Ereignissen zwischen Prince of Persia The Sands of Time und Prince of Persia: Warrior Within und eröffnet den Fans ein völlig neues Kapitel der Prince of Persia-Reihe.</li></ul></p>";
+				})
+				.Alter("Driver San Francisco", x =>
+				{
+					x.ShortDescription = "Gangsterboss Charles Jericho ist wieder auf freiem Fuß und wird zu einer enormen Bedrohung für ganz San Francisco. Nur ein Mann vermag ihn jetzt noch aufzuhalten. Er hat die Straßen hunderter Städte befahren und sein ganzes Leben damit verbracht, Verbrecher hinter Schloss und Riegel zu bringen. Nun gibt es kein Zurück mehr! Um Jericho zur Strecke zu bringen muss er alles riskieren und er weiß, dass es sich dabei um seine vielleicht letzte Fahrt handeln könnte. Sein Name ist John Tanner. Er ist der Driver.";
+					x.FullDescription = "<p>Mit Ubisoft Reflections kehren die Entwickler des Originals zurück und erschaffen mit Driver San Francisco einen brandneuen Ableger der weltweit über 14 Millionen Mal verkauften Driver-Reihe. Der Spieler schlüpft in die Rolle von Detective John Tanner und wird in eine unerbittliche Jagd in den Straßen der weltberühmten Stadt an der Bucht verwickelt. Dank eines revolutionären Features wird es nun möglich, nahtlos zwischen hunderten lizensierten Wagen hin und her zu wechseln. Der Spieler bleibt so immer mitten in der Action. Mir seiner zeitlose Atmosphäre, einzigartigem Fahrverhalten und einer grunderneuerten Spielbarkeit wird Driver San Francisco zu einer klassischen und kinoreifen Verfolgungsjagd in einer offenen Spielwelt.</p><p><ul> <li><strong>Verfolgungsjagd pur:</strong><br>Zurück zu den Ursprüngen des cinematischen Fahrerlebnis von DRIVER: Weiche Radaufhängungen, lange Drifts, enge Kurven und High-Speed Verfolgungen im dichten Verkehr. Über 120 lizensierte Fahrzeuge stehen in der intensiven Hatz durch die Straßen San Franciscos zur Verfügung.<br><br></li> <li><strong>Eine unerbitterliche Hetzjagd:</strong><br>Auf Tanners von Rache erfüllter Jagd nach Jericho enthüllt der Spieler eine spannende Geschichte. Er verfolgt Tanners PS geladenen Überlebenskampf durch San Francisco bis zu dem Punkt, an dem es kein Zurück mehr gibt. <br><br></li> <li><strong>Shift:</strong><br>Während Tanner sich von der Folgen eines dramatischen Unfalls erholt, wird ihm bewusst, dass er eine neue Fähigkeit erlang hat: Shift. Sie ermöglicht es ihm nahtlos zwischen Fahrzeugen hin und her zu wechseln um deren Kontrolle zu übernehmen. Dies hat eine beispiellose Intensität, Vielfältigkeit und Freiheit zur Folge: Es wird möglich, in schnellere Vehikel zu wechseln, mit zivilen Fahrzeugen seine Kontrahenten auszuschalten oder in den Wagen des Gegner zu schlüpfen, um ihn ins Verderben zu stürzen.<br><br></li> <li><strong>Ein Spielplatz für Verfolgungsjagden:</strong><br>Ein mehr als 200km umfassendes Straßen-Netzwerk reicht bis über die Golden Gate Bridge und ist gespickt mit vielen Sehenswürdigkeiten von San Francisco. Der Spieler wechselt von einem zum nächsten Fahrzeug und taucht ab in das Leben verschiedenster Stadtbewohner. Eine schwindelerregende Vielzahl an Charakteren, alle mit einem ganz eigenen Blick auf eine Stadt im Ausnahmezustand.<br><br></li> <li><strong>Wahnwitziger Mehrspieler-Action:</strong><br>Neun mitreißende Online-Modi, lassen die Spieler dank der SHIFT-Funktion nahezu zu jeder Zeit an jedem beliebigen Ort auftauchen.&nbsp; Sowohl offline im Splitscreen als auch online setzt man zum Rammen, Abhängen und Überholen seines Freundes an.<br><br> </li> <li><strong>Und vieles mehr:</strong><br>Wie ein echter Regisseur kann der Spieler seine besten Stunts in packenden Filmen festhalten, bearbeiten und mit seinen Freunden teilen. Wer sein fahrerisches Können unter Beweis stellen will, kann sich in 20 Rennen und bei 80 Herausforderungen austoben. Über 60 bekannte Songs und natürlich das originale Driver-Thema sorgen während der Action auf heißem Asphalt für ebenso heiße Ohren.</li> </ul></p>";
+				})
+				.Alter("PlayStation 3 plus game cheaper", x =>
+				{
+					x.Name = "PlayStation 3 plus Spiel günstiger";
+					x.ShortDescription = "Unser besonderes Angebot: PlayStation 3 plus ein Spiel Ihrer Wahl günstiger.";
+					x.FullDescription = "<table cellspacing=\"0\" cellpadding=\"1\"><tbody><tr><td>Prozessortyp&nbsp;</td><td>Cell Processor&nbsp;</td></tr><tr><td>Arbeitsspeicher (RAM)nbsp;</td><td>256 MB&nbsp;</td></tr><tr><td>Grafikchipsatz&nbsp;</td><td>nVidia RSX&nbsp;</td></tr><tr><td>Taktfrequenz&nbsp;</td><td>3.200 MHz&nbsp;</td></tr><tr><td>Abmessungen&nbsp;</td><td>290 x 60 x 230 mm&nbsp;</td></tr><tr><td>Gewicht&nbsp;</td><td>2.100 g&nbsp;</td></tr><tr><td>Speichermedium&nbsp;</td><td>Blu-ray&nbsp;</td></tr><tr><td>Stromverbrauch in Betrieb&nbsp;</td><td>190 Watt&nbsp;</td></tr><tr><td>Plattform&nbsp;</td><td>Playstation 3 (PS3)&nbsp;</td></tr><tr><td>Akku-Laufzeit&nbsp;</td><td>0 h&nbsp;</td></tr><tr><td>Anschlüsse&nbsp;</td><td>2x USB 2.0, AV-Ausgang, digitaler optischer Ausgang (SPDIF), HDMI&nbsp;</td></tr><tr><td>Soundmodi&nbsp;</td><td>AAC, Dolby igital, Dolby Digital Plus, Dolby TrueHD, DTS, DTS-HD, LPCM 7.1-Kanal&nbsp;</td></tr><tr><td>Unterstützte Auflösungen&nbsp;</td><td>576i, 576p, 720p, 1080i, 1080p Full HD&nbsp;</td></tr><tr><td>Serie&nbsp;</td><td>Sony Playstation 3&nbsp;</td></tr><tr><td>Veröffentlichungsjahr&nbsp;</td><td>2012&nbsp;</td></tr><tr><td>Mitgelieferte Hardware&nbsp;</td><td>Dual Shock 3-Controller&nbsp;</td></tr><tr><td>Farbe&nbsp;</td><td>schwarz&nbsp;</td></tr><tr><td>USK-Freigabe&nbsp;</td><td>0 Jahre&nbsp;</td></tr><tr><td>PEGI-Freigabe&nbsp;</td><td>3 Jahre&nbsp;</td></tr><tr><td>RAM-Typ&nbsp;</td><td>XDR-DRAM&nbsp;</td></tr><tr><td>Controller-Akku-Laufzeit&nbsp;</td><td>30 h&nbsp;</td></tr><tr><td>WLAN-Standard&nbsp;</td><td>IEEE 802.11 b/g&nbsp;</td></tr><tr><td>LAN-Standard&nbsp;</td><td>Gigabit Ethernet (10/100/1000 Mbit/s)&nbsp;</td></tr><tr><td>Daten-Kommunikation&nbsp;</td><td>Bluetooth 2.0 + EDR, Netzwerk (Ethernet), WLAN (Wi-Fi)&nbsp;</td></tr><tr><td>Controller-Eigenschaften&nbsp;</td><td>Beschleunigungssensor, Lagesensor (Gyrosensor), Headset-nschluss, Vibration&nbsp;</td></tr><tr><td>Spielsteuerungen&nbsp;</td><td>Bewegungssteuerung, Controller&nbsp;</td></tr><tr><td>Spielfunktionen&nbsp;</td><td>Community, Kindersicherung, Plattformübergreifendes Spielen, Remote Gaming, Sony PlayStation Network, Sony PlayStation Plus, Streaming (DLNA), Streaming (PlayStation Now/Gaikai)&nbsp;</td></tr><tr><td>Marketplace&nbsp;</td><td>Sony PlayStation Store&nbsp;</td></tr><tr><td>Internetfunktionen&nbsp;</td><td>Chat, Video Chat, Voice Chat, Webbrowser&nbsp;</td></tr><tr><td>Multimedia-Funktionen&nbsp;</td><td>Audio-CD-Wiedergabe, Blu-ray-Wiedergabe, DVD-Wiedergabe, Internet-Radio, Video-Wiedergabe&nbsp;</td></tr><tr><td>Streaming-ienste&nbsp;</td><td>Animax, Lovefilm, Maxdome, Mubi, Music on Demand, Sony Music Unlimited, Sony Video Unlimited, TuneIn, VidZone, Video on Demand, Watchever, YouTube&nbsp;</td></tr><tr><td>Ausstattung</td><td>onlinefähig/eingebautes Netzteil/3D-Ready</td></tr><tr><td>Sonstiges</td><td>bis zu 7 kabellose lageempfindliche Controller (Bluetooth) / PSP-Connectivity / keine Abwärtskompatibilität zu PlayStation 2-Spielen / Herunterladen von Filmen von Hollywood Studios aus dem Playstation Network, übertragbar auf PSP / Toploader-Laufwerk / Cross-Plattform-Funktionen (PS3 und PS Vita): Remote Play (Zugriff auf kompatible Inhalte auf PS3), Cross Buy (Spiel für anderes System kostenlos oder günstiger (online) dazukaufen), Cross-Goods (In-Game-Objekte für beide Systeme), Cross-Save (gespeichertes Spiel auf anderem System weiterspielen), Cross-Controller (PS Vita als Controller), Cross-Play (PSV vs. PS3), PlayStation Network-Konto erforderlich / 256 MB GDDR3 Grafikspeicher&nbsp;</td></tr></tbody></table>";
 				});
 
-                #endregion Certina DS Podium Big Size
-                #endregion watches
-            }
+				#endregion gaming
+
+			}
             catch (Exception ex)
             {
 				throw new SeedDataException("AlterProduct", ex);
@@ -3673,7 +3775,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             ;
         }
 
-
         protected override void Alter(IList<BlogPost> entities)
         {
             base.Alter(entities);
@@ -3822,7 +3923,5 @@ namespace SmartStore.Web.Infrastructure.Installation
                 x.Name = "Einmal im Monat";
             });
         }
-
     }
-
 }

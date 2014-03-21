@@ -22,7 +22,6 @@ namespace SmartStore.Services.Logging
         private readonly IWebHelper _webHelper;
         private readonly IDbContext _dbContext;
         private readonly IDataProvider _dataProvider;
-        private readonly CommonSettings _commonSettings;
 
         #endregion
 
@@ -36,14 +35,12 @@ namespace SmartStore.Services.Logging
         /// <param name="dbContext">DB context</param>>
         /// <param name="dataProvider">WeData provider</param>
         /// <param name="commonSettings">Common settings</param>
-        public DefaultLogger(IRepository<Log> logRepository, IWebHelper webHelper,
-            IDbContext dbContext, IDataProvider dataProvider, CommonSettings commonSettings)
+        public DefaultLogger(IRepository<Log> logRepository, IWebHelper webHelper, IDbContext dbContext, IDataProvider dataProvider)
         {
             this._logRepository = logRepository;
             this._webHelper = webHelper;
             this._dbContext = dbContext;
             this._dataProvider = dataProvider;
-            this._commonSettings = commonSettings;
         }
 
         #endregion

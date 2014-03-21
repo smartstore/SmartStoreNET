@@ -111,6 +111,10 @@
     <Compile Include="Migrations\201403210038385_AclPerf.Designer.cs">
       <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.cs" />
+    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.Designer.cs">
+      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="Setup\InstallDatabaseInitializer.cs" />
     <Compile Include="Setup\Builder\LocaleResourcesBuilder.cs" />
     <Compile Include="Setup\Builder\LocaleResourcesMigrator.cs" />
+    <Compile Include="Setup\ISqlCeIncompatible.cs" />
     <Compile Include="Setup\MigratorUtils.cs" />
     <Compile Include="Setup\SeedData\SeedDataException.cs" />
     <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
@@ -255,6 +260,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201403210038385_AclPerf.resx">
       <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403211655284_CurrencyMorePrecision.resx">
+      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

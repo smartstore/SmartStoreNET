@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.PrivateMessages;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {

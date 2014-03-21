@@ -11,7 +11,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;

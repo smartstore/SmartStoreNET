@@ -4,7 +4,7 @@ using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;

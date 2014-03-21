@@ -21,6 +21,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;

@@ -32,7 +32,7 @@ using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.News;
@@ -65,6 +65,7 @@ using SmartStore.Core.Email;
 using Autofac.Features.Metadata;
 using SmartStore.Services.Events;
 using System.Diagnostics;
+using SmartStore.Services.Logging;
 
 namespace SmartStore.Web.Framework
 {

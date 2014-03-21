@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Async;
 using SmartStore.Collections;
 using Autofac;

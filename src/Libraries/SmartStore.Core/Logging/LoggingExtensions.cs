@@ -2,7 +2,7 @@ using System;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 
-namespace SmartStore.Services.Logging
+namespace SmartStore.Core.Logging
 {
     public static class LoggingExtensions
     {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Email;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Messages

@@ -6,7 +6,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.SMS.Clickatell.Clickatell;
 using SmartStore.Services.Common; 
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Plugin.SMS.Clickatell
 {

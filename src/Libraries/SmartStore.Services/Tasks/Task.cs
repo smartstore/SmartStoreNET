@@ -1,7 +1,7 @@
 ﻿using System;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Tasks
 {

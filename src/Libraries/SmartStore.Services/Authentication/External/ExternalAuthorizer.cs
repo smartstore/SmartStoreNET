@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Utilities;

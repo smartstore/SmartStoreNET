@@ -4,7 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 
-namespace SmartStore.Services.Logging
+namespace SmartStore.Core.Logging
 {
     /// <summary>
     /// Customer activity service interface

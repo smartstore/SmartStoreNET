@@ -32,7 +32,7 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Stores;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Tax;

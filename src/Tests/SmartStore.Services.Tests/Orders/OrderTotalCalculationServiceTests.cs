@@ -15,7 +15,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;

@@ -210,6 +210,11 @@
     <Compile Include="Localization\LocalizedString.cs" />
     <Compile Include="Localization\Localizer.cs" />
     <Compile Include="Localization\NullLocalizer.cs" />
+    <Compile Include="Logging\ICustomerActivityService.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\LogContext.cs" />
+    <Compile Include="Logging\LoggingExtensions.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\ThreadSafeList.cs" />

@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using System;
 using System.Linq;

@@ -6,7 +6,7 @@ using System.Text;
 using ImageResizer;
 using ImageResizer.Configuration;
 using ImageResizer.Plugins.PrettyGifs;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Media
 {

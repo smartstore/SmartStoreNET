@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Logging;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;

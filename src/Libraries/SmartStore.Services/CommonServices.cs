@@ -6,7 +6,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services
 {

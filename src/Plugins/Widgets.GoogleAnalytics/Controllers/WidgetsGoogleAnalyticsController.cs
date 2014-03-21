@@ -10,7 +10,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Plugin.Widgets.GoogleAnalytics.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;

@@ -27,7 +27,7 @@ using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;

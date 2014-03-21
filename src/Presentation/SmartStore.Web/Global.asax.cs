@@ -12,7 +12,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.EmbeddedViews;

@@ -33,7 +33,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {

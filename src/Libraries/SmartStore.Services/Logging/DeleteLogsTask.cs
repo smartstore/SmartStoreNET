@@ -1,5 +1,6 @@
 ﻿using System;
 using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Logging

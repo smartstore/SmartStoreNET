@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Data;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {

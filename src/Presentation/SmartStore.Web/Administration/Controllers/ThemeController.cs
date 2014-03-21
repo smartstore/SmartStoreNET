@@ -11,7 +11,7 @@ using SmartStore.Services.Security;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Services.Themes;

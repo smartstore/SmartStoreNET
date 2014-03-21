@@ -10,7 +10,7 @@ using SmartStore.Plugin.Shipping.ByTotal.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
 

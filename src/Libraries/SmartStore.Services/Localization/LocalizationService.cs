@@ -13,7 +13,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
 using SmartStore.Data;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;

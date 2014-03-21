@@ -4,7 +4,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 

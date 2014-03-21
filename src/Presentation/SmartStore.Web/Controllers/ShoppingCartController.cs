@@ -39,7 +39,7 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {

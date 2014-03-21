@@ -23,7 +23,7 @@ using SmartStore.Data.Setup;
 using SmartStore.Core.Events;
 using SmartStore.Services.Common;
 using SmartStore.Services.Media;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;

@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;

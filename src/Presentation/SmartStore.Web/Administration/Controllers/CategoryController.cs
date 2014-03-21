@@ -12,7 +12,7 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;

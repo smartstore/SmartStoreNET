@@ -5,10 +5,11 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Services.Logging;
 
 namespace SmartStore.Services.Tests.Logging
 {

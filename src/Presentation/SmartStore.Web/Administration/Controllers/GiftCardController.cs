@@ -9,7 +9,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;

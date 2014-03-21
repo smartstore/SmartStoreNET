@@ -28,7 +28,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;

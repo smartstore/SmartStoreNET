@@ -4,31 +4,51 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 
-namespace SmartStore.Services.Logging
+namespace SmartStore.Core.Logging
 {
     /// <summary>
-    /// Logger interface
+    /// Null logger
     /// </summary>
-    public partial interface ILogger
+    public partial class NullLogger : ILogger
     {
-        /// <summary>
+		private static readonly ILogger s_instance = new NullLogger();
+
+		public static ILogger Instance
+		{
+			get
+			{
+				return s_instance;
+			}
+		}
+		
+		/// <summary>
         /// Determines whether a log level is enabled
         /// </summary>
         /// <param name="level">Log level</param>
         /// <returns>Result</returns>
-        bool IsEnabled(LogLevel level);
+        public bool IsEnabled(LogLevel level)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Deletes a log item
         /// </summary>
         /// <param name="log">Log item</param>
-        void DeleteLog(Log log);
+        public void DeleteLog(Log log)
+        {
+        }
 
         /// <summary>
         /// Clears a log
         /// </summary>
-        void ClearLog();
-		void ClearLog(DateTime toUtc, LogLevel logLevel);
+        public void ClearLog()
+        {
+        }
+
+		public void ClearLog(DateTime toUtc, LogLevel logLevel)
+		{
+		}
 
         /// <summary>
         /// Gets all log items
@@ -40,29 +60,36 @@ namespace SmartStore.Services.Logging
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Log item collection</returns>
-        IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, 
-            string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency);
+        public IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc,
+			string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
+        {
+            return new PagedList<Log>(new List<Log>(), pageIndex, pageSize);
+        }
 
         /// <summary>
         /// Gets a log item
         /// </summary>
         /// <param name="logId">Log item identifier</param>
         /// <returns>Log item</returns>
-        Log GetLogById(int logId);
+        public Log GetLogById(int logId)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Get log items by identifiers
         /// </summary>
         /// <param name="logIds">Log item identifiers</param>
         /// <returns>Log items</returns>
-        IList<Log> GetLogByIds(int[] logIds);
+        public virtual IList<Log> GetLogByIds(int[] logIds)
+        {
+            return new List<Log>();
+        }
 
-		/// <summary>
-		/// Inserts a log item
-		/// </summary>
-		/// <param name="context">The log context</param>
-		/// <returns>A log item</returns>
-		Log InsertLog(LogContext context);
+		public Log InsertLog(LogContext context)
+		{
+			return null;
+		}
 
         /// <summary>
         /// Inserts a log item
@@ -72,6 +99,9 @@ namespace SmartStore.Services.Logging
         /// <param name="fullMessage">The full message</param>
         /// <param name="customer">The customer to associate log record with</param>
         /// <returns>A log item</returns>
-        Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null);
+        public Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+        {
+            return null;
+        }
     }
 }

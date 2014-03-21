@@ -6,7 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework;

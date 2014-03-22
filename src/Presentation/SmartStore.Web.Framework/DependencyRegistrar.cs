@@ -233,18 +233,41 @@ namespace SmartStore.Web.Framework
 
 			if (DataSettings.Current.IsValid())
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
-					.PropertiesAutowired(PropertyWiringOptions.None)
-					.InstancePerHttpRequest();
-
 				// register DB Hooks (only when app was installed properly)
+
+				Func<Type, Type> findHookedType = (t) => 
+				{
+					var x = t;
+					while (x != null)
+					{
+						if (x.IsGenericType)
+						{
+							return x.GetGenericArguments()[0];
+						}
+						x = x.BaseType;
+					}
+
+					return typeof(object);
+				};
+
 				var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
 				foreach (var hook in hooks)
 				{
-					var registration = builder.RegisterType(hook).As(typeof(IHook)).InstancePerHttpRequest();
-					string stage = typeof(IPreActionHook).IsAssignableFrom(hook) ? "pre" : "post";
-					registration.WithMetadata("stage", stage);
+					var hookedType = findHookedType(hook);
+
+					var registration = builder.RegisterType(hook)
+						.As(typeof(IPreActionHook).IsAssignableFrom(hook) ? typeof(IPreActionHook) : typeof(IPostActionHook))
+						.InstancePerHttpRequest();
+
+					registration.WithMetadata<HookMetadata>(m => 
+					{ 
+						m.For(em => em.HookedType, hookedType); 
+					});
 				}
+
+				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
+					.PropertiesAutowired(PropertyWiringOptions.None)
+					.InstancePerHttpRequest();
 			}
 			else
 			{

@@ -7,8 +7,9 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Services.Localization;
 
-namespace SmartStore.Services.Localization
+namespace SmartStore.Services.Hooks
 {
     
     public class LocalizedEntityPostDeleteHook : PostDeleteHook<ILocalizedEntity>

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using Autofac.Features.Metadata;
+using SmartStore.Collections;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Core.Data.Hooks
@@ -23,70 +25,100 @@ namespace SmartStore.Core.Data.Hooks
 		public IEnumerable<HookedEntityEntry> ModifiedEntries { get; set; }
 	}
 
+	public class HookMetadata
+	{
+		public Type HookedType { get; set; }
+	}
+
 	public class HooksEventConsumer :
 		IConsumer<PreActionHookEvent>,
 		IConsumer<PostActionHookEvent>
 	{
-		private readonly IEnumerable<Meta<Lazy<IHook>>> _hooks;
+		private readonly IEnumerable<Lazy<IPreActionHook, HookMetadata>> _preHooks;
+		private readonly IEnumerable<Lazy<IPostActionHook, HookMetadata>> _postHooks;
 
-		public HooksEventConsumer(IEnumerable<Meta<Lazy<IHook>>> hooks)
+		private readonly Multimap<Type, IPreActionHook> _preHooksCache = new Multimap<Type, IPreActionHook>();
+		private readonly Multimap<Type, IPostActionHook> _postHooksCache = new Multimap<Type, IPostActionHook>();
+
+		public HooksEventConsumer(
+			IEnumerable<Lazy<IPreActionHook, HookMetadata>> preHooks,
+			IEnumerable<Lazy<IPostActionHook, HookMetadata>> postHooks)
 		{
-			this._hooks = hooks;
+			this._preHooks = preHooks;
+			this._postHooks = postHooks;
 		}
 
 		public void HandleEvent(PreActionHookEvent eventMessage)
 		{
 			var entries = eventMessage.ModifiedEntries;
 
-			if (!entries.Any())
-				return;
-
-			var preHooks = _hooks.Where(x => x.Metadata["stage"].ToString() == "pre").Select(x => x.Value.Value).Cast<IPreActionHook>().ToList();
-
-			if (!preHooks.Any())
+			if (!entries.Any() || !_preHooks.Any())
 				return;
 
 			foreach (var entry in entries)
 			{
 				var e = entry; // Prevents access to modified closure
-				foreach (var hook in preHooks.Where(x => x.HookStates == e.PreSaveState && x.RequiresValidation == eventMessage.RequiresValidation))
+				var preHooks = GetPreHookInstancesFor(e.Entity.GetType());
+				foreach (var hook in preHooks)
 				{
-					var metadata = new HookEntityMetadata(e.PreSaveState);
-					hook.HookObject(e.Entity, metadata);
-
-					if (metadata.HasStateChanged)
+					if (hook.HookStates == e.PreSaveState && hook.RequiresValidation == eventMessage.RequiresValidation)
 					{
-						e.PreSaveState = metadata.State;
+						var metadata = new HookEntityMetadata(e.PreSaveState);
+						hook.HookObject(e.Entity, metadata);
+
+						if (metadata.HasStateChanged)
+						{
+							e.PreSaveState = metadata.State;
+						}
 					}
 				}
 			}
+		}
+
+		private IEnumerable<IPreActionHook> GetPreHookInstancesFor(Type hookedType)
+		{
+			if (_preHooksCache.ContainsKey(hookedType)) 
+			{
+				return _preHooksCache[hookedType];
+			}
+
+			var hooks = _preHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
+			_preHooksCache.AddRange(hookedType, hooks);
+			return hooks;
 		}
 
 		public void HandleEvent(PostActionHookEvent eventMessage)
 		{
 			var entries = eventMessage.ModifiedEntries;
 
-			if (!entries.Any())
-				return;
-
-			var postHooks = _hooks.Where(x => x.Metadata["stage"].ToString() == "post").Select(x => x.Value.Value).Cast<IPostActionHook>().ToList();
-
-			if (!postHooks.Any())
+			if (!entries.Any() || !_postHooks.Any())
 				return;
 
 			foreach (var entry in entries)
 			{
 				var e = entry; // Prevents access to modified closure
-				if (e.Entity is SmartStore.Core.Domain.Localization.ILocalizedEntity)
+				var postHooks = GetPostHookInstancesFor(e.Entity.GetType());
+				foreach (var hook in postHooks)
 				{
-					Debug.WriteLine(e.Entity.ToString());
-				}
-				foreach (var hook in postHooks.Where(x => x.HookStates == e.PreSaveState))
-				{
-					var metadata = new HookEntityMetadata(e.PreSaveState);
-					hook.HookObject(e.Entity, metadata);
+					if (hook.HookStates == e.PreSaveState)
+					{
+						var metadata = new HookEntityMetadata(e.PreSaveState);
+						hook.HookObject(e.Entity, metadata);
+					}
 				}
 			}
+		}
+
+		private IEnumerable<IPostActionHook> GetPostHookInstancesFor(Type hookedType)
+		{
+			if (_postHooksCache.ContainsKey(hookedType))
+			{
+				return _postHooksCache[hookedType];
+			}
+
+			var hooks = _postHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
+			_postHooksCache.AddRange(hookedType, hooks);
+			return hooks;
 		}
 
 	}

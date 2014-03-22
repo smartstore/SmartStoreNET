@@ -43,7 +43,8 @@ namespace SmartStore.Core.Data
         // codehint: sm-add (increasing performance on bulk inserts)
         bool ProxyCreationEnabled { get; set; }
         bool AutoDetectChangesEnabled { get; set; }
-        bool ValidateOnSaveEnabled{ get; set; }
+        bool ValidateOnSaveEnabled { get; set; }
+		bool HooksEnabled { get; set; }
         bool HasChanges { get; }
 
 		/// <summary>

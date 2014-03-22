@@ -10,7 +10,8 @@ namespace SmartStore.Core.Tests
     [TestFixture]
     public class ConversionTests
     {
-        [Test]
+		
+		[Test]
         public void Can_get_typed_value()
         {
 			// register custom type converters

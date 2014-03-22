@@ -28,11 +28,6 @@ namespace SmartStore.Data
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
-        #region Fields
-
-        private IList<IPreActionHook> _preHooks;
-
-        #endregion
 
         #region Ctor
 
@@ -47,7 +42,7 @@ namespace SmartStore.Data
         protected ObjectContextBase(string nameOrConnectionString, string alias = null)
             : base(nameOrConnectionString)
         {
-            this._preHooks = new List<IPreActionHook>();
+			this.HooksEnabled = true;
             this.Alias = null;
 			this.EventPublisher = NullEventPublisher.Instance;
         }
@@ -132,10 +127,11 @@ namespace SmartStore.Data
 			}
 		}
 
-        protected virtual bool HooksEnabled
-        {
-            get { return true; }
-        }
+		public bool HooksEnabled
+		{
+			get;
+			set;
+		}
 
         #endregion
 

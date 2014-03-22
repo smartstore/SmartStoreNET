@@ -3,8 +3,9 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Services.Security;
 
-namespace SmartStore.Services.Security
+namespace SmartStore.Services.Hooks
 {
 
 	public class SoftDeletablePreUpdateHook : PreUpdateHook<ISoftDeletable>

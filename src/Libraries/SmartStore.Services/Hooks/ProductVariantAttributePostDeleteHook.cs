@@ -1,7 +1,8 @@
 ﻿using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog;
 
-namespace SmartStore.Services.Catalog
+namespace SmartStore.Services.Hooks
 {
 	public class ProductVariantAttributePostDeleteHook : PostDeleteHook<ProductVariantAttribute>
 	{

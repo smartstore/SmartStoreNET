@@ -4,7 +4,7 @@ using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Services.Security;
 
-namespace SmartStore.Services
+namespace SmartStore.Services.Common
 {
 	public class AclEntityPostDeleteHook : PostDeleteHook<IAclSupported>
 	{

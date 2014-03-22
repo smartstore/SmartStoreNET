@@ -10,7 +10,7 @@ If you are migrating from a version PRIOR to March 11 2014 (e.g. V1.2.1 or older
 please manually run all applicable SQL migration scripts in this folder. This ensures the
 database is in the 'initial snapshot' state. After that, you will never have to migrate manually anymore.
 
-If you current version is dated March 11 2014 or later, simply ignore this folder and do nothing ;-)
+If your current version is dated March 11 2014 or later, simply ignore this folder and do nothing ;-)
 
 
 

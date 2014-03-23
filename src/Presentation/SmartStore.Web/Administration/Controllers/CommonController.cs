@@ -656,10 +656,15 @@ namespace SmartStore.Admin.Controllers
 			return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
-        public ActionResult ClearCache()
+		public ActionResult ClearCache(string previousUrl)
         {
 			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
             cacheManager.Clear();
+
+			this.SuccessNotification(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+
+			if (previousUrl.HasValue())
+				return Redirect(previousUrl);
 
             return RedirectToAction("Index", "Home");
         }

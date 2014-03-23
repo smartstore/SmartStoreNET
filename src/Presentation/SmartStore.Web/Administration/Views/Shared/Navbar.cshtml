@@ -62,7 +62,7 @@
 						<li class="divider"></li>
 					}
                     <li>
-                        <a href="@Url.Action("ClearCache", "Common")">
+                        <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl })">
                             <i class="icon-remove"></i>
                             @T("Admin.Header.ClearCache")
                         </a>

@@ -151,12 +151,12 @@
     <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageBrowserController.cs" />
+    <Compile Include="Controllers\JbimagesController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManufacturerController.cs" />
     <Compile Include="Controllers\MeasureController.cs" />
     <Compile Include="Controllers\MessageTemplateController.cs" />
-    <Compile Include="Controllers\NetAdvImageController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NewsLetterSubscriptionController.cs" />
     <Compile Include="Controllers\OnlineCustomerController.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
-    <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
@@ -444,8 +443,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Navbar.cshtml" />
-    <Content Include="Views\Shared\RichEditor.cshtml" />
-    <Content Include="Views\Shared\RichEditor.Telerik.cshtml" />
     <Content Include="Views\Widget\ConfigureWidget.cshtml" />
     <Content Include="Views\ScheduleTask\List.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
@@ -1014,9 +1011,6 @@
     <Content Include="Views\Shared\EditorTemplates\RichEditor.Telerik.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\NetAdvImage\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Order\AddProductToOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1192,6 +1186,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Jbimages\Upload.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

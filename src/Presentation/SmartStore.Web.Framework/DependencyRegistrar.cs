@@ -50,7 +50,6 @@ using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Editor;
 using SmartStore.Services.Filter;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Themes;
@@ -545,10 +544,6 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			// HTML Editor services
-			builder.RegisterType<NetAdvDirectoryService>().As<INetAdvDirectoryService>().InstancePerHttpRequest();
-			builder.RegisterType<NetAdvImageService>().As<INetAdvImageService>().SingleInstance(); // xxx (http)
-
 			// register theming services
 			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance(); // codehint: sm-edit (InstancePerHttpRequest > SingleInstance)
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerHttpRequest();

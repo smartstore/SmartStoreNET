@@ -2,8 +2,7 @@
 @using SmartStore.Web.Framework.UI;
 @{
     Html.AddScriptParts(true,
-        "~/Content/editors/tinymce/tiny_mce_gzip.js", 
-        "~/Content/editors/tinymce/globalinit.js");
+        "~/Content/editors/tinymce4/tinymce.gzip.js" ,"~/Content/editors/tinymce4/globalinit.js");
 
     var availableLangs = new string[] { "de", "en" };
     var lang = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower();
@@ -14,24 +13,22 @@
 }
 <script type="text/javascript">
 
-    $(function () {
-        tinyMCE.init(
+	$(function () {
+
+    	tinyMCE.init(
             $.extend(
-                true, 
+                true,
                 {},
-                tiny_mce_global_config, 
+                tiny_mce_global_config,
                 {
-                    elements: '@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)',
-                    language: '@lang',
-                    editor_css: '@Url.Content("~/Content/editors/tinymce/themes/advanced/skins/smartstore/ui.less")',
-                    popup_css: '@Url.Content("~/Content/editors/tinymce/themes/advanced/skins/smartstore/dialog.less")'
+    				selector: '#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)',
+    				language: '@lang',
                 }
             )
         );
+
     });
 
 </script>
 
-@Html.TextArea(string.Empty, /* Name suffix */
-               ViewData.TemplateInfo.FormattedModelValue /* Initial value */
-)
+@Html.TextArea(string.Empty, ViewData.TemplateInfo.FormattedModelValue)

@@ -307,6 +307,8 @@ namespace SmartStore.Core.Domain.Catalog
 
         public bool ShowColorSquaresInLists { get; set; }
 
+		public bool HideBuyButtonInLists { get; set; }
+
         public int? LabelAsNewForMaxDays { get; set; }
 
         public bool ShowDiscountSign { get; set; }

@@ -54,6 +54,7 @@ namespace SmartStore.Web.Models.Catalog
 		public int ProductMinPriceId { get; set; }
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
+		public bool HideBuyButtonInLists { get; set; }
         //codehint: sm-add end
 
         //price

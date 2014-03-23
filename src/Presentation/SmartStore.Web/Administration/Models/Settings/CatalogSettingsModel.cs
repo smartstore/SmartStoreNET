@@ -164,6 +164,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists")]
         public bool ShowColorSquaresInLists { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideBuyButtonInLists")]
+		public bool HideBuyButtonInLists { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts")]
         public bool IncludeShortDescriptionInCompareProducts { get; set; }
 

@@ -387,7 +387,15 @@
                     @Html.ValidationMessageFor(model => model.ShowColorSquaresInLists)
                 </td>
             </tr>
-
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.HideBuyButtonInLists)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.HideBuyButtonInLists)
+                    @Html.ValidationMessageFor(model => model.HideBuyButtonInLists)
+                </td>
+            </tr>
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.LabelAsNewForMaxDays)

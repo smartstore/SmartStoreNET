@@ -241,7 +241,7 @@
                     <i class="icon-info-sign"></i>
                 </a>
                  
-                @if (!Model.ProductPrice.DisableBuyButton)
+                @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
                 {
                     <a data-href='@addtocartlink'
                         href="#"

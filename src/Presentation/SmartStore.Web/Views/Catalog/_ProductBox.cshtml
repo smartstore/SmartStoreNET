@@ -160,7 +160,7 @@
 
     <div class="buttons">
                 
-        @if (!Model.ProductPrice.DisableBuyButton)
+        @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
         {
             var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
             <a data-href='@addtocartlink' 

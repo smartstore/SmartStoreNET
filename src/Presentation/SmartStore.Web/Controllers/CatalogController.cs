@@ -633,6 +633,7 @@ namespace SmartStore.Web.Controllers
                 model.DisplayBasePrice = _catalogSettings.ShowBasePriceInProductLists;
 				model.BasePriceInfo = minPriceProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
 				model.CompareEnabled = _catalogSettings.CompareProductsEnabled;
+				model.HideBuyButtonInLists = _catalogSettings.HideBuyButtonInLists;
 
 				var addShippingPrice = _currencyService.ConvertCurrency(minPriceProduct.AdditionalShippingCharge,
 					_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId), _workContext.WorkingCurrency);

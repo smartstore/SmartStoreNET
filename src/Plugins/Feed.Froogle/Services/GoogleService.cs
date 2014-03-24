@@ -19,6 +19,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using SmartStore.Web.Framework;
 using SmartStore.Services.Directory;
+using SmartStore.Core;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -34,6 +35,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly ICategoryService _categoryService;
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
+		private readonly IPriceCalculationService _priceCalculationService;
+		private readonly IWorkContext _workContext;
 
 		public GoogleService(
 			IRepository<GoogleProductRecord> gpRepository,
@@ -43,16 +46,20 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			ICategoryService categoryService,
 			FroogleSettings settings,
 			IMeasureService measureService,
-			MeasureSettings measureSettings)
+			MeasureSettings measureSettings,
+			IPriceCalculationService priceCalculationService,
+			IWorkContext workContext)
         {
-            this._gpRepository = gpRepository;
-			this._productService = productService;
-			this._manufacturerService = manufacturerService;
-			this._storeService = storeService;
-			this._categoryService = categoryService;
-			this.Settings = settings;
-			this._measureService = measureService;
-			this._measureSettings = measureSettings;
+            _gpRepository = gpRepository;
+			_productService = productService;
+			_manufacturerService = manufacturerService;
+			_storeService = storeService;
+			_categoryService = categoryService;
+			Settings = settings;
+			_measureService = measureService;
+			_measureSettings = measureSettings;
+			_priceCalculationService = priceCalculationService;
+			_workContext = workContext;
 
 			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
 			{
@@ -97,11 +104,14 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			{
 				if (Settings.SpecialPrice && product.SpecialPrice.HasValue && product.SpecialPriceStartDateTimeUtc.HasValue && product.SpecialPriceEndDateTimeUtc.HasValue)
 				{
-					string dateFormat = "yyyy-MM-ddTHH:mmZ";
-					string startDate = product.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat);
-					string endDate = product.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat);
+					if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+					{
+						string dateFormat = "yyyy-MM-ddTHH:mmZ";
+						string startDate = product.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat);
+						string endDate = product.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat);
 
-					specialPriceDate = "{0}/{1}".FormatWith(startDate, endDate);
+						specialPriceDate = "{0}/{1}".FormatWith(startDate, endDate);
+					}
 				}
 			}
 			catch (Exception exc)
@@ -345,16 +355,24 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteElementString("g", "condition", _googleNamespace, Condition());
 			writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
 
-			decimal price = Helper.ConvertFromStoreCurrency(product.Price, currency);
-			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
-
+			decimal priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
+			decimal price = Helper.ConvertFromStoreCurrency(priceBase, currency);
 			string specialPriceDate;
+
 			if (SpecialPrice(product, out specialPriceDate))
 			{
-				decimal specialPrice = Helper.ConvertFromStoreCurrency(product.SpecialPrice.Value, currency);
-				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(specialPrice) + " " + currency.CurrencyCode);
+				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
 				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+
+				// get regular price
+				decimal specialPrice = product.SpecialPrice.Value;
+				product.SpecialPrice = null;
+				priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
+				product.SpecialPrice = specialPrice;
+				price = Helper.ConvertFromStoreCurrency(priceBase, currency);
 			}
+
+			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
 
 			writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
 			writer.WriteCData("brand", brand, "g", _googleNamespace);

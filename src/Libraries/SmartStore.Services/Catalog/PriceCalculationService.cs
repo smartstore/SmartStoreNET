@@ -231,8 +231,7 @@ namespace SmartStore.Services.Catalog
             decimal additionalCharge, 
             bool includeDiscounts)
         {
-            return GetFinalPrice(product, customer, additionalCharge, 
-                includeDiscounts, 1);
+            return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, 1);
         }
 
         /// <summary>
@@ -298,21 +297,20 @@ namespace SmartStore.Services.Catalog
 		public virtual decimal GetFinalPrice(Product product, IList<ProductBundleItemData> bundleItems,
 			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null)
 		{
-			if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
-				return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem);
-
-			decimal result = decimal.Zero;
-
-			if (bundleItems != null)
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{
-				foreach (var data in bundleItems.Where(x => x.IsValid()))
-				{
-					var bundleItemPrice = GetFinalPrice(data.Item.Product, customer, data.AdditionalCharge, includeDiscounts, 1, data);
-					result = result + decimal.Multiply(bundleItemPrice, data.Item.Quantity);
-				}
-			}
+				decimal result = decimal.Zero;
+				var items = bundleItems ?? _productService.GetBundleItems(product.Id);
 
-			return (result < decimal.Zero ? decimal.Zero : result);
+				foreach (var itemData in items.Where(x => x.IsValid()))
+				{
+					var itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData);
+					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
+				}
+
+				return (result < decimal.Zero ? decimal.Zero : result);
+			}
+			return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem);
 		}
 
 		/// <summary>

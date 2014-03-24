@@ -326,7 +326,7 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			var lst = new List<Product>();
 
-			if (product.ProductType == ProductType.SimpleProduct)
+			if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 			{
 				lst.Add(product);
 			}

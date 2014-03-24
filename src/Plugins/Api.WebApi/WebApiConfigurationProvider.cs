@@ -17,21 +17,26 @@ namespace SmartStore.Plugin.Api.WebApi
 {
 	public partial class WebApiConfigurationProvider : IWebApiConfigurationProvider
 	{
-		private void AddActionsToOrder(EntityTypeConfiguration<Order> order)
+		private void AddActionsToOrder(EntityTypeConfiguration<Order> config)
 		{
-			order.Action("PaymentPending")
+			config.Action("PaymentPending")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
 
-			order.Action("PaymentPaid")
+			config.Action("PaymentPaid")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
 				.Parameter<string>("PaymentMethodName");
 
-			order.Action("PaymentRefund")
+			config.Action("PaymentRefund")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
 				.Parameter<bool>("Online");
 
-			order.Action("Cancel")
+			config.Action("Cancel")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+		}
+		private void AddActionsToProduct(EntityTypeConfiguration<Product> config)
+		{
+			config.Action("FinalPrice")
+				.Returns<decimal>();
 		}
 
 		public void Configure(WebApiConfigurationBroadcaster configData)
@@ -78,6 +83,7 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
 
 			AddActionsToOrder(m.Entity<Order>());
+			AddActionsToProduct(m.Entity<Product>());
 		}
 
 		public int Priority { get { return 0; } }

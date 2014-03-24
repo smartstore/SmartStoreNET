@@ -1679,6 +1679,8 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
+			query = _productBundleItemRepository.Expand<Product>(query, x => x.Product);
+
 			var bundleItemData = new List<ProductBundleItemData>();
 
 			query.ToList().Each(x => bundleItemData.Add(new ProductBundleItemData(x)));

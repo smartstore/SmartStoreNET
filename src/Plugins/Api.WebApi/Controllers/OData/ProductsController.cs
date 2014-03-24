@@ -9,6 +9,8 @@ using System.Web.Http;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
@@ -136,6 +138,24 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		}
 
 		// actions
+
+		[HttpPost]
+		public decimal FinalPrice(int key)
+		{
+			var entity = GetEntityByKeyNotNull(key);
+			decimal result = decimal.Zero;
+
+			this.ProcessEntity(() =>
+			{
+				var engine = EngineContext.Current;
+				var customer = engine.Resolve<IWorkContext>().CurrentCustomer;
+				
+				result = engine.Resolve<IPriceCalculationService>().GetFinalPrice(entity, null, customer, decimal.Zero, true, 1);
+
+				return null;
+			});
+			return result;
+		}
 
 		//[HttpGet, WebApiQueryable]
 		//public IQueryable<RelatedProduct> GetRelatedProducts(int key)

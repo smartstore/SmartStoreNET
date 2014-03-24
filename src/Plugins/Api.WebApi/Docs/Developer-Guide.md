@@ -424,6 +424,12 @@ Note that you cannot use a path `/Orders(145)/ShippingAddress` to update an addr
 
     GET http://localhost:1260/odata/v1/Products?$top=120&$filter=ParentGroupedProductId eq 210
 
+#### Get final price of product with ID 211
+
+    POST http://localhost:1260/odata/v1/Products(211)/FinalPrice
+
+Note the post method. FinalPrice is an OData action because further data processing (price calculation) is required.
+
 #### Get email address of customer with ID 1
 
     GET http://localhost:1260/odata/v1/Customers(1)/Email

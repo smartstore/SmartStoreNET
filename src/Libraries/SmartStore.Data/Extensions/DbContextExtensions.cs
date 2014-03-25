@@ -2,13 +2,24 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 
-
 namespace SmartStore
 {
 
+	public class SqlServerInfo
+	{
+		public string ProductVersion { get; set; }
+		public string PatchLevel { get; set; }
+		public string ProductEdition { get; set; }
+		public string ClrVersion { get; set; }
+		public string DefaultCollation { get; set; }
+		public string Instance { get; set; }
+		public int Lcid { get; set; }
+		public string ServerName { get; set; }
+	}
+
 	public static class DbContextExtensions
 	{
-		
+
 		public static bool ColumnExists(this DbContext context, string tableName, string columnName) 
 		{
 			if (context != null && tableName.HasValue() && columnName.HasValue()) 
@@ -68,6 +79,21 @@ namespace SmartStore
 		public static int Execute(this DbContext context, string sql, params object[] parameters) 
 		{
 			return context.Database.ExecuteSqlCommand(sql, parameters);
+		}
+
+		internal static SqlServerInfo GetSqlServerInfo(this DbContext context)
+		{
+			string sql = @"SELECT  
+    SERVERPROPERTY('productversion') as 'ProductVersion', 
+    SERVERPROPERTY('productlevel') as 'PatchLevel',  
+    SERVERPROPERTY('edition') as 'ProductEdition',
+    SERVERPROPERTY('buildclrversion') as 'ClrVersion',
+    SERVERPROPERTY('collation') as 'DefaultCollation',
+    SERVERPROPERTY('instancename') as 'Instance',
+    SERVERPROPERTY('lcid') as 'Lcid',
+    SERVERPROPERTY('servername') as 'ServerName'";
+
+			return context.Database.SqlQuery<SqlServerInfo>(sql).FirstOrDefault();
 		}
 
 	}

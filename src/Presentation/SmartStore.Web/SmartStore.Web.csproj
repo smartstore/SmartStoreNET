@@ -565,6 +565,8 @@
     <Content Include="Content\editors\tinymce4\skins\smartstore\img\trans.gif" />
     <Content Include="Content\editors\tinymce4\skins\smartstore\img\wline.gif" />
     <Content Include="Content\editors\tinymce4\skins\smartstore\skin.ie7.min.css" />
+    <Content Include="Content\editors\tinymce4\skins\smartstore\content.smartstore.css" />
+    <Content Include="Content\editors\tinymce4\skins\smartstore\skin.smartstore.css" />
     <Content Include="Content\editors\tinymce4\skins\smartstore\skin.min.css" />
     <Content Include="Content\editors\tinymce4\themes\modern\theme.min.js" />
     <Content Include="Content\editors\tinymce4\tinymce.gzip.js" />

@@ -28,6 +28,8 @@ namespace SmartStore.Data
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
+		private static bool? s_isSqlServer2012OrHigher = null;
+
 
         #region Ctor
 
@@ -147,47 +149,85 @@ namespace SmartStore.Data
 			return base.Set<TEntity>();
 		}
 
+		private IEnumerable<DbParameter> ToParameters(params object[] parameters)
+		{
+			if (parameters == null || parameters.Length == 0)
+				return Enumerable.Empty<DbParameter>();
+
+			return parameters.Cast<DbParameter>();
+		}
+
 		public virtual IList<TEntity> ExecuteStoredProcedureList<TEntity>(string commandText, params object[] parameters) where TEntity : BaseEntity, new()
 		{
 			// Add parameters to command
-			if (parameters != null && parameters.Length > 0)
+			var commandText2 = commandText;
+			var dbParams = ToParameters(parameters);
+			bool firstParam = true;
+			bool hasOutputParams = false;
+			foreach (var p in dbParams)
 			{
-				for (int i = 0; i <= parameters.Length - 1; i++)
+				commandText += firstParam ? " " : ", ";
+				firstParam = false;
+
+				commandText += "@" + p.ParameterName;
+				if (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output)
 				{
-					var p = parameters[i] as DbParameter;
-					if (p == null)
-						throw new Exception("Unsupported parameter type");
-
-					commandText += i == 0 ? " " : ", ";
-
-					commandText += "@" + p.ParameterName;
-					if (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output)
-					{
-						//output parameter
-						commandText += " output";
-					}
+					// output parameter
+					hasOutputParams = true;
+					commandText += " output";
 				}
 			}
 
-			var result = this.Database.SqlQuery<TEntity>(commandText, parameters).ToList();
 
-			var autoDetect = this.AutoDetectChangesEnabled;
-
-			try
+			var isLegacyDb = !this.IsSqlServer2012OrHigher();
+			if (isLegacyDb && hasOutputParams)
 			{
-				this.AutoDetectChangesEnabled = false;
+				// SQL Server 2008 or lower is not capable of handling 
+				// stored procedures with output parameters
+				return ExecuteStoredProcedureListLegacy<TEntity>(commandText2, dbParams);
+			}
 
+			var result = this.Database.SqlQuery<TEntity>(commandText, parameters).ToList();
+			using (var scope = new DbContextScope(this, autoDetectChanges: false))
+			{
 				for (int i = 0; i < result.Count; i++)
 				{
 					result[i] = AttachEntityToContext(result[i]);
 				}
 			}
-			finally
-			{
-				this.AutoDetectChangesEnabled = autoDetect;
-			}
-
 			return result;
+		}
+
+		private IList<TEntity> ExecuteStoredProcedureListLegacy<TEntity>(string commandText, IEnumerable<DbParameter> parameters) where TEntity : BaseEntity, new()
+		{
+			var connection = this.Database.Connection;
+			// Don't close the connection after command execution
+
+			// open the connection for use
+			if (connection.State == ConnectionState.Closed)
+				connection.Open();
+
+			// create a command object
+			using (var cmd = connection.CreateCommand())
+			{
+				// command to execute
+				cmd.CommandText = commandText;
+				cmd.CommandType = CommandType.StoredProcedure;
+
+				// move parameters to command object
+				cmd.Parameters.AddRange(parameters.ToArray());
+
+				// database call
+				var reader = cmd.ExecuteReader();
+				var result = ((IObjectContextAdapter)(this)).ObjectContext.Translate<TEntity>(reader).ToList();
+				for (int i = 0; i < result.Count; i++)
+				{
+					result[i] = AttachEntityToContext(result[i]);
+				}
+				// close up the reader, we're done saving results
+				reader.Close();
+				return result;
+			}
 		}
 
         /// <summary>
@@ -398,6 +438,28 @@ namespace SmartStore.Data
 			throw Error.Application("A connection string could not be resolved for the parameterless constructor of the derived DbContext. Either the database is not installed, or the file 'Settings.txt' does not exist or contains invalid content.");
 		}
 
+		protected internal bool IsSqlServer2012OrHigher()
+		{
+			if (!s_isSqlServer2012OrHigher.HasValue)
+			{
+				try
+				{
+					// TODO: actually we should cache this value by connection (string).
+					// But fact is: it's quite unlikely that multiple DB versions are used within a single application scope.
+					var info = this.GetSqlServerInfo();
+					string productVersion = info.ProductVersion;
+					int version = productVersion.Split(new char[] { '.' })[0].ToInt();
+					s_isSqlServer2012OrHigher = version >= 11;
+				}
+				catch
+				{
+					s_isSqlServer2012OrHigher = false;
+				}
+			}
+			
+			return s_isSqlServer2012OrHigher.Value;
+		}
+
         /// <summary>
         /// Attach an entity to the context or return an already attached entity (if it was already attached)
         /// </summary>
@@ -406,20 +468,20 @@ namespace SmartStore.Data
         /// <returns>Attached entity</returns>
         protected virtual TEntity AttachEntityToContext<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
-            //little hack here until Entity Framework really supports stored procedures
-            //otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
-            var alreadyAttached = Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault();
-            if (alreadyAttached == null)
-            {
-                //attach new entity
-                Set<TEntity>().Attach(entity);
-                return entity;
-            }
-            else
-            {
-                //entity is already loaded.
-                return alreadyAttached;
-            }
+			// little hack here until Entity Framework really supports stored procedures
+			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
+			var alreadyAttached = Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault();
+			if (alreadyAttached == null)
+			{
+				// attach new entity
+				Set<TEntity>().Attach(entity);
+				return entity;
+			}
+			else
+			{
+				// entity is already loaded.
+				return alreadyAttached;
+			}
         }
 
         public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
@@ -431,11 +493,12 @@ namespace SmartStore.Data
         public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
             Guard.ArgumentNotNull(() => entity);
-            if (this.IsAttached(entity)) 
-            {
-                ((IObjectContextAdapter)this).ObjectContext.Detach(entity);
-            }
+			if (this.IsAttached(entity))
+			{
+				((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+			}
         }
+
 		public void Detach(object entity)
 		{
 			((IObjectContextAdapter)this).ObjectContext.Detach(entity);

@@ -1,7 +1,7 @@
 ﻿FriendlyName: Customer had spent x.xx amount
 SystemName: DiscountRequirement.HadSpentAmount
-Version: 1.12
-MinAppVersion: 1.2.1
+Version: 1.13
+MinAppVersion: 2.0.0
 DisplayOrder: 1
 FileName: SmartStore.Plugin.DiscountRules.HadSpentAmount.dll
 ResourceRootKey: Plugins.DiscountRules.HadSpentAmount

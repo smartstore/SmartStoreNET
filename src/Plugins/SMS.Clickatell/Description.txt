@@ -1,7 +1,7 @@
 ﻿FriendlyName: Clickatell SMS Provider
 SystemName: SMS.Clickatell
-Version: 1.3
-MinAppVersion: 1.2.1
+Version: 1.4
+MinAppVersion: 2.0.0
 DisplayOrder: 1
 FileName: SmartStore.Plugin.SMS.Clickatell.dll
 ResourceRootKey: Plugins.Sms.Clickatell

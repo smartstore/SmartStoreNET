@@ -155,6 +155,7 @@
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -213,10 +214,6 @@
     <Compile Include="WebApiPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll">
-      <Link>AutoMapper.Net4.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\smartstore.web.api.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

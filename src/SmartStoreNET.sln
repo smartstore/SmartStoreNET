@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.PayInStore", "Plugins\Payments.PayInStore\SmartStore.Plugin.Payments.PayInStore.csproj", "{A284F47B-9DAF-4475-BB79-7A418EECC01D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.PayPalDirect", "Plugins\Payments.PayPalDirect\SmartStore.Plugin.Payments.PayPalDirect.csproj", "{83235353-0D04-4028-82B2-81116E7361DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.PayPalStandard", "Plugins\Payments.PayPalStandard\SmartStore.Plugin.Payments.PayPalStandard.csproj", "{83235353-0D04-4028-82B2-81116E7361DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.Prepayment", "Plugins\Payments.Prepayment\SmartStore.Plugin.Payments.Prepayment.csproj", "{5B378AAD-5E5D-441D-9824-30A2995BCA68}"
 EndProject

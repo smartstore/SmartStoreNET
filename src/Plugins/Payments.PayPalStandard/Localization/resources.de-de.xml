@@ -1,0 +1,151 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalStandard" AppendRootKey="false">
+		<Value>PayPal Standard</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen!</p>
+<p>Sie müssen PDT (Payment Data Transfer) und die automatische Rückleitung in Ihrem PayPal-Profil aktivieren, um PDT nutzen zu können.
+Ferner benötigen Sie einen PDT-Identitäts-Token, der für jede PDT-Kommunikation mit PayPal erforderlich ist.
+Folgen Sie den Schritten, um Ihr Konto für PDT zu konfigurieren:</p>
+<ol>
+<li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
+<li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
+<li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
+<li>Aktivieren Sie <b>Automatische Rückleitung</b>.</li>
+<li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/PDTHandler</b>).</li>
+<li>Aktivieren Sie <b>Übertragung der Zahlungsdaten</b>.</li>
+<li>Klicken Sie auf <b>Speichern</b>.</li>
+<li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
+<li>Scrollen Sie runter zu <b>Übertragung der Zahlungsdaten</b>, um den PDT-Identitäts-Token einzusehen.</li>
+</ol>
+<p>Es gibt zwei Wege, um IPN-Nachrichten (Instant Payment Notification) zu empfangen (optional):</p>
+<ol type="a">
+<li>Unten <b>IPN aktivieren</b> abhaken. Die URL zu Ihrem IPN-Handler wird dann über die Anfrage übermittelt.</li>
+<li>
+	Ihr PayPal-Konto für diesen Service konfigurieren. Schritte hierzu:
+	<ol>
+	<li>In Ihr Premier- oder Business-Konto einloggen.</li>
+	<li>Auf den Register <b>Mein Profil</b> klicken.</li>
+	<li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
+	<li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
+	<li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/IPNHandler</b>) eingeben.</li>
+	<li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
+	</ol>
+</li>
+</ol>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.RedirectionTip">
+		<Value>Nach Bestätigung der Bestellung werden Sie direkt zu PayPal weitergeleitet. Halten Sie bitte Ihre Daten für das Online-Banking bereit.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.UseSandbox">
+		<Value>Sandbox benutzen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.UseSandbox.Hint">
+		<Value>Abhaken, um die Sandbox (Testumgebung) zu aktivieren.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BusinessEmail">
+		<Value>Business E-Mail</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.BusinessEmail.Hint">
+		<Value>PayPal Business E-Mail festlegen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PDTToken">
+		<Value>PDT-Identitäts-Token</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PDTToken.Hint">
+		<Value>PDT-Identitäts-Token festlegen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PDTValidateOrderTotal">
+		<Value>Gesamtbetrag überprüfen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
+		<Value>Aktivieren Sie diese Option, falls der durch PayPal übermittelte Gesamtbetrag überprüft werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFee">
+		<Value>Zusätzliche Gebühren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFee.Hint">
+		<Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFeePercentage">
+		<Value>Zusätzliche Gebühren (prozentual)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
+		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PassProductNamesAndTotals">
+		<Value>Produktbezeichnung und Gesamtbetrag an PayPal übermitteln</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
+		<Value>Aktivieren Sie diese Option, falls die Produktbezeichnung und der Gesamtbetrag an PayPal übermitteln werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.EnableIpn">
+		<Value>IPN aktivieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.EnableIpn.Hint">
+		<Value>Aktivieren Sie diese Option, falls IPN (Instant Payment Notification) aktiviert werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.EnableIpn.Hint2">
+		<Value>Leer lassen, falls die URL des Standard-IPN-Handlers verwendet werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.IpnUrl">
+		<Value>IPN-Handler (URL)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.IpnUrl.Hint">
+		<Value>URL zum IPN-Handler festlegen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NoModuleLoading">
+		<Value>PayPal Standard Modul konnte nicht geladen werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="FailedGetGross">
+		<Value>PayPal Standard PDT. Fehler beim Abruf von mc_gross.</Value>
+	</LocaleResource>
+	<LocaleResource Name="UnequalTotalOrder">
+		<Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1}.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PdtFailed">
+		<Value>PayPal Standard PDT ist fehlgeschlagen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NewPaymentStatus">
+		<Value>Neuer Zahlungsstatus</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnLogInfo">
+		<Value>PayPal Standard IPN. Wiederkehrende Information.</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnOrderNotFound">
+		<Value>PayPal Standard IPN. Bestellung konnte nicht gefunden werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnFailed">
+		<Value>PayPal Standard IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="InvalidCredentials">
+		<Value>Unvollständige Zugangsdaten für die PayPal API. Bitte geben Sie die erforderlichen Zugangsdaten im Konfigurationsbereich ein.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShippingFee">
+		<Value>Versandgebühren</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentMethodFee">
+		<Value>Zahlungsgebühren</Value>
+	</LocaleResource>
+	<LocaleResource Name="SalesTax">
+		<Value>Umsatzsteuer</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentNote">
+		<Value>
+			<![CDATA[PayPal PDT:
+Total: {0}
+Währung: {1}
+Zahlenderstatus: {2}
+Zahlungsstatus: {3}
+Ausstehend (Grund): {4}
+Transaktions-ID: {5}
+Zahlungstyp: {6}
+Zahlender-ID: {7}
+Empfänger-ID: {8}
+Rechnung: {9}
+Zahlungsgebühr: {10}]]>
+		</Value>
+	</LocaleResource>
+</Language>

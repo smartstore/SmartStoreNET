@@ -22,7 +22,7 @@ License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
 Autofac
 -----
 Website:      http://code.google.com/p/autofac/
-Copyright:    Copyright (c) 2007-2008 Autofac Contributors
+Copyright:    Copyright (c) 2007-2014 Autofac Contributors
               http://code.google.com/p/autofac/wiki/Contributing
 License:      MIT
 

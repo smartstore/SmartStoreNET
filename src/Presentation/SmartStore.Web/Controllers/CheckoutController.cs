@@ -129,11 +129,11 @@ namespace SmartStore.Web.Controllers
                 result = false;
 
             //Check whether paymethod needs workflow
-            var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-            if (processPaymentRequest != null)
-            {
-                result = processPaymentRequest.RequiresPaymentWorkflow;
-            }
+			//var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
+			//if (processPaymentRequest != null)
+			//{
+			//	result = processPaymentRequest.RequiresPaymentWorkflow;
+			//}
 
             return result;
         }
@@ -368,6 +368,7 @@ namespace SmartStore.Web.Controllers
             //codehint: sm-add
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
             model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
+			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
             return model;
         }
 

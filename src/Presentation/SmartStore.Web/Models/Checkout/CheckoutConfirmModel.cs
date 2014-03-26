@@ -12,12 +12,12 @@ namespace SmartStore.Web.Models.Checkout
 
         public string MinOrderTotalWarning { get; set; }
 
-        //codehint: sm-add
         public bool TermsOfServiceEnabled { get; set; }
 
         public IList<string> Warnings { get; set; }
 
-        //codehint: sm-add
         public bool ShowConfirmOrderLegalHint { get; set; }
+
+		public bool BypassPaymentMethodInfo { get; set; }
     }
 }

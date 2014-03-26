@@ -30,19 +30,19 @@ namespace SmartStore.Data.Setup
 		{
 			Guard.ArgumentNotNull(() => entries);
 
-			if (!entries.Any())
+			if (!entries.Any() || !_languages.Any())
 				return;
 
 			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false))
 			{
-				var langMap = _languages.ToDictionary(x => x.UniqueSeoCode);
+				var langMap = _languages.ToDictionary(x => x.UniqueSeoCode.EmptyNull().ToLower());
 
 				var toDelete = new List<LocaleStringResource>();
 				var toUpdate = new List<LocaleStringResource>();
 				var toAdd = new List<LocaleStringResource>();
 
 				// remove all entries with invalid lang identifier
-				var invalidEntries = entries.Where(x => x.Lang != null && !langMap.ContainsKey(x.Lang));
+				var invalidEntries = entries.Where(x => x.Lang != null && !langMap.ContainsKey(x.Lang.ToLower()));
 				if (invalidEntries.Any())
 				{
 					entries = entries.Except(invalidEntries);
@@ -50,7 +50,7 @@ namespace SmartStore.Data.Setup
 
 				foreach (var lang in langMap)
 				{
-					foreach (var entry in entries.Where(x => x.Lang == null || langMap[x.Lang].Id == lang.Value.Id))
+					foreach (var entry in entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id))
 					{
 						var db = GetResource(entry.Key, lang.Value.Id);
 

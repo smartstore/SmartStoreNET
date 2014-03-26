@@ -1,5 +1,5 @@
 SmartStore.NET
-Copyright 1999-2013 SmartStore AG
+Copyright 1999-2014 SmartStore AG
 http://www.smartstore.com | http://smartstore.codeplex.com
 
 
@@ -9,6 +9,21 @@ nopCommerce (http://www.nopcommerce.com).
 SmartStore.NET includes works distributed under the licenses listed below. 
 Please refer to the specific resources for more detailed information about the authors, 
 copyright notices, and licenses.
+
+
+51Degrees
+-----
+WebSite:      http://http://51degrees.mobi/
+Copyright:    Copyright 2010 - 2013 51Degrees.mobi Limited
+License:      Mozilla Public License 2.0 (MPL-2.0)
+
+
+ANTLR 
+-----
+Website:      http://www.antlr.org
+Copyright:    Copyright ANTLR / Terence Parr 2014
+License:      BSD License
+	      http://en.wikipedia.org/wiki/BSD_licenses
 
 
 ASP.NET MVC
@@ -29,9 +44,23 @@ License:      MIT
 
 AutoMapper
 -----
-WebSite:      http://http://www,automapper.org
+WebSite:      http://http://www.automapper.org
 Copyright:    Copyright © 2008-2013 Jimmy Bogard and other contributors
 License:      MIT
+
+
+Bundle Transformer 
+-----
+Website:      https://bundletransformer.codeplex.com
+Copyright:    Copyright Andrey Taritsyn 2014
+License:      Apache License 2.0 (Apache)
+
+
+DotNetOpenAuth
+-----
+Website:      http://http://dotnetopenauth.net/
+Copyright:    Copyright (c) 2011, Outercurve Foundation
+License:      MS-PL
 
 
 DotNetZip
@@ -41,11 +70,18 @@ Copyright:
 License:      MS-PL
 
 
-DotNetOpenAuth
+Entity Framework
 -----
-Website:      http://http://dotnetopenauth.net/
-Copyright:    Copyright (c) 2011, Outercurve Foundation
-License:      MS-PL
+Website:      https://entityframework.codeplex.com
+Copyright:    Copyright (c) 2012-2014 Microsoft Corporation
+License:      Apache License 2.0 (Apache)
+
+
+EPPlus
+-----
+Website:      https://epplus.codeplex.com/
+Copyright:    Copyright (C) 2011  Jan Källman
+License:      GNU Library General Public License (LGPL)
 
 
 Fasterflect
@@ -60,9 +96,16 @@ Website:      https://fluentvalidation.codeplex.com/
 License:      Apache License 2.0 (Apache)
 
 
+Glimpse
+-----
+Website:      https://github.com/Glimpse/Glimpse
+Copyright:    Copyright (C) 2014  Glimpse contributors (http://getglimpse.com/Community)
+License:      Apache License 2.0 (Apache)
+
+
 ImageResizer.NET
 -----
-Website:      https://http://imageresizing.net/
+Website:      https://imageresizing.net/
 Copyright:    Copyright (c) 2012 Imazen
 License:      Freedom License
 
@@ -71,6 +114,54 @@ iTextSharp
 -----
 Website:      http://itextpdf.com/
 License:      Affero General Public License
+
+
+JavaScriptEngineSwitcher
+-----
+Website:      https://github.com/Taritsyn/JavaScriptEngineSwitcher
+Copyright:    Copyright Andrey Taritsyn 2014
+License:      Apache License 2.0 (Apache)
+
+
+jQuery
+-----
+Website:      http://jquery.com
+Copyright:    Copyright (c) 2010 John Resig, http://jquery.com
+License:      MIT
+
+
+jQuery ScrollTo
+-----
+Website:      http://flesler.blogspot.com
+Copyright:    Copyright (c) 2007-2009 Ariel Flesler
+License:      MIT
+
+
+jQuery UI (Core, Widget, Datepicker)
+-----
+Website:      http://docs.jquery.com/UI
+Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
+License:      MIT
+
+
+JSON.NET
+-----
+Website:      http://http://james.newtonking.com/
+Copyright:    Copyright (c) 2007 James Newton-King
+License:      MIT
+
+
+LESS CSS for .NET
+-----
+Website:      http://www.dotlesscss.org/
+License:      Apache License v2.0
+
+
+Microsoft SQL Server Compact 4.0
+-----
+Website:      http://www.microsoft.com
+Copyright:    Copyright (c) 2011 Microsoft Corporation
+License:      Custom EULA - http://www.microsoft.com/web/webpi/eula/SQLCE_EULA_ENU.rtf
 
 
 MiniProfiler
@@ -83,56 +174,6 @@ Modernizr
 -----
 Website:      http://modernizr.com/
 License:      MIT
-
-
-JSON.NET
------
-Website:      http://http://james.newtonking.com/
-License:      MIT
-
-
-Telerik MVC Extensions
------
-Website:      http://www.telerik.com/
-License:      GPL v3.0
-
-
-Twitter Bootstrap
------
-Website:      http://twitter.github.io/bootstrap/
-License:      Apache License v2.0
-
-
-LESS CSS for .NET
------
-Website:      http://www.dotlesscss.org/
-License:      Apache License v2.0
-
-
-jQuery
------
-Website:      http://jquery.com
-Copyright:    Copyright (c) 2010 John Resig, http://jquery.com
-License:      MIT
-
-
-jQuery UI (Core, Widget, Datepicker)
------
-Website:      http://docs.jquery.com/UI
-Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
-License:      MIT
-
-
-jQuery ScrollTo
------
-Website:      http://flesler.blogspot.com
-Copyright:    Copyright (c) 2007-2009 Ariel Flesler
-License:      MIT
-
-
-underscore.js
------
-Website:      http://underscorejs.org
 
 
 NuGet
@@ -150,11 +191,10 @@ Copyright:    Copyright (c) 2002-2007 NUnit.org
 License:      Derived from zlib: http://nunit.org/index.php?p=license&r=2.4
 
 
-Microsoft SQL Server Compact 4.0
+Telerik MVC Extensions
 -----
-Website:      http://www.microsoft.com
-Copyright:    Copyright (c) 2011 Microsoft Corporation
-License:      Custom EULA - http://www.microsoft.com/web/webpi/eula/SQLCE_EULA_ENU.rtf
+Website:      http://www.telerik.com/
+License:      GPL v3.0
 
 
 TinyMCE
@@ -164,8 +204,14 @@ Copyright:    Copyright (c) 2003-2009 Moxiecode Systems AB
 License:      LGPL 2.1
 
 
-51Degrees
+Twitter Bootstrap
 -----
-WebSite:      http://http://51degrees.mobi/
-Copyright:    Copyright 2010 - 2013 51Degrees.mobi Limited
-License:      Mozilla Public License 2.0 (MPL-2.0)
+Website:      http://twitter.github.io/bootstrap/
+License:      Apache License v2.0
+
+
+underscore.js
+-----
+Website:      http://underscorejs.org
+Copyright:    Copyright (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+License:      MIT

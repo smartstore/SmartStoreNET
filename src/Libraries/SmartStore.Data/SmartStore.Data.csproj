@@ -115,6 +115,10 @@
     <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.Designer.cs">
       <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403251610279_AboutPage.cs" />
+    <Compile Include="Migrations\201403251610279_AboutPage.Designer.cs">
+      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -263,6 +267,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403211655284_CurrencyMorePrecision.resx">
       <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403251610279_AboutPage.resx">
+      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

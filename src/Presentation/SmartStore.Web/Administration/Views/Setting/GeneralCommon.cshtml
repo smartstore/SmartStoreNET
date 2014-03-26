@@ -104,7 +104,7 @@
     @Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
     
-    @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Fade(true).Items(x =>
+    @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
     {
         x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());

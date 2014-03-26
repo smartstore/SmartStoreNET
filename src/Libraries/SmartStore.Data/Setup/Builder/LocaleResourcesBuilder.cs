@@ -19,6 +19,8 @@ namespace SmartStore.Data.Setup
 	{
 		IResourceAddBuilder Value(string value);
 		IResourceAddBuilder Value(string lang, string value);
+		IResourceAddBuilder Hint(string value);
+		IResourceAddBuilder Hint(string lang, string value);
 	}
 	
 	public class LocaleResourcesBuilder : IHideObjectMembers
@@ -56,9 +58,15 @@ namespace SmartStore.Data.Setup
 		{
 			Guard.ArgumentNotEmpty(() => key);
 
-			Action<string, string> fn = (string v, string l) => 
+			Action<string, string, bool> fn = (string v, string l, bool isHint) => 
 			{
-				_entries.Add(new LocaleResourceEntry { Key = key, Value = v, Lang = l });
+				string k = key;
+				if (isHint)
+				{
+					k += ".Hint";
+				}
+
+				_entries.Add(new LocaleResourceEntry { Key = k, Value = v, Lang = l });
 			};
 
 			return new ResourceAddBuilder(key, fn);
@@ -68,13 +76,13 @@ namespace SmartStore.Data.Setup
 		/// Adds or updates locale resources
 		/// </summary>
 		/// <param name="key">The key of the resource</param>
-		/// <param name="enValue">English value of the resource</param>
+		/// <param name="value">Primary English (untranslated) value of the resource</param>
 		/// <param name="deValue">German value of the resource</param>
-		public void AddOrUpdate(string key, string enValue, string deValue)
+		public void AddOrUpdate(string key, string value, string deValue)
 		{
 			Guard.ArgumentNotEmpty(() => key);
 
-			_entries.Add(new LocaleResourceEntry { Key = key, Value = enValue, Lang = "en" });
+			_entries.Add(new LocaleResourceEntry { Key = key, Value = value });
 			_entries.Add(new LocaleResourceEntry { Key = key, Value = deValue, Lang = "de" });
 		}
 
@@ -82,16 +90,16 @@ namespace SmartStore.Data.Setup
 		/// Adds or updates locale resources
 		/// </summary>
 		/// <param name="key">The key of the resource</param>
-		/// <param name="enValue">English value of the resource</param>
+		/// <param name="value">Primary English (untranslated) value of the resource</param>
 		/// <param name="deValue">German value of the resource</param>
-		/// <param name="enValueHint">English value of the hint resource</param>
-		/// <param name="deValueHint">German value of the hint resource</param>
-		public void AddOrUpdate(string key, string enValue, string deValue, string enValueHint, string deValueHint)
+		/// <param name="hint">Primary English (untranslated) hint resource</param>
+		/// <param name="deHint">German hint resource</param>
+		public void AddOrUpdate(string key, string value, string deValue, string hint, string deHint)
 		{
 			Guard.ArgumentNotEmpty(() => key);
 
-			AddOrUpdate(key, enValue, deValue);
-			AddOrUpdate(key + ".Hint", enValueHint, deValueHint);
+			AddOrUpdate(key, value, deValue);
+			AddOrUpdate(key + ".Hint", hint, deHint);
 		}
 
 		internal void Reset()
@@ -108,9 +116,9 @@ namespace SmartStore.Data.Setup
 
 		internal class ResourceAddBuilder : IResourceAddBuilder
 		{
-			private readonly Action<string, string> _fn;
+			private readonly Action<string, string, bool> _fn;
 
-			public ResourceAddBuilder(string key, Action<string, string> fn)
+			public ResourceAddBuilder(string key, Action<string, string, bool> fn)
 			{
 				_fn = fn;
 			}
@@ -123,7 +131,20 @@ namespace SmartStore.Data.Setup
 			public IResourceAddBuilder Value(string lang, string value)
 			{
 				Guard.ArgumentNotEmpty(() => value);
-				_fn(value, lang.NullEmpty());
+				_fn(value, lang.NullEmpty(), false);
+				return this;
+			}
+
+
+			public IResourceAddBuilder Hint(string value)
+			{
+				return Hint(null, value);
+			}
+
+			public IResourceAddBuilder Hint(string lang, string value)
+			{
+				Guard.ArgumentNotEmpty(() => value);
+				_fn(value, lang.NullEmpty(), true);
 				return this;
 			}
 		}

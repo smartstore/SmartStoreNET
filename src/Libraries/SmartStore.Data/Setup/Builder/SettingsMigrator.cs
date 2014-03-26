@@ -51,6 +51,13 @@ namespace SmartStore.Data.Setup
 				// Then perform ADD actions
 				foreach (var entry in entries.Where(x => x.Value.HasValue()))
 				{
+					var existing = toAdd.FirstOrDefault(x => x.Name.Equals(entry.Key, StringComparison.InvariantCultureIgnoreCase));
+					if (existing != null)
+					{
+						existing.Value = entry.Value;
+						continue;
+					}
+
 					if (HasSettings(entry.Key, false))
 						continue; // skip existing (we don't perform updates)
 

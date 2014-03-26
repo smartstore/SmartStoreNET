@@ -52,7 +52,8 @@ namespace SmartStore.Data.Setup
 				{
 					foreach (var entry in entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id))
 					{
-						var db = GetResource(entry.Key, lang.Value.Id);
+						bool isLocal;
+						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out isLocal);
 
 						if (db == null  && entry.Value.HasValue())
 						{
@@ -66,10 +67,19 @@ namespace SmartStore.Data.Setup
 						if (entry.Value == null)
 						{
 							// DELETE action
-							toDelete.Add(db);
+							if (isLocal)
+								toAdd.Remove(db);
+							else
+								toDelete.Add(db);
 						}
 						else
 						{
+							if (isLocal)
+							{
+								db.ResourceValue = entry.Value;
+								continue;
+							}
+							
 							// UPDATE action
 							if (updateTouchedResources || !db.IsTouched.GetValueOrDefault())
 							{
@@ -96,10 +106,18 @@ namespace SmartStore.Data.Setup
 			}
 		}
 
-		private LocaleStringResource GetResource(string key, int langId)
+		private LocaleStringResource GetResource(string key, int langId, IList<LocaleStringResource> local, out bool isLocal)
 		{
-			var query = _resources.Where(x => x.ResourceName.Equals(key, StringComparison.InvariantCultureIgnoreCase) && x.LanguageId == langId);
-			return query.FirstOrDefault();
+			var res = local.FirstOrDefault(x => x.ResourceName.Equals(key, StringComparison.InvariantCultureIgnoreCase) && x.LanguageId == langId);
+			isLocal = res != null;
+
+			if (res == null)
+			{
+				var query = _resources.Where(x => x.ResourceName.Equals(key, StringComparison.InvariantCultureIgnoreCase) && x.LanguageId == langId);
+				res = query.FirstOrDefault();
+			}
+
+			return res;
 		}
 
 	}

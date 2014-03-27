@@ -12,6 +12,7 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
+using System.Text;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -55,6 +56,60 @@ namespace SmartStore.Services.ExportImport
 			this._rsProductPicture = rsProductPicture;
         }
 
+		public virtual string CreateTextReport(ImportResult result)
+		{
+			var sb = new StringBuilder();
+
+			using (var writer = new StringWriter(sb))
+			{
+				writer.WriteLine("SUMMARY");
+				writer.WriteLine("==================================================================================");
+				writer.WriteLine("Started: {0}".FormatCurrent(result.StartDateUtc.ToLocalTime()));
+				writer.WriteLine("Finished: {0}{1}".FormatCurrent(result.EndDateUtc.ToLocalTime(), result.Cancelled ? " (cancelled by user)" : ""));
+				writer.WriteLine("Duration: {0}".FormatCurrent((result.EndDateUtc - result.StartDateUtc).ToString("g")));
+
+				writer.WriteLine("");
+				writer.WriteLine("Total rows in source: {0}".FormatCurrent(result.TotalRecords));
+				writer.WriteLine("Rows processed: {0}".FormatCurrent(result.AffectedRecords));
+				writer.WriteLine("Products imported: {0}".FormatCurrent(result.NewRecords));
+				writer.WriteLine("Products updated: {0}".FormatCurrent(result.ModifiedRecords));
+
+				writer.WriteLine("");
+				writer.WriteLine("Warnings: {0}".FormatCurrent(result.Messages.Count(x => x.MessageType == ImportMessageType.Warning)));
+				writer.WriteLine("Errors: {0}".FormatCurrent(result.Messages.Count(x => x.MessageType == ImportMessageType.Error)));
+
+				writer.WriteLine("");
+				writer.WriteLine("");
+				writer.WriteLine("MESSAGES");
+				writer.WriteLine("==================================================================================");
+
+				foreach (var message in result.Messages)
+				{
+					string msg = string.Empty;
+					var prefix = new List<string>();
+					if (message.AffectedItem != null)
+					{
+						prefix.Add("Pos: " + message.AffectedItem.Position + 1);
+					}
+					if (message.AffectedField.HasValue())
+					{
+						prefix.Add("Field: " + message.AffectedField);
+					}
+
+					if (prefix.Any())
+					{
+						msg = "[{0}] ".FormatCurrent(String.Join(", ", prefix));
+					}
+
+					msg += message.Message;
+
+					writer.WriteLine("{0}: {1}".FormatCurrent(message.MessageType.ToString().ToUpper(), msg));
+				}
+			}
+
+			return sb.ToString();
+		}
+
 		/// <summary>
 		/// Import products from XLSX file
 		/// </summary>
@@ -69,6 +124,7 @@ namespace SmartStore.Services.ExportImport
 			var t = await Task.Run<ImportResult>(async () => {
 
 				var result = new ImportResult();
+				int saved = 0;
 
 				using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 				{
@@ -100,11 +156,11 @@ namespace SmartStore.Services.ExportImport
 							// ===========================================================================
 							try
 							{
-								await ProcessProducts(batch, result);
+								saved = await ProcessProducts(batch, result);
 							}
 							catch (Exception ex)
 							{
-								result.AddError(ex);
+								result.AddError(ex, segmenter.CurrentSegment, "ProcessProducts");
 							}
 
 							// reduce batch to saved (valid) products.
@@ -122,7 +178,9 @@ namespace SmartStore.Services.ExportImport
 							// ===========================================================================
 							if (batch.Any(x => x.IsNew || (x.ContainsKey("SeName") || x.NameChanged)))
 							{
+								_rsProduct.Context.AutoDetectChangesEnabled = true;
 								ProcessSlugs(batch, result);
+								_rsProduct.Context.AutoDetectChangesEnabled = false;
 							}
 
 							// ===========================================================================
@@ -136,7 +194,7 @@ namespace SmartStore.Services.ExportImport
 								}
 								catch (Exception ex)
 								{
-									result.AddError(ex);
+									result.AddError(ex, segmenter.CurrentSegment, "ProcessProductCategories");
 								}
 							}
 
@@ -151,7 +209,7 @@ namespace SmartStore.Services.ExportImport
 								}
 								catch (Exception ex)
 								{
-									result.AddError(ex);
+									result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
 								}
 							}
 
@@ -166,7 +224,7 @@ namespace SmartStore.Services.ExportImport
 								}
 								catch (Exception ex)
 								{
-									result.AddError(ex);
+									result.AddError(ex, segmenter.CurrentSegment, "ProcessProductPictures");
 								}
 							}
 
@@ -268,7 +326,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.MaxNumberOfDownloads, 10);
 				row.SetProperty(result, product, (x) => x.DownloadActivationTypeId, 1);
 				row.SetProperty(result, product, (x) => x.HasSampleDownload);
-				row.SetProperty(result, product, (x) => x.SampleDownloadId);
+				row.SetProperty(result, product, (x) => x.SampleDownloadId, (int?)null, ZeroToNull);
 				row.SetProperty(result, product, (x) => x.HasUserAgreement);
 				row.SetProperty(result, product, (x) => x.UserAgreementText);
 				row.SetProperty(result, product, (x) => x.IsRecurring);
@@ -543,6 +601,18 @@ namespace SmartStore.Services.ExportImport
 			}
 
 			return null;
+		}
+
+
+		private int? ZeroToNull(object value)
+		{
+			int result;
+			if (CommonHelper.TryConvert<int>(value, out result) && result > 0)
+			{
+				return result;
+			}
+
+			return (int?)null;
 		}
 
         /// <summary>

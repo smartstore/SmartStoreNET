@@ -296,6 +296,10 @@
         .Content(@<text>
 			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
+				<div id="importexcel-last-result-summary" class="alert hide">
+
+				</div>
+				
 				<div id="importexcel-upload">
 					<table style="text-align: left;">
 						<tr>
@@ -314,15 +318,15 @@
 						<div class="bar iep-bar" style="width: 0%;"></div>
 					</div>
 					<div class="iep-info muted">
-						@Html.Raw("{0} von {1} Zeilen verarbeitet.".FormatInvariant("<strong class='iep-processed'>0</strong>", "<strong class='iep-records'>0</strong>"))
-						@Html.Raw("Aktiv seit: {0}.".FormatInvariant("<span class='iep-elapsed'></span>"))
+						@Html.Raw(T("Admin.Common.ImportFromExcel.ProcessedCount").ToString().FormatInvariant("<strong class='iep-processed'>0</strong>", "<strong class='iep-records'>0</strong>"))
+						@Html.Raw(T("Admin.Common.ImportFromExcel.ActiveSince").ToString().FormatCurrent("<span class='iep-elapsed'></span>"))
 					</div>
 					<div class="iep-info muted">
-						@(Html.Raw("{0} neu, {1} aktualisiert - bei {2} Warnung(en) und {3} Fehler(n)".FormatInvariant(
+						@(Html.Raw(T("Admin.Common.ImportFromExcel.QuickStats").ToString().FormatInvariant(
 							"<span class='iep-new'>0</span>", 
 							"<span class='iep-modified'>0</span>",
-							"<span class='iep-warnings text-warning'>0</span>",
-							"<span class='iep-errors text-error'>0</span>")))
+							"<span class='iep-warnings'>0</span>",
+							"<span class='iep-errors'>0</span>")))
 					</div>
 				</div>
             }
@@ -366,6 +370,15 @@
     			success: function (data, status) {
     				var btn = $('#importexcelsubmit');
 
+    				if (data.LastResultSummary)
+    				{
+    					$('#importexcel-last-result-summary')
+							.html(data.LastResultSummary + "&nbsp;<a href='@Url.Action("ImportExcelDownloadReport", "Product")'>@T("Admin.Common.ImportFromExcel.DownloadReport")</a>")
+							.removeClass("alert-success alert-error")
+							.addClass(data.LastResultClass)
+							.removeClass("hide");
+    				}
+
     				if (data.NoRunningTask) {
     					window.clearInterval(importProgressIntervall);
     					$('#importexcel-upload').show();
@@ -384,10 +397,10 @@
     						btn.removeClass("btn-primary")
 								.addClass("btn-danger")
 								.data('action', 'cancel')
-								.text('Import abbrechen');
+								.text('@T("Admin.Common.ImportFromExcel.Cancel")');
     					}
 
-    					updateProgress(data);
+    					updateProgress(data.Progress);
 
     					// start the checkprogress interval
     					if (firstProgressCheck)
@@ -396,7 +409,6 @@
     			},
     			error: function () {
     				console.error(arguments[0].responseText);
-    				//handleError(arguments[0].responseText);
     			},
     			complete: function () {
     				firstProgressCheck = false;
@@ -420,7 +432,6 @@
     		importRunning = true;
     	}
 
-		// TODO: DELETE
     	$("#importexcelsubmit").click(function (e) {
     		e.preventDefault();
 
@@ -431,22 +442,11 @@
     			win.find("form").submit();
     		}
     		else {
-    			if (window.confirm("Soll der aktive Importvorgang wirklich abgebrochen werden? Bislang importierte Produkte werden nicht gelöscht.")) {
-    				$.ajax({
-    					url: '@Url.Action("ImportExcelCancel", "Product")',
-    					dataType: "json",
-    					async: true,
-    					type: "POST",
-    					cache: false,
-    					global: false
-    				});
-
-    				window.location.reload();
+    			if (window.confirm('@T("Admin.Common.ImportFromExcel.CancelPrompt")')) {
+    				setLocation('@Url.Action("ImportExcelCancel", "Product")');
     			}
     		}
-
         });
-    	// TODO: DELETE
 
     });
 </script>

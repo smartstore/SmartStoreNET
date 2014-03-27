@@ -15,6 +15,13 @@ namespace SmartStore.Services.ExportImport
 			Stream stream,
  			CancellationToken cancellationToken,
 			IProgress<ImportProgressInfo> progress = null);
+
+		/// <summary>
+		/// Dumps an <see cref="ImportResult"/> instance to a string
+		/// </summary>
+		/// <param name="result">The result instance</param>
+		/// <returns>The report</returns>
+		string CreateTextReport(ImportResult result);
     }
 
 	public static class IImportManagerExtensions

@@ -36,6 +36,8 @@ using System.Threading;
 using Autofac;
 using SmartStore.Core.Async;
 using SmartStore.Core.Events;
+using SmartStore.Utilities;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -2563,8 +2565,8 @@ namespace SmartStore.Admin.Controllers
 
 							var result = t.Result;
 
-							// TODO: Persist/serialize the result somewhere
-							// [...]
+							// Saving the result enabled us to show a report for last import.
+							AsyncState.Current.Set(result, neverExpires: true);
 						}
 						catch (AggregateException ae)
 						{
@@ -2586,7 +2588,8 @@ namespace SmartStore.Admin.Controllers
 					ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
 					return RedirectToAction("List");
 				}
-				SuccessNotification("Produkte werden jetzt im Hintergrund importiert.");
+
+				SuccessNotification(_localizationService.GetResource("Admin.Common.ImportFromExcel.InProgress"));
 				return RedirectToAction("List");
 			}
 			catch (Exception exc)
@@ -2601,26 +2604,70 @@ namespace SmartStore.Admin.Controllers
 		{
 			var progress = AsyncState.Current.Get<ImportProgressInfo>();
 
+			//object lastResult = null;
+			string lastResultSummary = null;
+			string lastResultClass = "";
+			var result = AsyncState.Current.Get<ImportResult>();
+			if (result != null)
+			{
+				var title = _localizationService.GetResource("Admin.Common.ImportFromExcel.LastResultTitle").FormatCurrent(
+					result.EndDateUtc.ToLocalTime(),
+ 					result.Cancelled ? " (" + _localizationService.GetResource("Common.Cancelled").ToLower() + ")" : "");
+				var counts = _localizationService.GetResource("Admin.Common.ImportFromExcel.ProcessedCount").FormatCurrent(
+					result.AffectedRecords, 
+					result.TotalRecords);
+				var stats = _localizationService.GetResource("Admin.Common.ImportFromExcel.QuickStats").FormatCurrent(
+					result.NewRecords,
+					result.ModifiedRecords,
+					result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
+					result.Messages.Count(x => x.MessageType == ImportMessageType.Error));
+
+				lastResultSummary = "{0} {1} {2}".FormatInvariant(title, counts, stats);
+
+				if (!result.Cancelled) 
+				{
+					lastResultClass = result.HasErrors ? "alert-error" : "alert-success";
+				}
+			}
+
 			if (progress == null)
 			{
-				return Json(new { NoRunningTask = true }, JsonRequestBehavior.DenyGet);
+				return Json(new { NoRunningTask = true, LastResultSummary = lastResultSummary, LastResultClass = lastResultClass }, JsonRequestBehavior.DenyGet);
 			}
 
-			return Json(progress, JsonRequestBehavior.DenyGet);
+			return Json(new { Progress = progress, LastResultSummary = lastResultSummary, LastResultClass = lastResultClass }, JsonRequestBehavior.DenyGet);
 		}
 
-		[HttpPost]
 		public ActionResult ImportExcelCancel()
 		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+			
 			var tcs = AsyncState.Current.GetCancelTokenSource<ImportProgressInfo>();
-			if (tcs == null)
+			if (tcs != null) 
 			{
-				return Json(new { NoRunningTask = true }, JsonRequestBehavior.DenyGet);
+				tcs.Cancel();
+				SuccessNotification(_localizationService.GetResource("Admin.Common.ImportFromExcel.Cancelled"));
 			}
 
-			tcs.Cancel();
+			return RedirectToAction("List");
+		}
 
-			return Json(new { Success = true }, JsonRequestBehavior.DenyGet);
+		public ActionResult ImportExcelDownloadReport()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var result = AsyncState.Current.Get<ImportResult>();
+			if (result == null)
+			{
+				return Content(_localizationService.GetResource("Admin.Common.ImportFromExcel.NoReportAvailable"));
+			}
+
+			var importManager = EngineContext.Current.Resolve<IImportManager>();
+			string report = importManager.CreateTextReport(result);
+
+			return File(Encoding.UTF8.GetBytes(report), "text/plain", "excelimport-report-{0}.txt".FormatInvariant(result.StartDateUtc.ToLocalTime()));
 		}
 
         #endregion

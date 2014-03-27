@@ -453,7 +453,6 @@ namespace SmartStore
             return dtTo;
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static DateTime ToEndOfTheDay(this DateTime dt)
 		{
 			if (dt != null)
@@ -461,7 +460,6 @@ namespace SmartStore
 			return dt;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static DateTime? ToEndOfTheDay(this DateTime? dt)
 		{
 			return (dt.HasValue ? dt.Value.ToEndOfTheDay() : dt);

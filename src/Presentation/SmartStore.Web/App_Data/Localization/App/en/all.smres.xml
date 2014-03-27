@@ -3077,7 +3077,7 @@
 		<Value>Import from Excel</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ImportFromExcelProgress">
-		<Value>Please wait while the import is executed</Value>
+		<Value>Please wait while the import is being executed</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Info">
 		<Value>Info</Value>

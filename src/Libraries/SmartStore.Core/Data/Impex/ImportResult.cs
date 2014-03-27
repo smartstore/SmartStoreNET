@@ -71,14 +71,35 @@ namespace SmartStore.Core.Data
 			return this.AddMessage(message, ImportMessageType.Error, affectedRow, affectedField);
 		}
 
-		public ImportMessage AddError(Exception exception)
+		public ImportMessage AddError(Exception exception, int? affectedBatch = null, string stage = null)
 		{
-			var message = exception.Message;
-			if (exception.InnerException != null)
+			var ex = exception;
+			while (true)
 			{
-				message += " ({0})".FormatCurrent(exception.InnerException.Message);
+				if (ex.InnerException == null)
+					break;
+				ex = ex.InnerException;
 			}
-			return this.AddMessage(message, ImportMessageType.Error);
+
+			var prefix = new List<string>();
+			if (affectedBatch.HasValue)
+			{
+				prefix.Add("Batch: " + affectedBatch.Value);
+			}
+			if (stage.HasValue())
+			{
+				prefix.Add("Stage: " + stage);
+			}
+
+			string msg = string.Empty;
+			if (prefix.Any())
+			{
+				msg = "[{0}] ".FormatCurrent(String.Join(", ", prefix));
+			}
+
+			msg += ex.Message;
+
+			return this.AddMessage(msg, ImportMessageType.Error);
 		}
 
 		public ImportMessage AddMessage(string message, ImportMessageType severity, ImportRowInfo affectedRow = null, string affectedField = null)

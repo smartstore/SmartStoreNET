@@ -18,7 +18,7 @@ namespace SmartStore.Core
             //       a greater minor version.
             new Version("1.2"),
             new Version("1.2.1"), // MC: had to be :-(
-            //new Version("1.3")
+            new Version("2.0")
         };
 
         static SmartStoreVersion()

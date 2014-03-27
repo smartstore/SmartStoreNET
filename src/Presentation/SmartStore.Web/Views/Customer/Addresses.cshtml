@@ -99,8 +99,14 @@
                     </div>
                     <div class="buttons pull-right">
                         @*codehint: sm-edit begin*@
-                        <button class="btn edit-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressEdit", new { addressId = address.Id })'">@T("Common.Edit")</button>
-                        <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressDelete", new { addressId = address.Id })'">@T("Common.Delete")</button>
+                        <button class="btn edit-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressEdit", new { addressId = address.Id })'">
+							<i class="icon icon-edit"></i>
+							@T("Common.Edit")
+						</button>
+                        <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressDelete", new { addressId = address.Id })'">
+							<i class="icon icon-trash"></i>
+							@T("Common.Delete")
+						</button>
                         @*codehint: sm-edit end*@
                     </div>
                 </div>

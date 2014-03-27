@@ -1400,7 +1400,7 @@ namespace SmartStore.Admin.Controllers
             {
                 ErrorNotification(exc);
             }
-            return RedirectToAction("GeneralCommon", new { selectedTab = "security" });
+			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-3" });
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("togglefulltext")]
@@ -1440,7 +1440,7 @@ namespace SmartStore.Admin.Controllers
             {
                 ErrorNotification(exc);
             }
-            return RedirectToAction("GeneralCommon", new { selectedTab = "fulltext" });
+			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-9" });
         }
 
 

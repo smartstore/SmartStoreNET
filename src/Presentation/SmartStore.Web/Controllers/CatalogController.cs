@@ -3229,7 +3229,7 @@ namespace SmartStore.Web.Controllers
                 return Json(new
                 {
                     Success = false, // codehint: sm-add
-					Result = T("Reviews.Helpfulness.OnlyRegistered"),
+					Result = T("Reviews.Helpfulness.OnlyRegistered").Text,
                     TotalYes = productReview.HelpfulYesTotal,
                     TotalNo = productReview.HelpfulNoTotal
                 });
@@ -3241,7 +3241,7 @@ namespace SmartStore.Web.Controllers
                 return Json(new
                 {
                     Success = false, // codehint: sm-add
-					Result = T("Reviews.Helpfulness.YourOwnReview"),
+					Result = T("Reviews.Helpfulness.YourOwnReview").Text,
                     TotalYes = productReview.HelpfulYesTotal,
                     TotalNo = productReview.HelpfulNoTotal
                 });
@@ -3282,7 +3282,7 @@ namespace SmartStore.Web.Controllers
             return Json(new
             {
                 Success = true, // codehint: sm-add
-				Result = T("Reviews.Helpfulness.SuccessfullyVoted"),
+				Result = T("Reviews.Helpfulness.SuccessfullyVoted").Text,
                 TotalYes = productReview.HelpfulYesTotal,
                 TotalNo = productReview.HelpfulNoTotal
             });

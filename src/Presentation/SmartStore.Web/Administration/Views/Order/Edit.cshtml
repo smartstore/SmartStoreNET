@@ -610,7 +610,7 @@
         <tr>
             <td colspan="2">
                 <button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn" style="margin-top:5px;">
-					<i class="icon-pencil"></i>&nbsp;@T("Admin.Orders.Fields.EditOrderTotals")
+					<i class="icon-edit"></i>&nbsp;@T("Admin.Orders.Fields.EditOrderTotals")
 				</button>
                 <button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-primary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 					<i class="icon-save"></i>&nbsp;@T("Admin.Orders.Fields.SaveOrderTotals")
@@ -1078,7 +1078,7 @@
                     }
                     <tr>
                         <td colspan="2" style="padding-top: 8px;">
-                            <a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-pencil"></i>&nbsp;@T("Admin.Common.Edit")</a>
+                            <a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-edit"></i>&nbsp;@T("Admin.Common.Edit")</a>
                         </td>
                     </tr>
                 </table>
@@ -1223,7 +1223,7 @@
                     }
                     <tr>
                         <td colspan="2" style="padding-top: 8px;">
-                            <a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-pencil"></i>&nbsp;@T("Admin.Common.Edit")</a>
+                            <a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-edit"></i>&nbsp;@T("Admin.Common.Edit")</a>
                         </td>
                     </tr>
                 </table>

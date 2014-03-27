@@ -61,7 +61,7 @@
                                                     @T("Forum.Search.SearchInForum")
                                                 </td>
                                                 <td class="data">
-                                                    @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected))
+                                                    @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected), new { style = "min-width:300px;" })
                                                 </td>
                                             </tr>
                                             <tr>
@@ -69,7 +69,7 @@
                                                     @T("Forum.Search.SearchWithin")
                                                 </td>
                                                 <td class="data">
-                                                    @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected))
+                                                    @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected), new { style = "min-width:300px;" })
                                                 </td>
                                             </tr>
                                             <tr>
@@ -77,7 +77,7 @@
                                                     @T("Forum.Search.LimitResultsToPrevious")
                                                 </td>
                                                 <td class="data">
-                                                    @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected))
+                                                    @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected), new { style = "min-width:300px;" })
                                                 </td>
                                             </tr>
                                         </tbody>

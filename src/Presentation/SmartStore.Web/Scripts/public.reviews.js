@@ -20,7 +20,7 @@ $(function () {
                 data: { "productReviewId": reviewId, "washelpful": wasHelpful },
                 success: function (data) {
                     el.parent().bindData(data, { showFalsy: true });
-                    console.log(data);
+
                     if (data.Result) {
                         displayNotification(data.Result, data.Success ? "success" : "error");
                     }

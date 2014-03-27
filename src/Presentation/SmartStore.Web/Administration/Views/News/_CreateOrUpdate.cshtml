@@ -3,7 +3,7 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
-@Html.ValidationSummary(true)
+@Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 @Html.SmartStore().TabStrip().Name("news-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>

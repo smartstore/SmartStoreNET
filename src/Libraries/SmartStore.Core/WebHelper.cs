@@ -569,9 +569,21 @@ namespace SmartStore.Core
             // new request will come to the newly started AppDomain.
             if (_httpContext != null && makeRedirect)
             {
-                if (String.IsNullOrEmpty(redirectUrl))
-                    redirectUrl = GetThisPageUrl(true);
-                _httpContext.Response.Redirect(redirectUrl, true /*endResponse*/);
+				if (_httpContext.Request.RequestType == "GET")
+				{
+					if (String.IsNullOrEmpty(redirectUrl))
+					{
+						redirectUrl = GetThisPageUrl(true);
+					}
+					_httpContext.Response.Redirect(redirectUrl, true /*endResponse*/);
+				}
+				else
+				{
+					// Don't redirect posts...
+					_httpContext.Response.ContentType = "text/html";
+					_httpContext.Response.WriteFile("~/refresh.html");
+					_httpContext.Response.End();
+				}
             }
         }
 

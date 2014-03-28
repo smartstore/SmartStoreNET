@@ -66,7 +66,7 @@ namespace SmartStore.Core.Plugins
                 string str;
                 while ((str = reader.ReadLine()) != null)
                 {
-                    if (String.IsNullOrWhiteSpace(str))
+                    if (str.IsEmpty() || lines.Contains(str, StringComparer.CurrentCultureIgnoreCase))
                         continue;
                     lines.Add(str.Trim());
                 }

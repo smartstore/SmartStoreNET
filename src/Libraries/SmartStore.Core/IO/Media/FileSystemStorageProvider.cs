@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
+using SmartStore.Utilities;
 
-namespace SmartStore.Core.IO
+namespace SmartStore.Core.IO.Media
 {
-    public class FileSystemStorageProvider : IStorageProvider {
+    public class FileSystemStorageProvider : IStorageProvider 
+	{
         private readonly string _storagePath;
         private readonly string _publicPath;
 
-        public FileSystemStorageProvider(FileSystemSettings settings, IWebHelper webHelper)
+        public FileSystemStorageProvider(FileSystemSettings settings)
         {
-            var mediaPath = webHelper.MapPath("~/Media/");
+            var mediaPath = CommonHelper.MapPath("~/Media/");
             _storagePath = Path.Combine(mediaPath, settings.DirectoryName);
 
             var appPath = "";

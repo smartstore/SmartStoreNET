@@ -32,7 +32,7 @@ namespace SmartStore.Core.Themes
 
             var root = _manifest.ConfigurationNode;
 
-            _manifest.ThemeTitle = root.GetAttribute("title").ToSafe();
+			_manifest.ThemeTitle = root.GetAttribute("title") ?? _manifest.ThemeName;
             _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
             _manifest.MobileTheme = root.GetAttribute("mobileTheme").ToBool();
             _manifest.PreviewImageUrl = root.GetAttribute("previewImageUrl").ToSafe();

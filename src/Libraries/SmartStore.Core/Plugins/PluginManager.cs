@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
+using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
 //Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
@@ -34,25 +36,48 @@ namespace SmartStore.Core.Plugins
 
         private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
-        private static readonly string _installedPluginsFilePath = "~/App_Data/InstalledPlugins.txt";
+        private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;
+		private static readonly ConcurrentDictionary<string, PluginDescriptor> _referencedPlugins = new ConcurrentDictionary<string, PluginDescriptor>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Returns a collection of all referenced plugin assemblies that have been shadow copied
-        /// </summary>
-        public static IEnumerable<PluginDescriptor> ReferencedPlugins { get; set; }
+		/// <summary> 
+		/// Returns a collection of all referenced plugin assemblies that have been shadow copied
+		/// </summary>
+		public static IEnumerable<PluginDescriptor> ReferencedPlugins
+		{
+			get
+			{
+				return _referencedPlugins.Values;
+			}
+			// for unit testing purposes
+			internal set
+			{
+				foreach (var x in value)
+				{
+					if (!_referencedPlugins.ContainsKey(x.SystemName))
+					{
+						_referencedPlugins[x.SystemName] = x;
+					}
+				}
+			}
+		}
 
-        /// <summary>
-        /// Returns a collection of all plugin which are not compatible with the current version
-        /// </summary>
-        public static IEnumerable<string> IncompatiblePlugins { get; set; }
+		/// <summary>
+		/// Returns a collection of all plugins which are not compatible with the current version
+		/// </summary>
+		public static IEnumerable<string> IncompatiblePlugins
+		{
+			get;
+			// for unit testing purposes
+			internal set;
+		}
 
         /// <summary>
         /// Initialize
@@ -69,10 +94,10 @@ namespace SmartStore.Core.Plugins
             {
                 // TODO: Add verbose exception handling / raising here since this is happening on app startup and could
                 // prevent app from starting altogether
-                var pluginFolder = new DirectoryInfo(HostingEnvironment.MapPath(_pluginsPath));
-                _shadowCopyFolder = new DirectoryInfo(HostingEnvironment.MapPath(_shadowCopyPath));
+                var pluginFolderPath = CommonHelper.MapPath(_pluginsPath);
+				_shadowCopyFolder = new DirectoryInfo(CommonHelper.MapPath(_shadowCopyPath));
 
-                var referencedPlugins = new List<PluginDescriptor>();
+                //var referencedPlugins = new List<PluginDescriptor>();
                 var incompatiblePlugins = new List<string>();
 
                 _clearShadowDirectoryOnStartup = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]) &&
@@ -80,18 +105,18 @@ namespace SmartStore.Core.Plugins
 
                 try
                 {
-                    var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(GetInstalledPluginsFilePath());
-
+					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
+					
                     Debug.WriteLine("Creating shadow copy folder and querying for dlls");
                     //ensure folders are created
-                    Directory.CreateDirectory(pluginFolder.FullName);
+                    Directory.CreateDirectory(pluginFolderPath);
                     Directory.CreateDirectory(_shadowCopyFolder.FullName);
 
                     // get list of all files in bin
                     var binFiles = _shadowCopyFolder.GetFiles("*", SearchOption.AllDirectories);
                     if (_clearShadowDirectoryOnStartup)
                     {
-                        //clear out shadow copied plugins
+                        // clear out shadow copied plugins
                         foreach (var f in binFiles)
                         {
                             Debug.WriteLine("Deleting " + f.Name);
@@ -106,104 +131,33 @@ namespace SmartStore.Core.Plugins
                         }
                     }
 
-                    // load description files
-                    foreach (var dfd in GetDescriptionFilesAndDescriptors(pluginFolder))
-                    {
-                        var descriptionFile = dfd.Key;
-                        var pluginDescriptor = dfd.Value;
+					// determine all plugin folders
+					var pluginPaths = from x in Directory.EnumerateDirectories(pluginFolderPath)
+									  where !x.IsMatch("bin") && !x.IsMatch("_Backup")
+									  select Path.Combine(pluginFolderPath, x);
 
-                        //ensure that version of plugin is valid
-                        if (!IsAssumedCompatible(pluginDescriptor))
-                        {
-                            incompatiblePlugins.Add(pluginDescriptor.SystemName);
-                            continue;
-                        }
+					// now activate all plugins
+					foreach (var pluginPath in pluginPaths)
+					{
+						var result = LoadPluginFromFolder(pluginPath);
+						if (result.IsIncompatible)
+						{
+							incompatiblePlugins.Add(result.Descriptor.SystemName);
+						}
+						else if (result.Success)
+						{
+							_referencedPlugins[result.Descriptor.SystemName] = result.Descriptor;
+						}
+					}
 
-                        //some validation
-                        if (String.IsNullOrWhiteSpace(pluginDescriptor.SystemName))
-                            throw new Exception(string.Format("A plugin '{0}' has no system name. Try assigning the plugin a unique name and recompiling.", descriptionFile.FullName));
-                        if (referencedPlugins.Contains(pluginDescriptor))
-                            throw new Exception(string.Format("A plugin with '{0}' system name is already defined", pluginDescriptor.SystemName));
-
-                        //set 'Installed' property
-                        pluginDescriptor.Installed = installedPluginSystemNames
-                            .Where(x => x.Equals(pluginDescriptor.SystemName, StringComparison.InvariantCultureIgnoreCase))
-                            .FirstOrDefault() != null;
-
-                        try
-                        {
-                            //get list of all DLLs in plugins (not in bin!)
-                            var pluginFiles = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories)
-                                //just make sure we're not registering shadow copied plugins
-                                .Where(x => !binFiles.Select(q => q.FullName).Contains(x.FullName))
-                                .Where(x => IsPackagePluginFolder(x.Directory))
-                                .ToList();
-
-                            //other plugin description info
-                            var mainPluginFile = pluginFiles.Where(x => x.Name.Equals(pluginDescriptor.PluginFileName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                            pluginDescriptor.OriginalAssemblyFile = mainPluginFile;
-
-                            //shadow copy main plugin file
-                            pluginDescriptor.ReferencedAssembly = PerformFileDeploy(mainPluginFile);
-
-                            if (!pluginDescriptor.Installed)
-                            {
-                                _inactiveAssemblies.Add(pluginDescriptor.ReferencedAssembly);
-                            }
-
-                            // load all other referenced assemblies now
-                            foreach (var plugin in pluginFiles
-                                .Where(x => !x.Name.Equals(mainPluginFile.Name, StringComparison.InvariantCultureIgnoreCase))
-                                .Where(x => !IsAlreadyLoaded(x)))
-                                    PerformFileDeploy(plugin);
-                            
-                            // init plugin type (only one plugin per assembly is allowed)
-                            var exportedTypes = pluginDescriptor.ReferencedAssembly.ExportedTypes;
-                            bool pluginFound = false;
-                            bool preStarterFound = !pluginDescriptor.Installed;
-                            foreach (var t in exportedTypes)
-                            {
-                                if (typeof(IPlugin).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract)
-                                {
-                                    pluginDescriptor.PluginType = t;
-                                    pluginFound = true;
-                                }
-                                else if (pluginDescriptor.Installed && typeof(IPreApplicationStart).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract && t.HasDefaultConstructor())
-                                {
-                                    try
-                                    {
-                                        var preStarter = Activator.CreateInstance(t) as IPreApplicationStart;
-                                        preStarter.Start();
-                                    }
-                                    catch { }
-                                    preStarterFound = true;
-                                }
-                                if (pluginFound && preStarterFound)
-                                {
-                                    break;
-                                }
-                            }
-
-                            referencedPlugins.Add(pluginDescriptor);
-                        }
-                        catch (ReflectionTypeLoadException ex)
-                        {
-                            var msg = string.Empty;
-                            foreach (var e in ex.LoaderExceptions)
-                                msg += e.Message + Environment.NewLine;
-
-                            var fail = new Exception(msg, ex);
-                            Debug.WriteLine(fail.Message, fail);
-
-                            throw fail;
-                        }
-                    }
                 }
                 catch (Exception ex)
                 {
                     var msg = string.Empty;
-                    for (var e = ex; e != null; e = e.InnerException)
-                        msg += e.Message + Environment.NewLine;
+					for (var e = ex; e != null; e = e.InnerException)
+					{
+						msg += e.Message + Environment.NewLine;
+					}
 
                     var fail = new Exception(msg, ex);
                     Debug.WriteLine(fail.Message, fail);
@@ -211,12 +165,152 @@ namespace SmartStore.Core.Plugins
                     throw fail;
                 }
 
-
-                ReferencedPlugins = referencedPlugins;
-                IncompatiblePlugins = incompatiblePlugins;
+                IncompatiblePlugins = incompatiblePlugins.AsReadOnly();
 
             }
         }
+
+		public static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath)
+		{
+			using (Locker.GetWriteLock())
+			{
+				return LoadPluginFromFolder(pluginFolderPath, null);
+			}
+		}
+
+		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, IList<string> installedPluginSystemNames)
+		{
+			Guard.ArgumentNotEmpty(() => pluginFolderPath);
+
+			var folder = new DirectoryInfo(pluginFolderPath);
+			if (!folder.Exists)
+			{
+				return null;
+			}
+
+			var descriptionFile = new FileInfo(Path.Combine(pluginFolderPath, "Description.txt"));
+			if (!descriptionFile.Exists)
+			{
+				return null;
+			}
+
+			// load descriptor file (Description.txt)
+			var descriptor = PluginFileParser.ParsePluginDescriptionFile(descriptionFile.FullName);
+
+			// some validation
+			if (descriptor.SystemName.IsEmpty())
+			{
+				throw new Exception("The plugin descriptor '{0}' does not define a plugin system name. Try assigning the plugin a unique name and recompile.".FormatInvariant(descriptionFile.FullName));
+			}
+			if (descriptor.PluginFileName.IsEmpty())
+			{
+				throw new Exception("The plugin descriptor '{0}' does not define a plugin assembly file name. Try assigning the plugin a file name and recompile.".FormatInvariant(descriptionFile.FullName));
+			}
+
+			var result = new LoadPluginResult
+			{
+				DescriptionFile = descriptionFile,
+				Descriptor = descriptor
+			};
+
+			//ensure that version of plugin is valid
+			if (!IsAssumedCompatible(descriptor))
+			{
+				result.IsIncompatible = true;
+				return result;
+			}
+
+			if (_referencedPlugins.ContainsKey(descriptor.SystemName))
+			{
+				throw new Exception(string.Format("A plugin with system name '{0}' is already defined", descriptor.SystemName));
+			}
+
+			if (installedPluginSystemNames == null)
+			{
+				installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
+			}
+
+			// set 'Installed' property
+			descriptor.Installed = installedPluginSystemNames.Any(x => x.Equals(descriptor.SystemName, StringComparison.InvariantCultureIgnoreCase));
+
+			try
+			{
+				// get list of all DLLs in plugin folders (not in 'bin' or '_Backup'!)
+				var pluginBinaries = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories)
+					// just make sure we're not registering shadow copied plugins
+					.Where(x => IsPackagePluginFolder(x.Directory))
+					.ToList();
+
+				// other plugin description info
+				var mainPluginFile = pluginBinaries.Where(x => x.Name.IsCaseInsensitiveEqual(descriptor.PluginFileName)).FirstOrDefault();
+				descriptor.OriginalAssemblyFile = mainPluginFile;
+
+				// shadow copy main plugin file
+				descriptor.ReferencedAssembly = Probe(mainPluginFile);
+
+				if (!descriptor.Installed)
+				{
+					_inactiveAssemblies.Add(descriptor.ReferencedAssembly);
+				}
+
+				// load all other referenced assemblies now
+				var otherAssemblies = from x in pluginBinaries
+									  where !x.Name.IsCaseInsensitiveEqual(mainPluginFile.Name)
+									  select x;
+
+				foreach (var assemblyFile in otherAssemblies)
+				{
+					if (!IsAlreadyLoaded(assemblyFile))
+					{
+						Probe(assemblyFile);
+					}
+				}
+
+				// init plugin type (only one plugin per assembly is allowed)
+				var exportedTypes = descriptor.ReferencedAssembly.ExportedTypes;
+				bool pluginFound = false;
+				bool preStarterFound = !descriptor.Installed;
+				foreach (var t in exportedTypes)
+				{
+					if (typeof(IPlugin).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract)
+					{
+						descriptor.PluginType = t;
+						pluginFound = true;
+					}
+					else if (descriptor.Installed && typeof(IPreApplicationStart).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract && t.HasDefaultConstructor())
+					{
+						try
+						{
+							var preStarter = Activator.CreateInstance(t) as IPreApplicationStart;
+							preStarter.Start();
+						}
+						catch { }
+						preStarterFound = true;
+					}
+					if (pluginFound && preStarterFound)
+					{
+						break;
+					}
+				}
+
+				result.Success = true;
+			}
+			catch (ReflectionTypeLoadException ex)
+			{
+				var msg = string.Empty;
+				foreach (var e in ex.LoaderExceptions)
+				{
+					msg += e.Message + Environment.NewLine;
+				}
+
+				var fail = new Exception(msg, ex);
+				Debug.WriteLine(fail.Message, fail);
+
+				throw fail;
+			}
+
+			return result;
+		}
 
         /// <summary>
         /// Mark plugin as installed
@@ -224,24 +318,16 @@ namespace SmartStore.Core.Plugins
         /// <param name="systemName">Plugin system name</param>
         public static void MarkPluginAsInstalled(string systemName)
         {
-            if (String.IsNullOrEmpty(systemName))
-                throw new ArgumentNullException("systemName");
+			if (String.IsNullOrEmpty(systemName))
+				throw new ArgumentNullException("systemName");
 
-            var filePath = HostingEnvironment.MapPath(_installedPluginsFilePath);
-            if (!File.Exists(filePath))
-                using (File.Create(filePath))
-                {
-                    //we use 'using' to close the file after it's created
-                }
-
-
-            var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(GetInstalledPluginsFilePath());
-            bool alreadyMarkedAsInstalled = installedPluginSystemNames
-                                .Where(x => x.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-                                .FirstOrDefault() != null;
-            if (!alreadyMarkedAsInstalled)
-                installedPluginSystemNames.Add(systemName);
-            PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, filePath);
+			var installedPluginSystemNames = GetInstalledPluginNames();
+			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Any(x => x.IsCaseInsensitiveEqual(systemName));
+			if (!alreadyMarkedAsInstalled)
+			{
+				installedPluginSystemNames.Add(systemName);
+			}
+			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, _installedPluginsFilePath);
         }
 
         /// <summary>
@@ -250,25 +336,15 @@ namespace SmartStore.Core.Plugins
         /// <param name="systemName">Plugin system name</param>
         public static void MarkPluginAsUninstalled(string systemName)
         {
-            if (String.IsNullOrEmpty(systemName))
-                throw new ArgumentNullException("systemName");
+			Guard.ArgumentNotEmpty(() => systemName);
 
-            var filePath = HostingEnvironment.MapPath(_installedPluginsFilePath);
-            if (!File.Exists(filePath))
-                using (File.Create(filePath))
-                {
-                    //we use 'using' to close the file after it's created
-                }
-
-
-            var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(GetInstalledPluginsFilePath());
-            bool alreadyMarkedAsInstalled = installedPluginSystemNames
-                                .ToList()
-                                .Where(x => x.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-                                .FirstOrDefault() != null;
-            if (alreadyMarkedAsInstalled)
-                installedPluginSystemNames.Remove(systemName);
-            PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames,filePath);
+			var installedPluginSystemNames = GetInstalledPluginNames();
+			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Any(x => x.IsCaseInsensitiveEqual(systemName));
+			if (alreadyMarkedAsInstalled)
+			{
+				installedPluginSystemNames.Remove(systemName);
+			}
+			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, _installedPluginsFilePath);
         }
 
         /// <summary>
@@ -276,10 +352,25 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void MarkAllPluginsAsUninstalled()
         {
-            var filePath = HostingEnvironment.MapPath(_installedPluginsFilePath);
+            var filePath = _installedPluginsFilePath;
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
+
+		private static IList<string> GetInstalledPluginNames()
+		{
+			var filePath = _installedPluginsFilePath;
+			if (!File.Exists(filePath))
+			{
+				using (File.Create(filePath))
+				{
+					//we use 'using' to close the file after it's created
+				}
+			}
+
+			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
+			return installedPluginSystemNames;
+		}
 
         /// <summary>
         /// Gets a value indicating whether a plugin is assumed
@@ -294,36 +385,68 @@ namespace SmartStore.Core.Plugins
         /// <returns><c>true</c> when the plugin is assumed to be compatible</returns>
         public static bool IsAssumedCompatible(PluginDescriptor descriptor)
         {
-            if (SmartStoreVersion.FullVersion == descriptor.MinAppVersion)
-            {
-                return true;
-            }
-            
-            if (SmartStoreVersion.FullVersion < descriptor.MinAppVersion)
-            {
-                return false;
-            }
+			Guard.ArgumentNotNull(() => descriptor);
 
-            bool compatible = true;
-
-            foreach (var version in SmartStoreVersion.BreakingChangesHistory)
-            {
-                if (version > descriptor.MinAppVersion)
-                {
-                    // there was a breaking change in a version greater
-                    // than plugin's MinorAppVersion.
-                    compatible = false;
-                    break;
-                }
-
-                if (version <= descriptor.MinAppVersion)
-                {
-                    break;
-                }
-            }
-
-            return compatible;
+			return IsAssumedCompatible(descriptor.MinAppVersion);
         }
+
+		/// <summary>
+		/// Gets a value indicating whether the given min. required app version is assumed
+		/// to be compatible with the current app version
+		/// </summary>
+		/// <remarks>
+		/// A plugin is generally compatible when both app version and plugin's 
+		/// <c>MinorAppVersion</c> are equal, OR - when app version is greater - it is 
+		/// assumed to be compatible when no breaking changes occured since <c>MinorAppVersion</c>.
+		/// </remarks>
+		/// <param name="minAppVersion">The min. app version to check for</param>
+		/// <returns><c>true</c> when the extension's version is assumed to be compatible</returns>
+		public static bool IsAssumedCompatible(Version minAppVersion)
+		{
+			Guard.ArgumentNotNull(() => minAppVersion);
+			
+			if (SmartStoreVersion.FullVersion == minAppVersion)
+			{
+				return true;
+			}
+
+			if (SmartStoreVersion.FullVersion < minAppVersion)
+			{
+				return false;
+			}
+
+			bool compatible = true;
+
+			foreach (var version in SmartStoreVersion.BreakingChangesHistory)
+			{
+				if (version > minAppVersion)
+				{
+					// there was a breaking change in a version greater
+					// than plugin's MinorAppVersion.
+					compatible = false;
+					break;
+				}
+
+				if (version <= minAppVersion)
+				{
+					break;
+				}
+			}
+
+			return compatible;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether a plugin
+		/// is registered and installed.
+		/// </summary>
+		/// <param name="systemName">The system name of the plugin to check for</param>
+		/// <returns><c>true</c> if the plugin exists, <c>false</c> otherwise</returns>
+		public static bool PluginExists(string systemName)
+		{
+			Guard.ArgumentNotEmpty(() => systemName);
+			return _referencedPlugins.ContainsKey(systemName);
+		}
 
         /// <summary>
         /// Gets a value indicating whether the plugin assembly
@@ -348,33 +471,6 @@ namespace SmartStore.Core.Plugins
 		}
 
         /// <summary>
-        /// Get description files
-        /// </summary>
-        /// <param name="pluginFolder">Plugin direcotry info</param>
-        /// <returns>Original and parsed description files</returns>
-        private static IEnumerable<KeyValuePair<FileInfo, PluginDescriptor>> GetDescriptionFilesAndDescriptors(DirectoryInfo pluginFolder)
-        {
-            if (pluginFolder == null)
-                throw new ArgumentNullException("pluginFolder");
-
-            //create list (<file info, parsed plugin descritor>)
-            var result = new List<KeyValuePair<FileInfo, PluginDescriptor>>();
-            //add display order and path to list
-            foreach (var descriptionFile in pluginFolder.GetFiles("Description.txt", SearchOption.AllDirectories))
-            {
-                //parse file
-                var pluginDescriptor = PluginFileParser.ParsePluginDescriptionFile(descriptionFile.FullName);
-
-                //populate list
-                result.Add(new KeyValuePair<FileInfo, PluginDescriptor>(descriptionFile, pluginDescriptor));
-            }
-
-            //sort list by display order. NOTE: Lowest DisplayOrder will be first i.e 0 , 1, 1, 1, 5, 10
-            result.Sort((firstPair, nextPair) => firstPair.Value.DisplayOrder.CompareTo(nextPair.Value.DisplayOrder));
-            return result;
-        }
-
-        /// <summary>
         /// Indicates whether assembly file is already loaded
         /// </summary>
         /// <param name="fileInfo">File info</param>
@@ -385,7 +481,8 @@ namespace SmartStore.Core.Plugins
             try
             {
                 string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileInfo.FullName);
-                foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+				var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+				foreach (var a in assemblies)
                 {
                     string assemblyName = a.FullName.Split(new[] { ',' }).FirstOrDefault();
                     if (fileNameWithoutExt.Equals(assemblyName, StringComparison.InvariantCultureIgnoreCase))
@@ -403,44 +500,42 @@ namespace SmartStore.Core.Plugins
         /// Perform file deply
         /// </summary>
         /// <param name="plug">Plugin file info</param>
-        /// <returns>Assembly</returns>
-        private static Assembly PerformFileDeploy(FileInfo plug)
+		/// <returns>Reference to the shadow copied Assembly</returns>
+        private static Assembly Probe(FileInfo plug)
         {
-            if (plug.Directory == null)
-                throw new InvalidOperationException("The plugin directory for the " + plug.Name +
-                                                    " file exists in a folder outside of the allowed SmartStore folder hierarchy");
-            
-            if (plug.Directory.Parent == null)
-                throw new InvalidOperationException("The plugin directory for the " + plug.Name +
-                                                    " file exists in a folder outside of the allowed SmartStore folder hierarchy");
+			if (plug.Directory == null || plug.Directory.Parent == null)
+				throw new InvalidOperationException("The plugin directory for the " + plug.Name +
+													" file exists in a folder outside of the allowed SmartStore folder hierarchy");
 
-            FileInfo shadowCopiedPlug;
+			FileInfo shadowCopiedPlug;
 
-            if (WebHelper.GetTrustLevel() != AspNetHostingPermissionLevel.Unrestricted)
-            {
-                //all plugins will need to be copied to ~/Plugins/bin/
-                //this is aboslutely required because all of this relies on probingPaths being set statically in the web.config
-                
-                //were running in med trust, so copy to custom bin folder
-                var shadowCopyPlugFolder = Directory.CreateDirectory(_shadowCopyFolder.FullName);
-                shadowCopiedPlug = InitializeMediumTrust(plug, shadowCopyPlugFolder);
-            }
-            else
-            {
-                var directory = AppDomain.CurrentDomain.DynamicDirectory;
+			if (WebHelper.GetTrustLevel() != AspNetHostingPermissionLevel.Unrestricted)
+			{
+				// TODO: (mc) SMNET does not support Medium Trust, so this code is actually obsolete!
+
+				// all plugins will need to be copied to ~/Plugins/bin/
+				// this is aboslutely required because all of this relies on probingPaths being set statically in the web.config
+
+				// were running in med trust, so copy to custom bin folder
+				var shadowCopyPlugFolder = Directory.CreateDirectory(_shadowCopyFolder.FullName);
+				shadowCopiedPlug = InitializeMediumTrust(plug, shadowCopyPlugFolder);
+			}
+			else
+			{
+				var directory = AppDomain.CurrentDomain.DynamicDirectory;
 				//Debug.WriteLine(plug.FullName + " to " + directory);	// codehint: sm-edit
-                //were running in full trust so copy to standard dynamic folder
-                shadowCopiedPlug = InitializeFullTrust(plug, new DirectoryInfo(directory));
-            }
+				// we're running in full trust so copy to standard dynamic folder
+				shadowCopiedPlug = InitializeFullTrust(plug, new DirectoryInfo(directory));
+			}
 
-            //we can now register the plugin definition
-            var shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlug.FullName));
+			// we can now register the plugin definition
+			var shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlug.FullName));
 
-            //add the reference to the build manager
+			// add the reference to the build manager
 			//Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);	// codehint: sm-edit
-            BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
+			BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
 
-            return shadowCopiedAssembly;
+			return shadowCopiedAssembly;
         }
 
         /// <summary>
@@ -547,16 +642,6 @@ namespace SmartStore.Core.Plugins
             if (folder.Parent == null) return false;
             if (!folder.Parent.Name.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
-        }
-
-        /// <summary>
-        /// Gets the full path of InstalledPlugins.txt file
-        /// </summary>
-        /// <returns></returns>
-        private static string GetInstalledPluginsFilePath()
-        { 
-            var filePath = HostingEnvironment.MapPath(_installedPluginsFilePath);
-            return filePath;
         }
 
         #endregion

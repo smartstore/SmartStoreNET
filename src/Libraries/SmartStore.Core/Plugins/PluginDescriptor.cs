@@ -22,8 +22,7 @@ namespace SmartStore.Core.Plugins
             this.MinAppVersion = SmartStoreVersion.FullVersion;
         }
 
-        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
-            Type pluginType)
+        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
             : this()
         {
             this.ReferencedAssembly = referencedAssembly;
@@ -32,7 +31,7 @@ namespace SmartStore.Core.Plugins
         }
 
         /// <summary>
-        /// Plugin type
+        /// Plugin file name
         /// </summary>
         public string PluginFileName { get; set; }
 

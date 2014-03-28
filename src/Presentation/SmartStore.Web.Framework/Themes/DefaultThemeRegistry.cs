@@ -68,34 +68,15 @@ namespace SmartStore.Web.Framework.Themes
             using (_rwLock.GetWriteLock())
             {
                 // TODO: Use IFileStorage?
-                foreach (string themeName in Directory.GetDirectories(_basePath))
+                foreach (string themePath in Directory.GetDirectories(_basePath))
                 {
-                    var manifest = CreateThemeManifest(themeName);
+					var manifest = ThemeManifest.Create(themePath, _virtualBasePath);
                     if (manifest != null)
                     {
                         _themeManifests.Add(manifest);
                     }
                 }
             }
-        }
-
-        private ThemeManifest CreateThemeManifest(string themePath)
-        {
-            var themeDirectory = new DirectoryInfo(themePath);
-            var themeConfigFile = new FileInfo(Path.Combine(themeDirectory.FullName, "theme.config"));
-
-            if (themeConfigFile.Exists)
-            {
-                var doc = new XmlDocument();
-                doc.Load(themeConfigFile.FullName);
-                return ThemeManifest.Create(
-                    themeDirectory.Name, 
-                    _virtualBasePath, 
-                    themeDirectory.FullName, 
-                    doc);
-            }
-
-            return null;
         }
 
         #endregion

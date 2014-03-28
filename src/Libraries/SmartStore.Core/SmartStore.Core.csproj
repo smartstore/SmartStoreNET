@@ -73,9 +73,16 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NuGet.Core.2.8.0\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -198,7 +205,15 @@
     <Compile Include="Async\AsyncRunner.cs" />
     <Compile Include="Infrastructure\CommonStartupTask.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
+    <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
+    <Compile Include="IO\Media\IStorageFile.cs" />
+    <Compile Include="IO\Media\IStorageFolder.cs" />
+    <Compile Include="IO\Media\IStorageProvider.cs" />
     <Compile Include="IO\MimeTypes.cs" />
+    <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
+    <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
+    <Compile Include="IO\WebSite\IWebSiteFolder.cs" />
+    <Compile Include="IO\WebSite\WebSiteFolder.cs" />
     <Compile Include="ISoftDeletable.cs" />
     <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />
@@ -215,6 +230,21 @@
     <Compile Include="Logging\LogContext.cs" />
     <Compile Include="Logging\LoggingExtensions.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Packaging\ExtensionDescriptor.cs" />
+    <Compile Include="Packaging\FolderUpdater.cs" />
+    <Compile Include="Packaging\IPackageBuilder.cs" />
+    <Compile Include="Packaging\IPackageInstaller.cs" />
+    <Compile Include="Packaging\IPackageManager.cs" />
+    <Compile Include="Packaging\NuGet\ExtensionReferenceRepository.cs" />
+    <Compile Include="Packaging\NuGet\FileBasedProjectSystem.cs" />
+    <Compile Include="Packaging\NuGet\NugetLogger.cs" />
+    <Compile Include="Packaging\NuGet\NullSourceRepository.cs" />
+    <Compile Include="Packaging\PackageBuilder.cs" />
+    <Compile Include="Packaging\PackageInfo.cs" />
+    <Compile Include="Packaging\PackageInstaller.cs" />
+    <Compile Include="Packaging\PackageManager.cs" />
+    <Compile Include="Packaging\PackagingResult.cs" />
+    <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\ThreadSafeList.cs" />
@@ -284,6 +314,7 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
+    <Compile Include="Plugins\LoadPluginResult.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
@@ -473,10 +504,6 @@
     <Compile Include="Domain\Catalog\SpecificationAttributeOption.cs" />
     <Compile Include="Domain\Catalog\TierPrice.cs" />
     <Compile Include="IO\FileSystemSettings.cs" />
-    <Compile Include="IO\FileSystemStorageProvider.cs" />
-    <Compile Include="IO\IStorageFile.cs" />
-    <Compile Include="IO\IStorageFolder.cs" />
-    <Compile Include="IO\IStorageProvider.cs" />
     <Compile Include="Domain\Customers\PasswordFormat.cs" />
     <Compile Include="HttpSecurityMode.cs" />
     <Compile Include="RouteInfo.cs" />
@@ -518,7 +545,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Packaging\Readme.txt" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
   </ItemGroup>

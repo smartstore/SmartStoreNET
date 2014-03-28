@@ -104,6 +104,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDbContext _dbContext;
         private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
+		private readonly ILogger _logger;
 
         #endregion
 
@@ -137,7 +138,8 @@ namespace SmartStore.Web.Controllers
             /* codehint: sm-add */
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
             IDeliveryTimeService deliveryTimeService, ISettingService settingService,
-			ICustomerActivityService customerActivityService
+			ICustomerActivityService customerActivityService,
+			ILogger logger
             )
         {
 			this._services = services;
@@ -185,6 +187,7 @@ namespace SmartStore.Web.Controllers
             this._dbContext = _services.DbContext;
             this._settingService = settingService;
             this._eventPublisher = _services.EventPublisher;
+			this._logger = logger;
             //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
@@ -718,42 +721,47 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected void ResolveCategoryProductsCount(TreeNode<CategoryNavigationModel.CategoryModel> curNode)
         {
-            // Perf: only resolve counts for categories in the current path.
-            while (true)
-            {
-                if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
-                {
-                    lock (s_lock)
-                    {
-                        if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
-                        {
-                            foreach (var node in curNode.Children)
-                            {
-                                var categoryIds = new List<int>();
+			try
+			{
+				// Perf: only resolve counts for categories in the current path.
+				while (curNode != null)
+				{
+					if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
+					{
+						lock (s_lock)
+						{
+							if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
+							{
+								foreach (var node in curNode.Children)
+								{
+									var categoryIds = new List<int>();
 
-                                if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
-                                {
-                                    // include subcategories
-                                    node.TraverseTree(x => categoryIds.Add(x.Value.Id));
-                                }
-                                else
-                                {
-                                    categoryIds.Add(node.Value.Id);
-                                }
+									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
+									{
+										// include subcategories
+										node.TraverseTree(x => categoryIds.Add(x.Value.Id));
+									}
+									else
+									{
+										categoryIds.Add(node.Value.Id);
+									}
 
-                                var ctx = new ProductSearchContext();
-                                ctx.CategoryIds = categoryIds;
-								ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
-                                node.Value.NumberOfProducts = _productService.CountProducts(ctx);
-                            }
-                        }
-                    }
-                }
+									var ctx = new ProductSearchContext();
+									ctx.CategoryIds = categoryIds;
+									ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+									node.Value.NumberOfProducts = _productService.CountProducts(ctx);
+								}
+							}
+						}
+					}
 
-                curNode = curNode.Parent;
-                if (curNode == null)
-                    break;
-            }
+					curNode = curNode.Parent;
+				}
+			}
+			catch (Exception exc)
+			{
+				_logger.Error(exc.Message, exc);
+			}
         }
 
         // codehint: sm-add (mc)

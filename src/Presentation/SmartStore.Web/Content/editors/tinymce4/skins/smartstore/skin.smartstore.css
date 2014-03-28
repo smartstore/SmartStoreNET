@@ -1,6 +1,6 @@
 
 div.mce-fullscreen {
-	top: 52px !important;
+	z-index: 1000;
 }
 
 .mce-container, .mce-container *, .mce-widget, .mce-widget * {

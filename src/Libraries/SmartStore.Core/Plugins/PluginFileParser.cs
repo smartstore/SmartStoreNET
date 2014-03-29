@@ -89,9 +89,12 @@ namespace SmartStore.Core.Plugins
         public static PluginDescriptor ParsePluginDescriptionFile(string filePath)
         {
             var descriptor = new PluginDescriptor();
+
             var text = File.ReadAllText(filePath);
             if (String.IsNullOrEmpty(text))
                 return descriptor;
+
+			descriptor.FolderName = new DirectoryInfo(Path.GetDirectoryName(filePath)).Name;
 
             var settings = new List<string>();
             using (var reader = new StringReader(text))

@@ -162,7 +162,7 @@ namespace SmartStore.Core.IO.VirtualPath
             return HostingEnvironment.MapPath(virtualPath);
         }
 
-		public string Normalize(string virtualPath)
+		public virtual string Normalize(string virtualPath)
 		{
 			return HostingEnvironment.VirtualPathProvider.GetFile(virtualPath).VirtualPath;
 		}

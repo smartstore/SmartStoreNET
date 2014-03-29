@@ -66,7 +66,7 @@ namespace SmartStore.Utilities
 
 				var testPath = Path.Combine(baseDirectory, path);
 
-				if (findAppRoot && !Directory.Exists(testPath))
+				if (findAppRoot /* && !Directory.Exists(testPath)*/)
 				{
 					// most likely we're in unit tests or design-mode (EF migration scaffolding)...
 					// find solution root directory first

@@ -73,7 +73,7 @@ namespace SmartStore.Core.Packaging
 			{
 				ExtensionType = "Plugin",
 				Location = "~/Plugins",
-				Id = pluginDescriptor.SystemName,
+				Id = pluginDescriptor.FolderName,
 				Author = pluginDescriptor.Author,
 				MinAppVersion = pluginDescriptor.MinAppVersion,
 				Version = pluginDescriptor.Version,
@@ -93,7 +93,7 @@ namespace SmartStore.Core.Packaging
 				ExtensionType = "Theme",
 				Location = "~/Themes",
 				Id = themeManifest.ThemeName,
-				Author = themeManifest.Author,
+				Author = themeManifest.Author.HasValue() ? themeManifest.Author : "[Unknown]",
 				MinAppVersion = new Version("2.0"), // TODO: (pkg) Add SupportedVersion to theme manifests
 				Version = new Version(themeManifest.Version),
 				Name = themeManifest.ThemeTitle,

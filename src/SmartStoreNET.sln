@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A340B280-C12B-47E7-90B7-89C650F8AAFC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7881B112-7843-4542-B1F7-F99553FB9BB7}"
@@ -109,6 +111,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{B3D76228-3B52-4786-8F47-87D3060ED1AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Api.WebApi", "Plugins\Api.WebApi\SmartStore.Plugin.Api.WebApi.csproj", "{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{DB17E553-DCB5-4851-A5AB-542C09CAC7CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Packager", "Tools\SmartStore.Packager\SmartStore.Packager.csproj", "{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -480,6 +486,16 @@ Global
 		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -525,6 +541,7 @@ Global
 		{C2B83AF5-80F6-4B8C-8628-FA7DE10C3BB5} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8} = {B3D76228-3B52-4786-8F47-87D3060ED1AD}
+		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F} = {DB17E553-DCB5-4851-A5AB-542C09CAC7CA}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

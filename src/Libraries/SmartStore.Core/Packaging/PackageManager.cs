@@ -72,7 +72,7 @@ namespace SmartStore.Core.Packaging
 			return new PackagingResult
 			{
 				ExtensionType = "Plugin",
-				PackageName = pluginDescriptor.SystemName,
+				PackageName = pluginDescriptor.FolderName,
 				PackageVersion = pluginDescriptor.Version.ToString(),
 				PackageStream = _packageBuilder.BuildPackage(pluginDescriptor)
 			};

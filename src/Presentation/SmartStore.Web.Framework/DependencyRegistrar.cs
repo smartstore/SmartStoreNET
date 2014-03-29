@@ -65,6 +65,10 @@ using Autofac.Features.Metadata;
 using SmartStore.Services.Events;
 using System.Diagnostics;
 using SmartStore.Services.Logging;
+using SmartStore.Core.Packaging;
+using SmartStore.Core.IO.Media;
+using SmartStore.Core.IO.VirtualPath;
+using SmartStore.Core.IO.WebSite;
 
 namespace SmartStore.Web.Framework
 {
@@ -81,6 +85,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new UiModule(typeFinder));
+			builder.RegisterModule(new IOModule());
+			builder.RegisterModule(new PackagingModule());
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
@@ -560,6 +566,27 @@ namespace SmartStore.Web.Framework
 			{
 				builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerHttpRequest();
 			}
+		}
+	}
+
+	public class IOModule : Module
+	{
+		protected override void Load(ContainerBuilder builder)
+		{
+			builder.RegisterType<FileSystemStorageProvider>().As<IStorageProvider>().InstancePerHttpRequest();
+			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().InstancePerHttpRequest();
+			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().InstancePerHttpRequest();
+		}
+	}
+
+	public class PackagingModule : Module
+	{
+		protected override void Load(ContainerBuilder builder)
+		{
+			builder.RegisterType<PackageBuilder>().As<IPackageBuilder>().InstancePerHttpRequest();
+			builder.RegisterType<PackageInstaller>().As<IPackageInstaller>().InstancePerHttpRequest();
+			builder.RegisterType<PackageManager>().As<IPackageManager>().InstancePerHttpRequest();
+			builder.RegisterType<FolderUpdater>().As<IFolderUpdater>().InstancePerHttpRequest();
 		}
 	}
 

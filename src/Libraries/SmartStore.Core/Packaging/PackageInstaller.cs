@@ -202,9 +202,11 @@ namespace SmartStore.Core.Packaging
 				throw new SmartException("Package not found: {0}".FormatCurrentUI(packageId));
 			}
 
-			// ... TODO: (pkg) ergänzen
-
-			throw new NotImplementedException();
+			// If the package was not installed through nuget we still need to try to uninstall it by removing its directory
+			if (Directory.Exists(extensionFullPath))
+			{
+				Directory.Delete(extensionFullPath, true);
+			}
 		}
 
 		private bool RestoreExtensionFolder(string extensionFolder, string extensionId)

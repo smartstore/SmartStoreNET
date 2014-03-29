@@ -22,8 +22,7 @@ namespace SmartStore.Core.Plugins
             this.MinAppVersion = SmartStoreVersion.FullVersion;
         }
 
-        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
-            Type pluginType)
+        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
             : this()
         {
             this.ReferencedAssembly = referencedAssembly;
@@ -32,11 +31,10 @@ namespace SmartStore.Core.Plugins
         }
 
         /// <summary>
-        /// Plugin type
+        /// Plugin file name
         /// </summary>
         public string PluginFileName { get; set; }
 
-        // codehint: sm-add
         /// <summary>
         /// The physical path of the runtime plugin
         /// </summary>
@@ -98,11 +96,9 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets or sets the plugin group
         /// </summary>
-        /// <remarks>codehint:sm-add</remarks>
 		[DataMember]
 		public string Group { get; internal set; }
 
-        // codehint: sm-add
         public bool IsInKnownGroup
         {
             get
@@ -116,6 +112,12 @@ namespace SmartStore.Core.Plugins
         /// </summary>
 		[DataMember]
 		public string FriendlyName { get; set; }
+
+		/// <summary>
+		/// Gets the folder name
+		/// </summary>
+		[DataMember]
+		public string FolderName { get; internal set; }
 
         /// <summary>
         /// Gets or sets the system name
@@ -164,7 +166,6 @@ namespace SmartStore.Core.Plugins
 		/// </summary>
 		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.
 		/// Otherwise you get the wrong root key.</remarks>
-		/// <remarks>codehint: sm-add</remarks>
 		public string ResourceRootKey {
 			get {
 				if (_resourceRootKey == null) {

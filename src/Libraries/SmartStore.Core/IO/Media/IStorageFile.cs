@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SmartStore.Core.IO
+namespace SmartStore.Core.IO.Media
 {
     public interface IStorageFile
     {

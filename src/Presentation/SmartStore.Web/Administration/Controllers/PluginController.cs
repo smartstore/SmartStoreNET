@@ -23,6 +23,7 @@ using SmartStore.Services.Configuration;
 using System.IO;
 using SmartStore.Services.Stores;
 using System.Collections.Generic;
+using SmartStore.Core.Packaging;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -43,6 +44,7 @@ namespace SmartStore.Admin.Controllers
         private readonly TaxSettings _taxSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly WidgetSettings _widgetSettings;
+		private readonly IPackageManager _packageManager;
 
 	    #endregion
 
@@ -59,7 +61,8 @@ namespace SmartStore.Admin.Controllers
 			ShippingSettings shippingSettings,
             TaxSettings taxSettings, 
 			ExternalAuthenticationSettings externalAuthenticationSettings, 
-            WidgetSettings widgetSettings)
+            WidgetSettings widgetSettings,
+			IPackageManager packageManager)
 		{
             this._pluginFinder = pluginFinder;
             this._localizationService = localizationService;
@@ -73,6 +76,7 @@ namespace SmartStore.Admin.Controllers
             this._taxSettings = taxSettings;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._widgetSettings = widgetSettings;
+			this._packageManager = packageManager;
 		}
 
 		#endregion 
@@ -279,6 +283,44 @@ namespace SmartStore.Admin.Controllers
 
             return RedirectToAction("List");
         }
+
+		[HttpPost]
+		public ActionResult UploadPackage(FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			try
+			{
+				var file = Request.Files["packagefile"];
+				if (file != null && file.ContentLength > 0)
+				{
+					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
+					{
+						ErrorNotification("Upload file is not a valid package. Must end with 'nupkg'.");
+						return RedirectToAction("List");
+					}
+
+					var location = _webHelper.MapPath("~/App_Data");
+					var appPath = _webHelper.MapPath("~/");
+					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
+				}
+				else
+				{
+					ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+					return RedirectToAction("List");
+				}
+
+				_webHelper.RestartAppDomain();
+				//SuccessNotification("Upload successfull. Reload the plugin list.");
+				return RedirectToAction("List");
+			}
+			catch (Exception exc)
+			{
+				ErrorNotification(exc);
+				return RedirectToAction("List");
+			}
+		}
 
         public ActionResult ReloadList()
         {

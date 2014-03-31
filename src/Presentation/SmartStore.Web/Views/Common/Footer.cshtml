@@ -44,15 +44,6 @@
                 </div>
             </div>
             }
-            
-@*            <div class="first-col footer-seals">
-                <h4>@T("Footer.Seals")</h4>
-                <div class="content">
-                    <a href="#"><i class="icon-github"></i></a>
-                    <a href="#"><i class="icon-linkedin"></i></a>
-                    <a href="#"><i class="icon-hand-right"></i></a>
-                </div>
-            </div>*@
         </div>
 
         <div class="span8">
@@ -134,14 +125,27 @@
     </div>
 </section>
 
-<div class="footer-disclaimer container clearfix">
-    @if (Model.ShowLegalInfo) 
-    {
-        <div class="footer-legal pull-left">
-            @Html.Raw(Model.LegalInfo)
-        </div>
-    }
-    <div class="pull-right">@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)</div>
+<div class="footer-disclaimer container">
+    <div class="row">
+		<div class="span8">
+			@if (!Model.ShowLegalInfo)
+			{
+				<div class="footer-legal">
+					@Html.Raw(Model.LegalInfo)
+				</div>
+			}
+		</div>
+
+		<div class="span8 ac">
+			@Html.Raw(Model.SmartStoreHint)
+		</div>
+
+		<div class="span8 ar">
+			<div>
+				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
+			</div>
+		</div>
+	</div>
 </div>
 
 <div id="switch-to-mobile">

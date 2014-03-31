@@ -253,7 +253,7 @@ body.popup {
 }
 
 #footer {
-    padding: 10px 0 20px 0;
+    padding: 10px 0;
     color: @var_FooterFontColor;
     z-index: 1;
 
@@ -295,15 +295,21 @@ body.popup {
 }
 .footer-disclaimer {
 	background-color: transparent; 
-	color: #888; 
-	padding: 0 10px; 
-	margin: 10px auto;
-	font-size: 12px;
+	color: mix(@var_SiteBackground, contrast(@var_SiteBackground), 70%); 
+	padding: 8px 0; 
+	.small();
 }
-.footer-disclaimer .footer-legal a {
-	color: #888; 
-	text-decoration: underline;
+.footer-disclaimer a {
+	color: @var_HeaderLinkColor;
+	text-decoration: none;
 }
+.footer-disclaimer a.sm-hint {
+	color: inherit;
+}
+.footer-disclaimer a:hover {
+	color: @var_HeaderHoverColor;
+}
+
 .first-col  { margin-left: 10px }
 .last-col   { margin-right: 10px }
 

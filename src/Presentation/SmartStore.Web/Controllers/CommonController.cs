@@ -47,6 +47,8 @@ using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Web.Controllers
 {
@@ -60,7 +62,6 @@ namespace SmartStore.Web.Controllers
         private readonly ITopicService _topicService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
-        private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IQueuedEmailService _queuedEmailService;
@@ -76,6 +77,8 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
 
+		private readonly static string[] s_hints = new string[] { "Onlineshop", "Shopsystem", "Onlineshop Software", "Shopsoftware", "Webshop", "Ecommerce", "Ecommerce Solution", "Shopping Cart", "Internetshop", "Online Commerce", "Free Shopsoftware" };
+
         private readonly CustomerSettings _customerSettings;
         private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -88,6 +91,7 @@ namespace SmartStore.Web.Controllers
 
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IPriceFormatter _priceFormatter;
+		private readonly ISettingService _settingService;
 
         #endregion
 
@@ -96,7 +100,7 @@ namespace SmartStore.Web.Controllers
         public CommonController(ICategoryService categoryService, IProductService productService,
             IManufacturerService manufacturerService, ITopicService topicService,
             ILanguageService languageService,
-            ICurrencyService currencyService, ILocalizationService localizationService,
+            ICurrencyService currencyService,
             IWorkContext workContext, IStoreContext storeContext,
             IQueuedEmailService queuedEmailService, IEmailAccountService emailAccountService,
             ISitemapGenerator sitemapGenerator, IThemeContext themeContext,
@@ -110,7 +114,7 @@ namespace SmartStore.Web.Controllers
             CommonSettings commonSettings, BlogSettings blogSettings, ForumSettings forumSettings,
             LocalizationSettings localizationSettings, CaptchaSettings captchaSettings,
             IOrderTotalCalculationService orderTotalCalculationService, IPriceFormatter priceFormatter,
-            ThemeSettings themeSettings)
+            ThemeSettings themeSettings, ISettingService settingService)
         {
             this._categoryService = categoryService;
             this._productService = productService;
@@ -118,7 +122,6 @@ namespace SmartStore.Web.Controllers
             this._topicService = topicService;
             this._languageService = languageService;
             this._currencyService = currencyService;
-            this._localizationService = localizationService;
             this._workContext = workContext;
 			this._storeContext = storeContext;
             this._queuedEmailService = queuedEmailService;
@@ -146,8 +149,9 @@ namespace SmartStore.Web.Controllers
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
 
-            //codehint: sm-add
             this._themeSettings = themeSettings;
+			this._settingService = settingService;
+			T = NullLocalizer.Instance;
         }
 
         #endregion
@@ -217,7 +221,6 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-        // codehint: sm-add
         // TODO: (MC) zentral auslagern
         private string GetLanguageNativeName(string locale)
         {
@@ -322,9 +325,15 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
-        #region Methods
+		#region Properties
 
-        //language
+		public Localizer T { get; set; }
+
+		#endregion
+
+		#region Methods
+
+		//language
         [ChildActionOnly]
         public ActionResult LanguageSelector()
         {
@@ -482,7 +491,7 @@ namespace SmartStore.Web.Controllers
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
             {
-                unreadMessage = string.Format(_localizationService.GetResource("PrivateMessages.TotalUnread"), unreadMessageCount);
+                unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
 
                 //notifications here
 				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id);
@@ -490,7 +499,7 @@ namespace SmartStore.Web.Controllers
 					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
-                    alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
+					alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
 
@@ -524,14 +533,14 @@ namespace SmartStore.Web.Controllers
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
             {
-                unreadMessage = string.Format(_localizationService.GetResource("PrivateMessages.TotalUnread"), unreadMessageCount);
+                unreadMessage = T("PrivateMessages.TotalUnread");
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
 					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
-                    alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
+                    alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
 
@@ -585,16 +594,15 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        // footer
-        // codehint: sm-edit nearly complete
         [ChildActionOnly]
         public ActionResult Footer()
         {
             string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
-                ? _localizationService.GetResource("Tax.InclVAT") 
-                : _localizationService.GetResource("Tax.ExclVAT");
+                ? T("Tax.InclVAT") 
+                : T("Tax.ExclVAT");
 
             string shippingInfoLink = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+			var store = _storeContext.CurrentStore;
 
             var AvailableStoreThemes = _themeRegistry.GetThemeManifests()
                 .Where(x => !x.MobileTheme)
@@ -608,18 +616,10 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
-            //TODO
-            //var topicTitles = from t in _topicService.GetAllTopics()
-            //                  select new
-            //                  {
-            //                      Id = t.SystemName,
-            //                      Title = t.Title
-            //                  };
-
             var model = new FooterModel()
             {
-                StoreName = _storeContext.CurrentStore.Name,
-                LegalInfo = string.Format(_localizationService.GetResource("Tax.LegalInfoFooter"), taxInfo, shippingInfoLink),
+				StoreName = store.Name,
+				LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoLink),
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = _themeSettings.AllowCustomerToSelectTheme && AvailableStoreThemes.Count > 1,          
                 BlogEnabled = _blogSettings.Enabled,                          
@@ -627,11 +627,18 @@ namespace SmartStore.Web.Controllers
                 HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
             };
 
+			var hint = _settingService.GetSettingByKey<string>("_SmCopyrightHint", string.Empty, store.Id);
+			if (hint.IsEmpty())
+			{
+				hint = s_hints[new Random().Next(s_hints.Length)];
+				_settingService.SetSetting<string>("_SmCopyrightHint", hint, store.Id);
+			}
+
             var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };
             foreach (var t in topics)
             {
 				//load by store
-				var topic = _topicService.GetTopicBySystemName(t, _storeContext.CurrentStore.Id);
+				var topic = _topicService.GetTopicBySystemName(t, store.Id);
 				if (topic == null)
 					//not found. let's find topic assigned to all stores
 					topic = _topicService.GetTopicBySystemName(t, 0);
@@ -650,11 +657,11 @@ namespace SmartStore.Web.Controllers
             model.TwitterLink = socialSettings.TwitterLink;
             model.PinterestLink = socialSettings.PinterestLink;
             model.YoutubeLink = socialSettings.YoutubeLink;
+			model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}".FormatCurrent(hint, DateTime.Now.Year);
 
             return PartialView(model);
         }
 
-        //menu
         [ChildActionOnly]
         public ActionResult Menu()
         {
@@ -713,14 +720,14 @@ namespace SmartStore.Web.Controllers
             //validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnContactUsPage && !captchaValid)
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
 
             if (ModelState.IsValid)
             {
                 string email = model.Email.Trim();
                 string fullName = model.FullName;
-				string subject = string.Format(_localizationService.GetResource("ContactUs.EmailSubject"), _storeContext.CurrentStore.Name);
+				string subject = T("ContactUs.EmailSubject", _storeContext.CurrentStore.Name);
 
                 var emailAccount = _emailAccountService.GetEmailAccountById(EngineContext.Current.Resolve<EmailAccountSettings>().DefaultEmailAccountId);
                 if (emailAccount == null)
@@ -759,10 +766,10 @@ namespace SmartStore.Web.Controllers
                 });
 
                 model.SuccessfullySent = true;
-                model.Result = _localizationService.GetResource("ContactUs.YourEnquiryHasBeenSent");
+                model.Result = T("ContactUs.YourEnquiryHasBeenSent");
 
                 //activity log
-                _customerActivityService.InsertActivity("PublicStore.ContactUs", _localizationService.GetResource("ActivityLog.PublicStore.ContactUs"));
+                _customerActivityService.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
 
                 return View(model);
             }
@@ -1080,14 +1087,14 @@ namespace SmartStore.Web.Controllers
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
             {
-                unreadMessage = string.Format(_localizationService.GetResource("PrivateMessages.TotalUnread"), unreadMessageCount);
+                unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
 					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
                 {
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
-                    alertMessage = string.Format(_localizationService.GetResource("PrivateMessages.YouHaveUnreadPM"), unreadMessageCount);
+					alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
 

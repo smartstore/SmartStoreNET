@@ -14,7 +14,7 @@ using SmartStore.Web.Models.Polls;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class PollController : SmartController
+    public partial class PollController : PublicControllerBase
     {
         #region Fields
 

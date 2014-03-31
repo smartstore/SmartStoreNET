@@ -33,11 +33,15 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public void EndLifetimeScope()
 		{
-			ILifetimeScope lifetimeScope = LifetimeScope;
-			if (lifetimeScope != null)
+			try
 			{
-				lifetimeScope.Dispose();
+				ILifetimeScope lifetimeScope = LifetimeScope;
+				if (lifetimeScope != null)
+				{
+					lifetimeScope.Dispose();
+				}
 			}
+			catch { }
 		}
 
 		public ILifetimeScope GetLifetimeScope(Action<ContainerBuilder> configurationAction)

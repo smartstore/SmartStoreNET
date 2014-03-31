@@ -278,7 +278,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
             }
 
             return RedirectToAction("List");
@@ -297,7 +297,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
 					{
-						ErrorNotification("Upload file is not a valid package. Must end with 'nupkg'.");
+						NotifyError("Upload file is not a valid package. Must end with 'nupkg'.");
 						return RedirectToAction("List");
 					}
 
@@ -307,7 +307,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
 					return RedirectToAction("List");
 				}
 
@@ -317,7 +317,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exc)
 			{
-				ErrorNotification(exc);
+				NotifyError(exc);
 				return RedirectToAction("List");
 			}
 		}
@@ -539,13 +539,13 @@ namespace SmartStore.Admin.Controllers
 
 			if (pluginDescriptor == null)
 			{
-				ErrorNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateFailure"));
+				NotifyError(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateFailure"));
 			}
 			else
 			{
 				_localizationService.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
 			return RedirectToAction("List");
 		}
@@ -569,7 +569,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
+			NotifySuccess(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			return RedirectToAction("List");
 		}
 

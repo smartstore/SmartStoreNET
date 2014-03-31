@@ -126,7 +126,7 @@ namespace SmartStore.Admin.Controllers
                 poll.EndDateUtc = model.EndDate;
                 _pollService.InsertPoll(poll);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Polls.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
             }
 
@@ -170,7 +170,7 @@ namespace SmartStore.Admin.Controllers
                 poll.EndDateUtc = model.EndDate;
                 _pollService.UpdatePoll(poll);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Polls.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
             }
 
@@ -192,7 +192,7 @@ namespace SmartStore.Admin.Controllers
             
             _pollService.DeletePoll(poll);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Polls.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Deleted"));
             return RedirectToAction("List");
         }
 

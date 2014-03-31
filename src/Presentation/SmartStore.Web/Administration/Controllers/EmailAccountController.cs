@@ -119,7 +119,7 @@ namespace SmartStore.Admin.Controllers
                 var emailAccount = model.ToEntity();
                 _emailAccountService.InsertEmailAccount(emailAccount);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
             }
 
@@ -157,7 +157,7 @@ namespace SmartStore.Admin.Controllers
                 emailAccount = model.ToEntity(emailAccount);
                 _emailAccountService.UpdateEmailAccount(emailAccount);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
             }
 
@@ -190,11 +190,11 @@ namespace SmartStore.Admin.Controllers
 
 				_emailSender.SendEmail(new SmtpContext(emailAccount), new EmailMessage(to, subject, body, from));
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message, false);
+				NotifyError(exc.Message, false);
             }
 
             //If we got this far, something failed, redisplay form
@@ -212,7 +212,7 @@ namespace SmartStore.Admin.Controllers
                 //No email account found with the specified id
                 return RedirectToAction("List");
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
             _emailAccountService.DeleteEmailAccount(emailAccount);
             return RedirectToAction("List");
         }

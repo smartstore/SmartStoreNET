@@ -166,11 +166,11 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
 
             if (showRestartNote)
             {
-                InfoNotification(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
+                NotifyInfo(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
             }
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
@@ -215,7 +215,7 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("EditThemeVars", _localizationService.GetResource("ActivityLog.EditThemeVars"), theme);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
 
 			return continueEditing ?
 				RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab }) :
@@ -237,7 +237,7 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("ResetThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), theme);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
         }
 
@@ -271,16 +271,16 @@ namespace SmartStore.Admin.Controllers
                     }
                     catch { }
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
+                    NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
                 }
                 else
                 {
-                    ErrorNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.UploadFile"));
+					NotifyError(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.UploadFile"));
                 }
             }
             catch (Exception ex)
             {
-                ErrorNotification(ex);
+                NotifyError(ex);
             }
 
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
@@ -303,7 +303,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (xml.IsEmpty())
                 {
-                    InfoNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.NoExportInfo"));
+                    NotifyInfo(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.NoExportInfo"));
                 }
                 else
                 {
@@ -322,7 +322,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception ex)
             {
-                ErrorNotification(ex);
+                NotifyError(ex);
             }
             
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });

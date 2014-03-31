@@ -86,7 +86,7 @@ namespace SmartStore.Admin.Controllers
                 }
 
             }
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.ActivityLog.ActivityLogType.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.ActivityLog.ActivityLogType.Updated"));
             return RedirectToAction("ListTypes");
         }
 

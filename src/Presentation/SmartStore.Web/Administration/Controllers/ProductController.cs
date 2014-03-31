@@ -789,7 +789,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id, selectedTab = selectedTab }) : RedirectToAction("List");
             }
 
@@ -908,7 +908,7 @@ namespace SmartStore.Admin.Controllers
                 // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id, selectedTab = selectedTab }) : RedirectToAction("List");
             }
 
@@ -934,7 +934,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteProduct", _localizationService.GetResource("ActivityLog.DeleteProduct"), product.Name);
                 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -973,12 +973,12 @@ namespace SmartStore.Admin.Controllers
             {
 				var product = _productService.GetProductById(copyModel.Id);
                 var newProduct = _copyProductService.CopyProduct(product, copyModel.Name, copyModel.Published, copyModel.CopyImages);
-                SuccessNotification("The product is copied");
+                NotifySuccess("The product is copied");
                 return RedirectToAction("Edit", new { id = newProduct.Id });
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
                 return RedirectToAction("Edit", new { id = copyModel.Id });
             }
         }
@@ -1944,7 +1944,7 @@ namespace SmartStore.Admin.Controllers
 
 					if (attributes.Count > 0 && attributes.Any(a => a.ProductVariantAttributeValues.Any(v => v.ValueType == ProductVariantAttributeValueType.ProductLinkage)))
 					{
-						this.ErrorNotification(_localizationService.GetResource("Admin.Catalog.Products.BundleItems.NoAttributeWithProductLinkage"));
+						NotifyError(_localizationService.GetResource("Admin.Catalog.Products.BundleItems.NoAttributeWithProductLinkage"));
 						closeWindow = false;
 					}
 					else
@@ -2060,7 +2060,7 @@ namespace SmartStore.Admin.Controllers
 				PrepareBundleItemEditModel(model, bundleItem, btnId, formId, true);
 
 				if (continueEditing)
-					this.SuccessNotification(_localizationService.GetResource("Admin.Common.DataSuccessfullySaved"));
+					this.NotifySuccess(_localizationService.GetResource("Admin.Common.DataSuccessfullySaved"));
 			}
 			else
 			{
@@ -2397,7 +2397,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -2424,7 +2424,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -2474,7 +2474,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -2502,35 +2502,6 @@ namespace SmartStore.Admin.Controllers
             }
             return File(bytes, "text/xls", "products.xlsx");
         }
-
-		//[HttpPost]
-		//public ActionResult ImportExcel(FormCollection form)
-		//{
-		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-		//		return AccessDeniedView();
-
-		//	try
-		//	{
-		//		var file = Request.Files["importexcelfile"];
-		//		if (file != null && file.ContentLength > 0)
-		//		{
-		//			_importManager.ImportProductsFromXlsx(file.InputStream);
-		//		}
-		//		else
-		//		{
-		//			ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
-		//			return RedirectToAction("List");
-		//		}
-		//		SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Imported"));
-		//		return RedirectToAction("List");
-		//	}
-		//	catch (Exception exc)
-		//	{
-		//		ErrorNotification(exc);
-		//		return RedirectToAction("List");
-		//	}
-
-		//}
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)
@@ -2585,16 +2556,16 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
 					return RedirectToAction("List");
 				}
 
-				SuccessNotification(_localizationService.GetResource("Admin.Common.ImportFromExcel.InProgress"));
+				NotifySuccess(_localizationService.GetResource("Admin.Common.ImportFromExcel.InProgress"));
 				return RedirectToAction("List");
 			}
 			catch (Exception exc)
 			{
-				ErrorNotification(exc);
+				NotifyError(exc);
 				return RedirectToAction("List");
 			}
 		}
@@ -2647,7 +2618,7 @@ namespace SmartStore.Admin.Controllers
 			if (tcs != null) 
 			{
 				tcs.Cancel();
-				SuccessNotification(_localizationService.GetResource("Admin.Common.ImportFromExcel.Cancelled"));
+				NotifySuccess(_localizationService.GetResource("Admin.Common.ImportFromExcel.Cancelled"));
 			}
 
 			return RedirectToAction("List");

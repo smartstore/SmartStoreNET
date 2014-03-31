@@ -21,7 +21,7 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.No)]
-    public partial class ProfileController : SmartController
+    public partial class ProfileController : PublicControllerBase
     {
         private readonly IForumService _forumService;
         private readonly ILocalizationService _localizationService;

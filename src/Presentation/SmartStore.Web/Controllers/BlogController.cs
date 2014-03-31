@@ -31,7 +31,7 @@ using SmartStore.Web.Models.Blogs;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.No)]
-    public partial class BlogController : SmartController
+    public partial class BlogController : PublicControllerBase
     {
         #region Fields
 

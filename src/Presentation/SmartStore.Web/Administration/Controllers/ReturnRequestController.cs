@@ -180,7 +180,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditReturnRequest", _localizationService.GetResource("ActivityLog.EditReturnRequest"), returnRequest.Id);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ReturnRequests.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Updated"));
                 return continueEditing ? RedirectToAction("Edit", returnRequest.Id) : RedirectToAction("List");
             }
 
@@ -206,7 +206,7 @@ namespace SmartStore.Admin.Controllers
             var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
             int queuedEmailId = _workflowMessageService.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
             if (queuedEmailId > 0)
-                SuccessNotification(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
+                NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
             return RedirectToAction("Edit", returnRequest.Id);
         }
 
@@ -227,7 +227,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteReturnRequest", _localizationService.GetResource("ActivityLog.DeleteReturnRequest"), returnRequest.Id);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ReturnRequests.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Deleted"));
             return RedirectToAction("List");
         }
 

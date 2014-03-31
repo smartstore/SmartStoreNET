@@ -142,7 +142,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(country, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Countries.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
@@ -187,7 +187,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(country, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Countries.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
@@ -213,12 +213,12 @@ namespace SmartStore.Admin.Controllers
 
                 _countryService.DeleteCountry(country);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Countries.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = country.Id });
             }
         }

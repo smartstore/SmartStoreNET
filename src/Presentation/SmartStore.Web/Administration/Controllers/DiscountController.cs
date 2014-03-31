@@ -206,7 +206,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewDiscount", _localizationService.GetResource("ActivityLog.AddNewDiscount"), discount.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Promotions.Discounts.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Discounts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = discount.Id }) : RedirectToAction("List");
             }
 
@@ -275,7 +275,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditDiscount", _localizationService.GetResource("ActivityLog.EditDiscount"), discount.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Promotions.Discounts.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Discounts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", discount.Id) : RedirectToAction("List");
             }
 
@@ -312,7 +312,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteDiscount", _localizationService.GetResource("ActivityLog.DeleteDiscount"), discount.Name);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Promotions.Discounts.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Promotions.Discounts.Deleted"));
             return RedirectToAction("List");
         }
 

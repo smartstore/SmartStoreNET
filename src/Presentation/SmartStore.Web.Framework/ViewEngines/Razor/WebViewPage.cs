@@ -15,6 +15,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.UI;
+using SmartStore.Collections;
+using System.Linq;
 
 #endregion
 
@@ -26,7 +29,6 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 		private IText _text;
         private IWorkContext _workContext;
 
-        // codehint: sm-add
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
         private ThemeManifest _themeManifest;
@@ -91,6 +93,74 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
                 return _isHomePage.Value;
             }
         }
+
+		protected ICollection<string> InfoMessages
+		{
+			get { return ResolveMessages(NotifyType.Info).AsReadOnly(); }
+		}
+
+		protected ICollection<string> SuccessMessages
+		{
+			get { return ResolveMessages(NotifyType.Success).AsReadOnly(); }
+		}
+
+		protected ICollection<string> ErrorMessages
+		{
+			get { return ResolveMessages(NotifyType.Error).AsReadOnly(); }
+		}
+
+		protected bool HasMessages
+		{
+			get
+			{
+				string key = "sm.notifications.all";
+				Multimap<NotifyType, string> map;
+
+				if (TempData[key] != null)
+				{
+					map = TempData[key] as Multimap<NotifyType, string>;
+					if (map != null && map.TotalValueCount > 0)
+						return true;
+				}
+
+				if (ViewData[key] != null)
+				{
+					map = ViewData[key] as Multimap<NotifyType, string>;
+					if (map != null && map.TotalValueCount > 0)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		private IEnumerable<string> ResolveMessages(NotifyType type)
+		{
+			string key = "sm.notifications.all";
+			Multimap<NotifyType, string> map;
+			IEnumerable<string> result = Enumerable.Empty<string>();
+
+			if (TempData[key] != null)
+			{
+				map = TempData[key] as Multimap<NotifyType, string>;
+				if (map != null)
+				{
+					result = result.Concat(map[type]);
+				}
+			}
+
+			if (ViewData[key] != null)
+			{
+				map = ViewData[key] as Multimap<NotifyType, string>;
+				if (map != null)
+				{
+					result = result.Concat(map[type]);
+				}
+			}
+
+			return result;
+
+		}
 
         /// <summary>
         /// Get a localized resource

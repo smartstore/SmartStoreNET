@@ -50,7 +50,7 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CommonController : SmartController
+    public partial class CommonController : PublicControllerBase
     {
         #region Fields
 

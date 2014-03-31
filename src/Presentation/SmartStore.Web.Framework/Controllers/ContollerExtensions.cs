@@ -6,6 +6,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Common;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -61,36 +62,60 @@ namespace SmartStore.Web.Framework.Controllers
             }
         }
 
+		///// <summary>
+		///// Pushes a message to the notification queue
+		///// </summary>
+		///// <param name="type">Notification type</param>
+		///// <param name="message">Message</param>
+		///// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
+		//public static void Notify(this ControllerBase controller, NotifyType type, string message, bool durable)
+		//{
+		//	if (message.IsEmpty())
+		//		return;
+
+		//	var storage = (durable ? (IDictionary<string, object>)controller.TempData : (IDictionary<string, object>)controller.ViewData);
+
+		//	ICollection<string> messages = null;
+		//	string key = string.Format("sm.notifications.{0}", type);
+
+		//	if (!storage.ContainsKey(key))
+		//	{
+		//		storage[key] = new HashSet<string>();
+		//	}
+
+		//	messages = storage[key] as ICollection<string>;
+
+		//	if (messages != null)
+		//	{
+		//		messages.Add(message);
+		//	}
+		//}
+
 		/// <summary>
-		/// Display notification
+		/// Pushes a message to the notification queue
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="type">Notification type</param>
 		/// <param name="message">Message</param>
-		/// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-		public static void AddNotificationMessage(this ControllerBase controller, NotifyType type, string message, bool persistForTheNextRequest)
+		/// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
+		public static void Notify(this ControllerBase controller, NotifyType type, string message, bool durable)
 		{
-			if (message.IsNullOrEmpty())
+			if (message.IsEmpty())
 				return;
 
-			List<string> lst = null;
-			string dataKey = string.Format("sm.notifications.{0}", type);
+			var storage = (durable ? (IDictionary<string, object>)controller.TempData : (IDictionary<string, object>)controller.ViewData);
 
-			if (persistForTheNextRequest)
+			Multimap<NotifyType, string> messages = null;
+			string key = "sm.notifications.all";
+
+			if (!storage.ContainsKey(key))
 			{
-				if (controller.TempData[dataKey] == null)
-					controller.TempData[dataKey] = new List<string>();
-				lst = (List<string>)controller.TempData[dataKey];
-			}
-			else
-			{
-				if (controller.ViewData[dataKey] == null)
-					controller.ViewData[dataKey] = new List<string>();
-				lst = (List<string>)controller.ViewData[dataKey];
+				storage[key] = messages = new Multimap<NotifyType, string>();
 			}
 
-			if (lst != null && !lst.Exists(m => m == message))
-				lst.Add(message);
+			if (messages != null && !messages.ContainsValue(type, message))
+			{
+				messages.Add(type, message);
+			}
 		}
 
 		/// <summary>

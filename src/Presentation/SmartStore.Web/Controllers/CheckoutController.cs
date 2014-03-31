@@ -32,7 +32,7 @@ using SmartStore.Services.Configuration;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-    public partial class CheckoutController : SmartController
+    public partial class CheckoutController : PublicControllerBase
     {
 		#region Fields
 
@@ -51,7 +51,6 @@ namespace SmartStore.Web.Controllers
         private readonly IShippingService _shippingService;
         private readonly IPaymentService _paymentService;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-        private readonly ILogger _logger;
         private readonly IOrderService _orderService;
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
@@ -62,7 +61,6 @@ namespace SmartStore.Web.Controllers
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
-        //codehint: sm-add
         private readonly ShoppingCartSettings _shoppingCartSettings;
 
         #endregion
@@ -78,7 +76,7 @@ namespace SmartStore.Web.Controllers
             IStateProvinceService stateProvinceService, IShippingService shippingService,
 			IPaymentService paymentService, 
 			IOrderTotalCalculationService orderTotalCalculationService,
-            ILogger logger, IOrderService orderService, IWebHelper webHelper,
+            IOrderService orderService, IWebHelper webHelper,
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
             PaymentSettings paymentSettings, AddressSettings addressSettings,
@@ -100,7 +98,6 @@ namespace SmartStore.Web.Controllers
             this._shippingService = shippingService;
             this._paymentService = paymentService;
             this._orderTotalCalculationService = orderTotalCalculationService;
-            this._logger = logger;
             this._orderService = orderService;
             this._webHelper = webHelper;
             this._httpContext = httpContext;
@@ -978,7 +975,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc);
+				Logger.Warning(exc.Message, exc);
                 model.Warnings.Add(exc.Message);
             }
 
@@ -1224,7 +1221,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1318,7 +1315,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1450,7 +1447,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1533,7 +1530,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1600,7 +1597,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1700,7 +1697,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Json(new { error = 1, message = exc.Message });
             }
         }
@@ -1758,7 +1755,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exc)
             {
-                _logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
+				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
                 return Content(exc.Message);
             }
         }

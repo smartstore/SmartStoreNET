@@ -183,7 +183,7 @@ namespace SmartStore.Admin.Controllers
             payment.IsActive = model.IsActive;
             _orderService.UpdateRecurringPayment(payment);
 
-            SuccessNotification(_localizationService.GetResource("Admin.RecurringPayments.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.RecurringPayments.Updated"));
             return continueEditing ? RedirectToAction("Edit", payment.Id) : RedirectToAction("List");
         }
 
@@ -201,7 +201,7 @@ namespace SmartStore.Admin.Controllers
 
             _orderService.DeleteRecurringPayment(payment);
 
-            SuccessNotification(_localizationService.GetResource("Admin.RecurringPayments.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.RecurringPayments.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -259,7 +259,7 @@ namespace SmartStore.Admin.Controllers
                 var model = new RecurringPaymentModel();
                 PrepareRecurringPaymentModel(model, payment, true);
 
-                SuccessNotification(_localizationService.GetResource("Admin.RecurringPayments.NextPaymentProcessed"), false);
+                NotifySuccess(_localizationService.GetResource("Admin.RecurringPayments.NextPaymentProcessed"), false);
                 return View(model);
             }
             catch (Exception exc)
@@ -267,7 +267,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new RecurringPaymentModel();
                 PrepareRecurringPaymentModel(model, payment, true);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -294,10 +294,10 @@ namespace SmartStore.Admin.Controllers
                 if (errors.Count > 0)
                 {
                     foreach (var error in errors)
-                        ErrorNotification(error, false);
+						NotifyError(error, false);
                 }
                 else
-                    SuccessNotification(_localizationService.GetResource("Admin.RecurringPayments.Cancelled"), false);
+                    NotifySuccess(_localizationService.GetResource("Admin.RecurringPayments.Cancelled"), false);
                 return View(model);
             }
             catch (Exception exc)
@@ -305,7 +305,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new RecurringPaymentModel();
                 PrepareRecurringPaymentModel(model, payment, true);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }

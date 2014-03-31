@@ -45,7 +45,7 @@ using SmartStore.Services;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CatalogController : SmartController
+    public partial class CatalogController : PublicControllerBase
     {
         #region Fields
 
@@ -104,7 +104,6 @@ namespace SmartStore.Web.Controllers
         private readonly IDbContext _dbContext;
         private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ILogger _logger;
 
         #endregion
 
@@ -138,8 +137,7 @@ namespace SmartStore.Web.Controllers
             /* codehint: sm-add */
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
             IDeliveryTimeService deliveryTimeService, ISettingService settingService,
-			ICustomerActivityService customerActivityService,
-			ILogger logger
+			ICustomerActivityService customerActivityService
             )
         {
 			this._services = services;
@@ -187,7 +185,6 @@ namespace SmartStore.Web.Controllers
             this._dbContext = _services.DbContext;
             this._settingService = settingService;
             this._eventPublisher = _services.EventPublisher;
-			this._logger = logger;
             //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
@@ -760,7 +757,7 @@ namespace SmartStore.Web.Controllers
 			}
 			catch (Exception exc)
 			{
-				_logger.Error(exc.Message, exc);
+				Logger.Error(exc.Message, exc);
 			}
         }
 
@@ -2355,7 +2352,7 @@ namespace SmartStore.Web.Controllers
 							{
 								//redisplay the page with "Product has been added to the wishlist" notification message
 								var model = PrepareProductDetailsPageModel(product);
-								this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist"), false);
+								this.NotifySuccess(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist"), false);
 
 								//activity log
 								_customerActivityService.InsertActivity("PublicStore.AddToWishlist",
@@ -2376,7 +2373,7 @@ namespace SmartStore.Web.Controllers
 							{
 								//redisplay the page with "Product has been added to the cart" notification message
 								var model = PrepareProductDetailsPageModel(product);
-								this.SuccessNotification(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"), false);
+								this.NotifySuccess(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"), false);
 
 								//activity log
 								_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart",
@@ -3363,7 +3360,7 @@ namespace SmartStore.Web.Controllers
 
                 if (result > 0)
                 {
-					this.SuccessNotification(T("Products.AskQuestion.Sent"), true);
+					this.NotifySuccess(T("Products.AskQuestion.Sent"), true);
                     return RedirectToRoute("Product", new { SeName = product.GetSeName() });
                 }
                 else

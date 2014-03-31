@@ -602,7 +602,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception exc)
                 {
-                    ErrorNotification(exc, false);
+                    NotifyError(exc, false);
                 }
             }
 
@@ -623,11 +623,11 @@ namespace SmartStore.Admin.Controllers
                 {
 					dbContext.ExecuteSqlThroughSmo(model.SqlQuery);
 
-                    SuccessNotification("The sql command was executed successfully.");
+                    NotifySuccess("The sql command was executed successfully.");
                 }
                 catch (Exception ex)
                 {
-                    ErrorNotification("Error executing sql command: {0}".FormatCurrentUI(ex.Message));
+					NotifyError("Error executing sql command: {0}".FormatCurrentUI(ex.Message));
                 }
             }
 
@@ -661,7 +661,7 @@ namespace SmartStore.Admin.Controllers
 			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
             cacheManager.Clear();
 
-			this.SuccessNotification(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+			this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
 
 			if (previousUrl.HasValue())
 				return Redirect(previousUrl);

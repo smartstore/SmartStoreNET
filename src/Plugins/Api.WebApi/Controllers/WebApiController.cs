@@ -44,7 +44,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers
 			bool hasPermission = _permissionService.Authorize(WebApiPermissionProvider.ManageWebApi);
 
 			if (notify && !hasPermission)
-				this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Admin.AccessDenied.Description"), true);
+				this.Notify(NotifyType.Error, _localizationService.GetResource("Admin.AccessDenied.Description"), true);
 
 			return hasPermission;
 		}

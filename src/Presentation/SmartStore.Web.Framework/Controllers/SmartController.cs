@@ -5,113 +5,93 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-    [SetWorkingCulture]
-    [CustomerLastActivity]
-    [StoreIpAddress]
-    [StoreLastVisitedPage]
-    [CheckAffiliate]
-    [StoreClosedAttribute]
-    [PublicStoreAllowNavigation]
-    [LanguageSeoCodeAttribute]
-    [RequireHttpsByConfigAttribute(SslRequirement.Retain)]
-    //[UnitOfWork]
-    public abstract partial class SmartController : Controller
-    {
+	[SetWorkingCulture]
+	public abstract partial class SmartController : Controller
+	{
+		
+		protected SmartController()
+		{
+			this.Logger = NullLogger.Instance;
+		}
 
-        protected override void Initialize(RequestContext requestContext)
-        {   
-            base.Initialize(requestContext);
-        }
-        
-        /// <summary>
-        /// Log exception
-        /// </summary>
-        /// <param name="exc">Exception</param>
-        private void LogException(Exception exc)
-        {
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
-            var logger = EngineContext.Current.Resolve<ILogger>();
 
-            var customer = workContext.CurrentCustomer;
-            logger.Error(exc.Message, exc, customer);
-        }
-
+		public ILogger Logger { get; set; }
+		
 		/// <summary>
-		/// Display info notification
+		/// Pushes an info message to the notification queue
 		/// </summary>
 		/// <param name="message">Message</param>
-		/// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-		protected virtual void InfoNotification(string message, bool persistForTheNextRequest = true)
+		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
+		protected virtual void NotifyInfo(string message, bool durable = true)
 		{
-			AddNotification(NotifyType.Info, message, persistForTheNextRequest);
+			this.Notify(NotifyType.Info, message, durable);
 		}
-        /// <summary>
-        /// Display success notification
-        /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-        protected virtual void SuccessNotification(string message, bool persistForTheNextRequest = true)
-        {
-            AddNotification(NotifyType.Success, message, persistForTheNextRequest);
-        }
-        /// <summary>
-        /// Display error notification
-        /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-        protected virtual void ErrorNotification(string message, bool persistForTheNextRequest = true)
-        {
-            AddNotification(NotifyType.Error, message, persistForTheNextRequest);
-        }
-        /// <summary>
-        /// Display error notification
-        /// </summary>
-        /// <param name="exception">Exception</param>
-        /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-        /// <param name="logException">A value indicating whether exception should be logged</param>
-        protected virtual void ErrorNotification(Exception exception, bool persistForTheNextRequest = true, bool logException = true)
-        {
-            if (logException)
-                LogException(exception);
-            AddNotification(NotifyType.Error, exception.Message, persistForTheNextRequest);
-        }
-        /// <summary>
-        /// Display notification
-        /// </summary>
-        /// <param name="type">Notification type</param>
-        /// <param name="message">Message</param>
-        /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-        protected virtual void AddNotification(NotifyType type, string message, bool persistForTheNextRequest)
-        {
-			if (message.IsNullOrEmpty())
-				return;
 
-			List<string> lst = null;
-            string dataKey = string.Format("sm.notifications.{0}", type);
+		/// <summary>
+		/// Pushes a success message to the notification queue
+		/// </summary>
+		/// <param name="message">Message</param>
+		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
+		protected virtual void NotifySuccess(string message, bool durable = true)
+		{
+			this.Notify(NotifyType.Success, message, durable);
+		}
+		/// <summary>
+		/// Pushes an error message to the notification queue
+		/// </summary>
+		/// <param name="message">Message</param>
+		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
+		protected virtual void NotifyError(string message, bool durable = true)
+		{
+			this.Notify(NotifyType.Error, message, durable);
+		}
+		/// <summary>
+		/// Pushes an error message to the notification queue
+		/// </summary>
+		/// <param name="exception">Exception</param>
+		/// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
+		/// <param name="logException">A value indicating whether the exception should be logged</param>
+		protected virtual void NotifyError(Exception exception, bool durable = true, bool logException = true)
+		{
+			if (logException)
+			{
+				LogException(exception);
+			}
 
-            if (persistForTheNextRequest)
-            {
-                if (TempData[dataKey] == null)
-                    TempData[dataKey] = new List<string>();
-                lst = (List<string>)TempData[dataKey];
-            }
-            else
-            {
-                if (ViewData[dataKey] == null)
-                    ViewData[dataKey] = new List<string>();
-                lst = (List<string>)ViewData[dataKey];
-            }
+			this.Notify(NotifyType.Error, exception.Message, durable);
+		}
 
-			if (lst != null && !lst.Exists(m => m == message))
-				lst.Add(message);
-        }
+		/// <summary>
+		/// On exception
+		/// </summary>
+		/// <param name="filterContext">Filter context</param>
+		protected override void OnException(ExceptionContext filterContext)
+		{
+			if (filterContext.Exception != null)
+			{
+				LogException(filterContext.Exception);
+			}
 
-    }
+			base.OnException(filterContext);
+		}
+
+		/// <summary>
+		/// Log exception
+		/// </summary>
+		/// <param name="exc">Exception</param>
+		private void LogException(Exception exc)
+		{
+			var workContext = EngineContext.Current.Resolve<IWorkContext>();
+
+			var customer = workContext.CurrentCustomer;
+			Logger.Error(exc.Message, exc, customer);
+		}
+
+	}
 }

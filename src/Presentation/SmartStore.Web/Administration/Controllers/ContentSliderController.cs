@@ -137,7 +137,7 @@ namespace SmartStore.Admin.Controllers
                 _contentSliderSettings.Slides.Add(model.ToEntity());
                 _settingService.SaveSetting(_contentSliderSettings);
                 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Added"));
                 return RedirectToAction("Index");
             }
 
@@ -207,7 +207,7 @@ namespace SmartStore.Admin.Controllers
                 _contentSliderSettings.Slides[index] = model.ToEntity();
                 _settingService.SaveSetting(_contentSliderSettings);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Updated"));
 
                 return continueEditing ? RedirectToAction("EditSlide", new { index = index }) : RedirectToAction("Index");
             }
@@ -229,12 +229,12 @@ namespace SmartStore.Admin.Controllers
 
                 _contentSliderSettings.Slides.RemoveAt(id);
                 _settingService.SaveSetting(_contentSliderSettings);
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Deleted"));
                 return RedirectToAction("Index");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { index = id });
             }
         }

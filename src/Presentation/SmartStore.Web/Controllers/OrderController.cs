@@ -26,7 +26,7 @@ using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class OrderController : SmartController
+    public partial class OrderController : PublicControllerBase
     {
 		#region Fields
 

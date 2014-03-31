@@ -27,7 +27,6 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly IStoreContext _storeContext;
 		private readonly IWorkContext _workContext;
-		private readonly ILogger _logger;
 		private readonly IWebHelper _webHelper;
 		private readonly PayPalStandardPaymentSettings _paypalStandardPaymentSettings;
 		private readonly PaymentSettings _paymentSettings;
@@ -37,7 +36,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			IOrderProcessingService orderProcessingService,
 			IStoreContext storeContext,
 			IWorkContext workContext,
-			ILogger logger, IWebHelper webHelper,
+			IWebHelper webHelper,
 			PayPalStandardPaymentSettings paypalStandardPaymentSettings,
 			PaymentSettings paymentSettings)
 		{
@@ -47,7 +46,6 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			this._orderProcessingService = orderProcessingService;
 			this._storeContext = storeContext;
 			this._workContext = workContext;
-			this._logger = logger;
 			this._webHelper = webHelper;
 			this._paypalStandardPaymentSettings = paypalStandardPaymentSettings;
 			this._paymentSettings = paymentSettings;
@@ -147,7 +145,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					}
 					catch (Exception exc)
 					{
-						_logger.Error(_helper.Resource("FailedGetGross"), exc);
+						Logger.Error(_helper.Resource("FailedGetGross"), exc);
 					}
 
 					string payer_status = string.Empty;
@@ -186,7 +184,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					//validate order total
 					if (_paypalStandardPaymentSettings.PdtValidateOrderTotal && !Math.Round(total, 2).Equals(Math.Round(order.OrderTotal, 2)))
 					{
-						_logger.Error(_helper.Resource("UnequalTotalOrder").FormatWith(total, order.OrderTotal));
+						Logger.Error(_helper.Resource("UnequalTotalOrder").FormatWith(total, order.OrderTotal));
 
 						return RedirectToAction("Index", "Home", new { area = "" });
 					}
@@ -338,11 +336,11 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 								}
 
 								//this.OrderService.InsertOrderNote(newOrder.OrderId, sb.ToString(), DateTime.UtcNow);
-								_logger.Information(_helper.Resource("IpnLogInfo"), new SmartException(sb.ToString()));
+								Logger.Information(_helper.Resource("IpnLogInfo"), new SmartException(sb.ToString()));
 							}
 							else
 							{
-								_logger.Error(_helper.Resource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(_helper.Resource("IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -416,7 +414,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 							}
 							else
 							{
-								_logger.Error(_helper.Resource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(_helper.Resource("IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -425,7 +423,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			}
 			else
 			{
-				_logger.Error(_helper.Resource("IpnFailed"), new SmartException(strRequest));
+				Logger.Error(_helper.Resource("IpnFailed"), new SmartException(strRequest));
 			}
 
 			//nothing should be rendered to visitor

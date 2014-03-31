@@ -493,7 +493,7 @@ namespace SmartStore.Admin.Controllers
                     if (!changePassResult.Success)
                     {
                         foreach (var changePassError in changePassResult.Errors)
-                            ErrorNotification(changePassError);
+							NotifyError(changePassError);
                     }
                 }
 
@@ -508,7 +508,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCustomer", _localizationService.GetResource("ActivityLog.AddNewCustomer"), customer.Id);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = customer.Id }) : RedirectToAction("List");
             }
 
@@ -802,12 +802,12 @@ namespace SmartStore.Admin.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
+                    NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
                 }
                 catch (Exception exc)
                 {
-                    ErrorNotification(exc.Message, false);
+					NotifyError(exc.Message, false);
                 }
             }
 
@@ -898,10 +898,10 @@ namespace SmartStore.Admin.Controllers
                     false, _customerSettings.DefaultPasswordFormat, model.Password);
                 var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);
                 if (changePassResult.Success)
-                    SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
+                    NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
                 else
                     foreach (var error in changePassResult.Errors)
-                        ErrorNotification(error);
+						NotifyError(error);
             }
 
             return RedirectToAction("Edit", customer.Id);
@@ -968,12 +968,12 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("DeleteCustomer", _localizationService.GetResource("ActivityLog.DeleteCustomer"), customer.Id);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
                 return RedirectToAction("Edit", new { id = customer.Id });
             }
         }
@@ -994,7 +994,7 @@ namespace SmartStore.Admin.Controllers
 			//otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
 			if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
 			{
-				ErrorNotification("A non-admin user cannot impersonate as an administrator");
+				NotifyError("A non-admin user cannot impersonate as an administrator");
 				return RedirectToAction("Edit", customer.Id);
 			}
 
@@ -1043,11 +1043,11 @@ namespace SmartStore.Admin.Controllers
                     CreatedOnUtc = DateTime.UtcNow,
                 };
                 _queuedEmailService.InsertQueuedEmail(email);
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.SendEmail.Queued"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.SendEmail.Queued"));
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
             }
 
             return RedirectToAction("Edit", new { id = customer.Id });
@@ -1089,11 +1089,11 @@ namespace SmartStore.Admin.Controllers
                 };
 
                 _forumService.InsertPrivateMessage(privateMessage);
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.SendPM.Sent"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.SendPM.Sent"));
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
             }
 
             return RedirectToAction("Edit", new { id = customer.Id });
@@ -1283,7 +1283,7 @@ namespace SmartStore.Admin.Controllers
                 customer.Addresses.Add(address);
                 _customerService.UpdateCustomer(customer);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Added"));
                 return RedirectToAction("AddressEdit", new { addressId = address.Id, customerId = model.CustomerId });
             }
 
@@ -1387,7 +1387,7 @@ namespace SmartStore.Admin.Controllers
                 address = model.Address.ToEntity(address);
                 _addressService.UpdateAddress(address);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Updated"));
                 return RedirectToAction("AddressEdit", new { addressId = model.Address.Id, customerId = model.CustomerId });
             }
 
@@ -1700,7 +1700,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -1745,7 +1745,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }

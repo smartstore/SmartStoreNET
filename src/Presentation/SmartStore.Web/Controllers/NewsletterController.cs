@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class NewsletterController : SmartController
+    public partial class NewsletterController : PublicControllerBase
     {
         private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;

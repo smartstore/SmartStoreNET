@@ -314,7 +314,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = manufacturer.Id }) : RedirectToAction("List");
             }
 
@@ -391,7 +391,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
                 return continueEditing ? RedirectToAction("Edit", manufacturer.Id) : RedirectToAction("List");
             }
 
@@ -420,7 +420,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteManufacturer", _localizationService.GetResource("ActivityLog.DeleteManufacturer"), manufacturer.Name);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Deleted"));
             return RedirectToAction("List");
         }
         
@@ -441,7 +441,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }

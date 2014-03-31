@@ -150,7 +150,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception exc)
                 {
-                    ErrorNotification(exc, false);
+                    NotifyError(exc, false);
                 }
             }
             ViewBag.ExchangeRateProviders = new List<SelectListItem>();
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(currency, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -340,7 +340,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(currency, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -374,12 +374,12 @@ namespace SmartStore.Admin.Controllers
 
                 _currencyService.DeleteCurrency(currency);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = currency.Id });
             }
         }

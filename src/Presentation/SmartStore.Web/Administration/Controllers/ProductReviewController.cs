@@ -162,7 +162,7 @@ namespace SmartStore.Admin.Controllers
                 //update product totals
                 _productService.UpdateProductReviewTotals(productReview.Product);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.ProductReviews.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.ProductReviews.Updated"));
                 return continueEditing ? RedirectToAction("Edit", productReview.Id) : RedirectToAction("List");
             }
 
@@ -189,7 +189,7 @@ namespace SmartStore.Admin.Controllers
             //update product totals
             _productService.UpdateProductReviewTotals(product);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.ProductReviews.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Catalog.ProductReviews.Deleted"));
             return RedirectToAction("List");
         }
 

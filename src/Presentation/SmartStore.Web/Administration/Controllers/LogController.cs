@@ -18,7 +18,6 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class LogController : AdminControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IWorkContext _workContext;
         private readonly ILocalizationService _localizationService;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -33,11 +32,10 @@ namespace SmartStore.Admin.Controllers
             { LogLevel.Debug, "default" }
         };
 
-        public LogController(ILogger logger, IWorkContext workContext,
+        public LogController(IWorkContext workContext,
             ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
             IPermissionService permissionService)
         {
-            this._logger = logger;
             this._workContext = workContext;
             this._localizationService = localizationService;
             this._dateTimeHelper = dateTimeHelper;
@@ -76,7 +74,7 @@ namespace SmartStore.Admin.Controllers
             LogLevel? logLevel = model.LogLevelId > 0 ? (LogLevel?)(model.LogLevelId) : null;
 
 
-            var logItems = _logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
+			var logItems = Logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
                 logLevel, command.Page - 1, command.PageSize, model.MinFrequency);
 
             var gridModel = new GridModel<LogModel>
@@ -120,9 +118,9 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-            _logger.ClearLog();
+			Logger.ClearLog();
 
-            SuccessNotification(_localizationService.GetResource("Admin.System.Log.Cleared"));
+            NotifySuccess(_localizationService.GetResource("Admin.System.Log.Cleared"));
             return RedirectToAction("List");
         }
 
@@ -131,7 +129,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-            var log = _logger.GetLogById(id);
+			var log = Logger.GetLogById(id);
             if (log == null)
                 //No log found with the specified id
                 return RedirectToAction("List");
@@ -165,15 +163,15 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-            var log = _logger.GetLogById(id);
+			var log = Logger.GetLogById(id);
             if (log == null)
                 //No log found with the specified id
                 return RedirectToAction("List");
 
-            _logger.DeleteLog(log);
+			Logger.DeleteLog(log);
 
 
-            SuccessNotification(_localizationService.GetResource("Admin.System.Log.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.System.Log.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -185,9 +183,9 @@ namespace SmartStore.Admin.Controllers
 
             if (selectedIds != null)
             {
-                var logItems = _logger.GetLogByIds(selectedIds.ToArray());
+				var logItems = Logger.GetLogByIds(selectedIds.ToArray());
                 foreach (var logItem in logItems)
-                    _logger.DeleteLog(logItem);
+					Logger.DeleteLog(logItem);
             }
 
             return Json(new { Result = true});

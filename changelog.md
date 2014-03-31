@@ -51,7 +51,8 @@
 * _Repliable_ Emails now have customer's email as ReplyTo address
 * #140 Import all plugin resources after adding a language
 * #45 Smarter logging. Save same log notifications only once including its frequency.
-* jQuery Mobile is updated to 1.3.2
+* Updated jQuery Mobile to version 1.3.2
+* Updated TinyMCE html editor to version 4
 * Mobile: Only the first product pictures is now displayed in the product-detail-view the others are available by navigation or swiping
 * Mobile: Shop logo is now displayed at the top of the mobile page
 * Mobile: legal hints are shown in the footer

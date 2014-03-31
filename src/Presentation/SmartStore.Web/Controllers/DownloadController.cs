@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class DownloadController : SmartController
+    public partial class DownloadController : PublicControllerBase
     {
         private readonly IDownloadService _downloadService;
         private readonly IProductService _productService;

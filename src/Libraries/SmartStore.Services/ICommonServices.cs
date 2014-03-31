@@ -48,11 +48,6 @@ namespace SmartStore.Services
 			get;
 		}
 
-		ILogger Logger
-		{
-			get;
-		}
-
 		ICustomerActivityService CustomerActivity
 		{
 			get;

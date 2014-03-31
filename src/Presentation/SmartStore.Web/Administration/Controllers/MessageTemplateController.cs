@@ -258,7 +258,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(messageTemplate, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
             }
 
@@ -286,7 +286,7 @@ namespace SmartStore.Admin.Controllers
 
 			_messageTemplateService.DeleteMessageTemplate(messageTemplate);
 
-			SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
+			NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
 			return RedirectToAction("List");
 		}
 
@@ -305,12 +305,12 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				var newMessageTemplate = _messageTemplateService.CopyMessageTemplate(messageTemplate);
-				SuccessNotification("The message template has been copied successfully");
+				NotifySuccess("The message template has been copied successfully");
 				return RedirectToAction("Edit", new { id = newMessageTemplate.Id });
 			}
 			catch (Exception exc)
 			{
-				ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
 				return RedirectToAction("Edit", new { id = model.Id });
 			}
 		}

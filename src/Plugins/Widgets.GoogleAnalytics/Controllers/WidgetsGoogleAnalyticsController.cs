@@ -18,20 +18,19 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
 {
-    //[UnitOfWork]
-    public class WidgetsGoogleAnalyticsController : Controller
+
+    public class WidgetsGoogleAnalyticsController : SmartController
     {
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
 		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly IOrderService _orderService;
-        private readonly ILogger _logger;
         private readonly ICategoryService _categoryService;
 
         public WidgetsGoogleAnalyticsController(IWorkContext workContext,
 			IStoreContext storeContext, IStoreService storeService,
-			ISettingService settingService, IOrderService orderService, ILogger logger, 
+			ISettingService settingService, IOrderService orderService,
             ICategoryService categoryService)
         {
             this._workContext = workContext;
@@ -39,7 +38,6 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
 			this._storeService = storeService;
             this._settingService = settingService;
             this._orderService = orderService;
-            this._logger = logger;
             this._categoryService = categoryService;
         }
 
@@ -114,7 +112,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
             }
             catch (Exception ex)
             {
-                _logger.InsertLog(SmartStore.Core.Domain.Logging.LogLevel.Error, "Error creating scripts for google ecommerce tracking", ex.ToString());
+                Logger.InsertLog(SmartStore.Core.Domain.Logging.LogLevel.Error, "Error creating scripts for google ecommerce tracking", ex.ToString());
             }
             return Content(globalScript);
             //return View("SmartStore.Plugin.Widgets.GoogleAnalytics.Views.WidgetsGoogleAnalytics.PublicInfo", model);

@@ -1,27 +1,11 @@
 ﻿@{
-    //success messages
-    var successMessages = new List<string>();
-    if (TempData[string.Format("sm.notifications.{0}", NotifyType.Success)] != null)
-    {
-        successMessages.AddRange(TempData[string.Format("sm.notifications.{0}", NotifyType.Success)] as IList<string>);
-    }
-    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Success)] != null)
-    {
-        successMessages.AddRange(ViewData[string.Format("sm.notifications.{0}", NotifyType.Success)] as IList<string>);
-    }
+    // success messages
+    var successMessages = this.SuccessMessages.ToList();
 
-
-    //error messages
-    var errorMessages = new List<string>();
-    if (TempData[string.Format("sm.notifications.{0}", NotifyType.Error)] != null)
-    {
-        errorMessages.AddRange(TempData[string.Format("sm.notifications.{0}", NotifyType.Error)] as IList<string>);
-    }
-    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Error)] != null)
-    {
-        errorMessages.AddRange(ViewData[string.Format("sm.notifications.{0}", NotifyType.Error)] as IList<string>);
-    }
+    // error messages
+    var errorMessages = this.ErrorMessages.ToList();
 }
+
 @if (successMessages.Count > 0)
 {
     var successSb = new System.Text.StringBuilder();

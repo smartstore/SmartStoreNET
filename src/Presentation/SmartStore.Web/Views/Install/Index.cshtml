@@ -171,9 +171,9 @@
                             <div class="controls">
                                 @Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages)
                                 @Html.ValidationMessageFor(x => x.MediaStorage)
-                                <span class="help-block muted">
-                                    @ILS.GetResource("MediaStorage.Hint"):
-                                </span>
+								<span class="help-block muted" style="margin-top: 4px">
+									@ILS.GetResource("MediaStorage.Hint"):
+								</span>
                             </div>
                         </div>
                         <div class="control-group">
@@ -262,7 +262,7 @@
                                     <label class="control-label" for="DatabaseConnectionString">@ILS.GetResource("ConnectionString")</label>
                                     <div class="controls">
                                         @Html.TextBoxFor(x => x.DatabaseConnectionString, new { style = "width:90%;" })
-                                        <span class="help-block muted">
+                                        <span class="help-block muted" style="margin-top: 4px">
                                             @ILS.GetResource("Example"):
                                             Data Source=sqlServerName;Initial Catalog=dbName;Persist Security Info=True;User
                                             ID=userName;Password=password
@@ -441,7 +441,7 @@
                 },
 
                 onComplete: function () {
-                    window.clearInterval(progressIntervall);
+                	window.clearInterval(progressIntervall);
                     $("#install-button").removeAttr("disabled");
                     $("#install-progress").html("");
                 }

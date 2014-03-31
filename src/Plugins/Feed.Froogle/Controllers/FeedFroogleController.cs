@@ -14,16 +14,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
     public class FeedFroogleController : PluginControllerBase
     {
         private readonly IGoogleService _googleService;
-        private readonly ILogger _logger;
         private readonly ISettingService _settingService;
 
         public FeedFroogleController(
 			IGoogleService googleService, 
-			ILogger logger,
 			ISettingService settingService)
 		{
 			this._googleService = googleService;
-			this._logger = logger;
 			this._settingService = settingService;
 		}
         
@@ -50,7 +47,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 
 			_googleService.Helper.ScheduleTaskUpdate(model.TaskEnabled, model.GenerateStaticFileEachMinutes * 60);
 
-			SuccessNotification(_googleService.Helper.Resource("ConfigSaveNote"), true);
+			NotifySuccess(_googleService.Helper.Resource("ConfigSaveNote"), true);
 
 			_googleService.SetupModel(model);
 
@@ -72,8 +69,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
             }
             catch (Exception exc)
 			{
-				ErrorNotification(exc.Message, true);
-                _logger.Error(exc.Message, exc);
+				NotifyError(exc.Message, true);
             }
 
 			_googleService.SetupModel(model, _googleService.Helper.ScheduledTask);

@@ -9,7 +9,7 @@ using SmartStore.Core;
 namespace SmartStore.Web.Controllers
 {
 
-    public partial class ExternalAuthenticationController : SmartController
+    public partial class ExternalAuthenticationController : PublicControllerBase
     {
 		#region Fields
 

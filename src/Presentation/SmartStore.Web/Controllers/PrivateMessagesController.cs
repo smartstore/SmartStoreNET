@@ -17,7 +17,7 @@ using SmartStore.Core.Logging;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-    public partial class PrivateMessagesController : SmartController
+    public partial class PrivateMessagesController : PublicControllerBase
     {
         #region Fields
 

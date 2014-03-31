@@ -749,7 +749,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -793,7 +793,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -852,7 +852,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -875,7 +875,7 @@ namespace SmartStore.Admin.Controllers
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
-                    ErrorNotification(error, false);
+					NotifyError(error, false);
                 return View(model);
             }
             catch (Exception exc)
@@ -883,7 +883,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
 
@@ -913,7 +913,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -936,7 +936,7 @@ namespace SmartStore.Admin.Controllers
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
-                    ErrorNotification(error, false);
+					NotifyError(error, false);
                 return View(model);
             }
             catch (Exception exc)
@@ -944,7 +944,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -973,7 +973,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -996,7 +996,7 @@ namespace SmartStore.Admin.Controllers
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
-                    ErrorNotification(error, false);
+					NotifyError(error, false);
                 return View(model);
             }
             catch (Exception exc)
@@ -1004,7 +1004,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -1033,7 +1033,7 @@ namespace SmartStore.Admin.Controllers
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -1097,7 +1097,7 @@ namespace SmartStore.Admin.Controllers
                     //error
                     PrepareOrderDetailsModel(model, order);
                     foreach (var error in errors)
-                        ErrorNotification(error, false);
+						NotifyError(error, false);
                     return View(model);
                 }
             }
@@ -1105,7 +1105,7 @@ namespace SmartStore.Admin.Controllers
             {
                 //error
                 PrepareOrderDetailsModel(model, order);
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
                 return View(model);
             }
         }
@@ -2090,14 +2090,14 @@ namespace SmartStore.Admin.Controllers
                 shipment.TotalWeight = totalWeight;
                 _shipmentService.InsertShipment(shipment);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
                 return continueEditing
                            ? RedirectToAction("ShipmentDetails", new {id = shipment.Id})
                            : RedirectToAction("Edit", new { id = orderId });
             }
             else
             {
-                ErrorNotification(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
+				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
                 return RedirectToAction("AddShipment", new { orderId = orderId });
             }
         }
@@ -2130,7 +2130,7 @@ namespace SmartStore.Admin.Controllers
 
             var orderId = shipment.OrderId;
 
-            SuccessNotification(_localizationService.GetResource("Admin.Orders.Shipments.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Deleted"));
             _shipmentService.DeleteShipment(shipment);
             return RedirectToAction("Edit", new { id = orderId });
         }
@@ -2173,7 +2173,7 @@ namespace SmartStore.Admin.Controllers
             catch (Exception exc)
             {
                 //error
-                ErrorNotification(exc, true);
+                NotifyError(exc, true);
                 return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
             }
         }
@@ -2198,7 +2198,7 @@ namespace SmartStore.Admin.Controllers
             catch (Exception exc)
             {
                 //error
-                ErrorNotification(exc, true);
+                NotifyError(exc, true);
                 return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
             }
         }

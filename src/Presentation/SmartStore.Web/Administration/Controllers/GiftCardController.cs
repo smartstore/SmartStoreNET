@@ -151,7 +151,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewGiftCard", _localizationService.GetResource("ActivityLog.AddNewGiftCard"), giftCard.GiftCardCouponCode);
 
-                SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = giftCard.Id }) : RedirectToAction("List");
             }
 
@@ -203,7 +203,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditGiftCard", _localizationService.GetResource("ActivityLog.EditGiftCard"), giftCard.GiftCardCouponCode);
 
-                SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Updated"));
                 return continueEditing ? RedirectToAction("Edit", giftCard.Id) : RedirectToAction("List");
             }
 
@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
             }
 
             return View(model);
@@ -285,7 +285,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteGiftCard", _localizationService.GetResource("ActivityLog.DeleteGiftCard"), giftCard.GiftCardCouponCode);
 
-            SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
         }
         

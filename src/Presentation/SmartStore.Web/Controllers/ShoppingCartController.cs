@@ -43,7 +43,7 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ShoppingCartController : SmartController
+    public partial class ShoppingCartController : PublicControllerBase
     {
         #region Fields
 
@@ -2290,7 +2290,7 @@ namespace SmartStore.Web.Controllers
 
                 PrepareWishlistModel(model, cart, !customerGuid.HasValue);
 
-				this.InfoNotification(_localizationService.GetResource("Products.SelectProducts"), true);
+				this.NotifyInfo(_localizationService.GetResource("Products.SelectProducts"), true);
 
                 return View(model);
             }

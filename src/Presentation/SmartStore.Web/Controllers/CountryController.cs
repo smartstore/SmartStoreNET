@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CountryController : SmartController
+    public partial class CountryController : PublicControllerBase
 	{
 		#region Fields
 

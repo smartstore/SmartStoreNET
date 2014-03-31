@@ -1,56 +1,43 @@
-﻿@{
-    //success messages
-    var successMessages = new List<string>();
-    if (TempData[string.Format("sm.notifications.{0}", NotifyType.Success)] != null)
-    {
-        successMessages.AddRange(TempData[string.Format("sm.notifications.{0}", NotifyType.Success)] as IList<string>);
-    }
-    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Success)] != null)
-    {
-        successMessages.AddRange(ViewData[string.Format("sm.notifications.{0}", NotifyType.Success)] as IList<string>);
-    }
-
-
-    //error messages
-    var errorMessages = new List<string>();
-    if (TempData[string.Format("sm.notifications.{0}", NotifyType.Error)] != null)
-    {
-        errorMessages.AddRange(TempData[string.Format("sm.notifications.{0}", NotifyType.Error)] as IList<string>);
-    }
-    if (ViewData[string.Format("sm.notifications.{0}", NotifyType.Error)] != null)
-    {
-        errorMessages.AddRange(ViewData[string.Format("sm.notifications.{0}", NotifyType.Error)] as IList<string>);
-    }
-}
-
-@if (successMessages.Count > 0 || errorMessages.Count > 0)
+﻿@if (this.HasMessages)
 {
-    <script type="text/javascript">
+	<script type="text/javascript">
         $(function () {
             var items = $("#notification-list").find("> .msg");
             items.each(function (i, el) {
                 el = $(el);
                 var type = el.data("type");
-                var title = type == "success" ? '@T("Common.Notification").Text' : '@T("Common.Error").Text';
-                var sticky = type == "error";
+                var title = '@T("Common.Notification").Text';
+                if (type == "error") {
+                    title = '@T("Common.Error").Text';
+                }
+                else if (type == "info") {
+                    title = '@T("Common.Note").Text';
+                }
+                //var title = type == "success" ? '@T("Common.Notification").Text' : '@T("Common.Error").Text';
+                var sticky = type != "success";
                 var notify = function () {
                     EventBroker.publish("message", { title: title, text: el.html(), type: type, hide: !sticky });
                 };
-                _.defer(notify);
+                _.delay(notify, 100 * i);
             });
         })
-    </script>
-    
-    <div id="notification-list" style="display:none; position:absolute; left:-9999px">
-    @foreach (var message in errorMessages)
-    {
-        <div class="msg" data-type="error">@message</div>
-    }
-    @foreach (var message in successMessages)
-    {
-        <div class="msg" data-type="success">@message</div>
-    }
-    </div>
+	</script>
+
+	<div id="notification-list" style="display:none; position:absolute; left:-9999px">
+		@foreach (var message in this.ErrorMessages)
+		{
+			<div class="msg" data-type="error">@Html.Raw(message)</div>
+		}
+		@foreach (var message in this.SuccessMessages)
+		{
+			<div class="msg" data-type="success">@Html.Raw(message)</div>
+		}
+		@foreach (var message in this.InfoMessages)
+		{
+			<div class="msg" data-type="info">@Html.Raw(message)</div>
+		}
+	</div>
+
+	@Html.Widget("notifications")
 }
 
-@Html.Widget("notifications")

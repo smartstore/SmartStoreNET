@@ -37,7 +37,7 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CustomerController : SmartController
+    public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 

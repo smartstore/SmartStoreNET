@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class HomeController : SmartController
+    public partial class HomeController : PublicControllerBase
     {
 
         #region Constructors

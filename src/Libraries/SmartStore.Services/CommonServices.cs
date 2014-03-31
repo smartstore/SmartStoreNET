@@ -19,7 +19,6 @@ namespace SmartStore.Services
 		private readonly Lazy<IWorkContext> _workContext;
 		private readonly Lazy<IEventPublisher> _eventPublisher;
 		private readonly Lazy<ILocalizationService> _localization;
-		private readonly Lazy<ILogger> _logger;
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		
 		public CommonServices(
@@ -30,7 +29,6 @@ namespace SmartStore.Services
 			Lazy<IWorkContext> workContext,
 			Lazy<IEventPublisher> eventPublisher,
 			Lazy<ILocalizationService> localization,
-			Lazy<ILogger> logger,
 			Lazy<ICustomerActivityService> customerActivity)
 		{
 			this._cache = cache("static");
@@ -40,7 +38,6 @@ namespace SmartStore.Services
 			this._workContext = workContext;
 			this._eventPublisher = eventPublisher;
 			this._localization = localization;
-			this._logger = logger;
 			this._customerActivity = customerActivity;
 		}
 		
@@ -97,14 +94,6 @@ namespace SmartStore.Services
 			get
 			{
 				return _localization.Value;
-			}
-		}
-
-		public ILogger Logger
-		{
-			get
-			{
-				return _logger.Value;
 			}
 		}
 

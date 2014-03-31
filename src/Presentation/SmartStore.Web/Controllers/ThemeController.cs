@@ -12,7 +12,7 @@ using SmartStore.Services.Themes;
 namespace SmartStore.Web.Controllers
 {
 	[AdminAuthorize]
-    public partial class ThemeController : SmartController
+    public partial class ThemeController : PublicControllerBase
 	{
 		#region Fields
 

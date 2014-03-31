@@ -17,7 +17,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ReturnRequestController : SmartController
+    public partial class ReturnRequestController : PublicControllerBase
     {
 		#region Fields
 

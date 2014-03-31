@@ -6,7 +6,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class WidgetController : SmartController
+    public partial class WidgetController : PublicControllerBase
     {
         private readonly IWidgetSelector _widgetSelector;
 

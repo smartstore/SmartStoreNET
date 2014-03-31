@@ -128,7 +128,7 @@ namespace SmartStore.Core.Packaging
 						Uninstall(package.Id, _virtualPathProvider.MapPath("~\\"));
 					}
 
-					var msg = "The package is compatible with version {0} and above only. Please update SmartStore.NET or install another version of this package.".FormatInvariant(descriptor.MinAppVersion);
+					var msg = "The package is not compatible the current app version {0}. Please update SmartStore.NET or install another version of this package.".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 					_logger.Error(msg);
 					throw new SmartException(msg);
 				}

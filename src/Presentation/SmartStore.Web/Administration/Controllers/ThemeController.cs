@@ -21,6 +21,8 @@ using System.Text;
 using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
+using SmartStore.Utilities;
+using SmartStore.Core.Packaging;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -38,6 +40,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IEventPublisher _eventPublisher;
 		private readonly IStoreService _storeService;
 		private readonly IStoreContext _storeContext;
+		private readonly IPackageManager _packageManager;
 
 	    #endregion
 
@@ -50,7 +53,8 @@ namespace SmartStore.Admin.Controllers
             ILocalizationService localizationService,
             IEventPublisher eventPublisher,
 			IStoreService storeService,
-			IStoreContext storeContext)
+			IStoreContext storeContext,
+			IPackageManager packageManager)
 		{
             this._settingService = settingService;
             this._themeVarService = themeVarService;
@@ -61,6 +65,7 @@ namespace SmartStore.Admin.Controllers
             this._eventPublisher = eventPublisher;
 			this._storeService = storeService;
 			this._storeContext = storeContext;
+			this._packageManager = packageManager;
 		}
 
 		#endregion 
@@ -327,6 +332,43 @@ namespace SmartStore.Admin.Controllers
             
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
+
+		[HttpPost]
+		public ActionResult UploadPackage(FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+				return AccessDeniedView();
+
+			try
+			{
+				var file = Request.Files["packagefile"];
+				if (file != null && file.ContentLength > 0)
+				{
+					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
+					{
+						NotifyError("Upload file is not a valid package. Must end with 'nupkg'.");
+						return RedirectToAction("List");
+					}
+
+					var location = CommonHelper.MapPath("~/App_Data");
+					var appPath = CommonHelper.MapPath("~/");
+					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
+				}
+				else
+				{
+					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
+					return RedirectToAction("List");
+				}
+
+				NotifySuccess("Theme package uploaded successfully.");
+				return RedirectToAction("List");
+			}
+			catch (Exception exc)
+			{
+				NotifyError(exc);
+				return RedirectToAction("List");
+			}
+		}
 
         #endregion
     }

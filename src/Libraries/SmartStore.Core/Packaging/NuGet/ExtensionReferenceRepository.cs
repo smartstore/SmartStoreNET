@@ -84,7 +84,7 @@ namespace SmartStore.Core.Packaging
 	internal class ThemeReferenceRepository : ExtensionReferenceRepository
 	{
 		private readonly IThemeRegistry _themeRegistry;
-		private readonly IList<ThemeManifest> _themeManifests;
+		private readonly ICollection<ThemeManifest> _themeManifests;
 
 		public ThemeReferenceRepository(IProjectSystem project, IPackageRepository sourceRepository, IThemeRegistry themeRegistry)
 			: base(project, sourceRepository)

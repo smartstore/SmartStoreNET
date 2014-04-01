@@ -215,7 +215,7 @@ namespace SmartStore.Core.Packaging
 
 			if (source.Exists)
 			{
-				var tempPath = _virtualPathProvider.Combine("~", extensionFolder, "_Backup", extensionId);
+				var tempPath = _virtualPathProvider.Combine("~/App_Data", "_Backup", extensionFolder, extensionId);
 				string localTempPath = null;
 				for (int i = 0; i < 1000; i++)
 				{
@@ -250,7 +250,7 @@ namespace SmartStore.Core.Packaging
 
 			if (source.Exists)
 			{
-				var tempPath = _virtualPathProvider.Combine("~", extensionFolder, "_Backup", extensionId);
+				var tempPath = _virtualPathProvider.Combine("~/App_Data", "_Backup", extensionFolder, extensionId);
 				string localTempPath = null;
 				for (int i = 0; i < 1000; i++)
 				{
@@ -265,7 +265,7 @@ namespace SmartStore.Core.Packaging
 
 				if (localTempPath == null)
 				{
-					throw new SmartException("Backup folder {0} has too many backups subfolder (limit is 1,000)".FormatInvariant(tempPath));
+					throw new SmartException("Backup folder {0} has too many backups subfolder (limit is 1.000)".FormatInvariant(tempPath));
 				}
 
 				var backupFolder = new DirectoryInfo(localTempPath);

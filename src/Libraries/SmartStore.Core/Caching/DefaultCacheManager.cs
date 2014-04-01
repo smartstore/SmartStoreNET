@@ -36,7 +36,7 @@ namespace SmartStore.Core.Caching
 			}
 			else
 			{
-				using (GetReadLock())
+				using (EnterReadLock())
 				{
 					if (!_cache.Contains(key))
 					{
@@ -58,7 +58,7 @@ namespace SmartStore.Core.Caching
 			if (value == null)
 				return;
 
-			using (GetWriteLock())
+			using (EnterWriteLock())
 			{
 				_cache.Set(key, value, cacheTime);
 			}
@@ -74,8 +74,11 @@ namespace SmartStore.Core.Caching
         public void Remove(string key)
         {
 			Guard.ArgumentNotEmpty(() => key);
-			
-			_cache.Remove(key);
+
+			using (EnterWriteLock())
+			{
+				_cache.Remove(key);
+			}
         }
 
         public void RemoveByPattern(string pattern)
@@ -93,10 +96,13 @@ namespace SmartStore.Core.Caching
                 }
             }
 
-            foreach (string key in keysToRemove)
-            {
-                _cache.Remove(key);
-            }
+			using (EnterWriteLock())
+			{
+				foreach (string key in keysToRemove)
+				{
+					_cache.Remove(key);
+				}
+			}
         }
 
         public void Clear()
@@ -107,18 +113,21 @@ namespace SmartStore.Core.Caching
                 keysToRemove.Add(item.Key);
             }
 
-            foreach (string key in keysToRemove)
-            {
-                _cache.Remove(key);
-            }
+			using (EnterWriteLock())
+			{
+				foreach (string key in keysToRemove)
+				{
+					_cache.Remove(key);
+				}
+			}
         }
 
-		private IDisposable GetReadLock()
+		private IDisposable EnterReadLock()
 		{
 			return _cache.IsSingleton ? _rwLock.GetUpgradeableReadLock() : ActionDisposable.Empty;
 		}
 
-		private IDisposable GetWriteLock()
+		public IDisposable EnterWriteLock()
 		{
 			return _cache.IsSingleton ? _rwLock.GetWriteLock() : ActionDisposable.Empty;
 		}

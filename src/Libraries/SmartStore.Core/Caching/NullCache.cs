@@ -1,4 +1,5 @@
 using System;
+using SmartStore.Utilities;
 namespace SmartStore.Core.Caching
 {
     /// <summary>
@@ -61,5 +62,9 @@ namespace SmartStore.Core.Caching
         {
         }
 
+		public IDisposable EnterWriteLock()
+		{
+			return ActionDisposable.Empty;
+		}
 	}
 }

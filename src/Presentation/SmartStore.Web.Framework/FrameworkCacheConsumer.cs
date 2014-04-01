@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
+using SmartStore.Web.Framework.Events;
 
 namespace SmartStore.Web.Framework
 {
@@ -27,7 +28,8 @@ namespace SmartStore.Web.Framework
         IConsumer<EntityInserted<Language>>,
         IConsumer<EntityUpdated<Language>>,
         IConsumer<EntityDeleted<Language>>,
-        IConsumer<EntityUpdated<Setting>>
+        IConsumer<EntityUpdated<Setting>>,
+		IConsumer<ThemeTouched>
     {
 
         /// <summary>
@@ -38,6 +40,8 @@ namespace SmartStore.Web.Framework
         /// {1} : store identifier
         /// </remarks>
         public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}-{1}";
+		public const string THEMEVARS_LESSCSS_THEME_KEY = "sm.pres.themevars-lesscss-{0}";
+		
         
         /// <summary>
         /// Key for tax display type caching
@@ -74,6 +78,12 @@ namespace SmartStore.Web.Framework
         {
 			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
+
+		public void HandleEvent(ThemeTouched eventMessage)
+		{
+			var cacheKey = BuildThemeVarsCacheKey(eventMessage.ThemeName, 0);
+			_aspCache.RemoveByPattern(cacheKey);
+		}
 
 
         public void HandleEvent(EntityDeleted<CustomerRole> eventMessage)
@@ -132,13 +142,16 @@ namespace SmartStore.Web.Framework
 
         internal static string BuildThemeVarsCacheKey(string themeName, int storeId)
         {
-            var cacheKey = THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
-            return cacheKey;
+			if (storeId > 0)
+			{
+				return THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
+			}
+
+			return THEMEVARS_LESSCSS_THEME_KEY.FormatInvariant(themeName);
         }
 
         #endregion
 
-
-    }
+	}
 
 }

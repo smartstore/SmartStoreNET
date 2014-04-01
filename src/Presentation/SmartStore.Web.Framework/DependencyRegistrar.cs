@@ -551,7 +551,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance(); // codehint: sm-edit (InstancePerHttpRequest > SingleInstance)
+			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance();
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerHttpRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerHttpRequest();
 

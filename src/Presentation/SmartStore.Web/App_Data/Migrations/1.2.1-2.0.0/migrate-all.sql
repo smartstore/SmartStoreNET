@@ -4125,7 +4125,7 @@ BEGIN
 		
 		--how many variants do we have?
 		DECLARE @NumberOfVariants int
-		SELECT @NumberOfVariants = COUNT(1) FROM [ProductVariant] WHERE [ProductId]=@ProductId
+		SELECT @NumberOfVariants = COUNT(1) FROM [ProductVariant] WHERE [ProductId]=@ProductId And [Deleted] = 0
 		
 		--product templates
 		DECLARE @SimpleProductTemplateId int

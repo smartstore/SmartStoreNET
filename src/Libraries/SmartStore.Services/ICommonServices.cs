@@ -52,6 +52,11 @@ namespace SmartStore.Services
 		{
 			get;
 		}
+
+		INotifier Notifier
+		{
+			get;
+		}
 	}
 
 }

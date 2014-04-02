@@ -20,6 +20,7 @@ namespace SmartStore.Services
 		private readonly Lazy<IEventPublisher> _eventPublisher;
 		private readonly Lazy<ILocalizationService> _localization;
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
+		private readonly Lazy<INotifier> _notifier;
 		
 		public CommonServices(
 			Func<string, Lazy<ICacheManager>> cache,
@@ -29,7 +30,8 @@ namespace SmartStore.Services
 			Lazy<IWorkContext> workContext,
 			Lazy<IEventPublisher> eventPublisher,
 			Lazy<ILocalizationService> localization,
-			Lazy<ICustomerActivityService> customerActivity)
+			Lazy<ICustomerActivityService> customerActivity,
+			Lazy<INotifier> notifier)
 		{
 			this._cache = cache("static");
 			this._dbContext = dbContext;
@@ -39,6 +41,7 @@ namespace SmartStore.Services
 			this._eventPublisher = eventPublisher;
 			this._localization = localization;
 			this._customerActivity = customerActivity;
+			this._notifier = notifier;
 		}
 		
 		public ICacheManager Cache
@@ -102,6 +105,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _customerActivity.Value;
+			}
+		}
+
+		public INotifier Notifier
+		{
+			get
+			{
+				return _notifier.Value;
 			}
 		}
 	}

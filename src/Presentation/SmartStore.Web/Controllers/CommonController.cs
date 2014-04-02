@@ -627,11 +627,11 @@ namespace SmartStore.Web.Controllers
                 HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
             };
 
-			var hint = _settingService.GetSettingByKey<string>("_SmCopyrightHint", string.Empty, store.Id);
+			var hint = _settingService.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
 			if (hint.IsEmpty())
 			{
 				hint = s_hints[new Random().Next(s_hints.Length)];
-				_settingService.SetSetting<string>("_SmCopyrightHint", hint, store.Id);
+				_settingService.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
 			}
 
             var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };

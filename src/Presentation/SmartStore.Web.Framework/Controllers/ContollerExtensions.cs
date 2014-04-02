@@ -63,33 +63,6 @@ namespace SmartStore.Web.Framework.Controllers
         }
 
 		/// <summary>
-		/// Pushes a message to the notification queue
-		/// </summary>
-		/// <param name="type">Notification type</param>
-		/// <param name="message">Message</param>
-		/// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
-		public static void Notify(this ControllerBase controller, NotifyType type, string message, bool durable)
-		{
-			if (message.IsEmpty())
-				return;
-
-			var storage = (durable ? (IDictionary<string, object>)controller.TempData : (IDictionary<string, object>)controller.ViewData);
-
-			Multimap<NotifyType, string> messages = null;
-			string key = "sm.notifications.all";
-
-			if (!storage.ContainsKey(key))
-			{
-				storage[key] = messages = new Multimap<NotifyType, string>();
-			}
-
-			if (messages != null && !messages.ContainsValue(type, message))
-			{
-				messages.Add(type, message);
-			}
-		}
-
-		/// <summary>
 		/// Get active store scope (for multi-store configuration mode)
 		/// </summary>
 		/// <param name="controller">Controller</param>

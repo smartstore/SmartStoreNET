@@ -472,6 +472,7 @@
     <Content Include="Content\editors\summernote\summernote.js" />
     <Content Include="Content\editors\summernote\summernote.min.js" />
     <Content Include="Content\editors\tinymce4\globalinit.js" />
+    <Content Include="Content\editors\tinymce4\langs\de.js" />
     <Content Include="Content\editors\tinymce4\license.txt" />
     <Content Include="Content\editors\tinymce4\plugins\advlist\plugin.min.js" />
     <Content Include="Content\editors\tinymce4\plugins\anchor\plugin.min.js" />

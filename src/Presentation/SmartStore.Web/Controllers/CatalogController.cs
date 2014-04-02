@@ -1320,6 +1320,16 @@ namespace SmartStore.Web.Controllers
 						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions
 					};
 
+					if (attribute.AttributeControlType == AttributeControlType.Datepicker)
+					{
+						if (pvaModel.Alias.HasValue() && RegularExpressions.IsYearRange.IsMatch(pvaModel.Alias))
+						{
+							var match = RegularExpressions.IsYearRange.Match(pvaModel.Alias);
+							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
+							pvaModel.EndYear = match.Groups[2].Value.ToInt();
+						}
+					}
+
 					if (attribute.ShouldHaveValues())
 					{
 						var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);

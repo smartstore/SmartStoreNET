@@ -25,7 +25,6 @@
         }
     }
 
-    // codehint: sm-edit (renamed and edited - former "displayBarNotification")
     window.displayNotification = function(message, type, sticky, delay) {
         if (window.EventBroker === undefined || window._ === undefined)
             return;

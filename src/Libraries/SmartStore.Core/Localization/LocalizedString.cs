@@ -48,6 +48,11 @@ namespace SmartStore.Core.Localization
             return obj.Text;
         }
 
+		public static implicit operator LocalizedString(string obj)
+		{
+			return new LocalizedString(obj);
+		}
+
         public override string ToString()
         {
             return _localized;

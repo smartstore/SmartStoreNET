@@ -12,12 +12,15 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Web.Framework.Controllers
 {
 	[SetWorkingCulture]
+	[Notify]
 	public abstract partial class SmartController : Controller
 	{
-		
+		private readonly Lazy<INotifier> _notifier;
+
 		protected SmartController()
 		{
 			this.Logger = NullLogger.Instance;
+			this._notifier = EngineContext.Current.Resolve<Lazy<INotifier>>();
 		}
 
 
@@ -30,7 +33,17 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
 		protected virtual void NotifyInfo(string message, bool durable = true)
 		{
-			this.Notify(NotifyType.Info, message, durable);
+			_notifier.Value.Information(message, durable);
+		}
+
+		/// <summary>
+		/// Pushes a warning message to the notification queue
+		/// </summary>
+		/// <param name="message">Message</param>
+		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
+		protected virtual void NotifyWarning(string message, bool durable = true)
+		{
+			_notifier.Value.Warning(message, durable);
 		}
 
 		/// <summary>
@@ -40,8 +53,9 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
 		protected virtual void NotifySuccess(string message, bool durable = true)
 		{
-			this.Notify(NotifyType.Success, message, durable);
+			_notifier.Value.Success(message, durable);
 		}
+
 		/// <summary>
 		/// Pushes an error message to the notification queue
 		/// </summary>
@@ -49,8 +63,9 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="durable">A value indicating whether the message should be persisted for the next request</param>
 		protected virtual void NotifyError(string message, bool durable = true)
 		{
-			this.Notify(NotifyType.Error, message, durable);
+			_notifier.Value.Error(message, durable);
 		}
+
 		/// <summary>
 		/// Pushes an error message to the notification queue
 		/// </summary>
@@ -64,7 +79,7 @@ namespace SmartStore.Web.Framework.Controllers
 				LogException(exception);
 			}
 
-			this.Notify(NotifyType.Error, exception.Message, durable);
+			_notifier.Value.Error(exception.Message, durable);
 		}
 
 		/// <summary>

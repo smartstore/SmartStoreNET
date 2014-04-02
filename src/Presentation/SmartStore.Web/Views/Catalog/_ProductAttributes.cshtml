@@ -86,7 +86,7 @@
                         break;
                     case AttributeControlType.Datepicker:
                         {
-							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
+							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", attribute.BeginYear, attribute.EndYear, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
                         }
                         break;
                     case AttributeControlType.FileUpload:

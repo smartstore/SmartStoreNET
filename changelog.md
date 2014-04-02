@@ -69,6 +69,7 @@
 * #280 Filter orders by customer name
 * #190 App Restart: stay on current page
 * Filter orders: Order, payment and shipping status are multi-selectable
+* DatePicker control for variant attributes: displayed year range can be specified via _Alias_ property ([BeginYear]-[EndYear], e.g. 1950-2020)
 
 ##SmartStore.NET 1.2.1.0#
 

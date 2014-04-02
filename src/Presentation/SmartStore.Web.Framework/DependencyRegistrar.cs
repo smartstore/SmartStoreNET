@@ -313,6 +313,7 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<Notifier>().As<INotifier>().InstancePerHttpRequest();
 			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerHttpRequest();
 			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().WithRequestCache().InstancePerHttpRequest();
 		}

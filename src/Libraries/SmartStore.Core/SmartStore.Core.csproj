@@ -229,6 +229,8 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogContext.cs" />
     <Compile Include="Logging\LoggingExtensions.cs" />
+    <Compile Include="Logging\Notifier.cs" />
+    <Compile Include="Logging\NotifyEntry.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Packaging\ExtensionDescriptor.cs" />
     <Compile Include="Packaging\FolderUpdater.cs" />

@@ -20,6 +20,7 @@ namespace SmartStore.Core.Packaging
 		private readonly IPluginFinder _pluginFinder;
 		private readonly IThemeRegistry _themeRegistry;
 		private readonly IFolderUpdater _folderUpdater;
+		private readonly INotifier _notifier;
 		private readonly Log.ILogger _logger;
 
 		public PackageInstaller(
@@ -27,12 +28,14 @@ namespace SmartStore.Core.Packaging
 			IPluginFinder pluginFinder,
 			IThemeRegistry themeRegistry,
 			IFolderUpdater folderUpdater,
+			INotifier notifier,
 			Log.ILogger logger)
 		{
 			_virtualPathProvider = virtualPathProvider;
 			_pluginFinder = pluginFinder;
 			_themeRegistry = themeRegistry;
 			_folderUpdater = folderUpdater;
+			_notifier = notifier;
 			_logger = logger;
 		}
 
@@ -211,7 +214,8 @@ namespace SmartStore.Core.Packaging
 
 		private bool RestoreExtensionFolder(string extensionFolder, string extensionId)
 		{
-			var source = new DirectoryInfo(_virtualPathProvider.MapPath(_virtualPathProvider.Combine("~", extensionFolder, extensionId)));
+			var virtualSource = _virtualPathProvider.Combine("~", extensionFolder, extensionId);
+			var source = new DirectoryInfo(_virtualPathProvider.MapPath(virtualSource));
 
 			if (source.Exists)
 			{
@@ -235,8 +239,7 @@ namespace SmartStore.Core.Packaging
 
 				var backupFolder = new DirectoryInfo(localTempPath);
 				_folderUpdater.Restore(backupFolder, source);
-				// TODO: (pkg) Notify in controller
-				//_notifier.Information(T("Successfully restored local package to local folder \"{0}\"", source));
+				_notifier.Information("Successfully restored local package to local folder '{0}'.".FormatInvariant(virtualSource));
 
 				return true;
 			}
@@ -270,8 +273,7 @@ namespace SmartStore.Core.Packaging
 
 				var backupFolder = new DirectoryInfo(localTempPath);
 				_folderUpdater.Backup(source, backupFolder);
-				// TODO: (pkg) Notify in controller
-				//_notifier.Information(T("Successfully backed up local package to local folder \"{0}\"", backupFolder));
+				_notifier.Information("Successfully backed up local package to local folder '{0}'".FormatInvariant(backupFolder.Name));
 
 				return true;
 			}
@@ -286,8 +288,7 @@ namespace SmartStore.Core.Packaging
 			try
 			{
 				Uninstall(package.Id, _virtualPathProvider.MapPath("~\\"));
-				// TODO: (pkg) Notify in controller
-				//_notifier.Information(T("Successfully un-installed local package {0}", package.ExtensionId()));
+				_notifier.Information("Successfully un-installed local package {0}".FormatInvariant(package.ExtensionId()));
 			}
 			catch { }
 		}

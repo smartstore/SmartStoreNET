@@ -18,6 +18,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Collections;
 using System.Linq;
+using SmartStore.Core.Logging;
 
 #endregion
 
@@ -94,17 +95,22 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             }
         }
 
-		protected ICollection<string> InfoMessages
+		protected ICollection<LocalizedString> InfoMessages
 		{
 			get { return ResolveMessages(NotifyType.Info).AsReadOnly(); }
 		}
 
-		protected ICollection<string> SuccessMessages
+		protected ICollection<LocalizedString> SuccessMessages
 		{
 			get { return ResolveMessages(NotifyType.Success).AsReadOnly(); }
 		}
 
-		protected ICollection<string> ErrorMessages
+		protected ICollection<LocalizedString> WarningMessages
+		{
+			get { return ResolveMessages(NotifyType.Warning).AsReadOnly(); }
+		}
+
+		protected ICollection<LocalizedString> ErrorMessages
 		{
 			get { return ResolveMessages(NotifyType.Error).AsReadOnly(); }
 		}
@@ -114,19 +120,19 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 			get
 			{
 				string key = "sm.notifications.all";
-				Multimap<NotifyType, string> map;
+				IEnumerable<NotifyEntry> entries;
 
 				if (TempData[key] != null)
 				{
-					map = TempData[key] as Multimap<NotifyType, string>;
-					if (map != null && map.TotalValueCount > 0)
+					entries = TempData[key] as IEnumerable<NotifyEntry>;
+					if (entries != null && entries.Any())
 						return true;
 				}
 
 				if (ViewData[key] != null)
 				{
-					map = ViewData[key] as Multimap<NotifyType, string>;
-					if (map != null && map.TotalValueCount > 0)
+					entries = ViewData[key] as IEnumerable<NotifyEntry>;
+					if (entries != null && entries.Any())
 						return true;
 				}
 
@@ -134,32 +140,31 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 			}
 		}
 
-		private IEnumerable<string> ResolveMessages(NotifyType type)
+		private IEnumerable<LocalizedString> ResolveMessages(NotifyType type)
 		{
 			string key = "sm.notifications.all";
-			Multimap<NotifyType, string> map;
-			IEnumerable<string> result = Enumerable.Empty<string>();
+			IEnumerable<NotifyEntry> entries;
+			IEnumerable<LocalizedString> result = Enumerable.Empty<LocalizedString>();
 
 			if (TempData[key] != null)
 			{
-				map = TempData[key] as Multimap<NotifyType, string>;
-				if (map != null)
+				entries = TempData[key] as IEnumerable<NotifyEntry>;
+				if (entries != null)
 				{
-					result = result.Concat(map[type]);
+					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
 				}
 			}
 
 			if (ViewData[key] != null)
 			{
-				map = ViewData[key] as Multimap<NotifyType, string>;
-				if (map != null)
+				entries = ViewData[key] as IEnumerable<NotifyEntry>;
+				if (entries != null)
 				{
-					result = result.Concat(map[type]);
+					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
 				}
 			}
 
 			return result;
-
 		}
 
         /// <summary>

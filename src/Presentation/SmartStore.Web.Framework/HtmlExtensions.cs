@@ -265,10 +265,11 @@ namespace SmartStore.Web.Framework
             int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true, bool disabled = false)
         {
             var daysList = new TagBuilder("select");
-            //daysList.MergeAttribute("placeholder", "TAGE");
-            //daysList.MergeAttribute("style", "width: 80px");
+            daysList.MergeAttribute("style", "width: 70px");
             var monthsList = new TagBuilder("select");
+			monthsList.MergeAttribute("style", "width: 130px");
             var yearsList = new TagBuilder("select");
+			yearsList.MergeAttribute("style", "width: 90px");
 
             daysList.Attributes.Add("name", dayName);
             monthsList.Attributes.Add("name", monthName);
@@ -304,13 +305,13 @@ namespace SmartStore.Web.Framework
                 yearLocale = "Year";
             }
 
-            days.AppendFormat("<option value='{0}'>{1}</option>", "0", dayLocale);
+            days.AppendFormat("<option>{0}</option>", dayLocale);
             for (int i = 1; i <= 31; i++)
                 days.AppendFormat("<option value='{0}'{1}>{0}</option>", i,
                     (selectedDay.HasValue && selectedDay.Value == i) ? " selected=\"selected\"" : null);
 
 
-            months.AppendFormat("<option value='{0}'>{1}</option>", "0", monthLocale);
+            months.AppendFormat("<option>{0}</option>", monthLocale);
             for (int i = 1; i <= 12; i++)
             {
                 months.AppendFormat("<option value='{0}'{1}>{2}</option>",
@@ -320,12 +321,12 @@ namespace SmartStore.Web.Framework
             }
 
 
-            years.AppendFormat("<option value='{0}'>{1}</option>", "0", yearLocale);
+            years.AppendFormat("<option>{0}</option>", yearLocale);
 
             if (beginYear == null)
-                beginYear = DateTime.UtcNow.Year - 100;
+                beginYear = DateTime.UtcNow.Year - 90;
             if (endYear == null)
-                endYear = DateTime.UtcNow.Year;
+                endYear = DateTime.UtcNow.Year + 10;
 
             for (int i = beginYear.Value; i <= endYear.Value; i++)
                 years.AppendFormat("<option value='{0}'{1}>{0}</option>", i,

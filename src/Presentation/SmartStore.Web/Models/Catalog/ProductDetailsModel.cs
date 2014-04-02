@@ -249,6 +249,14 @@ namespace SmartStore.Web.Models.Catalog
 			/// </summary>
 			public int? SelectedYear { get; set; }
 			/// <summary>
+			/// Begin year for datepicker
+			/// </summary>
+			public int? BeginYear { get; set; }
+			/// <summary>
+			/// End year for datepicker
+			/// </summary>
+			public int? EndYear { get; set; }
+			/// <summary>
 			/// Allowed file extensions for customer uploaded files
 			/// </summary>
 			public IList<string> AllowedFileExtensions { get; set; }

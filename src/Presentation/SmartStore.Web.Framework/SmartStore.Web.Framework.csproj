@@ -202,6 +202,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="AppPath.cs" />
+    <Compile Include="Controllers\NotifyAttribute.cs" />
     <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />
     <Compile Include="Controllers\PluginControllerBase.cs" />
     <Compile Include="Controllers\CheckAffiliateAttribute.cs" />
@@ -311,7 +312,6 @@
     <Compile Include="UI\ResourceLocation.cs" />
     <Compile Include="UI\LayoutExtensions.cs" />
     <Compile Include="UI\IPageAssetsBuilder.cs" />
-    <Compile Include="UI\NotifyType.cs" />
     <Compile Include="UI\PageAssetsBuilder.cs" />
     <Compile Include="UI\DataListExtensions.cs" />
     <Compile Include="UI\Components\HtmlHelperExtensions.cs" />

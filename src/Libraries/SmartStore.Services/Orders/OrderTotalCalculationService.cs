@@ -179,13 +179,32 @@ namespace SmartStore.Services.Orders
             decimal subTotalInclTaxWithoutDiscount = decimal.Zero;
 
             foreach (var shoppingCartItem in cart)
-            {
-                decimal taxRate = decimal.Zero;
-                decimal sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+			{
+				#region Obsolete (RoundFix)
+				//decimal taxRate = decimal.Zero;
+				//decimal sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
 
-                decimal sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
-                decimal sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
-                subTotalExclTaxWithoutDiscount += sciExclTax;
+				//decimal sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
+				//decimal sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
+				#endregion
+
+				#region RoundFix
+				int temQuantity = shoppingCartItem.Item.Quantity;
+				shoppingCartItem.Item.Quantity = 1;
+
+				decimal taxRate = decimal.Zero;
+				decimal sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+
+				//Adaption to eliminate rounding erro
+				decimal sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
+				sciExclTax = Math.Round(sciExclTax, 2) * temQuantity;
+				decimal sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
+				sciInclTax = Math.Round(sciInclTax, 2) * temQuantity;
+
+				shoppingCartItem.Item.Quantity = temQuantity;
+				#endregion
+
+				subTotalExclTaxWithoutDiscount += sciExclTax;
                 subTotalInclTaxWithoutDiscount += sciInclTax;
 
                 //tax rates

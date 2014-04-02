@@ -316,13 +316,23 @@ namespace SmartStore.Web.Controllers
 			{
 				//sub total
 				decimal taxRate = decimal.Zero;
-				decimal shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
-				decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-				
-				model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
 
-				//display an applied discount amount
-				decimal shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
+				#region Obsolete (RoundFix)
+				//decimal shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
+				//decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+				//model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
+				//// display an applied discount amount
+				//decimal shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
+				#endregion
+
+				#region RoundFix
+				decimal shoppingCartItemSubTotalWithDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate), 2) * sci.Item.Quantity;
+				decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+				model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
+				// display an applied discount amount
+				decimal shoppingCartItemSubTotalWithoutDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate), 2) * sci.Item.Quantity;
+				#endregion
+
 				decimal shoppingCartItemDiscountBase = shoppingCartItemSubTotalWithoutDiscountBase - shoppingCartItemSubTotalWithDiscountBase;
 
 				if (shoppingCartItemDiscountBase > decimal.Zero)

@@ -165,9 +165,15 @@ namespace SmartStore.Services.Tax
                 result = price * (1 + percent / 100);
             }
             else
-            {
-                result = price - (price) / (100 + percent) * percent;
-            }
+			{
+				#region Obsolete (RoundFix)
+				//result = price - (price) / (100 + percent) * percent;
+				#endregion
+
+				#region RoundFix
+				result = price - Math.Round((price) / (100 + percent) * percent, 2);
+				#endregion
+			}
             return result;
         }
 

@@ -41,10 +41,10 @@ namespace SmartStore.Web.Framework.Controllers
 			if (_entries == null || !_entries.Any())
 				return;
 
-			var viewResult = filterContext.Result as ViewResultBase;
+			var viewResult = filterContext.Result;
 
 			// if it's not a view result, a redirect for example
-			if (viewResult == null)
+			if (!(viewResult is ViewResultBase || viewResult is RedirectResult || viewResult is RedirectToRouteResult))
 				return;
 
 			var entries = _entries.Where(x => x.Message.ToString().HasValue()).ToList();

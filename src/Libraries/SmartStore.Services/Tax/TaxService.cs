@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tax
         private readonly IAddressService _addressService;
         private readonly IWorkContext _workContext;
         private readonly TaxSettings _taxSettings;
+		private readonly ShoppingCartSettings _cartSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IDictionary<string, ITaxProvider> _taxProviders;
         private readonly IDictionary<TaxRateCacheKey, decimal> _cachedTaxRates;
@@ -43,11 +44,13 @@ namespace SmartStore.Services.Tax
         public TaxService(IAddressService addressService,
             IWorkContext workContext,
             TaxSettings taxSettings,
+			ShoppingCartSettings cartSettings,
             IPluginFinder pluginFinder)
         {
             _addressService = addressService;
             _workContext = workContext;
             _taxSettings = taxSettings;
+			_cartSettings = cartSettings;
             _pluginFinder = pluginFinder;
             _taxProviders = new Dictionary<string, ITaxProvider>();
             _cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
@@ -166,13 +169,15 @@ namespace SmartStore.Services.Tax
             }
             else
 			{
-				#region Obsolete (RoundFix)
-				//result = price - (price) / (100 + percent) * percent;
-				#endregion
-
-				#region RoundFix
-				result = price - Math.Round((price) / (100 + percent) * percent, 2);
-				#endregion
+				if (_cartSettings.RoundPricesDuringCalculation)
+				{
+					// Gross > Net RoundFix
+					result = price - Math.Round((price) / (100 + percent) * percent, 2);
+				}
+				else
+				{
+					result = price - (price) / (100 + percent) * percent;
+				}
 			}
             return result;
         }

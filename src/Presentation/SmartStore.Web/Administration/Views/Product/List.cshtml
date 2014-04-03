@@ -294,23 +294,17 @@
         .Name("importexcel-window")
         .Title(T("Admin.Common.ImportFromExcel").Text)
         .Content(@<text>
-			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
             {
 				<div id="importexcel-last-result-summary" class="alert hide">
 
 				</div>
-				
-				<div id="importexcel-upload">
-					<table style="text-align: left;">
-						<tr>
-							<td>
-								<strong>@T("Admin.Common.ExcelFile"): </strong>
-							</td>
-							<td>
-								<input type="file" id="importexcelfile" name="importexcelfile" />
-							</td>
-						</tr>
-					</table>
+
+				<div id="importexcel-upload" class="control-group">
+					<label class="control-label" for="importexcelfile">@T("Admin.Common.ExcelFile"):</label>
+					<div class="controls">
+						<input type="file" id="importexcelfile" name="importexcelfile" />
+					</div>
 				</div>
 				
 				<div id="importexcel-progress" class="hide">

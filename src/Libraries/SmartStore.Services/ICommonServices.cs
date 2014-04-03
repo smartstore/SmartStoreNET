@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services
 {
@@ -54,6 +55,11 @@ namespace SmartStore.Services
 		}
 
 		INotifier Notifier
+		{
+			get;
+		}
+
+		IPermissionService Permissions
 		{
 			get;
 		}

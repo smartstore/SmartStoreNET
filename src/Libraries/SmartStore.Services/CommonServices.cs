@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services
 {
@@ -21,6 +22,7 @@ namespace SmartStore.Services
 		private readonly Lazy<ILocalizationService> _localization;
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		private readonly Lazy<INotifier> _notifier;
+		private readonly Lazy<IPermissionService> _permissions;
 		
 		public CommonServices(
 			Func<string, Lazy<ICacheManager>> cache,
@@ -31,7 +33,8 @@ namespace SmartStore.Services
 			Lazy<IEventPublisher> eventPublisher,
 			Lazy<ILocalizationService> localization,
 			Lazy<ICustomerActivityService> customerActivity,
-			Lazy<INotifier> notifier)
+			Lazy<INotifier> notifier,
+			Lazy<IPermissionService> permissions)
 		{
 			this._cache = cache("static");
 			this._dbContext = dbContext;
@@ -42,6 +45,7 @@ namespace SmartStore.Services
 			this._localization = localization;
 			this._customerActivity = customerActivity;
 			this._notifier = notifier;
+			this._permissions = permissions;
 		}
 		
 		public ICacheManager Cache
@@ -113,6 +117,15 @@ namespace SmartStore.Services
 			get
 			{
 				return _notifier.Value;
+			}
+		}
+
+
+		public IPermissionService Permissions
+		{
+			get 
+			{
+				return _permissions.Value;
 			}
 		}
 	}

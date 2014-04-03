@@ -2,18 +2,15 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Security;
 using SmartStore.Admin.Models.Themes;
-using SmartStore.Admin.Models.Settings;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Mvc;
 using System.IO;
@@ -21,7 +18,6 @@ using System.Text;
 using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
-using SmartStore.Utilities;
 using SmartStore.Core.Packaging;
 
 namespace SmartStore.Admin.Controllers
@@ -332,43 +328,6 @@ namespace SmartStore.Admin.Controllers
             
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
-
-		[HttpPost]
-		public ActionResult UploadPackage(FormCollection form)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
-				return AccessDeniedView();
-
-			try
-			{
-				var file = Request.Files["packagefile"];
-				if (file != null && file.ContentLength > 0)
-				{
-					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
-					{
-						NotifyError("Upload file is not a valid package. Must end with 'nupkg'.");
-						return RedirectToAction("List");
-					}
-
-					var location = CommonHelper.MapPath("~/App_Data");
-					var appPath = CommonHelper.MapPath("~/");
-					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
-				}
-				else
-				{
-					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
-					return RedirectToAction("List");
-				}
-
-				NotifySuccess("Theme package uploaded successfully.");
-				return RedirectToAction("List");
-			}
-			catch (Exception exc)
-			{
-				NotifyError(exc);
-				return RedirectToAction("List");
-			}
-		}
 
         #endregion
     }

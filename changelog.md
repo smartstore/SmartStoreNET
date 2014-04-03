@@ -3,16 +3,21 @@
 ##SmartStore.NET 2.0.0#
 
 ###Highlights###
-* #106 Bundle Products
-* #112 WebApi plugin
-* Improved product structure without product variant entity
+* RESTFul WebApi
+* Highly optimized and simplified product management
+* Bundle Products
+* Considerably faster app startup and page processing
+* New variant attribute type: Linked Product
+* Package upload for plugins and themes
+* Lightning fast asynchronous Excel import with progress indicators and detailed reports
+* (Developer) Code-based Entity Framework database migrations
 
 ###New Features###
+* Package upload for plugins and themes
 * #137 Shipping method option to ignore additional shipping charges
 * #175 IPayment plugin: Implemented deactivation of specific credit card types
 * #191 Implemented new scheduled task _Delete logs_
 * Added support for _SummerNote_ HTML editor (experimental)
-* (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
 * Enabled fulltext search
 * New setting to redirect to order detail page if an order completed
 * New setting to suppress the search for SKUs
@@ -22,6 +27,10 @@
 * #295 Display short description for payment plugins
 * Entity Framework code-based Migrations now fully supported in application core and all relevant plugins (no need to manually run SQL scripts anymore in order to update to newer version).
 * Setting to skip the payment info page during checkout.
+* (Developer) Implemented code-based Entity Framework multi-context database migrations
+* (Developer) Admin: Implemented _entity-commit_ event message (for client EventBroker) in order to support custom data persistence in a loosely coupled manner.
+* (Developer) New interface _IWidget_ for simplified widget development and multi-widgets per plugin
+* (Developer) Outsourced notifications from MVC controller and implemented _INotifier_ for more centralized approach
 
 ###Bugfixes###
 * #150 GTB & disclaimer aren't readable when they become to long
@@ -42,11 +51,13 @@
 * #260 Delivery times translations are not getting applied
 * robots.txt: localizable disallow paths did not contain a trailing slash
 * #296 Fix price adjustment of product variant combinations
+* Resolved shopping cart rounding issues (when prices are gross but displayed net)
 
 ###Improvements###
+* Considerably faster app startup and page processing
+* Lightning fast asynchronous Excel import with progress indicators and detailed reports
 * #171: select2 Dropdown too short in OPC
 * Product filtering by price now supports decimal places
-* Excel Import: Field _CreatedOnUtc_ is optional now
 * Enhanced Admin UI for _Message Templates_
 * _Repliable_ Emails now have customer's email as ReplyTo address
 * #140 Import all plugin resources after adding a language
@@ -60,7 +71,6 @@
 * #180 Display delivery time in shopping cart and relevant mails
 * #217 GMC Feed Plugin: Make export of expiration_date configurable
 * #222 Feed Plugins: Take special price into consideration
-* (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 * Canceling a PayPal, SU or PostFinance payment now redirects to the order detail page rather than checkout complete
 * Added an option to display the short description of products within the order summary
 * Added an option to turn off the display of variant price adjustments
@@ -70,6 +80,10 @@
 * #190 App Restart: stay on current page
 * Filter orders: Order, payment and shipping status are multi-selectable
 * DatePicker control for variant attributes: displayed year range can be specified via _Alias_ property ([BeginYear]-[EndYear], e.g. 1950-2020)
+* Updated _TinyMCE_ to latest version 4
+* Significantly faster install process
+* (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
+* (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 
 ##SmartStore.NET 1.2.1.0#
 

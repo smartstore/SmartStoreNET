@@ -10,6 +10,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Packaging
 {
@@ -39,6 +40,8 @@ namespace SmartStore.Core.Packaging
 			_logger = logger;
 		}
 
+		public Localizer T { get; set; }
+
 		//public PackageInfo Install(string packageId, string version, string location, string applicationFolder)
 		//{
 		//	// instantiates the appropriate package repository
@@ -67,7 +70,7 @@ namespace SmartStore.Core.Packaging
 			}
 			catch (Exception ex)
 			{
-				throw new SmartException("Package could not be created from stream.", ex);
+				throw new SmartException(T("Admin.Packaging.StreamError"), ex);
 			}
 			
 			// instantiates the appropriate package repository
@@ -75,16 +78,8 @@ namespace SmartStore.Core.Packaging
 			return InstallPackage(package, packageRepository, location, applicationPath);
 		}
 
-		//public PackageInfo Install(IPackage package, string location, string applicationPath)
-		//{
-		//	// instantiates the appropriate package repository
-		//	var packageRepository = new NullSourceRepository();
-		//	return InstallPackage(package, packageRepository, location, applicationPath);
-		//}
-
 		protected PackageInfo InstallPackage(IPackage package, IPackageRepository packageRepository, string location, string applicationPath)
 		{
-			// TODO: (pkg) Localization
 
 			bool previousInstalled;
 
@@ -95,7 +90,7 @@ namespace SmartStore.Core.Packaging
 			}
 			catch (Exception exception)
 			{
-				throw new SmartException("Unable to backup existing local package directory.", exception);
+				throw new SmartException(T("Admin.Packaging.BackupError"), exception);
 			}
 
 			if (previousInstalled)
@@ -107,7 +102,7 @@ namespace SmartStore.Core.Packaging
 				}
 				catch (Exception exception)
 				{
-					throw new SmartException("Unable to un-install local package before updating.", exception);
+					throw new SmartException(T("Admin.Packaging.UninstallError"), exception);
 				}
 			}
 
@@ -131,7 +126,7 @@ namespace SmartStore.Core.Packaging
 						Uninstall(package.Id, _virtualPathProvider.MapPath("~\\"));
 					}
 
-					var msg = "The package is not compatible the current app version {0}. Please update SmartStore.NET or install another version of this package.".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+					var msg = T("Admin.Packaging.IsIncompatible", SmartStoreVersion.CurrentFullVersion);
 					_logger.Error(msg);
 					throw new SmartException(msg);
 				}
@@ -187,7 +182,6 @@ namespace SmartStore.Core.Packaging
 
 		public void Uninstall(string packageId, string applicationFolder)
 		{
-			// TODO: (pkg) Localization
 
 			string extensionFullPath = string.Empty;
 
@@ -202,7 +196,7 @@ namespace SmartStore.Core.Packaging
 
 			if (string.IsNullOrEmpty(extensionFullPath) || !System.IO.Directory.Exists(extensionFullPath))
 			{
-				throw new SmartException("Package not found: {0}".FormatCurrentUI(packageId));
+				throw new SmartException(T("Admin.Packaging.NotFound", packageId));
 			}
 
 			// If the package was not installed through nuget we still need to try to uninstall it by removing its directory
@@ -234,12 +228,12 @@ namespace SmartStore.Core.Packaging
 
 				if (localTempPath == null)
 				{
-					throw new SmartException("Backup folder {0} has too many backups subfolder (limit is 1.000)".FormatInvariant(tempPath));
+					throw new SmartException(T("Admin.Packaging.TooManyBackups", tempPath));
 				}
 
 				var backupFolder = new DirectoryInfo(localTempPath);
 				_folderUpdater.Restore(backupFolder, source);
-				_notifier.Information("Successfully restored local package to local folder '{0}'.".FormatInvariant(virtualSource));
+				_notifier.Information(T("Admin.Packaging.RestoreSuccess", virtualSource));
 
 				return true;
 			}
@@ -268,12 +262,12 @@ namespace SmartStore.Core.Packaging
 
 				if (localTempPath == null)
 				{
-					throw new SmartException("Backup folder {0} has too many backups subfolder (limit is 1.000)".FormatInvariant(tempPath));
+					throw new SmartException(T("Admin.Packaging.TooManyBackups", tempPath));
 				}
 
 				var backupFolder = new DirectoryInfo(localTempPath);
 				_folderUpdater.Backup(source, backupFolder);
-				_notifier.Information("Successfully backed up local package to local folder '{0}'".FormatInvariant(backupFolder.Name));
+				_notifier.Information(T("Admin.Packaging.BackupSuccess", backupFolder.Name));
 
 				return true;
 			}
@@ -288,7 +282,7 @@ namespace SmartStore.Core.Packaging
 			try
 			{
 				Uninstall(package.Id, _virtualPathProvider.MapPath("~\\"));
-				_notifier.Information("Successfully un-installed local package {0}".FormatInvariant(package.ExtensionId()));
+				//_notifier.Information("Successfully un-installed local package {0}".FormatInvariant(package.ExtensionId()));
 			}
 			catch { }
 		}

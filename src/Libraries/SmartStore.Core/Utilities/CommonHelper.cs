@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Hosting;
+using System.Web.Mvc;
 
 namespace SmartStore.Utilities
 {
@@ -117,6 +119,19 @@ namespace SmartStore.Utilities
 		public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
 		{
 			return Misc.TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
+		}
+
+		public static ExpandoObject ToExpando(object value)
+		{
+			Guard.ArgumentNotNull(() => value);
+
+			var anonymousDictionary = HtmlHelper.AnonymousObjectToHtmlAttributes(value);
+			IDictionary<string, object> expando = new ExpandoObject();
+			foreach (var item in anonymousDictionary)
+			{
+				expando.Add(item);
+			}
+			return (ExpandoObject)expando;
 		}
 
     }

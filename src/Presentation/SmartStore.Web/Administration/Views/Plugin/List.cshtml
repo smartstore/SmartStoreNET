@@ -27,21 +27,24 @@
             </button>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
 				<i class="icon-upload-alt"></i>
-				Upload package
+				@T("Admin.Packaging.UploadPlugin")
 			</a>
             <div class="btn-group" style="vertical-align: middle">
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                    @T("Admin.Common.Edit")&nbsp;<span class="icon-caret-down"></span>
+                    @T("Admin.Common.Edit")
+					<span class="icon-caret-down"></span>
                 </a>
                 <ul class="dropdown-menu pull-right">
                     <li>
                         <a href="@Url.Action("ReloadList")">
-                            <i class="icon-refresh"></i>&nbsp;@T("Admin.Configuration.Plugins.ReloadList")
+                            <i class="icon-refresh"></i>
+							@T("Admin.Configuration.Plugins.ReloadList")
                         </a>
                     </li>
                     <li>
                         <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources" >
-                            <i class="icon-refresh"></i>&nbsp;@T("Admin.Configuration.Plugins.Resources.UpdateAll")
+                            <i class="icon-refresh"></i>
+							@T("Admin.Configuration.Plugins.Resources.UpdateAll")
                         </a>
                     </li>
                 </ul>
@@ -348,44 +351,4 @@
 </script>
 }
 
-@*Upload package form*@
-@{Html.SmartStore().Window()
-	.Name("uploadpackage-window")
-	.Title("Upload plugin package")
-	.Content(@<text>
-		@using (Html.BeginForm("UploadPackage", "Plugin", FormMethod.Post, new { enctype = "multipart/form-data" }))
-		{
-			<div id="package-upload">
-				<table style="text-align: left;">
-					<tr>
-						<td>
-							<strong>Package file (nupkg): </strong>
-						</td>
-						<td>
-							<input type="file" id="packagefile" name="packagefile" />
-						</td>
-					</tr>
-				</table>
-			</div>
-		}
-
-	</text>)
-	.FooterContent(@<text>
-		<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">Upload</button>
-		<a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
-	</text>)
-	.Modal(true)
-	.Visible(false)
-	.Render();
-}
-
-<script>
-	$(function () {
-		$("#uploadpackagesubmit").click(function (e) {
-			e.preventDefault();
-			var btn = $(this);
-			var win = $('#uploadpackage-window');
-			win.find("form").submit();
-		});
-	});
-</script>
+@Html.Action("UploadPackage", "Packaging", new { isTheme = false })

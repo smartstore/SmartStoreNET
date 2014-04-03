@@ -123,6 +123,10 @@
     <Compile Include="Migrations\201403262015448_ImportExcel.Designer.cs">
       <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404032144400_Packaging.cs" />
+    <Compile Include="Migrations\201404032144400_Packaging.Designer.cs">
+      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -277,6 +281,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403262015448_ImportExcel.resx">
       <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404032144400_Packaging.resx">
+      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

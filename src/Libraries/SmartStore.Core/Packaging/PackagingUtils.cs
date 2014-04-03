@@ -12,6 +12,7 @@ namespace SmartStore.Core.Packaging
 
 	public static class PackagingUtils
 	{
+		
 		public static string GetExtensionPrefix(string extensionType)
 		{
 			return string.Format("SmartStore.{0}.", extensionType);
@@ -24,7 +25,7 @@ namespace SmartStore.Core.Packaging
 
 
 
-		public static bool IsTheme(this IPackage package)
+		internal static bool IsTheme(this IPackage package)
 		{
 			return IsTheme(package.Id);
 		}
@@ -34,12 +35,12 @@ namespace SmartStore.Core.Packaging
 			return IsTheme(info.Id);
 		}
 
-		public static string ExtensionFolder(this IPackage package)
+		internal static string ExtensionFolder(this IPackage package)
 		{
 			return ExtensionFolder(package.IsTheme());
 		}
 
-		public static string ExtensionId(this IPackage package)
+		internal static string ExtensionId(this IPackage package)
 		{
 			return ExtensionId(package.IsTheme(), package.Id);
 		}
@@ -49,7 +50,7 @@ namespace SmartStore.Core.Packaging
 			return ExtensionId(info.IsTheme(), info.Id);
 		}
 
-		private static bool IsTheme(string packageId)
+		public static bool IsTheme(string packageId)
 		{
 			return packageId.StartsWith(GetExtensionPrefix("Theme"));
 		}
@@ -94,12 +95,12 @@ namespace SmartStore.Core.Packaging
 				Location = "~/Themes",
 				Id = themeManifest.ThemeName,
 				Author = themeManifest.Author.HasValue() ? themeManifest.Author : "[Unknown]",
-				MinAppVersion = new Version("2.0"), // TODO: (pkg) Add SupportedVersion to theme manifests
+				MinAppVersion = SmartStoreVersion.FullVersion, // TODO: (pkg) Add SupportedVersion to theme manifests
 				Version = new Version(themeManifest.Version),
 				Name = themeManifest.ThemeTitle,
-				Description = string.Empty, // TODO: (pkg) Add description to plugin manifests
-				WebSite = string.Empty, // TODO: (pkg) Add author url to plugin manifests,
-				Tags = string.Empty // TODO: (pkg) Add tags to plugin manifests
+				Description = string.Empty, // TODO: (pkg) Add description to theme manifests
+				WebSite = string.Empty, // TODO: (pkg) Add author url to theme manifests,
+				Tags = string.Empty // TODO: (pkg) Add tags to theme manifests
 			};
 
 			return descriptor;

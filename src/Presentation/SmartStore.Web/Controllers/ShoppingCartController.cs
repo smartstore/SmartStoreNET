@@ -315,23 +315,26 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//sub total
-				decimal taxRate = decimal.Zero;
+				decimal taxRate, shoppingCartItemSubTotalWithDiscountBase, shoppingCartItemSubTotalWithDiscount, shoppingCartItemSubTotalWithoutDiscountBase = decimal.Zero;
 
-				#region Obsolete (RoundFix)
-				//decimal shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
-				//decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-				//model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
-				//// display an applied discount amount
-				//decimal shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
-				#endregion
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					// Gross > Net RoundFix
+					shoppingCartItemSubTotalWithDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate), 2) * sci.Item.Quantity;
+					shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+					model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
+					// display an applied discount amount
+					shoppingCartItemSubTotalWithoutDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate), 2) * sci.Item.Quantity;
 
-				#region RoundFix
-				decimal shoppingCartItemSubTotalWithDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate), 2) * sci.Item.Quantity;
-				decimal shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-				model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
-				// display an applied discount amount
-				decimal shoppingCartItemSubTotalWithoutDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate), 2) * sci.Item.Quantity;
-				#endregion
+				}
+				else
+				{
+					shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
+					shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+					model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
+					// display an applied discount amount
+					shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
+				}
 
 				decimal shoppingCartItemDiscountBase = shoppingCartItemSubTotalWithoutDiscountBase - shoppingCartItemSubTotalWithDiscountBase;
 

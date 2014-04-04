@@ -36,7 +36,6 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Description { get; set; }
 
-		/// <remarks>codehint: sm-add</remarks>
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
 		public string Alias { get; set; }
 

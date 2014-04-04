@@ -191,7 +191,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
-                .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
+                .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
+				.ForMember(dest => dest.Picture, mo => mo.Ignore());
             //manufacturer
 			Mapper.CreateMap<Manufacturer, ManufacturerModel>()
 				.ForMember(dest => dest.AvailableManufacturerTemplates, mo => mo.Ignore())
@@ -205,7 +206,8 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<ManufacturerModel, Manufacturer>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.Deleted, mo => mo.Ignore());
+                .ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.Picture, mo => mo.Ignore());
             //products
 			Mapper.CreateMap<Product, ProductModel>()
 				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
@@ -278,7 +280,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore());
+				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore())
+				.ForMember(dest => dest.SampleDownload, mo => mo.Ignore());
 			//logs
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())

@@ -632,16 +632,25 @@ namespace SmartStore.Web.Framework
             return RegistrationBuilder
 				.ForDelegate((c, p) =>
 				{
-					var store = c.Resolve<IStoreContext>().CurrentStore;
+					int currentStoreId = 0;
+					IStoreContext storeContext;
+					if (c.TryResolve<IStoreContext>(out storeContext))
+					{
+						var store = storeContext.CurrentStore;
 
-					var currentStoreId = store.Id;
-					//uncomment the code below if you want load settings per store only when you have two stores installed.
-					//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
-					//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
+						currentStoreId = store.Id;
+						//uncomment the code below if you want load settings per store only when you have two stores installed.
+						//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
+						//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
 
-					//although it's better to connect to your database and execute the following SQL:
-					//DELETE FROM [Setting] WHERE [StoreId] > 0
-					return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+						//although it's better to connect to your database and execute the following SQL:
+						//DELETE FROM [Setting] WHERE [StoreId] > 0
+
+						return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+					}
+
+					// Unit tests
+					return new TSettings();
 				})
                 .InstancePerHttpRequest()
                 .CreateRegistration();

@@ -14,7 +14,7 @@ namespace SmartStore.Core.IO.Media
 
         public FileSystemStorageProvider(FileSystemSettings settings)
         {
-            var mediaPath = CommonHelper.MapPath("~/Media/");
+            string mediaPath = CommonHelper.MapPath("~/Media/", false);
             _storagePath = Path.Combine(mediaPath, settings.DirectoryName);
 
             var appPath = "";

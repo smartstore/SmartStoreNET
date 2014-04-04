@@ -119,10 +119,12 @@ namespace SmartStore.Services.Tests.Orders
             _taxSettings = new TaxSettings();
             _taxSettings.ShippingIsTaxable = true;
             _taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
+			_taxSettings.PricesIncludeTax = false;
+			_taxSettings.TaxDisplayType = TaxDisplayType.IncludingTax;
             _taxSettings.DefaultTaxAddressId = 10;
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService);
 
             _rewardPointsSettings = new RewardPointsSettings();
 

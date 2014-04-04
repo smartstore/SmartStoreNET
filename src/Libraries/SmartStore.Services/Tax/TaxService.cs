@@ -29,6 +29,7 @@ namespace SmartStore.Services.Tax
         private readonly IPluginFinder _pluginFinder;
         private readonly IDictionary<string, ITaxProvider> _taxProviders;
         private readonly IDictionary<TaxRateCacheKey, decimal> _cachedTaxRates;
+		private readonly ISettingService _settingService;
 
         #endregion
 
@@ -45,7 +46,8 @@ namespace SmartStore.Services.Tax
             IWorkContext workContext,
             TaxSettings taxSettings,
 			ShoppingCartSettings cartSettings,
-            IPluginFinder pluginFinder)
+            IPluginFinder pluginFinder,
+			ISettingService settingService)
         {
             _addressService = addressService;
             _workContext = workContext;
@@ -54,6 +56,7 @@ namespace SmartStore.Services.Tax
             _pluginFinder = pluginFinder;
             _taxProviders = new Dictionary<string, ITaxProvider>();
             _cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
+			_settingService = settingService;
         }
 
         #endregion
@@ -197,7 +200,7 @@ namespace SmartStore.Services.Tax
             {
                 taxProvider = LoadAllTaxProviders().FirstOrDefault();
                 _taxSettings.ActiveTaxProviderSystemName = taxProvider.PluginDescriptor.SystemName;
-                EngineContext.Current.Resolve<ISettingService>().SaveSetting(_taxSettings);
+                _settingService.SaveSetting(_taxSettings);
             }
             return taxProvider;
         }

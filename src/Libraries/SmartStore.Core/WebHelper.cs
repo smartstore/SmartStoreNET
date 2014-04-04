@@ -201,57 +201,60 @@ namespace SmartStore.Core
             {
 				//let's resolve IWorkContext  here.
 				//Do not inject it via contructor because it'll cause circular references
-				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-				var currentStore = storeContext.CurrentStore;
-				if (currentStore == null)
-					throw new Exception("Current store cannot be loaded");
+				IStoreContext storeContext;
+				if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
+				{
+					var currentStore = storeContext.CurrentStore;
+					if (currentStore == null)
+						throw new Exception("Current store cannot be loaded");
 
-				var securityMode = currentStore.GetSecurityMode(useSsl);
+					var securityMode = currentStore.GetSecurityMode(useSsl);
 
-                if (httpHost.IsEmpty())
-                {
-					//HTTP_HOST variable is not available.
-					//It's possible only when HttpContext is not available (for example, running in a schedule task)
-					result = currentStore.Url.EnsureEndsWith("/");
+					if (httpHost.IsEmpty())
+					{
+						//HTTP_HOST variable is not available.
+						//It's possible only when HttpContext is not available (for example, running in a schedule task)
+						result = currentStore.Url.EnsureEndsWith("/");
 
-					appPathPossiblyAppended = true;
-                }
+						appPathPossiblyAppended = true;
+					}
 
-                if (useSsl)
-                {
-					if (securityMode == HttpSecurityMode.SharedSsl)
-                    {
-                        // Secure URL for shared ssl specified. 
-                        // So a store owner doesn't want it to be resolved automatically.
-                        // In this case let's use the specified secure URL
-						result = currentStore.SecureUrl.EmptyNull();
-
-						if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+					if (useSsl)
+					{
+						if (securityMode == HttpSecurityMode.SharedSsl)
 						{
-							result = "https://" + result;
+							// Secure URL for shared ssl specified. 
+							// So a store owner doesn't want it to be resolved automatically.
+							// In this case let's use the specified secure URL
+							result = currentStore.SecureUrl.EmptyNull();
+
+							if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+							{
+								result = "https://" + result;
+							}
+
+							appPathPossiblyAppended = true;
 						}
+						else
+						{
+							// Secure URL is not specified.
+							// So a store owner wants it to be resolved automatically.
+							result = result.Replace("http:/", "https:/");
+						}
+					}
+					else // no ssl
+					{
+						if (securityMode == HttpSecurityMode.SharedSsl)
+						{
+							// SSL is enabled in this store and shared ssl URL is specified.
+							// So a store owner doesn't want it to be resolved automatically.
+							// In this case let's use the specified non-secure URL
 
-                        appPathPossiblyAppended = true;
-                    }
-                    else
-                    {
-                        // Secure URL is not specified.
-                        // So a store owner wants it to be resolved automatically.
-                        result = result.Replace("http:/", "https:/");
-                    }
-                }
-                else // no ssl
-                {
-                    if (securityMode == HttpSecurityMode.SharedSsl)
-                    {
-                        // SSL is enabled in this store and shared ssl URL is specified.
-                        // So a store owner doesn't want it to be resolved automatically.
-                        // In this case let's use the specified non-secure URL
-
-                        result = currentStore.Url;
-                        appPathPossiblyAppended = true;
-                    }
-                }
+							result = currentStore.Url;
+							appPathPossiblyAppended = true;
+						}
+					}
+				}
             }
 
             return result.EnsureEndsWith("/").ToLowerInvariant();

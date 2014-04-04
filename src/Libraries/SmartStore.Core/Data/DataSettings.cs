@@ -17,6 +17,7 @@ namespace SmartStore.Core.Data
 		private static DataSettings s_current = null;
 		private static Func<DataSettings> s_settingsFactory = new Func<DataSettings>(() => new DataSettings());
 		private static bool? s_installed = null;
+		private static bool s_TestMode = false;
 
 		protected const char SEPARATOR = ':';
 		protected const string FILENAME = "Settings.txt";
@@ -63,12 +64,20 @@ namespace SmartStore.Core.Data
 
 		public static bool DatabaseIsInstalled()
 		{
+			if (s_TestMode)
+				return false;
+			
 			if (!s_installed.HasValue)
 			{
 				s_installed = Current.IsValid();
 			}
 
 			return s_installed.Value;
+		}
+
+		internal static void SetTestMode(bool isTestMode)
+		{
+			s_TestMode = isTestMode;
 		}
 
 		public static void Reload()

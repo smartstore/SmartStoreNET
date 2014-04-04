@@ -13,6 +13,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Tax
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Tests.Tax
 		ShoppingCartSettings _cartSettings;
         IEventPublisher _eventPublisher;
         ITaxService _taxService;
+		ISettingService _settingService;
 
         [SetUp]
         public new void SetUp()
@@ -45,7 +47,9 @@ namespace SmartStore.Services.Tests.Tax
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder);
+			_settingService = MockRepository.GenerateMock<ISettingService>();
+
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService);
         }
 
         [Test]

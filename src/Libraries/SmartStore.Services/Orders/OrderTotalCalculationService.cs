@@ -715,13 +715,13 @@ namespace SmartStore.Services.Orders
 
             var customer = cart.GetCustomer();
 
-            //// (VATFIX)
-            if (_taxService.IsVatExempt(null, customer))
-            {
-                taxRates.Add(decimal.Zero, decimal.Zero);
-                return decimal.Zero;
-            }
-            //// (VATFIX)
+			//// (VATFIX)
+			if (_taxService.IsVatExempt(null, customer))
+			{
+				taxRates.Add(decimal.Zero, decimal.Zero);
+				return decimal.Zero;
+			}
+			//// (VATFIX)
 
             string paymentMethodSystemName = "";
             if (customer != null)

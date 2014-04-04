@@ -15,32 +15,15 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            builder.RegisterType<TaxRateService>().As<ITaxRateService>().InstancePerHttpRequest();
+			builder.RegisterType<TaxRateService>().As<ITaxRateService>().WithRequestCache().InstancePerHttpRequest();
 
-            //data layer
-            var dataSettingsManager = new DataSettingsManager();
-            var dataProviderSettings = dataSettingsManager.LoadSettings();
+			//register named context
+			builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
+				.Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
+				.InstancePerHttpRequest();
 
-            if (dataProviderSettings != null && dataProviderSettings.IsValid())
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new TaxRateObjectContext(dataProviderSettings.DataConnectionString))
-                    .Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(dataProviderSettings.DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-            else
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new TaxRateObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
+			builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
+				.InstancePerHttpRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<TaxRate>>()

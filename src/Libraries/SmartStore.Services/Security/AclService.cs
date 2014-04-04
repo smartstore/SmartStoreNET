@@ -26,6 +26,7 @@ namespace SmartStore.Services.Security
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
+		private bool? _hasActiveAcl;
 
         #endregion
 
@@ -43,11 +44,28 @@ namespace SmartStore.Services.Security
             this._cacheManager = cacheManager;
             this._workContext = workContext;
             this._aclRecordRepository = aclRecordRepository;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
-        #region Methods
+        #region Members
+
+		public bool HasActiveAcl 
+		{
+			get
+			{
+				if (!_hasActiveAcl.HasValue)
+				{
+					var query = _aclRecordRepository.Where(x => !x.IsIdle);
+					_hasActiveAcl = query.Any();
+				}
+				return _hasActiveAcl.Value;
+			}
+		}
 
         /// <summary>
         /// Deletes an ACL record
@@ -84,7 +102,7 @@ namespace SmartStore.Services.Security
         /// <typeparam name="T">Type</typeparam>
         /// <param name="entity">Entity</param>
         /// <returns>ACL records</returns>
-        public virtual IList<AclRecord> GetAclRecords<T>(T entity) where T : BaseEntity, IAclSupported
+        public IList<AclRecord> GetAclRecords<T>(T entity) where T : BaseEntity, IAclSupported
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
@@ -92,13 +110,21 @@ namespace SmartStore.Services.Security
             int entityId = entity.Id;
             string entityName = typeof(T).Name;
 
-            var query = from ur in _aclRecordRepository.Table
-                        where ur.EntityId == entityId &&
-                        ur.EntityName == entityName
-                        select ur;
-            var aclRecords = query.ToList();
-            return aclRecords;
+			return GetAclRecordsFor(entityName, entityId);
         }
+
+		public virtual IList<AclRecord> GetAclRecordsFor(string entityName, int entityId)
+		{
+			Guard.ArgumentIsPositive(entityId, "entityId");
+			Guard.ArgumentNotEmpty(() => entityName);
+
+			var query = from ur in _aclRecordRepository.Table
+						where ur.EntityId == entityId &&
+						ur.EntityName == entityName
+						select ur;
+			var aclRecords = query.ToList();
+			return aclRecords;
+		}
 
 
         /// <summary>
@@ -212,6 +238,9 @@ namespace SmartStore.Services.Security
 
             if (customer == null)
                 return false;
+
+			if (QuerySettings.IgnoreAcl)
+				return true;
 
             if (!entity.SubjectToAcl)
                 return true;

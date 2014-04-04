@@ -4,11 +4,13 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Hosting;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core
 {
@@ -16,8 +18,11 @@ namespace SmartStore.Core
     /// Represents a common helper
     /// </summary>
     public partial class WebHelper : IWebHelper
-    {        
-        private readonly HttpContextBase _httpContext;
+    {
+		private static AspNetHostingPermissionLevel? s_trustLevel = null;
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled);
+		
+		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
 
         /// <summary>
@@ -51,12 +56,12 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         public virtual string GetCurrentIpAddress()
         {
-            if (_httpContext != null &&
-                    _httpContext.Request != null &&
-                    _httpContext.Request.UserHostAddress != null)
-                return _httpContext.Request.UserHostAddress;
-            else
-                return string.Empty;
+			if (_httpContext != null && _httpContext.Request != null)
+			{
+				return _httpContext.Request.UserHostAddress.EmptyNull();
+			}
+
+			return string.Empty;
         }
         
         /// <summary>
@@ -183,7 +188,7 @@ namespace SmartStore.Core
                 result = "http://" + httpHost.EnsureEndsWith("/");
             }
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
             {
                 if (useSsl)
                 {
@@ -196,57 +201,60 @@ namespace SmartStore.Core
             {
 				//let's resolve IWorkContext  here.
 				//Do not inject it via contructor because it'll cause circular references
-				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-				var currentStore = storeContext.CurrentStore;
-				if (currentStore == null)
-					throw new Exception("Current store cannot be loaded");
+				IStoreContext storeContext;
+				if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
+				{
+					var currentStore = storeContext.CurrentStore;
+					if (currentStore == null)
+						throw new Exception("Current store cannot be loaded");
 
-				var securityMode = currentStore.GetSecurityMode(useSsl);
+					var securityMode = currentStore.GetSecurityMode(useSsl);
 
-                if (httpHost.IsEmpty())
-                {
-					//HTTP_HOST variable is not available.
-					//It's possible only when HttpContext is not available (for example, running in a schedule task)
-					result = currentStore.Url.EnsureEndsWith("/");
+					if (httpHost.IsEmpty())
+					{
+						//HTTP_HOST variable is not available.
+						//It's possible only when HttpContext is not available (for example, running in a schedule task)
+						result = currentStore.Url.EnsureEndsWith("/");
 
-					appPathPossiblyAppended = true;
-                }
+						appPathPossiblyAppended = true;
+					}
 
-                if (useSsl)
-                {
-					if (securityMode == HttpSecurityMode.SharedSsl)
-                    {
-                        // Secure URL for shared ssl specified. 
-                        // So a store owner doesn't want it to be resolved automatically.
-                        // In this case let's use the specified secure URL
-						result = currentStore.SecureUrl.EmptyNull();
-
-						if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+					if (useSsl)
+					{
+						if (securityMode == HttpSecurityMode.SharedSsl)
 						{
-							result = "https://" + result;
+							// Secure URL for shared ssl specified. 
+							// So a store owner doesn't want it to be resolved automatically.
+							// In this case let's use the specified secure URL
+							result = currentStore.SecureUrl.EmptyNull();
+
+							if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+							{
+								result = "https://" + result;
+							}
+
+							appPathPossiblyAppended = true;
 						}
+						else
+						{
+							// Secure URL is not specified.
+							// So a store owner wants it to be resolved automatically.
+							result = result.Replace("http:/", "https:/");
+						}
+					}
+					else // no ssl
+					{
+						if (securityMode == HttpSecurityMode.SharedSsl)
+						{
+							// SSL is enabled in this store and shared ssl URL is specified.
+							// So a store owner doesn't want it to be resolved automatically.
+							// In this case let's use the specified non-secure URL
 
-                        appPathPossiblyAppended = true;
-                    }
-                    else
-                    {
-                        // Secure URL is not specified.
-                        // So a store owner wants it to be resolved automatically.
-                        result = result.Replace("http:/", "https:/");
-                    }
-                }
-                else // no ssl
-                {
-                    if (securityMode == HttpSecurityMode.SharedSsl)
-                    {
-                        // SSL is enabled in this store and shared ssl URL is specified.
-                        // So a store owner doesn't want it to be resolved automatically.
-                        // In this case let's use the specified non-secure URL
-
-                        result = currentStore.Url;
-                        appPathPossiblyAppended = true;
-                    }
-                }
+							result = currentStore.Url;
+							appPathPossiblyAppended = true;
+						}
+					}
+				}
             }
 
             return result.EnsureEndsWith("/").ToLowerInvariant();
@@ -304,7 +312,7 @@ namespace SmartStore.Core
         /// <param name="request">HTTP Request</param>
         /// <returns>True if the request targets a static resource file.</returns>
         /// <remarks>
-        /// These are the file extensions considered to be static resources:
+        /// These are - among others - the file extensions considered to be static resources:
         /// .css
         ///	.gif
         /// .png 
@@ -316,41 +324,21 @@ namespace SmartStore.Core
         /// </remarks>
         public virtual bool IsStaticResource(HttpRequest request)
         {
-            if (request == null)
-                throw new ArgumentNullException("request");
-
-            string path = request.Path;
-            string extension = VirtualPathUtility.GetExtension(path);
-
-            if (extension == null) return false;
-
-            switch (extension.ToLower())
-            {
-                case ".axd":
-                case ".ashx":
-                case ".bmp":
-                case ".css":
-                case ".gif":
-                case ".htm":
-                case ".html":
-                case ".ico":
-                case ".jpeg":
-                case ".jpg":
-                case ".js":
-                case ".png":
-                case ".rar":
-                case ".zip":
-                case ".woff":
-                case ".eot":
-                case ".svg":
-                case ".otf":
-                case ".ttf":
-                case ".less":
-                    return true;
-            }
-
-            return false;
+			return IsStaticResourceRequested(new HttpRequestWrapper(request));
         }
+
+		public static bool IsStaticResourceRequested(HttpRequest request)
+		{
+			Guard.ArgumentNotNull(() => request);
+			return s_staticExts.IsMatch(request.Path);
+		}
+
+		public static bool IsStaticResourceRequested(HttpRequestBase request)
+		{
+			// unit testable
+			Guard.ArgumentNotNull(() => request);
+			return s_staticExts.IsMatch(request.Path);
+		}
         
         /// <summary>
         /// Maps a virtual path to a physical disk path.
@@ -359,18 +347,7 @@ namespace SmartStore.Core
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
         public virtual string MapPath(string path)
         {
-            if (HostingEnvironment.IsHosted)
-            {
-                //hosted
-                return HostingEnvironment.MapPath(path);
-            }
-            else
-            {
-                //not hosted. For example, run in unit tests
-                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                path = path.Replace("~/", "").TrimStart('/').Replace('/', '\\');
-                return Path.Combine(baseDirectory, path);
-            }
+			return CommonHelper.MapPath(path, false);
         }
         
         /// <summary>
@@ -548,7 +525,7 @@ namespace SmartStore.Core
                 queryParam = _httpContext.Request.QueryString[name];
 
             if (!String.IsNullOrEmpty(queryParam))
-                return CommonHelper.To<T>(queryParam);
+                return queryParam.Convert<T>();
 
             return default(T);
         }
@@ -560,12 +537,13 @@ namespace SmartStore.Core
         /// <param name="redirectUrl">Redirect URL; empty string if you want to redirect to the current page URL</param>
         public virtual void RestartAppDomain(bool makeRedirect = false, string redirectUrl = "")
         {
-            if (CommonHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
+            if (WebHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
             {
                 //full trust
                 HttpRuntime.UnloadAppDomain();
 
-                TryWriteGlobalAsax();
+				// not a good idea with optimized compilation!
+                //TryWriteGlobalAsax();
             }
             else
             {
@@ -594,9 +572,21 @@ namespace SmartStore.Core
             // new request will come to the newly started AppDomain.
             if (_httpContext != null && makeRedirect)
             {
-                if (String.IsNullOrEmpty(redirectUrl))
-                    redirectUrl = GetThisPageUrl(true);
-                _httpContext.Response.Redirect(redirectUrl, true /*endResponse*/);
+				if (_httpContext.Request.RequestType == "GET")
+				{
+					if (String.IsNullOrEmpty(redirectUrl))
+					{
+						redirectUrl = GetThisPageUrl(true);
+					}
+					_httpContext.Response.Redirect(redirectUrl, true /*endResponse*/);
+				}
+				else
+				{
+					// Don't redirect posts...
+					_httpContext.Response.ContentType = "text/html";
+					_httpContext.Response.WriteFile("~/refresh.html");
+					_httpContext.Response.End();
+				}
             }
         }
 
@@ -696,6 +686,42 @@ namespace SmartStore.Core
                 _httpContext.Items["sm.IsPOSTBeingDone"] = value;
             }
         }
+
+		/// <summary>
+		/// Finds the trust level of the running application (http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx)
+		/// </summary>
+		/// <returns>The current trust level.</returns>
+		public static AspNetHostingPermissionLevel GetTrustLevel()
+		{
+			if (!s_trustLevel.HasValue)
+			{
+				//set minimum
+				s_trustLevel = AspNetHostingPermissionLevel.None;
+
+				//determine maximum
+				foreach (AspNetHostingPermissionLevel trustLevel in
+						new AspNetHostingPermissionLevel[] {
+                                AspNetHostingPermissionLevel.Unrestricted,
+                                AspNetHostingPermissionLevel.High,
+                                AspNetHostingPermissionLevel.Medium,
+                                AspNetHostingPermissionLevel.Low,
+                                AspNetHostingPermissionLevel.Minimal 
+                            })
+				{
+					try
+					{
+						new AspNetHostingPermission(trustLevel).Demand();
+						s_trustLevel = trustLevel;
+						break; //we've set the highest permission we can
+					}
+					catch (System.Security.SecurityException)
+					{
+						continue;
+					}
+				}
+			}
+			return s_trustLevel.Value;
+		}
 
         private class StoreHost
         {

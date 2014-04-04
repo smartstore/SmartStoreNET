@@ -25,7 +25,7 @@ using SmartStore.Web.Models.Boards;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.No)]
-    public partial class BoardsController : SmartController
+    public partial class BoardsController : PublicControllerBase
     {
         #region Fields
 

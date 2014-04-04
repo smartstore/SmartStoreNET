@@ -1,0 +1,138 @@
+﻿@{
+    Layout = "";
+}
+@model ConfigurationModel
+@using SmartStore.Plugin.Payments.PayPalStandard.Models;
+@using SmartStore.Web.Framework;
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#@Html.FieldIdFor(model => model.EnableIpn)").click(toggleEnableIpn);
+
+		toggleEnableIpn();
+	});
+
+	function toggleEnableIpn() {
+	    if ($('#@Html.FieldIdFor(model => model.EnableIpn)').is(':checked')) {
+			$('#pnlIpnUrl').show();
+		}
+		else {
+			$('#pnlIpnUrl').hide();
+		}
+	}
+</script>
+
+@using (Html.BeginForm())
+{
+    <table class="adminContent">
+	<tr>
+		<td colspan="2">
+			<a href="https://www.paypal.com/" target="_blank">
+				<img src="@Url.Content("~/Plugins/Payments.PayPalStandard/Content/images/logo200x53.png")" alt="PayPal" style="width:200px; height:53px; margin-bottom:10px;" />
+			</a>
+		</td>
+	</tr>
+    <tr>
+        <td colspan="2">
+            <div class="alert alert-info fade in">
+                <button class="close" data-dismiss="alert">x</button>
+                @Html.Raw(T("Plugins.Payments.PayPalStandard.AdminInstruction"))
+            </div>
+        </td>
+    </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UseSandbox)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.UseSandbox)
+                @Html.ValidationMessageFor(model => model.UseSandbox)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BusinessEmail)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BusinessEmail)
+                @Html.ValidationMessageFor(model => model.BusinessEmail)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PdtToken)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PdtToken)
+                @Html.ValidationMessageFor(model => model.PdtToken)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PdtValidateOrderTotal)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PdtValidateOrderTotal)
+                @Html.ValidationMessageFor(model => model.PdtValidateOrderTotal)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFee)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.ValidationMessageFor(model => model.AdditionalFee)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PassProductNamesAndTotals)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PassProductNamesAndTotals)
+                @Html.ValidationMessageFor(model => model.PassProductNamesAndTotals)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EnableIpn)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EnableIpn)
+                @Html.ValidationMessageFor(model => model.EnableIpn)
+            </td>
+        </tr>
+		<tr id="pnlIpnUrl">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IpnUrl)
+                <span style="float:right; font-size:0.9em; font-style:italic;">
+				    @T("Plugins.Payments.PayPalStandard.Fields.EnableIpn.Hint2")
+			    </span>
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IpnUrl)
+                @Html.ValidationMessageFor(model => model.IpnUrl)
+            </td>
+        </tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+                <button type="submit" name="save" class="btn btn-primary" value="save">
+                    <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+                </button>
+            </td>
+        </tr>
+    </table>   
+}

@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Customers
     /// Represents a customer
     /// </summary>
     [DataContract]
-    public partial class Customer : BaseEntity
+	public partial class Customer : BaseEntity, ISoftDeletable
     {
         private ICollection<ExternalAuthenticationRecord> _externalAuthenticationRecords;
         private ICollection<CustomerContent> _customerContent;
@@ -55,7 +55,6 @@ namespace SmartStore.Core.Domain.Customers
 		/// <summary>
 		/// Gets or sets the password
 		/// </summary>
-        [DataMember]
         public string Password { get; set; }
 
 		/// <summary>
@@ -92,12 +91,14 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
-        public int AffiliateId { get; set; }
+		[DataMember]
+		public int AffiliateId { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether the customer is active
         /// </summary>
-        public bool Active { get; set; }
+		[DataMember]
+		public bool Active { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the customer has been deleted
@@ -107,32 +108,38 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets a value indicating whether the customer account is system
         /// </summary>
-        public bool IsSystemAccount { get; set; }
+		[DataMember]
+		public bool IsSystemAccount { get; set; }
 
         /// <summary>
         /// Gets or sets the customer system name
         /// </summary>
-        public string SystemName { get; set; }
+		[DataMember]
+		public string SystemName { get; set; }
 
         /// <summary>
         /// Gets or sets the last IP address
         /// </summary>
-        public string LastIpAddress { get; set; }
+		[DataMember]
+		public string LastIpAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>
-        public DateTime CreatedOnUtc { get; set; }
+		[DataMember]
+		public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of last login
         /// </summary>
-        public DateTime? LastLoginDateUtc { get; set; }
+		[DataMember]
+		public DateTime? LastLoginDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of last activity
         /// </summary>
-        public DateTime LastActivityDateUtc { get; set; }
+		[DataMember]
+		public DateTime LastActivityDateUtc { get; set; }
         
         #region Navigation properties
 
@@ -175,7 +182,8 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets orders
         /// </summary>
-        public virtual ICollection<Order> Orders
+		[DataMember]
+		public virtual ICollection<Order> Orders
         {
             get { return _orders ?? (_orders = new List<Order>()); }
             protected set { _orders = value; }            
@@ -193,7 +201,8 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets return request of this customer
         /// </summary>
-        public virtual ICollection<ReturnRequest> ReturnRequests
+		[DataMember]
+		public virtual ICollection<ReturnRequest> ReturnRequests
         {
             get { return _returnRequests ?? (_returnRequests = new List<ReturnRequest>()); }
             protected set { _returnRequests = value; }            
@@ -202,17 +211,20 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Default billing address
         /// </summary>
-        public virtual Address BillingAddress { get; set; }
+		[DataMember]
+		public virtual Address BillingAddress { get; set; }
 
         /// <summary>
         /// Default shipping address
         /// </summary>
-        public virtual Address ShippingAddress { get; set; }
+		[DataMember]
+		public virtual Address ShippingAddress { get; set; }
 
         /// <summary>
         /// Gets or sets customer addresses
         /// </summary>
-        public virtual ICollection<Address> Addresses
+		[DataMember]
+		public virtual ICollection<Address> Addresses
         {
             get { return _addresses ?? (_addresses = new List<Address>()); }
             protected set { _addresses = value; }            

@@ -9,7 +9,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Tax;

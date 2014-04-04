@@ -10,6 +10,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Stores;
+using SmartStore.Core;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -18,6 +19,7 @@ namespace SmartStore.Admin.Controllers
     {
         #region Fields
 
+        private readonly IWorkContext _workContext;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
@@ -38,7 +40,8 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService,
             IPictureService pictureService,
             ContentSliderSettings contentSliderSettings,
-			IStoreService storeService)
+			IStoreService storeService,
+            IWorkContext workContext)
         {
             this._settingService = settingService;
             this._localizationService = localizationService;
@@ -48,6 +51,7 @@ namespace SmartStore.Admin.Controllers
             this._pictureService = pictureService;
             this._contentSliderSettings = contentSliderSettings;
 			this._storeService = storeService;
+            this._workContext = workContext;
         }
         
         #endregion
@@ -65,7 +69,16 @@ namespace SmartStore.Admin.Controllers
             foreach (ContentSliderSlideModel slide in model.Slides)
             {
 				slide.SlideIndex = rowIndex++;
-                slide.LanguageName = _languageService.GetLanguageByCulture(slide.LanguageCulture).Name;
+
+                var language = _languageService.GetLanguageByCulture(slide.LanguageCulture);
+                if (language != null)
+                {
+                    slide.LanguageName = language.Name;
+                }
+                else {
+                    var seoCode = _workContext.GetDefaultLanguageSeoCode();
+                    slide.LanguageName = _languageService.GetLanguageBySeoCode(seoCode).Name;
+                }
             }
 
             return View(model);
@@ -124,7 +137,7 @@ namespace SmartStore.Admin.Controllers
                 _contentSliderSettings.Slides.Add(model.ToEntity());
                 _settingService.SaveSetting(_contentSliderSettings);
                 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Added"));
                 return RedirectToAction("Index");
             }
 
@@ -194,7 +207,7 @@ namespace SmartStore.Admin.Controllers
                 _contentSliderSettings.Slides[index] = model.ToEntity();
                 _settingService.SaveSetting(_contentSliderSettings);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Updated"));
 
                 return continueEditing ? RedirectToAction("EditSlide", new { index = index }) : RedirectToAction("Index");
             }
@@ -216,12 +229,12 @@ namespace SmartStore.Admin.Controllers
 
                 _contentSliderSettings.Slides.RemoveAt(id);
                 _settingService.SaveSetting(_contentSliderSettings);
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Deleted"));
                 return RedirectToAction("Index");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { index = id });
             }
         }

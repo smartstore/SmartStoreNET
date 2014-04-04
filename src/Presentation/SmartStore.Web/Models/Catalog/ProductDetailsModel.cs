@@ -11,16 +11,34 @@ namespace SmartStore.Web.Models.Catalog
 {
     public partial class ProductDetailsModel : EntityModelBase
     {
-		private ProductDetailsPictureModel _detailsPictureModel;	// codehint: sm-add
+		private ProductDetailsPictureModel _detailsPictureModel;
 
         public ProductDetailsModel()
         {
-            ProductVariantModels = new List<ProductVariantModel>();
-            SpecificationAttributeModels = new List<ProductSpecificationModel>();
             //codehint: sm-edit
             //Manufacturers = new List<ProductManufacturer>();
             Manufacturers = new List<ManufacturerOverviewModel>();
+			GiftCard = new GiftCardModel();
+			ProductPrice = new ProductPriceModel();
+			AddToCart = new AddToCartModel();
+			ProductVariantAttributes = new List<ProductVariantAttributeModel>();
+			Combinations = new List<ProductVariantAttributeCombination>();
+			AssociatedProducts = new List<ProductDetailsModel>();
+			BundledItems = new List<ProductDetailsModel>();
+			BundleItem = new ProductBundleItemModel();
+			IsAvailable = true;
         }
+
+		//picture(s)
+		public ProductDetailsPictureModel DetailsPictureModel
+		{
+			get
+			{
+				if (_detailsPictureModel == null)
+					_detailsPictureModel = new ProductDetailsPictureModel();
+				return _detailsPictureModel;
+			}
+		}
 
         public string Name { get; set; }
         public string ShortDescription { get; set; }
@@ -30,29 +48,71 @@ namespace SmartStore.Web.Models.Catalog
         public string MetaDescription { get; set; }
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
+		public ProductType ProductType { get; set; }
+		public bool VisibleIndividually { get; set; }
 
-        //codehint: sm-ad
+		public bool ShowSku { get; set; }
+		public string Sku { get; set; }
+
+		public bool ShowManufacturerPartNumber { get; set; }
+		public string ManufacturerPartNumber { get; set; }
+
+		public bool ShowGtin { get; set; }
+		public string Gtin { get; set; }
+
+		public bool HasSampleDownload { get; set; }
+
+		public GiftCardModel GiftCard { get; set; }
+
+		public string StockAvailability { get; set; }
+		public bool IsAvailable { get; set; }
+
+		public bool IsCurrentCustomerRegistered { get; set; }
+		public bool DisplayBackInStockSubscription { get; set; }
+		public bool BackInStockAlreadySubscribed { get; set; }
+
+		public ProductPriceModel ProductPrice { get; set; }
+		public AddToCartModel AddToCart { get; set; }
+		public IList<ProductVariantAttributeModel> ProductVariantAttributes { get; set; }
+		public string AttributeInfo { get; set; }
+
         public bool DisplayAdminLink { get; set; }
         public bool EnableHtmlTextCollapser { get; set; }
         public string HtmlTextCollapsedHeight { get; set; }
+		public bool ShowLegalInfo { get; set; }
+		public string LegalInfo { get; set; }
+		public bool ShowWeight { get; set; }
+		public bool ShowDimensions { get; set; }
+		public decimal WeightValue { get; set; }
+		public string Weight { get; set; }
+		public string Length { get; set; }
+		public string Width { get; set; }
+		public string Height { get; set; }
+		public int ThumbDimensions { get; set; }
+        public string DeliveryTimeName { get; set; }
+        public string DeliveryTimeHexValue { get; set; }
 
-        //picture(s)
-		//codehint: sm-edit (refactored)
-		public ProductDetailsPictureModel DetailsPictureModel {
-			get {
-				if (_detailsPictureModel == null)
-					_detailsPictureModel = new ProductDetailsPictureModel();
-				return _detailsPictureModel;
-			}
-		}
-        //codehint: sm-add
+		public bool DisplayDeliveryTime { get; set; }
+		public bool IsShipEnabled { get; set; }
+		public bool DisplayDeliveryTimeAccordingToStock { get; set; }
+		public bool IsBasePriceEnabled { get; set; }
+		public string BasePriceInfo { get; set; }
+		public string BundleTitleText { get; set; }
+		public bool BundlePerItemShipping { get; set; }
+		public bool BundlePerItemPricing { get; set; }
+		public bool BundlePerItemShoppingCart { get; set; }
+
+		public IList<ProductVariantAttributeCombination> Combinations { get; set; }
+		public ProductVariantAttributeCombination CombinationSelected { get; set; }
+
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }
 
-        //product variant(s)
-        public IList<ProductVariantModel> ProductVariantModels { get; set; }
-        //specification attributes
-        public IList<ProductSpecificationModel> SpecificationAttributeModels { get; set; }
+		//a list of associated products. For example, "Grouped" products could have several child "simple" products
+		public IList<ProductDetailsModel> AssociatedProducts { get; set; }
+
+		public IList<ProductDetailsModel> BundledItems { get; set; }
+		public ProductBundleItemModel BundleItem { get; set; }
 
 		#region Nested Classes
 
@@ -69,221 +129,172 @@ namespace SmartStore.Web.Models.Catalog
             public IList<CategoryModel> CategoryBreadcrumb { get; set; }
         }
 
-        public partial class ProductVariantModel : EntityModelBase
-        {
-            public ProductVariantModel()
-            {
-                GiftCard = new GiftCardModel();
-                ProductVariantPrice = new ProductVariantPriceModel();
-                PictureModel = new PictureModel();
-                AddToCart = new AddToCartModel();
-                ProductVariantAttributes = new List<ProductVariantAttributeModel>();
-				Combinations = new List<ProductVariantAttributeCombination>();
-            }
+		public partial class AddToCartModel : ModelBase
+		{
+			public AddToCartModel()
+			{
+				this.AllowedQuantities = new List<SelectListItem>();
+			}
+			public int ProductId { get; set; }
 
-            public string Name { get; set; }
+			[SmartResourceDisplayName("Products.Qty")]
+			public int EnteredQuantity { get; set; }
 
-            public bool ShowSku { get; set; }
-            public string Sku { get; set; }
+			[SmartResourceDisplayName("Products.EnterProductPrice")]
+			public bool CustomerEntersPrice { get; set; }
+			[SmartResourceDisplayName("Products.EnterProductPrice")]
+			public decimal CustomerEnteredPrice { get; set; }
+			public String CustomerEnteredPriceRange { get; set; }
 
-            public string Description { get; set; }
+			public bool DisableBuyButton { get; set; }
+			public bool DisableWishlistButton { get; set; }
+			public List<SelectListItem> AllowedQuantities { get; set; }
+			public bool AvailableForPreOrder { get; set; }
+		}
 
-            public bool ShowManufacturerPartNumber { get; set; }
-            public string ManufacturerPartNumber { get; set; }
+		public partial class ProductPriceModel : ModelBase
+		{
+			public string OldPrice { get; set; }
 
-            public bool ShowGtin { get; set; }
-            public string Gtin { get; set; }
+			public string Price { get; set; }
+			public string PriceWithDiscount { get; set; }
 
-            public bool HasSampleDownload { get; set; }
+			public decimal PriceValue { get; set; }
+			public decimal PriceWithDiscountValue { get; set; }
 
-            public GiftCardModel GiftCard { get; set; }
+			public bool CustomerEntersPrice { get; set; }
 
-            public string StockAvailablity { get; set; }
+			public bool CallForPrice { get; set; }
 
-            public bool IsCurrentCustomerRegistered { get; set; }
-            public bool DisplayBackInStockSubscription { get; set; }
-            public bool BackInStockAlreadySubscribed { get; set; }
+			public int ProductId { get; set; }
 
-            public ProductVariantPriceModel ProductVariantPrice { get; set; }
+			public bool HidePrices { get; set; }
 
-            public AddToCartModel AddToCart { get; set; }
+			public bool DynamicPriceUpdate { get; set; }
+			public bool BundleItemShowBasePrice { get; set; }
 
-            public PictureModel PictureModel { get; set; }
+			public string NoteWithDiscount { get; set; }
+			public string NoteWithoutDiscount { get; set; }
+		}
 
-            public IList<ProductVariantAttributeModel> ProductVariantAttributes { get; set; }
+		public partial class GiftCardModel : ModelBase
+		{
+			public bool IsGiftCard { get; set; }
 
-            //codehint: sm-edit begin
-            public bool ShowLegalInfo { get; set; }
-            public string LegalInfo { get; set; }
-            public bool ShowWeight { get; set; }
-            public bool ShowDimensions { get; set; }
-			public decimal WeightValue { get; set; }
-            public string Weight { get; set; }
-            public string Length { get; set; }
-            public string Width { get; set; }
-            public string Height { get; set; }
-            public int ThumbDimensions { get; set; }
-            public DeliveryTime DeliveryTime { get; set; }
-            public bool DisplayDeliveryTime { get; set; }
-            public bool IsShipEnabled { get; set; }
-            public bool DisplayDeliveryTimeAccordingToStock { get; set; }
-            public bool IsBasePriceEnabled { get; set; }
-            public string BasePriceInfo { get; set; }
+			[SmartResourceDisplayName("Products.GiftCard.RecipientName")]
+			[AllowHtml]
+			public string RecipientName { get; set; }
+			[SmartResourceDisplayName("Products.GiftCard.RecipientEmail")]
+			[AllowHtml]
+			public string RecipientEmail { get; set; }
+			[SmartResourceDisplayName("Products.GiftCard.SenderName")]
+			[AllowHtml]
+			public string SenderName { get; set; }
+			[SmartResourceDisplayName("Products.GiftCard.SenderEmail")]
+			[AllowHtml]
+			public string SenderEmail { get; set; }
+			[SmartResourceDisplayName("Products.GiftCard.Message")]
+			[AllowHtml]
+			public string Message { get; set; }
 
-			public IList<ProductVariantAttributeCombination> Combinations { get; set; }
-			public ProductVariantAttributeCombination CombinationSelected { get; set; }
-			public bool IsUnavailable { get; set; }
-            //codehint: sm-edit end
+			public GiftCardType GiftCardType { get; set; }
+		}
 
-            #region Nested Classes
+		public partial class TierPriceModel : ModelBase
+		{
+			public string Price { get; set; }
 
-            public partial class AddToCartModel : ModelBase
-            {
-                public AddToCartModel()
-                {
-                    this.AllowedQuantities = new List<SelectListItem>();
-                }
-                public int ProductVariantId { get; set; }
+			public int Quantity { get; set; }
+		}
 
-                [SmartResourceDisplayName("Products.Qty")]
-                public int EnteredQuantity { get; set; }
+		public partial class ProductVariantAttributeModel : EntityModelBase
+		{
+			public ProductVariantAttributeModel()
+			{
+				AllowedFileExtensions = new List<string>();
+				Values = new List<ProductVariantAttributeValueModel>();
+			}
 
-                [SmartResourceDisplayName("Products.EnterProductPrice")]
-                public bool CustomerEntersPrice { get; set; }
-                [SmartResourceDisplayName("Products.EnterProductPrice")]
-                public decimal CustomerEnteredPrice { get; set; }
-                public String CustomerEnteredPriceRange { get; set; }
-                
-                public bool DisableBuyButton { get; set; }
-                public bool DisableWishlistButton { get; set; }
-                public List<SelectListItem> AllowedQuantities { get; set; }
-                public bool AvailableForPreOrder { get; set; }
-            }
+			public int ProductId { get; set; }
+			public int BundleItemId { get; set; }
 
-            public partial class ProductVariantPriceModel : ModelBase
-            {
-                public string OldPrice { get; set; }
+			public int ProductAttributeId { get; set; }
 
-                public string Price { get; set; }
-                public string PriceWithDiscount { get; set; }
+			public string Alias { get; set; }
 
-                public decimal PriceValue { get; set; }
-                public decimal PriceWithDiscountValue { get; set; }
+			public string Name { get; set; }
 
-                public bool CustomerEntersPrice { get; set; }
+			public string Description { get; set; }
 
-                public bool CallForPrice { get; set; }
+			public string TextPrompt { get; set; }
 
-                public int ProductVariantId { get; set; }
+			public bool IsRequired { get; set; }
 
-                public bool HidePrices { get; set; }
+			public bool IsDisabled { get; set; }
 
-                public bool DynamicPriceUpdate { get; set; }
-            }
+			/// <summary>
+			/// Selected value for textboxes
+			/// </summary>
+			public string TextValue { get; set; }
+			/// <summary>
+			/// Selected day value for datepicker
+			/// </summary>
+			public int? SelectedDay { get; set; }
+			/// <summary>
+			/// Selected month value for datepicker
+			/// </summary>
+			public int? SelectedMonth { get; set; }
+			/// <summary>
+			/// Selected year value for datepicker
+			/// </summary>
+			public int? SelectedYear { get; set; }
+			/// <summary>
+			/// Begin year for datepicker
+			/// </summary>
+			public int? BeginYear { get; set; }
+			/// <summary>
+			/// End year for datepicker
+			/// </summary>
+			public int? EndYear { get; set; }
+			/// <summary>
+			/// Allowed file extensions for customer uploaded files
+			/// </summary>
+			public IList<string> AllowedFileExtensions { get; set; }
 
-            public partial class GiftCardModel : ModelBase
-            {
-                public bool IsGiftCard { get; set; }
+			public AttributeControlType AttributeControlType { get; set; }
 
-                [SmartResourceDisplayName("Products.GiftCard.RecipientName")]
-                [AllowHtml]
-                public string RecipientName { get; set; }
-                [SmartResourceDisplayName("Products.GiftCard.RecipientEmail")]
-                [AllowHtml]
-                public string RecipientEmail { get; set; }
-                [SmartResourceDisplayName("Products.GiftCard.SenderName")]
-                [AllowHtml]
-                public string SenderName { get; set; }
-                [SmartResourceDisplayName("Products.GiftCard.SenderEmail")]
-                [AllowHtml]
-                public string SenderEmail { get; set; }
-                [SmartResourceDisplayName("Products.GiftCard.Message")]
-                [AllowHtml]
-                public string Message { get; set; }
+			public IList<ProductVariantAttributeValueModel> Values { get; set; }
 
-                public GiftCardType GiftCardType { get; set; }
-            }
+		}
 
-            public partial class TierPriceModel : ModelBase
-            {
-                public string Price { get; set; }
+		public partial class ProductVariantAttributeValueModel : EntityModelBase
+		{
+			public string Name { get; set; }
+            public string SeName { get; set; }
+			public string Alias { get; set; }
+			public string ColorSquaresRgb { get; set; }
+			public string PriceAdjustment { get; set; }
+			public decimal PriceAdjustmentValue { get; set; }
+			public int QuantityInfo { get; set; }
+			public bool IsPreSelected { get; set; }
+			public string ImageUrl { get; set; }
+		}
 
-                public int Quantity { get; set; }
-            }
-
-            public partial class ProductVariantAttributeModel : EntityModelBase
-            {
-                public ProductVariantAttributeModel()
-                {
-                    AllowedFileExtensions = new List<string>();
-                    Values = new List<ProductVariantAttributeValueModel>();
-                }
-
-                public int ProductVariantId { get; set; }
-
-                public int ProductAttributeId { get; set; }
-
-                public string Alias { get; set; }
-
-                public string Name { get; set; }
-
-                public string Description { get; set; }
-
-                public string TextPrompt { get; set; }
-
-                public bool IsRequired { get; set; }
-
-                /// <summary>
-                /// Selected value for textboxes
-                /// </summary>
-                public string TextValue { get; set; }
-                /// <summary>
-                /// Selected day value for datepicker
-                /// </summary>
-                public int? SelectedDay { get; set; }
-                /// <summary>
-                /// Selected month value for datepicker
-                /// </summary>
-                public int? SelectedMonth { get; set; }
-                /// <summary>
-                /// Selected year value for datepicker
-                /// </summary>
-                public int? SelectedYear { get; set; }
-                /// <summary>
-                /// Allowed file extensions for customer uploaded files
-                /// </summary>
-                public IList<string> AllowedFileExtensions { get; set; }
-
-                public AttributeControlType AttributeControlType { get; set; }
-                
-                public IList<ProductVariantAttributeValueModel> Values { get; set; }
-
-            }
-
-            public partial class ProductVariantAttributeValueModel : EntityModelBase
-            {
-                public string Name { get; set; }
-
-                public string Alias { get; set; }
-
-                public string ColorSquaresRgb { get; set; }
-
-                public string PriceAdjustment { get; set; }
-
-                public decimal PriceAdjustmentValue { get; set; }
-
-                public bool IsPreSelected { get; set; }
-            }
-            #endregion
-        }
+		public partial class ProductBundleItemModel : EntityModelBase
+		{
+			public int Quantity { get; set; }
+			public bool HideThumbnail { get; set; }
+			public bool Visible { get; set; }
+			public bool IsBundleItemPricing { get; set; }
+		}
 
 		#endregion
     }
 
-	/// <remarks>codehint: sm-add</remarks>
 	public partial class ProductDetailsPictureModel : ModelBase
 	{
-		public ProductDetailsPictureModel() {
+		public ProductDetailsPictureModel()
+		{
 			PictureModels = new List<PictureModel>();
 		}
 
@@ -295,5 +306,4 @@ namespace SmartStore.Web.Models.Catalog
 		public IList<PictureModel> PictureModels { get; set; }
 		public int GalleryStartIndex { get; set; }
 	}
-
 }

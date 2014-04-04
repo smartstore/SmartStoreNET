@@ -2,8 +2,9 @@
 @model ProductDetailsPictureModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    Html.AddScriptParts(@Url.Content("~/Scripts/load-image.js"));
-    Html.AddScriptParts(@Url.Content("~/Content/bootstrap/js/custom/bootstrap-image-gallery.js"));
+    Html.AddScriptParts(true,
+        "~/Scripts/load-image.js", 
+        "~/Content/bootstrap/js/custom/bootstrap-image-gallery.js");
 
     var zoomEnabled = Model.DefaultPictureZoomEnabled;
 }

@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Events;
 
 namespace SmartStore.Services.Tasks
 {

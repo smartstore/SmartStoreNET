@@ -124,7 +124,7 @@ namespace SmartStore.Admin.Controllers
                 email = model.ToEntity(email);
                 _queuedEmailService.UpdateQueuedEmail(email);
 
-                SuccessNotification(_localizationService.GetResource("Admin.System.QueuedEmails.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = email.Id }) : RedirectToAction("List");
             }
 
@@ -162,7 +162,7 @@ namespace SmartStore.Admin.Controllers
             };
             _queuedEmailService.InsertQueuedEmail(requeuedEmail);
 
-            SuccessNotification(_localizationService.GetResource("Admin.System.QueuedEmails.Requeued"));
+            NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Requeued"));
             return RedirectToAction("Edit", requeuedEmail.Id);
         }
 
@@ -179,7 +179,7 @@ namespace SmartStore.Admin.Controllers
 
             _queuedEmailService.DeleteQueuedEmail(email);
 
-            SuccessNotification(_localizationService.GetResource("Admin.System.QueuedEmails.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Deleted"));
 			return RedirectToAction("List");
 		}
 

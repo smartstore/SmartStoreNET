@@ -62,12 +62,28 @@
                 }
             }
 
+            function renderSelectItem(item) {
+            	try {
+            		var option = $(item.element),
+						imageUrl = option.data('imageurl');
+
+            		if (imageUrl) {
+            			return '<img class="attribute-value-image" src="' + imageUrl + '" />' + item.text;
+            		}
+            	}
+            	catch (e) { }
+
+            	return item.text;
+            }
+
             var opts = {
                 width: 'resolve',
                 allowClear: !!(placeholder), // assuming that a placeholder indicates nullability
                 placeholder: placeholder,
                 minimumResultsForSearch: _.isNumber(minResultsForSearch) ? minResultsForSearch : 8,
-                minimumInputLength: _.isNumber(minInputLength) ? minInputLength : 0
+                minimumInputLength: _.isNumber(minInputLength) ? minInputLength : 0,
+                formatResult: renderSelectItem,
+                formatSelection: renderSelectItem
             };
 
             if (url) {

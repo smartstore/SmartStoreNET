@@ -67,7 +67,7 @@
             var state = Model.GetNodePathState(node);
             <li class="@GetCssClassForNode(state)">
                 <a href="@Url.RouteUrl("Category", new { SeName = node.Value.SeName })">@node.Value.Name
-                    @if (node.Value.NumberOfProducts.HasValue)
+                    @if ((node.Value.NumberOfProducts ?? 0) > 0)
                     {
                         <text> (@(node.Value.NumberOfProducts))</text>
                     }

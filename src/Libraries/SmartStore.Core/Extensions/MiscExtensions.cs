@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using System.Data;
-using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Web.Mvc;
+using SmartStore.Core;
 
 namespace SmartStore
 {   
-	/// <remarks>codehint: sm-add</remarks>
     public static class MiscExtensions
     {
 		public static void Dump(this Exception exc) {
@@ -75,22 +71,44 @@ namespace SmartStore
 			return false;
 		}
 
-		public static void SelectValue(this List<SelectListItem> lst, string value, string defaultValue = null) 
-        {
-			if (lst != null) {
-				var itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(value));
-
-				if (itm == null && defaultValue != null)
-					itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(defaultValue));
-
-				if (itm != null)
-					itm.Selected = true;
-			}
-		}
-
         public static bool IsNullOrDefault<T>(this T? value) where T : struct
         {
             return default(T).Equals(value.GetValueOrDefault());
         }
-    }	// class
+
+		/// <summary>Converts bytes into a hex string.</summary>
+		public static string ToHexString(this byte[] bytes, int length = 0)
+		{
+			if (bytes == null || bytes.Length <= 0)
+				return "";
+
+			var sb = new StringBuilder();
+
+			foreach (byte b in bytes)
+			{
+				sb.Append(b.ToString("x2"));
+
+				if (length > 0 && sb.Length >= length)
+					break;
+			}
+			return sb.ToString();
+		}
+
+		public static T GetMergedDataValue<T>(this IMergedData mergedData, string key, T defaultValue)
+		{
+			try
+			{
+				if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
+				{
+					object value;
+
+					if (mergedData.MergedDataValues.TryGetValue(key, out value))
+						return (T)value;
+				}
+			}
+			catch (Exception) { }
+
+			return defaultValue;
+		}
+    }
 }

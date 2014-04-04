@@ -1,11 +1,32 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Orders
 {
     public class ShoppingCartSettings : ISettings
     {
-        /// <summary>
+		public ShoppingCartSettings()
+		{
+			MaximumShoppingCartItems = 1000;
+			MaximumWishlistItems = 1000;
+			MoveItemsFromWishlistToCart = true;
+			ShowProductImagesOnShoppingCart = true;
+			ShowProductBundleImagesOnShoppingCart = true;
+			ShowProductImagesOnWishList = true;
+			ShowProductBundleImagesOnWishList = true;
+			ShowDiscountBox = true;
+			ShowGiftCardBox = true;
+			CrossSellsNumber = 8;
+			EmailWishlistEnabled = true;
+			MiniShoppingCartEnabled = true;
+			ShowProductImagesInMiniShoppingCart = true;
+			MiniShoppingCartProductNumber = 5;
+			//RoundPricesDuringCalculation = false;
+            ShowBasePrice = true;
+            ShowDeliveryTimes = true;
+            ShowShortDesc = true;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether a custoemr should be redirected to the shopping cart page after adding a product to the cart/wishlist
         /// </summary>
         public bool DisplayCartAfterAddingProduct { get; set; }
@@ -40,10 +61,20 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool ShowProductImagesOnShoppingCart { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to show product bundle images on shopping cart page
+		/// </summary>
+		public bool ShowProductBundleImagesOnShoppingCart { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to show product image on wishlist page
         /// </summary>
         public bool ShowProductImagesOnWishList { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show product image on wishlist page
+		/// </summary>
+		public bool ShowProductBundleImagesOnWishList { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show discount box on shopping cart page
@@ -94,5 +125,25 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show a legal hint in the order summary
         /// </summary>
         public bool ShowConfirmOrderLegalHint { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show delivery times in the order summary
+        /// </summary>
+        public bool ShowDeliveryTimes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show the product short description in the order summary
+        /// </summary>
+        public bool ShowShortDesc { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show the product short description in the order summary
+        /// </summary>
+        public bool ShowBasePrice { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show the quantity of linked attribute value product
+		/// </summary>
+		public bool ShowLinkedAttributeValueQuantity { get; set; }
     }
 }

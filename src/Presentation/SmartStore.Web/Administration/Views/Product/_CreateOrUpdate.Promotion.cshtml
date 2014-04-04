@@ -1,0 +1,158 @@
+﻿@model ProductModel
+@using Telerik.Web.Mvc.UI;
+
+<div>
+    <h3>@T("Admin.Catalog.Products.RelatedProducts")</h3>
+
+    @if (Model.Id > 0)
+    {
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<ProductModel.RelatedProductModel>()
+                    .Name("relatedproducts-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("RelatedProductList", "Product", new { productId = Model.Id })
+                            .Update("RelatedProductUpdate", "Product")
+                            .Delete("RelatedProductDelete", "Product");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Product2Name)
+                            .ReadOnly()
+							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
+                        columns.Bound(x => x.Product2Sku)
+                            .ReadOnly();
+                        columns.Bound(x => x.Product2Published)
+                            .ReadOnly()
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Product2Published))
+                            .ClientTemplate(@Html.SymbolForBool("Product2Published"))
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(100)
+                            .Centered();
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        })
+                        .Width(180);
+                    })
+                    .EnableCustomBinding(true))
+
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning" style="margin-top:3px;"
+                            onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                        <i class="icon-plus"></i>
+                        @T("Admin.Catalog.Products.RelatedProducts.AddNew")
+                    </button>
+
+                    <input type="submit" id="btnRefreshRelatedProducts" name="btnRefreshRelatedProducts" style="display: none" />
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefreshRelatedProducts').click(function () {
+                                //refresh grid
+                                var optionsGrid = $("#relatedproducts-grid");
+                                optionsGrid.data('tGrid').ajaxRequest();
+
+                                //return false to don't reload a page
+                                return false;
+                            });
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.RelatedProducts.SaveBeforeEdit")
+        </div>
+    }
+</div>
+
+<div style="margin-top:30px;">
+    <h3>@T("Admin.Catalog.Products.CrossSells")</h3>
+
+    @if (Model.Id > 0)
+    {
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<ProductModel.CrossSellProductModel>()
+                    .Name("crosssellproducts-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("CrossSellProductList", "Product", new { productId = Model.Id })
+                            .Delete("CrossSellProductDelete", "Product");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Product2Name)
+                            .ReadOnly()
+							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
+                        columns.Bound(x => x.Product2Sku);
+                        columns.Bound(x => x.Product2Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Product2Published))
+                            .ClientTemplate(@Html.SymbolForBool("Product2Published"))
+                            .Centered();
+                        columns.Command(commands =>
+                        {
+                            commands.Delete().Localize(T);
+                        })
+                        .Width(90);
+                    })
+                    .EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning" style="margin-top:3px;"
+                            onclick="javascript:OpenWindow('@(Url.Action("CrossSellProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshCrossSellProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                        <i class="icon-plus"></i>
+                        @T("Admin.Catalog.Products.CrossSells.AddNew")
+                    </button>
+
+                    <input type="submit" id="btnRefreshCrossSellProducts" name="btnRefreshCrossSellProducts" style="display: none" />
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefreshCrossSellProducts').click(function () {
+                                //refresh grid
+                                var optionsGrid = $("#crosssellproducts-grid");
+                                optionsGrid.data('tGrid').ajaxRequest();
+
+                                //return false to don't reload a page
+                                return false;
+                            });
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.CrossSells.SaveBeforeEdit")
+        </div>
+    }
+</div>

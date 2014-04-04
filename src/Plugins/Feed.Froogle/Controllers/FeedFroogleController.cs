@@ -4,7 +4,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -14,16 +14,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
     public class FeedFroogleController : PluginControllerBase
     {
         private readonly IGoogleService _googleService;
-        private readonly ILogger _logger;
         private readonly ISettingService _settingService;
 
         public FeedFroogleController(
 			IGoogleService googleService, 
-			ILogger logger,
 			ISettingService settingService)
 		{
 			this._googleService = googleService;
-			this._logger = logger;
 			this._settingService = settingService;
 		}
         
@@ -45,13 +42,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
             if (!ModelState.IsValid)
 				return Configure();
 
-			// codehint: sm-edit
 			model.Copy(_googleService.Settings, false);
 			_settingService.SaveSetting(_googleService.Settings);
 
 			_googleService.Helper.ScheduleTaskUpdate(model.TaskEnabled, model.GenerateStaticFileEachMinutes * 60);
 
-			SuccessNotification(_googleService.Helper.Resource("ConfigSaveNote"), true);
+			NotifySuccess(_googleService.Helper.Resource("ConfigSaveNote"), true);
 
 			_googleService.SetupModel(model);
 
@@ -73,9 +69,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
             }
             catch (Exception exc)
 			{
-				//model.GenerateFeedResult = exc.Message;	// codehint: sm-edit
-				ErrorNotification(exc.Message, true);
-                _logger.Error(exc.Message, exc);
+				NotifyError(exc.Message, true);
             }
 
 			_googleService.SetupModel(model, _googleService.Helper.ScheduledTask);
@@ -83,7 +77,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		[HttpPost]
 		public ActionResult GoogleProductEdit(int pk, string name, string value) {
 			_googleService.UpdateInsert(pk, name, value);
@@ -98,5 +91,5 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
                 Data = _googleService.GetGridModel(command, searchProductName)
             };
         }
-    }	// class
+    }
 }

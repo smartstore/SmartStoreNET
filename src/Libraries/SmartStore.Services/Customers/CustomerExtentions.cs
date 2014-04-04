@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -133,7 +135,9 @@ namespace SmartStore.Services.Customers
 
             string fullName = "";
             if (!String.IsNullOrWhiteSpace(firstName) && !String.IsNullOrWhiteSpace(lastName))
+            {
                 fullName = string.Format("{0} {1}", firstName, lastName);
+            }
             else
             {
                 if (!String.IsNullOrWhiteSpace(firstName))
@@ -141,6 +145,13 @@ namespace SmartStore.Services.Customers
 
                 if (!String.IsNullOrWhiteSpace(lastName))
                     fullName = lastName;
+
+                if (String.IsNullOrWhiteSpace(firstName) && String.IsNullOrWhiteSpace(lastName))
+                {
+                    var address = customer.Addresses.FirstOrDefault();
+                    if (address != null)
+                        fullName = string.Format("{0} {1}", address.FirstName, address.LastName);
+                }
             }
             return fullName;
         }
@@ -198,6 +209,31 @@ namespace SmartStore.Services.Customers
 
             return result;
         }
+
+		#region Shopping cart
+
+		public static int CountProductsInCart(this Customer customer, ShoppingCartType cartType, int? storeId = null)
+		{
+			int count = customer.ShoppingCartItems
+				.Filter(cartType, storeId)
+				.Where(x => x.ParentItemId == null)
+				.Sum(x => x.Quantity);
+
+			return count;
+		}
+		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null, bool orderById = false)
+		{
+			var rawItems = customer.ShoppingCartItems.Filter(cartType, storeId);
+
+			if (orderById)
+				rawItems = rawItems.OrderByDescending(x => x.Id);
+
+			var organizedItems = rawItems.ToList().Organize();
+
+			return organizedItems.ToList();
+		}
+
+		#endregion
 
 		#region Gift cards
 

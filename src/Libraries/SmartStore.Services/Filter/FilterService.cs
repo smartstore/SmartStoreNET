@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
@@ -11,12 +10,10 @@ using SmartStore.Services.Catalog;
 using System.Linq.Dynamic;
 using SmartStore.Core.Data;
 using System.Globalization;
-using System.Data.Objects.SqlClient;
 using SmartStore.Core;
 
 namespace SmartStore.Services.Filter
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public partial class FilterService : IFilterService
 	{
 		private const string _defaultType = "String";
@@ -39,8 +36,10 @@ namespace SmartStore.Services.Filter
 		public static string ShortcutPrice { get { return "_Price"; } }
 		public static string ShortcutSpecAttribute { get { return "_SpecId"; } }
 
-		public bool IncludeFeatured {
-			get {
+		public bool IncludeFeatured
+		{
+			get
+			{
 				if (_includeFeatured == null)
 					_includeFeatured = EngineContext.Current.Resolve<CatalogSettings>().IncludeFeaturedProductsInNormalLists;
 				return _includeFeatured ?? false;
@@ -48,18 +47,21 @@ namespace SmartStore.Services.Filter
 		}
 
 		// helper
-		private string ValidateValue(string value, string alternativeValue) {
+		private string ValidateValue(string value, string alternativeValue)
+		{
 			if (value.HasValue() && !value.IsCaseInsensitiveEqual("null"))
 				return value;
 			return alternativeValue;
 		}
-		private string FormatParameterIndex(ref int index) {
+		private string FormatParameterIndex(ref int index)
+		{
 			//if (curlyBracketFormatting)
 			//	return "{0}{1}{2}".FormatWith('{', index++, '}');
 
 			return "@{0}".FormatWith(index++);
 		}
-		private object FilterValueToObject(string value, string type) {
+		private object FilterValueToObject(string value, string type)
+		{
 			if (value == null)
 				value = "";
 
@@ -74,11 +76,16 @@ namespace SmartStore.Services.Filter
 
 			Type t = Type.GetType("System.{0}".FormatWith(ValidateValue(type, _defaultType)));
 
-			return TypeDescriptor.GetConverter(t).ConvertFromString(value);
+			var result = TypeDescriptor.GetConverter(t).ConvertFromString(null, CultureInfo.InvariantCulture, value);
+
+			return result;
 		}
-		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index) {
-			if (itm.Entity == ShortcutPrice) {
-				if (itm.IsRange) {
+		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index)
+		{
+			if (itm.Entity == ShortcutPrice)
+			{
+				if (itm.IsRange)
+				{
 					string valueLeft, valueRight;
 					itm.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
@@ -93,7 +100,8 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(FilterValueToObject(valueRight, itm.Type ?? "Decimal"));
 					context.Values.Add(DateTime.UtcNow);
 				}
-				else {
+				else
+				{
 					context.WhereClause.AppendFormat("(Price {0} {1} Or (SpecialPrice {0} {1} And SpecialPriceStartDateTimeUtc <= {2} And SpecialPriceEndDateTimeUtc >= {2}))",
 						itm.Operator == null ? "=" : itm.Operator.ToString(),
 						FormatParameterIndex(ref index),
@@ -103,24 +111,28 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(DateTime.UtcNow);
 				}
 			}
-			else if (itm.Entity == ShortcutSpecAttribute) {
+			else if (itm.Entity == ShortcutSpecAttribute)
+			{
 				context.WhereClause.AppendFormat("SpecificationAttributeOptionId {0} {1}", itm.Operator == null ? "=" : itm.Operator.ToString(), FormatParameterIndex(ref index));
 				
 				context.Values.Add(itm.ID ?? 0);
 			}
-			else {
+			else
+			{
 				return false;
 			}
 			return true;
 		}
-		private void FilterParentheses(List<FilterCriteria> criteria) {
+		private void FilterParentheses(List<FilterCriteria> criteria)
+		{
 			// Logical or combine all criteria with same name.
 			//
 			// "The order of precedence for the logical operators is NOT (highest), followed by AND, followed by OR.
 			// The order of evaluation at the same precedence level is from left to right."
 			// http://www.databasedev.co.uk/sql-multiple-conditions.html
 
-			if (criteria.Count > 0) {
+			if (criteria.Count > 0)
+			{
 				criteria.Sort();
 				criteria.ForEach(c => { c.Open = null; c.Or = false; });
 
@@ -129,7 +141,8 @@ namespace SmartStore.Services.Filter
 					group c by c.Entity).Where(g => g.Count() > 1);
 					//group c by c.Name).Where(g => g.Count() > 1);
 
-				foreach (var grp in data) {
+				foreach (var grp in data)
+				{
 					grp.ToList().ForEach(f => f.Or = true);
 					grp.First().Or = false;
 					grp.First().Open = true;
@@ -140,31 +153,48 @@ namespace SmartStore.Services.Filter
 		private IQueryable<Product> AllProducts(List<int> categoryIds)
 		{
 			if (_products == null)
-				_products = _productService.GetAllProducts(categoryIds, IncludeFeatured, _storeContext.CurrentStoreIdIfMultiStoreMode);
+			{
+				var allContext = new ProductAllContext()
+				{
+					CategoryIds = categoryIds,
+					IncludeFeatured = IncludeFeatured,
+					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+					VisibleIndividually = true,
+					FilterByAvailableDate = true
+				};
+
+				_products = _productService.GetAllProducts(allContext);
+			}
 			return _products;
 		}
 
-		private List<FilterCriteria> ProductFilterablePrices(FilterProductContext context) {
-			List<FilterCriteria> result = new List<FilterCriteria>();
+		private List<FilterCriteria> ProductFilterablePrices(FilterProductContext context)
+		{
+			var result = new List<FilterCriteria>();
 			FilterCriteria criteria;
 			Category category;
 
-			FilterProductContext tmp = new FilterProductContext {
+			var tmp = new FilterProductContext
+			{
 				ParentCategoryID = context.ParentCategoryID,
 				CategoryIds = context.CategoryIds,
 				Criteria = new List<FilterCriteria>()
 			};
 
-			if (context.ParentCategoryID != 0 && (category = _categoryService.GetCategoryById(context.ParentCategoryID)) != null && category.PriceRanges.HasValue()) {
+			if (context.ParentCategoryID != 0 && (category = _categoryService.GetCategoryById(context.ParentCategoryID)) != null && category.PriceRanges.HasValue())
+			{
 				string[] ranges = category.PriceRanges.SplitSafe(";");
 
-				foreach (string range in ranges) {
-					if ((criteria = range.ParsePriceString()) != null) {
+				foreach (string range in ranges)
+				{
+					if ((criteria = range.ParsePriceString()) != null)
+					{
 						tmp.Criteria.Clear();
 						tmp.Criteria.AddRange(context.Criteria);
 						tmp.Criteria.Add(criteria);
 
-						try {
+						try
+						{
 							criteria.MatchCount = ProductFilter(tmp).Count();
 						}
 						catch (Exception exc) {
@@ -180,14 +210,15 @@ namespace SmartStore.Services.Filter
 			result.ForEach(c => c.IsInactive = true);
 			return result;
 		}
-		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false) {
+		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
+		{
 			bool includeFeatured = IncludeFeatured;
 			var query = ProductFilter(context);
 
 			var manus =
 				from p in query
 				from pm in p.ProductManufacturers
-				where pm.IsFeaturedProduct == includeFeatured
+				where pm.IsFeaturedProduct == includeFeatured && !pm.Manufacturer.Deleted
 				select pm.Manufacturer;
 
 			var grouped =
@@ -195,7 +226,8 @@ namespace SmartStore.Services.Filter
 				orderby m.DisplayOrder
 				group m by m.Id into grp
 				orderby grp.Key
-				select new FilterCriteria {
+				select new FilterCriteria
+				{
 					MatchCount = grp.Count(),
 					Value = grp.FirstOrDefault().Name
 				};
@@ -207,54 +239,17 @@ namespace SmartStore.Services.Filter
 
 			var lst = grouped.ToList();
 
-			lst.ForEach(c => {
+			lst.ForEach(c =>
+			{
 				c.Name = "Name";
 				c.Entity = "Manufacturer";
 				c.IsInactive = true;
 			});
 
 			return lst;
-
-
-			//bool includeFeatured = IncludeFeatured;
-			//var products = ProductFilter(context).Select(p => p.Id);
-			//var manus = EngineContext.Current.Resolve<IRepository<Manufacturer>>();
-			//var productToManus = EngineContext.Current.Resolve<IRepository<ProductManufacturer>>();
-
-			//var query =
-			//	from m in manus.Table
-			//	join pm in productToManus.Table on m.Id equals pm.ManufacturerId
-			//	where pm.IsFeaturedProduct == includeFeatured && products.Contains(pm.ProductId)
-			//	select new {
-			//		Id = m.Id,
-			//		Name = m.Name
-			//	};
-
-			//var grouped =
-			//	from m in query
-			//	group m by m.Id into grp
-			//	orderby grp.Key
-			//	select new FilterCriteria {
-			//		MatchCount = grp.Count(),
-			//		Value = grp.FirstOrDefault().Name
-			//	};
-
-			//grouped = grouped.OrderByDescending(m => m.MatchCount);
-
-			//if (!getAll)
-			//	grouped = grouped.Take(MaxDisplayCriteria);
-
-			//var lst = grouped.ToList();
-
-			//lst.ForEach(c => {
-			//	c.Name = "Name";
-			//	c.Entity = "Manufacturer";
-			//	c.IsInactive = true;
-			//});
-
-			//return lst;
 		}
-		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null) {
+		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null)
+		{
 			var query = ProductFilter(context);
 
 			var attributes =
@@ -270,7 +265,8 @@ namespace SmartStore.Services.Filter
 			var grouped =
 				from a in attributes
 				group a by new { a.SpecificationAttributeId, a.Id } into g
-				select new FilterCriteria {
+				select new FilterCriteria
+				{
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
 					ID = g.Key.Id,
@@ -280,7 +276,8 @@ namespace SmartStore.Services.Filter
 
 			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
 
-			lst.ForEach(c => {
+			lst.ForEach(c =>
+			{
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
 			});
@@ -288,9 +285,12 @@ namespace SmartStore.Services.Filter
 			return lst;
 		}
 
-		public virtual List<FilterCriteria> Deserialize(string jsonData) {
-			if (jsonData.HasValue()) {
-				if (jsonData.StartsWith("[")) {
+		public virtual List<FilterCriteria> Deserialize(string jsonData)
+		{
+			if (jsonData.HasValue())
+			{
+				if (jsonData.StartsWith("["))
+				{
 					return JsonConvert.DeserializeObject<List<FilterCriteria>>(jsonData);
 				}
 
@@ -298,14 +298,16 @@ namespace SmartStore.Services.Filter
 			}
 			return new List<FilterCriteria>();
 		}
-		public virtual string Serialize(List<FilterCriteria> criteria) {
+		public virtual string Serialize(List<FilterCriteria> criteria)
+		{
 			//criteria.FindAll(c => c.Type.IsNullOrEmpty()).ForEach(c => c.Type = _defaultType);
 			if (criteria != null && criteria.Count > 0)
 				return JsonConvert.SerializeObject(criteria);
 			return "";
 		}
 
-		public virtual bool ToWhereClause(FilterSql context) {
+		public virtual bool ToWhereClause(FilterSql context)
+		{
 			if (context.Values == null)
 				context.Values = new List<object>();
 			else
@@ -320,16 +322,19 @@ namespace SmartStore.Services.Filter
 
 			FilterParentheses(context.Criteria);
 
-			foreach (var itm in context.Criteria) {
+			foreach (var itm in context.Criteria)
+			{
 				if (context.WhereClause.Length > 0)
 					context.WhereClause.AppendFormat(" {0} ", itm.Or ? "Or" : "And");
 
 				if (itm.Open.HasValue && itm.Open.Value)
 					context.WhereClause.Append("(");
 
-				if (IsShortcut(context, itm, ref index)) {
+				if (IsShortcut(context, itm, ref index))
+				{
 				}
-				else if (itm.IsRange) {
+				else if (itm.IsRange)
+				{
 					string valueLeft, valueRight;
 					itm.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
@@ -343,7 +348,8 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(FilterValueToObject(valueLeft, itm.Type));
 					context.Values.Add(FilterValueToObject(valueRight, itm.Type));
 				}
-				else if (itm.Value.IsNullOrEmpty()) {
+				else if (itm.Value.IsNullOrEmpty())
+				{
 					context.WhereClause.AppendFormat("ASCII({0}) Is Null", itm.SqlName);		// true if null or empty (string)
 				}
 				else {
@@ -371,7 +377,8 @@ namespace SmartStore.Services.Filter
 			}
 			return (context.WhereClause.Length > 0);
 		}
-		public virtual bool ToWhereClause(FilterSql context, List<FilterCriteria> findIn, Predicate<FilterCriteria> match) {
+		public virtual bool ToWhereClause(FilterSql context, List<FilterCriteria> findIn, Predicate<FilterCriteria> match)
+		{
 			if (context.Criteria != null)
 				context.Criteria.Clear();	// !
 
@@ -385,23 +392,6 @@ namespace SmartStore.Services.Filter
 			var sql = new FilterSql();
 			var query = AllProducts(context.CategoryIds);
 
-			// product variant (default filter entity)
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "ProductVariant" || c.Entity == ShortcutPrice)))
-			{
-				var variantRepository = EngineContext.Current.Resolve<IRepository<ProductVariant>>();
-
-				var pvq = variantRepository.Table
-					.Where(pv => pv.Published && !pv.Deleted && 
-						(!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value <= nowUtc) && 
-						(!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value >= nowUtc))
-					.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
-
-				query =
-					from p in query
-					join pv in pvq on p.Id equals pv.ProductId
-					select p;
-			}
-
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
@@ -410,7 +400,7 @@ namespace SmartStore.Services.Filter
 				var pmq = (
 					from p in query
 					from pm in p.ProductManufacturers
-					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct)
+					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct) && !pm.Manufacturer.Deleted
 					select pm).Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 
 				query = pmq.Select(pm => pm.Product);
@@ -446,17 +436,17 @@ namespace SmartStore.Services.Filter
 			}
 
 			// sort
-			ProductSortingEnum order = (ProductSortingEnum)(context.OrderBy ?? 0);
+			var order = (ProductSortingEnum)(context.OrderBy ?? 0);
 			switch (order)
 			{
 				case ProductSortingEnum.NameDesc:
 					query = query.OrderByDescending(p => p.Name);
 					break;
 				case ProductSortingEnum.PriceAsc:
-					query = query.OrderBy(p => p.ProductVariants.FirstOrDefault().Price);
+					query = query.OrderBy(p => p.Price);
 					break;
 				case ProductSortingEnum.PriceDesc:
-					query = query.OrderByDescending(p => p.ProductVariants.FirstOrDefault().Price);
+					query = query.OrderByDescending(p => p.Price);
 					break;
 				case ProductSortingEnum.CreatedOn:
 					query = query.OrderByDescending(p => p.CreatedOnUtc);
@@ -481,7 +471,8 @@ namespace SmartStore.Services.Filter
 			return query;
 		}
 		
-		public virtual void ProductFilterable(FilterProductContext context) {
+		public virtual void ProductFilterable(FilterProductContext context)
+		{
 			if (context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutPrice) == null)
 				context.Criteria.AddRange(ProductFilterablePrices(context));
 
@@ -490,11 +481,13 @@ namespace SmartStore.Services.Filter
 
 			context.Criteria.AddRange(ProductFilterableSpecAttributes(context));
 		}
-		public virtual void ProductFilterableMultiSelect(FilterProductContext context, string filterMultiSelect) {
+		public virtual void ProductFilterableMultiSelect(FilterProductContext context, string filterMultiSelect)
+		{
 			var criteriaMultiSelect = Deserialize(filterMultiSelect).FirstOrDefault();
 			List<FilterCriteria> inactive = null;
 
-			if (criteriaMultiSelect != null) {
+			if (criteriaMultiSelect != null)
+			{
 				context.Criteria.RemoveAll(c => c.Name == criteriaMultiSelect.Name && c.Entity == criteriaMultiSelect.Entity);
 
 				if (criteriaMultiSelect.Name == "Name" && criteriaMultiSelect.Entity == "Manufacturer")
@@ -513,11 +506,12 @@ namespace SmartStore.Services.Filter
 
 			context.Filter = excludedFilter;
 
-			if (inactive != null) {
+			if (inactive != null)
+			{
 				inactive.ForEach(c => c.IsInactive = true);
 				context.Criteria.AddRange(inactive);
 			}
 		}
-	}	// class
+	}
 }
 

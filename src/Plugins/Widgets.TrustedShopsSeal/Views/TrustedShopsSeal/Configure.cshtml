@@ -1,6 +1,6 @@
 ﻿@{
     Layout = "";
-    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsSeal/Content/trustedshops.css"));
+    Html.AddCssFileParts(true, "~/Plugins/Widgets.TrustedShopsSeal/Content/trustedshops.css");
 }
 @model SmartStore.Plugin.Widgets.TrustedShopsSeal.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
@@ -8,21 +8,21 @@
 <div class="ts-info">
     <img src="@Url.Content(@T("Plugins.Widgets.TrustedShopsCustomerReviews.Image.Logo"))" class="pull-right" />
     <div class="intro">
-        @Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerReviews.Introduction.Headline"))
+        @Html.Raw(T("Plugins.Widgets.TrustedShopsCustomerReviews.Introduction.Headline"))
     </div>
     <div class="clearfix">
         <div class="pull-left">
-            <img src="@Url.Content(@T("Plugins.Widgets.TrustedShopsCustomerReviews.Image.Seal"))" />
+            <img src="@Url.Content(T("Plugins.Widgets.TrustedShopsCustomerReviews.Image.Seal"))" />
             <div class="prepared">
-                <span>@Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerReviews.Prepared"))</span>
+                <span>@Html.Raw(T("Plugins.Widgets.TrustedShopsCustomerReviews.Prepared"))</span>
             </div>
         </div>
-        @Html.Raw(@T("Plugins.Widgets.TrustedShopsCustomerReviews.Introduction.Body"))
+        @Html.Raw(T("Plugins.Widgets.TrustedShopsCustomerReviews.Introduction.Body"))
     </div>
 </div>
 
 <div class="alert alert-info">
-    @Html.Raw(@T("Plugins.Widgets.TrustedShopsSeal.AdminInstruction"))
+    @Html.Raw(T("Plugins.Widgets.TrustedShopsSeal.AdminInstruction"))
 </div>
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
@@ -77,10 +77,11 @@
             @Html.ValidationMessageFor(model => model.ShopText)
         </td>
     </tr>
-
     <tr>
-        <td>&nbsp;</td>
-        <td style="padding:10px 0">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
             <button type="submit" name="save" value="save" class="btn btn-primary">
 				<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -35,7 +36,6 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Description { get; set; }
 
-		/// <remarks>codehint: sm-add</remarks>
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
 		public string Alias { get; set; }
 
@@ -92,6 +92,12 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+		[SmartResourceDisplayName("Common.CreatedOn")]
+		public DateTime? CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime? UpdatedOn { get; set; }
         
         public IList<CategoryLocalizedModel> Locales { get; set; }
 
@@ -131,6 +137,16 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.Product")]
             public string ProductName { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+			public string Sku { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+			public string ProductTypeName { get; set; }
+			public string ProductTypeLabelHint { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+			public bool Published { get; set; }
+
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
@@ -147,6 +163,7 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableCategories = new List<SelectListItem>();
                 AvailableManufacturers = new List<SelectListItem>();
+				AvailableProductTypes = new List<SelectListItem>();
             }
             public GridModel<ProductModel> Products { get; set; }
 
@@ -157,9 +174,12 @@ namespace SmartStore.Admin.Models.Catalog
             public int SearchCategoryId { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
             public int SearchManufacturerId { get; set; }
+			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
+			public int SearchProductTypeId { get; set; }
 
             public IList<SelectListItem> AvailableCategories { get; set; }
             public IList<SelectListItem> AvailableManufacturers { get; set; }
+			public IList<SelectListItem> AvailableProductTypes { get; set; }
 
             public int CategoryId { get; set; }
 

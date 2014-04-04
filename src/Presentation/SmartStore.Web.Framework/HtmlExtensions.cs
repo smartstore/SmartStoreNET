@@ -134,7 +134,10 @@ namespace SmartStore.Web.Framework
             {
                 Id = helper.ViewData.Model.Id,
                 ControllerName = helper.ViewContext.RouteData.GetRequiredString("controller"),
-                ActionName = actionName
+                ActionName = actionName,
+                ButtonSelector = buttonsSelector,
+                // TODO: (MC) this is really awkward, but sufficient for the moment
+                EntityType = buttonsSelector.Replace("-delete", "")
             };
 
             var window = helper.SmartStore().Window().Name(modalId)
@@ -148,7 +151,7 @@ namespace SmartStore.Web.Framework
         }
 
         // codehint: sm-edit
-        public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true)
+        public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true, object htmlAttributes = null)
         {
             var result = new StringBuilder();
             var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
@@ -186,15 +189,24 @@ namespace SmartStore.Web.Framework
                 labelText = metadata.PropertyName.SplitPascalCase();
             }
 
-            result.Append("<div class='ctl-label'>");
+            var label = helper.LabelFor(expression, labelText, htmlAttributes);
+
+            if (displayHint)
             {
-                result.Append(helper.LabelFor(expression, labelText));
-                if (hint.HasValue())
+                result.Append("<div class='ctl-label'>");
                 {
-                    result.Append(helper.Hint(hint).ToHtmlString());
+                    result.Append(label);
+                    if (hint.HasValue())
+                    {
+                        result.Append(helper.Hint(hint).ToHtmlString());
+                    }
                 }
+                result.Append("</div>");
             }
-            result.Append("</div>");
+            else
+            {
+                result.Append(label);
+            }
 
             return MvcHtmlString.Create(result.ToString());
         }
@@ -250,13 +262,14 @@ namespace SmartStore.Web.Framework
         public static MvcHtmlString DatePickerDropDowns(this HtmlHelper html,
             string dayName, string monthName, string yearName,
             int? beginYear = null, int? endYear = null,
-            int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true)
+            int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true, bool disabled = false)
         {
             var daysList = new TagBuilder("select");
-            //daysList.MergeAttribute("placeholder", "TAGE");
-            //daysList.MergeAttribute("style", "width: 80px");
+            daysList.MergeAttribute("style", "width: 70px");
             var monthsList = new TagBuilder("select");
+			monthsList.MergeAttribute("style", "width: 130px");
             var yearsList = new TagBuilder("select");
+			yearsList.MergeAttribute("style", "width: 90px");
 
             daysList.Attributes.Add("name", dayName);
             monthsList.Attributes.Add("name", monthName);
@@ -265,6 +278,13 @@ namespace SmartStore.Web.Framework
             daysList.Attributes.Add("class", "date-part");
             monthsList.Attributes.Add("class", "date-part");
             yearsList.Attributes.Add("class", "date-part");
+
+			if (disabled)
+			{
+				daysList.Attributes.Add("disabled", "disabled");
+				monthsList.Attributes.Add("disabled", "disabled");
+				yearsList.Attributes.Add("disabled", "disabled");
+			}
 
             var days = new StringBuilder();
             var months = new StringBuilder();
@@ -285,13 +305,13 @@ namespace SmartStore.Web.Framework
                 yearLocale = "Year";
             }
 
-            days.AppendFormat("<option value='{0}'>{1}</option>", "0", dayLocale);
+            days.AppendFormat("<option>{0}</option>", dayLocale);
             for (int i = 1; i <= 31; i++)
                 days.AppendFormat("<option value='{0}'{1}>{0}</option>", i,
                     (selectedDay.HasValue && selectedDay.Value == i) ? " selected=\"selected\"" : null);
 
 
-            months.AppendFormat("<option value='{0}'>{1}</option>", "0", monthLocale);
+            months.AppendFormat("<option>{0}</option>", monthLocale);
             for (int i = 1; i <= 12; i++)
             {
                 months.AppendFormat("<option value='{0}'{1}>{2}</option>",
@@ -301,12 +321,12 @@ namespace SmartStore.Web.Framework
             }
 
 
-            years.AppendFormat("<option value='{0}'>{1}</option>", "0", yearLocale);
+            years.AppendFormat("<option>{0}</option>", yearLocale);
 
             if (beginYear == null)
-                beginYear = DateTime.UtcNow.Year - 100;
+                beginYear = DateTime.UtcNow.Year - 90;
             if (endYear == null)
-                endYear = DateTime.UtcNow.Year;
+                endYear = DateTime.UtcNow.Year + 10;
 
             for (int i = beginYear.Value; i <= endYear.Value; i++)
                 years.AppendFormat("<option value='{0}'{1}>{0}</option>", i,
@@ -473,7 +493,10 @@ namespace SmartStore.Web.Framework
 
             sb.Append("</div>");
 
-            html.AppendScriptParts("~/bundles/colorbox");
+            var bootstrapJsRoot = "~/Content/bootstrap/js/";
+            html.AppendScriptParts(false,
+                bootstrapJsRoot + "custom/bootstrap-colorpicker.js",
+                bootstrapJsRoot + "custom/bootstrap-colorpicker-globalinit.js");
 
             return MvcHtmlString.Create(sb.ToString());
         }
@@ -529,8 +552,8 @@ namespace SmartStore.Web.Framework
 				sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
 
 				sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
-				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3, "").ToUpper());
-				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3, "").ToUpper());
+				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
+				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
 				sb.Append("<span class=\"onoffswitch-switch\"></span>");
 				sb.Append("<span class=\"onoffswitch-inner\"></span>");
 				sb.Append("</label>");

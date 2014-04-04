@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-
+﻿
 namespace SmartStore.Core.Domain.Orders
 {
     public static class OrderExtensions
@@ -19,6 +17,5 @@ namespace SmartStore.Core.Domain.Orders
 
             return order.OrderNumber;
         }
-
     }
 }

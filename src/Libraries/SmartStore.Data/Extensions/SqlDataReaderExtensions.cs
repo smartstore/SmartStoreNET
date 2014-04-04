@@ -7,20 +7,24 @@ using System.Threading.Tasks;
 
 namespace SmartStore
 {
-	/// <remarks>codehint: sm-add</remarks>
+
 	public static class SqlDataReaderExtensions
 	{
-		public static object GetValue(this SqlDataReader reader, string columnName) {
-			try {
-				if (reader != null && columnName.HasValue()) {
+		public static object GetValue(this SqlDataReader reader, string columnName) 
+		{
+			try 
+			{
+				if (reader != null && columnName.HasValue()) 
+				{
 					int ordinal = reader.GetOrdinal(columnName);
 					return reader.GetValue(ordinal);
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc) 
+			{
 				exc.Dump();
 			}
 			return null;
 		}
-	}	// class
+	}
 }

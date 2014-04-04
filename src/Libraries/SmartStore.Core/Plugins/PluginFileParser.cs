@@ -66,7 +66,7 @@ namespace SmartStore.Core.Plugins
                 string str;
                 while ((str = reader.ReadLine()) != null)
                 {
-                    if (String.IsNullOrWhiteSpace(str))
+                    if (str.IsEmpty() || lines.Contains(str, StringComparer.CurrentCultureIgnoreCase))
                         continue;
                     lines.Add(str.Trim());
                 }
@@ -89,9 +89,12 @@ namespace SmartStore.Core.Plugins
         public static PluginDescriptor ParsePluginDescriptionFile(string filePath)
         {
             var descriptor = new PluginDescriptor();
+
             var text = File.ReadAllText(filePath);
             if (String.IsNullOrEmpty(text))
                 return descriptor;
+
+			descriptor.FolderName = new DirectoryInfo(Path.GetDirectoryName(filePath)).Name;
 
             var settings = new List<string>();
             using (var reader = new StringReader(text))
@@ -133,7 +136,7 @@ namespace SmartStore.Core.Plugins
                     case "SystemName":
                         descriptor.SystemName = value;
                         break;
-                    case "Description": // codehint: sm-add
+                    case "Description":
                         descriptor.Description = value;
                         break;
                     case "Version":

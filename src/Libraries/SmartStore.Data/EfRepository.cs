@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
-using System.Data.Objects;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core;
@@ -33,6 +33,14 @@ namespace SmartStore.Data
             get
             {
                 return this.Entities;
+            }
+        }
+
+        public virtual IQueryable<T> TableUntracked
+        {
+            get
+            {
+                return this.Entities.AsNoTracking();
             }
         }
 
@@ -112,14 +120,18 @@ namespace SmartStore.Data
 
             if (this.AutoCommitEnabled)
             {
-                _context.SaveChanges();
+				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
+				{
+					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+				}
+				_context.SaveChanges();
             }
             else
             {
                 try
                 {
                     this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.EntityState.Modified;
+                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
                 }
                 finally { }
             }
@@ -130,7 +142,7 @@ namespace SmartStore.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            if (InternalContext.Entry(entity).State == System.Data.EntityState.Detached)
+            if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
             {
                 this.Entities.Attach(entity);
             }
@@ -157,21 +169,24 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
+		public bool IsModified(T entity)
+		{
+			Guard.ArgumentNotNull(() => entity);
+			var ctx = InternalContext;
+			var entry = ctx.Entry(entity);
+
+			if (entry != null)
+			{
+				var modified = entry.State == System.Data.Entity.EntityState.Modified;
+				return modified;
+			}
+
+			return false;
+		}
+
         public IDictionary<string, object> GetModifiedProperties(T entity)
         {
-            var props = new Dictionary<string, object>();
-
-            var ctx = InternalContext;
-            var entry = ctx.Entry(entity);
-            var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-                                        where entry.Property(p).IsModified
-                                        select p;
-            foreach (var name in modifiedPropertyNames)
-            {
-                props.Add(name, entry.Property(name).OriginalValue);
-            }
-
-            return props;
+			return InternalContext.GetModifiedProperties(entity);
         }
 
         public IDbContext Context

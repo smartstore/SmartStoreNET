@@ -7,20 +7,18 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Shipping
 {
-    /// <summary>
-    /// Shipping service
-    /// </summary>
     public partial class ShippingService : IShippingService
     {
         #region Fields
@@ -29,6 +27,7 @@ namespace SmartStore.Services.Shipping
         private readonly ICacheManager _cacheManager;
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
@@ -36,7 +35,7 @@ namespace SmartStore.Services.Shipping
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
 
         #endregion
 
@@ -49,6 +48,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="shippingMethodRepository">Shipping method repository</param>
         /// <param name="logger">Logger</param>
         /// <param name="productAttributeParser">Product attribute parser</param>
+		/// <param name="productService">Product service</param>
         /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
 		/// <param name="genericAttributeService">Generic attribute service</param>
         /// <param name="localizationService">Localization service</param>
@@ -61,6 +61,7 @@ namespace SmartStore.Services.Shipping
             IRepository<ShippingMethod> shippingMethodRepository,
             ILogger logger,
             IProductAttributeParser productAttributeParser,
+			IProductService productService,
             ICheckoutAttributeParser checkoutAttributeParser,
 			IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
@@ -74,6 +75,7 @@ namespace SmartStore.Services.Shipping
             this._shippingMethodRepository = shippingMethodRepository;
             this._logger = logger;
             this._productAttributeParser = productAttributeParser;
+			this._productService = productService;
             this._checkoutAttributeParser = checkoutAttributeParser;
 			this._genericAttributeService = genericAttributeService;
             this._localizationService = localizationService;
@@ -233,22 +235,37 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        public virtual decimal GetShoppingCartItemWeight(ShoppingCartItem shoppingCartItem)
+		public virtual decimal GetShoppingCartItemWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
+
             decimal weight = decimal.Zero;
-            if (shoppingCartItem.ProductVariant != null)
+
+            if (shoppingCartItem.Item.Product != null)
             {
                 decimal attributesTotalWeight = decimal.Zero;
 
-                if (!String.IsNullOrEmpty(shoppingCartItem.AttributesXml))
+                if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
-                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.AttributesXml);
-                    foreach (var pvaValue in pvaValues)
-                        attributesTotalWeight += pvaValue.WeightAdjustment;
+                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+
+					foreach (var pvaValue in pvaValues)
+					{
+						if (pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+						{
+							var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+							if (linkedProduct != null)
+								attributesTotalWeight += (linkedProduct.Weight * pvaValue.Quantity);
+						}
+						else
+						{
+							attributesTotalWeight += pvaValue.WeightAdjustment;
+						}
+					}
                 }
-                weight = shoppingCartItem.ProductVariant.Weight + attributesTotalWeight;
+
+                weight = shoppingCartItem.Item.Product.Weight + attributesTotalWeight;
             }
             return weight;
         }
@@ -258,12 +275,12 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="shoppingCartItem">Shopping cart item</param>
         /// <returns>Shopping cart item weight</returns>
-        public virtual decimal GetShoppingCartItemTotalWeight(ShoppingCartItem shoppingCartItem)
+		public virtual decimal GetShoppingCartItemTotalWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Quantity;
+            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
             return totalWeight;
         }
 
@@ -272,7 +289,7 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Shopping cart weight</returns>
-        public virtual decimal GetShoppingCartTotalWeight(IList<ShoppingCartItem> cart)
+		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart)
         {
             Customer customer = cart.GetCustomer();
 
@@ -301,14 +318,14 @@ namespace SmartStore.Services.Shipping
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
         /// <returns>Shipment package</returns>
-        public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<ShoppingCartItem> cart,
+		public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart,
             Address shippingAddress)
         {
             var request = new GetShippingOptionRequest();
             request.Customer = cart.GetCustomer();
-            request.Items = new List<ShoppingCartItem>();
+            request.Items = new List<OrganizedShoppingCartItem>();
             foreach (var sc in cart)
-                if (sc.IsShipEnabled)
+                if (sc.Item.IsShipEnabled)
                     request.Items.Add(sc);
             request.ShippingAddress = shippingAddress;
             request.CountryFrom = null;
@@ -326,7 +343,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
-        public virtual GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart,
+		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart,
 			Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)

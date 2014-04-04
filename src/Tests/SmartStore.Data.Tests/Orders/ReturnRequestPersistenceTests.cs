@@ -76,24 +76,5 @@ namespace SmartStore.Data.Tests.Orders
                 CreatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
-
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
-
     }
 }

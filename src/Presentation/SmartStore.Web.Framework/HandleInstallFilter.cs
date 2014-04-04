@@ -23,7 +23,7 @@ namespace SmartStore.Web.Framework
                 return;
             }
 
-            if (!DataSettingsHelper.DatabaseIsInstalled() && controllerName != "Install")
+            if (!DataSettings.DatabaseIsInstalled() && controllerName != "Install")
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary {

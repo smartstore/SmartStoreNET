@@ -34,8 +34,13 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <button type="submit" id="btnSearch" class="btn">@T("Admin.SalesReport.NeverSold.RunReport")</button>
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <button type="submit" id="btnSearch" class="btn">
+					<i class="icon-search icon-white"></i>&nbsp;@T("Admin.SalesReport.NeverSold.RunReport")
+				</button>
             </td>
         </tr>
     </table>
@@ -49,16 +54,9 @@
                         .ClientEvents(events => events.OnDataBinding("onDataBinding"))
                         .Columns(columns =>
                         {
-                            columns.Bound(x => x.ProductVariantFullName)
-                               .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "ProductVariant", new { id = x.ProductVariantId }, new { }))                                
-                               .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= ProductVariantId #>\">" + "<#= ProductVariantFullName #>\">" + "</a>");
-                    
-                            columns.Bound(x => x.ProductVariantId)
-                                .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "ProductVariant", new { id = x.ProductVariantId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= ProductVariantId #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .Title(T("Admin.Common.View").Text);
+                            columns.Bound(x => x.ProductName)
+								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));                    
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
@@ -82,9 +80,9 @@
 
     function onDataBinding(e) {
         var searchModel = {
-                StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
-                EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
-                };
+            StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+            EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
+        };
         e.data = searchModel;
     }
 

@@ -1,16 +1,15 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -135,7 +134,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				// codehint: sm-edit
 				//throw new SmartException("No emails to export");
-				InfoNotification(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
 			}
 			for (int i = 0; i < newsLetterSubscriptions.Count; i++)
@@ -164,15 +163,15 @@ namespace SmartStore.Admin.Controllers
                 {
                     var result = _newsLetterSubscriptionService.ImportSubscribers(file.InputStream);
 
-                    SuccessNotification(String.Format(_localizationService.GetResource("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess"), result.AffectedRecords));
+                    NotifySuccess(String.Format(_localizationService.GetResource("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess"), result.AffectedRecords));
                     return RedirectToAction("List");
                 }
-                ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+				NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }

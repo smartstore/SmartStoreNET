@@ -99,6 +99,9 @@ namespace SmartStore.Services.Payments
 		public string DirectDebitBankName { get; set; }
 		public string DirectDebitIban { get; set; }
 		public string DirectDebitBic { get; set; }
+
+        public bool IsShippingMethodSet { get; set; }
+        public bool RequiresPaymentWorkflow { get; set; }
 		//codehint: sm-add end
 
         #endregion

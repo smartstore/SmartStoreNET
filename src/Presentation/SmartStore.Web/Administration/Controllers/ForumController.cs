@@ -82,7 +82,7 @@ namespace SmartStore.Admin.Controllers
                 forumGroup.UpdatedOnUtc = DateTime.UtcNow;
                 _forumService.InsertForumGroup(forumGroup);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Added"));
                 return continueEditing ? RedirectToAction("EditForumGroup", new { forumGroup.Id }) : RedirectToAction("List");
             }
 
@@ -118,7 +118,7 @@ namespace SmartStore.Admin.Controllers
                 forum.UpdatedOnUtc = DateTime.UtcNow;
                 _forumService.InsertForum(forum);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
                 return continueEditing ? RedirectToAction("EditForum", new { forum.Id }) : RedirectToAction("List");
             }
 
@@ -166,7 +166,7 @@ namespace SmartStore.Admin.Controllers
                 forumGroup.UpdatedOnUtc = DateTime.UtcNow;
                 _forumService.UpdateForumGroup(forumGroup);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Updated"));
                 return continueEditing ? RedirectToAction("EditForumGroup", forumGroup.Id) : RedirectToAction("List");
             }
 
@@ -210,7 +210,7 @@ namespace SmartStore.Admin.Controllers
                 forum.UpdatedOnUtc = DateTime.UtcNow;
                 _forumService.UpdateForum(forum);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
                 return continueEditing ? RedirectToAction("EditForum", forum.Id) : RedirectToAction("List");
             }
 
@@ -240,7 +240,7 @@ namespace SmartStore.Admin.Controllers
 
             _forumService.DeleteForumGroup(forumGroup);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.ForumGroup.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -257,7 +257,7 @@ namespace SmartStore.Admin.Controllers
 
             _forumService.DeleteForum(forum);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
             return RedirectToAction("List");
         }
 

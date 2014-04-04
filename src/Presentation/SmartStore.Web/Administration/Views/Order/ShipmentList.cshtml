@@ -4,7 +4,6 @@
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    var hideProfitReport = false;
     
     //page title
     ViewBag.Title = T("Admin.Orders.Shipments.List").Text;
@@ -20,8 +19,12 @@
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
-                <a href="@Url.Action("PdfPackagingSlipAll")" class="btn">@T("Admin.Orders.Shipments.PrintPackagingSlip.All")</a>
-                <button type="submit" id="exportpackagingslips-selected" class="btn">@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")</button>
+                <a href="@Url.Action("PdfPackagingSlipAll")" class="btn">
+					<i class="icon-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
+				</a>
+                <button type="submit" id="exportpackagingslips-selected" class="btn">
+					<i class="icon-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")
+				</button>
             }
         </div>
     </div>
@@ -43,7 +46,18 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.TrackingNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
                 <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
@@ -143,9 +157,10 @@
 
         function onDataBinding(e) {
             var searchModel = {
-                    StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
-                    EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
-                    };
+                StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+                EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
+                TrackingNumber: $('#@Html.FieldIdFor(model => model.TrackingNumber)').val()
+            };
             e.data = searchModel;
         }
     

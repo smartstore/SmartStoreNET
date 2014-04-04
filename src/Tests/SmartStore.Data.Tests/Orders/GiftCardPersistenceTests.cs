@@ -82,22 +82,22 @@ namespace SmartStore.Data.Tests.Orders
         }
         
         [Test]
-        public void Can_save_and_load_giftCard_with_associatedOrderProductVariant()
+        public void Can_save_and_load_giftCard_with_associatedOrderItem()
         {
             var giftCard = new GiftCard()
             {
                 GiftCardType = GiftCardType.Physical,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-                PurchasedWithOrderProductVariant = GetTestOrderProductVariant()
+                PurchasedWithOrderItem = GetTestOrderItem()
             };
 
             var fromDb = SaveAndLoadEntity(giftCard);
             fromDb.ShouldNotBeNull();
 
 
-            fromDb.PurchasedWithOrderProductVariant.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.ProductVariant.ShouldNotBeNull();
-            fromDb.PurchasedWithOrderProductVariant.ProductVariant.Name.ShouldEqual("Product variant name 1");
+            fromDb.PurchasedWithOrderItem.ShouldNotBeNull();
+            fromDb.PurchasedWithOrderItem.Product.ShouldNotBeNull();
+            fromDb.PurchasedWithOrderItem.Product.Name.ShouldEqual("Product name 1");
         }
 
         protected Customer GetTestCustomer()
@@ -113,32 +113,24 @@ namespace SmartStore.Data.Tests.Orders
             };
         }
 
-        protected OrderProductVariant GetTestOrderProductVariant()
+        protected OrderItem GetTestOrderItem()
         {
-            return new OrderProductVariant()
+            return new OrderItem()
             {
                 Order = GetTestOrder(),
-                ProductVariant = GetTestProductVariant(),
+				Product = GetTestProduct()
             };
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
 
         protected Order GetTestOrder()
         {

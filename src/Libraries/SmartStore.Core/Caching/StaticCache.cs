@@ -1,21 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Runtime.Caching;
+using SmartStore.Utilities;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Caching
 {
     
     public partial class StaticCache : ICache
     {
-        private const string REGION_NAME = "$$SmartStoreNET$$";
-        private readonly static object s_lock = new object();
+		private ObjectCache _cache;
 
         protected ObjectCache Cache
         {
             get
             {
-                return MemoryCache.Default;
+				if (_cache == null)
+				{
+					_cache = new MemoryCache("SmartStore");
+				}
+				return _cache;
             }
         }
 
@@ -23,64 +29,41 @@ namespace SmartStore.Core.Caching
         {
             get
             {
-                return from entry in Cache
-                       where entry.Key.StartsWith(REGION_NAME)
-                       select new KeyValuePair<string, object>(
-                           entry.Key.Substring(REGION_NAME.Length), 
-                           entry.Value);
+				return Cache;
             }
         }
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime)
+		public object Get(string key)
         {
-            key = BuildKey(key);
-
-            if (Cache.Contains(key))
-            {
-                return (T)Cache.Get(key);
-            }
-            else
-            {
-                lock (s_lock)
-                { 
-                    if (!Cache.Contains(key))
-                    {
-                        var value = acquirer();
-                        if (value != null)
-                        {
-                            var cacheItem = new CacheItem(key, value);
-                            CacheItemPolicy policy = null;
-                            if (cacheTime.GetValueOrDefault() > 0)
-                            {
-                                policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime.Value) };
-                            }
-
-                            Cache.Add(cacheItem, policy);
-                        }
-
-                        return value;
-                    }
-                }
-
-                return (T)Cache.Get(key);
-            }
+			return Cache.Get(key);
         }
+
+		public void Set(string key, object value, int? cacheTime)
+		{
+			var cacheItem = new CacheItem(key, value);
+			CacheItemPolicy policy = null;
+			if (cacheTime.GetValueOrDefault() > 0)
+			{
+				policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime.Value) };
+			}
+
+			Cache.Add(cacheItem, policy);
+		}
 
         public bool Contains(string key)
         {
-            return Cache.Contains(BuildKey(key));
+            return Cache.Contains(key);
         }
 
         public void Remove(string key)
         {
-            Cache.Remove(BuildKey(key));
+            Cache.Remove(key);
         }
 
-        private string BuildKey(string key)
-        {
-            return key.HasValue() ? REGION_NAME + key : null;
-        }
-
-    }
+		public bool IsSingleton
+		{
+			get { return true; }
+		}
+	}
 
 }

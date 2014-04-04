@@ -1,70 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 
 namespace SmartStore.Core
 {
-    /// <summary>
-    /// Paged list
-    /// </summary>
-    /// <typeparam name="T">T</typeparam>
-    public class PagedList<T> : List<T>, IPagedList<T> 
+    
+    // codehint: sm-add (whole file)
+    public abstract class PagedListBase : IPageable
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        public PagedList(IQueryable<T> source, int pageIndex, int pageSize)
+
+        protected PagedListBase()
         {
-            // codehint: sm-edit
-            Guard.ArgumentNotNull(source, "source");
-            Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count());
+            this.PageIndex = 0;
+            this.PageSize = 0;
+            this.TotalCount = 1;
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        public PagedList(IList<T> source, int pageIndex, int pageSize)
+        protected PagedListBase(IPageable pageable)
         {
-            // codehint: sm-edit
-            Guard.ArgumentNotNull(source, "source");
-            Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count);
+            this.Init(pageable);
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="totalCount">Total count</param>
-        public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
+        protected PagedListBase(IEnumerable source, int pageIndex, int pageSize)
         {
-            // codehint: sm-edit
             Guard.ArgumentNotNull(source, "source");
-            Init(source, pageIndex, pageSize, totalCount);
-        }
-
-        // codehint: sm-add
-        private void Init(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
-        {
-            Guard.PagingArgsValid(pageIndex, pageSize,"pageIndex", "pageSize");
+            Guard.PagingArgsValid(pageIndex, pageSize, "pageIndex", "pageSize");
 
             this.PageIndex = pageIndex;
             this.PageSize = pageSize;
-            this.TotalCount = totalCount;
-
-            this.AddRange(source);
+            this.TotalCount = source.GetCount();
         }
 
-        #region IPageable Members
+        protected PagedListBase(int pageIndex, int pageSize, int totalItemsCount)
+        {
+            Guard.PagingArgsValid(pageIndex, pageSize, "pageIndex", "pageSize");
 
-        // codehint: sm-add/edit
+            this.PageIndex = pageIndex;
+            this.PageSize = pageSize;
+            this.TotalCount = totalItemsCount;
+        }
+
+        // only here for compat reasons with nc
+        public void LoadPagedList<T>(IPagedList<T> pagedList)
+        {
+            this.Init(pagedList as IPageable);
+        }
+
+        public virtual void Init(IPageable pageable)
+        {
+            Guard.ArgumentNotNull(pageable, "pageable");
+
+            this.PageIndex = pageable.PageIndex;
+            this.PageSize = pageable.PageSize;
+            this.TotalCount = pageable.TotalCount;
+        }
 
         public int PageIndex
         {
@@ -86,7 +75,7 @@ namespace SmartStore.Core
 
         public int PageNumber
         {
-            get
+            get 
             {
                 return this.PageIndex + 1;
             }
@@ -98,7 +87,7 @@ namespace SmartStore.Core
 
         public int TotalPages
         {
-            get
+            get 
             {
                 var total = this.TotalCount / this.PageSize;
 
@@ -111,15 +100,15 @@ namespace SmartStore.Core
 
         public bool HasPreviousPage
         {
-            get
+            get 
             {
-                return this.PageIndex > 0;
+                return this.PageIndex > 0; 
             }
         }
 
         public bool HasNextPage
         {
-            get
+            get 
             {
                 return (this.PageIndex < (this.TotalPages - 1));
             }
@@ -127,15 +116,15 @@ namespace SmartStore.Core
 
         public int FirstItemIndex
         {
-            get
+            get 
             {
-                return (this.PageIndex * this.PageSize) + 1;
+                return (this.PageIndex * this.PageSize) + 1; 
             }
         }
 
         public int LastItemIndex
         {
-            get
+            get 
             {
                 return Math.Min(this.TotalCount, ((this.PageIndex * this.PageSize) + this.PageSize));
             }
@@ -143,21 +132,32 @@ namespace SmartStore.Core
 
         public bool IsFirstPage
         {
-            get
-            {
+            get 
+            { 
                 return (this.PageIndex <= 0);
             }
         }
 
         public bool IsLastPage
         {
-            get
+            get 
             {
-                return (this.PageIndex >= (this.TotalPages - 1));
+                return (this.PageIndex >= (this.TotalPages - 1)); 
             }
         }
 
-        #endregion
+        public virtual IEnumerator GetEnumerator()
+        {
+            return Enumerable.Empty<int>().GetEnumerator();
+        }
 
     }
+
+    public class PagedList : PagedListBase
+    {
+        public PagedList(int pageIndex, int pageSize, int totalItemsCount) : base(pageIndex, pageSize, totalItemsCount)
+        {
+        }
+    }
+
 }

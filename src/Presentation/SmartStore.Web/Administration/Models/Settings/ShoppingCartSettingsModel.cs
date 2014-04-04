@@ -22,8 +22,14 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnShoppingCart")]
         public bool ShowProductImagesOnShoppingCart { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart")]
+		public bool ShowProductBundleImagesOnShoppingCart { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnWishList")]
         public bool ShowProductImagesOnWishList { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList")]
+		public bool ShowProductBundleImagesOnWishList { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox")]
         public bool ShowDiscountBox { get; set; }
@@ -52,5 +58,16 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes")]
+        public bool ShowDeliveryTimes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowShortDesc")]
+        public bool ShowShortDesc { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowBasePrice")]
+        public bool ShowBasePrice { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity")]
+		public bool ShowLinkedAttributeValueQuantity { get; set; }
     }
 }

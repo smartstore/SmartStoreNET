@@ -1,26 +1,31 @@
 using SmartStore.Core.Domain.Localization;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Catalog
 {
     /// <summary>
     /// Represents a product attribute
     /// </summary>
-    public partial class ProductAttribute : BaseEntity, ILocalizedEntity
+	[DataContract]
+	public partial class ProductAttribute : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the product attribute alias 
         /// (an optional key for advanced customization)
         /// </summary>
-        public string Alias { get; set; }
+		[DataMember]
+		public string Alias { get; set; }
         
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description
         /// </summary>
-        public string Description { get; set; }
+		[DataMember]
+		public string Description { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
@@ -151,7 +151,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewGiftCard", _localizationService.GetResource("ActivityLog.AddNewGiftCard"), giftCard.GiftCardCouponCode);
 
-                SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = giftCard.Id }) : RedirectToAction("List");
             }
 
@@ -171,7 +171,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = giftCard.ToModel();
-            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderProductVariant != null ? (int?)giftCard.PurchasedWithOrderProductVariant.OrderId : null;
+            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderItem != null ? (int?)giftCard.PurchasedWithOrderItem.OrderId : null;
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
@@ -189,7 +189,7 @@ namespace SmartStore.Admin.Controllers
 
             var giftCard = _giftCardService.GetGiftCardById(model.Id);
 
-            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderProductVariant != null ? (int?)giftCard.PurchasedWithOrderProductVariant.OrderId : null;
+            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderItem != null ? (int?)giftCard.PurchasedWithOrderItem.OrderId : null;
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
@@ -203,7 +203,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditGiftCard", _localizationService.GetResource("ActivityLog.EditGiftCard"), giftCard.GiftCardCouponCode);
 
-                SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Updated"));
                 return continueEditing ? RedirectToAction("Edit", giftCard.Id) : RedirectToAction("List");
             }
 
@@ -227,7 +227,7 @@ namespace SmartStore.Admin.Controllers
             var giftCard = _giftCardService.GetGiftCardById(model.Id);
 
             model = giftCard.ToModel();
-            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderProductVariant != null ? (int?)giftCard.PurchasedWithOrderProductVariant.OrderId : null;
+            model.PurchasedWithOrderId = giftCard.PurchasedWithOrderItem != null ? (int?)giftCard.PurchasedWithOrderItem.OrderId : null;
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
@@ -235,13 +235,13 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                if (!CommonHelper.IsValidEmail(giftCard.RecipientEmail))
+				if (!giftCard.RecipientEmail.IsEmail())
                     throw new SmartException("Recipient email is not valid");
-                if (!CommonHelper.IsValidEmail(giftCard.SenderEmail))
+				if (!giftCard.SenderEmail.IsEmail())
                     throw new SmartException("Sender email is not valid");
 
                 var languageId = 0;
-	            var order = giftCard.PurchasedWithOrderProductVariant != null ? giftCard.PurchasedWithOrderProductVariant.Order : null;
+	            var order = giftCard.PurchasedWithOrderItem != null ? giftCard.PurchasedWithOrderItem.Order : null;
 	            if (order != null)
 	            {
 	                var customerLang = _languageService.GetLanguageById(order.CustomerLanguageId);
@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
             }
 
             return View(model);
@@ -285,7 +285,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteGiftCard", _localizationService.GetResource("ActivityLog.DeleteGiftCard"), giftCard.GiftCardCouponCode);
 
-            SuccessNotification(_localizationService.GetResource("Admin.GiftCards.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
         }
         

@@ -4,7 +4,32 @@ namespace SmartStore.Core.Domain.Forums
 {
     public class ForumSettings : ISettings
     {
-        /// <summary>
+		public ForumSettings()
+		{
+			ForumsEnabled = true;
+			RelativeDateTimeFormattingEnabled = true;
+			TopicSubjectMaxLength = 450;
+			PostMaxLength = 4000;
+			StrippedTopicMaxLength = 45;
+			TopicsPageSize = 10;
+			PostsPageSize = 10;
+			SearchResultsPageSize = 10;
+			LatestCustomerPostsPageSize = 10;
+			ShowCustomersPostCount = true;
+			ForumEditor = EditorType.BBCodeEditor;
+			SignaturesEnabled = true;
+			PrivateMessagesPageSize = 10;
+			ForumSubscriptionsPageSize = 10;
+			PMSubjectMaxLength = 450;
+			PMTextMaxLength = 4000;
+			HomePageActiveDiscussionsTopicCount = 5;
+			ActiveDiscussionsPageTopicCount = 50;
+			ActiveDiscussionsFeedCount = 25;
+			ForumFeedCount = 10;
+			ForumSearchTermMinimumLength = 3;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether forums are enabled
         /// </summary>
         public bool ForumsEnabled { get; set; }

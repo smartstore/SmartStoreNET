@@ -20,6 +20,12 @@ namespace SmartStore.Services.Catalog
         public IList<int> CategoryIds { get; set; }
 
         /// <summary>
+        /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)
+        /// </summary>
+        /// <remarks>Only works in LINQ mode at the moment</remarks>
+        public bool MatchAllcategories { get; set; }
+
+        /// <summary>
         /// Manufacturer identifier; 0 to load all records
         /// </summary>
         public int ManufacturerId { get; set; }
@@ -103,5 +109,32 @@ namespace SmartStore.Services.Catalog
 		/// Store identifier; 0 to load all records
 		/// </summary>
 		public int StoreId { get; set; }
+
+		/// <summary>
+		/// Parent product identifier (used with grouped products); 0 to load all records
+		/// </summary>
+		public int ParentGroupedProductId { get; set; }
+
+		/// <summary>
+		/// A values indicating whether to load only products marked as "visible individually"; "false" to load all records; "true" to load "visible individually" only
+		/// </summary>
+		public bool VisibleIndividuallyOnly { get; set; }
+
+		/// <summary>
+		/// Product type; 0 to load all records
+		/// </summary>
+		public ProductType? ProductType { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to search by a specified "Keyword" in product SKU
+		/// </summary>
+		public bool SearchSku { get; set; }
+
+        /// <summary>
+        /// Any value indicating the origin of the search request,
+        /// e.g. the category id, if the caller is is a category page.
+        /// Can be useful in customization scenarios.
+        /// </summary>
+        public string Origin { get; set; }
     }
 }

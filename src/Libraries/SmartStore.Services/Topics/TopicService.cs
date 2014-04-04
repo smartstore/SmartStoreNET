@@ -4,7 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Topics
 {
@@ -30,7 +30,11 @@ namespace SmartStore.Services.Topics
             _topicRepository = topicRepository;
 			_storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -80,7 +84,7 @@ namespace SmartStore.Services.Topics
 			query = query.OrderBy(t => t.Id);
 
 			//Store mapping
-			if (storeId > 0)
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from t in query
 						join sm in _storeMappingRepository.Table
@@ -111,7 +115,7 @@ namespace SmartStore.Services.Topics
 			query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
 
 			//Store mapping
-			if (storeId > 0)
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from t in query
 						join sm in _storeMappingRepository.Table

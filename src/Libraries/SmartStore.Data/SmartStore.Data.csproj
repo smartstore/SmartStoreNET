@@ -39,10 +39,31 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\EFMigrations\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.3.3.0\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -56,17 +77,16 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Scripting.11.0.2100.61\lib\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.4.3.5\lib\net40\System.Data.SqlServerCe.Entity.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
@@ -83,23 +103,61 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="BaseEfDataProvider.cs" />
-    <Compile Include="DbContextExtensions.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="DataReaderExtensions.cs" />
+    <Compile Include="Migrations\201403112331027_Initial.cs" />
+    <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
+      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403210038385_AclPerf.cs" />
+    <Compile Include="Migrations\201403210038385_AclPerf.Designer.cs">
+      <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.cs" />
+    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.Designer.cs">
+      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403251610279_AboutPage.cs" />
+    <Compile Include="Migrations\201403251610279_AboutPage.Designer.cs">
+      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403262015448_ImportExcel.cs" />
+    <Compile Include="Migrations\201403262015448_ImportExcel.Designer.cs">
+      <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404032144400_Packaging.cs" />
+    <Compile Include="Migrations\201404032144400_Packaging.Designer.cs">
+      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Setup\Builder\SettingsBuilder.cs" />
+    <Compile Include="Setup\Builder\SettingsMigrator.cs" />
+    <Compile Include="Setup\DbMigrationContext.cs" />
+    <Compile Include="Extensions\IDbContextExtensions.cs" />
+    <Compile Include="Extensions\BaseEntityExtensions.cs" />
+    <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Extensions\SqlDataReaderExtensions.cs" />
-    <Compile Include="Initializers\CreateCeDatabaseIfNotExists.cs" />
-    <Compile Include="Initializers\DropCreateCeDatabaseAlways.cs" />
-    <Compile Include="Initializers\DropCreateCeDatabaseIfModelChanges.cs" />
-    <Compile Include="Initializers\SqlCeInitializer.cs" />
-    <Compile Include="Initializers\CreateTablesIfNotExist.cs" />
-    <Compile Include="EfDataProviderManager.cs" />
+    <Compile Include="Setup\DbMigrationException.cs" />
+    <Compile Include="Setup\DbSeedingMigrator.cs" />
+    <Compile Include="Setup\IDbMigrationExtensions.cs" />
+    <Compile Include="Setup\IDataSeeder.cs" />
+    <Compile Include="Setup\ILocaleResourcesProvider.cs" />
+    <Compile Include="Setup\InstallDatabaseInitializer.cs" />
+    <Compile Include="Setup\Builder\LocaleResourcesBuilder.cs" />
+    <Compile Include="Setup\Builder\LocaleResourcesMigrator.cs" />
+    <Compile Include="Setup\MigratorUtils.cs" />
+    <Compile Include="Setup\SeedData\SeedDataException.cs" />
+    <Compile Include="Setup\SeedData\SeedEntityExtensions.cs" />
+    <Compile Include="Setup\SeedData\SeedDataConfiguration.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.cs" />
+    <Compile Include="Setup\MigrateDatabaseInitializer.cs" />
+    <Compile Include="EfDataProviderFactory.cs" />
     <Compile Include="IEfDataProvider.cs" />
+    <Compile Include="Mapping\Catalog\ProductBundleItemAttributeFilterMap.cs" />
+    <Compile Include="Mapping\Catalog\ProductBundleItemMap.cs" />
     <Compile Include="Mapping\Stores\StoreMap.cs" />
     <Compile Include="Mapping\Stores\StoreMappingMap.cs" />
     <Compile Include="Mapping\Themes\ThemeVariableMap.cs" />
+    <Compile Include="Migrations\MigrationsConfiguration.cs" />
     <Compile Include="ObjectContextBase.cs" />
     <Compile Include="Mapping\Catalog\BackInStockSubscriptionMap.cs" />
     <Compile Include="Mapping\Catalog\ManufacturerTemplateMap.cs" />
@@ -111,8 +169,11 @@
     <Compile Include="Mapping\Security\AclRecordMap.cs" />
     <Compile Include="Mapping\Seo\UrlRecordMap.cs" />
     <Compile Include="Mapping\Shipping\ShipmentMap.cs" />
-    <Compile Include="Mapping\Shipping\ShipmentOrderProductVariantMap.cs" />
+    <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
+    <Compile Include="Setup\Builder\BuilderDbContextExtensions.cs" />
+    <Compile Include="Setup\TestDatabaseInitializer.cs" />
+    <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
     <Compile Include="Mapping\Affiliates\AffiliateMap.cs" />
@@ -151,7 +212,7 @@
     <Compile Include="Mapping\Orders\ReturnRequestMap.cs" />
     <Compile Include="Mapping\Orders\RecurringPaymentHistoryMap.cs" />
     <Compile Include="Mapping\Orders\RecurringPaymentMap.cs" />
-    <Compile Include="Mapping\Orders\OrderProductVariantMap.cs" />
+    <Compile Include="Mapping\Orders\OrderItemMap.cs" />
     <Compile Include="Mapping\Orders\OrderNoteMap.cs" />
     <Compile Include="Mapping\Orders\GiftCardMap.cs" />
     <Compile Include="Mapping\Orders\GiftCardUsageHistoryMap.cs" />
@@ -182,7 +243,6 @@
     <Compile Include="Mapping\Catalog\ProductCategoryMap.cs" />
     <Compile Include="Mapping\Catalog\CategoryMap.cs" />
     <Compile Include="Mapping\Catalog\ProductMap.cs" />
-    <Compile Include="Mapping\Catalog\ProductVariantMap.cs" />
     <Compile Include="Mapping\Customers\CustomerMap.cs" />
     <Compile Include="Mapping\Logging\LogMap.cs" />
     <Compile Include="Mapping\Localization\LanguageMap.cs" />
@@ -194,7 +254,6 @@
     <Compile Include="SmartObjectContext.cs" />
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EfStartUpTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -204,6 +263,42 @@
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201403112331027_Initial.resx">
+      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201403210038385_AclPerf.resx">
+      <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403211655284_CurrencyMorePrecision.resx">
+      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403251610279_AboutPage.resx">
+      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403262015448_ImportExcel.resx">
+      <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404032144400_Packaging.resx">
+      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sql\Indexes.sql" />
+    <EmbeddedResource Include="Sql\StoredProcedures.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Indexes.SqlServer.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Indexes.Inverse.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Indexes.SqlServer.Inverse.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

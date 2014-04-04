@@ -7,7 +7,7 @@ using SmartStore.Admin.Models.Security;
 using SmartStore.Core;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 
@@ -18,7 +18,6 @@ namespace SmartStore.Admin.Controllers
 	{
 		#region Fields
 
-        private readonly ILogger _logger;
         private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
         private readonly ICustomerService _customerService;
@@ -28,11 +27,10 @@ namespace SmartStore.Admin.Controllers
 
 		#region Constructors
 
-        public SecurityController(ILogger logger, IWorkContext workContext,
+        public SecurityController(IWorkContext workContext,
             IPermissionService permissionService,
             ICustomerService customerService, ILocalizationService localizationService)
 		{
-            this._logger = logger;
             this._workContext = workContext;
             this._permissionService = permissionService;
             this._customerService = customerService;
@@ -48,11 +46,11 @@ namespace SmartStore.Admin.Controllers
             var currentCustomer = _workContext.CurrentCustomer;
             if (currentCustomer == null || currentCustomer.IsGuest())
             {
-                _logger.Information(string.Format("Access denied to anonymous request on {0}", pageUrl));
+				Logger.Information(string.Format("Access denied to anonymous request on {0}", pageUrl));
                 return View();
             }
 
-            _logger.Information(string.Format("Access denied to user #{0} '{1}' on {2}", currentCustomer.Email, currentCustomer.Email, pageUrl));
+			Logger.Information(string.Format("Access denied to user #{0} '{1}' on {2}", currentCustomer.Email, currentCustomer.Email, pageUrl));
 
 
             return View();
@@ -133,7 +131,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.ACL.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.ACL.Updated"));
             return RedirectToAction("Permissions");
         }
         #endregion

@@ -12,8 +12,11 @@ namespace SmartStore.Admin.Models.Catalog
     {
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Product")]
         public int ProductId { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Product")]
         public string ProductName { get; set; }
+		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Customer")]
         public int CustomerId { get; set; }

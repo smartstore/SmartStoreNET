@@ -11,9 +11,9 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Data;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
@@ -39,9 +39,7 @@ namespace SmartStore.Services.Localization
         private readonly ILogger _logger;
         private readonly ILanguageService _languageService;
         private readonly ICacheManager _cacheManager;
-        private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-        private readonly CommonSettings _commonSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
@@ -66,7 +64,6 @@ namespace SmartStore.Services.Localization
             ILogger logger, IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
             ILanguageService languageService,
-            IDataProvider dataProvider, IDbContext dbContext, CommonSettings commonSettings,
             LocalizationSettings localizationSettings, IEventPublisher eventPublisher)
         {
             this._cacheManager = cacheManager;
@@ -74,12 +71,7 @@ namespace SmartStore.Services.Localization
             this._workContext = workContext;
             this._lsrRepository = lsrRepository;
             this._languageService = languageService;
-            this._dataProvider = dataProvider;
-            this._dbContext = dbContext;
-            this._commonSettings = commonSettings;
-            this._dataProvider = dataProvider;
-            this._dbContext = dbContext;
-            this._commonSettings = commonSettings;
+			this._dbContext = lsrRepository.Context;
             this._localizationSettings = localizationSettings;
             this._eventPublisher = eventPublisher;
         }
@@ -87,6 +79,11 @@ namespace SmartStore.Services.Localization
         #endregion
 
         #region Methods
+
+		public virtual void ClearCache()
+		{
+			_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+		}
 
         /// <summary>
         /// Deletes a locale string resource
@@ -394,7 +391,6 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Import language resources from XML file
 		/// </summary>
-		/// <remarks>codehint: sm-edit</remarks>
 		/// <param name="language">Language</param>
 		/// <param name="xmlDocument">XML document</param>
 		/// <param name="rootKey">Prefix for resource key name</param>
@@ -403,7 +399,7 @@ namespace SmartStore.Services.Localization
             XmlDocument xmlDocument, 
             string rootKey = null, 
             bool sourceIsPlugin = false, 
-            DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
+            ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
 		{            
             var autoCommit = _lsrRepository.AutoCommitEnabled;
@@ -444,7 +440,7 @@ namespace SmartStore.Services.Localization
                     var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                     if (resource != null)
                     {
-                        if (mode.IsSet<DataImportModeFlags>(DataImportModeFlags.Update))
+                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
                         {
                             if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
                             {
@@ -456,7 +452,7 @@ namespace SmartStore.Services.Localization
                     }
                     else
                     {
-                        if (mode.IsSet<DataImportModeFlags>(DataImportModeFlags.Insert))
+                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
                         {
                             toAdd.Add(
                                 new LocaleStringResource()
@@ -503,10 +499,12 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Import plugin resources from xml files in plugin's localization directory.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
 		/// <param name="forceToList">Load them into list rather than into database</param>
-		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor, List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true)
+		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
+		/// <param name="filterLanguages">Import only files for particular languages</param>
+		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor,
+			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true, IList<Language> filterLanguages = null)
 		{
 			string pluginDir = pluginDescriptor.OriginalAssemblyFile.Directory.FullName;
 			string localizationDir = Path.Combine(pluginDir, "Localization");
@@ -519,20 +517,25 @@ namespace SmartStore.Services.Localization
 
 			var languages = _languageService.GetAllLanguages(true);
 			var doc = new XmlDocument();
-            
+
 			foreach (var filePath in System.IO.Directory.EnumerateFiles(localizationDir, "*.xml"))
 			{
 				Match match = Regex.Match(Path.GetFileName(filePath), Regex.Escape("resources.") + "(.*?)" + Regex.Escape(".xml"));
 				string languageCode = match.Groups[1].Value;
 
 				Language language = languages.Where(l => l.LanguageCulture.IsCaseInsensitiveEqual(languageCode)).FirstOrDefault();
-                if (language != null)
-                {
-                    language = _languageService.GetLanguageById(language.Id);
-                }
+				if (language != null)
+				{
+					language = _languageService.GetLanguageById(language.Id);
+				}
 
 				if (languageCode.HasValue() && language != null)
 				{
+					if (filterLanguages != null && !filterLanguages.Exists(x => x.Id == language.Id))
+					{
+						continue;
+					}
+
 					doc.Load(filePath);
 
 					if (forceToList == null)
@@ -550,7 +553,7 @@ namespace SmartStore.Services.Localization
 								ResourceName = node.Attributes["Name"].InnerText.Trim(),
 								ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
 								LanguageId = language.Id,
-                                IsFromPlugin = true
+								IsFromPlugin = true
 							};
 
 							if (res.ResourceName.HasValue())

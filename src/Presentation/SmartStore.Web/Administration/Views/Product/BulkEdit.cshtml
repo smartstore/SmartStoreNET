@@ -1,0 +1,178 @@
+﻿@model BulkEditListModel
+@using Telerik.Web.Mvc.UI
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+    
+    //page title
+    ViewBag.Title = T("Admin.Catalog.BulkEdit").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-sitemap"></i>
+            @T("Admin.Catalog.BulkEdit")
+        </div>
+        <div class="options">
+        </div>
+    </div>
+    
+    <table width="100%">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.SearchProductName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchCategoryId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchManufacturerId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+            </td>
+        </tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+            <td class="adminData">
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+            </td>
+        </tr>
+    </table>
+    <p>
+    </p>
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<BulkEditProductModel>()
+                    .Name("products-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(p => p.Id);
+                    })
+                    .ToolBar(commands =>
+                    {
+                        commands.SubmitChanges();
+                    })
+                    .DataBinding(dataBinding =>
+                        dataBinding.Ajax()
+                            .Select("BulkEditSelect", "Product")
+                            .Update("BulkEditSave", "Product")
+                    )
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.Name)
+                            .ReadOnly()
+							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+                        columns.Bound(p => p.Sku);
+                        columns.Bound(p => p.Price);
+                        columns.Bound(p => p.OldPrice);
+                        columns.Bound(p => p.ManageInventoryMethod)
+                            .ReadOnly();
+                        columns.Bound(p => p.StockQuantity);
+                        columns.Bound(p => p.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .ReadOnly()
+                            .Width(90)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                        columns.Command(
+                            commands => commands.Delete().Localize(T)
+                        ).Width(90);
+                    })
+                    .ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
+                    .Editable(editing => editing.Mode(GridEditMode.InCell))
+                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                )
+                <script type="text/javascript">
+
+                    $(document).ready(function () {
+                        $('#search-products').click(function () {
+                            var grid = $('#products-grid').data('tGrid');
+                            grid.currentPage = 1; //new search. Set page size to 1
+                            grid.ajaxRequest();
+                            return false;
+                        });
+        
+                        $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
+                            if (event.keyCode == 13) {
+                                $("#search-products").click();
+                                return false;
+                            }
+                        });
+                    });
+
+                    function Grid_onError(args) {
+                        if (args.textStatus == "modelstateerror" && args.modelState) {
+                            var message = "Errors:\n";
+                            $.each(args.modelState, function (key, value) {
+                                if ('errors' in value) {
+                                    $.each(value.errors, function () {
+                                        message += this + "\n";
+                                    });
+                                }
+                            });
+                            args.preventDefault();
+                            alert(message);
+                        }
+                    }
+                    function Grid_onDataBinding(e) {
+                        var loadData = true;
+                        var grid = $(this).data('tGrid');
+                        if (grid.hasChanges()) {
+                            if (!confirm('@T("Admin.Common.LoseUnsavedChanges")')) {
+                                e.preventDefault();
+                                loadData = false;
+                            }
+                        }
+        
+                        if (loadData) {
+                            var searchModel = {
+                                SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+                                SearchCategoryId: $('#SearchCategoryId').val(),
+                                SearchManufacturerId: $('#SearchManufacturerId').val(),
+                                SearchProductTypeId: $('#SearchProductTypeId').val()
+                            };
+                            e.data = searchModel;
+                        }
+                    }
+                    function Grid_onSubmitChanges(e) {
+                        //Pass search parameters
+
+                        e.values["SearchProductName"] = $('#@Html.FieldIdFor(model => model.SearchProductName)').val();
+                        e.values["SearchCategoryId"] = $('#SearchCategoryId').val();
+                        e.values["SearchManufacturerId"] = $('#SearchManufacturerId').val();
+                        e.values["SearchProductTypeId"] = $('#SearchProductTypeId').val();
+                    }
+                </script>
+            </td>
+        </tr>
+    </table>
+}

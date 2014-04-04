@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
 {
     
-    public class TrustedShopsSealController : Controller
+    public class TrustedShopsSealController : SmartController
     {
 		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -103,9 +103,9 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
 				isTrustedShopIdValid = IsTrustedShopIdValid(model);
 
 				if (isTrustedShopIdValid)
-					this.AddNotificationMessage(NotifyType.Success, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
+					NotifySuccess(_localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdSuccess"), true);
 				else
-					this.AddNotificationMessage(NotifyType.Error, _localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
+					NotifyError(_localizationService.GetResource("Plugins.Widgets.TrustedShopsSeal.CheckIdError"), true);
 			}
 
 			if (isTrustedShopIdValid)	//save settings

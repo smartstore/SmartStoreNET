@@ -14,9 +14,9 @@ namespace SmartStore.Data.Mapping.Orders
 
             this.Ignore(gc => gc.GiftCardType);
 
-            this.HasOptional(gc => gc.PurchasedWithOrderProductVariant)
-                .WithMany(opv => opv.AssociatedGiftCards)
-                .HasForeignKey(gc => gc.PurchasedWithOrderProductVariantId);
+            this.HasOptional(gc => gc.PurchasedWithOrderItem)
+                .WithMany(orderItem => orderItem.AssociatedGiftCards)
+                .HasForeignKey(gc => gc.PurchasedWithOrderItemId);
         }
     }
 }

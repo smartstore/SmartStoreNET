@@ -193,7 +193,7 @@ namespace SmartStore.Admin.Controllers
                     affiliate.Address.StateProvinceId = null;
                 _affiliateService.InsertAffiliate(affiliate);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Affiliates.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = affiliate.Id }) : RedirectToAction("List");
             }
 
@@ -242,7 +242,7 @@ namespace SmartStore.Admin.Controllers
                     affiliate.Address.StateProvinceId = null;
                 _affiliateService.UpdateAffiliate(affiliate);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Affiliates.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", affiliate.Id) : RedirectToAction("List");
             }
 
@@ -264,7 +264,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             _affiliateService.DeleteAffiliate(affiliate);
-            SuccessNotification(_localizationService.GetResource("Admin.Affiliates.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Deleted"));
             return RedirectToAction("List");
         }
 

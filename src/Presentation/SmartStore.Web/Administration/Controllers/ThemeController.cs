@@ -2,25 +2,23 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Security;
 using SmartStore.Admin.Models.Themes;
-using SmartStore.Admin.Models.Settings;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Mvc;
 using System.IO;
 using System.Text;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
+using SmartStore.Core.Packaging;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -38,6 +36,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IEventPublisher _eventPublisher;
 		private readonly IStoreService _storeService;
 		private readonly IStoreContext _storeContext;
+		private readonly IPackageManager _packageManager;
 
 	    #endregion
 
@@ -50,7 +49,8 @@ namespace SmartStore.Admin.Controllers
             ILocalizationService localizationService,
             IEventPublisher eventPublisher,
 			IStoreService storeService,
-			IStoreContext storeContext)
+			IStoreContext storeContext,
+			IPackageManager packageManager)
 		{
             this._settingService = settingService;
             this._themeVarService = themeVarService;
@@ -61,6 +61,7 @@ namespace SmartStore.Admin.Controllers
             this._eventPublisher = eventPublisher;
 			this._storeService = storeService;
 			this._storeContext = storeContext;
+			this._packageManager = packageManager;
 		}
 
 		#endregion 
@@ -90,12 +91,6 @@ namespace SmartStore.Admin.Controllers
 
             model.AvailableBundleOptimizationValues.AddRange(commonListItems);
             model.AvailableBundleOptimizationValues.FirstOrDefault(x => int.Parse(x.Value) == model.BundleOptimizationEnabled).Selected = true;
-
-            model.AvailableCssCacheValues.AddRange(commonListItems);
-            model.AvailableCssCacheValues.FirstOrDefault(x => int.Parse(x.Value) == model.CssCacheEnabled).Selected = true;
-
-            model.AvailableCssMinifyValues.AddRange(commonListItems);
-            model.AvailableCssMinifyValues.FirstOrDefault(x => int.Parse(x.Value) == model.CssMinifyEnabled).Selected = true;
 
             // add theme configs
             model.DesktopThemes.AddRange(GetThemes(false, themeSettings));
@@ -147,10 +142,7 @@ namespace SmartStore.Admin.Controllers
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
-            bool showRestartNote = model.BundleOptimizationEnabled != themeSettings.BundleOptimizationEnabled
-                                    || model.CssCacheEnabled != themeSettings.CssCacheEnabled
-                                    || model.CssMinifyEnabled != themeSettings.CssMinifyEnabled
-                                    || model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
+            bool showRestartNote = model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
 
             bool mobileThemeSwitched = false;
             bool themeSwitched = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);
@@ -175,11 +167,11 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
 
             if (showRestartNote)
             {
-                InfoNotification(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
+                NotifyInfo(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
             }
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
@@ -224,7 +216,7 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("EditThemeVars", _localizationService.GetResource("ActivityLog.EditThemeVars"), theme);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
 
 			return continueEditing ?
 				RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab }) :
@@ -246,7 +238,7 @@ namespace SmartStore.Admin.Controllers
             // activity log
             _customerActivityService.InsertActivity("ResetThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), theme);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
         }
 
@@ -280,16 +272,16 @@ namespace SmartStore.Admin.Controllers
                     }
                     catch { }
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
+                    NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
                 }
                 else
                 {
-                    ErrorNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.UploadFile"));
+					NotifyError(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.UploadFile"));
                 }
             }
             catch (Exception ex)
             {
-                ErrorNotification(ex);
+                NotifyError(ex);
             }
 
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
@@ -312,7 +304,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (xml.IsEmpty())
                 {
-                    InfoNotification(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.NoExportInfo"));
+                    NotifyInfo(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.NoExportInfo"));
                 }
                 else
                 {
@@ -331,7 +323,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception ex)
             {
-                ErrorNotification(ex);
+                NotifyError(ex);
             }
             
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });

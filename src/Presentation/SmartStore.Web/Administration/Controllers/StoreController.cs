@@ -47,11 +47,10 @@ namespace SmartStore.Admin.Controllers
 		{
 			var stores = _storeService.GetAllStores();
 
-			stores.Insert(0, new Store 
+			if (label.HasValue())
 			{
-				Id = 0,
-				Name = _localizationService.GetResource("Admin.Common.StoresAll")
-			});
+				stores.Insert(0, new Store { Name = label, Id = 0 });
+			}
 
 			var list = 
 				from m in stores
@@ -109,7 +108,7 @@ namespace SmartStore.Admin.Controllers
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.InsertStore(store);
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Added"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Added"));
 				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
 			}
 
@@ -150,7 +149,7 @@ namespace SmartStore.Admin.Controllers
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.UpdateStore(store);
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Updated"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Updated"));
 				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
 			}
 
@@ -192,12 +191,12 @@ namespace SmartStore.Admin.Controllers
 						_settingService.DeleteSetting(setting);
 				}
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
 				return RedirectToAction("List");
 			}
 			catch (Exception exc)
 			{
-				ErrorNotification(exc);
+				NotifyError(exc);
 				return RedirectToAction("Edit", new { id = store.Id });
 			}
 		}

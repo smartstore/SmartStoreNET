@@ -5,16 +5,19 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using System.Collections.Generic;
-using SmartStore.Data;
 using Fasterflect;
 using System.Xml;
+using SmartStore.Core.Data;
+using SmartStore.Utilities;
+using System.Collections.Concurrent;
 
 namespace SmartStore.Services.Localization
 {
     public static class LocalizationExtentions
     {
-        /// <summary>
+		private static readonly ConcurrentDictionary<LambdaExpression, object> _compiledExpressions = new ConcurrentDictionary<LambdaExpression, object>();
+		
+		/// <summary>
         /// Get localized property of an entity
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
@@ -61,7 +64,7 @@ namespace SmartStore.Services.Localization
             bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true)
             where T : BaseEntity, ILocalizedEntity
         {
-            if (entity == null)
+			if (entity == null)
                 throw new ArgumentNullException("entity");
 
             var member = keySelector.Body as MemberExpression;
@@ -104,18 +107,16 @@ namespace SmartStore.Services.Localization
                     var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
                     resultStr = leService.GetLocalizedValue(languageId, entity.Id, localeKeyGroup, localeKey);
                     if (!String.IsNullOrEmpty(resultStr))
-                        result = CommonHelper.To<TPropType>(resultStr);
+						result = resultStr.Convert<TPropType>();
                 }
             }
 
             //set default value if required
             if (String.IsNullOrEmpty(resultStr) && returnDefaultValue)
             {
-                // codehint: sm-edit
+				var localizer = (Func<T, TPropType>)_compiledExpressions.GetOrAdd(keySelector, exp => exp.Compile());
                 //var localizer = keySelector.Compile();
-                //result = localizer(entity);
-                result = ((TPropType)propInfo.Get(entity));
-                
+                result = localizer(entity);
             }
             
             return result;
@@ -162,7 +163,7 @@ namespace SmartStore.Services.Localization
 
             //set default value if required
             if (String.IsNullOrEmpty(result))
-                result = CommonHelper.ConvertEnum(enumValue.ToString());
+                result = Inflector.Titleize(enumValue.ToString());
 
             return result;
         }
@@ -276,102 +277,69 @@ namespace SmartStore.Services.Localization
             }
         }
 
+		/// <summary>
+		/// Get localized property value of a plugin
+		/// </summary>
+		/// <typeparam name="T">Plugin</typeparam>
+		/// <param name="plugin">Plugin</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <param name="propertyName">Name of the property</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+		/// <returns>Localized value</returns>
+		public static string GetLocalizedValue<T>(this T plugin, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+			where T : IPlugin
+		{
+			if (plugin == null)
+				throw new ArgumentNullException("plugin");
+
+			if (plugin.PluginDescriptor == null)
+				throw new ArgumentNullException("PluginDescriptor cannot be loaded");
+
+			return plugin.PluginDescriptor.GetLocalizedValue(localizationService, propertyName, languageId, returnDefaultValue);
+		}
+
+		/// <summary>
+		/// Get localized property value of a plugin
+		/// </summary>
+		/// <param name="descriptor">Plugin descriptor</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <param name="propertyName">Name of the property</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+		/// <returns>Localized value</returns>
+		public static string GetLocalizedValue(this PluginDescriptor descriptor, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+		{
+			if (localizationService == null)
+				throw new ArgumentNullException("localizationService");
+
+			if (descriptor == null)
+				throw new ArgumentNullException("descriptor");
+
+			if (propertyName == null)
+				throw new ArgumentNullException("name");
+
+			string systemName = descriptor.SystemName;
+			string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
+			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
+
+			if (String.IsNullOrEmpty(result) && returnDefaultValue)
+				result = descriptor.TryGetPropertyValue(propertyName) as string;
+
+			return result;
+		}
 
         /// <summary>
-        /// Get localized friendly name of a plugin
+        /// Save localized plugin descriptor value
         /// </summary>
         /// <typeparam name="T">Plugin</typeparam>
         /// <param name="plugin">Plugin</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="languageId">Language identifier</param>
-        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-        /// <returns>Localized value</returns>
-        public static string GetLocalizedFriendlyName<T>(this T plugin, ILocalizationService localizationService, 
-            int languageId = 0, bool returnDefaultValue = true)
-            where T : IPlugin
-        {   
-            // codehint: sm-edit
-            if (plugin == null)
-                throw new ArgumentNullException("plugin");
-
-            if (plugin.PluginDescriptor == null)
-                throw new ArgumentNullException("PluginDescriptor cannot be loaded");
-
-            return plugin.PluginDescriptor.GetLocalizedFriendlyName(localizationService, languageId, returnDefaultValue);
-        }
-
-        /// <summary>
-        /// Get localized friendly name of a plugin
-        /// </summary>
-        /// <param name="descriptor">Plugin descriptor</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="languageId">Language identifier</param>
-        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-        /// <returns>Localized value</returns>
-        // codehint: sm-add
-        public static string GetLocalizedFriendlyName(this PluginDescriptor descriptor, ILocalizationService localizationService,
-            int languageId = 0, bool returnDefaultValue = true)
-        {
-            if (localizationService == null)
-                throw new ArgumentNullException("localizationService");
-
-            if (descriptor == null)
-                throw new ArgumentNullException("descriptor");
-
-            string systemName = descriptor.SystemName;
-            //localized value
-            string resourceName = string.Format("Plugins.FriendlyName.{0}", systemName);
-            string result = localizationService.GetResource(resourceName, languageId, false, "", true);
-
-            //set default value if required
-            if (String.IsNullOrEmpty(result) && returnDefaultValue)
-                result = descriptor.FriendlyName;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get localized description of a plugin
-        /// </summary>
-        /// <param name="descriptor">Plugin descriptor</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="languageId">Language identifier</param>
-        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-        /// <returns>Localized value</returns>
-        // codehint: sm-add
-        public static string GetLocalizedDescription(this PluginDescriptor descriptor, ILocalizationService localizationService, int languageId = 0, bool returnDefaultValue = true)
-        {
-            if (localizationService == null)
-                throw new ArgumentNullException("localizationService");
-
-            if (descriptor == null)
-                throw new ArgumentNullException("descriptor");
-
-            string description = descriptor.Description;
-            //localized value
-            string resourceName = string.Format("Plugins.Description.{0}", description);
-            string result = localizationService.GetResource(resourceName, languageId, false, "", true);
-
-            //set default value if required
-            if (String.IsNullOrEmpty(result) && returnDefaultValue)
-                result = descriptor.Description;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get localized friendly name of a plugin
-        /// </summary>
-        /// <typeparam name="T">Plugin</typeparam>
-        /// <param name="plugin">Plugin</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="languageId">Language identifier</param>
-        /// <param name="localizedFriendlyName">Localized friendly name</param>
-        /// <returns>Localized value</returns>
-        public static void SaveLocalizedFriendlyName<T>(this T plugin, 
-            ILocalizationService localizationService, int languageId,
-            string localizedFriendlyName)
-            where T : IPlugin
+		/// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Localized value</param>
+        public static void SaveLocalizedValue<T>(this T plugin, ILocalizationService localizationService, int languageId,
+			string propertyName, string value) where T : IPlugin
         {
             if (plugin == null)
                 throw new ArgumentNullException("plugin");
@@ -379,21 +347,19 @@ namespace SmartStore.Services.Localization
             if (plugin.PluginDescriptor == null)
                 throw new ArgumentNullException("PluginDescriptor cannot be loaded");
 
-            plugin.PluginDescriptor.SaveLocalizedFriendlyName(localizationService, languageId, localizedFriendlyName);
+			plugin.PluginDescriptor.SaveLocalizedValue(localizationService, languageId, propertyName, value);
         }
 
         /// <summary>
-        /// Get localized friendly name of a plugin
+		/// Save localized plugin descriptor value
         /// </summary>
         /// <param name="descriptor">Plugin</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="languageId">Language identifier</param>
-        /// <param name="localizedFriendlyName">Localized friendly name</param>
-        /// <returns>Localized value</returns>
-        // codehint: sm-add
-        public static void SaveLocalizedFriendlyName(this PluginDescriptor descriptor,
-            ILocalizationService localizationService, int languageId,
-            string localizedFriendlyName)
+		/// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Localized value</param>
+        public static void SaveLocalizedValue(this PluginDescriptor descriptor, ILocalizationService localizationService, int languageId,
+			string propertyName, string value)
         {
             if (localizationService == null)
                 throw new ArgumentNullException("localizationService");
@@ -404,14 +370,16 @@ namespace SmartStore.Services.Localization
             if (descriptor == null)
                 throw new ArgumentNullException("descriptor");
 
+			if (propertyName == null)
+				throw new ArgumentNullException("name");
+
             string systemName = descriptor.SystemName;
-            //localized value
-            string resourceName = string.Format("Plugins.FriendlyName.{0}", systemName);
+            string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
             var resource = localizationService.GetLocaleStringResourceByName(resourceName, languageId, false);
 
             if (resource != null)
             {
-                if (string.IsNullOrWhiteSpace(localizedFriendlyName))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     //delete
                     localizationService.DeleteLocaleStringResource(resource);
@@ -419,20 +387,20 @@ namespace SmartStore.Services.Localization
                 else
                 {
                     //update
-                    resource.ResourceValue = localizedFriendlyName;
+                    resource.ResourceValue = value;
                     localizationService.UpdateLocaleStringResource(resource);
                 }
             }
             else
             {
-                if (!string.IsNullOrWhiteSpace(localizedFriendlyName))
+                if (!string.IsNullOrWhiteSpace(value))
                 {
                     //insert
                     resource = new LocaleStringResource()
                     {
                         LanguageId = languageId,
                         ResourceName = resourceName,
-                        ResourceValue = localizedFriendlyName,
+                        ResourceValue = value,
                     };
                     localizationService.InsertLocaleStringResource(resource);
                 }
@@ -449,7 +417,7 @@ namespace SmartStore.Services.Localization
             string xml,
             string rootKey = null,
             bool sourceIsPlugin = false,
-            DataImportModeFlags mode = DataImportModeFlags.Insert | DataImportModeFlags.Update,
+            ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
         {
             if (language == null)
@@ -463,6 +431,5 @@ namespace SmartStore.Services.Localization
 
             service.ImportResourcesFromXml(language, xmlDoc, rootKey, sourceIsPlugin, mode, updateTouchedResources);
         }
-
     }
 }

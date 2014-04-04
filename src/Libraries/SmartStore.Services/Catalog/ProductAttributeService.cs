@@ -4,7 +4,7 @@ using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data;
@@ -26,6 +26,10 @@ namespace SmartStore.Services.Catalog
         private const string PRODUCTATTRIBUTES_PATTERN_KEY = "SmartStore.productattribute.";
         private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
         private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalue.";
+        private const string PRODUCTATTRIBUTES_BY_ID_KEY = "SmartStore.productattribute.id-{0}";
+        private const string PRODUCTVARIANTATTRIBUTES_BY_ID_KEY = "SmartStore.productvariantattribute.id-{0}";
+        private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.productvariantattributevalue.id-{0}";
+
         #endregion
 
         #region Fields
@@ -34,6 +38,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
+		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
 		private readonly IPictureService _pictureService;
@@ -56,6 +61,7 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
+			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
             IEventPublisher eventPublisher,
 			IPictureService pictureService)
         {
@@ -64,14 +70,15 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeRepository = productVariantAttributeRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
+			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
             _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
         }
 
         #endregion
 
-        // Autowired Dependency (is a proptery dependency to avoid circularity)
-        public virtual IProductAttributeParser AttributeParser { get; set; }
+		//// Autowired Dependency (is a proptery dependency to avoid circularity)
+		//public virtual IProductAttributeParser AttributeParser { get; set; }
 
         #region Methods
 
@@ -124,7 +131,10 @@ namespace SmartStore.Services.Catalog
             if (productAttributeId == 0)
                 return null;
 
-            return _productAttributeRepository.GetById(productAttributeId);
+            string key = string.Format(PRODUCTATTRIBUTES_BY_ID_KEY, productAttributeId);
+            return _cacheManager.Get(key, () => { 
+                return _productAttributeRepository.GetById(productAttributeId); 
+            });
         }
 
         /// <summary>
@@ -191,17 +201,17 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets product variant attribute mappings by product identifier
         /// </summary>
-        /// <param name="productVariantId">The product variant identifier</param>
+        /// <param name="productId">The product identifier</param>
         /// <returns>Product variant attribute mapping collection</returns>
-        public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByProductVariantId(int productVariantId)
+		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId)
         {
-            string key = string.Format(PRODUCTVARIANTATTRIBUTES_ALL_KEY, productVariantId);
+			string key = string.Format(PRODUCTVARIANTATTRIBUTES_ALL_KEY, productId);
 
             return _cacheManager.Get(key, () =>
             {
                 var query = from pva in _productVariantAttributeRepository.Table
                             orderby pva.DisplayOrder
-                            where pva.ProductVariantId == productVariantId
+							where pva.ProductId == productId
                             select pva;
                 var productVariantAttributes = query.ToList();
                 return productVariantAttributes;
@@ -218,7 +228,10 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeId == 0)
                 return null;
 
-            return _productVariantAttributeRepository.GetById(productVariantAttributeId);
+            string key = string.Format(PRODUCTVARIANTATTRIBUTES_BY_ID_KEY, productVariantAttributeId);
+            return _cacheManager.Get(key, () => { 
+                return _productVariantAttributeRepository.GetById(productVariantAttributeId); 
+            });
         }
 
         // codehint: sm-add
@@ -333,7 +346,11 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeValueId == 0)
                 return null;
 
-            return _productVariantAttributeValueRepository.GetById(productVariantAttributeValueId);
+           string key = string.Format(PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY, productVariantAttributeValueId);
+           return _cacheManager.Get(key, () =>
+           {
+               return _productVariantAttributeValueRepository.GetById(productVariantAttributeValueId);
+           });
         }
 
         /// <summary>
@@ -377,44 +394,14 @@ namespace SmartStore.Services.Catalog
         #endregion
 
         #region Product variant attribute combinations (ProductVariantAttributeCombination)
-
-        public virtual bool VariantHasAttributeCombinations(int productVariantId, bool showHidden = false)
-        {
-            if (productVariantId == 0)
-            {
-                return false;
-            }
-            
-            var query = from c in _productVariantAttributeCombinationRepository.Table
-                        where c.ProductVariantId == productVariantId
-                        select c;
-
-            if (!showHidden)
-            {
-                query = query.Where(x => x.IsActive == true);
-            }
-
-            return query.Select(x => x.Id).Any();
-        }
-
-		//private void EnsureSingleDefaultVariant(ProductVariantAttributeCombination combination) {
-		//	// the current combination should be the default one, so reset the prior default combination.
-		//	var query = from c in _productVariantAttributeCombinationRepository.Table
-		//				where c.IsDefaultCombination && c.ProductVariantId == combination.ProductVariantId             
-		//				select c;
-
-		//	foreach (var comb in query.ToList())
-		//	{
-		//		comb.IsDefaultCombination = false;
-		//		_productVariantAttributeCombinationRepository.Update(comb);
-		//	}
-		//}
         
-		private void CombineAll(List<List<ProductVariantAttributeValue>> toCombine, List<List<ProductVariantAttributeValue>> result, int y, List<ProductVariantAttributeValue> tmp) {
+		private void CombineAll(List<List<ProductVariantAttributeValue>> toCombine, List<List<ProductVariantAttributeValue>> result, int y, List<ProductVariantAttributeValue> tmp)
+		{
 			var combine = toCombine[y];
 
-			for (int i = 0; i < combine.Count; ++i) {
-				List<ProductVariantAttributeValue> lst = new List<ProductVariantAttributeValue>(tmp);
+			for (int i = 0; i < combine.Count; ++i)
+			{
+				var lst = new List<ProductVariantAttributeValue>(tmp);
 				lst.Add(combine[i]);
 
 				if (y == (toCombine.Count - 1))
@@ -433,24 +420,7 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-			// codehint: sm-add
-            // pictures
-
-            //var wasDefault = combination.IsDefaultCombination;
-            //var prevId = combination.ProductVariantId;
-
             _productVariantAttributeCombinationRepository.Delete(combination);
-
-			//if (wasDefault)
-			//{
-			//	// we deleted the default combination, set another as default!
-			//	var newDefault = _productVariantAttributeCombinationRepository.Table.FirstOrDefault(x => x.ProductVariantId == prevId);
-			//	if (newDefault != null)
-			//	{
-			//		newDefault.IsDefaultCombination = true;
-			//		_productVariantAttributeCombinationRepository.Update(newDefault);
-			//	}
-			//}
 
             //event notification
             _eventPublisher.EntityDeleted(combination);
@@ -459,22 +429,17 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets all product variant attribute combinations
         /// </summary>
-        /// <param name="productVariantId">Product variant identifier</param>
+        /// <param name="productId">Product identifier</param>
         /// <returns>Product variant attribute combination collection</returns>
-        public virtual IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productVariantId, bool showHidden = false)
+		public virtual IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId)
         {
-            if (productVariantId == 0)
+			if (productId == 0)
                 return new List<ProductVariantAttributeCombination>();
 
             var query = from pvac in _productVariantAttributeCombinationRepository.Table
                         orderby pvac.Id
-                        where pvac.ProductVariantId == productVariantId
+						where pvac.ProductId == productId
                         select pvac;
-
-            if (!showHidden)
-            {
-                query = query.Where(x => x.IsActive == true);
-            }
 
             var combinations = query.ToList();
             return combinations;
@@ -558,14 +523,16 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Creates all variant attribute combinations
 		/// </summary>
-		/// <param name="productVariantId">Product variant identifier</param>
-		public virtual void CreateAllProductVariantAttributeCombinations(ProductVariant variant) {
+		/// <param name="product">The product</param>
+		public virtual void CreateAllProductVariantAttributeCombinations(Product product)
+		{
 			// delete all existing combinations
-			foreach(var itm in GetAllProductVariantAttributeCombinations(variant.Id, true)) {
+			foreach(var itm in GetAllProductVariantAttributeCombinations(product.Id))
+			{
 				DeleteProductVariantAttributeCombination(itm);
 			}
 
-			var attributes = GetProductVariantAttributesByProductVariantId(variant.Id);
+			var attributes = GetProductVariantAttributesByProductId(product.Id);
 			if (attributes == null || attributes.Count <= 0)
 				return;
 
@@ -573,24 +540,28 @@ namespace SmartStore.Services.Catalog
 			var resultMatrix = new List<List<ProductVariantAttributeValue>>();
 			var tmp = new List<ProductVariantAttributeValue>();
 
-			foreach (var attr in attributes) {
+			foreach (var attr in attributes)
+			{
 				var attributeValues = attr.ProductVariantAttributeValues.ToList();
 				if (attributeValues.Count > 0)
 					toCombine.Add(attributeValues);
 			}
 
-			if (toCombine.Count > 0) {
+			if (toCombine.Count > 0)
+			{
 				CombineAll(toCombine, resultMatrix, 0, tmp);
 
-				foreach (var values in resultMatrix) {
+				foreach (var values in resultMatrix)
+				{
 					string attrXml = "";
 					foreach (var x in values) 
                     {
-						attrXml = this.AttributeParser.AddProductAttribute(attrXml, attributes[values.IndexOf(x)], x.Id.ToString());
+						attrXml = attributes[values.IndexOf(x)].AddProductAttribute(attrXml, x.Id.ToString());
 					}
 
-					var combination = new ProductVariantAttributeCombination {
-						ProductVariantId = variant.Id,
+					var combination = new ProductVariantAttributeCombination()
+					{
+						ProductId = product.Id,
 						AttributesXml = attrXml,
 						StockQuantity = 10000,
 						AllowOutOfStockOrders = true,
@@ -602,7 +573,6 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
-
 			//foreach (var y in resultMatrix) {
 			//	StringBuilder sb = new StringBuilder();
 			//	foreach (var x in y) {
@@ -610,45 +580,118 @@ namespace SmartStore.Services.Catalog
 			//	}
 			//	sb.ToString().Dump();
 			//}
+		}
 
+		public virtual bool VariantHasAttributeCombinations(int productId)
+		{
+			if (productId == 0)
+				return false;
 
-			//Sample ResultMatrix:
-			//Size Color Material	(var attributes)
-			//1X Blau Cotton (var AttrXml)
-			//1X Blau Leather 
-			//1X Grün Cotton 
-			//1X Grün Leather 
-			//1X Rot Cotton 
-			//1X Rot Leather 
-			//2X Blau Cotton 
-			//2X Blau Leather 
-			//2X Grün Cotton 
-			//2X Grün Leather 
-			//2X Rot Cotton 
-			//2X Rot Leather 
-			//3X Blau Cotton 
-			//3X Blau Leather 
-			//3X Grün Cotton 
-			//3X Grün Leather 
-			//3X Rot Cotton 
-			//3X Rot Leather 
-			//4X Blau Cotton 
-			//4X Blau Leather 
-			//4X Grün Cotton 
-			//4X Grün Leather 
-			//4X Rot Cotton 
-			//4X Rot Leather 
-			//5X Blau Cotton 
-			//5X Blau Leather 
-			//5X Grün Cotton 
-			//5X Grün Leather 
-			//5X Rot Cotton 
-			//5X Rot Leather
+			var query =
+				from c in _productVariantAttributeCombinationRepository.Table
+				where c.ProductId == productId
+				select c;
 
+			return query.Select(x => x.Id).Any();
 		}
 
         #endregion
 
-        #endregion
-    }
+		#region Product bundle item attribute filter
+
+		/// <summary>
+		/// Inserts a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void InsertProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			if (attributeFilter.AttributeId != 0 && attributeFilter.AttributeValueId != 0)
+			{
+				_productBundleItemAttributeFilterRepository.Insert(attributeFilter);
+
+				_eventPublisher.EntityInserted(attributeFilter);
+			}
+		}
+
+		/// <summary>
+		/// Updates the product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void UpdateProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			_productBundleItemAttributeFilterRepository.Update(attributeFilter);
+
+			_eventPublisher.EntityUpdated(attributeFilter);
+		}
+
+		/// <summary>
+		/// Deletes a product bundle item attribute filter
+		/// </summary>
+		/// <param name="attributeFilter">Product bundle item attribute filter</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
+		{
+			if (attributeFilter == null)
+				throw new ArgumentNullException("attributeFilter");
+
+			_productBundleItemAttributeFilterRepository.Delete(attributeFilter);
+
+			_eventPublisher.EntityDeleted(attributeFilter);
+		}
+
+		/// <summary>
+		/// Deletes all attribute filters of a bundle item
+		/// </summary>
+		/// <param name="bundleItem">Bundle item</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem)
+		{
+			if (bundleItem != null && bundleItem.Id != 0)
+			{
+				var attributeFilterQuery =
+					from x in _productBundleItemAttributeFilterRepository.Table
+					where x.BundleItemId == bundleItem.Id
+					select x;
+
+				attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
+			}
+		}
+
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		/// <param name="attributeValueId">Attribute value identifier</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(int attributeId, int attributeValueId)
+		{
+			var attributeFilterQuery =
+				from x in _productBundleItemAttributeFilterRepository.Table
+				where x.AttributeId == attributeId && x.AttributeValueId == attributeValueId
+				select x;
+
+			attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
+		}
+
+		/// <summary>
+		/// Deletes product bundle item attribute filters
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		public virtual void DeleteProductBundleItemAttributeFilter(int attributeId)
+		{
+			var attributeFilterQuery =
+				from x in _productBundleItemAttributeFilterRepository.Table
+				where x.AttributeId == attributeId
+				select x;
+
+			attributeFilterQuery.ToList().Each(x => DeleteProductBundleItemAttributeFilter(x));
+		}
+
+		#endregion
+
+		#endregion
+	}
 }

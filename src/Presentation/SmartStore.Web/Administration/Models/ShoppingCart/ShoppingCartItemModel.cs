@@ -9,9 +9,11 @@ namespace SmartStore.Admin.Models.ShoppingCart
 		[SmartResourceDisplayName("Admin.Common.Store")]
 		public string Store { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]
-        public int ProductVariantId { get; set; }
+        public int ProductId { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]
-        public string FullProductName { get; set; }
+        public string ProductName { get; set; }
+		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.CurrentCarts.UnitPrice")]
         public string UnitPrice { get; set; }

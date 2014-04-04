@@ -40,7 +40,7 @@
                 <div>
 					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores) 
 					<button type="button" name="savestorerequirement@(Model.RequirementId)" id="savestorerequirement@(Model.RequirementId)" class="btn">
-						@T("Admin.Common.Save")
+						<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
 					</button>
                 </div>
                 <div id="pnl-save-requirement-result@(Model.RequirementId)" style="display:none;">@T("Admin.Promotions.Discounts.Requirements.Saved")</div>

@@ -7,7 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Catalog
 {
@@ -95,7 +95,7 @@ namespace SmartStore.Services.Catalog
 			return _cacheManager.Get(key, () =>
 			{
 
-				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
 				{
 					//stored procedures are enabled and supported by the database. 
 					//It's much faster than the LINQ implementation below 
@@ -131,9 +131,7 @@ namespace SmartStore.Services.Catalog
 									Id = pt.Id,
 									ProductCount = pt.Products
 										//published and not deleted product/variants
-										.Count(p => !p.Deleted &&
-											p.Published &&
-											p.ProductVariants.Any(pv => !pv.Deleted && pv.Published))
+										.Count(p => !p.Deleted && p.Published)
 									//UNDOEN filter by store identifier if specified ( > 0 )
 								};
 

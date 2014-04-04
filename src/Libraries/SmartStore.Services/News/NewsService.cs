@@ -5,7 +5,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.News
 {
@@ -34,7 +34,11 @@ namespace SmartStore.Services.News
 			_storeMappingRepository = storeMappingRepository;
             _cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -93,7 +97,7 @@ namespace SmartStore.Services.News
 			query = query.OrderByDescending(n => n.CreatedOnUtc);
 
 			//Store mapping
-			if (storeId > 0)
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from n in query
 						join sm in _storeMappingRepository.Table

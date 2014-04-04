@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Data;
 using SmartStore.Core.Themes;
 using SmartStore.Core.Caching;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using System.Xml;
 
 namespace SmartStore.Services.Themes
@@ -24,8 +24,10 @@ namespace SmartStore.Services.Themes
         private readonly IEventPublisher _eventPublisher;
 
         public ThemeVariablesService(
-            IRepository<ThemeVariable> rsVariables, IThemeRegistry themeRegistry,
-            ICacheManager cacheManager, IEventPublisher eventPublisher)
+            IRepository<ThemeVariable> rsVariables, 
+			IThemeRegistry themeRegistry,
+            ICacheManager cacheManager, 
+			IEventPublisher eventPublisher)
         {
             this._rsVariables = rsVariables;
             this._themeRegistry = themeRegistry;

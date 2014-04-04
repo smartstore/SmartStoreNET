@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 
@@ -11,7 +12,7 @@ namespace SmartStore.Web.Models.Order
         {
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
-            Items = new List<OrderProductVariantModel>();
+            Items = new List<OrderItemModel>();
             OrderNotes = new List<OrderNote>();
             Shipments = new List<ShipmentBriefModel>();
 
@@ -63,23 +64,46 @@ namespace SmartStore.Web.Models.Order
         public IList<GiftCard> GiftCards { get; set; }
 
         public bool ShowSku { get; set; }
-        public IList<OrderProductVariantModel> Items { get; set; }
+        public IList<OrderItemModel> Items { get; set; }
 
         public IList<OrderNote> OrderNotes { get; set; }
 
         #region Nested Classes
 
-        public partial class OrderProductVariantModel : EntityModelBase
+        public partial class OrderItemModel : EntityModelBase
         {
+			public OrderItemModel()
+			{
+				BundleItems = new List<BundleItemModel>();
+			}
+
             public string Sku { get; set; }
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductSeName { get; set; }
+			public ProductType ProductType { get; set; }
             public string UnitPrice { get; set; }
             public string SubTotal { get; set; }
             public int Quantity { get; set; }
             public string AttributeInfo { get; set; }
+
+			public bool BundlePerItemPricing { get; set; }
+			public bool BundlePerItemShoppingCart { get; set; }
+
+			public IList<BundleItemModel> BundleItems { get; set; }
         }
+
+		public partial class BundleItemModel : ModelBase
+		{
+			public string Sku { get; set; }
+			public string ProductName { get; set; }
+			public string ProductSeName { get; set; }
+			public bool VisibleIndividually { get; set; }
+			public int Quantity { get; set; }
+			public int DisplayOrder { get; set; }
+			public string PriceWithDiscount { get; set; }
+			public string AttributeInfo { get; set; }
+		}
 
         public partial class TaxRate : ModelBase
         {

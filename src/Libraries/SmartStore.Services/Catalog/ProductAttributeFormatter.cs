@@ -4,6 +4,7 @@ using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Html;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -20,50 +21,56 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkContext _workContext;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IPriceCalculationService _priceCalculationService;
         private readonly ICurrencyService _currencyService;
         private readonly ILocalizationService _localizationService;
         private readonly ITaxService _taxService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IDownloadService _downloadService;
         private readonly IWebHelper _webHelper;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
 
         public ProductAttributeFormatter(IWorkContext workContext,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
+			IPriceCalculationService priceCalculationService,
             ICurrencyService currencyService,
             ILocalizationService localizationService,
             ITaxService taxService,
             IPriceFormatter priceFormatter,
             IDownloadService downloadService,
-            IWebHelper webHelper)
+            IWebHelper webHelper,
+			ShoppingCartSettings shoppingCartSettings)
         {
             this._workContext = workContext;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
+			this._priceCalculationService = priceCalculationService;
             this._currencyService = currencyService;
             this._localizationService = localizationService;
             this._taxService = taxService;
             this._priceFormatter = priceFormatter;
             this._downloadService = downloadService;
             this._webHelper = webHelper;
+			this._shoppingCartSettings = shoppingCartSettings;
         }
 
         /// <summary>
         /// Formats attributes
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="attributes">Attributes</param>
         /// <returns>Attributes</returns>
-        public string FormatAttributes(ProductVariant productVariant, string attributes)
+		public string FormatAttributes(Product product, string attributes)
         {
             var customer = _workContext.CurrentCustomer;
-            return FormatAttributes(productVariant, attributes, customer);
+            return FormatAttributes(product, attributes, customer);
         }
 
         /// <summary>
         /// Formats attributes
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
+		/// <param name="product">Product</param>
         /// <param name="attributes">Attributes</param>
         /// <param name="customer">Customer</param>
         /// <param name="serapator">Serapator</param>
@@ -73,7 +80,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="renderGiftCardAttributes">A value indicating whether to render gift card attributes</param>
         /// <param name="allowHyperlinks">A value indicating whether to HTML hyperink tags could be rendered (if required)</param>
         /// <returns>Attributes</returns>
-        public string FormatAttributes(ProductVariant productVariant, string attributes,
+        public string FormatAttributes(Product product, string attributes,
             Customer customer, string serapator = "<br />", bool htmlEncode = true, bool renderPrices = true,
             bool renderProductAttributes = true, bool renderGiftCardAttributes = true,
             bool allowHyperlinks = true)
@@ -157,12 +164,22 @@ namespace SmartStore.Services.Catalog
                                 var pvaValue = _productAttributeService.GetProductVariantAttributeValueById(pvaId);
                                 if (pvaValue != null)
                                 {
-                                    pvaAttribute = string.Format("{0}: {1}", pva.ProductAttribute.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id), pvaValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id));
+                                    pvaAttribute = string.Format("{0}: {1}", pva.ProductAttribute.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id),
+										pvaValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id));
+
                                     if (renderPrices)
                                     {
                                         decimal taxRate = decimal.Zero;
-                                        decimal priceAdjustmentBase = _taxService.GetProductPrice(productVariant, pvaValue.PriceAdjustment, customer, out taxRate);
+										decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+										decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out taxRate);
                                         decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
+
+										if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
+											pvaValue.Quantity > 1)
+										{
+											pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
+										}
+
                                         if (priceAdjustmentBase > 0)
                                         {
                                             string priceAdjustmentStr = _priceFormatter.FormatPrice(priceAdjustment, false, false);
@@ -194,7 +211,7 @@ namespace SmartStore.Services.Catalog
             //gift cards
             if (renderGiftCardAttributes)
             {
-                if (productVariant.IsGiftCard)
+                if (product.IsGiftCard)
                 {
                     string giftCardRecipientName = "";
                     string giftCardRecipientEmail = "";
@@ -205,11 +222,11 @@ namespace SmartStore.Services.Catalog
                         out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
 
                     //sender
-                    var giftCardFrom = productVariant.GiftCardType == GiftCardType.Virtual ?
+                    var giftCardFrom = product.GiftCardType == GiftCardType.Virtual ?
                         string.Format(_localizationService.GetResource("GiftCardAttribute.From.Virtual"), giftCardSenderName, giftCardSenderEmail) :
                         string.Format(_localizationService.GetResource("GiftCardAttribute.From.Physical"), giftCardSenderName);
                     //recipient
-                    var giftCardFor = productVariant.GiftCardType == GiftCardType.Virtual ?
+                    var giftCardFor = product.GiftCardType == GiftCardType.Virtual ?
                         string.Format(_localizationService.GetResource("GiftCardAttribute.For.Virtual"), giftCardRecipientName, giftCardRecipientEmail) :
                         string.Format(_localizationService.GetResource("GiftCardAttribute.For.Physical"), giftCardRecipientName);
 

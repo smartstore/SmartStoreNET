@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Themes
 {
-    public class ThemeableRazorViewEngine : ThemeableBuildManagerViewEngine
+	public class ThemeableRazorViewEngine : ThemeableVirtualPathProviderViewEngine
     {
-        public ThemeableRazorViewEngine()
+
+		public ThemeableRazorViewEngine()
         {
             // 0: view, 1: controller, 2: area, 3: theme
             AreaViewLocationFormats = new[]
@@ -70,13 +70,6 @@ namespace SmartStore.Web.Framework.Themes
                                             "~/Views/{1}/{0}.vbhtml", 
                                             "~/Views/Shared/{0}.cshtml",
                                             "~/Views/Shared/{0}.vbhtml",
-
-
-                                            //Admin
-                                            "~/Administration/Views/{1}/{0}.cshtml",
-                                            "~/Administration/Views/{1}/{0}.vbhtml",
-                                            "~/Administration/Views/Shared/{0}.cshtml",
-                                            "~/Administration/Views/Shared/{0}.vbhtml",
                                       };
 
             // 0: view, 1: controller, 2: theme
@@ -109,12 +102,6 @@ namespace SmartStore.Web.Framework.Themes
                                                 "~/Views/{1}/{0}.vbhtml", 
                                                 "~/Views/Shared/{0}.cshtml", 
                                                 "~/Views/Shared/{0}.vbhtml",
-
-                                                //Admin
-                                                "~/Administration/Views/{1}/{0}.cshtml",
-                                                "~/Administration/Views/{1}/{0}.vbhtml",
-                                                "~/Administration/Views/Shared/{0}.cshtml",
-                                                "~/Administration/Views/Shared/{0}.vbhtml",
                                              };
 
             FileExtensions = new[] { "cshtml", "vbhtml" };
@@ -124,17 +111,17 @@ namespace SmartStore.Web.Framework.Themes
         {
             string layoutPath = null;
             var runViewStartPages = false;
-            IEnumerable<string> fileExtensions = base.FileExtensions;
-            return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions);
-            //return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions, base.ViewPageActivator);
+			var fileExtensions = base.FileExtensions;
+            //return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions);
+            return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions, base.ViewPageActivator);
         }
 
         protected override IView CreateView(ControllerContext controllerContext, string viewPath, string masterPath)
         {
             string layoutPath = masterPath;
             var runViewStartPages = true;
-            IEnumerable<string> fileExtensions = base.FileExtensions;
-            return new RazorView(controllerContext, viewPath, layoutPath, runViewStartPages, fileExtensions);
+            var fileExtensions = base.FileExtensions;
+            return new RazorView(controllerContext, viewPath, layoutPath, runViewStartPages, fileExtensions, base.ViewPageActivator);
         }
     }
 }

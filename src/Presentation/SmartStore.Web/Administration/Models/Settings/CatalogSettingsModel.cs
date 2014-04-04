@@ -47,19 +47,24 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShareButton")]
         public bool ShowShareButton { get; set; }
 
-        //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBasePriceInProductLists")]
         public bool ShowBasePriceInProductLists { get; set; }
 
-        //codehint: sm-add
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment")]
+        public bool ShowVariantCombinationPriceAdjustment { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity")]
+		public bool ShowLinkedAttributeValueQuantity { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueImage")]
+		public bool ShowLinkedAttributeValueImage { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
         public bool ShowDeliveryTimesInProductLists { get; set; }
 
-        //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
         public bool ShowDeliveryTimesInProductDetail { get; set; }
 
-        //codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
         public bool ShowProductReviewsInProductLists { get; set; }
 
@@ -120,6 +125,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate")]
         public bool EnableDynamicPriceUpdate { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.BundleItemShowBasePrice")]
+		public bool BundleItemShowBasePrice { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfProductTags")]
         public int NumberOfProductTags { get; set; }
 
@@ -135,7 +143,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSizeOptions")]
         public string ProductsByTagPageSizeOptions { get; set; }
 
-        //codehint: sm-add begin
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAllowCustomersToSelectPageSize")]
         public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
 
@@ -156,7 +163,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists")]
         public bool ShowColorSquaresInLists { get; set; }
-        //codehint: sm-add end
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideBuyButtonInLists")]
+		public bool HideBuyButtonInLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts")]
         public bool IncludeShortDescriptionInCompareProducts { get; set; }
@@ -178,6 +187,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDiscountSign")]
         public bool ShowDiscountSign { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
+		public bool SuppressSkuSearch { get; set; }
 
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
     }

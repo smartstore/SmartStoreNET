@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using SmartStore.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
 
 namespace SmartStore.Plugin.Shipping.ByWeight.Data
 {
@@ -14,12 +16,27 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data
     {
         public const string ALIASKEY = "sm_object_context_shipping_weight_zip";
         
+		static ShippingByWeightObjectContext()
+		{
+			var initializer = new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>
+			{
+				TablesToCheck = new[] { "ShippingByWeight" }
+			};
+			Database.SetInitializer(initializer);
+		}
+
+		/// <summary>
+		/// For tooling support, e.g. EF Migrations
+		/// </summary>
+		public ShippingByWeightObjectContext()
+			: base()
+		{
+		}
+
         public ShippingByWeightObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString, ALIASKEY)
         {
-            //((IObjectContextAdapter) this).ObjectContext.ContextOptions.LazyLoadingEnabled = true;
         }
-
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -28,32 +45,6 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Data
             //disable EdmMetadata generation
             //modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
             base.OnModelCreating(modelBuilder);
-        }
-
-        /// <summary>
-        /// Install
-        /// </summary>
-        public void Install()
-        {
-            //It's required to set initializer to null (for SQL Server Compact).
-            //otherwise, you'll get something like "The model backing the 'your context name' context has changed since the database was created. Consider using Code First Migrations to update the database"
-            Database.SetInitializer<ShippingByWeightObjectContext>(null);
-
-            //create the table
-            var dbScript = CreateDatabaseScript();
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
-        }
-
-        /// <summary>
-        /// Uninstall
-        /// </summary>
-        public void Uninstall()
-        {
-            //drop the table
-            var dbScript = "DROP TABLE ShippingByWeight";
-            Database.ExecuteSqlCommand(dbScript);
-            SaveChanges();
         }
        
     }

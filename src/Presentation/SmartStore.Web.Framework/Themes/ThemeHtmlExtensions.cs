@@ -145,7 +145,7 @@ namespace SmartStore.Web.Framework.Themes
         public static string ThemePath(this HtmlHelper html, ThemeManifest manifest, string path)
         {
             path = EnsurePath(path);
-            return manifest.Location + "/" + Path.Combine(manifest.ThemeName, path);
+            return "{0}{1}/{2}".FormatCurrent(manifest.Location, manifest.ThemeName, path);
         }
 
         private static string EnsurePath(string path)

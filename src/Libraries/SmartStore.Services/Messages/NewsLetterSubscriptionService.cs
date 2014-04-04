@@ -6,7 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Data;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Messages
 {
@@ -24,11 +24,11 @@ namespace SmartStore.Services.Messages
             _eventPublisher = eventPublisher;
         }
 
-        public DataImportResult ImportSubscribers(Stream stream)
+        public ImportResult ImportSubscribers(Stream stream)
         {
             Guard.ArgumentNotNull(() => stream);
 
-            var result = new DataImportResult();
+            var result = new ImportResult();
             var toAdd = new List<NewsLetterSubscription>();
             var toUpdate = new List<NewsLetterSubscription>();
             var autoCommit = _subscriptionRepository.AutoCommitEnabled;
@@ -76,13 +76,13 @@ namespace SmartStore.Services.Messages
 
                         if (email.Length > 255)
                         {
-                            result.Warnings.Add("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
+                            result.AddWarning("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
                             continue;
                         }
 
                         if (!email.IsEmail())
                         {
-                            result.Warnings.Add("'{0}' is not a valid email address.".FormatInvariant(email));
+							result.AddWarning("'{0}' is not a valid email address.".FormatInvariant(email));
                             continue;
                         }
 
@@ -98,7 +98,6 @@ namespace SmartStore.Services.Messages
 
                             toUpdate.Add(subscription);
                             result.ModifiedRecords++;
-                            result.AffectedRecords++;
                         }
                         else
                         {
@@ -112,7 +111,6 @@ namespace SmartStore.Services.Messages
 
                             toAdd.Add(subscription);
                             result.NewRecords++;
-                            result.AffectedRecords++;
                         }
                     }
                 }
@@ -159,7 +157,7 @@ namespace SmartStore.Services.Messages
             }
 
             //Handle e-mail
-            newsLetterSubscription.Email = CommonHelper.EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
+            newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Persist
             _subscriptionRepository.Insert(newsLetterSubscription);
@@ -187,7 +185,7 @@ namespace SmartStore.Services.Messages
             }
 
             //Handle e-mail
-            newsLetterSubscription.Email = CommonHelper.EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
+            newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Get original subscription record
             NewsLetterSubscription originalSubscription = _context.LoadOriginalCopy(newsLetterSubscription);
@@ -275,7 +273,8 @@ namespace SmartStore.Services.Messages
         /// <returns>NewsLetter subscription</returns>
         public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email)
         {
-            if (!CommonHelper.IsValidEmail(email)) return null;
+			if (!email.IsEmail())
+				return null;
 
             email = email.Trim();
 
@@ -330,5 +329,22 @@ namespace SmartStore.Services.Messages
                 }
             }
         }
+
+		/// <summary>
+		/// Ensures the subscriber email or throw.
+		/// </summary>
+		/// <param name="email">The email.</param>
+		/// <returns></returns>
+		private static string EnsureSubscriberEmailOrThrow(string email)
+		{
+			string output = email.EmptyNull().Trim().Truncate(255);
+
+			if (!output.IsEmail())
+			{
+				throw Error.ArgumentOutOfRange("email", "Email is not valid", email);
+			}
+
+			return output;
+		}
     }
 }

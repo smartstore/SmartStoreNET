@@ -118,15 +118,20 @@ namespace SmartStore.Web.Framework
 
         public static GridBoundColumnBuilder<T> Centered<T>(this GridBoundColumnBuilder<T> columnBuilder) where T:class
         {
-            return columnBuilder.HtmlAttributes(new { align = "center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center;" });
+            return columnBuilder.HtmlAttributes(new { align = "center" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
         }
-
         public static GridTemplateColumnBuilder<T> Centered<T>(this GridTemplateColumnBuilder<T> columnBuilder) where T : class
         {
-            return columnBuilder.HtmlAttributes(new { align = "center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center;" });
+            return columnBuilder.HtmlAttributes(new { align = "center" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
         }
+		public static GridBoundColumnBuilder<T> RightAlign<T>(this GridBoundColumnBuilder<T> columnBuilder) where T : class
+		{
+			return columnBuilder.HtmlAttributes(new { style = "text-align:right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" });
+		}
+		public static GridTemplateColumnBuilder<T> RightAlign<T>(this GridTemplateColumnBuilder<T> columnBuilder) where T : class
+		{
+			return columnBuilder.HtmlAttributes(new { style = "text-align:right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" });
+		}
 
         public static SelectList ToSelectList<TEnum>(this TEnum enumObj, bool markCurrentAsSelected = true) where TEnum : struct
         {
@@ -299,6 +304,20 @@ namespace SmartStore.Web.Framework
 				});
 			}
 			return lst;
+		}
+
+		public static void SelectValue(this List<SelectListItem> lst, string value, string defaultValue = null)
+		{
+			if (lst != null)
+			{
+				var itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(value));
+
+				if (itm == null && defaultValue != null)
+					itm = lst.FirstOrDefault(i => i.Value.IsCaseInsensitiveEqual(defaultValue));
+
+				if (itm != null)
+					itm.Selected = true;
+			}
 		}
     }
 }

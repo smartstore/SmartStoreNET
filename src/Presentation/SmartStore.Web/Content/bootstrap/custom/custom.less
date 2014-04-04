@@ -209,6 +209,13 @@ nav li {
 	}
 }
 
+.btn-above {
+	margin-bottom: 5px !important;
+}
+.btn-below {
+	margin-top: 5px !important;
+}
+
 
 // FORMS (GENERAL)
 // --------------
@@ -346,6 +353,10 @@ input[type="color"],
 	vertical-align: -1px;
 }
 
+.dropdown-menu li a i {
+	display: inline-block;
+	min-width: 16px;
+}
 
 // LABEL-BADGE ENHANCEMENTS
 // -------------------------
@@ -355,6 +366,17 @@ input[type="color"],
 	// labels & badges within tabs "push" the tab item
 	// downwards: kill the ugly solid table line
 	vertical-align: text-top;
+}
+
+.label-smnet {
+	margin-right: 5px;
+}
+.label-smnet-hide {
+	display: none;
+}
+.label-smnet + span,
+.label-smnet + a {
+	vertical-align: middle;
 }
 
 // JQUERY UI STUFF
@@ -424,4 +446,12 @@ input[type="color"],
 	ul {
 		margin-bottom: 0;
 	}
+}
+
+
+// 'summernote' html editor tweaks
+// -------------------------
+
+.note-editable {
+    background-color: #fff;
 }

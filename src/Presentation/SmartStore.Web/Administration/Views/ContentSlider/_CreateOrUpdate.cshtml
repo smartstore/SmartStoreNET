@@ -71,7 +71,7 @@
 				@Html.SmartLabelFor(model => model.Text)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.Text, "RichEditor")
+				@Html.EditorFor(x => x.Text, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.Text)
 			</td>
 		</tr>

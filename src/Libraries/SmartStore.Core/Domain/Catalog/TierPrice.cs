@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -5,37 +6,43 @@ namespace SmartStore.Core.Domain.Catalog
     /// <summary>
     /// Represents a tier price
     /// </summary>
-    public partial class TierPrice : BaseEntity
+    [DataContract]
+	public partial class TierPrice : BaseEntity
     {
         /// <summary>
-        /// Gets or sets the product variant identifier
+        /// Gets or sets the product identifier
         /// </summary>
-        public int ProductVariantId { get; set; }
+		[DataMember]
+		public int ProductId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the store identifier (0 - all stores)
 		/// </summary>
+		[DataMember]
 		public int StoreId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role identifier
         /// </summary>
-        public int? CustomerRoleId { get; set; }
+		[DataMember]
+		public int? CustomerRoleId { get; set; }
 
         /// <summary>
         /// Gets or sets the quantity
         /// </summary>
-        public int Quantity { get; set; }
+		[DataMember]
+		public int Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the price
         /// </summary>
-        public decimal Price { get; set; }
+		[DataMember]
+		public decimal Price { get; set; }
 
         /// <summary>
-        /// Gets or sets the product variant
+        /// Gets or sets the product
         /// </summary>
-        public virtual ProductVariant ProductVariant { get; set; }
+		public virtual Product Product { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role

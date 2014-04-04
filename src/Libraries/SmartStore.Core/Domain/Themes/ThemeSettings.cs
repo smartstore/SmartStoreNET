@@ -9,6 +9,13 @@ namespace SmartStore.Core.Domain.Themes
 {
     public class ThemeSettings : ISettings
     {
+		public ThemeSettings()
+		{
+			DefaultDesktopTheme = "Alpha";
+			DefaultMobileTheme = "Mobile";
+			AllowCustomerToSelectTheme = true;
+			MobileDevicesSupported = true;
+		}
 
         /// <summary>
         /// Gets or sets a value indicating whether
@@ -20,28 +27,6 @@ namespace SmartStore.Core.Domain.Themes
         /// 2: Enabled
         /// </value>
         public int BundleOptimizationEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether
-        /// (less) css caching is enabled
-        /// </summary>
-        /// <value>
-        /// 0: Auto (decide based on web.config dotLess configuration)
-        /// 1: Disabled
-        /// 2: Enabled
-        /// </value>
-        public int CssCacheEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether
-        /// (less) css minifying is enabled
-        /// </summary>
-        /// <value>
-        /// 0: Auto (decide based on web.config dotLess configuration)
-        /// 1: Disabled
-        /// 2: Enabled
-        /// </value>
-        public int CssMinifyEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a default store theme for desktops

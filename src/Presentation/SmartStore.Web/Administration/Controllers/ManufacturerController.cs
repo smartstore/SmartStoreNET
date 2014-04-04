@@ -9,12 +9,14 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
@@ -41,6 +43,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -55,6 +58,7 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IExportManager exportManager, IWorkContext workContext,
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
+			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings, CatalogSettings catalogSettings)
         {
             this._categoryService = categoryService;
@@ -72,6 +76,7 @@ namespace SmartStore.Admin.Controllers
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
+			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
         }
@@ -120,7 +125,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Manufacturer manufacturer)
         {
-            var picture = _pictureService.GetPictureById(manufacturer.PictureId);
+			var picture = _pictureService.GetPictureById(manufacturer.PictureId.GetValueOrDefault());
             if (picture != null)
                 _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(manufacturer.Name));
         }
@@ -143,7 +148,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[NonAction]
-		private void PrepareStoresMappingModel(ManufacturerModel model, Manufacturer manufacturer, bool excludeProperties)
+		private void PrepareManufacturerModel(ManufacturerModel model, Manufacturer manufacturer, bool excludeProperties)
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
@@ -152,6 +157,7 @@ namespace SmartStore.Admin.Controllers
 				.GetAllStores()
 				.Select(s => s.ToModel())
 				.ToList();
+
 			if (!excludeProperties)
 			{
 				if (manufacturer != null)
@@ -162,6 +168,12 @@ namespace SmartStore.Admin.Controllers
 				{
 					model.SelectedStoreIds = new int[0];
 				}
+			}
+
+			if (manufacturer != null)
+			{
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
+				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
 			}
 		}
 
@@ -266,8 +278,7 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales);
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, null, false);
+			PrepareManufacturerModel(model, null, false);
             //default values
             model.PageSize = 12; // codehint: sm-edit > 4;
             model.Published = true;
@@ -303,15 +314,14 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = manufacturer.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, null, true);
+			PrepareManufacturerModel(model, null, true);
 
             return View(model);
         }
@@ -339,8 +349,7 @@ namespace SmartStore.Admin.Controllers
             });
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, manufacturer, false);
+			PrepareManufacturerModel(model, manufacturer, false);
 
             return View(model);
         }
@@ -358,7 +367,7 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                int prevPictureId = manufacturer.PictureId;
+				int prevPictureId = manufacturer.PictureId.GetValueOrDefault();
                 manufacturer = model.ToEntity(manufacturer);
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
                 _manufacturerService.UpdateManufacturer(manufacturer);
@@ -368,7 +377,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(manufacturer, model);
                 //delete an old picture (if deleted or updated)
-                if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId)
+				if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId.GetValueOrDefault())
                 {
                     var prevPicture = _pictureService.GetPictureById(prevPictureId);
                     if (prevPicture != null)
@@ -382,7 +391,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
                 return continueEditing ? RedirectToAction("Edit", manufacturer.Id) : RedirectToAction("List");
             }
 
@@ -390,8 +399,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);
-			//Stores
-			PrepareStoresMappingModel(model, manufacturer, true);
+			PrepareManufacturerModel(model, manufacturer, true);
 
             return View(model);
         }
@@ -412,7 +420,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteManufacturer", _localizationService.GetResource("ActivityLog.DeleteManufacturer"), manufacturer.Name);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.Manufacturers.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Deleted"));
             return RedirectToAction("List");
         }
         
@@ -433,7 +441,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
@@ -456,12 +464,18 @@ namespace SmartStore.Admin.Controllers
                 Data = productManufacturers
                 .Select(x =>
                 {
+					var product = _productService.GetProductById(x.ProductId);
+
                     return new ManufacturerModel.ManufacturerProductModel()
                     {
                         Id = x.Id,
                         ManufacturerId = x.ManufacturerId,
                         ProductId = x.ProductId,
-                        ProductName = _productService.GetProductById(x.ProductId).Name,
+                        ProductName = product.Name,
+						Sku = product.Sku,
+						ProductTypeName = product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = product.ProductTypeLabelHint,
+						Published = product.Published,
                         IsFeaturedProduct = x.IsFeaturedProduct,
                         DisplayOrder1 = x.DisplayOrder
                     };
@@ -523,21 +537,35 @@ namespace SmartStore.Admin.Controllers
             var products = _productService.SearchProducts(ctx);
 
             var model = new ManufacturerModel.AddManufacturerProductModel();
-            model.Products = new GridModel<ProductModel>
-            {
-                Data = products.Select(x => x.ToModel()),
-                Total = products.TotalCount
-            };
+			model.Products = new GridModel<ProductModel>
+			{
+				Data = products.Select(x =>
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				}),
+				Total = products.TotalCount
+			};
 
             //categories
-            //model.AvailableCategories.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete
-            foreach (var c in _categoryService.GetAllCategories(showHidden: true))
-                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService), Value = c.Id.ToString() });
+            var allCategories = _categoryService.GetAllCategories(showHidden: true);
+            var mappedCategories = allCategories.ToDictionary(x => x.Id);
+            foreach (var c in allCategories)
+            {
+                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+            }
 
             //manufacturers
-            // model.AvailableManufacturers.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
+            {
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+            }
+
+			//product types
+			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
         }
@@ -562,10 +590,17 @@ namespace SmartStore.Admin.Controllers
             ctx.PageIndex = command.Page - 1;
             ctx.PageSize = command.PageSize;
             ctx.ShowHidden = true;
+			ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
 
             var products = _productService.SearchProducts(ctx);
 
-            gridModel.Data = products.Select(x => x.ToModel());
+            gridModel.Data = products.Select(x =>
+			{
+				var productModel = x.ToModel();
+				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+				return productModel;
+			});
             gridModel.Total = products.TotalCount;
             return new JsonResult
             {

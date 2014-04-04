@@ -5,8 +5,7 @@
 @model SmartStore.Plugin.Widgets.TrustedShopsSeal.Models.PublicInfoModel
 @{
     Layout = "";
-
-    Html.AddCssFileParts(@Url.Content("~/Plugins/Widgets.TrustedShopsSeal/Content/trustedshops.css"));
+    Html.AddCssFileParts(true, "~/Plugins/Widgets.TrustedShopsSeal/Content/trustedshops.css");
 }
 @using SmartStore.Web.Framework;
 

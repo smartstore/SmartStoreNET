@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Controllers
             if (filterContext.RouteData == null || filterContext.RouteData.Route == null || !(filterContext.RouteData.Route is LocalizedRoute))
                 return;
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             var localizationSettings = EngineContext.Current.Resolve<LocalizationSettings>();

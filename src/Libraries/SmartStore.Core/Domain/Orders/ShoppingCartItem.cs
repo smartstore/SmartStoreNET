@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 
@@ -12,7 +13,17 @@ namespace SmartStore.Core.Domain.Orders
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>
-		public virtual int StoreId { get; set; }
+		public int StoreId { get; set; }
+
+		/// <summary>
+		/// The parent shopping cart item id
+		/// </summary>
+		public int? ParentItemId { get; set; }
+
+		/// <summary>
+		/// Gets or sets ths bundle item identifier
+		/// </summary>
+		public int? BundleItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the shopping cart type identifier
@@ -25,9 +36,9 @@ namespace SmartStore.Core.Domain.Orders
         public int CustomerId { get; set; }
 
         /// <summary>
-        /// Gets or sets the product variant identifier
+        /// Gets or sets the product identifier
         /// </summary>
-        public int ProductVariantId { get; set; }
+		public int ProductId { get; set; }
 
         /// <summary>
         /// Gets or sets the product variant attributes
@@ -70,14 +81,19 @@ namespace SmartStore.Core.Domain.Orders
         }
 
         /// <summary>
-        /// Gets or sets the product variant
+        /// Gets or sets the product
         /// </summary>
-        public virtual ProductVariant ProductVariant { get; set; }
+		public virtual Product Product { get; set; }
 
         /// <summary>
         /// Gets or sets the customer
         /// </summary>
         public virtual Customer Customer { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product bundle item
+		/// </summary>
+		public virtual ProductBundleItem BundleItem { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the shopping cart item is free shipping
@@ -86,9 +102,9 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-                var productVariant = this.ProductVariant;
-                if (productVariant != null)
-                    return productVariant.IsFreeShipping;
+				var product = this.Product;
+				if (product != null)
+					return product.IsFreeShipping;
                 return true;
             }
         }
@@ -100,25 +116,10 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-                var productVariant = this.ProductVariant;
-                if (productVariant != null)
-                    return productVariant.IsShipEnabled;
+				var product = this.Product;
+				if (product != null)
+					return product.IsShipEnabled;
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets the additional shipping charge
-        /// </summary> 
-        public decimal AdditionalShippingCharge
-        {
-            get
-            {
-                decimal additionalShippingCharge = decimal.Zero;
-                var productVariant = this.ProductVariant;
-                if (productVariant != null)
-                    additionalShippingCharge = productVariant.AdditionalShippingCharge * Quantity;
-                return additionalShippingCharge;
             }
         }
 
@@ -129,9 +130,9 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-                var productVariant = this.ProductVariant;
-                if (productVariant != null)
-                    return productVariant.IsTaxExempt;
+				var product = this.Product;
+				if (product != null)
+					return product.IsTaxExempt;
                 return false;
             }
         }

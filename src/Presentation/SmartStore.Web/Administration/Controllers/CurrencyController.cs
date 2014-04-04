@@ -150,7 +150,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception exc)
                 {
-                    ErrorNotification(exc, false);
+                    NotifyError(exc, false);
                 }
             }
             ViewBag.ExchangeRateProviders = new List<SelectListItem>();
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(currency, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -293,16 +293,26 @@ namespace SmartStore.Admin.Controllers
 
             var currency = _currencyService.GetCurrencyById(id);
             if (currency == null)
-                //No currency found with the specified id
                 return RedirectToAction("List");
 
             var model = currency.ToModel();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(currency.CreatedOnUtc, DateTimeKind.Utc);
-            //locales
+            
+			//locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = currency.GetLocalized(x => x.Name, languageId, false, false);
             });
+
+			foreach (var ending in model.DomainEndings.SplitSafe(","))
+			{
+				var item = model.AvailableDomainEndings.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual(ending));
+				if (item == null)
+					model.AvailableDomainEndings.Add(new SelectListItem() { Text = ending, Value = ending, Selected = true });
+				else
+					item.Selected = true;
+			}
+
 			//Stores
 			PrepareStoresMappingModel(model, currency, false);
 
@@ -330,7 +340,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(currency, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -364,12 +374,12 @@ namespace SmartStore.Admin.Controllers
 
                 _currencyService.DeleteCurrency(currency);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Currencies.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = currency.Id });
             }
         }

@@ -1,6 +1,7 @@
 ﻿@model int
 @using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Utilities;
 @{
     
     //other variables
@@ -9,11 +10,12 @@
     var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
     var download = downloadService.GetDownloadById(Model);
     
-    Html.AddCssFileParts(Url.Content("~/Content/fileupload/jquery.fileupload-single-ui.css")); // codehint: sm-add
+    Html.AddCssFileParts("~/Content/fileupload/jquery.fileupload-single-ui.css");
+    Html.AddScriptParts(
+        "~/Content/fileupload/jquery.iframe-transport.js",
+        "~/Content/fileupload/jquery.fileupload.js",
+        "~/Content/fileupload/jquery.fileupload-single-ui.js");
 }
-
-@*codehint: sm-add*@
-@Scripts.Render("~/bundles/fileupload-single") 
 
 <script type="text/javascript">
     $(document).ready(function () {

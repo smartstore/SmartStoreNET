@@ -4,7 +4,14 @@ namespace SmartStore.Core.Domain.Messages
 {
     public class MessageTemplatesSettings : ISettings
     {
-        /// <summary>
+		public MessageTemplatesSettings()
+		{
+			Color1 = "#3A87AD";
+			Color2 = "#F7F7F7";
+			Color3 = "#F5F5F5";
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether to replace message tokens according to case invariant rules
         /// </summary>
         public bool CaseInvariantReplacement { get; set; }

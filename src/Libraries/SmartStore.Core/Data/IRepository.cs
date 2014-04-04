@@ -16,6 +16,12 @@ namespace SmartStore.Core.Data
         IQueryable<T> Table { get; }
 
         /// <summary>
+        /// Returns an untracked queryable entity set for the given type {T}.
+        /// The entities returned will not be cached in the object context thus increasing performance.
+        /// </summary>
+        IQueryable<T> TableUntracked { get; }
+
+        /// <summary>
         /// Creates a new instance of an entity of type {T}
         /// </summary>
         /// <returns>The new entity instance.</returns>
@@ -74,6 +80,13 @@ namespace SmartStore.Core.Data
         /// <param name="path">The path of the child entities to eager load.</param>
         /// <returns>A new query object to which the expansion was applied.</returns>
         IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path);
+
+		/// <summary>
+		/// Gets a value indicating whether the given entity was modified since it has been attached to the context
+		/// </summary>
+		/// <param name="entity">The entity to check</param>
+		/// <returns><c>true</c> if the entity was modified, <c>false</c> otherwise</returns>
+		bool IsModified(T entity);
 
         /// <summary>
         /// Gets a list of modified properties for the specified entity

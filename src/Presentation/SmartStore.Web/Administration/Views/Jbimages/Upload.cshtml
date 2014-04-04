@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>JustBoil Result Page</title>
+    <script language="javascript" type="text/javascript">
+        window.parent.window.jbImagesDialog.uploadFinish({
+            filename: '@ViewData["FileName"]',
+            result: '@ViewData["Result"]',
+            resultCode: '@ViewData["ResultCode"]'
+        });
+    </script>
+    <style type="text/css">
+        body {
+            font-family: Courier, "Courier New", monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    Result
+</body>
+</html>

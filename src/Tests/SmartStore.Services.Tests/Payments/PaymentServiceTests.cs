@@ -7,6 +7,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Tests.Payments
 {
@@ -30,7 +31,10 @@ namespace SmartStore.Services.Tests.Payments
             _shoppingCartSettings = new ShoppingCartSettings();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
-            _paymentService = new PaymentService(_paymentSettings, pluginFinder, _shoppingCartSettings, _settingService);
+			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
+			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
+
+			_paymentService = new PaymentService(_paymentSettings, pluginFinder, _shoppingCartSettings, _settingService, localizationService);
         }
 
         [Test]

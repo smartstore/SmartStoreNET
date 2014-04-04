@@ -1,0 +1,213 @@
+﻿@model ProductModel
+@using Telerik.Web.Mvc.UI;
+
+<div id="group-prices">
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Price)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Price) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.Price)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OldPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.OldPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.OldPrice)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductCost)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductCost) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.ProductCost)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SpecialPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SpecialPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.SpecialPrice)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SpecialPriceStartDateTimeUtc)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc)
+                @Html.ValidationMessageFor(model => model.SpecialPriceStartDateTimeUtc)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SpecialPriceEndDateTimeUtc)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc)
+                @Html.ValidationMessageFor(model => model.SpecialPriceEndDateTimeUtc)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisableBuyButton)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisableBuyButton)
+                @Html.ValidationMessageFor(model => model.DisableBuyButton)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisableWishlistButton)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisableWishlistButton)
+                @Html.ValidationMessageFor(model => model.DisableWishlistButton)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AvailableForPreOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AvailableForPreOrder)
+                @Html.ValidationMessageFor(model => model.AvailableForPreOrder)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CallForPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CallForPrice)
+                @Html.ValidationMessageFor(model => model.CallForPrice)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerEntersPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomerEntersPrice)
+                @Html.ValidationMessageFor(model => model.CustomerEntersPrice)
+            </td>
+        </tr>
+        <tr id="pnlMinimumCustomerEnteredPrice">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
+            </td>
+        </tr>
+        <tr id="pnlMaximumCustomerEnteredPrice">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
+            </td>
+        </tr>
+        <tr class="adminSeparator">
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <!-- PAnGV -->
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BasePriceEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BasePriceEnabled)
+                @Html.ValidationMessageFor(model => model.BasePriceEnabled)
+            </td>
+        </tr>
+        <tr id="pnlBasePriceBaseAmount">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BasePriceBaseAmount, new { small = true })
+                @Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
+            </td>
+        </tr>
+        <tr id="pnlBasePriceAmount">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BasePriceAmount)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.BasePriceAmount, new { small = true })
+                <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
+            </td>
+        </tr>
+    </table>
+
+    <div id="TierPriceContainer" style="margin-top:30px;">
+        <h3>@T("Admin.Catalog.Products.TierPrices")</h3>
+
+        @if (Model.Id > 0)
+        {
+            @(Html.Telerik().Grid<ProductModel.TierPriceModel>()
+            .Name("tierprices-grid")
+            .DataKeys(keys =>
+            {
+                keys.Add(x => x.Id);
+            })
+            .DataBinding(dataBinding =>
+            {
+                dataBinding.Ajax()
+                    .Select("TierPriceList", "Product", new { productId = Model.Id })
+                    .Insert("TierPriceInsert", "Product", new { productId = Model.Id })
+                    .Update("TierPriceUpdate", "Product")
+                    .Delete("TierPriceDelete", "Product");
+            })
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Store)
+                        .Centered();
+                columns.Bound(x => x.CustomerRole)
+                    .Centered();
+                columns.Bound(x => x.Quantity)
+                    .Centered();
+                columns.Bound(x => x.Price1)
+                    .Format("{0:G29}");
+                columns.Command(commands =>
+                {
+                    commands.Edit().Localize(T);
+                    commands.Delete().Localize(T);
+                })
+                .Width(180);
+            })
+            .ToolBar(commands => commands.Insert())
+            .ClientEvents(events => events.OnEdit("onTierPriceEdit"))
+            .EnableCustomBinding(true))
+
+            <script type="text/javascript">
+                function onTierPriceEdit(e) {
+                    // codehint: sm-edit
+                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
+                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                }
+            </script>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                @T("Admin.Catalog.Products.TierPrices.SaveBeforeEdit")
+            </div>
+        }
+    </div>
+</div>

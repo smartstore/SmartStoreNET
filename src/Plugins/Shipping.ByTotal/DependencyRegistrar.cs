@@ -15,32 +15,16 @@ namespace SmartStore.Plugin.Shipping.ByTotal
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().InstancePerHttpRequest();
+			builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().WithRequestCache().InstancePerHttpRequest();
 
             //data layer
-            var dataSettingsManager = new DataSettingsManager();
-            var dataProviderSettings = dataSettingsManager.LoadSettings();
+            //register named context
+			builder.Register<IDbContext>(c => new ShippingByTotalObjectContext(DataSettings.Current.DataConnectionString))
+                .Named<IDbContext>(ShippingByTotalObjectContext.ALIASKEY)
+                .InstancePerHttpRequest();
 
-            if (dataProviderSettings != null && dataProviderSettings.IsValid())
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new ShippingByTotalObjectContext(dataProviderSettings.DataConnectionString))
-                    .Named<IDbContext>(ShippingByTotalObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<ShippingByTotalObjectContext>(c => new ShippingByTotalObjectContext(dataProviderSettings.DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
-            else
-            {
-                //register named context
-                builder.Register<IDbContext>(c => new ShippingByTotalObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .Named<IDbContext>(ShippingByTotalObjectContext.ALIASKEY)
-                    .InstancePerHttpRequest();
-
-                builder.Register<ShippingByTotalObjectContext>(c => new ShippingByTotalObjectContext(c.Resolve<DataSettings>().DataConnectionString))
-                    .InstancePerHttpRequest();
-            }
+			builder.Register<ShippingByTotalObjectContext>(c => new ShippingByTotalObjectContext(DataSettings.Current.DataConnectionString))
+                .InstancePerHttpRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<ShippingByTotalRecord>>()

@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Threading.Tasks;
 using SmartStore.Core;
 
 namespace SmartStore.Core.Data
 {
     public interface IDbContext 
     {
-        IDbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
+        DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
 
         int SaveChanges();
+
+		Task<int> SaveChangesAsync();
 
         IList<TEntity> ExecuteStoredProcedureList<TEntity>(string commandText, params object[] parameters) 
             where TEntity : BaseEntity, new();
@@ -29,10 +32,9 @@ namespace SmartStore.Core.Data
         /// <param name="timeout">Timeout value, in seconds. A null value indicates that the default value of the underlying provider will be used</param>
         /// <param name="parameters">The parameters to apply to the command string.</param>
         /// <returns>The result returned by the database after executing the command.</returns>
-        int ExecuteSqlCommand(string sql, int? timeout = null, params object[] parameters);
+        int ExecuteSqlCommand(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters);
 
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		int ExecuteSqlThroughSmo(string sql);
 
         // codehint: sm-add (required for UoW implementation)
@@ -41,7 +43,36 @@ namespace SmartStore.Core.Data
         // codehint: sm-add (increasing performance on bulk inserts)
         bool ProxyCreationEnabled { get; set; }
         bool AutoDetectChangesEnabled { get; set; }
-        bool ValidateOnSaveEnabled{ get; set; }
+        bool ValidateOnSaveEnabled { get; set; }
+		bool HooksEnabled { get; set; }
         bool HasChanges { get; }
+
+		/// <summary>
+		/// Gets a list of modified properties for the specified entity
+		/// </summary>
+		/// <param name="entity">The entity instance for which to get modified properties for</param>
+		/// <returns>
+		/// A dictionary, where the key is the name of the modified property
+		/// and the value is its ORIGINAL value (which was tracked when the entity
+		/// was attached to the context the first time)
+		/// Returns an empty dictionary if no modification could be detected.
+		/// </returns>
+		IDictionary<string, object> GetModifiedProperties(BaseEntity entity);
+
+        /// <summary>
+        /// Determines whether the given entity is already attached to the current object context
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <param name="entity">The entity instance to attach</param>
+        /// <returns><c>true</c> when the entity is attched already, <c>false</c> otherwise</returns>
+        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+
+        /// <summary>
+        /// Detaches an entity from the current object context if it's attached
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <param name="entity">The entity instance to detach</param>
+        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+		void Detach(object entity);
     }
 }

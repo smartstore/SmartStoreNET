@@ -11,14 +11,15 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Events;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Seo;
 using ImageResizer;
 using ImageResizer.Configuration;
 using StackExchange.Profiling;
 using System.Threading;
 using System.Text;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {   
@@ -170,7 +171,7 @@ namespace SmartStore.Services.Media
         /// <returns>Result</returns>
         public virtual string GetPictureSeName(string name)
         {
-            return SeoExtensions.GetSeName(name, true, false);
+            return SeoHelper.GetSeName(name, true, false);
         }
 
         /// <summary>
@@ -602,10 +603,10 @@ namespace SmartStore.Services.Media
         /// <returns>Picture</returns>
         public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true)
         {
-            mimeType = CommonHelper.EnsureNotNull(mimeType);
-            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+			mimeType = mimeType.EmptyNull();
+			mimeType = mimeType.Truncate(20);
 
-            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+			seoFilename = seoFilename.Truncate(100);
 
             if (validateBinary)
             {
@@ -641,11 +642,10 @@ namespace SmartStore.Services.Media
         /// <param name="isNew">A value indicating whether the picture is new</param>
         /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
         /// <returns>Picture</returns>
-        public virtual Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType,
-            string seoFilename, bool isNew, bool validateBinary = true)
+        public virtual Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true)
         {
-            mimeType = mimeType.EmptyNull().Truncate(20, "");
-            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+            mimeType = mimeType.EmptyNull().Truncate(20);
+			seoFilename = seoFilename.Truncate(100);
 
             if (validateBinary)
             {

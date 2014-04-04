@@ -1,7 +1,7 @@
 ﻿@model BlogPostModel
 
 @using Telerik.Web.Mvc.UI;
-@Html.ValidationSummary(true)
+@Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Items(x =>
 {
@@ -10,7 +10,7 @@
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "blog-post-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
@@ -38,7 +38,7 @@
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.Body, "RichEditor")
+                @Html.EditorFor(x => x.Body, Html.RichEditorFlavor())
                 @Html.ValidationMessageFor(model => model.Body)
             </td>
         </tr>

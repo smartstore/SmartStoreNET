@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Affiliates;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Affiliates
 {

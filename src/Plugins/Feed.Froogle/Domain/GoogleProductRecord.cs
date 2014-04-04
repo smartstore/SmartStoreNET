@@ -7,7 +7,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Domain
     /// </summary>
     public partial class GoogleProductRecord : BaseEntity
     {
-        public int ProductVariantId { get; set; }
+		public int ProductId { get; set; }
         public string Taxonomy { get; set; }
 
         public string Gender { get; set; }

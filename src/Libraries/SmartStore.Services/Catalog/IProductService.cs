@@ -20,8 +20,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         void DeleteProduct(Product product);
 
-		/// <remarks>codehint: sm-add</remarks>
-		IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0);
+		IQueryable<Product> GetAllProducts(ProductAllContext context);
 
         /// <summary>
         /// Gets all products displayed on the home page
@@ -53,7 +52,7 @@ namespace SmartStore.Services.Catalog
         /// Updates the product
         /// </summary>
         /// <param name="product">Product</param>
-        void UpdateProduct(Product product);
+		void UpdateProduct(Product product, bool publishEvent = true);
 
         /// <summary>
         /// Gets the total count of products matching the criteria
@@ -70,108 +69,61 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="product">Product</param>
         void UpdateProductReviewTotals(Product product);
-
-        #endregion
-
-        #region Product variants
         
         /// <summary>
-        /// Get low stock product variants
+        /// Get low stock products
         /// </summary>
         /// <returns>Result</returns>
-        IList<ProductVariant> GetLowStockProductVariants();
+        IList<Product> GetLowStockProducts();
 
         /// <summary>
-        /// Gets a product variant
-        /// </summary>
-        /// <param name="productVariantId">Product variant identifier</param>
-        /// <returns>Product variant</returns>
-        ProductVariant GetProductVariantById(int productVariantId);
-
-        /// <summary>
-        /// Get product variants by product identifiers
-        /// </summary>
-        /// <param name="productIds">Product identifiers</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variants</returns>
-        IList<ProductVariant> GetProductVariantsByProductIds(int[] productIds, bool showHidden = false);
-
-        /// <summary>
-        /// Gets a product variant by SKU
+        /// Gets a product by SKU
         /// </summary>
         /// <param name="sku">SKU</param>
-        /// <returns>Product variant</returns>
-        ProductVariant GetProductVariantBySku(string sku);
+        /// <returns>Product</returns>
+        Product GetProductBySku(string sku);
 
         /// <summary>
-        /// Gets a product variant by GTIN
+        /// Gets a product by GTIN
         /// </summary>
         /// <param name="sku">SKU</param>
-        /// <returns>Product variant</returns>
-        ProductVariant GetProductVariantByGtin(string sku);
-
-        /// <summary>
-        /// Inserts a product variant
-        /// </summary>
-        /// <param name="productVariant">The product variant</param>
-        void InsertProductVariant(ProductVariant productVariant);
-
-        /// <summary>
-        /// Updates the product variant
-        /// </summary>
-        /// <param name="productVariant">The product variant</param>
-        void UpdateProductVariant(ProductVariant productVariant);
-
-        /// <summary>
-        /// Gets product variants by product identifier
-        /// </summary>
-        /// <param name="productId">The product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variant collection</returns>
-        IList<ProductVariant> GetProductVariantsByProductId(int productId, bool showHidden = false);
-
-        /// <summary>
-        /// Delete a product variant
-        /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        void DeleteProductVariant(ProductVariant productVariant);
+        /// <returns>Product</returns>
+        Product GetProductByGtin(string sku);
         
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="sci">Shopping cart item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease);
+
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		void AdjustInventory(OrderItem orderItem, bool decrease);
+
         /// <summary>
         /// Adjusts inventory
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        /// <param name="decrease">A value indicating whether to increase or descrease product variant stock quantity</param>
+		/// <param name="product">Product</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-        void AdjustInventory(ProductVariant productVariant, bool decrease,
-            int quantity, string attributesXml);
-
-        /// <summary>
-        /// Search product variants
-        /// </summary>
-        /// <param name="categoryId">Category identifier; 0 to load all records</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="searchDescriptions">A value indicating whether to search in descriptions</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variants</returns>
-        IPagedList<ProductVariant> SearchProductVariants(int categoryId, int manufacturerId, 
-            string keywords, bool searchDescriptions, int pageIndex, int pageSize, bool showHidden = false);
+        void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml);
 
         /// <summary>
         /// Update HasTierPrices property (used for performance optimization)
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        void UpdateHasTierPricesProperty(ProductVariant productVariant);
-
+		/// <param name="product">Product</param>
+        void UpdateHasTierPricesProperty(Product product);
 
         /// <summary>
         /// Update HasDiscountsApplied property (used for performance optimization)
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        void UpdateHasDiscountsApplied(ProductVariant productVariant);
+		/// <param name="product">Product</param>
+        void UpdateHasDiscountsApplied(Product product);
 
         #endregion
 
@@ -253,7 +205,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="cart">Shopping cart</param>
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
-        IList<Product> GetCrosssellProductsByShoppingCart(IList<ShoppingCartItem> cart, int numberOfProducts);
+		IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts);
 
         #endregion
         
@@ -321,5 +273,43 @@ namespace SmartStore.Services.Catalog
         void UpdateProductPicture(ProductPicture productPicture);
 
         #endregion
+
+		#region Bundled products
+
+		/// <summary>
+		/// Inserts a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void InsertBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Updates a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void UpdateBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Deletes a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		void DeleteBundleItem(ProductBundleItem bundleItem);
+
+		/// <summary>
+		/// Get a product bundle item by item identifier
+		/// </summary>
+		/// <param name="bundleItemId">Product bundle item identifier</param>
+		/// <returns>Product bundle item</returns>
+		ProductBundleItem GetBundleItemById(int bundleItemId);
+
+		/// <summary>
+		/// Gets a list of bundle items for a particular product identifier
+		/// </summary>
+		/// <param name="bundleProductId">Product identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>List of bundle items</returns>
+		IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false);
+
+		#endregion
+
     }
 }

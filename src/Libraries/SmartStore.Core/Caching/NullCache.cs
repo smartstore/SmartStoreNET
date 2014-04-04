@@ -1,4 +1,5 @@
 using System;
+using SmartStore.Utilities;
 namespace SmartStore.Core.Caching
 {
     /// <summary>
@@ -7,10 +8,26 @@ namespace SmartStore.Core.Caching
     public partial class NullCache : ICacheManager
     {
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime = 60)
-        {
-            return acquirer();
-        }
+		private readonly static ICacheManager s_instance = new NullCache();
+
+		public static ICacheManager Instance
+		{
+			get { return s_instance; }
+		}
+
+		public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
+		{
+			if (acquirer == null)
+			{
+				return default(T);
+			}
+			return acquirer();
+		}
+
+
+		public void Set(string key, object value, int? cacheTime = null)
+		{
+		}
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached
@@ -44,5 +61,10 @@ namespace SmartStore.Core.Caching
         public void Clear()
         {
         }
-    }
+
+		public IDisposable EnterWriteLock()
+		{
+			return ActionDisposable.Empty;
+		}
+	}
 }

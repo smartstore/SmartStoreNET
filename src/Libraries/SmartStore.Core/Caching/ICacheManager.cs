@@ -16,22 +16,14 @@ namespace SmartStore.Core.Caching
         /// <param name="cacheTime">Expiration time in minutes</param>
         /// <returns>Cached item value</returns>
         T Get<T>(string key, Func<T> acquirer, int? cacheTime = null);
-        
-        ///// <summary>
-        ///// Gets or sets the value associated with the specified key.
-        ///// </summary>
-        ///// <typeparam name="T">Type</typeparam>
-        ///// <param name="key">The key of the value to get.</param>
-        ///// <returns>The value associated with the specified key.</returns>
-        //T Get<T>(string key);
 
-        ///// <summary>
-        ///// Adds the specified key and object to the cache.
-        ///// </summary>
-        ///// <param name="key">key</param>
-        ///// <param name="data">Data</param>
-        ///// <param name="cacheTime">Cache time</param>
-        //void Set(string key, object data, int cacheTime);
+		/// <summary>
+		/// Adds a cache item with the specified key
+		/// </summary>
+		/// <param name="key">Key</param>
+		/// <param name="value">Value</param>
+		/// <param name="cacheTime">Cache time in minutes</param>
+		void Set(string key, object value, int? cacheTime = null);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached
@@ -56,5 +48,19 @@ namespace SmartStore.Core.Caching
         /// Clear all cache data
         /// </summary>
         void Clear();
+
+		/// <summary>
+		/// Returns a wrapped sync lock for the underlying <c>ICache</c> implementation
+		/// </summary>
+		/// <returns>The disposable sync lock</returns>
+		/// <remarks>
+		/// This method internally wraps either a <c>ReaderWriterLockSlim</c> or an empty noop action
+		/// dependending on the scope of the underlying <c>ICache</c> implementation.
+		/// The static (singleton) cache always returns the <c>ReaderWriterLockSlim</c> instance
+		/// which is used to sync read/write access to cache items.
+		/// This method is useful if you want to modify a cache item's value, thus must lock access
+		/// to the cache during the update.
+		/// </remarks>
+		IDisposable EnterWriteLock();
     }
 }

@@ -249,7 +249,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(sm, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Added"));
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
             }
 
@@ -295,7 +295,7 @@ namespace SmartStore.Admin.Controllers
                 _shippingService.UpdateShippingMethod(sm);
                 //locales
                 UpdateLocales(sm, model);
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
             }
 
@@ -317,7 +317,7 @@ namespace SmartStore.Admin.Controllers
 
             _shippingService.DeleteShippingMethod(sm);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
             return RedirectToAction("Methods");
         }
         
@@ -400,7 +400,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Shipping.Restrictions.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Shipping.Restrictions.Updated"));
             return RedirectToAction("Restrictions");
         }
 

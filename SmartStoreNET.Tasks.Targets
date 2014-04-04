@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 	
 	<!-- General -->
-	<UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\Web\Microsoft.Web.Publishing.Tasks.dll"/>
+	<UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll"/>
 
 	<!-- Initialization -->
 
@@ -19,6 +19,7 @@
 		<MsBuildTasksFolder>$(RootFolder)\buildtasks</MsBuildTasksFolder>
 		<ArtifactsFolder>$(RootFolder)\artifacts</ArtifactsFolder>
 		<SqlCeFolder>$(LibFolder)\sqlce</SqlCeFolder>
+		<V8Folder>$(LibFolder)\ClearScript.V8</V8Folder>
 		<SourceArtifactFolder>$(ArtifactsFolder)\Source</SourceArtifactFolder>
 		<MsDeployArtifactFolder>$(ArtifactsFolder)\MsDeploy</MsDeployArtifactFolder>
 		<GalleryArtifactFolder>$(ArtifactsFolder)\Gallery</GalleryArtifactFolder>
@@ -43,7 +44,7 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>1.2.1</Version>
+		<Version>2.0.0</Version>
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
@@ -97,10 +98,14 @@
 
 		<ItemGroup>
 			<PluginFiles Include="$(WebPluginsFolder)\**\*" />
-			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*" />
+			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.sql" />
+			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.txt" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
+		  	<V8-Libs Include="$(V8Folder)\lib\**\*"/>
+		  	<V8-Native-Binaries-x86 Include="$(V8Folder)\Native\x86\**\*"/>
+		  	<V8-Native-Binaries-amd64 Include="$(V8Folder)\Native\amd64\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -146,9 +151,14 @@
 		<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
 		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 
-		<!--Lets copy SQL Compact native binaries-->
+		<!-- copy SQL Compact native binaries-->
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		
+		<!-- copy ClearScript.V8 Javascript engine files -->
+		<Copy SourceFiles="@(V8-Libs)" DestinationFolder="$(StageFolder)\bin\ClearScript.V8\%(RecursiveDir)" />
+		<Copy SourceFiles="@(V8-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(V8-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />

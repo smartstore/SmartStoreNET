@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
@@ -27,6 +28,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool ShowSku { get; set; }
         public bool ShowProductImages { get; set; }
+		public bool ShowProductBundleImages { get; set; }
         public bool IsEditable { get; set; }
         public IList<ShoppingCartItemModel> Items { get; set; }
 
@@ -41,9 +43,12 @@ namespace SmartStore.Web.Models.ShoppingCart
         public GiftCardBoxModel GiftCardBox { get; set; }
         public OrderReviewDataModel OrderReviewData { get; set; }
 
-        //codehint: sm-add
         public int MediaDimensions { get; set; }
-
+		public int BundleThumbSize { get; set; }
+        public bool DisplayDeliveryTime { get; set; }
+        public bool DisplayShortDesc { get; set; }
+        public bool DisplayBasePrice { get; set; }
+        
         public IList<string> ButtonPaymentMethodActionNames { get; set; }
         public IList<string> ButtonPaymentMethodControllerNames { get; set; }
         public IList<RouteValueDictionary> ButtonPaymentMethodRouteValues { get; set; }
@@ -57,6 +62,8 @@ namespace SmartStore.Web.Models.ShoppingCart
                 Picture = new PictureModel();
                 AllowedQuantities = new List<SelectListItem>();
                 Warnings = new List<string>();
+				ChildItems = new List<ShoppingCartItemModel>();
+				BundleItem = new BundleItemModel();
             }
             public string Sku { get; set; }
 
@@ -67,6 +74,10 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductName { get; set; }
 
             public string ProductSeName { get; set; }
+
+			public bool VisibleIndividually { get; set; }
+
+			public ProductType ProductType { get; set; }
 
             public string UnitPrice { get; set; }
 
@@ -83,7 +94,28 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public IList<string> Warnings { get; set; }
 
+            public bool IsShipEnabled { get; set; }
+
+            public string DeliveryTimeName { get; set; }
+            
+            public string DeliveryTimeHexValue { get; set; }
+
+            public string ShortDesc { get; set; }
+
+            public string BasePrice { get; set; }
+
+			public bool BundlePerItemPricing { get; set; }
+			public bool BundlePerItemShoppingCart { get; set; }
+			public BundleItemModel BundleItem { get; set; }
+			public IList<ShoppingCartItemModel> ChildItems { get; set; }
         }
+
+		public partial class BundleItemModel : EntityModelBase
+		{
+			public string PriceWithDiscount { get; set; }
+			public int DisplayOrder { get; set; }
+			public bool HideThumbnail { get; set; }
+		}
 
         public partial class CheckoutAttributeModel : EntityModelBase
         {

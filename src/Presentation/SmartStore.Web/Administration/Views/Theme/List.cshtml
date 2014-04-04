@@ -17,8 +17,12 @@
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="icon-ok"></i>
-                &nbsp;@T("Admin.Common.Save")
+                @T("Admin.Common.Save")
             </button>
+			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
+				<i class="icon-upload-alt"></i>
+				@T("Admin.Packaging.UploadTheme")
+			</a>
         </div>
     </div>
 	
@@ -168,23 +172,7 @@
                 @Html.ValidationMessageFor(model => model.BundleOptimizationEnabled)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CssCacheEnabled)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.CssCacheEnabled, Model.AvailableCssCacheValues)
-                @Html.ValidationMessageFor(model => model.CssCacheEnabled)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CssMinifyEnabled)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.CssMinifyEnabled, Model.AvailableCssMinifyValues)
-                @Html.ValidationMessageFor(model => model.CssMinifyEnabled)
-            </td>
-        </tr>
     </table> 
 }
+
+@Html.Action("UploadPackage", "Packaging", new { isTheme = true })

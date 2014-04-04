@@ -5,10 +5,13 @@
         <p>
             @T("Admin.Common.DeleteConfirmation")
         </p>
-        @*<div class="form-actions">*@
-		<div style="margin-top:18px;">
-            <button type="submit" class="btn btn-danger" value='@T("Admin.Common.Delete")'>@T("Admin.Common.Delete")</button>
-            <button type="button" class="btn" onclick="closeModalWindow(); return false;">@T("Admin.Common.NoCancel")</button>
+		<div style="margin-top:18px;" class="pull-right">
+            <button type="submit" class="btn btn-danger entity-commit-trigger" value='@T("Admin.Common.Delete")' data-commit-type="@Model.EntityType" data-commit-action="delete" data-commit-id="@Model.Id">
+                @T("Admin.Common.Delete")
+            </button>
+            <button type="button" class="btn btn-link" onclick="closeModalWindow(); return false;">
+                @T("Admin.Common.NoCancel")
+            </button>
         </div>
     </div>
 }

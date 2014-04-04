@@ -184,7 +184,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(blogPost, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
@@ -239,7 +239,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(blogPost, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
 
             _blogService.DeleteBlogPost(blogPost);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
 			return RedirectToAction("List");
 		}
 

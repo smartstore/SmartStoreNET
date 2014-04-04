@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 
@@ -23,8 +24,6 @@ namespace SmartStore.Core.Infrastructure
         T Resolve<T>(string name = null) where T : class;
 
         object Resolve(Type type, string name = null);
-
-        Array ResolveAll(Type serviceType);
 
         T[] ResolveAll<T>();
     }

@@ -71,8 +71,8 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
                 request.Store.Id, 
                 request.Customer.Id,
                 null, 
-                null, 
-                OrderStatus.Complete, 
+                null,
+				new int[] { (int)OrderStatus.Complete },
                 null, 
                 null, 
                 null, 
@@ -87,15 +87,13 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 
         private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request, bool includingDiscount = true)
         {
-            var cartItems = request.Customer.ShoppingCartItems
-                .Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart && sci.StoreId == request.Store.Id)
-                .ToList();
+            var cartItems = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
             decimal spentAmount = decimal.Zero;
             decimal taxRate = decimal.Zero;
             foreach (var sci in cartItems) 
             {
-                spentAmount += sci.Quantity * _taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
+                spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
             }       
             
             return spentAmount >= request.DiscountRequirement.SpentAmount;

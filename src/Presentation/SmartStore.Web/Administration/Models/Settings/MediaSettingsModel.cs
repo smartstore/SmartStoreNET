@@ -27,8 +27,11 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage")]
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductVariantPictureSize")]
-        public int ProductVariantPictureSize { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AssociatedProductPictureSize")]
+        public int AssociatedProductPictureSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.BundledProductPictureSize")]
+		public int BundledProductPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
         public int CategoryThumbPictureSize { get; set; }
@@ -38,6 +41,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbPictureSize")]
         public int CartThumbPictureSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize")]
+		public int CartThumbBundleItemPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MiniCartThumbPictureSize")]
         public int MiniCartThumbPictureSize { get; set; }

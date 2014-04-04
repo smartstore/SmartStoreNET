@@ -1,0 +1,7 @@
+﻿FriendlyName: PayPal Standard
+SystemName: Payments.PayPalStandard
+Version: 1.6
+MinAppVersion: 2.0.0
+DisplayOrder: 1
+FileName: SmartStore.Plugin.Payments.PayPalStandard.dll
+ResourceRootKey: Plugins.Payments.PayPalStandard

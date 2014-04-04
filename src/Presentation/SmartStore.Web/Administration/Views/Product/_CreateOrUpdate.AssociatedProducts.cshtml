@@ -1,0 +1,88 @@
+﻿@model ProductModel
+
+@using Telerik.Web.Mvc.UI;
+
+@if (Model.Id > 0)
+{
+    <div style="margin: 10px 0px 10px 0px;" class="alert alert-success">
+        <div>
+            @T("Admin.Catalog.Products.AssociatedProducts.Note1")
+            @T("Admin.Catalog.Products.AssociatedProducts.Note2")
+        </div>
+    </div>
+    
+    <div style="margin: 10px 0">    
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
+                        .Name("associatedproducts-grid")
+                        .DataKeys(keys =>
+                        {
+                            keys.Add(x => x.Id);
+                        })
+                        .DataBinding(dataBinding =>
+                        {
+                            dataBinding.Ajax()
+                                .Select("AssociatedProductList", "Product", new { productId = Model.Id })
+                                .Update("AssociatedProductUpdate", "Product")
+                                .Delete("AssociatedProductDelete", "Product");
+                        })
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.ProductName)
+                                .ReadOnly()
+								.Template(x => @Html.LabeledProductName(x.Id, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+								.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
+                            columns.Bound(x => x.Sku)
+                                .ReadOnly();
+                            columns.Bound(x => x.Published)
+                                .ReadOnly()
+                                .Width(100)
+                                .Template(item => @Html.SymbolForBool(item.Published))
+                                .ClientTemplate(@Html.SymbolForBool("Published"))
+                                .Centered();
+                            columns.Bound(x => x.DisplayOrder)
+                                .Width(100)
+                                .Centered();
+                            columns.Command(commands =>
+                            {
+                                commands.Edit().Localize(T);
+                                commands.Delete().Localize(T);
+                            })
+                            .Width(180);
+                        })
+                        .EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn btn-warning" style="margin-top:3px;"
+                            onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                        <i class="icon-plus"></i>
+                        @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
+                    </button>
+
+                    <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
+
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefreshAssociatedProducts').click(function () {
+                                //refresh grid
+                                var optionsGrid = $("#associatedproducts-grid");
+                                optionsGrid.data('tGrid').ajaxRequest();
+
+                                //return false to don't reload a page
+                                return false;
+                            });
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+else
+{
+    @T("Admin.Catalog.Products.AssociatedProducts.SaveBeforeEdit")
+}

@@ -16,14 +16,14 @@ namespace SmartStore.Core.Domain.Orders
     /// <summary>
     /// Represents an order
     /// </summary>
-    //[DataContract]
-    public partial class Order : BaseEntity
+    [DataContract]
+	public partial class Order : BaseEntity, ISoftDeletable
     {
 
         private ICollection<DiscountUsageHistory> _discountUsageHistory;
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
         private ICollection<OrderNote> _orderNotes;
-        private ICollection<OrderProductVariant> _orderProductVariant;
+        private ICollection<OrderItem> _orderItems;
         private ICollection<Shipment> _shipments;
 
         #region Utilities
@@ -70,7 +70,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the (formatted) order number
         /// </summary>
-        public string OrderNumber { get; set; }
+		[DataMember]
+		public string OrderNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the order identifier
@@ -81,22 +82,26 @@ namespace SmartStore.Core.Domain.Orders
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>
+		[DataMember]
 		public int StoreId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>
-        public int CustomerId { get; set; }
+		[DataMember]
+		public int CustomerId { get; set; }
 
         /// <summary>
         /// Gets or sets the billing address identifier
         /// </summary>
-        public int BillingAddressId { get; set; }
+		[DataMember]
+		public int BillingAddressId { get; set; }
 
         /// <summary>
         /// Gets or sets the shipping address identifier
         /// </summary>
-        public int? ShippingAddressId { get; set; }
+		[DataMember]
+		public int? ShippingAddressId { get; set; }
 
         /// <summary>
         /// Gets or sets an order status identifier
@@ -107,12 +112,14 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the shipping status identifier
         /// </summary>
-        public int ShippingStatusId { get; set; }
+		[DataMember]
+		public int ShippingStatusId { get; set; }
 
         /// <summary>
         /// Gets or sets the payment status identifier
         /// </summary>
-        public int PaymentStatusId { get; set; }
+		[DataMember]
+		public int PaymentStatusId { get; set; }
 
         /// <summary>
         /// Gets or sets the payment method system name
@@ -135,7 +142,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the customer tax display type identifier
         /// </summary>
-        public virtual int CustomerTaxDisplayTypeId { get; set; }
+		[DataMember]
+		public virtual int CustomerTaxDisplayTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the VAT number (the European Union Value Added Tax)
@@ -248,7 +256,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
-        public int AffiliateId { get; set; }
+		[DataMember]
+		public int AffiliateId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer IP address
@@ -259,7 +268,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets a value indicating whether storing of credit card number is allowed
         /// </summary>
-        public bool AllowStoringCreditCardNumber { get; set; }
+		[DataMember]
+		public bool AllowStoringCreditCardNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the card type
@@ -343,52 +353,62 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the authorization transaction identifier
         /// </summary>
-        public string AuthorizationTransactionId { get; set; }
+		[DataMember]
+		public string AuthorizationTransactionId { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization transaction code
         /// </summary>
-        public string AuthorizationTransactionCode { get; set; }
+		[DataMember]
+		public string AuthorizationTransactionCode { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization transaction result
         /// </summary>
-        public string AuthorizationTransactionResult { get; set; }
+		[DataMember]
+		public string AuthorizationTransactionResult { get; set; }
 
         /// <summary>
         /// Gets or sets the capture transaction identifier
         /// </summary>
-        public string CaptureTransactionId { get; set; }
+		[DataMember]
+		public string CaptureTransactionId { get; set; }
 
         /// <summary>
         /// Gets or sets the capture transaction result
         /// </summary>
-        public string CaptureTransactionResult { get; set; }
+		[DataMember]
+		public string CaptureTransactionResult { get; set; }
 
         /// <summary>
         /// Gets or sets the subscription transaction identifier
         /// </summary>
-        public string SubscriptionTransactionId { get; set; }
+		[DataMember]
+		public string SubscriptionTransactionId { get; set; }
 
         /// <summary>
         /// Gets or sets the purchase order number
         /// </summary>
-        public string PurchaseOrderNumber { get; set; }
+		[DataMember]
+		public string PurchaseOrderNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the paid date and time
         /// </summary>
-        public DateTime? PaidDateUtc { get; set; }
+		[DataMember]
+		public DateTime? PaidDateUtc { get; set; }
         
         /// <summary>
         /// Gets or sets the shipping method
         /// </summary>
-        public string ShippingMethod { get; set; }
+		[DataMember]
+		public string ShippingMethod { get; set; }
 
         /// <summary>
         /// Gets or sets the shipping rate computation method identifier
         /// </summary>
-        public string ShippingRateComputationMethodSystemName { get; set; }
+		[DataMember]
+		public string ShippingRateComputationMethodSystemName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
@@ -398,7 +418,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the date and time of order creation
         /// </summary>
-        public DateTime CreatedOnUtc { get; set; }
+		[DataMember]
+		public DateTime CreatedOnUtc { get; set; }
 
         #endregion
 
@@ -413,12 +434,14 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the billing address
         /// </summary>
-        public virtual Address BillingAddress { get; set; }
+		[DataMember]
+		public virtual Address BillingAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the shipping address
         /// </summary>
-        public virtual Address ShippingAddress { get; set; }
+		[DataMember]
+		public virtual Address ShippingAddress { get; set; }
         
         /// <summary>
         /// Gets or sets the reward points history record
@@ -446,25 +469,28 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets order notes
         /// </summary>
-        public virtual ICollection<OrderNote> OrderNotes
+		[DataMember]
+		public virtual ICollection<OrderNote> OrderNotes
         {
             get { return _orderNotes ?? (_orderNotes = new List<OrderNote>()); }
             protected set { _orderNotes = value; }
         }
 
         /// <summary>
-        /// Gets or sets order product variants
+        /// Gets or sets order items
         /// </summary>
-        public virtual ICollection<OrderProductVariant> OrderProductVariants
+		[DataMember]
+		public virtual ICollection<OrderItem> OrderItems
         {
-            get { return _orderProductVariant ?? (_orderProductVariant = new List<OrderProductVariant>()); }
-            protected set { _orderProductVariant = value; }
+            get { return _orderItems ?? (_orderItems = new List<OrderItem>()); }
+            protected set { _orderItems = value; }
         }
 
         /// <summary>
         /// Gets or sets shipments
         /// </summary>
-        public virtual ICollection<Shipment> Shipments
+		[DataMember]
+		public virtual ICollection<Shipment> Shipments
         {
             get { return _shipments ?? (_shipments = new List<Shipment>()); }
             protected set { _shipments = value; }
@@ -477,7 +503,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the order status
         /// </summary>
-        public OrderStatus OrderStatus
+		[DataMember]
+		public OrderStatus OrderStatus
         {
             get
             {
@@ -492,7 +519,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the payment status
         /// </summary>
-        public PaymentStatus PaymentStatus
+		[DataMember]
+		public PaymentStatus PaymentStatus
         {
             get
             {
@@ -507,7 +535,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the shipping status
         /// </summary>
-        public ShippingStatus ShippingStatus
+		[DataMember]
+		public ShippingStatus ShippingStatus
         {
             get
             {
@@ -522,7 +551,8 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the customer tax display type
         /// </summary>
-        public TaxDisplayType CustomerTaxDisplayType
+		[DataMember]
+		public TaxDisplayType CustomerTaxDisplayType
         {
             get
             {

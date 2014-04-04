@@ -1,26 +1,31 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Media
 {
     /// <summary>
     /// Represents a download
     /// </summary>
-    public partial class Download : BaseEntity
+    [DataContract]
+	public partial class Download : BaseEntity
     {
         /// <summary>
         /// Gets a sets a GUID
         /// </summary>
-        public Guid DownloadGuid { get; set; }
+		[DataMember]
+		public Guid DownloadGuid { get; set; }
 
         /// <summary>
         /// Gets a sets a value indicating whether DownloadUrl property should be used
         /// </summary>
-        public bool UseDownloadUrl { get; set; }
+		[DataMember]
+		public bool UseDownloadUrl { get; set; }
 
         /// <summary>
         /// Gets a sets a download URL
         /// </summary>
-        public string DownloadUrl { get; set; }
+		[DataMember]
+		public string DownloadUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the download binary
@@ -30,22 +35,25 @@ namespace SmartStore.Core.Domain.Media
         /// <summary>
         /// The mime-type of the download
         /// </summary>
-        public string ContentType { get; set; }
+		[DataMember]
+		public string ContentType { get; set; }
 
         /// <summary>
         /// The filename of the download
         /// </summary>
-        public string Filename { get; set; }
+		[DataMember]
+		public string Filename { get; set; }
 
         /// <summary>
         /// Gets or sets the extension
         /// </summary>
-        public string Extension { get; set; }
+		[DataMember]
+		public string Extension { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the download is new
         /// </summary>
-        public bool IsNew { get; set; }
+		[DataMember]
+		public bool IsNew { get; set; }
     }
-
 }

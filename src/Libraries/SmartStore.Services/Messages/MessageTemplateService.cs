@@ -5,7 +5,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
 
@@ -60,7 +60,11 @@ namespace SmartStore.Services.Messages
 			this._storeMappingService = storeMappingService;
 			this._messageTemplateRepository = messageTemplateRepository;
 			this._eventPublisher = eventPublisher;
-        }
+
+			this.QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -147,25 +151,15 @@ namespace SmartStore.Services.Messages
 				var query = _messageTemplateRepository.Table;
 				query = query.Where(t => t.Name == messageTemplateName);
 				query = query.OrderBy(t => t.Id);
+				var templates = query.ToList();
 
-				//Store mapping
+				//store mapping
 				if (storeId > 0)
 				{
-					query = from t in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = t.Id, c2 = "MessageTemplate" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into t_sm
-							from sm in t_sm.DefaultIfEmpty()
-							where !t.LimitedToStores || storeId == sm.StoreId
-							select t;
-
-					//only distinct items (group by ID)
-					query = from t in query
-							group t by t.Id	into tGroup
-							orderby tGroup.Key
-							select tGroup.FirstOrDefault();
-					query = query.OrderBy(t => t.Id);
+					return templates.Where(t => _storeMappingService.Authorize(t, storeId)).FirstOrDefault();
 				}
-                return query.FirstOrDefault();
+
+                return templates.FirstOrDefault();
             });
 
         }
@@ -184,7 +178,7 @@ namespace SmartStore.Services.Messages
 				query = query.OrderBy(t => t.Name);
 
 				//Store mapping
-				if (storeId > 0)
+				if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 				{
 					query = from t in query
 							join sm in _storeMappingRepository.Table

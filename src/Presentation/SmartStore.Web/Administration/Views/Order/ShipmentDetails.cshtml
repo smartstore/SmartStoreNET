@@ -19,9 +19,6 @@
                 <a href="@Url.Action("PdfPackagingSlip", new { shipmentId = Model.Id })" class="btn">@T("Admin.Orders.Shipments.PrintPackagingSlip")</a>
             }
             <button type="submit" id="shipment-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
-            <!--
-            <span id="shipment-delete" class="t-button">@T("Admin.Common.Delete")</span>
-            -->
         </div>
     </div>    
     @Html.ValidationSummary(false)
@@ -96,12 +93,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Products)
+                        @foreach (var item in Model.Items)
                         {
                             <tr>
                                 <td style="width: 70%;">
-                                    <div style="padding-left: 10px; padding-right: 10px; text-align: left;">
-                                        <em><a href="@Url.Action("Edit", "ProductVariant", new { id = item.ProductVariantId })">@item.FullProductName</a></em>
+                                    <div>
+										@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+										
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
                                             <br />
@@ -110,7 +108,7 @@
                                     </div>
                                 </td>
                                 <td style="width: 15%;">
-                                    <div style="padding-left: 10px; padding-right: 10px; text-align: left;">
+                                    <div>
                                         @item.Sku
                                     </div>
                                 </td>

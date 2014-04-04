@@ -32,6 +32,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,33 +54,29 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime, Version=3.3.1.7705, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
+      <HintPath>..\..\..\packages\Autofac.3.3.0\lib\net40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="AutoMapper, Version=2.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+    <Reference Include="AutoMapper, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\AutoMapper.2.2.1-ci9000\lib\net40\AutoMapper.dll</HintPath>
+      <HintPath>..\..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=3.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AutoMapper.Net4, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\FluentValidation.3.4.6.0\lib\Net40\FluentValidation.dll</HintPath>
+      <HintPath>..\..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -88,32 +85,32 @@
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Optimization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Web.Optimization.1.0.0\lib\net40\System.Web.Optimization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.1.1\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.1.1\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Routing" />
-    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -122,10 +119,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="WebGrease, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\WebGrease.1.1.0\lib\WebGrease.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -158,16 +151,17 @@
     <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageBrowserController.cs" />
+    <Compile Include="Controllers\JbimagesController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManufacturerController.cs" />
     <Compile Include="Controllers\MeasureController.cs" />
     <Compile Include="Controllers\MessageTemplateController.cs" />
-    <Compile Include="Controllers\NetAdvImageController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NewsLetterSubscriptionController.cs" />
     <Compile Include="Controllers\OnlineCustomerController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PackagingController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PictureController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
@@ -175,7 +169,6 @@
     <Compile Include="Controllers\ProductAttributeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProductReviewController.cs" />
-    <Compile Include="Controllers\ProductVariantController.cs" />
     <Compile Include="Controllers\QueuedEmailController.cs" />
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
@@ -190,13 +183,13 @@
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
-    <Compile Include="Infrastructure\AdminBundleProvider.cs" />
-    <Compile Include="Infrastructure\RouteProvider.cs" />
+    <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
+    <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
-    <Compile Include="Models\Catalog\BulkEditProductVariantModel.cs" />
+    <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
     <Compile Include="Models\Catalog\BulkEditListModel.cs" />
     <Compile Include="Models\Catalog\CategoryListModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerListModel.cs" />
@@ -314,7 +307,6 @@
     <Compile Include="Models\Localization\LanguageResourceModel.cs" />
     <Compile Include="Models\Logging\LogModel.cs" />
     <Compile Include="Models\Catalog\ProductModel.cs" />
-    <Compile Include="Models\Catalog\ProductVariantModel.cs" />
     <Compile Include="Models\Messages\QueuedEmailModel.cs" />
     <Compile Include="Models\Settings\TaxSettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -354,7 +346,6 @@
     <Compile Include="Validators\Catalog\SpecificationAttributeOptionValidator.cs" />
     <Compile Include="Validators\Catalog\SpecificationAttributeValidator.cs" />
     <Compile Include="Validators\Catalog\ProductAttributeValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductVariantValidator.cs" />
     <Compile Include="Validators\Customers\CustomerRoleValidator.cs" />
     <Compile Include="Validators\Customers\CustomerValidator.cs" />
     <Compile Include="Validators\Forums\ForumGroupValidator.cs" />
@@ -370,12 +361,8 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\1pix.gif" />
-    <Content Include="Content\images\active-false.gif" />
-    <Content Include="Content\images\active-true.gif" />
-    <Content Include="Content\images\admin-gvw-bg.gif" />
-    <Content Include="Content\images\admin-menu-bg.gif" />
     <Content Include="Content\images\ajax-progress-2.gif" />
+    <Content Include="Content\images\ajax_loader_small.gif" />
     <Content Include="Content\images\ap-catalog-white.png" />
     <Content Include="Content\images\ap-catalog.png" />
     <Content Include="Content\images\ap-chevron.png" />
@@ -398,9 +385,7 @@
     <Content Include="Content\images\ap-system-white.png" />
     <Content Include="Content\images\ap-system.png" />
     <Content Include="Content\images\checkmark.png" />
-    <Content Include="Content\images\error-message.gif" />
     <Content Include="Content\images\google-maps.gif" />
-    <Content Include="Content\images\hr.png" />
     <Content Include="Content\images\ico-content-negative.png" />
     <Content Include="Content\images\ico-content-o60.png" />
     <Content Include="Content\images\ico-content.png" />
@@ -417,8 +402,6 @@
     <Content Include="Content\images\icon-plugin-tax.png" />
     <Content Include="Content\images\preloader-32.gif" />
     <Content Include="Content\images\smnet.png" />
-    <Content Include="Content\images\throbber-synchronizing.gif" />
-    <Content Include="Content\images\success-message.gif" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
@@ -461,8 +444,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Navbar.cshtml" />
-    <Content Include="Views\Shared\RichEditor.cshtml" />
-    <Content Include="Views\Shared\RichEditor.Telerik.cshtml" />
     <Content Include="Views\Widget\ConfigureWidget.cshtml" />
     <Content Include="Views\ScheduleTask\List.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
@@ -512,12 +493,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\QueuedEmail\List.cshtml" />
@@ -662,28 +637,22 @@
     <Content Include="Views\Category\ProductAddPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\Create.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\TierPriceCustomer.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceCustomer.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\ProductAttribute.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\ProductAttribute.cshtml" />
+    <Content Include="Views\Product\EditAttributeValues.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\AttributeControlType.cshtml" />
+    <Content Include="Views\Product\ProductAttributeValueCreatePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditAttributeValues.cshtml" />
+    <Content Include="Views\Product\ProductAttributeValueEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\ProductAttributeValueCreatePopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\ProductAttributeValueEditPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdateProductAttributeValue.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdateProductAttributeValue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
@@ -692,9 +661,6 @@
     <Content Include="Views\Shared\EditorTemplates\Decimal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_ProductVariantInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
@@ -908,7 +874,7 @@
     <Content Include="Views\Product\ProductTags.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\LowStockReport.cshtml" />
+    <Content Include="Views\Product\LowStockReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\BestsellersReport.cshtml" />
@@ -956,10 +922,10 @@
     <Content Include="Views\Common\LanguageSelector.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\_ProductAttributes.cshtml" />
+    <Content Include="Views\Product\_ProductAttributes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Security\Permissions.cshtml" />
@@ -1019,7 +985,7 @@
     <Content Include="Views\ShoppingCart\CurrentWishlists.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\BulkEdit.cshtml" />
+    <Content Include="Views\Product\BulkEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Country\StateEditPopup.cshtml" />
@@ -1044,9 +1010,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\RichEditor.Telerik.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\NetAdvImage\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\AddProductToOrder.cshtml" />
@@ -1089,7 +1052,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\PromotionFeeds\" />
-    <Folder Include="Views\Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />
@@ -1122,10 +1084,10 @@
     <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\AttributeCombinationCreatePopup.cshtml" />
+    <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\AttributeCombinationEditPopup.cshtml" />
+    <Content Include="Views\Product\AttributeCombinationEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Theme\List.cshtml" />
@@ -1158,7 +1120,7 @@
     <Content Include="Views\Setting\StoreScopeConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProductVariant\EditorTemplates\TierPriceStore.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\TierPriceStore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\WidgetZone.cshtml" />
@@ -1166,9 +1128,87 @@
   <ItemGroup>
     <Content Include="Views\Common\GenericAttributes.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.SummerNote.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Acl.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Discounts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Info.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Manufacturers.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Pictures.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Attributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.SEO.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.SpecificationAttributes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\AssociatedProductAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Price.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.Promotion.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\_CreateOrUpdate.BundleItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\BundleItemAddPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Jbimages\Upload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Home\About.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Packaging\UploadPackage.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

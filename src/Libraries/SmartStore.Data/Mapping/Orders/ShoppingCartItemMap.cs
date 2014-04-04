@@ -15,16 +15,20 @@ namespace SmartStore.Data.Mapping.Orders
             this.Ignore(sci => sci.ShoppingCartType);
             this.Ignore(sci => sci.IsFreeShipping);
             this.Ignore(sci => sci.IsShipEnabled);
-            this.Ignore(sci => sci.AdditionalShippingCharge);
             this.Ignore(sci => sci.IsTaxExempt);
 
             this.HasRequired(sci => sci.Customer)
                 .WithMany(c => c.ShoppingCartItems)
                 .HasForeignKey(sci => sci.CustomerId);
 
-            this.HasRequired(sci => sci.ProductVariant)
+            this.HasRequired(sci => sci.Product)
                 .WithMany()
-                .HasForeignKey(sci => sci.ProductVariantId);
+                .HasForeignKey(sci => sci.ProductId);
+
+			this.HasOptional(sci => sci.BundleItem)
+				.WithMany()
+				.HasForeignKey(sci => sci.BundleItemId)
+				.WillCascadeOnDelete(false);
         }
     }
 }

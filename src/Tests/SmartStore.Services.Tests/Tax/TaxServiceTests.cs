@@ -7,11 +7,13 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tests.Tax
 {
@@ -21,8 +23,10 @@ namespace SmartStore.Services.Tests.Tax
         IAddressService _addressService;
         IWorkContext _workContext;
         TaxSettings _taxSettings;
+		ShoppingCartSettings _cartSettings;
         IEventPublisher _eventPublisher;
         ITaxService _taxService;
+		ISettingService _settingService;
 
         [SetUp]
         public new void SetUp()
@@ -31,6 +35,8 @@ namespace SmartStore.Services.Tests.Tax
             _taxSettings.DefaultTaxAddressId = 10;
 
             _workContext = null;
+
+			_cartSettings = new ShoppingCartSettings();
 
             _addressService = MockRepository.GenerateMock<IAddressService>();
             //default tax address
@@ -41,7 +47,9 @@ namespace SmartStore.Services.Tests.Tax
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _taxService = new TaxService(_addressService, _workContext, _taxSettings, pluginFinder);
+			_settingService = MockRepository.GenerateMock<ISettingService>();
+
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService);
         }
 
         [Test]
@@ -67,13 +75,13 @@ namespace SmartStore.Services.Tests.Tax
         }
 
         [Test]
-        public void Can_check_taxExempt_productVariant()
+        public void Can_check_taxExempt_product()
         {
-            var productVariant = new ProductVariant();
-            productVariant.IsTaxExempt = true;
-            _taxService.IsTaxExempt(productVariant, null).ShouldEqual(true);
-            productVariant.IsTaxExempt = false;
-            _taxService.IsTaxExempt(productVariant, null).ShouldEqual(false);
+			var product = new Product();
+			product.IsTaxExempt = true;
+			_taxService.IsTaxExempt(product, null).ShouldEqual(true);
+			product.IsTaxExempt = false;
+			_taxService.IsTaxExempt(product, null).ShouldEqual(false);
         }
 
         [Test]
@@ -115,30 +123,16 @@ namespace SmartStore.Services.Tests.Tax
         }
 
         [Test]
-        public void Can_get_tax_rate_for_productVariant()
-        {
-            _taxSettings.TaxBasedOn = TaxBasedOn.BillingAddress;
-
-            var customer = new Customer();
-            customer.BillingAddress = new Address();
-            var productVariant = new ProductVariant();
-
-            _taxService.GetTaxRate(productVariant, customer).ShouldEqual(GetFixedTestTaxRate());
-            productVariant.IsTaxExempt = true;
-            _taxService.GetTaxRate(productVariant, customer).ShouldEqual(0);
-        }
-
-        [Test]
         public void Can_get_productPrice_priceIncludesTax_includingTax()
         {
             var customer = new Customer();
-            var productVariant = new ProductVariant();
+            var product = new Product();
 
             decimal taxRate;
-            _taxService.GetProductPrice(productVariant, 0, 1000M, true, customer, true, out taxRate).ShouldEqual(1000);
-            _taxService.GetProductPrice(productVariant, 0, 1000M, true, customer, false, out taxRate).ShouldEqual(1100);
-            _taxService.GetProductPrice(productVariant, 0, 1000M, false, customer, true, out taxRate).ShouldEqual(909.0909090909090909090909091M);
-            _taxService.GetProductPrice(productVariant, 0, 1000M, false, customer, false, out taxRate).ShouldEqual(1000);
+            _taxService.GetProductPrice(product, 0, 1000M, true, customer, true, out taxRate).ShouldEqual(1000);
+            _taxService.GetProductPrice(product, 0, 1000M, true, customer, false, out taxRate).ShouldEqual(1100);
+            _taxService.GetProductPrice(product, 0, 1000M, false, customer, true, out taxRate).ShouldEqual(909.0909090909090909090909091M);
+            _taxService.GetProductPrice(product, 0, 1000M, false, customer, false, out taxRate).ShouldEqual(1000);
         }
 
         [Test]

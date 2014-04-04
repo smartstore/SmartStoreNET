@@ -5,7 +5,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Data;
 
 namespace SmartStore.Services.Common
@@ -159,7 +159,7 @@ namespace SmartStore.Services.Common
             var prop = props.FirstOrDefault(ga =>
                 ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
 
-            string valueStr = CommonHelper.To<string>(value);
+            string valueStr = value.Convert<string>();
 
             if (prop != null)
             {

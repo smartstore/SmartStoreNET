@@ -13,6 +13,12 @@
     <div class="options">
     </div>
 </div>
+
+<div class="alert alert-info fade in">
+	<button class="close" data-dismiss="alert">&#215;</button>
+	@T("Admin.Orders.Products.AddNew.Note1")
+</div>
+
 <table width="100%">
     <tr>
         <td class="adminTitle">
@@ -39,37 +45,51 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
-            <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SearchProductTypeId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+        </td>
+    </tr>
+    <tr>
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
+            <button type="submit" id="search-products" value="search-products" class="btn btn-above">
+				<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
+			</button>
         </td>
     </tr>
 </table>
+<p></p>
 <table class="adminContent">
     <tr>
         <td>
-            <strong>@T("Admin.Orders.Products.AddNew.Note1")</strong>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductVariantLineModel>()
+            @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(pv => pv.Id).Width(70);
-                        columns.Bound(pv => pv.Name).Width(400);
-                        columns.Bound(pv => pv.Sku).Width(100);
+                        columns.Bound(p => p.Id)
+							.Width(80);
+                        columns.Bound(p => p.Name)
+							.Template(p => @Html.LabeledProductName(0, p.Name, p.ProductTypeName, p.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+                        columns.Bound(p => p.Sku);
                     })
                     .Selectable()
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                            .DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
-                    .ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelected("onRowSelected"))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
+                    .ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelect("onRowSelected"))
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
-<div id="productvariantdetails">
+
+<div id="productdetails">
 </div>
+
 @Html.HiddenFor(model => Model.OrderId)
 <script type="text/javascript">
     $(document).ready(function () {
@@ -92,16 +112,17 @@
         var searchModel = {
             SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
             SearchCategoryId: $('#SearchCategoryId').val(),
-            SearchManufacturerId: $('#SearchManufacturerId').val()
+            SearchManufacturerId: $('#SearchManufacturerId').val(),
+            SearchProductTypeId: $('#SearchProductTypeId').val()
         };
         e.data = searchModel;
     }
 
     function onRowSelected(e) {
-        productVariantID = e.row.cells[0].innerHTML;
-        //load "product variant details page" block
-        var productDetailsActionUrl = '@Html.Raw(Url.Action("AddProductToOrderDetails", "Order", new { orderId = Model.OrderId, productVariantId = "productvariantidplaceholder" }))';
-        productDetailsActionUrl = productDetailsActionUrl.replace("productvariantidplaceholder", productVariantID);
+        productID = e.row.cells[0].innerHTML;
+        //load "product details page" block
+        var productDetailsActionUrl = '@Html.Raw(Url.Action("AddProductToOrderDetails", "Order", new { orderId = Model.OrderId, productId = "productidplaceholder" }))';
+        productDetailsActionUrl = productDetailsActionUrl.replace("productidplaceholder", productID);
         setLocation(productDetailsActionUrl);
     }
 </script>

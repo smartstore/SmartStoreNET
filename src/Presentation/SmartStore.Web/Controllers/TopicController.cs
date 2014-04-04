@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class TopicController : SmartController
+    public partial class TopicController : PublicControllerBase
     {
         #region Fields
 

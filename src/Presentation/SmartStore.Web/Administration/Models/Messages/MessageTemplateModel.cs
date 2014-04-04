@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Messages;
+using SmartStore.Collections;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
@@ -17,11 +20,12 @@ namespace SmartStore.Admin.Models.Messages
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
 			AvailableStores = new List<StoreModel>();
+            TokensTree = new TreeNode<string>("_ROOT_");
         }
 
-
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
-        public string AllowedTokens { get; set; }
+        [ScriptIgnore]
+        public TreeNode<string> TokensTree { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Name")]
         [AllowHtml]
@@ -55,6 +59,7 @@ namespace SmartStore.Admin.Models.Messages
 
         public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
+
     }
 
     public class MessageTemplateLocalizedModel : ILocalizedModelLocal

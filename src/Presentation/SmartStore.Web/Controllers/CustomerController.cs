@@ -33,11 +33,11 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CustomerController : SmartController
+    public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 
@@ -320,7 +320,7 @@ namespace SmartStore.Web.Controllers
                     Id = ear.Id,
                     Email = ear.Email,
                     ExternalIdentifier = ear.ExternalIdentifier,
-                    AuthMethodName = authMethod.GetLocalizedFriendlyName(_localizationService, _workContext.WorkingLanguage.Id)
+                    AuthMethodName = authMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id)
                 });
             }
 
@@ -1294,17 +1294,18 @@ namespace SmartStore.Web.Controllers
 			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null);
             foreach (var returnRequest in returnRequests)
             {
-                var opv = _orderService.GetOrderProductVariantById(returnRequest.OrderProductVariantId);
-                if (opv != null)
+                var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+                if (orderItem != null)
                 {
-                    var pv = opv.ProductVariant;
+                    var product = orderItem.Product;
 
                     var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel()
                     {
                         Id = returnRequest.Id,
                         ReturnRequestStatus = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        ProductId = pv.ProductId,
-                        ProductSeName = pv.Product.GetSeName(),
+                        ProductId = product.Id,
+						ProductName = product.GetLocalized(x => x.Name),
+                        ProductSeName = product.GetSeName(),
                         Quantity = returnRequest.Quantity,
                         ReturnAction = returnRequest.RequestedAction,
                         ReturnReason = returnRequest.ReasonForReturn,
@@ -1312,11 +1313,6 @@ namespace SmartStore.Web.Controllers
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc),
                     };
                     model.Items.Add(itemModel);
-
-                    if (!String.IsNullOrEmpty(pv.GetLocalized(x => x.Name)))
-                        itemModel.ProductName = string.Format("{0} ({1})", pv.Product.GetLocalized(x => x.Name), pv.GetLocalized(x => x.Name));
-                    else
-                        itemModel.ProductName = pv.Product.GetLocalized(x => x.Name);
                 }
             }
 
@@ -1338,29 +1334,24 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerDownloadableProductsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.DownloadableProducts;
-            var items = _orderService.GetAllOrderProductVariants(null, customer.Id, null, null,
+            var items = _orderService.GetAllOrderItems(null, customer.Id, null, null,
                 null, null, null, true);
             foreach (var item in items)
             {
                 var itemModel = new CustomerDownloadableProductsModel.DownloadableProductsModel()
                 {
-                    OrderProductVariantGuid = item.OrderProductVariantGuid,
+                    OrderItemGuid = item.OrderItemGuid,
                     OrderId = item.OrderId,
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(item.Order.CreatedOnUtc, DateTimeKind.Utc),
-                    ProductSeName = item.ProductVariant.Product.GetSeName(),
+					ProductName = item.Product.GetLocalized(x => x.Name),
+                    ProductSeName = item.Product.GetSeName(),
                     ProductAttributes = item.AttributeDescription,
-                    ProductId = item.ProductVariant.ProductId
+					ProductId = item.ProductId
                 };
                 model.Items.Add(itemModel);
 
-                //product name
-                if (!String.IsNullOrEmpty(item.ProductVariant.GetLocalized(x => x.Name)))
-                    itemModel.ProductName = string.Format("{0} ({1})", item.ProductVariant.Product.GetLocalized(x => x.Name), item.ProductVariant.GetLocalized(x => x.Name));
-                else
-                    itemModel.ProductName = item.ProductVariant.Product.GetLocalized(x => x.Name);
-
                 if (_downloadService.IsDownloadAllowed(item))
-                    itemModel.DownloadId = item.ProductVariant.DownloadId;
+                    itemModel.DownloadId = item.Product.DownloadId;
 
                 if (_downloadService.IsLicenseDownloadAllowed(item))
                     itemModel.LicenseId = item.LicenseDownloadId.HasValue ? item.LicenseDownloadId.Value : 0;
@@ -1369,20 +1360,19 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        public ActionResult UserAgreement(Guid opvId)
+        public ActionResult UserAgreement(Guid orderItemId)
         {
-            var opv = _orderService.GetOrderProductVariantByGuid(opvId);
-            if (opv == null)
+            var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
+            if (orderItem == null)
                 return RedirectToRoute("HomePage");
 
-
-            var productVariant = opv.ProductVariant;
-            if (productVariant == null || !productVariant.HasUserAgreement)
+            var product = orderItem.Product;
+            if (product == null || !product.HasUserAgreement)
                 return RedirectToRoute("HomePage");
 
             var model = new UserAgreementModel();
-            model.UserAgreementText = productVariant.UserAgreementText;
-            model.OrderProductVariantGuid = opvId;
+            model.UserAgreementText = product.UserAgreementText;
+            model.OrderItemGuid = orderItemId;
             
             return View(model);
         }
@@ -1814,24 +1804,17 @@ namespace SmartStore.Web.Controllers
 
             foreach (var subscription in list)
             {
-                var productVariant = subscription.ProductVariant;
+                var product = subscription.Product;
 
-                if (productVariant != null)
+                if (product != null)
                 {
                     var subscriptionModel = new BackInStockSubscriptionModel()
                     {
                         Id = subscription.Id,
-                        ProductId = productVariant.Product.Id,
-                        SeName = productVariant.Product.GetSeName(),
+                        ProductId = product.Id,
+						ProductName = product.GetLocalized(x => x.Name),
+                        SeName = product.GetSeName(),
                     };
-                    //product name
-                    if (!String.IsNullOrEmpty(productVariant.GetLocalized(x => x.Name)))
-                        subscriptionModel.ProductName = string.Format("{0} ({1})",
-                                                                      productVariant.Product.GetLocalized(x => x.Name),
-                                                                      productVariant.GetLocalized(x => x.Name));
-                    else
-                        subscriptionModel.ProductName = productVariant.Product.GetLocalized(x => x.Name);
-
                     model.Subscriptions.Add(subscriptionModel);
                 }
             }

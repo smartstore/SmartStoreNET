@@ -1,42 +1,50 @@
 
 using SmartStore.Core.Domain.Localization;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
     /// Represents a state/province
     /// </summary>
-    public partial class StateProvince : BaseEntity, ILocalizedEntity
+	[DataContract]
+	public partial class StateProvince : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the country identifier
         /// </summary>
-        public int CountryId { get; set; }
+		[DataMember]
+		public int CountryId { get; set; }
 
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the abbreviation
         /// </summary>
-        public string Abbreviation { get; set; }
+		[DataMember]
+		public string Abbreviation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
-        public bool Published { get; set; }
+		[DataMember]
+		public bool Published { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
+		[DataMember]
+		public int DisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the country
         /// </summary>
-        public virtual Country Country { get; set; }
+		[DataMember]
+		public virtual Country Country { get; set; }
     }
 
 }

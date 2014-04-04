@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
@@ -185,7 +185,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCheckoutAttribute", _localizationService.GetResource("ActivityLog.AddNewCheckoutAttribute"), checkoutAttribute.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = checkoutAttribute.Id }) : RedirectToAction("List");
             }
 
@@ -238,7 +238,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("EditCheckoutAttribute", _localizationService.GetResource("ActivityLog.EditCheckoutAttribute"), checkoutAttribute.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", checkoutAttribute.Id) : RedirectToAction("List");
             }
 
@@ -260,7 +260,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("DeleteCheckoutAttribute", _localizationService.GetResource("ActivityLog.DeleteCheckoutAttribute"), checkoutAttribute.Name);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Deleted"));
             return RedirectToAction("List");
         }
 

@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Data.Entity.Migrations;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.Froogle.Data;
+using SmartStore.Plugin.Feed.Froogle.Data.Migrations;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Feed.Froogle
 {
@@ -16,7 +19,7 @@ namespace SmartStore.Plugin.Feed.Froogle
         private readonly IGoogleService _googleService;
         private readonly ISettingService _settingService;
         private readonly GoogleProductObjectContext _objectContext;
-		private readonly ILocalizationService _localizationService;	// codehint: sm-add
+		private readonly ILocalizationService _localizationService;
 
         public FroogleService(
 			IGoogleService googleService,
@@ -27,7 +30,7 @@ namespace SmartStore.Plugin.Feed.Froogle
             this._googleService = googleService;
             this._settingService = settingService;
             this._objectContext = objectContext;
-			this._localizationService = localizationService;	// codehint: sm-add
+			this._localizationService = localizationService;
         }
 
         /// <summary>
@@ -60,11 +63,8 @@ namespace SmartStore.Plugin.Feed.Froogle
 			};
             _settingService.SaveSetting(settings);
 
-            _objectContext.Install();
-
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			// codehint: sm-edit (refactored)
 			_googleService.Helper.ScheduleTaskInsert();
 
             base.Install();
@@ -77,12 +77,12 @@ namespace SmartStore.Plugin.Feed.Froogle
         {
             _settingService.DeleteSetting<FroogleSettings>();
 
-            _objectContext.Uninstall();
-
 			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
-			// codehint: sm-edit (refactored)
 			_googleService.Helper.ScheduleTaskDelete();
+
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

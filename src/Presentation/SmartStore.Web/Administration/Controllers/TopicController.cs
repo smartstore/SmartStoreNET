@@ -162,6 +162,7 @@ namespace SmartStore.Admin.Controllers
             };
             return new JsonResult
 			{
+				MaxJsonLength = int.MaxValue,
 				Data = gridModel
 			};
         }
@@ -201,7 +202,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(topic, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Topics.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
             }
 
@@ -267,7 +268,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(topic, model);
                 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
 
@@ -294,7 +295,7 @@ namespace SmartStore.Admin.Controllers
 
             _topicService.DeleteTopic(topic);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Topics.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Deleted"));
             return RedirectToAction("List");
         }
         

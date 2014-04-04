@@ -3,12 +3,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using SmartStore.Collections;
-
-// codehint: sm-edit (moved from SmartStore.Web.Framework and renamed from ThemeConfiguration)
+using System.IO;
 
 namespace SmartStore.Core.Themes
 {
-    public class ThemeManifest
+    public class ThemeManifest : ComparableObject<ThemeManifest>
     {
 
         #region Ctor
@@ -16,6 +15,29 @@ namespace SmartStore.Core.Themes
         internal ThemeManifest()
         {
         }
+
+		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes")
+		{
+			Guard.ArgumentNotEmpty(() => themePath);
+			Guard.ArgumentNotEmpty(() => virtualBasePath);
+
+			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
+			var themeDirectory = new DirectoryInfo(themePath);
+			var themeConfigFile = new FileInfo(System.IO.Path.Combine(themeDirectory.FullName, "theme.config"));
+
+			if (themeConfigFile.Exists)
+			{
+				var doc = new XmlDocument();
+				doc.Load(themeConfigFile.FullName);
+				return ThemeManifest.Create(
+					themeDirectory.Name,
+					virtualBasePath,
+					themeDirectory.FullName,
+					doc);
+			}
+
+			return null;
+		}
 
         public static ThemeManifest Create(string themeName, string virtualPath, string path, XmlDocument doc)
         {
@@ -47,6 +69,7 @@ namespace SmartStore.Core.Themes
 
         public bool MobileTheme { get; protected internal set; }
 
+		[ObjectSignature]
         public string ThemeName { get; protected internal set; }
 
         public string ThemeTitle { get; protected internal set; }
@@ -55,10 +78,8 @@ namespace SmartStore.Core.Themes
 
         public string Version { get; protected internal set; }
 
-        // codehint: sm-add
         public IDictionary<string, ThemeVariableInfo> Variables { get; internal set; }
 
-        // codehint: sm-add
         public Multimap<string, string> Selects { get; internal set; }
 
         internal string FullPath

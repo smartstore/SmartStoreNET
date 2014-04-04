@@ -15,37 +15,39 @@
 		
 		this.init = function() {
 			
-		    var opts = this.options;
+			var opts = this.options;
 			
 		    this.createGallery(opts.galleryStartIndex);
 			
-            //TODO: nur wenn varianten da sind
 		    $('#pd-gallery-container-outer').throbber({ white: false, small: false, show: false });
 
 		    $('#pd-manufacturer img').css({ 'max-width': opts.galleryWidth });
 
 			// update product data and gallery
 		    $(el).find(':input').change(function () {
-		    	var context = $(this).closest('.product-variant-line'),
-		    		url = opts.updateUrl;
+		    	var context = $(this).closest('.update-container');
 
-		    	if (context[0])		// multiple variant template
-		    		url += '&productVariantId=' + context.attr('data-productvariantid');
-				else
+		    	if (context[0]) {		// associated or bundled item
+		    	}
+		    	else {
 		    		context = el;
+		    	}
 
-                /*
-		    	if ($(this).attr('name').endsWith('EnteredQuantity'))
-		    		url += '&updateGallery=false';
-                */  
-
-
-		    	$({}).doAjax({
-		    		//smallIcon: '.price-details', // TODO... selector or object where to show small spinner
-		    		url: url,
+		    	context.doAjax({
 		    		data: context.find(':input').serialize(),
-		    		callbackSuccess: function (resp) {
-		    			self.updateDetailData(resp, context);
+		    		callbackSuccess: function (response) {
+		    			self.updateDetailData(response, context);
+
+		    			if (context.hasClass('bundle-item')) {
+		    				// update bundle price too
+		    				$('#TotalPriceUpdateContainer').doAjax({
+		    					data: $('#ProductBundleItems').find(':input').serialize(),
+		    					callbackSuccess: function (response2) {
+		    						self.updateDetailData(response2, $('#AddToCart'));
+		    					}
+		    				});
+		    			}
+
 		    		}
 		    	});
 		    });
@@ -54,7 +56,8 @@
 		};
 
 		this.updateDetailData = function (data, context) {
-		    var gallery = $('#pd-gallery').data(galPluginName);
+			var gallery = $('#pd-gallery').data(galPluginName),
+				referTo = $(context).attr('data-referto');
 
 		    if (data.GalleryHtml) {
 		        var cnt = $('#pd-gallery-container');
@@ -75,10 +78,12 @@
 		        }
 		    }
 
-		    //update detail data in view
+			//update detail data in view
+		    if (referTo)
+		    	context = $(referTo);
 
 		    //prices
-		    var priceBlock = $(".price-details", $(context));
+		    var priceBlock = $(context).find('.price-block').addBack();
 		    priceBlock.find(".base-price").html(data.Price.Base.Info);
 		    priceBlock.find(".old-product-price").html(data.Price.Old.Text);
 		    priceBlock.find('.product-price-without-discount').html(data.Price.WithoutDiscount.Text);
@@ -90,7 +95,7 @@
 		    deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
 		     
 		    //attributes
-		    var attributesBlock = $(".attributes", $(context));
+		    var attributesBlock = $(context).find('.attributes').addBack();
 		    
 		    function updateAttrLine(className, newValue) {
 		        attrLine = attributesBlock.find(className);
@@ -98,7 +103,8 @@
 		            attrLine.find(".value").html(newValue);
 		            attrLine.removeClass("hide");
 		            attrLine.addClass("in");
-		        } else {
+		        }
+		        else {
 		            attrLine.find(".value").html();
 		            attrLine.addClass("hide");
 		            attrLine.removeClass("in");
@@ -114,7 +120,11 @@
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
 		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
 
-		    context.find('.add-to-cart .form-inline').toggle(!data.Stock.Availability.Unavailable);
+		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
+
+		    if (data.DynamicThumblUrl && data.DynamicThumblUrl.length > 0) {
+		    	$(context).find('.dynamic-image img').attr('src', data.DynamicThumblUrl);
+		    }
 		};
 		
 		this.initialized = false;

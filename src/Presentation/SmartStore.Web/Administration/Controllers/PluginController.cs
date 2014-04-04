@@ -80,18 +80,19 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-        protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor)
+        protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)
         {
             var pluginModel = pluginDescriptor.ToModel();
 
             pluginModel.Group = _localizationService.GetResource("Plugins.KnownGroup." + pluginDescriptor.Group);
-            pluginModel.FriendlyName = pluginDescriptor.GetLocalizedFriendlyName(_localizationService);
-            pluginModel.Description = pluginDescriptor.GetLocalizedDescription(_localizationService);
+			pluginModel.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName", 0, forList);
+			pluginModel.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description", 0, forList);
 
             //locales
             AddLocales(_languageService, pluginModel.Locales, (locale, languageId) =>
             {
-                locale.FriendlyName = pluginDescriptor.GetLocalizedFriendlyName(_localizationService, languageId, false);
+				locale.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName", languageId, false);
+				locale.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description", languageId, false);
             });
 			//stores
 			pluginModel.AvailableStores = _storeService
@@ -273,7 +274,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
             }
 
             return RedirectToAction("List");
@@ -323,7 +324,7 @@ namespace SmartStore.Admin.Controllers
                 //No plugin found with the specified id
                 return RedirectToAction("List");
 
-            var model = PreparePluginModel(pluginDescriptor);
+            var model = PreparePluginModel(pluginDescriptor, false);
 
             return View(model);
         }
@@ -336,14 +337,14 @@ namespace SmartStore.Admin.Controllers
 
             var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(model.SystemName, false);
             if (pluginDescriptor == null)
-                //No plugin found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
-				//we allow editing of 'friendly name', 'display order', store mappings
                 pluginDescriptor.FriendlyName = model.FriendlyName;
+				pluginDescriptor.Description = model.Description;
                 pluginDescriptor.DisplayOrder = model.DisplayOrder;
+
                 PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
 
 				string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
@@ -352,18 +353,21 @@ namespace SmartStore.Admin.Controllers
 				else
 					_settingService.DeleteSetting(settingKey);
 
-                //reset plugin cache
+                // reset plugin and string resources cache
                 _pluginFinder.ReloadPlugins();
-                //locales
-                foreach (var localized in model.Locales)
-                {
-                    pluginDescriptor.Instance().SaveLocalizedFriendlyName(_localizationService, localized.LanguageId, localized.FriendlyName);
-                }
+				_localizationService.ClearCache();
+
+				var pluginInstance = pluginDescriptor.Instance();
+
+				foreach (var localized in model.Locales)
+				{
+					pluginInstance.SaveLocalizedValue(_localizationService, localized.LanguageId, "FriendlyName", localized.FriendlyName);
+					pluginInstance.SaveLocalizedValue(_localizationService, localized.LanguageId, "Description", localized.Description);
+				}
 
                 //enabled/disabled
                 if (pluginDescriptor.Installed)
                 {
-                    var pluginInstance = pluginDescriptor.Instance();
                     if (pluginInstance is IPaymentMethod)
                     {
                         //payment plugin
@@ -482,7 +486,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public ActionResult UpdateStringResources(string systemName)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
@@ -494,14 +497,37 @@ namespace SmartStore.Admin.Controllers
 
 			if (pluginDescriptor == null)
 			{
-				ErrorNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateFailure"));
+				NotifyError(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateFailure"));
 			}
 			else
 			{
 				_localizationService.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));				
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
+			return RedirectToAction("List");
+		}
+
+		public ActionResult UpdateAllStringResources()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var pluginDescriptors = _pluginFinder.GetPluginDescriptors(false);
+
+			foreach (var plugin in pluginDescriptors)
+			{
+				if (plugin.Installed)
+				{
+					_localizationService.ImportPluginResourcesFromXml(plugin, null, false);
+				}
+				else
+				{
+					_localizationService.DeleteLocaleStringResources(plugin.ResourceRootKey);
+				}
+			}
+
+			NotifySuccess(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			return RedirectToAction("List");
 		}
 

@@ -21,5 +21,9 @@ namespace SmartStore.Services.Payments
         /// Button
         /// </summary>
         Button = 20,
+        /// <summary>
+        /// All payment information is entered on the site and is available via button
+        /// </summary>
+        StandardAndButton = 25,
     }
 }

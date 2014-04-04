@@ -9,6 +9,13 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Themes;
+using SmartStore.Utilities;
+using SmartStore.Core.Caching;
+using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.Events;
+using SmartStore.Web.Framework.Events;
+using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace SmartStore.Web.Framework.Themes
 {
@@ -16,88 +23,178 @@ namespace SmartStore.Web.Framework.Themes
     {
 		#region Fields
 
-        private readonly ReaderWriterLockSlim _rwLock; // codehint: sm-add
+		internal const string THEME_MANIFESTS_ALL_KEY = "sm.theme-manifests.all";
 
-        private readonly IList<ThemeManifest> _themeManifests = new List<ThemeManifest>();
-        private string _virtualBasePath = string.Empty;
-        private string _basePath = string.Empty;
+		private readonly SmartStoreConfig _cfg;
+		private readonly IEventPublisher _eventPublisher;
+		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string,ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
 
 		#endregion
 
 		#region Constructors
 
-        public DefaultThemeRegistry()
+		public DefaultThemeRegistry(
+			SmartStoreConfig cfg,
+			IEventPublisher eventPublisher)
         {
-            _rwLock = new ReaderWriterLockSlim();
-            
-            var config = EngineContext.Current.Resolve<SmartStoreConfig>();
-            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+			this._cfg = cfg;
+			this._eventPublisher = eventPublisher;
 
-            _virtualBasePath = config.ThemeBasePath;
-            _basePath = webHelper.MapPath(config.ThemeBasePath);
-            LoadConfigurations();
+			// load all themes initially
+			LoadThemes();
+
+			// start FS watcher
+			WatchConfigFiles();
+			WatchFolders();
         }
 
 		#endregion 
         
-        #region IThemeRegistry
-        
-        public ThemeManifest GetThemeManifest(string themeName)
-        {
-            return _themeManifests.SingleOrDefault(x => x.ThemeName.Equals(themeName, StringComparison.InvariantCultureIgnoreCase));
-        }
+		#region Watcher
 
-        public IList<ThemeManifest> GetThemeManifests()
-        {
-            return _themeManifests;
-        }
+		private void WatchConfigFiles()
+		{
+			var watcher = new FileSystemWatcher();
+
+			watcher.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			watcher.Filter = "theme.config";
+			watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+			watcher.IncludeSubdirectories = true;
+			watcher.EnableRaisingEvents = true;
+
+			watcher.Changed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			watcher.Deleted += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			watcher.Created += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			watcher.Renamed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+		}
+
+		private void WatchFolders()
+		{
+			var watcher = new FileSystemWatcher();
+
+			watcher.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			watcher.Filter = "*";
+			watcher.NotifyFilter = NotifyFilters.DirectoryName;
+			watcher.IncludeSubdirectories = false;
+			watcher.EnableRaisingEvents = true;
+
+			watcher.Renamed += (s, e) => ThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
+			watcher.Deleted += (s, e) => TryRemoveManifest(e.Name);
+		}
+
+		private void ThemeConfigChanged(string name, string fullPath)
+		{
+			var di = new DirectoryInfo(Path.GetDirectoryName(fullPath));
+			try
+			{
+				var newManifest = ThemeManifest.Create(di.FullName);
+				if (newManifest != null)
+				{
+					this.AddThemeManifest(newManifest);
+					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+				}
+				else
+				{
+					// something went wrong (most probably no 'theme.config'): remove the manifest
+					TryRemoveManifest(di.Name);
+				}
+			}
+			catch (Exception ex)
+			{
+				TryRemoveManifest(di.Name);
+				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
+			}
+		}
+
+		private void ThemeFolderRenamed(string name, string fullPath, string oldName, string oldFullPath)
+		{
+			TryRemoveManifest(oldName);
+			
+			var di = new DirectoryInfo(fullPath);
+			try
+			{
+				var newManifest = ThemeManifest.Create(di.FullName);
+				if (newManifest != null)
+				{
+					this.AddThemeManifest(newManifest);
+					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
+			}
+		}
+
+		#endregion
+
+		#region IThemeRegistry
 
         public bool ThemeManifestExists(string themeName)
         {
             if (themeName.IsEmpty())
                 return false;
-            return GetThemeManifests().Any(configuration => configuration.ThemeName.Equals(themeName, StringComparison.InvariantCultureIgnoreCase));
+
+			return _themes.ContainsKey(themeName);
         }
+
+		public ThemeManifest GetThemeManifest(string themeName)
+		{
+			ThemeManifest value;
+			if (_themes.TryGetValue(themeName, out value))
+			{
+				return value;
+			}
+			return null;
+		}
+
+		public ICollection<ThemeManifest> GetThemeManifests()
+		{
+			return _themes.Values.AsReadOnly();
+		}
+
+		public void AddThemeManifest(ThemeManifest manifest)
+		{
+			Guard.ArgumentNotNull(() => manifest);
+
+			TryRemoveManifest(manifest.ThemeName);
+			_themes.TryAdd(manifest.ThemeName, manifest);
+		}
+
+		private bool TryRemoveManifest(string themeName)
+		{
+			bool result;
+			ThemeManifest existing;
+			if (result = _themes.TryRemove(themeName, out existing))
+			{
+				_eventPublisher.Publish(new ThemeTouched(themeName));
+			}
+			return result;
+		}
+
+		private void LoadThemes()
+		{
+			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
+			var virtualBasePath = _cfg.ThemeBasePath;
+			foreach (var path in folder.ListDirectories(virtualBasePath))
+			{
+				try
+				{
+					var manifest = ThemeManifest.Create(CommonHelper.MapPath(path), virtualBasePath);
+					if (manifest != null)
+					{
+						_themes.TryAdd(manifest.ThemeName, manifest);
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(path, ex.Message));
+				}
+			}
+		}
 
         #endregion
 
-        #region Utility
+	}
 
-        private void LoadConfigurations()
-        {
-            using (_rwLock.GetWriteLock())
-            {
-                // TODO: Use IFileStorage?
-                foreach (string themeName in Directory.GetDirectories(_basePath))
-                {
-                    var manifest = CreateThemeManifest(themeName);
-                    if (manifest != null)
-                    {
-                        _themeManifests.Add(manifest);
-                    }
-                }
-            }
-        }
-
-        private ThemeManifest CreateThemeManifest(string themePath)
-        {
-            var themeDirectory = new DirectoryInfo(themePath);
-            var themeConfigFile = new FileInfo(Path.Combine(themeDirectory.FullName, "theme.config"));
-
-            if (themeConfigFile.Exists)
-            {
-                var doc = new XmlDocument();
-                doc.Load(themeConfigFile.FullName);
-                return ThemeManifest.Create(
-                    themeDirectory.Name, 
-                    _virtualBasePath, 
-                    themeDirectory.FullName, 
-                    doc);
-            }
-
-            return null;
-        }
-
-        #endregion
-    }
 }

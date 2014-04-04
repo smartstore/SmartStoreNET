@@ -3,6 +3,15 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
+@{
+    var availableDomainEndings = Model.AvailableDomainEndings.Select(x => x.Value).ToArray();
+    for (int i = 0; i < availableDomainEndings.Length; i++)
+    {
+        availableDomainEndings[i] = availableDomainEndings[i].EncodeJsString();
+    }
+    ViewBag.SerializedDomainEndings = String.Join(",", availableDomainEndings);
+}
+
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("currency-edit").Items(x =>
@@ -16,6 +25,15 @@
 
 @helper TabInfo()
 {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var domainEndings = $("#@Html.FieldIdFor(x => x.DomainEndings)");
+            domainEndings.select2({ tags: [@(Html.Raw(ViewBag.SerializedDomainEndings))] });
+
+        });
+    </script>
+
     var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
     @(Html.LocalizedEditor<CurrencyModel, CurrencyLocalizedModel>("currency-info-localized",
                 @<table class="adminContent">
@@ -87,6 +105,15 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DomainEndings)
+        </td>
+        <td class="adminData">
+            @Html.HiddenFor(model => model.DomainEndings)
+            @Html.ValidationMessageFor(model => model.DomainEndings)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Published)
         </td>
         <td class="adminData">
@@ -123,8 +150,8 @@
         $(document).ready(function () {
 
             $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-        
             toggleStoreMapping();
+
         });
 
 

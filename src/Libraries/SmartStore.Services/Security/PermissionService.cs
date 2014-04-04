@@ -29,7 +29,8 @@ namespace SmartStore.Services.Security
 
         #region Fields
 
-        private readonly IRepository<PermissionRecord> _permissionPecordRepository;
+        private readonly IRepository<PermissionRecord> _permissionRecordRepository;
+		private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly ICustomerService _customerService;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
@@ -41,15 +42,18 @@ namespace SmartStore.Services.Security
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="permissionPecordRepository">Permission repository</param>
+        /// <param name="permissionRecordRepository">Permission repository</param>
         /// <param name="customerService">Customer service</param>
         /// <param name="workContext">Work context</param>
         /// <param name="cacheManager">Cache manager</param>
-        public PermissionService(IRepository<PermissionRecord> permissionPecordRepository,
+        public PermissionService(
+			IRepository<PermissionRecord> permissionRecordRepository,
+			IRepository<CustomerRole> customerRoleRepository,
             ICustomerService customerService,
             IWorkContext workContext, ICacheManager cacheManager)
         {
-            this._permissionPecordRepository = permissionPecordRepository;
+            this._permissionRecordRepository = permissionRecordRepository;
+			this._customerRoleRepository = customerRoleRepository;
             this._customerService = customerService;
             this._workContext = workContext;
             this._cacheManager = cacheManager;
@@ -94,7 +98,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Delete(permission);
+            _permissionRecordRepository.Delete(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -109,7 +113,7 @@ namespace SmartStore.Services.Security
             if (permissionId == 0)
                 return null;
 
-            return _permissionPecordRepository.GetById(permissionId);
+            return _permissionRecordRepository.GetById(permissionId);
         }
 
         /// <summary>
@@ -122,7 +126,7 @@ namespace SmartStore.Services.Security
             if (String.IsNullOrWhiteSpace(systemName))
                 return null;
 
-            var query = from pr in _permissionPecordRepository.Table
+            var query = from pr in _permissionRecordRepository.Table
                         where  pr.SystemName == systemName
                         orderby pr.Id
                         select pr;
@@ -137,7 +141,7 @@ namespace SmartStore.Services.Security
         /// <returns>Permissions</returns>
         public virtual IList<PermissionRecord> GetAllPermissionRecords()
         {
-            var query = from pr in _permissionPecordRepository.Table
+            var query = from pr in _permissionRecordRepository.Table
                         orderby pr.Name
                         select pr;
             var permissions = query.ToList();
@@ -153,7 +157,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Insert(permission);
+            _permissionRecordRepository.Insert(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -167,7 +171,7 @@ namespace SmartStore.Services.Security
             if (permission == null)
                 throw new ArgumentNullException("permission");
 
-            _permissionPecordRepository.Update(permission);
+            _permissionRecordRepository.Update(permission);
 
             _cacheManager.RemoveByPattern(PERMISSIONS_PATTERN_KEY);
         }
@@ -178,56 +182,71 @@ namespace SmartStore.Services.Security
         /// <param name="permissionProvider">Permission provider</param>
         public virtual void InstallPermissions(IPermissionProvider permissionProvider)
         {
-            //install new permissions
-            var permissions = permissionProvider.GetPermissions();
-            foreach (var permission in permissions)
-            {
-                var permission1 = GetPermissionRecordBySystemName(permission.SystemName);
-                if (permission1 == null)
-                {
-                    //new permission (install it)
-                    permission1 = new PermissionRecord()
-                    {
-                        Name = permission.Name,
-                        SystemName = permission.SystemName,
-                        Category = permission.Category,
-                    };
+			using (var scope = new DbContextScope(_permissionRecordRepository.Context, autoDetectChanges: false))
+			{
+				try
+				{
+					_permissionRecordRepository.AutoCommitEnabled = false;
+					_customerRoleRepository.AutoCommitEnabled = false;
+
+					//install new permissions
+					var permissions = permissionProvider.GetPermissions();
+					foreach (var permission in permissions)
+					{
+						var permission1 = GetPermissionRecordBySystemName(permission.SystemName);
+						if (permission1 == null)
+						{
+							//new permission (install it)
+							permission1 = new PermissionRecord()
+							{
+								Name = permission.Name,
+								SystemName = permission.SystemName,
+								Category = permission.Category,
+							};
+
+							// default customer role mappings
+							var defaultPermissions = permissionProvider.GetDefaultPermissions();
+							foreach (var defaultPermission in defaultPermissions)
+							{
+								var customerRole = _customerService.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
+								if (customerRole == null)
+								{
+									//new role (save it)
+									customerRole = new CustomerRole()
+									{
+										Name = defaultPermission.CustomerRoleSystemName,
+										Active = true,
+										SystemName = defaultPermission.CustomerRoleSystemName
+									};
+									_customerService.InsertCustomerRole(customerRole);
+								}
 
 
-                    //default customer role mappings
-                    var defaultPermissions = permissionProvider.GetDefaultPermissions();
-                    foreach (var defaultPermission in defaultPermissions)
-                    {
-                        var customerRole = _customerService.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
-                        if (customerRole == null)
-                        {
-                            //new role (save it)
-                            customerRole = new CustomerRole()
-                            {
-                                Name = defaultPermission.CustomerRoleSystemName,
-                                Active = true,
-                                SystemName = defaultPermission.CustomerRoleSystemName
-                            };
-                            _customerService.InsertCustomerRole(customerRole);
-                        }
+								var defaultMappingProvided = (from p in defaultPermission.PermissionRecords
+															  where p.SystemName == permission1.SystemName
+															  select p).Any();
+								var mappingExists = (from p in customerRole.PermissionRecords
+													 where p.SystemName == permission1.SystemName
+													 select p).Any();
+								if (defaultMappingProvided && !mappingExists)
+								{
+									permission1.CustomerRoles.Add(customerRole);
+								}
+							}
 
+							//save new permission
+							InsertPermissionRecord(permission1);
+						}
+					}
 
-                        var defaultMappingProvided = (from p in defaultPermission.PermissionRecords
-                                                      where p.SystemName == permission1.SystemName
-                                                      select p).Any();
-                        var mappingExists = (from p in customerRole.PermissionRecords
-                                             where p.SystemName == permission1.SystemName
-                                             select p).Any();
-                        if (defaultMappingProvided && !mappingExists)
-                        {
-                            permission1.CustomerRoles.Add(customerRole);
-                        }
-                    }
-
-                    //save new permission
-                    InsertPermissionRecord(permission1);
-                }
-            }
+					scope.Commit();
+				}
+				finally
+				{
+					_permissionRecordRepository.AutoCommitEnabled = true;
+					_customerRoleRepository.AutoCommitEnabled = true;
+				}
+			}
         }
 
         /// <summary>

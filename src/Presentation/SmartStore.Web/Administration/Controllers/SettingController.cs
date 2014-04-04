@@ -25,7 +25,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
@@ -197,7 +197,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Blog");
         }
 
@@ -239,7 +239,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Forum");
         }
 
@@ -279,7 +279,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("News");
         }
 
@@ -389,7 +389,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Shipping");
         }
 
@@ -532,7 +532,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Tax");
         }
 
@@ -580,7 +580,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Catalog", new { selectedTab = selectedTab });
         }
 
@@ -635,14 +635,14 @@ namespace SmartStore.Admin.Controllers
 				//activity log
 				_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-				SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
 			}
 			else
 			{
 				//If we got this far, something failed, redisplay form
 				foreach (var modelState in ModelState.Values)
 					foreach (var error in modelState.Errors)
-						ErrorNotification(error.ErrorMessage);
+						NotifyError(error.ErrorMessage);
 			}
 			return RedirectToAction("RewardPoints");
         }
@@ -742,21 +742,21 @@ namespace SmartStore.Admin.Controllers
                     }
                     catch (Exception exc)
                     {
-                        ErrorNotification(exc.Message);
+						NotifyError(exc.Message);
                     }
                 }
 
                 //activity log
                 _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             }
             else
             {
 				//If we got this far, something failed, redisplay form
                 foreach (var modelState in ModelState.Values)
                     foreach (var error in modelState.Errors)
-                        ErrorNotification(error.ErrorMessage);
+						NotifyError(error.ErrorMessage);
             }
             return RedirectToAction("Order", new { selectedTab = selectedTab });
         }
@@ -798,7 +798,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("ShoppingCart");
         }
 
@@ -859,7 +859,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Media");
         }
         [HttpPost, ActionName("Media")]
@@ -874,7 +874,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Media");
         }
 
@@ -941,7 +941,7 @@ namespace SmartStore.Admin.Controllers
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("CustomerUser", new { selectedTab = selectedTab });
         }
 
@@ -1111,6 +1111,7 @@ namespace SmartStore.Admin.Controllers
 			model.SocialSettings.GooglePlusLink = socialSettings.GooglePlusLink;
 			model.SocialSettings.TwitterLink = socialSettings.TwitterLink;
 			model.SocialSettings.PinterestLink = socialSettings.PinterestLink;
+            model.SocialSettings.YoutubeLink = socialSettings.YoutubeLink;
 
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _settingService, false);
 
@@ -1189,7 +1190,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (captchaSettings.Enabled && (String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPublicKey) || String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPrivateKey)))
 			{
-				ErrorNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
+				NotifyError(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
 			}
 
 			//PDF settings
@@ -1279,6 +1280,7 @@ namespace SmartStore.Admin.Controllers
 			socialSettings.GooglePlusLink = model.SocialSettings.GooglePlusLink;
 			socialSettings.TwitterLink = model.SocialSettings.TwitterLink;
 			socialSettings.PinterestLink = model.SocialSettings.PinterestLink;
+            socialSettings.YoutubeLink = model.SocialSettings.YoutubeLink;
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _settingService);
 
@@ -1290,7 +1292,7 @@ namespace SmartStore.Admin.Controllers
 			//activity log
 			_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("GeneralCommon", new { selectedTab = selectedTab });
         }
         [HttpPost, ActionName("GeneralCommon")]
@@ -1392,13 +1394,13 @@ namespace SmartStore.Admin.Controllers
 
                 securitySettings.EncryptionKey = newEncryptionPrivateKey;
                 _settingService.SaveSetting(securitySettings);
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
             }
-            return RedirectToAction("GeneralCommon", new { selectedTab = "security" });
+			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-3" });
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("togglefulltext")]
@@ -1420,25 +1422,25 @@ namespace SmartStore.Admin.Controllers
                     _fulltextService.DisableFullText();
 
                     commonSettings.UseFullTextSearch = false;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
+                    NotifySuccess(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
                 }
                 else
                 {
                     _fulltextService.EnableFullText();
 
                     commonSettings.UseFullTextSearch = true;
-                    _settingService.SaveSetting(commonSettings);
+                    _settingService.SaveSetting(commonSettings, storeScope);
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
+                    NotifySuccess(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
                 }
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
             }
-            return RedirectToAction("GeneralCommon", new { selectedTab = "fulltext" });
+			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-9" });
         }
 
 
@@ -1457,7 +1459,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
-
+            
             var settings = _settingService
                 .GetAllSettings()
 				.Select(x =>
@@ -1517,7 +1519,7 @@ namespace SmartStore.Admin.Controllers
 			if (setting == null)
 				return Content(_localizationService.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 
 			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) ||
 				setting.StoreId != storeId)
@@ -1551,7 +1553,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
-			var storeId = Int32.Parse(model.Store); //use Store property (not StoreId) because appropriate property is stored in it
+			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
 			_settingService.SetSetting(model.Name, model.Value, storeId);
 
             //activity log

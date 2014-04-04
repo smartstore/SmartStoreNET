@@ -23,7 +23,7 @@ namespace SmartStore.Data.Tests.Orders
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02),
                 Customer = GetTestCustomer(),
-                ProductVariant = GetTestProductVariant()
+				Product = GetTestProduct()
             };
 
             var fromDb = SaveAndLoadEntity(sci);
@@ -37,8 +37,7 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.UpdatedOnUtc.ShouldEqual(new DateTime(2010, 01, 02));
 
             fromDb.Customer.ShouldNotBeNull();
-
-            fromDb.ProductVariant.ShouldNotBeNull();
+			fromDb.Product.ShouldNotBeNull();
         }
 
         protected Customer GetTestCustomer()
@@ -55,22 +54,14 @@ namespace SmartStore.Data.Tests.Orders
             };
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    Published = true,
-                    Deleted = false,
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
     }
 }

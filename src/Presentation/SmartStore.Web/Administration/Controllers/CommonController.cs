@@ -121,7 +121,7 @@ namespace SmartStore.Admin.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-            var cacheManager = EngineContext.Current.Resolve<ICacheManager>("sm_cache_static");
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
 
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
             string cacheKey = string.Format("smartstore.pres.adminmenu.navigation-{0}-{1}", _workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
@@ -132,8 +132,6 @@ namespace SmartStore.Admin.Controllers
 					return PrepareAdminMenu();
 				}
             });
-
-            //var rootNode = PrepareAdminMenu();
 
             return PartialView(rootNode);
         }
@@ -604,7 +602,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception exc)
                 {
-                    ErrorNotification(exc, false);
+                    NotifyError(exc, false);
                 }
             }
 
@@ -625,11 +623,11 @@ namespace SmartStore.Admin.Controllers
                 {
 					dbContext.ExecuteSqlThroughSmo(model.SqlQuery);
 
-                    SuccessNotification("The sql command was executed successfully.");
+                    NotifySuccess("The sql command was executed successfully.");
                 }
                 catch (Exception ex)
                 {
-                    ErrorNotification("Error executing sql command: {0}".FormatCurrentUI(ex.Message));
+					NotifyError("Error executing sql command: {0}".FormatCurrentUI(ex.Message));
                 }
             }
 
@@ -658,23 +656,32 @@ namespace SmartStore.Admin.Controllers
 			return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
-        public ActionResult ClearCache()
+		public ActionResult ClearCache(string previousUrl)
         {
-            var cacheManager = new DefaultCacheManager(new StaticCache());
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
             cacheManager.Clear();
+
+			this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+
+			if (previousUrl.HasValue())
+				return Redirect(previousUrl);
 
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult RestartApplication()
+		public ActionResult RestartApplication(string previousUrl)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-            //restart application
             _webHelper.RestartAppDomain();
+
+			if (previousUrl.HasValue())
+				return Redirect(previousUrl);
+
             return RedirectToAction("Index", "Home");
         }
+
         #endregion
 
         #region Search engine friendly names

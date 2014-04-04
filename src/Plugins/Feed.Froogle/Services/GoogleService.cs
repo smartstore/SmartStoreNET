@@ -2,15 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Xml;
 using System.Globalization;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Seo;
 using SmartStore.Plugin.Feed.Froogle.Domain;
 using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Web.Framework.Plugins;
@@ -21,10 +18,11 @@ using SmartStore.Core.Domain.Stores;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using SmartStore.Web.Framework;
+using SmartStore.Services.Directory;
+using SmartStore.Core;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
-	/// <remarks>codehint: sm-edit (refactored)</remarks>
     public partial class GoogleService : IGoogleService
     {
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
@@ -35,6 +33,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IStoreService _storeService;
 		private readonly ICategoryService _categoryService;
+		private readonly IMeasureService _measureService;
+		private readonly MeasureSettings _measureSettings;
+		private readonly IPriceCalculationService _priceCalculationService;
+		private readonly IWorkContext _workContext;
 
 		public GoogleService(
 			IRepository<GoogleProductRecord> gpRepository,
@@ -42,16 +44,25 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			IManufacturerService manufacturerService,
 			IStoreService storeService,
 			ICategoryService categoryService,
-			FroogleSettings settings)
+			FroogleSettings settings,
+			IMeasureService measureService,
+			MeasureSettings measureSettings,
+			IPriceCalculationService priceCalculationService,
+			IWorkContext workContext)
         {
-            this._gpRepository = gpRepository;
-			this._productService = productService;
-			this._manufacturerService = manufacturerService;
-			this._storeService = storeService;
-			this._categoryService = categoryService;
-			this.Settings = settings;
+            _gpRepository = gpRepository;
+			_productService = productService;
+			_manufacturerService = manufacturerService;
+			_storeService = storeService;
+			_categoryService = categoryService;
+			Settings = settings;
+			_measureService = measureService;
+			_measureSettings = measureSettings;
+			_priceCalculationService = priceCalculationService;
+			_workContext = workContext;
 
-			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () => {
+			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
+			{
 				return Settings as PromotionFeedSettings;
 			});
         }
@@ -59,13 +70,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		public FroogleSettings Settings { get; set; }
 		public PluginHelperFeed Helper { get { return _helper; } }
 
-        private GoogleProductRecord GetByProductVariantId(int productVariantId)
+        private GoogleProductRecord GetByProductId(int productId)
         {
-            if (productVariantId == 0)
+            if (productId == 0)
                 return null;
 
             var query = from gp in _gpRepository.Table
-                        where gp.ProductVariantId == productVariantId
+                        where gp.ProductId == productId
                         orderby gp.Id
                         select gp;
             var record = query.FirstOrDefault();
@@ -85,24 +96,32 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
             _gpRepository.Update(googleProductRecord);
         }
-		private bool SpecialPrice(ProductVariant variant, out string specialPriceDate) {
+		private bool SpecialPrice(Product product, out string specialPriceDate)
+		{
 			specialPriceDate = "";
 
-			try {
-				if (Settings.SpecialPrice && variant.SpecialPrice.HasValue && variant.SpecialPriceStartDateTimeUtc.HasValue && variant.SpecialPriceEndDateTimeUtc.HasValue) {
-					string dateFormat = "yyyy-MM-ddTHH:mmZ";
-					string startDate = variant.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat);
-					string endDate = variant.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat);
+			try
+			{
+				if (Settings.SpecialPrice && product.SpecialPrice.HasValue && product.SpecialPriceStartDateTimeUtc.HasValue && product.SpecialPriceEndDateTimeUtc.HasValue)
+				{
+					if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+					{
+						string dateFormat = "yyyy-MM-ddTHH:mmZ";
+						string startDate = product.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat);
+						string endDate = product.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat);
 
-					specialPriceDate = "{0}/{1}".FormatWith(startDate, endDate);
+						specialPriceDate = "{0}/{1}".FormatWith(startDate, endDate);
+					}
 				}
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return specialPriceDate.HasValue();
 		}
-		private string ProductCategory(ProductVariant variant, GoogleProductRecord googleProduct) {
+		private string ProductCategory(GoogleProductRecord googleProduct)
+		{
 			string productCategory = "";
 
 			if (googleProduct != null)
@@ -113,7 +132,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return productCategory;
 		}
-		private string Condition() {
+		private string Condition()
+		{
 			if (Settings.Condition.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
 				return "";
 
@@ -122,13 +142,17 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return Settings.Condition;
 		}
-		private string Availability(ProductVariant variant) {
+		private string Availability(Product product)
+		{
 			if (Settings.Availability.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
 				return "";
 
-			if (Settings.Availability.IsNullOrEmpty()) {
-				if (variant.ManageInventoryMethod == ManageInventoryMethod.ManageStock && variant.StockQuantity <= 0) {
-					switch (variant.BackorderMode) {
+			if (Settings.Availability.IsNullOrEmpty())
+			{
+				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock && product.StockQuantity <= 0)
+				{
+					switch (product.BackorderMode)
+					{
 						case BackorderMode.NoBackorders:
 							return "out of stock";
 						case BackorderMode.AllowQtyBelow0:
@@ -138,10 +162,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				}
 				return "in stock";
 			}
-
 			return Settings.Availability;
 		}
-		private string Gender(GoogleProductRecord googleProduct) {
+		private string Gender(GoogleProductRecord googleProduct)
+		{
 			if (Settings.Gender.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
 				return "";
 
@@ -150,7 +174,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return Settings.Gender;
 		}
-		private string AgeGroup(GoogleProductRecord googleProduct) {
+		private string AgeGroup(GoogleProductRecord googleProduct)
+		{
 			if (Settings.AgeGroup.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
 				return "";
 
@@ -159,57 +184,140 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return Settings.AgeGroup;
 		}
-		private string Color(GoogleProductRecord googleProduct) {
+		private string Color(GoogleProductRecord googleProduct)
+		{
 			if (googleProduct != null && googleProduct.Color.HasValue())
 				return googleProduct.Color;
 
 			return Settings.Color;
 		}
-		private string Size(GoogleProductRecord googleProduct) {
+		private string Size(GoogleProductRecord googleProduct)
+		{
 			if (googleProduct != null && googleProduct.Size.HasValue())
 				return googleProduct.Size;
 
 			return Settings.Size;
 		}
-		private string Material(GoogleProductRecord googleProduct) {
+		private string Material(GoogleProductRecord googleProduct)
+		{
 			if (googleProduct != null && googleProduct.Material.HasValue())
 				return googleProduct.Material;
 
 			return Settings.Material;
 		}
-		private string Pattern(GoogleProductRecord googleProduct) {
+		private string Pattern(GoogleProductRecord googleProduct)
+		{
 			if (googleProduct != null && googleProduct.Pattern.HasValue())
 				return googleProduct.Pattern;
 
 			return Settings.Pattern;
 		}
-		private string ItemGroupId(GoogleProductRecord googleProduct) {
+		private string ItemGroupId(GoogleProductRecord googleProduct)
+		{
 			if (googleProduct != null && googleProduct.ItemGroupId.HasValue())
 				return googleProduct.ItemGroupId;
 
 			return "";
 		}
-		private string WriteItem(XmlWriter writer, Store store, Product product, ProductVariant variant, ProductManufacturer manu, Currency currency) {
-			var mainImageUrl = Helper.MainProductImageUrl(store, product, variant);
-			var googleProduct = GetByProductVariantId(variant.Id);
-			var category = ProductCategory(variant, googleProduct);
+		private bool BasePriceSupported(int baseAmount, string unit)
+		{
+			if (baseAmount == 1 || baseAmount == 10 || baseAmount == 100)
+				return true;
+
+			if (baseAmount == 75 && unit == "cl")
+				return true;
+
+			if ((baseAmount == 50 || baseAmount == 1000) && unit == "kg")
+				return true;
+
+			return false;
+		}
+		private string BasePriceUnits(string value)
+		{
+			const string defaultValue = "kg";
+
+			if (value.IsNullOrEmpty())
+				return defaultValue;
+
+			// TODO: Product.BasePriceMeasureUnit should be localized
+			switch (value.ToLower())
+			{
+				case "mg":
+				case "milligramm":
+				case "milligram":
+					return "mg";
+				case "g":
+				case "gramm":
+				case "gram":
+					return "g";
+				case "kg":
+				case "kilogramm":
+				case "kilogram":
+					return "kg";
+
+				case "ml":
+				case "milliliter":
+				case "millilitre":
+					return "ml";
+				case "cl":
+				case "zentiliter":
+				case "centilitre":
+					return "cl";
+				case "l":
+				case "liter":
+				case "litre":
+					return "l";
+				case "cbm":
+				case "kubikmeter":
+				case "cubic metre":
+					return "cbm";
+
+				case "cm":
+				case "zentimeter":
+				case "centimetre":
+					return "cm";
+				case "m":
+				case "meter":
+					return "m";
+
+				case "qm²":
+				case "quadratmeter":
+				case "square metre":
+					return "sqm";
+
+				default:
+					return defaultValue;
+			}
+		}
+		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
+		{
+			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
+			var mainImageUrl = Helper.MainProductImageUrl(store, product);
+			var googleProduct = GetByProductId(product.Id);
+			var category = ProductCategory(googleProduct);
 
 			if (category.IsNullOrEmpty())
 				return Helper.Resource("MissingDefaultCategory");
 
-			writer.WriteElementString("g", "id", _googleNamespace, variant.Id.ToString());
+			var brand = (manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand);
+			var mpn = Helper.ManufacturerPartNumber(product);
+
+			bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
+
+			writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
 
 			writer.WriteStartElement("title");
-			writer.WriteCData(variant.FullProductName.Truncate(70, ""));
+			writer.WriteCData(product.Name.Truncate(70));
 			writer.WriteEndElement();
 
-			var description = Helper.BuildProductDescription(product, variant, manu, d =>
+			var description = Helper.BuildProductDescription(product, manu, d =>
 			{
-				if (variant.Description.IsNullOrEmpty() && product.FullDescription.IsNullOrEmpty() && product.ShortDescription.IsNullOrEmpty())
+				if (product.FullDescription.IsNullOrEmpty() && product.ShortDescription.IsNullOrEmpty())
 				{
-					Random rnd = new Random();
+					var rnd = new Random();
 
-					switch (rnd.Next(1, 5)) {
+					switch (rnd.Next(1, 5))
+					{
 						case 1: return d.Grow(Settings.AppendDescriptionText1, " ");
 						case 2: return d.Grow(Settings.AppendDescriptionText2, " ");
 						case 3: return d.Grow(Settings.AppendDescriptionText3, " ");
@@ -245,21 +353,30 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			}
 
 			writer.WriteElementString("g", "condition", _googleNamespace, Condition());
-			writer.WriteElementString("g", "availability", _googleNamespace, Availability(variant));
+			writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
 
-			decimal price = Helper.ConvertFromStoreCurrency(variant.Price, currency);
-			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
-
+			decimal priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
+			decimal price = Helper.ConvertFromStoreCurrency(priceBase, currency);
 			string specialPriceDate;
-			if (SpecialPrice(variant, out specialPriceDate))
+
+			if (SpecialPrice(product, out specialPriceDate))
 			{
-				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(variant.SpecialPrice.Value) + " " + currency.CurrencyCode);
+				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
 				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+
+				// get regular price
+				decimal specialPrice = product.SpecialPrice.Value;
+				product.SpecialPrice = null;
+				priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
+				product.SpecialPrice = specialPrice;
+				price = Helper.ConvertFromStoreCurrency(priceBase, currency);
 			}
 
-			writer.WriteCData("gtin", variant.Gtin, "g", _googleNamespace);
-			writer.WriteCData("brand", manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand, "g", _googleNamespace);
-			writer.WriteCData("mpn", Helper.ManufacturerPartNumber(variant), "g", _googleNamespace);
+			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
+
+			writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
+			writer.WriteCData("brand", brand, "g", _googleNamespace);
+			writer.WriteCData("mpn", mpn, "g", _googleNamespace);
 
 			writer.WriteCData("gender", Gender(googleProduct), "g", _googleNamespace);
 			writer.WriteCData("age_group", AgeGroup(googleProduct), "g", _googleNamespace);
@@ -270,13 +387,51 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteCData("item_group_id", ItemGroupId(googleProduct), "g", _googleNamespace);
 
 			writer.WriteElementString("g", "online_only", _googleNamespace, Settings.OnlineOnly ? "y" : "n");
-			writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.Now.AddDays(28).ToString("yyyy-MM-dd"));
+			writer.WriteElementString("g", "identifier_exists", _googleNamespace, identifierExists ? "TRUE" : "FALSE");
+
+			if (Settings.ExpirationDays > 0)
+			{
+				writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(Settings.ExpirationDays).ToString("yyyy-MM-dd"));
+			}
+
+			if (Settings.ExportShipping)
+			{
+				string weightInfo, weight = Helper.DecimalUsFormat(product.Weight);
+				string systemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
+
+				if (systemKey.IsCaseInsensitiveEqual("gram"))
+					weightInfo = weight + " g";
+				else if (systemKey.IsCaseInsensitiveEqual("lb"))
+					weightInfo = weight + " lb";
+				else if (systemKey.IsCaseInsensitiveEqual("ounce"))
+					weightInfo = weight + " oz";
+				else
+					weightInfo = weight + " kg";
+
+				writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
+			}
+
+			if (Settings.ExportBasePrice && product.BasePriceHasValue)
+			{
+				string measureUnit = BasePriceUnits(product.BasePriceMeasureUnit);
+
+				if (BasePriceSupported(product.BasePriceBaseAmount ?? 0, measureUnit))
+				{
+					string basePriceMeasure = "{0} {1}".FormatWith(Helper.DecimalUsFormat(product.BasePriceAmount ?? decimal.Zero), measureUnit);
+					string basePriceBaseMeasure = "{0} {1}".FormatWith(product.BasePriceBaseAmount, measureUnit);
+
+					writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
+					writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
+				}
+			}
 
 			return null;
 		}
 		
-		public virtual string[] GetTaxonomyList() {
-			try {
+		public virtual string[] GetTaxonomyList()
+		{
+			try
+			{
 				string fileDir = Path.Combine(Helper.Plugin.OriginalAssemblyFile.Directory.FullName, "Files");
 				string fileName = "taxonomy.{0}.txt".FormatWith(Helper.Language.LanguageCulture ?? "de-DE");
 				string path = Path.Combine(fileDir, fileName);
@@ -288,25 +443,30 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 				return lines;
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return new string[] { };
 		}
-		public virtual void UpdateInsert(int pk, string name, string value) {
+		public virtual void UpdateInsert(int pk, string name, string value)
+		{
 			if (pk == 0 || name.IsNullOrEmpty())
 				return;
 
-			var product = GetByProductVariantId(pk);
+			var product = GetByProductId(pk);
 			bool insert = (product == null);
 
-			if (insert) {
-				product = new GoogleProductRecord {
-					ProductVariantId = pk
+			if (insert)
+			{
+				product = new GoogleProductRecord()
+				{
+					ProductId = pk
 				};
 			}
 
-			switch(name) {
+			switch(name)
+			{
 				case "GoogleCategory":
 					product.Taxonomy = value;
 					break;
@@ -324,25 +484,39 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 					break;
 			}
 
-			if (insert) {
+			if (insert)
+			{
 				InsertGoogleProductRecord(product);
 			}
-			else {
+			else
+			{
 				UpdateGoogleProductRecord(product);
 			}
 		}
-		public virtual GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null) {
-			var productVariants = _productService.SearchProductVariants(0, 0, searchProductName, false, command.Page - 1, command.PageSize, true);
+		public virtual GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null)
+		{
+			var searchContext = new ProductSearchContext()
+			{
+				Keywords = searchProductName,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				ShowHidden = true
+			};
 
-			var data = productVariants.Select(x => {
-				var gModel = new GoogleProductModel() {
-					ProductVariantId = x.Id,
-					FullProductVariantName = x.FullProductName
+			var products = _productService.SearchProducts(searchContext);
+
+			var data = products.Select(x =>
+			{
+				var gModel = new GoogleProductModel()
+				{
+					ProductId = x.Id,
+					ProductName = x.Name
 				};
 
-				var googleProduct = GetByProductVariantId(x.Id);
+				var googleProduct = GetByProductId(x.Id);
 
-				if (googleProduct != null) {
+				if (googleProduct != null)
+				{
 					gModel.GoogleCategory = googleProduct.Taxonomy;
 					gModel.Gender = googleProduct.Gender;
 					gModel.AgeGroup = googleProduct.AgeGroup;
@@ -360,9 +534,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			})
 			.ToList();
 
-			var model = new GridModel<GoogleProductModel>() {
+			var model = new GridModel<GoogleProductModel>()
+			{
 				Data = data,
-				Total = productVariants.TotalCount
+				Total = products.TotalCount
 			};
 
 			return model;
@@ -387,27 +562,27 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				writer.WriteElementString("description", "Information about products");
 
 				var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-				var ctx = new ProductSearchContext()
+				var searchContext = new ProductSearchContext()
 				{
 					OrderBy = ProductSortingEnum.CreatedOn,
 					PageSize = int.MaxValue,
-					StoreId = store.Id
+					StoreId = store.Id,
+					VisibleIndividuallyOnly = true
 				};
 
-				var products = _productService.SearchProducts(ctx);
+				var products = _productService.SearchProducts(searchContext);
 
 				foreach (var product in products)
 				{
-					var manufacturer = _manufacturerService.GetProductManufacturersByProductId((product.Id)).FirstOrDefault();
-					var variants = _productService.GetProductVariantsByProductId(product.Id, false);
+					var qualifiedProducts = Helper.QualifiedProductsByProduct(_productService, product, store);
 
-					foreach (var variant in variants.Where(v => v.Published))
+					foreach (var qualifiedProduct in qualifiedProducts)
 					{
 						writer.WriteStartElement("item");
 
 						try
 						{
-							breakingError = WriteItem(writer, store, product, variant, manufacturer, currency);
+							breakingError = WriteItem(writer, store, qualifiedProduct, currency);
 						}
 						catch (Exception exc)
 						{
@@ -415,10 +590,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 						}
 
 						writer.WriteEndElement(); // item
-
-						if (breakingError.HasValue())
-							break;
 					}
+
 					if (breakingError.HasValue())
 						break;
 				}
@@ -458,5 +631,5 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				model.TaskEnabled = task.Enabled;
 			}
 		}
-    }	// class
+    }
 }

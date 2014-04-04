@@ -12,8 +12,12 @@
         @T("Admin.Promotions.newsLetterSubscriptions")
     </div>
     <div class="options">
-        <a href="@Url.Action("ExportCsv")" class="t-button">@T("Admin.Common.ExportToCsv")</a>
-        <a" href="#importcsv-window" data-toggle="modal" class="btn">@T("Admin.Common.ImportFromCsv")</a>
+        <a href="@Url.Action("ExportCsv")" class="btn">
+			<i class="icon-download-alt"></i>&nbsp;@T("Admin.Common.ExportToCsv")
+		</a>
+        <a href="#importcsv-window" data-toggle="modal" class="btn">
+			<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromCsv")
+		</a>
     </div>
 </div>
 <table width="100%">
@@ -26,7 +30,10 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
             <button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions"
                 class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
         </td>

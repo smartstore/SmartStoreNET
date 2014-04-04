@@ -143,7 +143,8 @@
                 @if (Model.Id > 0)
                 {
                     <button type="submit" name="changepassword" value="changepassword" class="btn">
-                        Change password</button>
+                        <i class="icon-pencil"></i>&nbsp;Change password
+					</button>
                 }
             </td>
         </tr>
@@ -514,11 +515,9 @@
     <div class="clear">
     </div>
     
-    <p>
-        <strong>
-            @T("Admin.Customers.Customers.RewardPoints.AddTitle")
-        </strong>
-    </p>
+    <div class="caption-container">
+        <h3 class="bordered">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</h3>
+    </div>
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -539,9 +538,13 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" align="left">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
                 <button type="button" name="addRewardPoints" id="addRewardPoints" class="btn">
-                    @T("Admin.Customers.Customers.RewardPoints.AddButton")</button>
+                    <i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.RewardPoints.AddButton")
+				</button>
             </td>
         </tr>
     </table>
@@ -604,11 +607,10 @@
     }))
     <div class="clear">
     </div>
-    <p>
-        <strong>
-            <button type="button" class="btn" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'"><i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")</button>
-        </strong>
-    </p>
+
+	<button type="button" class="btn btn-primary btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
+		<i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
+	</button>
 }
 @helper TabCurrentShoppingCart()
     {
@@ -619,14 +621,14 @@
                             .Name("currentshoppingcart-grid")
                             .Columns(columns =>
                             {
-                                columns.Bound(sci => sci.FullProductName)
-                                .Template(sci => Html.ActionLink(sci.FullProductName, "Edit", "ProductVariant", new { id = sci.ProductVariantId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= ProductVariantId #>\"><#= FullProductName #></a>");
-                                columns.Bound(sci => sci.Quantity).Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(100);
-                                columns.Bound(sci => sci.Total).Width(100);
-								columns.Bound(sci => sci.Store).Width(100);
-                                columns.Bound(sci => sci.UpdatedOn).Width(100);
+                                columns.Bound(sci => sci.ProductName)
+									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                                columns.Bound(sci => sci.Quantity).Centered().Width(100);
+                                columns.Bound(sci => sci.UnitPrice).Width(120);
+                                columns.Bound(sci => sci.Total).Width(120);
+								columns.Bound(sci => sci.Store).Width(300);
+                                columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
                             .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("GetCartList", "Customer", new
@@ -648,14 +650,14 @@
                             .Name("currentwishlist-grid")
                             .Columns(columns =>
                             {
-                                columns.Bound(sci => sci.FullProductName)
-                                .Template(sci => Html.ActionLink(sci.FullProductName, "Edit", "ProductVariant", new { id = sci.ProductVariantId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= ProductVariantId #>\"><#= FullProductName #></a>");
-                                columns.Bound(sci => sci.Quantity).Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(100);
-                                columns.Bound(sci => sci.Total).Width(100);
-								columns.Bound(sci => sci.Store).Width(100);
-                                columns.Bound(sci => sci.UpdatedOn).Width(100);
+                                columns.Bound(sci => sci.ProductName)
+									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                                columns.Bound(sci => sci.Quantity).Centered().Width(100);
+                                columns.Bound(sci => sci.UnitPrice).Width(120);
+                                columns.Bound(sci => sci.Total).Width(120);
+								columns.Bound(sci => sci.Store).Width(300);
+                                columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
                             .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("GetCartList", "Customer", new
@@ -673,12 +675,14 @@
     <table class="adminContent">
         <tr>
             <td>
-            @T("Admin.Customers.Customers.Impersonate.Description1")
-                <br />
-                @T("Admin.Customers.Customers.Impersonate.Description2")
-            <br /><br />
-            
-            <button type="submit" name="impersonate" value="impersonate" class="btn">@T("Admin.Customers.Customers.Impersonate.Button")</button>
+				@T("Admin.Customers.Customers.Impersonate.Description1")
+				<br />
+				@T("Admin.Customers.Customers.Impersonate.Description2")
+				<br /><br />
+
+				<button type="submit" name="impersonate" value="impersonate" class="btn">
+					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
+				</button>
             </td>
         </tr>
     </table>

@@ -25,10 +25,30 @@
                 <span class="label label-important label-uninstall-count hide">0</span>
                 <span class="label label-warning label-install-count hide">0</span>
             </button>
-            <a href="@Url.Action("ReloadList")" class="btn">
-                <i class="icon-refresh"></i>
-                @T("Admin.Configuration.Plugins.ReloadList")
-            </a>
+			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
+				<i class="icon-upload-alt"></i>
+				@T("Admin.Packaging.UploadPlugin")
+			</a>
+            <div class="btn-group" style="vertical-align: middle">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                    @T("Admin.Common.Edit")
+					<span class="icon-caret-down"></span>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li>
+                        <a href="@Url.Action("ReloadList")">
+                            <i class="icon-refresh"></i>
+							@T("Admin.Configuration.Plugins.ReloadList")
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources" >
+                            <i class="icon-refresh"></i>
+							@T("Admin.Configuration.Plugins.Resources.UpdateAll")
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     
@@ -36,11 +56,10 @@
         <button class="close" data-dismiss="alert">x</button>
         <p style="font-weight: bold">@T("Admin.Configuration.Plugins.Description")</p>
         <ol>
-            <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step1", "uploadpackage", "#uploadpackage-window"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step2"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step3"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step4"))</li>
         </ol>
     </div>
     
@@ -48,7 +67,7 @@
         <tr>
             <td>
     
-                @foreach (var g in Model.Groups)
+                @foreach (var g in Model.Groups.OrderBy(x => x.Key))
                 {
                     <div class="plugins-group">
                         <h3 class="group-title">
@@ -110,23 +129,18 @@
                         <div class="plugin-actions">
 
 							<i class="icon-edit"></i>
-							<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">
-								@T("Admin.Common.Edit")
-							</a>
+							<a class="plugin-edit" data-systemname='@plugin.SystemName' href="#">@T("Admin.Common.Edit")</a>
 
                             @if (plugin.ConfigurationUrl.HasValue())
                             {
                                 <i class="icon-cog"></i>
-                                <a class="plugin-configure" href="@plugin.ConfigurationUrl">
-                                    @T("Admin.Configuration.Plugins.Fields.Configure")
-                                </a>
+                                <a class="plugin-configure" href="@plugin.ConfigurationUrl">@T("Admin.Configuration.Plugins.Fields.Configure")</a>
                             }
                             @if (plugin.Installed)
                             {
                                 <i class="icon-refresh"></i>
                                 <a class="plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
-                                    @T("Admin.Configuration.Plugins.Resources.Update")
-                                </a>								
+                                    @T("Admin.Configuration.Plugins.Resources.Update")</a>
                             }
                         </div>
 
@@ -158,182 +172,182 @@
     }
     
     <script type="text/javascript">
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            function getPluginFriendlyName(dropdown, systemName) {
-                return dropdown.find('option[value="{0}"]'.format(systemName)).text();
-            }
+        function getPluginFriendlyName(dropdown, systemName) {
+            return dropdown.find('option[value="{0}"]'.format(systemName)).text();
+        }
 
-            var dropdownInstall = $('#pluginsToInstall'),
-                dropdownUninstall = $('#pluginsToUninstall'),
-                btnExecuteTasks = $('#btn-execute-tasks');
+        var dropdownInstall = $('#pluginsToInstall'),
+            dropdownUninstall = $('#pluginsToUninstall'),
+            btnExecuteTasks = $('#btn-execute-tasks');
 
-            // Execute filtering
-            $('#filter-query').on('keyup', function (e) {
-                var el = $(this);
+        // Execute filtering
+        $('#filter-query').on('keyup', function (e) {
+            var el = $(this);
 
-                // Retrieve the input field text and reset the count to zero
-                var filter = el.val(),
-                    rg = new RegExp(filter, "i");
+            // Retrieve the input field text and reset the count to zero
+            var filter = el.val(),
+                rg = new RegExp(filter, "i");
 
-                // Loop through the plugin items
-                $('.plugins-group').each(function () {
-                    var group = $(this),
-                        count = 0;
+            // Loop through the plugin items
+            $('.plugins-group').each(function () {
+                var group = $(this),
+                    count = 0;
 
-                    group.find('.plugin-item').each(function () {
-                        // If the list item does not contain the text phrase hide it
-                        if (filter.length > 1 && $(this).data('system-name').search(rg) < 0 && $(this).data('friendly-name').search(rg) < 0) {
-                            $(this).hide();
-                        }
-                        // Show the list item if the phrase matches and increase the count by 1
-                        else {
-                            $(this).show();
-                            count++;
-                        }
-                    });
-
-                    if (count > 0) {
-                        group.show();
+                group.find('.plugin-item').each(function () {
+                    // If the list item does not contain the text phrase hide it
+                    if (filter.length > 1 && $(this).data('system-name').search(rg) < 0 && $(this).data('friendly-name').search(rg) < 0) {
+                        $(this).hide();
                     }
+                        // Show the list item if the phrase matches and increase the count by 1
                     else {
-                        group.hide();
+                        $(this).show();
+                        count++;
                     }
                 });
-            });
 
-            // Create tooltip for  ExecuteTasks button which informs 
-            // about plugins to be installed and uninstalled
-            btnExecuteTasks.tooltip({
-                html: true,
-                placement: 'bottom',
-                title: function () {
-                    var text = '';
-
-                    if (dropdownUninstall.val()) {
-                        text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall"):</b></div>';
-                        _.each(dropdownUninstall.val(), function (val, i) {
-                            text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownUninstall, val));
-                        });
-                    }
-
-                    if (dropdownInstall.val()) {
-                        if (text) text += '<div style="height: 6px"></div>';
-                        text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install"):</b></div>';
-                        _.each(dropdownInstall.val(), function (val, i) {
-                            text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownInstall, val));
-                        });
-                    }
-
-                    return text;
-                }
-            });
-
-            // Add/Remove plugins to/from the list of (un)installable plugins
-            $('#plugins-form').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
-                e.preventDefault();
-
-                var el = $(this),
-                    systemName = el.parent().data('system-name'),
-                    dropdown = null;
-
-                if (el.hasClass("plugin-install")) {
-                    dropdown = dropdownInstall;
-                }
-                else if (el.hasClass("plugin-uninstall")) {
-                    dropdown = dropdownUninstall;
-                }
-
-                // set the corresponding dropdown's option to selected
-                var wasRemoved = false;
-                var option = dropdown.find('option[value="{0}"]'.format(systemName));
-                if (option.attr('selected')) {
-                    option.removeAttr('selected');
-                    wasRemoved = true;
+                if (count > 0) {
+                    group.show();
                 }
                 else {
-                    option.attr('selected', 1);
+                    group.hide();
                 }
-
-                var transferSrc = wasRemoved ? btnExecuteTasks : el;
-                var transferTarget = wasRemoved ? el : btnExecuteTasks;
-
-                transferSrc.stop(true, true).effect("transfer", { to: transferTarget, easing: "easeOutQuad", className: "transfer" }, 400, function () {
-                    // Toggle the ExecuteTasks button and it's labels
-                    var labelInstall = btnExecuteTasks.find('.label-install-count'),
-                        labelUninstall = btnExecuteTasks.find('.label-uninstall-count'),
-                        installCount = dropdownInstall.val() ? dropdownInstall.val().length : 0,
-                        uninstallCount = dropdownUninstall.val() ? dropdownUninstall.val().length : 0;
-
-                    labelInstall.toggleClass('hide', installCount == 0).text(installCount);
-                    labelUninstall.toggleClass('hide', uninstallCount == 0).text(uninstallCount);
-
-                    if (!installCount && !uninstallCount) {
-                        btnExecuteTasks.attr('disabled', 'disabled');
-                    }
-                    else {
-                        btnExecuteTasks.removeAttr('disabled');
-                    }
-                });
-
-            });
-
-            // Execute the install actions
-            btnExecuteTasks.on('click', function (e) {
-                var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").Text';
-                var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").Text';
-
-                if (!confirm(_.str.unescapeHTML(confirmText))) {
-                    e.preventDefault();
-                    return false;
-                }
-
-                $.throbber.show({
-                    message: progressText
-                });
-            });
-
-            // Update plugin resources
-            $('#plugins-form').on('click', 'a.plugin-update-resources', function (e) {
-                e.preventDefault();
-                var el = $(this);
-
-                var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
-                    progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
-
-        	    if (!confirm(_.str.unescapeHTML(confirmText).format(el.parent().data('plugin-name')))) {
-        	        return false;
-        	    }
-
-        	    e.preventDefault();
-        	    $.throbber.show({
-        	        message: progressText,
-        	        callback: function () {
-        	            console.log(el.attr("href"));
-        	            setLocation(el.attr("href"));
-        	        }
-        	    });
-
-        	});
-
-            $('#plugins-form').on('click', '.plugin-edit', function (e) {
-                OpenWindow(
-                    '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
-                        '@Url.Content("~/Admin/Plugin/EditPopup")',
-                        $(this).data("systemname")
-                    ),
-                    800,
-                    350,
-                    true
-                );
-                return false;
-            });
-
-            $('#btnRefresh').click(function () {
-                // reload page
-                setLocation(location.href);
-                return false;
             });
         });
+
+        // Create tooltip for  ExecuteTasks button which informs
+        // about plugins to be installed and uninstalled
+        btnExecuteTasks.tooltip({
+            html: true,
+            placement: 'bottom',
+            title: function () {
+                var text = '';
+
+                if (dropdownUninstall.val()) {
+                    text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall"):</b></div>';
+                    _.each(dropdownUninstall.val(), function (val, i) {
+                        text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownUninstall, val));
+                    });
+                }
+
+                if (dropdownInstall.val()) {
+                    if (text) text += '<div style="height: 6px"></div>';
+                    text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install"):</b></div>';
+                    _.each(dropdownInstall.val(), function (val, i) {
+                        text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownInstall, val));
+                    });
+                }
+
+                return text;
+            }
+        });
+
+        // Add/Remove plugins to/from the list of (un)installable plugins
+        $('#plugins-form').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
+            e.preventDefault();
+
+            var el = $(this),
+                systemName = el.parent().data('system-name'),
+                dropdown = null;
+
+            if (el.hasClass("plugin-install")) {
+                dropdown = dropdownInstall;
+            }
+            else if (el.hasClass("plugin-uninstall")) {
+                dropdown = dropdownUninstall;
+            }
+
+            // set the corresponding dropdown's option to selected
+            var wasRemoved = false;
+            var option = dropdown.find('option[value="{0}"]'.format(systemName));
+            if (option.attr('selected')) {
+                option.removeAttr('selected');
+                wasRemoved = true;
+            }
+            else {
+                option.attr('selected', 1);
+            }
+
+            var transferSrc = wasRemoved ? btnExecuteTasks : el;
+            var transferTarget = wasRemoved ? el : btnExecuteTasks;
+
+            transferSrc.stop(true, true).effect("transfer", { to: transferTarget, easing: "easeOutQuad", className: "transfer" }, 400, function () {
+                // Toggle the ExecuteTasks button and it's labels
+                var labelInstall = btnExecuteTasks.find('.label-install-count'),
+                    labelUninstall = btnExecuteTasks.find('.label-uninstall-count'),
+                    installCount = dropdownInstall.val() ? dropdownInstall.val().length : 0,
+                    uninstallCount = dropdownUninstall.val() ? dropdownUninstall.val().length : 0;
+
+                labelInstall.toggleClass('hide', installCount == 0).text(installCount);
+                labelUninstall.toggleClass('hide', uninstallCount == 0).text(uninstallCount);
+
+                if (!installCount && !uninstallCount) {
+                    btnExecuteTasks.attr('disabled', 'disabled');
+                }
+                else {
+                    btnExecuteTasks.removeAttr('disabled');
+                }
+            });
+
+        });
+
+        // Execute the install actions
+        btnExecuteTasks.on('click', function (e) {
+            var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").Text';
+            var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").Text';
+
+            if (!confirm(_.str.unescapeHTML(confirmText))) {
+                e.preventDefault();
+                return false;
+            }
+
+            $.throbber.show({
+                message: progressText
+            });
+        });
+
+        // Update (all) plugin resources
+        $('#plugins-form').on('click', 'a.plugin-update-resources,a.plugin-update-allresources', function (e) {
+            e.preventDefault();
+            var el = $(this);
+
+            var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
+                confirmAllText = '@T("Admin.Configuration.Plugins.Resources.UpdateAllConfirm").Text',
+                progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
+
+            if (!confirm(_.str.unescapeHTML(el.hasClass('plugin-update-allresources') ? confirmAllText : confirmText))) {
+                return false;
+            }
+
+            $.throbber.show({
+                message: progressText,
+                callback: function () {
+                    setLocation(el.attr("href"));
+                }
+            });
+        });
+
+        $('#plugins-form').on('click', '.plugin-edit', function (e) {
+            OpenWindow(
+                '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
+                    '@Url.Content("~/Admin/Plugin/EditPopup")',
+                    $(this).data("systemname")
+                ),
+                1000,
+                480,
+                true
+            );
+            return false;
+        });
+
+        $('#btnRefresh').click(function () {
+            // reload page
+            setLocation(location.href);
+            return false;
+        });
+    });
 </script>
 }
+
+@Html.Action("UploadPackage", "Packaging", new { isTheme = false })

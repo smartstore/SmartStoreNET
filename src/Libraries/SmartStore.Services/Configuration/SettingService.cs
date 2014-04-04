@@ -8,11 +8,12 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.Core.Plugins;
+using System.ComponentModel;
 
 namespace SmartStore.Services.Configuration
 {
@@ -41,8 +42,7 @@ namespace SmartStore.Services.Configuration
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="eventPublisher">Event publisher</param>
         /// <param name="settingRepository">Setting repository</param>
-        public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher,
-            IRepository<Setting> settingRepository)
+        public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher, IRepository<Setting> settingRepository)
         {
             this._cacheManager = cacheManager;
             this._eventPublisher = eventPublisher;
@@ -166,7 +166,6 @@ namespace SmartStore.Services.Configuration
 			return settings;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		private void SaveSettingsJson<T>(T settings)
 		{
 			Type t = typeof(T);
@@ -239,7 +238,7 @@ namespace SmartStore.Services.Configuration
 					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
 
 				if (setting != null)
-					return CommonHelper.To<T>(setting.Value);
+					return setting.Value.Convert<T>();
 			}
             return defaultValue;
         }
@@ -340,9 +339,9 @@ namespace SmartStore.Services.Configuration
                     continue;          
                 }
 
-                var converter = CommonHelper.GetCustomTypeConverter(prop.PropertyType);
+				var converter = TypeDescriptor.GetConverter(prop.PropertyType);
 
-                if (!converter.CanConvertFrom(typeof(string)))
+                if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
                 if (!converter.IsValid(setting))
@@ -370,7 +369,7 @@ namespace SmartStore.Services.Configuration
             Guard.ArgumentNotEmpty(() => key);
 
             key = key.Trim().ToLowerInvariant();
-			string valueStr = CommonHelper.GetCustomTypeConverter(typeof(T)).ConvertToInvariantString(value);
+			string valueStr = TypeDescriptor.GetConverter(typeof(T)).ConvertToInvariantString(value);
 
 			var allSettings = GetAllSettingsCached();
 			var settingForCaching = allSettings.ContainsKey(key) ?
@@ -404,7 +403,6 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store identifier</param>
 		public virtual void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
-			// codehint: sm-add
 			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
 			{
 				SaveSettingsJson<T>(settings);
@@ -420,7 +418,7 @@ namespace SmartStore.Services.Configuration
 				if (!prop.CanRead || !prop.CanWrite)
 					continue;
 
-				if (!CommonHelper.GetCustomTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+				if (!TypeDescriptor.GetConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
 					continue;
 
 				string key = typeof(T).Name + "." + prop.Name;
@@ -581,7 +579,7 @@ namespace SmartStore.Services.Configuration
 				try
 				{
 					string sqlDelete = "Delete From Setting Where Name Like '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
-					result = EngineContext.Current.Resolve<IDbContext>().ExecuteSqlCommand(sqlDelete);
+					result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
 
                     // cache
                     _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);

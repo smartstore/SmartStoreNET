@@ -30,7 +30,7 @@ namespace SmartStore.Web.Framework.Controllers
             if (filterContext.IsChildAction)
                 return;
 
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             var permissionService = EngineContext.Current.Resolve<IPermissionService>();

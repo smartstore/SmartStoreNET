@@ -1,0 +1,64 @@
+﻿@model ProductModel
+
+@using Telerik.Web.Mvc.UI;
+
+@if (Model.Id > 0)
+{
+    if (Model.NumberOfAvailableCategories > 0)
+    {
+        @(Html.Telerik().Grid<ProductModel.ProductCategoryModel>()
+            .Name("productcategories-grid")
+            .DataKeys(keys =>
+            {
+                keys.Add(x => x.Id);
+            })
+            .DataBinding(dataBinding =>
+            {
+                dataBinding.Ajax()
+                    .Select("ProductCategoryList", "Product", new { productId = Model.Id })
+                    .Insert("ProductCategoryInsert", "Product", new { productId = Model.Id })
+                    .Update("ProductCategoryUpdate", "Product")
+                    .Delete("ProductCategoryDelete", "Product");
+            })
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Category)
+                    .Width(500)
+                    .Centered();
+                columns.Bound(x => x.IsFeaturedProduct)
+                    .Width(50)
+                    .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
+                    .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+                    .Centered();
+                columns.Bound(x => x.DisplayOrder)
+                    .Width(50);
+                columns.Command(commands =>
+                {
+                    commands.Edit().Localize(T);
+                    commands.Delete().Localize(T);
+                })
+                .Width(180);
+            })
+            .ToolBar(commands => commands.Insert())
+            .ClientEvents(events => events.OnEdit("onProductCategoryEdit"))
+            .EnableCustomBinding(true))
+
+        <script type="text/javascript">
+            function onProductCategoryEdit(e) {
+                $(e.form).find('#Category').select2('val', e.dataItem['CategoryId']);
+            }
+        </script>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            @T("Admin.Catalog.Products.Categories.NoCategoriesAvailable")
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-danger">
+        @T("Admin.Catalog.Products.Categories.SaveBeforeEdit")
+    </div>
+}

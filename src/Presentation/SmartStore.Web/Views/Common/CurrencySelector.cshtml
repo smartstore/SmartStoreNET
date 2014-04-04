@@ -16,7 +16,7 @@
         {
             var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
             <li @Html.Attr("class", "selected", currency.Id == Model.CurrentCurrencyId)>
-                <a class="currency regional-label" href="@href" rel="tooltip" title="@currency.Name">
+                <a class="currency regional-label" href="@href" rel="tooltip nofollow" title="@currency.Name">
                     @currency.Symbol
                 </a>
             </li>

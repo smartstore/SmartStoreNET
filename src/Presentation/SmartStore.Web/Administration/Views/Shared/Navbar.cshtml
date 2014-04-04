@@ -3,9 +3,14 @@
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
+	var currentLanguage = this.WorkContext.WorkingLanguage;
     var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;
     var userName = usernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
 	var stores = EngineContext.Current.Resolve<IStoreService>().GetAllStores();
+	string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
+	string communityUrl = (currentLanguageCode == "de" ? 
+		"http://community.smartstore.com" :
+		"http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
 }
 
 <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
@@ -35,8 +40,18 @@
                         <i class="icon-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Account", "Edit", "Customer", new { id = currentCustomer.Id }, new { })</li>
-                        <li>@Html.ActionLink(T("Admin.Header.Logout").Text, "Logout", "Customer", new { area = "" }, new { @class = "disabled" })</li>
+                        <li>
+							<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id })">
+								<i class="icon-user"></i>
+								Account
+							</a>
+						</li>
+                        <li>
+							<a href="@Url.Action("Logout", "Customer", new { area = "" })" class="disabled">
+								<i class="icon-signout"></i>
+								@T("Admin.Header.Logout")
+							</a>
+						</li>
                     </ul>
                 </div>
             </text>
@@ -62,13 +77,13 @@
 						<li class="divider"></li>
 					}
                     <li>
-                        <a href="@Url.Action("ClearCache", "Common")">
+                        <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl })">
                             <i class="icon-remove"></i>
                             @T("Admin.Header.ClearCache")
                         </a>
                     </li>
                     <li>
-                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common")">
+                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl })">
                             <i class="icon-refresh"></i>
                             @T("Admin.Header.RestartApplication")
                         </a>
@@ -83,8 +98,24 @@
                     <i class="icon-question-sign"></i>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="#">@T("Admin.Help.Topics")</a></li>
-                    <li><a href="#">@T("Admin.Help.Forums")</a></li>
+                    @*<li>
+						<a href="https://smartstore.zendesk.com/forums/22347533-Tipps-und-Tricks" data-lang="@currentLanguageCode">
+							<i class="icon-file"></i>
+							@T("Admin.Help.Topics")
+						</a>
+					</li>*@
+                    <li>
+						<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
+							<i class="icon-comment"></i>
+							@T("Admin.Help.Forums")
+						</a>
+					</li>
+					<li>
+						<a href="@Url.Action("About", "Home")">
+							<i class="icon-info-sign"></i>
+							@T("Admin.Common.About") SmartStore.NET
+						</a>
+					</li>
                 </ul>
             </div>
            

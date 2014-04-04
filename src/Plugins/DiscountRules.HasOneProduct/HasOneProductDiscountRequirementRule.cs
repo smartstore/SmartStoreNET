@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 {
@@ -30,56 +31,56 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
             if (request.DiscountRequirement == null)
                 throw new SmartException("Discount requirement is not set");
 
-            if (String.IsNullOrWhiteSpace(request.DiscountRequirement.RestrictedProductVariantIds))
+            if (String.IsNullOrWhiteSpace(request.DiscountRequirement.RestrictedProductIds))
                 return true;
 
             if (request.Customer == null)
                 return false;
 
-            //we support three ways of specifying product variants:
-            //1. The comma-separated list of product variant identifiers (e.g. 77, 123, 156).
-            //2. The comma-separated list of product variant identifiers with quantities.
-            //      {Product variant ID}:{Quantity}. For example, 77:1, 123:2, 156:3
-            //3. The comma-separated list of product variant identifiers with quantity range.
-            //      {Product variant ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
-            var restrictedProductVariants = request.DiscountRequirement.RestrictedProductVariantIds
+            //we support three ways of specifying products:
+            //1. The comma-separated list of product identifiers (e.g. 77, 123, 156).
+            //2. The comma-separated list of product identifiers with quantities.
+            //      {Product ID}:{Quantity}. For example, 77:1, 123:2, 156:3
+            //3. The comma-separated list of product identifiers with quantity range.
+            //      {Product ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
+            var restrictedProducts = request.DiscountRequirement.RestrictedProductIds
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim())
                 .ToList();
-            if (restrictedProductVariants.Count == 0)
+            if (restrictedProducts.Count == 0)
                 return false;
 
             //cart
-			var cart = request.Customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart && x.StoreId == request.Store.Id);
+			var cart = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
             bool found = false;
-            foreach (var restrictedPv in restrictedProductVariants)
+            foreach (var restrictedProduct in restrictedProducts)
             {
-                if (String.IsNullOrWhiteSpace(restrictedPv))
+                if (String.IsNullOrWhiteSpace(restrictedProduct))
                     continue;
 
                 foreach (var sci in cart)
                 {
-                    if (restrictedPv.Contains(":"))
+                    if (restrictedProduct.Contains(":"))
                     {
-                        if (restrictedPv.Contains("-"))
+                        if (restrictedProduct.Contains("-"))
                         {
                             //the third way (the quantity rage specified)
-                            //{Product variant ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
-                            int restrictedPvId = 0;
-                            if (!int.TryParse(restrictedPv.Split(new[] { ':' })[0], out restrictedPvId))
+                            //{Product ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
+                            int restrictedProductId = 0;
+                            if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out restrictedProductId))
                                 //parsing error; exit;
                                 return false;
                             int quantityMin = 0;
-                            if (!int.TryParse(restrictedPv.Split(new[] { ':' })[1].Split(new[] { '-' })[0], out quantityMin))
+                            if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[0], out quantityMin))
                                 //parsing error; exit;
                                 return false;
                             int quantityMax = 0;
-                            if (!int.TryParse(restrictedPv.Split(new[] { ':' })[1].Split(new[] { '-' })[1], out quantityMax))
+                            if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[1], out quantityMax))
                                 //parsing error; exit;
                                 return false;
 
-                            if (sci.ProductVariantId == restrictedPvId && quantityMin <= sci.Quantity && sci.Quantity <= quantityMax)
+                            if (sci.Item.ProductId == restrictedProductId && quantityMin <= sci.Item.Quantity && sci.Item.Quantity <= quantityMax)
                             {
                                 found = true;
                                 break;
@@ -88,17 +89,17 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
                         else
                         {
                             //the second way (the quantity specified)
-                            //{Product variant ID}:{Quantity}. For example, 77:1, 123:2, 156:3
-                            int restrictedPvId = 0;
-                            if (!int.TryParse(restrictedPv.Split(new[] { ':' })[0], out restrictedPvId))
+                            //{Product ID}:{Quantity}. For example, 77:1, 123:2, 156:3
+                            int restrictedProductId = 0;
+                            if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out restrictedProductId))
                                 //parsing error; exit;
                                 return false;
                             int quantity = 0;
-                            if (!int.TryParse(restrictedPv.Split(new[] { ':' })[1], out quantity))
+                            if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1], out quantity))
                                 //parsing error; exit;
                                 return false;
 
-                            if (sci.ProductVariantId == restrictedPvId && sci.Quantity == quantity)
+                            if (sci.Item.ProductId == restrictedProductId && sci.Item.Quantity == quantity)
                             {
                                 found = true;
                                 break;
@@ -108,8 +109,8 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct
                     else
                     {
                         //the first way (the quantity is not specified)
-                        int restrictedPvId = int.Parse(restrictedPv);
-                        if (sci.ProductVariantId == restrictedPvId)
+                        int restrictedProductId = int.Parse(restrictedProduct);
+                        if (sci.Item.ProductId == restrictedProductId)
                         {
                             found = true;
                             break;

@@ -79,9 +79,10 @@
                     </div>
                 }
             </div>  
-            @Html.Widget("checkout_confirm_bottom")
         }
         
+        @Html.Widget("checkout_confirm_bottom")
+
         <div class="order-summary-body">
             @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
         </div>
@@ -111,7 +112,7 @@
                                 {
                                         <text>
                                 if (!$('#termsofservice').is(':checked')) {
-                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept")', "error");
+                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
                                     termOfServiceOk = false;
                                     $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                                 }
@@ -128,7 +129,7 @@
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.RouteUrl("CheckoutPaymentInfo")">
+                    <a class="btn pull-left" href="@Url.RouteUrl(Model.BypassPaymentMethodInfo ? "CheckoutPaymentMethod" : "CheckoutPaymentInfo")">
                         <i class="icon-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>

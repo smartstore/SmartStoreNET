@@ -19,26 +19,14 @@ namespace SmartStore.Data.Tests.Catalog
                 WeightAdjustment = 2.1M,
                 IsPreSelected = true,
                 DisplayOrder = 3,
+				Quantity = 2,
                 ProductVariantAttribute = new ProductVariantAttribute
                 {
                     TextPrompt = "TextPrompt 1",
                     IsRequired = true,
                     AttributeControlType = AttributeControlType.DropdownList,
                     DisplayOrder = 1,
-                    ProductVariant = new ProductVariant()
-                    {
-                        Name = "Product variant name 1",
-                        CreatedOnUtc = new DateTime(2010, 01, 03),
-                        UpdatedOnUtc = new DateTime(2010, 01, 04),
-                        Product = new Product()
-                        {
-                            Name = "Name 1",
-                            Published = true,
-                            Deleted = false,
-                            CreatedOnUtc = new DateTime(2010, 01, 01),
-                            UpdatedOnUtc = new DateTime(2010, 01, 02),
-                        }
-                    },
+					Product = GetTestProduct(),
                     ProductAttribute = new ProductAttribute()
                     {
                         Name = "Name 1",
@@ -55,9 +43,20 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.WeightAdjustment.ShouldEqual(2.1M);
             fromDb.IsPreSelected.ShouldEqual(true);
             fromDb.DisplayOrder.ShouldEqual(3);
+			fromDb.Quantity.ShouldEqual(2);
 
             fromDb.ProductVariantAttribute.ShouldNotBeNull();
             fromDb.ProductVariantAttribute.TextPrompt.ShouldEqual("TextPrompt 1");
         }
+
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
     }
 }

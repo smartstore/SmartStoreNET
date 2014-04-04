@@ -14,7 +14,9 @@
             @T("Admin.Configuration.ActivityLog.ActivityLog")
         </div>
         <div class="options">
-            <a href="@Url.Action("ClearAll")" class="btn btn-primary">@T("Admin.Common.Clear")</a>
+            <a href="@Url.Action("ClearAll")" class="btn btn-primary">
+				<i class="icon-repeat"></i>&nbsp;@T("Admin.Common.Clear")
+			</a>
         </div>
     </div>
     <p>
@@ -53,15 +55,18 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
                     <i class="icon-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
         </tr>
-    </table>    
+    </table>
+	<p></p>
     <table class="adminContent">
         <tr>
             <td>

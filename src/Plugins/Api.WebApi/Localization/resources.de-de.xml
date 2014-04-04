@@ -1,0 +1,62 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.Api.WebApi" AppendRootKey="false">
+    <Value>Web-API</Value>
+  </LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<ul>
+<li>Nur registrierte Kunden (siehe Liste unten) mit einem öffentlichen und einem geheimen Schlüssel zur API haben Zugriff.</li>
+<li>Sie können den Zugriff für einen Kunden durch Löschen der Schlüssel endgültig oder durch Deaktivieren zeitweise unterbinden.</li>
+<li>Die Rechte der jeweiligen Kundengruppe gelten auch bei Zugriffen über die API.</li>
+</ul>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="ApiOdataUrl">
+		<Value>OData API URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="ApiOdataUrl.Hint">
+		<Value>Die URL der OData Web API.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ApiOdataMetadataUrl">
+		<Value>OData Metadaten URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="ApiOdataMetadataUrl.Hint">
+		<Value>Die URL der OData Metadaten. Sie beschreiben das gesamte Entitäten-Daten-Modell (EDM), auf dem die Web API basiert.</Value>
+	</LocaleResource>	
+	<LocaleResource Name="ValidMinutePeriod">
+    <Value>Anfragezeitfenster (Minuten)</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidMinutePeriod.Hint">
+    <Value>Aus Sicherheitsgründen darf die Zeit, zu der die Anfrage an die API gesendet wurde, nicht zu weit von der aktuellen Server-Zeit abweichen. Mit dieser Einstellung legen Sie dieses Zeitfenster in Minuten fest.</Value>
+  </LocaleResource>	
+  <LocaleResource Name="LogUnauthorized">
+    <Value>Unauthorisierte Zugriffe speichern</Value>
+  </LocaleResource>
+  <LocaleResource Name="LogUnauthorized.Hint">
+    <Value>Jeder unauthorisierte Zugriff wird in der Ereignisliste gespeichert.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PublicKey">
+    <Value>Öffentlicher Schlüssel</Value>
+  </LocaleResource>
+  <LocaleResource Name="SecretKey">
+    <Value>Geheimer Schlüssel</Value>
+  </LocaleResource>
+  <LocaleResource Name="LastRequest">
+    <Value>Letzter Zugriff</Value>
+  </LocaleResource>
+	<LocaleResource Name="ApiEnabled">
+		<Value>Für API zugelassen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Activate">
+		<Value>Zulassen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Deactivate">
+		<Value>Nicht zulassen</Value>
+	</LocaleResource>
+	<LocaleResource Name="RemoveKeys">
+		<Value>Schlüssel löschen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CreateKeys">
+		<Value>Schlüssel erstellen</Value>
+	</LocaleResource>
+</Language>

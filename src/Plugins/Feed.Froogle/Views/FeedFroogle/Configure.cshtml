@@ -9,10 +9,13 @@
 @{
 	Layout = "";
 
-	Html.AddCssFileParts(Url.Content("~/Content/x-editable/bootstrap-editable.css")); // bundle doesn't work for whatever reason
-	Html.AddCssFileParts(Url.Content("~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css"));
+	Html.AddCssFileParts(true,
+        "~/Content/x-editable/bootstrap-editable.css",
+        "~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css");
 
-	Html.AppendScriptParts(ResourceLocation.Head, "~/bundles/x-editable");
+    Html.AppendScriptParts(true,
+        "~/Content/bootstrap/js/bootstrap-typeahead.js", 
+        "~/Content/x-editable/bootstrap-editable.js");
 }
 
 <p>
@@ -320,6 +323,15 @@
             @Html.ValidationMessageFor(m => m.CurrencyId)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExpirationDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExpirationDays)
+            @Html.ValidationMessageFor(m => m.ExpirationDays)
+        </td>
+    </tr>
 	<tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(m => m.SpecialPrice)
@@ -327,6 +339,24 @@
         <td class="adminData">
             @Html.EditorFor(m => m.SpecialPrice)
             @Html.ValidationMessageFor(m => m.SpecialPrice)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportShipping)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExportShipping)
+            @Html.ValidationMessageFor(m => m.ExportShipping)
+        </td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportBasePrice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExportBasePrice)
+            @Html.ValidationMessageFor(m => m.ExportBasePrice)
         </td>
     </tr>
     <tr>
@@ -416,11 +446,11 @@
             @(Html.Telerik().Grid<GoogleProductModel>()
 				.Name("froogleproducts-grid")
 				.DataKeys(keys => {
-					keys.Add(x => x.ProductVariantId).RouteKey("ProductVariantId");
+					keys.Add(x => x.ProductId).RouteKey("ProductId");
 				})
 				.Columns(c => {
-					c.Bound(x => x.ProductVariantId).ReadOnly().Visible(false);
-					c.Bound(x => x.FullProductVariantName).ReadOnly().Visible(true).Width(440);
+					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
+					c.Bound(x => x.ProductName).ReadOnly().Visible(true).Width(440);
 					c.Bound(x => x.GoogleCategory).ClientTemplate(Html.XEditableLink("GoogleCategory", "typeahead"));
 					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
 					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);

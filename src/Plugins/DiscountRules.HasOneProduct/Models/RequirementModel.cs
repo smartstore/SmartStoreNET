@@ -4,8 +4,8 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Models
 {
     public class RequirementModel
     {
-        [SmartResourceDisplayName("Plugins.DiscountRules.HasOneProduct.Fields.ProductVariants")]
-        public string ProductVariants { get; set; }
+        [SmartResourceDisplayName("Plugins.DiscountRules.HasOneProduct.Fields.Products")]
+        public string Products { get; set; }
 
         public int DiscountId { get; set; }
 

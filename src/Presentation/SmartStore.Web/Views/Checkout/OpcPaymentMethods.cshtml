@@ -70,6 +70,12 @@
                                 <input id="paymentmethod_@(i)" type="radio" name="paymentmethod" value="@(paymentMethod.PaymentMethodSystemName)" checked="@paymentMethod.Selected" />
                                 @paymentMethod.Name
                             </label>
+							@if (!String.IsNullOrWhiteSpace(paymentMethod.Description))
+							{
+								<div class="payment-method-desc">
+									@Html.Raw(paymentMethod.Description)
+								</div>
+							}
                         </div>
  
                     </div>

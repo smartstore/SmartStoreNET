@@ -16,12 +16,11 @@
         <div class="options">
             @if (Model.DisplayPdfInvoice)
             {
-                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">@T("Admin.Orders.PdfInvoice")</a>
+                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
+					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
+				</a>
             }
             <button type="submit" id="order-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
-            <!--
-            <span id="order-delete" class="t-button">@T("Admin.Common.Delete")</span>
-            -->
             <input type="submit" id="btnRefreshPage" name="btnRefreshPage" style="display: none" />
         </div>
     </div>
@@ -183,10 +182,13 @@
                 @Html.SmartLabelFor(model => model.OrderStatus)
             </td>
             <td class="adminData">
-                <b> @Model.OrderStatus</b>&nbsp;
+                <b>@Model.OrderStatus</b>
+				&nbsp;
                 @if (Model.CanCancelOrder)
                 {
-                    <input type="submit" name="cancelorder" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" id="cancelorder" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');"  />
+                    <button type="submit" name="cancelorder" id="cancelorder" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.OrderStatus.Cancel")
+					</button>
                 }
             </td>
         </tr>
@@ -606,13 +608,13 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="2">
                 <button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn" style="margin-top:5px;">
 					<i class="icon-edit"></i>&nbsp;@T("Admin.Orders.Fields.EditOrderTotals")
 				</button>
-                <input type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" value="@T("Admin.Orders.Fields.SaveOrderTotals")" class="btn btn-primary" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-            </td>
-            <td>
+                <button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<i class="icon-ok"></i>&nbsp;@T("Admin.Orders.Fields.SaveOrderTotals")
+				</button>
                 <button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn">
 					<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.CancelOrderTotals")
 				</button>
@@ -698,14 +700,23 @@
         @if (Model.AllowStoringCreditCardNumber)
         {
             <tr>
-                <td>
-                    <input type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn" />
-                    <input type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                </td>
-                <td>
-                    <input type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn" />
+                <td colspan="2">
+                    <button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn">
+						<i class="icon icon-edit"></i>&nbsp;@T("Admin.Orders.Fields.EditCC")
+					</button>
+                    <button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon icon-ok"></i>&nbsp;@T("Admin.Orders.Fields.SaveCC")
+					</button>
+                    <button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn">
+						<i class="icon icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.CancelCC")
+					</button>
                 </td>
             </tr>
+			<tr class="adminSeparator">
+				<td colspan="2">
+					<hr />
+				</td>
+			</tr>
         }
 
         @*codehint: sm-add begin*@
@@ -796,14 +807,23 @@
         @if (Model.AllowStoringDirectDebit)
         {
             <tr>
-                <td>
-                    <input type="submit" name="btnEditDD" value="@T("Admin.Orders.Fields.EditDD")" onclick="toggleDD(true);return false;" id="btnEditDD" class="btn" />
-                    <input type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")    ');" />
-                </td>
-                <td>
-                    <input type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn" />
+                <td colspan="2">
+                    <button type="submit" name="btnEditDD" value="@T("Admin.Orders.Fields.EditDD")" onclick="toggleDD(true);return false;" id="btnEditDD" class="btn">
+						<i class="icon icon-edit"></i>&nbsp;@T("Admin.Orders.Fields.EditDD")
+					</button>
+                    <button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon icon-ok"></i>&nbsp;@T("Admin.Orders.Fields.SaveDD")
+					</button>
+                    <button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn">
+						<i class="icon icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.CancelDD")
+					</button>
                 </td>
             </tr>
+			<tr class="adminSeparator">
+				<td colspan="2">
+					<hr />
+				</td>
+			</tr>
         }
         
         @*codehint: sm-add end*@
@@ -1076,7 +1096,7 @@
                     }
                     <tr>
                         <td colspan="2" style="padding-top: 8px;">
-                            <a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-pencil"></i>&nbsp;@T("Admin.Common.Edit")</a>
+                            <a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-edit"></i>&nbsp;@T("Admin.Common.Edit")</a>
                         </td>
                     </tr>
                 </table>
@@ -1221,7 +1241,7 @@
                     }
                     <tr>
                         <td colspan="2" style="padding-top: 8px;">
-                            <a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-pencil"></i>&nbsp;@T("Admin.Common.Edit")</a>
+                            <a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn"><i class="icon-edit"></i>&nbsp;@T("Admin.Common.Edit")</a>
                         </td>
                     </tr>
                 </table>
@@ -1252,11 +1272,9 @@
         
     <div class="clear">
     </div>    
-    <p>
-        <strong>
-            @T("Admin.Orders.Shipments")
-        </strong>
-    </p>
+
+	<h3>@T("Admin.Orders.Shipments")</h3>
+
     <div class="clear">
     </div>  
         <table class="adminContent">
@@ -1282,13 +1300,23 @@
                         .HeaderTemplate(T("Admin.Common.View").Text);
                 })
                 .EnableCustomBinding(true))
+
+				@if (Model.CanAddNewShipments)
+				{
+					<div>
+
+					</div>
+				}
             </td>
         </tr>
         @if (Model.CanAddNewShipments)
         {
             <tr>
-                <td class="adminData">
-                    <input type="submit" id="btnAddNewShipment" name="btnAddNewShipment" value="@T("Admin.Orders.Shipments.AddNew")" onclick="javascript:setLocation('@(Url.Action("AddShipment", "Order", new { orderId = Model.Id }))'); return false;" class="btn" />
+                <td>
+                    <button type="submit" id="btnAddNewShipment" name="btnAddNewShipment" class="btn btn-below"
+						onclick="javascript:setLocation('@(Url.Action("AddShipment", "Order", new { orderId = Model.Id }))'); return false;">
+						<i class="icon-plus"></i>&nbsp;@T("Admin.Orders.Shipments.AddNew")
+					</button>
                 </td>
             </tr>
         }
@@ -1307,46 +1335,82 @@
     </table>
     }
 }
+
+@helper BundleItemsInfo(OrderModel.OrderItemModel parentItem)
+{
+	if (parentItem.BundleItems != null)
+	{
+		<div class="bundle-items-container">
+			@foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+			{
+				<div class="bundle-item">
+					<div class="bundle-item-name">
+						@Html.ActionLink(item.ProductName, "Edit", "Product", new { id = item.ProductId }, new { })
+						@if (item.Quantity > 1)
+						{
+							<text>
+								&#215;&nbsp;@item.Quantity
+							</text>
+						}
+					</div>
+					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+					{
+						<div class="bundle-item-price">
+							@Html.Raw(item.PriceWithDiscount)
+						</div>
+					}
+					@if (!String.IsNullOrEmpty(item.AttributeInfo))
+					{
+						<div class="bundle-item-attribute-info muted">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
 @helper TabProducts()
 {
     <table class="adminContent">
         <tr>
-            <td class="adminData">
+            <td class="adminData" style="padding:0;">
                 @foreach (var item in Model.Items)
                 {
                     <script type="text/javascript">
-        $(document).ready(function() {
-        toggleOpvEdit@(item.Id)(false);
-        });
+                        $(document).ready(function() {
+                            toggleOrderItemEdit@(item.Id)(false);
+                        });
                     </script>
         
                     <script type="text/javascript">
-        function toggleOpvEdit@(item.Id) (editMode) {
-        if (editMode) {
-        $('#pnlEditPvUnitPrice@(item.Id)').show();
-        $('#pnlEditPvQuantity@(item.Id)').show();
-        $('#pnlEditPvDiscount@(item.Id)').show();
-        $('#pnlEditPvPrice@(item.Id)').show();
-        $('#btnEditOpv@(item.Id)').hide();
-        $('#btnDeleteOpv@(item.Id)').hide();
-        $('#btnSaveOpv@(item.Id)').show();
-        $('#btnCancelOpv@(item.Id)').show();
-        }
-        else {
-        $('#pnlEditPvUnitPrice@(item.Id)').hide();
-        $('#pnlEditPvQuantity@(item.Id)').hide();
-        $('#pnlEditPvDiscount@(item.Id)').hide();
-        $('#pnlEditPvPrice@(item.Id)').hide();
-        $('#btnEditOpv@(item.Id)').show();
-        $('#btnDeleteOpv@(item.Id)').show();
-        $('#btnSaveOpv@(item.Id)').hide();
-        $('#btnCancelOpv@(item.Id)').hide();
-        }
-        }
+                        function toggleOrderItemEdit@(item.Id) (editMode) {
+                        if (editMode) {
+                            $('#pnlEditUnitPrice@(item.Id)').show();
+                            $('#pnlEditQuantity@(item.Id)').show();
+                            $('#pnlEditDiscount@(item.Id)').show();
+                            $('#pnlEditPrice@(item.Id)').show();
+                            $('#btnEditOrderItem@(item.Id)').hide();
+                            $('#btnDeleteOrderItem@(item.Id)').hide();
+                            $('#btnSaveOrderItem@(item.Id)').show();
+                            $('#btnCancelOrderItem@(item.Id)').show();
+                        }
+                        else {
+                            $('#pnlEditUnitPrice@(item.Id)').hide();
+                            $('#pnlEditQuantity@(item.Id)').hide();
+                            $('#pnlEditDiscount@(item.Id)').hide();
+                            $('#pnlEditPrice@(item.Id)').hide();
+                            $('#btnEditOrderItem@(item.Id)').show();
+                            $('#btnDeleteOrderItem@(item.Id)').show();
+                            $('#btnSaveOrderItem@(item.Id)').hide();
+                            $('#btnCancelOrderItem@(item.Id)').hide();
+                        }
+                    }
                     </script>
 
                 }
-                <table class="table table-bordered table-striped table-hover">
+                <table class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
                     <thead>
                         <tr style="background-color: #666; color: #fff">
                             <th>
@@ -1381,7 +1445,8 @@
                             <tr>
                                 <td style="width: 25%;">
                                     <div>
-                                        <a href="@Url.Action("Edit", "ProductVariant", new { id = item.ProductVariantId })">@item.FullProductName</a>
+										@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
                                             <br />
@@ -1398,6 +1463,11 @@
                                             <strong>@T("Admin.Orders.Products.SKU")</strong><text>:</text>
                                             @item.Sku
                                         }
+										@if (item.ProductType == ProductType.BundledProduct)
+										{
+											<br />
+											@BundleItemsInfo(item)
+										}
                                         @if (item.ReturnRequestIds.Count > 0)
                                         {
                                             <br />
@@ -1456,7 +1526,7 @@
                                                     <a href="@Url.Action("DownloadFile", "Download", new { downloadId = item.LicenseDownloadId.Value })">@T("Admin.Orders.Products.License.DownloadLicense")</a>
                                                 }
                                                 <br />
-                                                <input type="submit" id="pvlicensefile" name="pvlicensefile" value="@T("Admin.Orders.Products.License.UploadFile")" onclick="javascript:OpenWindow('@(Url.Action("UploadLicenseFilePopup", "Order", new { id = Model.Id, opvId = item.Id, btnId = "btnRefreshPage", formId = "order-form" }))', 500, 300, true); return false;" class="btn" />
+                                                <input type="submit" id="pvlicensefile" name="pvlicensefile" value="@T("Admin.Orders.Products.License.UploadFile")" onclick="javascript:OpenWindow('@(Url.Action("UploadLicenseFilePopup", "Order", new { id = Model.Id, orderItemId = item.Id, btnId = "btnRefreshPage", formId = "order-form" }))', 500, 300, true); return false;" class="btn" />
                                             </div>
                                         }
                                     </td>
@@ -1487,7 +1557,7 @@
                                         }
                                     }
 
-                                    <div id="pnlEditPvUnitPrice@(item.Id)">
+                                    <div id="pnlEditUnitPrice@(item.Id)">
                                         <table class="order-edit">
                                             <tr>
                                                 <td>
@@ -1511,7 +1581,7 @@
                                 <td align="center" style="width: 10%;">
                                     @item.Quantity
 
-                                    <div id="pnlEditPvQuantity@(item.Id)">
+                                    <div id="pnlEditQuantity@(item.Id)">
                                         <table class="order-edit">
                                             <tr>
                                                 <td colspan="2">
@@ -1548,7 +1618,7 @@
                                     }
                                     <div class="clear">
                                     </div>
-                                    <div id="pnlEditPvDiscount@(item.Id)">
+                                    <div id="pnlEditDiscount@(item.Id)">
                                         <table class="order-edit">
                                             <tr>
                                                 <td>
@@ -1596,7 +1666,7 @@
                                     }
                                     <div class="clear">
                                     </div>
-                                    <div id="pnlEditPvPrice@(item.Id)">
+                                    <div id="pnlEditPrice@(item.Id)">
                                         <table class="order-edit">
                                             <tr>
                                                 <td>
@@ -1618,10 +1688,10 @@
                                     </div>
                                 </td>
                                 <td align="center" style="width: 15%;">
-                                    <input type="submit" name="btnEditOpv@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOpvEdit@(item.Id)(true);return false;" id="btnEditOpv@(item.Id)" class="btn" />
-                                    <input type="submit" name="btnDeleteOpv@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOpv@(item.Id)" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                                    <input type="submit" name="btnSaveOpv@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOpv@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                                    <input type="submit" name="btnCancelOpv@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOpvEdit@(item.Id)(false);return false;" id="btnCancelOpv@(item.Id)" class="btn" style="display: none;" />
+                                    <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOrderItemEdit@(item.Id)(true);return false;" id="btnEditOrderItem@(item.Id)" class="btn" />
+                                    <input type="submit" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
+                                    <input type="submit" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
+                                    <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOrderItemEdit@(item.Id)(false);return false;" id="btnCancelOrderItem@(item.Id)" class="btn" style="display: none;" />
                                 </td>
                             </tr>
                         }
@@ -1640,8 +1710,11 @@
             </tr>
         }
         <tr>
-            <td class="adminData">
-                <input type="submit" id="btnAddNewProduct" name="btnAddNewProduct" value="@T("Admin.Orders.Products.AddNew")" onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;" class="btn" />
+            <td>
+                <button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn btn-below"
+						onclick="javascript:setLocation('@(Url.Action("AddProductToOrder", "Order", new { orderId = Model.Id }))'); return false;">
+					<i class="icon-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")
+				</button>
             </td>
         </tr>
     </table>
@@ -1679,11 +1752,9 @@
             </td>
         </tr>
     </table>  
-    <p style="margin-top:14px;">
-        <strong>
-            @T("Admin.Orders.OrderNotes.AddTitle")
-        </strong>
-    </p>
+    <div class="caption-container">
+        <h3 class="bordered">@T("Admin.Orders.OrderNotes.AddTitle")</h3>
+    </div>
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -1704,10 +1775,13 @@
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td align="left">
-                <button type="button" name="addOrderNote" id="addOrderNote" class="btn"><i class="icon-plus icon-white"></i>
-                    @T("Admin.Orders.OrderNotes.AddButton")</button>
+            <td class="adminTitle">
+				&nbsp;
+			</td>
+            <td class="adminData">
+                <button type="button" name="addOrderNote" id="addOrderNote" class="btn">
+					<i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Orders.OrderNotes.AddButton")
+				</button>
             </td>
         </tr>
     </table>

@@ -7,13 +7,18 @@ using System.IO;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using SmartStore.Core;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Themes; // codehint: sm-add
+using SmartStore.Core.Themes;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Themes;
-using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.UI;
+using SmartStore.Collections;
+using System.Linq;
+using SmartStore.Core.Logging;
 
 #endregion
 
@@ -22,18 +27,15 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
     public abstract class WebViewPage<TModel> : System.Web.Mvc.WebViewPage<TModel>
     {
 
-        private ILocalizationService _localizationService;
-        private Localizer _localizer;
+		private IText _text;
         private IWorkContext _workContext;
 
-        // codehint: sm-add
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
         private ThemeManifest _themeManifest;
         private ExpandoObject _themeVars;
         private bool? _isHomePage;
 
-        // codehint: sm-add (mc)
         protected int CurrentCategoryId
         {
             get
@@ -93,35 +95,86 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             }
         }
 
-        // codehint: sm-add (mc) end
+		protected ICollection<LocalizedString> InfoMessages
+		{
+			get { return ResolveMessages(NotifyType.Info).AsReadOnly(); }
+		}
+
+		protected ICollection<LocalizedString> SuccessMessages
+		{
+			get { return ResolveMessages(NotifyType.Success).AsReadOnly(); }
+		}
+
+		protected ICollection<LocalizedString> WarningMessages
+		{
+			get { return ResolveMessages(NotifyType.Warning).AsReadOnly(); }
+		}
+
+		protected ICollection<LocalizedString> ErrorMessages
+		{
+			get { return ResolveMessages(NotifyType.Error).AsReadOnly(); }
+		}
+
+		protected bool HasMessages
+		{
+			get
+			{
+				string key = "sm.notifications.all";
+				IEnumerable<NotifyEntry> entries;
+
+				if (TempData[key] != null)
+				{
+					entries = TempData[key] as IEnumerable<NotifyEntry>;
+					if (entries != null && entries.Any())
+						return true;
+				}
+
+				if (ViewData[key] != null)
+				{
+					entries = ViewData[key] as IEnumerable<NotifyEntry>;
+					if (entries != null && entries.Any())
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		private IEnumerable<LocalizedString> ResolveMessages(NotifyType type)
+		{
+			string key = "sm.notifications.all";
+			IEnumerable<NotifyEntry> entries;
+			IEnumerable<LocalizedString> result = Enumerable.Empty<LocalizedString>();
+
+			if (TempData[key] != null)
+			{
+				entries = TempData[key] as IEnumerable<NotifyEntry>;
+				if (entries != null)
+				{
+					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
+				}
+			}
+
+			if (ViewData[key] != null)
+			{
+				entries = ViewData[key] as IEnumerable<NotifyEntry>;
+				if (entries != null)
+				{
+					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
+				}
+			}
+
+			return result;
+		}
 
         /// <summary>
-        /// Get a localized resources
+        /// Get a localized resource
         /// </summary>
         public Localizer T
         {
             get
             {
-                if (_localizer == null)
-                {
-                    //null localizer
-                    //_localizer = (format, args) => new LocalizedString((args == null || args.Length == 0) ? format : string.Format(format, args));
-
-                    //default localizer
-                    _localizer = (format, args) =>
-                                     {
-                                         var resFormat = _localizationService.GetResource(format);
-                                         if (string.IsNullOrEmpty(resFormat))
-                                         {
-                                             return new LocalizedString(format);
-                                         }
-                                         return
-                                             new LocalizedString((args == null || args.Length == 0)
-                                                                     ? resFormat
-                                                                     : string.Format(resFormat, args));
-                                     };
-                }
-                return _localizer;
+				return _text.Get;
             }
         }
 
@@ -137,9 +190,9 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         {
             base.InitHelpers();
 
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
             {
-                _localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();
             }
         }

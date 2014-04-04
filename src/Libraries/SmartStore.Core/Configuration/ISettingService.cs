@@ -90,6 +90,10 @@ namespace SmartStore.Services.Configuration
 		/// <remarks>codehint: sm-add</remarks>
 		void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0) where T : ISettings, new();
 
+		void InsertSetting(Setting setting, bool clearCache = true);
+
+		void UpdateSetting(Setting setting, bool clearCache = true);
+
 		/// <summary>
 		/// Deletes a setting
 		/// </summary>

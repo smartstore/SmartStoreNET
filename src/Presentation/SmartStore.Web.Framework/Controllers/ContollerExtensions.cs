@@ -6,6 +6,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Common;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -60,38 +61,6 @@ namespace SmartStore.Web.Framework.Controllers
                 return sw.GetStringBuilder().ToString();
             }
         }
-
-		/// <summary>
-		/// Display notification
-		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
-		/// <param name="type">Notification type</param>
-		/// <param name="message">Message</param>
-		/// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request</param>
-		public static void AddNotificationMessage(this ControllerBase controller, NotifyType type, string message, bool persistForTheNextRequest)
-		{
-			if (message.IsNullOrEmpty())
-				return;
-
-			List<string> lst = null;
-			string dataKey = string.Format("sm.notifications.{0}", type);
-
-			if (persistForTheNextRequest)
-			{
-				if (controller.TempData[dataKey] == null)
-					controller.TempData[dataKey] = new List<string>();
-				lst = (List<string>)controller.TempData[dataKey];
-			}
-			else
-			{
-				if (controller.ViewData[dataKey] == null)
-					controller.ViewData[dataKey] = new List<string>();
-				lst = (List<string>)controller.ViewData[dataKey];
-			}
-
-			if (lst != null && !lst.Exists(m => m == message))
-				lst.Add(message);
-		}
 
 		/// <summary>
 		/// Get active store scope (for multi-store configuration mode)

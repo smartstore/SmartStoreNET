@@ -1,5 +1,4 @@
 ﻿using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Tasks;
 
@@ -10,7 +9,8 @@ namespace SmartStore.Plugin.Feed.Froogle
 		/// <summary>
 		/// Execute task
 		/// </summary>
-		public void Execute() {
+		public void Execute()
+		{
 			var googleService = EngineContext.Current.Resolve<IGoogleService>();
 			googleService.CreateFeed();
 		}

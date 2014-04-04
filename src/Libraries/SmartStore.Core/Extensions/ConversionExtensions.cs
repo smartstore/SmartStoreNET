@@ -10,10 +10,11 @@ using System.Globalization;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-
 using SmartStore.Utilities;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using SmartStore.Core.ComponentModel;
+using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore
 {
@@ -35,7 +36,7 @@ namespace SmartStore
 
         public static object Convert(this object value, Type to)
         {
-            return value.Convert(to, CultureInfo.CurrentCulture);
+            return value.Convert(to, CultureInfo.InvariantCulture);
         }
 
         public static object Convert(this object value, Type to, CultureInfo culture)
@@ -86,8 +87,8 @@ namespace SmartStore
 
             Type fromType = value.GetType();
 
-            if (to.IsInterface || to.IsGenericTypeDefinition || to.IsAbstract)
-                throw Error.Argument("to", "Target type '{0}' is not a value type or a non-abstract class.", to.FullName);
+			//if (to.IsInterface || to.IsGenericTypeDefinition || to.IsAbstract)
+			//	throw Error.Argument("to", "Target type '{0}' is not a value type or a non-abstract class.", to.FullName);
 
             // use Convert.ChangeType if both types are IConvertible
             if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
@@ -112,17 +113,29 @@ namespace SmartStore
             // see if source or target types have a TypeConverter that converts between the two
             TypeConverter toConverter = TypeDescriptor.GetConverter(fromType);
 
-            if (toConverter != null && toConverter.CanConvertTo(to))
+			Type nonNullableTo = to.GetNonNullableType();
+			bool isNullableTo = to != nonNullableTo;
+
+			if (toConverter != null && toConverter.CanConvertTo(nonNullableTo))
             {
-                return toConverter.ConvertTo(null, culture, value, to);
+				object result = toConverter.ConvertTo(null, culture, value, nonNullableTo);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
             }
 
-            TypeConverter fromConverter = TypeDescriptor.GetConverter(to);
+			TypeConverter fromConverter = TypeDescriptor.GetConverter(nonNullableTo);
 
             if (fromConverter != null && fromConverter.CanConvertFrom(fromType))
             {
-                return fromConverter.ConvertFrom(null, culture, value);
+                object result = fromConverter.ConvertFrom(null, culture, value);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
             }
+			
+			// TypeConverter doesn't like Double to Decimal
+			if (fromType == typeof(double) && nonNullableTo == typeof(decimal))
+			{
+				decimal result = new Decimal((double)value);
+				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
+			}
 
             throw Error.InvalidCast(fromType, to);
 
@@ -157,29 +170,6 @@ namespace SmartStore
             //                                         to.FullName);
             //            }
             #endregion
-        }
-
-        public static bool TryConvert<T>(this object value, out T convertedValue)
-        {
-            return value.TryConvert<T>(CultureInfo.CurrentCulture, out convertedValue);
-        }
-
-        public static bool TryConvert<T>(this object value, CultureInfo culture, out T convertedValue)
-        {
-            return Misc.TryAction<T>(delegate
-            {
-                return value.Convert<T>(culture);
-            }, out convertedValue);
-        }
-
-        public static bool TryConvert(this object value, Type to, out object convertedValue)
-        {
-            return value.TryConvert(to, CultureInfo.CurrentCulture, out convertedValue);
-        }
-
-        public static bool TryConvert(this object value, Type to, CultureInfo culture, out object convertedValue)
-        {
-            return Misc.TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
         }
 
         #endregion

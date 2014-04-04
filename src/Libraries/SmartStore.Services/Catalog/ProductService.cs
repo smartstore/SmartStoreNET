@@ -11,10 +11,10 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
 {
@@ -22,17 +22,17 @@ namespace SmartStore.Services.Catalog
     /// Product service
     /// </summary>
     public partial class ProductService : IProductService
-    {
-        #region Constants
-        private const string PRODUCTVARIANTS_ALL_KEY = "SmartStore.productvariant.all-{0}-{1}";
-        private const string PRODUCTVARIANTS_PATTERN_KEY = "SmartStore.productvariant.";
-        private const string TIERPRICES_PATTERN_KEY = "SmartStore.tierprice.";
-        #endregion
+	{
+		#region Constants
 
-        #region Fields
+		private const string PRODUCTS_BY_ID_KEY = "SmartStore.product.id-{0}";
+		private const string PRODUCTS_PATTERN_KEY = "SmartStore.product.";
 
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<ProductVariant> _productVariantRepository;
+		#endregion
+
+		#region Fields
+
+		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
@@ -42,6 +42,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
+		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ILanguageService _languageService;
@@ -66,7 +67,6 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="productRepository">Product repository</param>
-        /// <param name="productVariantRepository">Product variant repository</param>
         /// <param name="relatedProductRepository">Related product repository</param>
         /// <param name="crossSellProductRepository">Cross-sell product repository</param>
         /// <param name="tierPriceRepository">Tier price repository</param>
@@ -88,7 +88,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="eventPublisher">Event published</param>
         public ProductService(ICacheManager cacheManager,
             IRepository<Product> productRepository,
-            IRepository<ProductVariant> productVariantRepository,
             IRepository<RelatedProduct> relatedProductRepository,
             IRepository<CrossSellProduct> crossSellProductRepository,
             IRepository<TierPrice> tierPriceRepository,
@@ -98,6 +97,7 @@ namespace SmartStore.Services.Catalog
 			IRepository<StoreMapping> storeMappingRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
+			IRepository<ProductBundleItem> productBundleItemRepository,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
             ILanguageService languageService,
@@ -110,7 +110,6 @@ namespace SmartStore.Services.Catalog
         {
             this._cacheManager = cacheManager;
             this._productRepository = productRepository;
-            this._productVariantRepository = productVariantRepository;
             this._relatedProductRepository = relatedProductRepository;
             this._crossSellProductRepository = crossSellProductRepository;
             this._tierPriceRepository = tierPriceRepository;
@@ -120,6 +119,7 @@ namespace SmartStore.Services.Catalog
 			this._storeMappingRepository = storeMappingRepository;
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
+			this._productBundleItemRepository = productBundleItemRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
             this._languageService = languageService;
@@ -131,7 +131,11 @@ namespace SmartStore.Services.Catalog
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
             this._eventPublisher = eventPublisher;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
         
@@ -163,23 +167,11 @@ namespace SmartStore.Services.Catalog
             product.Deleted = true;
             //delete product
             UpdateProduct(product);
-
-            //delete product variants
-            foreach (var productVariant in product.ProductVariants)
-                DeleteProductVariant(productVariant);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual IQueryable<Product> GetAllProducts(List<int> categoryIds, bool? includeFeatured, int storeId = 0)
+		public virtual IQueryable<Product> GetAllProducts(ProductAllContext context)
 		{
 			var allowedRoleIds = AllowedRoleIds;
-
-			//var query =
-			//	from p in _productRepository.Table
-			//	join acl in _aclRepository.Table on p.Id equals acl.EntityId into p_acl
-			//	from acl in p_acl.DefaultIfEmpty()
-			//	where p.Published && !p.Deleted && (!p.SubjectToAcl || (acl.EntityName == "Product" && allowedRoleIds.Contains(acl.CustomerRoleId)))
-			//	select p;
 
 			var query =
 				from p in _productRepository.Table
@@ -189,28 +181,47 @@ namespace SmartStore.Services.Catalog
 				where p.Published && !p.Deleted && (!p.SubjectToAcl || allowedRoleIds.Contains(acl.CustomerRoleId))
 				select p;
 
-			if (storeId > 0)
+			if (context.VisibleIndividually.HasValue)
 			{
-				query = 
+				query = query.Where(x => x.VisibleIndividually == context.VisibleIndividually.Value);
+			}
+
+			if (context.FilterByAvailableDate)
+			{
+				var nowUtc = DateTime.UtcNow;
+
+				query = query.Where(p =>
+					(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value <= nowUtc) &&
+					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc));
+			}
+
+			if (context.ProductIds != null)
+			{
+				query = query.Where(x => context.ProductIds.Contains(x.Id));
+			}
+
+			if (context.CategoryIds != null && context.CategoryIds.Count > 0)
+			{
+				query =
+					from p in query
+					from pc in p.ProductCategories.Where(pc => context.CategoryIds.Contains(pc.CategoryId))
+					where (!context.IncludeFeatured.HasValue || context.IncludeFeatured.Value == pc.IsFeaturedProduct)
+					select p;
+			}
+
+			if (context.StoreId > 0)
+			{
+				query =
 					from p in query
 					join sm in _storeMappingRepository.Table
 					on new { c1 = p.Id, c2 = "Product" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into p_sm
 					from sm in p_sm.DefaultIfEmpty()
-					where !p.LimitedToStores || storeId == sm.StoreId
+					where !p.LimitedToStores || context.StoreId == sm.StoreId
 					select p;
 			}
 
-			if (categoryIds != null && categoryIds.Count > 0)
-			{
-				query =
-					from p in query
-					from pc in p.ProductCategories.Where(pc => categoryIds.Contains(pc.CategoryId))
-					where (!includeFeatured.HasValue || includeFeatured.Value == pc.IsFeaturedProduct)
-					select p;
-			}
 			return query;
 		}
-
 
         /// <summary>
         /// Gets all products displayed on the home page
@@ -238,7 +249,11 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return null;
 
-            return _productRepository.GetById(productId);
+            string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
+            return _cacheManager.Get(key, () =>
+            { 
+                return _productRepository.GetById(productId); 
+            });
         }
 
         /// <summary>
@@ -280,9 +295,8 @@ namespace SmartStore.Services.Catalog
             //insert
             _productRepository.Insert(product);
 
-            //clear cache
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+			//clear cache
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
             _eventPublisher.EntityInserted(product);
@@ -292,20 +306,28 @@ namespace SmartStore.Services.Catalog
         /// Updates the product
         /// </summary>
         /// <param name="product">Product</param>
-        public virtual void UpdateProduct(Product product)
+		public virtual void UpdateProduct(Product product, bool publishEvent = true)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
+			bool modified = false;
+			if (publishEvent)
+			{
+				modified = _productRepository.IsModified(product);
+			}
+
             //update
             _productRepository.Update(product);
 
-            //cache
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+			//cache
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(product);
+			if (publishEvent && modified)
+			{
+				_eventPublisher.EntityUpdated(product);
+			}
         }
 
 
@@ -327,6 +349,8 @@ namespace SmartStore.Services.Catalog
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
+
+            _eventPublisher.Publish(new ProductsSearchingEvent(ctx));
 
 			//search by keyword
             bool searchLocalizedValue = false;
@@ -352,7 +376,7 @@ namespace SmartStore.Services.Catalog
             var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {
                 //stored procedures are enabled and supported by the database. 
                 //It's much faster than the LINQ implementation below 
@@ -416,8 +440,23 @@ namespace SmartStore.Services.Catalog
 
 				var pStoreId = _dataProvider.GetParameter();
 				pStoreId.ParameterName = "StoreId";
-				pStoreId.Value = ctx.StoreId;
+				pStoreId.Value = QuerySettings.IgnoreMultiStore ? 0 : ctx.StoreId;
 				pStoreId.DbType = DbType.Int32;
+
+				var pParentGroupedProductId = _dataProvider.GetParameter();
+				pParentGroupedProductId.ParameterName = "ParentGroupedProductId";
+				pParentGroupedProductId.Value = ctx.ParentGroupedProductId;
+				pParentGroupedProductId.DbType = DbType.Int32;
+
+				var pProductTypeId = _dataProvider.GetParameter();
+				pProductTypeId.ParameterName = "ProductTypeId";
+				pProductTypeId.Value = ctx.ProductType.HasValue ? (object)ctx.ProductType.Value : DBNull.Value;
+				pProductTypeId.DbType = DbType.Int32;
+
+				var pVisibleIndividuallyOnly = _dataProvider.GetParameter();
+				pVisibleIndividuallyOnly.ParameterName = "VisibleIndividuallyOnly";
+				pVisibleIndividuallyOnly.Value = ctx.VisibleIndividuallyOnly;
+				pVisibleIndividuallyOnly.DbType = DbType.Int32;
 
                 var pProductTagId = _dataProvider.GetParameter();
                 pProductTagId.ParameterName = "ProductTagId";
@@ -448,6 +487,11 @@ namespace SmartStore.Services.Catalog
                 pSearchDescriptions.ParameterName = "SearchDescriptions";
                 pSearchDescriptions.Value = ctx.SearchDescriptions;
                 pSearchDescriptions.DbType = DbType.Boolean;
+
+				var pSearchSku = _dataProvider.GetParameter();
+				pSearchSku.ParameterName = "SearchSku";
+				pSearchSku.Value = ctx.SearchSku;
+				pSearchSku.DbType = DbType.Boolean;
 
                 var pSearchProductTags = _dataProvider.GetParameter();
                 pSearchProductTags.ParameterName = "SearchProductTags";
@@ -521,12 +565,16 @@ namespace SmartStore.Services.Catalog
                     pCategoryIds,
                     pManufacturerId,
 					pStoreId,
+					pParentGroupedProductId,
+					pProductTypeId,
+					pVisibleIndividuallyOnly,
                     pProductTagId,
                     pFeaturedProducts,
                     pPriceMin,
                     pPriceMax,
                     pKeywords,
                     pSearchDescriptions,
+					pSearchSku,
                     pSearchProductTags,
                     pUseFullTextSearch,
                     pFullTextMode,
@@ -584,18 +632,14 @@ namespace SmartStore.Services.Catalog
                     //manufacturer position
                     query = query.OrderBy(p => p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId).FirstOrDefault().DisplayOrder);
                 }
-                //else if (orderBy == ProductSortingEnum.Position && relatedToProductId > 0)
-                //{
-                //    //sort by related product display order
-                //    query = from p in query
-                //            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
-                //            where (relatedToProductId == rp.ProductId1)
-                //            orderby rp.DisplayOrder
-                //            select p;
-                //}
+				else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ParentGroupedProductId > 0)
+				{
+					//parent product specified (sort associated products)
+					query = query.OrderBy(p => p.DisplayOrder);
+				}
                 else if (ctx.OrderBy == ProductSortingEnum.Position)
                 {
-                    //sort by name (there's no any position if category or manufactur is not specified)
+					//otherwise sort by name
                     query = query.OrderBy(p => p.Name);
                 }
                 else if (ctx.OrderBy == ProductSortingEnum.NameAsc)
@@ -611,12 +655,12 @@ namespace SmartStore.Services.Catalog
                 else if (ctx.OrderBy == ProductSortingEnum.PriceAsc)
                 {
                     //Price: Low to High
-                    query = query.OrderBy(p => p.ProductVariants.FirstOrDefault().Price);
+                    query = query.OrderBy(p => p.Price);
                 }
                 else if (ctx.OrderBy == ProductSortingEnum.PriceDesc)
                 {
                     //Price: High to Low
-                    query = query.OrderByDescending(p => p.ProductVariants.FirstOrDefault().Price);
+                    query = query.OrderByDescending(p => p.Price);
                 }
                 else if (ctx.OrderBy == ProductSortingEnum.CreatedOn)
                 {
@@ -625,7 +669,6 @@ namespace SmartStore.Services.Catalog
                 }
                 else if (ctx.OrderBy == ProductSortingEnum.CreatedOnAsc)
                 {
-                    // codehing: sm-add
                     // creation date: old to new
                     query = query.OrderBy(p => p.CreatedOnUtc);
                 }
@@ -650,7 +693,6 @@ namespace SmartStore.Services.Catalog
                         .ToList();
                 }
 
-                //return products
                 return products;
 
                 #endregion
@@ -668,10 +710,79 @@ namespace SmartStore.Services.Catalog
             // products
             var query = _productRepository.Table;
             query = query.Where(p => !p.Deleted);
+
             if (!ctx.ShowHidden)
             {
                 query = query.Where(p => p.Published);
             }
+
+			if (ctx.ParentGroupedProductId > 0)
+			{
+				query = query.Where(p => p.ParentGroupedProductId == ctx.ParentGroupedProductId);
+			}
+
+			if (ctx.VisibleIndividuallyOnly)
+			{
+				query = query.Where(p => p.VisibleIndividually);
+			}
+
+			if (ctx.ProductType.HasValue)
+			{
+				int productTypeId = (int)ctx.ProductType.Value;
+				query = query.Where(p => p.ProductTypeId == productTypeId);
+			}
+
+			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
+			//That's why we pass the date value
+			var nowUtc = DateTime.UtcNow;
+
+			if (ctx.PriceMin.HasValue)
+			{
+				//min price
+				query = query.Where(p =>
+					//special price (specified price and valid date range)
+										((p.SpecialPrice.HasValue &&
+										  ((!p.SpecialPriceStartDateTimeUtc.HasValue ||
+											p.SpecialPriceStartDateTimeUtc.Value < nowUtc) &&
+										   (!p.SpecialPriceEndDateTimeUtc.HasValue ||
+											p.SpecialPriceEndDateTimeUtc.Value > nowUtc))) &&
+										 (p.SpecialPrice >= ctx.PriceMin.Value))
+										||
+											//regular price (price isn't specified or date range isn't valid)
+										((!p.SpecialPrice.HasValue ||
+										  ((p.SpecialPriceStartDateTimeUtc.HasValue &&
+											p.SpecialPriceStartDateTimeUtc.Value > nowUtc) ||
+										   (p.SpecialPriceEndDateTimeUtc.HasValue &&
+											p.SpecialPriceEndDateTimeUtc.Value < nowUtc))) &&
+										 (p.Price >= ctx.PriceMin.Value)));
+			}
+			if (ctx.PriceMax.HasValue)
+			{
+				//max price
+				query = query.Where(p =>
+					//special price (specified price and valid date range)
+									((p.SpecialPrice.HasValue &&
+									  ((!p.SpecialPriceStartDateTimeUtc.HasValue ||
+										p.SpecialPriceStartDateTimeUtc.Value < nowUtc) &&
+									   (!p.SpecialPriceEndDateTimeUtc.HasValue ||
+										p.SpecialPriceEndDateTimeUtc.Value > nowUtc))) &&
+									 (p.SpecialPrice <= ctx.PriceMax.Value))
+									||
+										//regular price (price isn't specified or date range isn't valid)
+									((!p.SpecialPrice.HasValue ||
+									  ((p.SpecialPriceStartDateTimeUtc.HasValue &&
+										p.SpecialPriceStartDateTimeUtc.Value > nowUtc) ||
+									   (p.SpecialPriceEndDateTimeUtc.HasValue &&
+										p.SpecialPriceEndDateTimeUtc.Value < nowUtc))) &&
+									 (p.Price <= ctx.PriceMax.Value)));
+			}
+			if (!ctx.ShowHidden)
+			{
+				//available dates
+				query = query.Where(p =>
+					(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value < nowUtc) &&
+					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > nowUtc));
+			}
 
             // searching by keyword
             if (!String.IsNullOrWhiteSpace(ctx.Keywords))
@@ -679,15 +790,12 @@ namespace SmartStore.Services.Catalog
                 query = from p in query
                         join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
                         from lp in p_lp.DefaultIfEmpty()
-                        from pv in p.ProductVariants.DefaultIfEmpty()
                         from pt in p.ProductTags.DefaultIfEmpty()
                         where (p.Name.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
-                              (pv.Name.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && pv.Description.Contains(ctx.Keywords)) ||
                               (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
-                            //localized values
+							//localized values
                               (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
@@ -695,7 +803,7 @@ namespace SmartStore.Services.Catalog
                         select p;
             }
 
-            if (!ctx.ShowHidden)
+            if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
             {
 				// ACL
                 query = from p in query
@@ -705,53 +813,15 @@ namespace SmartStore.Services.Catalog
                         select p;
             }
 
-			if (ctx.StoreId > 0)
+			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				//Store mapping
 				query = from p in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = p.Id, c2 = "Product" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into p_sm
+						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
 						from sm in p_sm.DefaultIfEmpty()
-						where !p.LimitedToStores || ctx.StoreId == sm.StoreId
+						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.StoreId == sm.StoreId)
 						select p;
 			}
-
-            // product variants
-            // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
-            // That's why we pass the date value
-            var nowUtc = DateTime.UtcNow;
-            query = from p in query
-                    from pv in p.ProductVariants.DefaultIfEmpty()
-                    where
-                        //deleted
-                        (ctx.ShowHidden || !pv.Deleted) &&
-                        //published
-                        (ctx.ShowHidden || pv.Published) &&
-                        //price min
-                        (
-                            !ctx.PriceMin.HasValue
-                            ||
-                        //special price (specified price and valid date range)
-                            ((pv.SpecialPrice.HasValue && ((!pv.SpecialPriceStartDateTimeUtc.HasValue || pv.SpecialPriceStartDateTimeUtc.Value <= nowUtc) && (!pv.SpecialPriceEndDateTimeUtc.HasValue || pv.SpecialPriceEndDateTimeUtc.Value >= nowUtc))) && (pv.SpecialPrice >= ctx.PriceMin.Value))
-                            ||
-                        //regular price (price isn't specified or date range isn't valid)
-                            ((!pv.SpecialPrice.HasValue || ((pv.SpecialPriceStartDateTimeUtc.HasValue && pv.SpecialPriceStartDateTimeUtc.Value >= nowUtc) || (pv.SpecialPriceEndDateTimeUtc.HasValue && pv.SpecialPriceEndDateTimeUtc.Value <= nowUtc))) && (pv.Price >= ctx.PriceMin.Value))
-                        ) &&
-                        //price max
-                        (
-                            !ctx.PriceMax.HasValue
-                            ||
-                        //special price (specified price and valid date range)
-                            ((pv.SpecialPrice.HasValue && ((!pv.SpecialPriceStartDateTimeUtc.HasValue || pv.SpecialPriceStartDateTimeUtc.Value <= nowUtc) && (!pv.SpecialPriceEndDateTimeUtc.HasValue || pv.SpecialPriceEndDateTimeUtc.Value >= nowUtc))) && (pv.SpecialPrice <= ctx.PriceMax.Value))
-                            ||
-                        //regular price (price isn't specified or date range isn't valid)
-                            ((!pv.SpecialPrice.HasValue || ((pv.SpecialPriceStartDateTimeUtc.HasValue && pv.SpecialPriceStartDateTimeUtc.Value >= nowUtc) || (pv.SpecialPriceEndDateTimeUtc.HasValue && pv.SpecialPriceEndDateTimeUtc.Value <= nowUtc))) && (pv.Price <= ctx.PriceMax.Value))
-                        ) &&
-                        //available dates
-                        (ctx.ShowHidden || (!pv.AvailableStartDateTimeUtc.HasValue || pv.AvailableStartDateTimeUtc.Value <= nowUtc)) &&
-                        (ctx.ShowHidden || (!pv.AvailableEndDateTimeUtc.HasValue || pv.AvailableEndDateTimeUtc.Value >= nowUtc))
-                    select p;
-
 
             // search by specs
             if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
@@ -769,10 +839,21 @@ namespace SmartStore.Services.Catalog
             if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
             {
                 //search in subcategories
-                query = from p in query
-                        from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-                        where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                        select p;
+                if (ctx.MatchAllcategories)
+                {
+                    query = from p in query
+                                where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+                            from pc in p.ProductCategories
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
+                else
+                {
+                    query = from p in query
+                            from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
+                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+                            select p;
+                }
             }
 
             // manufacturer filtering
@@ -847,239 +928,157 @@ namespace SmartStore.Services.Catalog
             product.NotApprovedTotalReviews = notApprovedTotalReviews;
             UpdateProduct(product);
         }
-
-        #endregion
-
-        #region Product variants
         
         /// <summary>
-        /// Get low stock product variants
+        /// Get low stock products
         /// </summary>
         /// <returns>Result</returns>
-        public virtual IList<ProductVariant> GetLowStockProductVariants()
+        public virtual IList<Product> GetLowStockProducts()
         {
-            //Track inventory for product variant
-            var query1 = from pv in _productVariantRepository.Table
-                         orderby pv.MinStockQuantity
-                         where !pv.Deleted &&
-                         pv.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
-                         pv.MinStockQuantity >= pv.StockQuantity
-                         select pv;
-            var productVariants1 = query1.ToList();
-            //Track inventory for product variant by product attributes
-            var query2 = from pv in _productVariantRepository.Table
-                         from pvac in pv.ProductVariantAttributeCombinations
-                         where !pv.Deleted &&
-                         pv.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
-                         pvac.StockQuantity <= 0
-                         select pv;
-            //only distinct products (group by ID)
-            //if we use standard Distinct() method, then all fields will be compared (low performance)
-            query2 = from pv in query2
-                    group pv by pv.Id into pGroup
-                    orderby pGroup.Key
-                    select pGroup.FirstOrDefault();
-            var productVariants2 = query2.ToList();
+			//Track inventory for product
+			var query1 = from p in _productRepository.Table
+						 orderby p.MinStockQuantity
+						 where !p.Deleted &&
+						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
+						 p.MinStockQuantity >= p.StockQuantity
+						 select p;
+			var products1 = query1.ToList();
 
-            var result = new List<ProductVariant>();
-            result.AddRange(productVariants1);
-            result.AddRange(productVariants2);
+			//Track inventory for product by product attributes
+			var query2 = from p in _productRepository.Table
+						 from pvac in p.ProductVariantAttributeCombinations
+						 where !p.Deleted &&
+						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
+						 pvac.StockQuantity <= 0
+						 select p;
+			//only distinct products (group by ID)
+			//if we use standard Distinct() method, then all fields will be compared (low performance)
+			query2 = from p in query2
+					 group p by p.Id into pGroup
+					 orderby pGroup.Key
+					 select pGroup.FirstOrDefault();
+			var products2 = query2.ToList();
+
+			var result = new List<Product>();
+			result.AddRange(products1);
+			result.AddRange(products2);
             return result;
         }
-        
-        /// <summary>
-        /// Gets a product variant
-        /// </summary>
-        /// <param name="productVariantId">Product variant identifier</param>
-        /// <returns>Product variant</returns>
-        public virtual ProductVariant GetProductVariantById(int productVariantId)
-        {
-            if (productVariantId == 0)
-                return null;
 
-            return _productVariantRepository.GetById(productVariantId);
-        }
-        
-        /// <summary>
-        /// Get product variants by product identifiers
-        /// </summary>
-        /// <param name="productIds">Product identifiers</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variants</returns>
-        public virtual IList<ProductVariant> GetProductVariantsByProductIds(int[] productIds, bool showHidden = false)
-        {
-            if (productIds == null || productIds.Length == 0)
-                return new List<ProductVariant>();
+		/// Gets a product by SKU
+		/// </summary>
+		/// <param name="sku">SKU</param>
+		/// <returns>Product</returns>
+		public virtual Product GetProductBySku(string sku)
+		{
+			if (String.IsNullOrEmpty(sku))
+				return null;
 
-            var query = _productVariantRepository.Table;
-            if (!showHidden)
-            {
-                query = query.Where(pv => pv.Published);
-            }
-            if (!showHidden)
-            {
-                //The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
-                //That's why we pass the date value
-                var nowUtc = DateTime.UtcNow;
-                query = query.Where(pv =>
-                        !pv.AvailableStartDateTimeUtc.HasValue ||
-                        pv.AvailableStartDateTimeUtc <= nowUtc);
-                query = query.Where(pv =>
-                        !pv.AvailableEndDateTimeUtc.HasValue ||
-                        pv.AvailableEndDateTimeUtc >= nowUtc);
-            }
-            query = query.Where(pv => !pv.Deleted);
-            query = query.Where(pv => productIds.Contains(pv.ProductId));
-            query = query.OrderBy(pv => pv.DisplayOrder);
+			sku = sku.Trim();
 
-            var productVariants = query.ToList();
-            return productVariants;
-        }
-        
-        /// <summary>
-        /// Gets a product variant by SKU
-        /// </summary>
-        /// <param name="sku">SKU</param>
-        /// <returns>Product variant</returns>
-        public virtual ProductVariant GetProductVariantBySku(string sku)
-        {
-            if (String.IsNullOrEmpty(sku))
-                return null;
-
-            sku = sku.Trim();
-
-            var query = from pv in _productVariantRepository.Table
-                        orderby pv.DisplayOrder, pv.Id
-                        where !pv.Deleted &&
-                        pv.Sku == sku
-                        select pv;
-            var productVariant = query.FirstOrDefault();
-            return productVariant;
-        }
+			var query = from p in _productRepository.Table
+						orderby p.DisplayOrder, p.Id
+						where !p.Deleted &&
+						p.Sku == sku
+						select p;
+			var product = query.FirstOrDefault();
+			return product;
+		}
 
         /// <summary>
-        /// Gets a product variant by GTIN
+        /// Gets a product by GTIN
         /// </summary>
         /// <param name="sku">GTIN</param>
-        /// <returns>Product variant</returns>
-        public virtual ProductVariant GetProductVariantByGtin(string gtin)
+        /// <returns>Product</returns>
+        public virtual Product GetProductByGtin(string gtin)
         {
             if (String.IsNullOrEmpty(gtin))
                 return null;
 
             gtin = gtin.Trim();
 
-            var query = from pv in _productVariantRepository.Table
-                        orderby pv.DisplayOrder, pv.Id
-                        where !pv.Deleted &&
-                        pv.Gtin == gtin
-                        select pv;
-            var productVariant = query.FirstOrDefault();
-            return productVariant;
+            var query = from p in _productRepository.Table
+                        orderby p.Id
+                        where !p.Deleted &&
+                        p.Gtin == gtin
+                        select p;
+            var product = query.FirstOrDefault();
+            return product;
         }
 
-        /// <summary>
-        /// Inserts a product variant
-        /// </summary>
-        /// <param name="productVariant">The product variant</param>
-        public virtual void InsertProductVariant(ProductVariant productVariant)
-        {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="sci">Shopping cart item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		public virtual void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
+		{
+			if (sci == null)
+				throw new ArgumentNullException("cartItem");
 
-            _productVariantRepository.Insert(productVariant);
+			if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShoppingCart)
+			{
+				if (sci.ChildItems == null)
+					return;
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+				foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
+					AdjustInventory(child, decrease);
+			}
+			else
+			{
+				AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
+			}
+		}
 
-            //event notification
-            _eventPublisher.EntityInserted(productVariant);
-        }
+		/// <summary>
+		/// Adjusts inventory
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
+		public virtual void AdjustInventory(OrderItem orderItem, bool decrease)
+		{
+			if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
-        /// <summary>
-        /// Updates the product variant
-        /// </summary>
-        /// <param name="productVariant">The product variant</param>
-        public virtual void UpdateProductVariant(ProductVariant productVariant)
-        {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.Product.BundlePerItemShoppingCart)
+			{
+				if (orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
+					if (bundleData.Count > 0)
+					{
+						var products = GetProductsByIds(bundleData.Select(x => x.ProductId).ToArray());
 
-            _productVariantRepository.Update(productVariant);
+						foreach (var item in bundleData)
+						{
+							var product = products.FirstOrDefault(x => x.Id == item.ProductId);
+							if (product != null)
+								AdjustInventory(product, decrease, item.Quantity, item.AttributesXml);
+						}
+					}
+				}
+			}
+			else
+			{
+				AdjustInventory(orderItem.Product, decrease, orderItem.Quantity, orderItem.AttributesXml);
+			}
+		}
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(productVariant);
-        }
-        
-        /// <summary>
-        /// Gets product variants by product identifier
-        /// </summary>
-        /// <param name="productId">The product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variant collection</returns>
-        public virtual IList<ProductVariant> GetProductVariantsByProductId(int productId, bool showHidden = false)
-        {
-            string key = string.Format(PRODUCTVARIANTS_ALL_KEY, showHidden, productId);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = _productVariantRepository.Table;
-                if (!showHidden)
-                {
-                    query = query.Where(pv => pv.Published);
-                }
-                if (!showHidden)
-                {
-                    //The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
-                    //That's why we pass the date value
-                    var nowUtc = DateTime.UtcNow;
-                    query = query.Where(pv =>
-                            !pv.AvailableStartDateTimeUtc.HasValue ||
-                            pv.AvailableStartDateTimeUtc <= nowUtc);
-                    query = query.Where(pv =>
-                            !pv.AvailableEndDateTimeUtc.HasValue ||
-                            pv.AvailableEndDateTimeUtc >= nowUtc);
-                }
-                query = query.Where(pv => !pv.Deleted);
-                query = query.Where(pv => pv.ProductId == productId);
-                query = query.OrderBy(pv => pv.DisplayOrder);
-
-                var productVariants = query.ToList();
-                return productVariants;
-            });
-        }
-
-        /// <summary>
-        /// Delete a product variant
-        /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        public virtual void DeleteProductVariant(ProductVariant productVariant)
-        {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
-
-            productVariant.Deleted = true;
-            UpdateProductVariant(productVariant);
-        }
-        
         /// <summary>
         /// Adjusts inventory
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        /// <param name="decrease">A value indicating whether to increase or descrease product variant stock quantity</param>
+		/// <param name="product">Product</param>
+		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-        public virtual void AdjustInventory(ProductVariant productVariant, bool decrease,
-            int quantity, string attributesXml)
+		public virtual void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+			if (product == null)
+				throw new ArgumentNullException("product");
 
-            var prevStockQuantity = productVariant.StockQuantity;
+			var prevStockQuantity = product.StockQuantity;
 
-            switch (productVariant.ManageInventoryMethod)
+			switch (product.ManageInventoryMethod)
             {
                 case ManageInventoryMethod.DontManageStock:
                     {
@@ -1090,68 +1089,45 @@ namespace SmartStore.Services.Catalog
                     {
                         int newStockQuantity = 0;
                         if (decrease)
-                            newStockQuantity = productVariant.StockQuantity - quantity;
-                        else
-                            newStockQuantity = productVariant.StockQuantity + quantity;
+							newStockQuantity = product.StockQuantity - quantity;
+						else
+							newStockQuantity = product.StockQuantity + quantity;
 
-                        bool newPublished = productVariant.Published;
-                        bool newDisableBuyButton = productVariant.DisableBuyButton;
-                        bool newDisableWishlistButton = productVariant.DisableWishlistButton;
+						bool newPublished = product.Published;
+						bool newDisableBuyButton = product.DisableBuyButton;
+						bool newDisableWishlistButton = product.DisableWishlistButton;
 
                         //check if minimum quantity is reached
                         if (decrease)
                         {
-                            if (productVariant.MinStockQuantity >= newStockQuantity)
+                            switch (product.LowStockActivity)
                             {
-                                switch (productVariant.LowStockActivity)
-                                {
-                                    case LowStockActivity.DisableBuyButton:
-                                        newDisableBuyButton = true;
-                                        newDisableWishlistButton = true;
-                                        break;
-                                    case LowStockActivity.Unpublish:
-                                        newPublished = false;
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                case LowStockActivity.DisableBuyButton:
+                                    newDisableBuyButton = product.MinStockQuantity >= newStockQuantity;
+                                    newDisableWishlistButton = product.MinStockQuantity >= newStockQuantity;
+                                    break;
+                                case LowStockActivity.Unpublish:
+                                    newPublished = product.MinStockQuantity <= newStockQuantity;
+                                    break;
+                                default:
+                                    break;
                             }
                         }
 
-                        productVariant.StockQuantity = newStockQuantity;
-                        productVariant.DisableBuyButton = newDisableBuyButton;
-                        productVariant.DisableWishlistButton = newDisableWishlistButton;
-                        productVariant.Published = newPublished;
-                        UpdateProductVariant(productVariant);
+						product.StockQuantity = newStockQuantity;
+						product.DisableBuyButton = newDisableBuyButton;
+						product.DisableWishlistButton = newDisableWishlistButton;
+						product.Published = newPublished;
+						UpdateProduct(product);
 
                         //send email notification
-                        if (decrease && productVariant.NotifyAdminForQuantityBelow > newStockQuantity)
-                            _workflowMessageService.SendQuantityBelowStoreOwnerNotification(productVariant, _localizationSettings.DefaultAdminLanguageId);
-                        
-                        if (decrease)
-                        {
-                            var product = productVariant.Product;
-                            bool allProductVariantsUnpublished = true;
-                            foreach (var pv2 in GetProductVariantsByProductId(product.Id))
-                            {
-                                if (pv2.Published)
-                                {
-                                    allProductVariantsUnpublished = false;
-                                    break;
-                                }
-                            }
-
-                            if (allProductVariantsUnpublished)
-                            {
-                                product.Published = false;
-                                UpdateProduct(product);
-                            }
-                        }
+                        if (decrease && product.NotifyAdminForQuantityBelow > newStockQuantity)
+                            _workflowMessageService.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
                     }
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:
                     {
-                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(productVariant, attributesXml);
+                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
                         if (combination != null)
                         {
                             int newStockQuantity = 0;
@@ -1169,111 +1145,59 @@ namespace SmartStore.Services.Catalog
                     break;
             }
 
+			var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml);
+
+			attributeValues
+				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.ToList()
+				.Each(x =>
+			{
+				var linkedProduct = GetProductById(x.LinkedProductId);
+				if (linkedProduct != null)
+					AdjustInventory(linkedProduct, decrease, quantity * x.Quantity, "");
+			});
+
             //TODO send back in stock notifications?
-            //if (productVariant.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
-            //    productVariant.BackorderMode == BackorderMode.NoBackorders &&
-            //    productVariant.AllowBackInStockSubscriptions &&
-            //    productVariant.StockQuantity > 0 &&
+            //if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
+            //    product.BackorderMode == BackorderMode.NoBackorders &&
+            //    product.AllowBackInStockSubscriptions &&
+            //    product.StockQuantity > 0 &&
             //    prevStockQuantity <= 0 &&
-            //    productVariant.Published &&
-            //    !productVariant.Deleted)
+            //    product.Published &&
+            //    !product.Deleted)
             //{
-            //    //_backInStockSubscriptionService.SendNotificationsToSubscribers(productVariant);
+            //    //_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
             //}
-        }
-
-        /// <summary>
-        /// Search product variants
-        /// </summary>
-        /// <param name="categoryId">Category identifier; 0 to load all records</param>
-        /// <param name="manufacturerId">Manufacturer identifier; 0 to load all records</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="searchDescriptions">A value indicating whether to search in descriptions</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product variants</returns>
-        public virtual IPagedList<ProductVariant> SearchProductVariants(int categoryId, int manufacturerId,
-             string keywords, bool searchDescriptions, int pageIndex, int pageSize, bool showHidden = false)
-        {
-            //products
-            var query = _productVariantRepository.Table;
-            query = query.Where(pv => !pv.Deleted);
-            if (!showHidden)
-            {
-                query = query.Where(pv => pv.Published);
-            }
-            query = query.Where(pv => !pv.Product.Deleted);
-            if (!showHidden)
-            {
-                query = query.Where(pv => pv.Product.Published);
-            }
-
-            //searching by keyword
-            if (!String.IsNullOrWhiteSpace(keywords))
-            {
-                query = from pv in query
-                        where (pv.Product.Name.Contains(keywords)) ||
-                        (searchDescriptions && pv.Product.ShortDescription.Contains(keywords)) ||
-                        (searchDescriptions && pv.Product.FullDescription.Contains(keywords)) ||
-                        (pv.Name.Contains(keywords)) ||
-                        (searchDescriptions && pv.Description.Contains(keywords))
-                        select pv;
-            }
-
-            //category filtering
-            if (categoryId > 0)
-            {
-                query = from pv in query
-                        from pc in pv.Product.ProductCategories.Where(pc => pc.CategoryId == categoryId)
-                        select pv;
-            }
-
-            //manufacturer filtering
-            if (manufacturerId > 0)
-            {
-                query = from pv in query
-                        from pm in pv.Product.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId)
-                        select pv;
-            }
-
-            //only distinct products (group by ID)
-            //if we use standard Distinct() method, then all fields will be compared (low performance)
-            //it'll not work in SQL Server Compact when searching products by a keyword)
-            query = from pv in query
-                    group pv by pv.Id into pvGroup
-                    orderby pvGroup.Key
-                    select pvGroup.FirstOrDefault();
-
-            query = query.OrderBy(pv => pv.Product.Name).ThenBy(pv => pv.DisplayOrder);
-            var productVariants = new PagedList<ProductVariant>(query, pageIndex, pageSize);
-            return productVariants;
         }
         
         /// <summary>
         /// Update HasTierPrices property (used for performance optimization)
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        public virtual void UpdateHasTierPricesProperty(ProductVariant productVariant)
+		/// <param name="product">Product</param>
+		public virtual void UpdateHasTierPricesProperty(Product product)
         {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+			if (product == null)
+				throw new ArgumentNullException("product");
 
-            productVariant.HasTierPrices = productVariant.TierPrices.Count > 0;
-            UpdateProductVariant(productVariant);
+			var prevValue = product.HasTierPrices;
+			product.HasTierPrices = product.TierPrices.Count > 0;
+			if (prevValue != product.HasTierPrices)
+				UpdateProduct(product);
         }
 
         /// <summary>
         /// Update HasDiscountsApplied property (used for performance optimization)
         /// </summary>
-        /// <param name="productVariant">Product variant</param>
-        public virtual void UpdateHasDiscountsApplied(ProductVariant productVariant)
+		/// <param name="product">Product</param>
+		public virtual void UpdateHasDiscountsApplied(Product product)
         {
-            if (productVariant == null)
-                throw new ArgumentNullException("productVariant");
+			if (product == null)
+				throw new ArgumentNullException("product");
 
-            productVariant.HasDiscountsApplied = productVariant.AppliedDiscounts.Count > 0;
-            UpdateProductVariant(productVariant);
+			var prevValue = product.HasDiscountsApplied;
+			product.HasDiscountsApplied = product.AppliedDiscounts.Count > 0;
+			if (prevValue != product.HasDiscountsApplied)
+				UpdateProduct(product);
         }
 
         #endregion
@@ -1447,7 +1371,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="cart">Shopping cart</param>
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
-        public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<ShoppingCartItem> cart, int numberOfProducts)
+		public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts)
         {
             var result = new List<Product>();
 
@@ -1460,14 +1384,14 @@ namespace SmartStore.Services.Catalog
             var cartProductIds = new List<int>();
             foreach (var sci in cart)
             {
-                int prodId = sci.ProductVariant.ProductId;
+                int prodId = sci.Item.ProductId;
                 if (!cartProductIds.Contains(prodId))
                     cartProductIds.Add(prodId);
             }
 
             foreach (var sci in cart)
             {
-                var crossSells = GetCrossSellProductsByProductId1(sci.ProductVariant.ProductId);
+                var crossSells = GetCrossSellProductsByProductId1(sci.Item.ProductId);
                 foreach (var crossSell in crossSells)
                 {
                     //validate that this product is not added to result yet
@@ -1478,9 +1402,6 @@ namespace SmartStore.Services.Catalog
                         var productToAdd = GetProductById(crossSell.ProductId2);
                         //validate product
                         if (productToAdd == null || productToAdd.Deleted || !productToAdd.Published)
-                            continue;
-                        //at least one variant should be valid and available
-                        if (GetProductVariantsByProductId(productToAdd.Id).Count == 0)
                             continue;
 
                         //add a product to result
@@ -1507,8 +1428,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(tierPrice);
@@ -1539,8 +1459,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(tierPrice);
@@ -1557,8 +1476,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(TIERPRICES_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(tierPrice);
@@ -1586,32 +1504,28 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityDeleted(productPicture);
         }
 
-        // codehint: sm-add
         private void UnassignDeletedPictureFromVariantCombinations(ProductPicture productPicture)
         {
             var picId = productPicture.Id;
-            var rs = this._productVariantAttributeCombinationRepository;
             bool touched = false;
 
-            foreach (var variant in productPicture.Product.ProductVariants)
-            {
-                var combinations = from c in rs.Table
-                                    where c.ProductVariantId == variant.Id && !String.IsNullOrEmpty(c.AssignedPictureIds)
-                                    select c;
+			var combinations =
+				from c in this._productVariantAttributeCombinationRepository.Table
+				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedPictureIds)
+				select c;
 
-                foreach (var c in combinations)
-                {
-                    var ids = c.GetAssignedPictureIds().ToList();
-                    if (ids.Contains(picId)) 
-                    {
-                        ids.Remove(picId);
-                        //c.AssignedPictureIds = ids.Count > 0 ? String.Join<int>(",", ids) : null;
-                        c.SetAssignedPictureIds(ids.ToArray());
-                        touched = true;
-                        // we will save after we're done. It's faster.
-                    }
-                }
-            }
+			foreach (var c in combinations)
+			{
+				var ids = c.GetAssignedPictureIds().ToList();
+				if (ids.Contains(picId))
+				{
+					ids.Remove(picId);
+					//c.AssignedPictureIds = ids.Count > 0 ? String.Join<int>(",", ids) : null;
+					c.SetAssignedPictureIds(ids.ToArray());
+					touched = true;
+					// we will save after we're done. It's faster.
+				}
+			}
 
             // save in one shot!
             if (touched)
@@ -1681,6 +1595,101 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #endregion
-    }
+		#region Bundled products
+
+		/// <summary>
+		/// Inserts a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void InsertBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			if (bundleItem.BundleProductId == 0)
+				throw new SmartException("BundleProductId of a bundle item cannot be 0.");
+
+			if (bundleItem.ProductId == 0)
+				throw new SmartException("ProductId of a bundle item cannot be 0.");
+
+			if (bundleItem.ProductId == bundleItem.BundleProductId)
+				throw new SmartException("A bundle item cannot be an element of itself.");
+
+			_productBundleItemRepository.Insert(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityInserted(bundleItem);
+		}
+
+		/// <summary>
+		/// Updates a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void UpdateBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			_productBundleItemRepository.Update(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityUpdated(bundleItem);
+		}
+
+		/// <summary>
+		/// Deletes a product bundle item
+		/// </summary>
+		/// <param name="bundleItem">Product bundle item</param>
+		public virtual void DeleteBundleItem(ProductBundleItem bundleItem)
+		{
+			if (bundleItem == null)
+				throw new ArgumentNullException("bundleItem");
+
+			_productBundleItemRepository.Delete(bundleItem);
+
+			//event notification
+			_eventPublisher.EntityDeleted(bundleItem);
+		}
+
+		/// <summary>
+		/// Get a product bundle item by item identifier
+		/// </summary>
+		/// <param name="bundleItemId">Product bundle item identifier</param>
+		/// <returns>Product bundle item</returns>
+		public virtual ProductBundleItem GetBundleItemById(int bundleItemId)
+		{
+			if (bundleItemId == 0)
+				return null;
+
+			return _productBundleItemRepository.GetById(bundleItemId);
+		}
+
+		/// <summary>
+		/// Gets a list of bundle items for a particular product identifier
+		/// </summary>
+		/// <param name="bundleProductId">Product identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>List of bundle items</returns>
+		public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
+		{
+			var query =
+				from pbi in _productBundleItemRepository.Table
+				join p in _productRepository.Table on pbi.ProductId equals p.Id
+				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || (pbi.Published && p.Published))
+				orderby pbi.DisplayOrder
+				select pbi;
+
+			query = _productBundleItemRepository.Expand<Product>(query, x => x.Product);
+
+			var bundleItemData = new List<ProductBundleItemData>();
+
+			query.ToList().Each(x => bundleItemData.Add(new ProductBundleItemData(x)));
+
+			return bundleItemData;
+		}
+
+		#endregion
+
+		#endregion
+	}
 }

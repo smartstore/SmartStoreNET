@@ -53,7 +53,18 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+            </td>
+        </tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
                 <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
@@ -67,21 +78,20 @@
                     .Name("products-grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Id)
-                        .Template(
-                                @<text>
-                                    <input name="SelectedProductIds" type="checkbox" value="@item.Id " />
-                                </text>
-                        )
-                        .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' />")
-                        .Title(T("Admin.Common.Check").Text)
-                        .Width(50);
-                        columns.Bound(x => x.Name);
+						columns.Bound(x => x.Id)
+							.Template(x => string.Format("<input type='checkbox' name='SelectedProductIds' value='{0}' class='checkboxGroups'/>", x.Id))
+							.ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(x => x.Name)
+							.Template(x => @Html.LabeledProductName(0, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+						columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Published)
-                            .Width("100px")
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
+                            .Centered()
+							.Width(100);
                     })
                     .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductAddPopupList", "Manufacturer"))
@@ -91,7 +101,8 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button type="submit" name="save" value="save" class="t-button">@T("Admin.Common.Save")</button>
+				<p></p>
+				<button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
             </td>
         </tr>
     </table>
@@ -116,7 +127,8 @@
             var searchModel = {
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
-                SearchManufacturerId: $('#SearchManufacturerId').val()
+                SearchManufacturerId: $('#SearchManufacturerId').val(),
+                SearchProductTypeId: $('#SearchProductTypeId').val()
             };
             e.data = searchModel;
         }

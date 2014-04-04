@@ -13,11 +13,11 @@ namespace SmartStore.Web.Models.Catalog
             ProductPrice = new ProductPriceModel();
             DefaultPictureModel = new PictureModel();
             SpecificationAttributeModels = new List<ProductSpecificationModel>();
-            //codehint: sm-add begin
             Manufacturers = new List<ManufacturerOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
             ColorAttributes = new List<ColorAttributeModel>();
-            //codehint: sm-add end
+			Weight = "";
+			TransportSurcharge = "";
         }
 
         public string Name { get; set; }
@@ -43,15 +43,18 @@ namespace SmartStore.Web.Models.Catalog
         public int TotalReviews { get; set; }
         public bool ShowReviews { get; set; }
         public bool ShowDeliveryTimes { get; set; }
-        public DeliveryTime DeliveryTime { get; set; }
+        public string DeliveryTimeName { get; set; }
+        public string DeliveryTimeHexValue { get; set; }
+
         public bool IsShipEnabled { get; set; }
         public bool DisplayDeliveryTimeAccordingToStock { get; set; }
         public string StockAvailablity { get; set; }
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
-		public int DefaultProductVariantId { get; set; }
+		public int ProductMinPriceId { get; set; }
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
+		public bool HideBuyButtonInLists { get; set; }
         //codehint: sm-add end
 
         //price

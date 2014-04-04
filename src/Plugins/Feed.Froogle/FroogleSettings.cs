@@ -15,6 +15,9 @@ namespace SmartStore.Plugin.Feed.Froogle
 		public string Material { get; set; }
 		public string Pattern { get; set; }
 		public bool OnlineOnly { get; set; }
+		public int ExpirationDays { get; set; }
+		public bool ExportShipping { get; set; }
+		public bool ExportBasePrice { get; set; }
 
 		public string AppendDescriptionText1 { get; set; }
 		public string AppendDescriptionText2 { get; set; }

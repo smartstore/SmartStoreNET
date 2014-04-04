@@ -10,7 +10,7 @@ namespace SmartStore.Services.Directory
     {
         /// <summary>
         /// Checks if the delivery time is associated with
-        /// at least one dependant entity (e.g. ProductVariant)
+        /// at least one dependant entity
         /// </summary>
         bool IsAssociated(int deliveryTimeId);
         
@@ -40,5 +40,6 @@ namespace SmartStore.Services.Directory
         /// <param name="currency">DeliveryTime</param>
         void InsertDeliveryTime(DeliveryTime deliveryTime);
 
+		void UpdateDeliveryTime(DeliveryTime deliveryTime);
     }
 }

@@ -323,6 +323,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.PinterestLink")]
             public string PinterestLink { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink")]
+            public string YoutubeLink { get; set; }
         }
 
         //codehint: sm-add end

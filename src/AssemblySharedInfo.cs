@@ -8,6 +8,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("SmartStore.NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SmartStore AG")]
-[assembly: AssemblyCopyright("Copyright © SmartStore AG 2013")]
+[assembly: AssemblyCopyright("Copyright © SmartStore AG 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

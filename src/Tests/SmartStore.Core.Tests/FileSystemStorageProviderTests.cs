@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.IO;
+using SmartStore.Core.IO.Media;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Tests
 {
@@ -30,7 +32,7 @@ namespace SmartStore.Core.Tests
             var context = new FakeHttpContext("~/");
             var webHelper = new WebHelper(context);
 
-            _storageProvider = new FileSystemStorageProvider(new FileSystemSettings { DirectoryName = "Default" }, webHelper);
+            _storageProvider = new FileSystemStorageProvider(new FileSystemSettings { DirectoryName = "Default" });
         }
 
         [TearDown]

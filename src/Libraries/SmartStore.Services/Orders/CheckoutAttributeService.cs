@@ -4,7 +4,7 @@ using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Orders
 {
@@ -18,6 +18,8 @@ namespace SmartStore.Services.Orders
         private const string CHECKOUTATTRIBUTEVALUES_ALL_KEY = "SmartStore.checkoutattributevalue.all-{0}";
         private const string CHECKOUTATTRIBUTES_PATTERN_KEY = "SmartStore.checkoutattribute.";
         private const string CHECKOUTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.checkoutattributevalue.";
+        private const string CHECKOUTATTRIBUTES_BY_ID_KEY = "SmartStore.checkoutattribute.id-{0}";
+        private const string CHECKOUTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.checkoutattributevalue.id-{0}";
         #endregion
         
         #region Fields
@@ -99,7 +101,11 @@ namespace SmartStore.Services.Orders
             if (checkoutAttributeId == 0)
                 return null;
 
-            return _checkoutAttributeRepository.GetById(checkoutAttributeId);
+            string key = string.Format(CHECKOUTATTRIBUTES_BY_ID_KEY, checkoutAttributeId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _checkoutAttributeRepository.GetById(checkoutAttributeId); 
+            });
         }
 
         /// <summary>
@@ -189,7 +195,11 @@ namespace SmartStore.Services.Orders
             if (checkoutAttributeValueId == 0)
                 return null;
 
-            return _checkoutAttributeValueRepository.GetById(checkoutAttributeValueId);
+            string key = string.Format(CHECKOUTATTRIBUTEVALUES_BY_ID_KEY, checkoutAttributeValueId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _checkoutAttributeValueRepository.GetById(checkoutAttributeValueId); 
+            });
         }
 
         /// <summary>

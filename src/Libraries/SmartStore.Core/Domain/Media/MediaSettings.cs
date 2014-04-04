@@ -5,14 +5,37 @@ namespace SmartStore.Core.Domain.Media
 {
     public class MediaSettings : ISettings
     {
-        public int AvatarPictureSize { get; set; }
+		public MediaSettings()
+		{
+			AvatarPictureSize = 85;
+			ProductThumbPictureSize = 100;
+			ProductDetailsPictureSize = 300;
+			ProductThumbPictureSizeOnProductDetailsPage = 70;
+			AssociatedProductPictureSize = 125;
+			BundledProductPictureSize = 70;
+			CategoryThumbPictureSize = 125;
+			ManufacturerThumbPictureSize = 125;
+			CartThumbPictureSize = 80;
+			CartThumbBundleItemPictureSize = 32;
+			MiniCartThumbPictureSize = 32;
+			AutoCompleteSearchThumbPictureSize = 20;
+			MaximumImageSize = 1280;
+			DefaultPictureZoomEnabled = true;
+			PictureZoomType = "window";
+			DefaultImageQuality = 90;
+			MultipleThumbDirectories = true;
+		}
+		
+		public int AvatarPictureSize { get; set; }
         public int ProductThumbPictureSize { get; set; }
         public int ProductDetailsPictureSize { get; set; }
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
-        public int ProductVariantPictureSize { get; set; }
+        public int AssociatedProductPictureSize { get; set; }
+		public int BundledProductPictureSize { get; set; }
         public int CategoryThumbPictureSize { get; set; }
         public int ManufacturerThumbPictureSize { get; set; }
         public int CartThumbPictureSize { get; set; }
+		public int CartThumbBundleItemPictureSize { get; set; }
         public int MiniCartThumbPictureSize { get; set; }
         public int AutoCompleteSearchThumbPictureSize { get; set; }
 

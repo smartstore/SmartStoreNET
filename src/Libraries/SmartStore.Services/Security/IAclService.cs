@@ -15,7 +15,12 @@ namespace SmartStore.Services.Security
     /// </summary>
     public partial interface IAclService
     {
-        /// <summary>
+		/// <summary>
+		/// Gets a value indicating whether at least one ACL record is in active state system-wide
+		/// </summary>
+		bool HasActiveAcl { get; }
+		
+		/// <summary>
         /// Deletes an ACL record
         /// </summary>
         /// <param name="aclRecord">ACL record</param>
@@ -35,6 +40,14 @@ namespace SmartStore.Services.Security
         /// <param name="entity">Entity</param>
         /// <returns>ACL records</returns>
         IList<AclRecord> GetAclRecords<T>(T entity) where T : BaseEntity, IAclSupported;
+
+		/// <summary>
+		/// Gets ACL records
+		/// </summary>
+		/// <param name="entityName">Name of entity</param>
+		/// <param name="entityId">Id of entity</param>
+		/// <returns>ACL records</returns>
+		IList<AclRecord> GetAclRecordsFor(string entityName, int entityId);
 
         /// <summary>
         /// Inserts an ACL record

@@ -16,6 +16,14 @@ namespace SmartStore.Admin.Models.Directory
         public CurrencyModel()
         {
             Locales = new List<CurrencyLocalizedModel>();
+
+			AvailableDomainEndings = new List<SelectListItem>()
+			{
+				new SelectListItem() { Text = ".com", Value = ".com" },
+				new SelectListItem() { Text = ".uk", Value = ".uk" },
+				new SelectListItem() { Text = ".de", Value = ".de" },
+				new SelectListItem() { Text = ".ch", Value = ".ch" }
+			};
         }
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.Name")]
         [AllowHtml]
@@ -50,6 +58,10 @@ namespace SmartStore.Admin.Models.Directory
 
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency")]
         public bool IsPrimaryStoreCurrency { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.DomainEndings")]
+		public string DomainEndings { get; set; }
+		public IList<SelectListItem> AvailableDomainEndings { get; set; }
 
         public IList<CurrencyLocalizedModel> Locales { get; set; }
 

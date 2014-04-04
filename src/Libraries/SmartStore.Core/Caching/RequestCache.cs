@@ -47,29 +47,31 @@ namespace SmartStore.Core.Caching
             }
         }
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime)
+        public object Get(string key)
         {
             var items = GetItems();
             if (items == null)
-                return default(T);
-            
-            key = BuildKey(key);
+                return null;
 
-            if (items.Contains(key))
-            {
-                return (T)items[key];
-            }
-            else
-            {
-                var value = acquirer();
-                if (value != null)
-                {
-                    items.Add(key, value);
-                }
-
-                return value;
-            }
+			return items[BuildKey(key)];
         }
+
+		public void Set(string key, object value, int? cacheTime)
+		{
+			var items = GetItems();
+			if (items == null)
+				return;
+
+			key = BuildKey(key);
+
+			if (value != null)
+			{
+				if (items.Contains(key))
+					items[key] = value;
+				else
+					items.Add(key, value);
+			}
+		}
 
         public bool Contains(string key)
         {
@@ -94,6 +96,11 @@ namespace SmartStore.Core.Caching
             return key.HasValue() ? REGION_NAME + key : null;
         }
 
-    }
+		public bool IsSingleton
+		{
+			get { return false; }
+		}
+
+	}
 
 }

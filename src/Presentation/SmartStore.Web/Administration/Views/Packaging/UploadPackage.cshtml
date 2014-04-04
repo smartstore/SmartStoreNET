@@ -1,0 +1,43 @@
+﻿
+@{
+	string dialogTitle = (string)Model.Title;
+	string dialogInfo = (string)Model.Info;
+}
+
+@{Html.SmartStore().Window()
+	.Name("uploadpackage-window")
+	.Title(dialogTitle)
+	.Content(@<text>
+		@using (Html.BeginForm("UploadPackage", "Packaging", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+		{
+			<div class="alert alert-info">
+				@dialogInfo
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="packagefile">@T("Admin.Packaging.Dialog.File"):</label>
+				<div class="controls">
+					<input type="file" id="packagefile" name="packagefile" />
+				</div>
+			</div>
+		}
+
+	</text>)
+	.FooterContent(@<text>
+		<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">@T("Admin.Packaging.Dialog.Upload")</button>
+		<a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+	</text>)
+	.Modal(true)
+	.Visible(false)
+	.Render();
+}
+
+<script>
+	$(function () {
+		$("#uploadpackagesubmit").click(function (e) {
+			e.preventDefault();
+			var btn = $(this);
+			var win = $('#uploadpackage-window');
+			win.find("form").submit();
+		});
+	});
+</script>

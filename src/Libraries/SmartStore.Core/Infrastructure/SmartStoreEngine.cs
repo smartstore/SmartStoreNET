@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 using Autofac;
+using Autofac.Integration.Mvc;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -51,19 +54,20 @@ namespace SmartStore.Core.Infrastructure
                     startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
                 }
             }
-            
-            //sort
-            foreach (var startUpTask in startUpTasks.OrderBy(st => st.Order))
-            {
-                startUpTask.Execute();
-            }
+
+			// execute tasks async grouped by order
+			var groupedTasks = startUpTasks.OrderBy(st => st.Order).ToLookup(x => x.Order);
+			foreach (var tasks in groupedTasks)
+			{
+				Parallel.ForEach(tasks, task => { task.Execute(); });
+			}
+			
         }
         
         private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker, SmartStoreConfig config)
         {
             var builder = new ContainerBuilder();
-
-            _containerManager = new ContainerManager(builder.Build());
+			_containerManager = new ContainerManager(builder.Build());
             configurer.Configure(this, _containerManager, broker, config);
         }
 
@@ -77,12 +81,17 @@ namespace SmartStore.Core.Infrastructure
         /// <param name="config">Config</param>
         public void Initialize(SmartStoreConfig config)
         {
-            bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
-            if (databaseInstalled)
-            {
-                //startup tasks
-                RunStartupTasks();
-            }
+            bool databaseInstalled = DataSettings.DatabaseIsInstalled();
+			if (databaseInstalled)
+			{
+				//startup tasks
+				RunStartupTasks();
+			}
+			else
+			{
+				// TODO: (MC) not really good code. Find a better pattern!
+				new CommonStartupTask().Execute();
+			}
         }
 
         public T Resolve<T>(string name = null) where T : class
@@ -103,10 +112,6 @@ namespace SmartStore.Core.Infrastructure
             return ContainerManager.Resolve(type);
         }
 
-        public Array ResolveAll(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
 
         public T[] ResolveAll<T>()
         {
@@ -128,5 +133,6 @@ namespace SmartStore.Core.Infrastructure
         }
 
         #endregion
-    }
+
+	}
 }

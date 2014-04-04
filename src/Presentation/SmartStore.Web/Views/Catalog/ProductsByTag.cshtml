@@ -6,6 +6,7 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Extensions;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Core.Domain.Seo;
 
 @{
     Layout = "~/Views/Shared/_ColumnsThree.cshtml";
@@ -13,6 +14,14 @@
     //title
     Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
     Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+    
+    //canonical URL
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+        var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(byTagUrl);
+	}
 }
 
 @functions{

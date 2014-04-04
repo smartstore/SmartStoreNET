@@ -51,13 +51,13 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual PagerBuilder Pager(int pageIndex, int pageSize, int totalItemsCount)
         {
-            return Pager(new Pageable(pageIndex, pageSize, totalItemsCount));
+            return Pager(new PagedList(pageIndex, pageSize, totalItemsCount));
         }
 
         public virtual PagerBuilder Pager(int pageCount)
         {
             // for simple pagers without active state (e.g. forum topic mini pager)
-            return Pager(new Pageable(0, 1, pageCount));
+            return Pager(new PagedList(0, 1, pageCount));
         }
 
         public virtual PagerBuilder Pager(IPageable model)

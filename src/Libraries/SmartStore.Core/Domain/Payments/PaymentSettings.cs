@@ -8,6 +8,8 @@ namespace SmartStore.Core.Domain.Payments
         public PaymentSettings()
         {
             ActivePaymentMethodSystemNames = new List<string>();
+			AllowRePostingPayments = true;
+			BypassPaymentMethodSelectionIfOnlyOne = true;
         }
 
         /// <summary>
@@ -24,5 +26,10 @@ namespace SmartStore.Core.Domain.Payments
         /// Gets or sets a value indicating whether we should bypass 'select payment method' page if we have only one payment method
         /// </summary>
         public bool BypassPaymentMethodSelectionIfOnlyOne { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether we should bypass the payment method info page
+		/// </summary>
+		public bool BypassPaymentMethodInfo { get; set; }
     }
 }

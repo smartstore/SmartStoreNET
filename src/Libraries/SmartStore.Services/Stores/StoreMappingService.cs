@@ -45,7 +45,11 @@ namespace SmartStore.Services.Stores
 			this._cacheManager = cacheManager;
 			this._storeContext = storeContext;
 			this._storeMappingRepository = storeMappingRepository;
+
+			this.QuerySettings = DbQuerySettings.Default;
 		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
 		#endregion
 
@@ -197,7 +201,7 @@ namespace SmartStore.Services.Stores
 		/// <returns>true - authorized; otherwise, false</returns>
 		public virtual bool Authorize<T>(T entity) where T : BaseEntity, IStoreMappingSupported
 		{
-			return Authorize(entity, _storeContext.CurrentStore);
+			return Authorize(entity, _storeContext.CurrentStore.Id);
 		}
 
 		/// <summary>
@@ -207,20 +211,23 @@ namespace SmartStore.Services.Stores
 		/// <param name="entity">Entity</param>
 		/// <param name="store">Store</param>
 		/// <returns>true - authorized; otherwise, false</returns>
-		public virtual bool Authorize<T>(T entity, Store store) where T : BaseEntity, IStoreMappingSupported
+		public virtual bool Authorize<T>(T entity, int storeId) where T : BaseEntity, IStoreMappingSupported
 		{
 			if (entity == null)
 				return false;
 
-			if (store == null)
+			if (storeId == 0)
 				//return true if no store specified/found
+				return true;
+
+			if (QuerySettings.IgnoreMultiStore)
 				return true;
 
 			if (!entity.LimitedToStores)
 				return true;
 
-			foreach (var storeId in GetStoresIdsWithAccess(entity))
-				if (store.Id == storeId)
+			foreach (var storeIdWithAccess in GetStoresIdsWithAccess(entity))
+				if (storeId == storeIdWithAccess)
 					//yes, we have such permission
 					return true;
 

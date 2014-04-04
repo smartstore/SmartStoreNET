@@ -12,9 +12,9 @@ namespace SmartStore.Core.Domain.Orders
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
         
         /// <summary>
-        /// Gets or sets the associated order product variant identifier
+        /// Gets or sets the associated order item identifier
         /// </summary>
-        public int? PurchasedWithOrderProductVariantId { get; set; }
+        public int? PurchasedWithOrderItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the gift card type identifier
@@ -96,9 +96,9 @@ namespace SmartStore.Core.Domain.Orders
         }
         
         /// <summary>
-        /// Gets or sets the associated order product variant
+        /// Gets or sets the associated order item
         /// </summary>
-        public virtual OrderProductVariant PurchasedWithOrderProductVariant { get; set; }
+        public virtual OrderItem PurchasedWithOrderItem { get; set; }
 
         #region Methods
 

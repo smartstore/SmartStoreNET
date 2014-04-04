@@ -1,4 +1,4 @@
-
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -6,53 +6,95 @@ namespace SmartStore.Core.Domain.Catalog
     /// <summary>
     /// Represents a product variant attribute value
     /// </summary>
-    public partial class ProductVariantAttributeValue : BaseEntity, ILocalizedEntity
+    [DataContract]
+	public partial class ProductVariantAttributeValue : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the product variant attribute mapping identifier
         /// </summary>
-        public int ProductVariantAttributeId { get; set; }
+		[DataMember]
+		public int ProductVariantAttributeId { get; set; }
 
         /// <summary>
         /// Gets or sets the product variant attribute alias 
         /// (an optional key for advanced customization)
         /// </summary>
-        public string Alias { get; set; }
+		[DataMember]
+		public string Alias { get; set; }
 
         /// <summary>
         /// Gets or sets the product variant attribute name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the color RGB value (used with "Color squares" attribute type)
         /// </summary>
-        public virtual string ColorSquaresRgb { get; set; }
+		[DataMember]
+		public virtual string ColorSquaresRgb { get; set; }
 
         /// <summary>
         /// Gets or sets the price adjustment
         /// </summary>
-        public decimal PriceAdjustment { get; set; }
+		[DataMember]
+		public decimal PriceAdjustment { get; set; }
 
         /// <summary>
         /// Gets or sets the weight adjustment
         /// </summary>
-        public decimal WeightAdjustment { get; set; }
+		[DataMember]
+		public decimal WeightAdjustment { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the value is pre-selected
         /// </summary>
-        public bool IsPreSelected { get; set; }
+		[DataMember]
+		public bool IsPreSelected { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
-        
+		[DataMember]
+		public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type Id
+		/// </summary>
+		[DataMember]
+		public int ValueTypeId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the linked product Id
+		/// </summary>
+		[DataMember]
+		public int LinkedProductId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the quantity for the linked product
+		/// </summary>
+		[DataMember]
+		public int Quantity { get; set; }
+
         /// <summary>
         /// Gets the product variant attribute
         /// </summary>
-        public virtual ProductVariantAttribute ProductVariantAttribute { get; set; }
-    }
+		[DataMember]
+		public virtual ProductVariantAttribute ProductVariantAttribute { get; set; }
 
+		/// <summary>
+		/// Gets or sets the product attribute value type
+		/// </summary>
+		public ProductVariantAttributeValueType ValueType
+		{
+			get
+			{
+				return (ProductVariantAttributeValueType)this.ValueTypeId;
+			}
+			set
+			{
+				this.ValueTypeId = (int)value;
+			}
+		}
+    }
 }

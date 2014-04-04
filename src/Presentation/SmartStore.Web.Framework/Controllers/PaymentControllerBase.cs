@@ -4,8 +4,8 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-    [SetWorkingCulture]
-    public abstract class PaymentControllerBase : Controller
+
+    public abstract class PaymentControllerBase : SmartController
     {
         public abstract IList<string> ValidatePaymentForm(FormCollection form);
         public abstract ProcessPaymentRequest GetPaymentInfo(FormCollection form);

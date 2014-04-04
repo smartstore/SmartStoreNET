@@ -27,7 +27,9 @@
             </a>
             @if (Model.DisplayPdfDownloadCatalog)
             {
-                <a href="@Url.Action("DownloadCatalogAsPdf")" class="btn">@T("Admin.Catalog.Products.List.DownloadPDF")</a>
+                <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">
+					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Catalog.Products.List.DownloadPDF")
+				</a>
             }
             <div class="btn-group" style="vertical-align: middle">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -41,13 +43,17 @@
                 <li><a id="exportexcel-selected" href="javascript:void(0)">@T("Admin.Common.ExportToExcel.Selected")</a></li>
               </ul>
             </div>
-            @*<button type="submit" id="importexcel2" name="importexcel2" value="importexcel2" class="btn">@T("Admin.Common.ImportFromExcel")</button>*@
-            <a id="importexcel" href="#importexcel-window" class="btn" role="button" data-toggle="modal">@T("Admin.Common.ImportFromExcel")</a>
-            <button type="submit" id="delete-selected" class="btn btn-danger"><i class="icon-trash"></i>&nbsp;@T("Admin.Common.Delete.Selected")</button>
+            <a id="importexcel" href="#importexcel-window" class="btn" role="button">
+				<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
+			</a>
+            <button type="submit" id="delete-selected" class="btn btn-danger">
+				<i class="icon-trash"></i>
+				@T("Admin.Common.Delete.Selected")
+			</button>
         </div>
     </div>
 
-       <table width="100%">
+       <table style="width:100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SearchProductName)
@@ -82,16 +88,29 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.GoDirectlyToSku)
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToSku)
-                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="t-button">@T("Admin.Common.Go")</button>
+                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
+					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+				</button>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <button type="submit" id="search-products" value="search-products" class="t-button">@T("Admin.Common.Search")</button>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+            <td class="adminData">
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -105,13 +124,13 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id)
-                        .Filterable(false)
-                        .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-                        .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                        .Title("<input id='mastercheckbox' type='checkbox'/>")
-                        .Width(50)
-                        .HtmlAttributes(new { style = "text-align:center" })
-                        .HeaderHtmlAttributes(new { style = "text-align:center" });
+                            .Filterable(false)
+                            .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                            .Title("<input id='mastercheckbox' type='checkbox'/>")
+                            .Width(50)
+                            .HtmlAttributes(new { style = "text-align:center" })
+                            .HeaderHtmlAttributes(new { style = "text-align:center" });
 
                         if (Model.DisplayProductPictures)
                         {
@@ -125,8 +144,11 @@
                                 .ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
                         }
                         columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+                        columns.Bound(x => x.Sku);
+                        columns.Bound(x => x.Price);
+                        columns.Bound(x => x.StockQuantity);
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))
@@ -139,60 +161,10 @@
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                             .Title(T("Admin.Common.Edit").Text);
                     })
-                    .DetailView(details => details.ClientTemplate(
-                            Html.Telerik().Grid<ProductVariantModel>()
-                            .Name("variants-grid-<#= Id #>")
-                            .Columns(columns =>
-                            {
-                                columns.Bound(pv => pv.Name)
-                                .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
-                                columns.Bound(pv => pv.Sku).Width(100);
-                                columns.Bound(pv => pv.Price).Width(100);
-                                columns.Bound(pv => pv.StockQuantity).Width(100);
-                                columns.Bound(pv => pv.Published)
-                                    .Width(100)
-                                    .Template(item => @Html.SymbolForBool(item.Published))
-                                    .ClientTemplate(@Html.SymbolForBool("Published"))
-                                    .Centered();
-                            })
-                            .DataBinding(dataBinding => dataBinding.Ajax()
-                                .Select("GetVariants", "Product", new
-                                {
-                                    productId =
-                                        "<#= Id #>"
-                                }))
-                            .ToHtmlString()
-                        )
-                        .Template(
-
-
-                            @<text>
-                            @(Html.Telerik().Grid(item.ProductVariantModels)
-                                                .Name("variants-grid-" + item.Id)
-                                                .Columns(columns =>
-                                                {
-                                                    columns.Bound(pv => pv.Name)
-                                                    .Template(pv => Html.ActionLink(pv.Name, "Edit", "ProductVariant", new { id = pv.Id }, new { }))
-                                                    .ClientTemplate("<a href=\""+ @Url.Content("~/Admin/ProductVariant/Edit/") + "<#= Id #>\"><#= Name #></a>");
-                                                    columns.Bound(pv => pv.Sku).Width(100);
-                                                    columns.Bound(pv => pv.Price).Width(100);
-                                                    columns.Bound(pv => pv.StockQuantity).Width(100);
-                                                    columns.Bound(pv => pv.Published)
-                                                    .Width(100)
-                                                    .Template(pv => pv.Published.ToString().ToLower())
-                                                    .Centered();
-                                                })
-                                        )
-                            </text>
-
-
-                                            )
-                                            )
-                                            .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                                            .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
-                                            .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-                                            .EnableCustomBinding(true))
+                    .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+                    .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+                    .EnableCustomBinding(true))
             </td>
         </tr>
     </table>
@@ -279,6 +251,13 @@
                 }
                 productsGrid_updateMasterCheckbox();
             });
+
+            $('#PdfDownloadCatalog').click(function (e) {
+            	if (!confirm(_.str.unescapeHTML('@T("Admin.Common.AskToProceed").Text'))) {
+            		e.preventDefault();
+            		return false;
+            	}
+            });
         });
 
         function productsGrid_onDataBinding(e) {
@@ -286,7 +265,8 @@
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
                 SearchManufacturerId: $('#SearchManufacturerId').val(),
-                SearchStoreId: $('#SearchStoreId').val()
+                SearchStoreId: $('#SearchStoreId').val(),
+                SearchProductTypeId: $('#SearchProductTypeId').val()
             };
             e.data = searchModel;
         }
@@ -314,22 +294,40 @@
         .Name("importexcel-window")
         .Title(T("Admin.Common.ImportFromExcel").Text)
         .Content(@<text>
-            @using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
             {
-                <table style="text-align: left;">
-                    <tr>
-                        <td>
-                            <strong>@T("Admin.Common.ExcelFile"): </strong>
-                        </td>
-                        <td>
-                            <input type="file" id="importexcelfile" name="importexcelfile" />
-                        </td>
-                    </tr>
-                </table>
+				<div id="importexcel-last-result-summary" class="alert hide">
+
+				</div>
+
+				<div id="importexcel-upload" class="control-group">
+					<label class="control-label" for="importexcelfile">@T("Admin.Common.ExcelFile"):</label>
+					<div class="controls">
+						<input type="file" id="importexcelfile" name="importexcelfile" />
+					</div>
+				</div>
+				
+				<div id="importexcel-progress" class="hide">
+					<div class="progress progress-warning progress-striped active">
+						<div class="bar iep-bar" style="width: 0%;"></div>
+					</div>
+					<div class="iep-info muted">
+						@Html.Raw(T("Admin.Common.ImportFromExcel.ProcessedCount").ToString().FormatInvariant("<strong class='iep-processed'>0</strong>", "<strong class='iep-records'>0</strong>"))
+						@Html.Raw(T("Admin.Common.ImportFromExcel.ActiveSince").ToString().FormatCurrent("<span class='iep-elapsed'></span>"))
+					</div>
+					<div class="iep-info muted">
+						@(Html.Raw(T("Admin.Common.ImportFromExcel.QuickStats").ToString().FormatInvariant(
+							"<span class='iep-new'>0</span>", 
+							"<span class='iep-modified'>0</span>",
+							"<span class='iep-warnings'>0</span>",
+							"<span class='iep-errors'>0</span>")))
+					</div>
+				</div>
             }
+
             </text>)
         .FooterContent(@<text>
-            <button id="importexcelsubmit" type="submit" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
+            <button id="importexcelsubmit" type="submit" data-action="import" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
             <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
         </text>)
         .Modal(true)
@@ -338,26 +336,113 @@
 }
 <script type="text/javascript">
     $(document).ready(function () {
+		
+    	var importProgressIntervall;
+    	var firstProgressCheck = true;
+    	var importRunning = true;
+		
+    	$('#importexcel').on('click', function (e) {
+    		e.preventDefault();
+    		var btn = $(this);
 
-        $("#importexcelsubmit").click(function (e) {
-            e.preventDefault();
+    		if (!btn.data('initialized')) {
+    			checkImportProgress(false);
+    			btn.data('initialized', true);
+    		}
 
-            var win = $('#importexcel-window');
-            win.data('modal').hide();
+    		$(btn.attr('href')).modal('toggle');
+    	});
 
-            var progress = function () {
-                $.throbber.show({
-                    message: '@T("Admin.Common.ImportFromExcelProgress")',
-                    callback: function () {
-                        win.find("form").submit();
-                    }
-                });
-            };
+    	function checkImportProgress(async) {
+    		$.ajax({
+    			url: '@Url.Action("ImportExcelProgress", "Product")',
+    			dataType: "json",
+    			async: _.isBoolean(async) ? async : !firstProgressCheck,
+    			type: "POST",
+    			cache: false,
+				global: false,
+    			success: function (data, status) {
+    				var btn = $('#importexcelsubmit');
 
-            _.delay(progress, 200);
+    				if (data.LastResultSummary)
+    				{
+    					$('#importexcel-last-result-summary')
+							.html(data.LastResultSummary + "&nbsp;<a href='@Url.Action("ImportExcelDownloadReport", "Product")'>@T("Admin.Common.ImportFromExcel.DownloadReport")</a>")
+							.removeClass("alert-success alert-error")
+							.addClass(data.LastResultClass)
+							.removeClass("hide");
+    				}
 
+    				if (data.NoRunningTask) {
+    					window.clearInterval(importProgressIntervall);
+    					$('#importexcel-upload').show();
+    					$('#importexcel-progress').hide();
+    					if (btn.data('action') == 'cancel') {
+    						btn.removeClass("btn-danger")
+								.addClass("btn-primary")
+								.data('action', 'import')
+								.text('@T("Admin.Common.ImportFromExcel")');
+    					}
+    				}
+    				else {
+    					$('#importexcel-upload').hide();
+    					$('#importexcel-progress').show();
+    					if (btn.data('action') == 'import') {
+    						btn.removeClass("btn-primary")
+								.addClass("btn-danger")
+								.data('action', 'cancel')
+								.text('@T("Admin.Common.ImportFromExcel.Cancel")');
+    					}
+
+    					updateProgress(data.Progress);
+
+    					// start the checkprogress interval
+    					if (firstProgressCheck)
+    						importProgressIntervall = window.setInterval(checkImportProgress, 2000);
+    				}
+    			},
+    			error: function () {
+    				console.error(arguments[0].responseText);
+    			},
+    			complete: function () {
+    				firstProgressCheck = false;
+    			}
+    		});
+    	}
+
+    	function updateProgress(data) {
+    		var el = $('#importexcel-progress');
+    		var percent = Math.round(data.ProcessedPercent) + '%';
+
+    		el.find('.iep-bar').css('width', percent).text(percent);
+    		el.find('.iep-processed').text(data.TotalProcessed);
+    		el.find('.iep-records').text(data.TotalRecords);
+    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.Seconds));
+    		el.find('.iep-new').text(data.NewRecords);
+    		el.find('.iep-modified').text(data.ModifiedRecords);
+    		el.find('.iep-warnings').text(data.TotalWarnings);
+    		el.find('.iep-errors').text(data.TotalErrors);
+
+    		importRunning = true;
+    	}
+
+    	$("#importexcelsubmit").click(function (e) {
+    		e.preventDefault();
+
+    		var btn = $(this);
+    		var win = $('#importexcel-window');
+
+    		if (btn.data('action') == 'import') {
+    			win.find("form").submit();
+    		}
+    		else {
+    			if (window.confirm('@T("Admin.Common.ImportFromExcel.CancelPrompt")')) {
+    				setLocation('@Url.Action("ImportExcelCancel", "Product")');
+    			}
+    		}
         });
 
     });
 </script>
+
 

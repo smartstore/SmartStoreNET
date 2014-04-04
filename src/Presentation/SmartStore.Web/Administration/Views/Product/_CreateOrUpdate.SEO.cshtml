@@ -1,0 +1,86 @@
+﻿@model ProductModel
+
+@(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-seo-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.Locales[item].MetaKeywords, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.Locales[item].MetaDescription, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.Locales[item].MetaTitle, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].SeName)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.Locales[item].SeName, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].SeName)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaKeywords)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(x => x.MetaKeywords, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.MetaKeywords)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaDescription)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(x => x.MetaDescription, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.MetaDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaTitle)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(x => x.MetaTitle, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.MetaTitle)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeName)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.SeName)
+            </td>
+        </tr>
+    </table>
+))

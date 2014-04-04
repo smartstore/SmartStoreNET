@@ -1,0 +1,17 @@
+
+Entity Framework Migrations:
+============================
+
+As of March 11 2014, SmartStore.NET fully supports Entity Framework code-based migrations (changeset 7920a6d2c0e0). 
+From this date on, database migration is NOT performed manually with plain SQL files anymore, but with auto-generated 
+code files which get compiled into the app and executed automatically on app startup.
+
+If you are migrating from a version PRIOR to March 11 2014 (e.g. V1.2.1 or older), 
+please manually run all applicable SQL migration scripts in this folder. This ensures the
+database is in the 'initial snapshot' state. After that, you will never have to migrate manually anymore.
+
+If your current version is dated March 11 2014 or later, simply ignore this folder and do nothing ;-)
+
+
+
+

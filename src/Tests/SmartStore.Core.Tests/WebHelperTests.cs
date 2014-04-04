@@ -55,15 +55,15 @@ namespace SmartStore.Core.Tests
             _webHelper.GetStoreLocation(false).ShouldEqual("http://www.example.com/");
         }
 
-        [Test]
-        public void Can_get_storeLocation_with_ssl()
-        {
-            var serverVariables = new NameValueCollection();
-            serverVariables.Add("HTTP_HOST", "www.example.com");
-            _httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
-            _webHelper = new WebHelper(_httpContext);
-            _webHelper.GetStoreLocation(true).ShouldEqual("https://www.example.com/");
-        }
+		//[Test]
+		//public void Can_get_storeLocation_with_ssl()
+		//{
+		//	var serverVariables = new NameValueCollection();
+		//	serverVariables.Add("HTTP_HOST", "www.example.com");
+		//	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
+		//	_webHelper = new WebHelper(_httpContext);
+		//	_webHelper.GetStoreLocation(true).ShouldEqual("https://www.example.com/");
+		//}
 
         [Test]
         public void Can_get_storeLocation_in_virtual_directory()

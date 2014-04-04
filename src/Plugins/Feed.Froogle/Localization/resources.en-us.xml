@@ -258,4 +258,25 @@
 	<LocaleResource Name="Store.Hint">
 		<Value>Select the store that will be used to generate the feed.</Value>
 	</LocaleResource>
+	<LocaleResource Name="ExpirationDays">
+		<Value>Expires in days</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExpirationDays.Hint">
+		<Value>Number of days after products should expire or no longer appear. A value of 0 causes that no expiry date will be exported.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExpirationDays.Validate">
+		<Value>The value must be between 1 and 29 days.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportShipping">
+		<Value>Export shipping data</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportShipping.Hint">
+		<Value>Activate this option if you want to export the weight of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice">
+		<Value>Export base price</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice.Hint">
+		<Value>Activate this option if you want to export the base price of the product.</Value>
+	</LocaleResource>
 </Language>

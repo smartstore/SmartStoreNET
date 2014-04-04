@@ -5,7 +5,14 @@ namespace SmartStore.Core.Domain.Common
 {
     public class PdfSettings : ISettings
     {
-        /// <summary>
+		public PdfSettings()
+		{
+			Enabled = true;
+			RenderOrderNotes = true;
+			FontFileName = "OpenSans-Regular.ttf";
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating PDF is supported
         /// </summary>
         public bool Enabled { get; set; }

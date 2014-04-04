@@ -53,13 +53,33 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchStoreId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchStoreId", Model.AvailableStores)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SearchProductTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+            </td>
+        </tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
                 <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
-    <p>
-    </p>
+    
+    <p></p>
+    
     <table class="adminContent">
         <tr>
             <td>
@@ -68,29 +88,29 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id)
-                        .Template(
-                                @<text>
-                <input name="SelectedProductIds" type="checkbox" value="@item.Id " />
-                </text>
-                        )
-                        .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' />")
-                        .Title(T("Admin.Common.Check").Text)
-                        .Width(50);
-                        columns.Bound(x => x.Name);
+                            .Template(x => string.Format("<input type='checkbox' name='SelectedProductIds' value='{0}' class='checkboxGroups'/>", x.Id))
+                            .ClientTemplate("<input type='checkbox' name='SelectedProductIds' value='<#= Id #>' class='checkboxGroups'/>")
+                            .Width(50)
+                            .HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(x => x.Name)
+							.Template(x => @Html.LabeledProductName(0, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+                        columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Published)
-                            .Width("100px")
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
+                            .Centered()
+                            .Width(100);
                     })
                     .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("CrossSellProductAddPopupList", "Product"))
-                    .ClientEvents(events => events.OnDataBinding("onDataBinding"))
+                    .ClientEvents(events => events.OnDataBinding("crossSellProducts_onDataBinding"))
                     .EnableCustomBinding(true))
             </td>
         </tr>
         <tr>
             <td colspan="2">
+                <p></p>
                 <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
             </td>
         </tr>
@@ -104,20 +124,22 @@
                 grid.ajaxRequest();
                 return false;
             });
+
+            $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#search-products").click();
+                    return false;
+                }
+            });
         });
 
-        $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
-            if (event.keyCode == 13) {
-                $("#search-products").click();
-                return false;
-            }
-        });
-
-        function onDataBinding(e) {
+        function crossSellProducts_onDataBinding(e) {
             var searchModel = {
                 SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
                 SearchCategoryId: $('#SearchCategoryId').val(),
-                SearchManufacturerId: $('#SearchManufacturerId').val()
+                SearchManufacturerId: $('#SearchManufacturerId').val(),
+                SearchStoreId: $('#SearchStoreId').val(),
+                SearchProductTypeId: $('#SearchProductTypeId').val()
             };
             e.data = searchModel;
         }

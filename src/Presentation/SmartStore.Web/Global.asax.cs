@@ -12,7 +12,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.EmbeddedViews;
@@ -22,11 +22,14 @@ using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Themes;
 using StackExchange.Profiling;
 using StackExchange.Profiling.MVCHelpers;
-using SmartStore.Services.Events;
 using SmartStore.Core.Events;
 using System.Web;
-using dotless.Core.configuration;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Infrastructure.DependencyManagement;
+using Autofac;
+using Autofac.Integration.Mvc;
+using System.IO;
+using System.Diagnostics;
 
 
 namespace SmartStore.Web
@@ -36,7 +39,9 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+		private bool _profilingEnabled = false;
+
+		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppRegisterGlobalFiltersEvent {
@@ -44,14 +49,17 @@ namespace SmartStore.Web
 			});
         }
 
-        public static void RegisterRoutes(RouteCollection routes)
+		public static void RegisterRoutes(RouteCollection routes, bool databaseInstalled = true)
         {
             routes.IgnoreRoute("favicon.ico");
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-            
-            // register custom routes (plugins, etc)
-            var routePublisher = EngineContext.Current.Resolve<IRoutePublisher>();
-            routePublisher.RegisterRoutes(routes);
+
+			if (databaseInstalled)
+			{
+				// register custom routes (plugins, etc)
+				var routePublisher = EngineContext.Current.Resolve<IRoutePublisher>();
+				routePublisher.RegisterRoutes(routes);
+			}
             
             routes.MapRoute(
                 "Default", // Route name
@@ -61,118 +69,91 @@ namespace SmartStore.Web
             );
         }
 
-        /// <summary>
-        /// <remarks>codehint: sm-add</remarks>
-        /// </summary>
-        public static void RegisterBundles(BundleCollection bundles, bool databaseInstalled = true)
+        public static void RegisterBundles(BundleCollection bundles)
         {               
             // register custom bundles
             var bundlePublisher = EngineContext.Current.Resolve<IBundlePublisher>();
             bundlePublisher.RegisterBundles(bundles);
-
-            var lessConfig = new WebConfigConfigurationLoader().GetConfiguration();
-
-            // it's way better to depend minifying on DebugMode than 
-            // the explicit definition in web.config, so overwrite here!
-            lessConfig.MinifyOutput = HttpContext.Current.IsDebuggingEnabled;
-
-            // handle theme settings
-            if (databaseInstalled)
-            {
-                var themeSettings = EngineContext.Current.Resolve<ThemeSettings>();
-
-                // dotless config
-                if (themeSettings.CssCacheEnabled > 0 || themeSettings.CssMinifyEnabled > 0)
-                {
-                    if (themeSettings.CssCacheEnabled > 0)
-                        lessConfig.CacheEnabled = themeSettings.CssCacheEnabled == 2;
-                    if (themeSettings.CssMinifyEnabled > 0)
-                        lessConfig.MinifyOutput = themeSettings.CssMinifyEnabled == 2;
-                }
-
-                // bundling config
-                if (themeSettings.BundleOptimizationEnabled > 0)
-                    BundleTable.EnableOptimizations = themeSettings.BundleOptimizationEnabled == 2;
-            }
         }
 
         protected void Application_Start()
-        {
-
-            // we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
-			var mobileDisplayMode = DisplayModeProvider.Instance.Modes
-				.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
+        {	
+			// we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
+			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
-
             
             // initialize engine context
-            EngineContext.Initialize(false);
-
-            bool databaseInstalled = DataSettingsHelper.DatabaseIsInstalled();
-
-            // set dependency resolver
-            var dependencyResolver = new SmartDependencyResolver();
-            DependencyResolver.SetResolver(dependencyResolver);
+            EngineContext.Initialize(false);        
 
             // model binders
             ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
-
-            if (databaseInstalled)
-            {
-                // remove all view engines
-                ViewEngines.Engines.Clear();
-                // except the themeable razor view engine we use
-                ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
-            }
 
             // Add some functionality on top of the default ModelMetadataProvider
             ModelMetadataProviders.Current = new SmartMetadataProvider();
 
             // Registering some regular mvc stuff
             AreaRegistration.RegisterAllAreas();
-
-            // codehint: sm-add
-            RegisterGlobalFilters(GlobalFilters.Filters);
-
-            RegisterRoutes(RouteTable.Routes);
-
-            // codehint: sm-add
-            RegisterBundles(BundleTable.Bundles, databaseInstalled);
-
-            if (!databaseInstalled)
-            {
-                GlobalFilters.Filters.Add(new HandleInstallFilter());
-            }
-
-            // StackExchange profiler
-            if (databaseInstalled && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
-            {
-                GlobalFilters.Filters.Add(new ProfilingActionFilter());
-            }
             
             // fluent validation
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             ModelValidatorProviders.Providers.Add(new FluentValidationModelValidatorProvider(new SmartValidatorFactory()));
 
-            // register virtual path provider for embedded views
-            var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
-            var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
-            HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
+			bool installed = DataSettings.DatabaseIsInstalled();
 
-            // start scheduled tasks
-            if (databaseInstalled)
-            {
-                TaskManager.Instance.Initialize();
-                TaskManager.Instance.Start();
-            }
+			// Routes
+			RegisterRoutes(RouteTable.Routes, installed);
+
+			if (installed)
+			{
+				var profilingEnabled = this.ProfilingEnabled;
+				
+				// remove all view engines...
+				ViewEngines.Engines.Clear();
+				// ...except the themeable razor view engine we use
+				IViewEngine viewEngine = new ThemeableRazorViewEngine();
+				if (profilingEnabled)
+				{
+					// ...and wrap if profiling is active
+					viewEngine = new ProfilingViewEngine(viewEngine);
+					GlobalFilters.Filters.Add(new ProfilingActionFilter());
+				}
+				ViewEngines.Engines.Add(viewEngine);
+
+				// Global filters
+				RegisterGlobalFilters(GlobalFilters.Filters);
+				
+				// Bundles
+				RegisterBundles(BundleTable.Bundles);
+
+				// register virtual path provider for theme variables
+				HostingEnvironment.RegisterVirtualPathProvider(new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
+				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
+
+				// register virtual path provider for embedded views
+				var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
+				var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
+				HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
+
+				// start scheduled tasks
+				TaskManager.Instance.Initialize();
+				TaskManager.Instance.Start();
+			}
+			else
+			{
+				// app not installed
+
+				// Install filter
+				GlobalFilters.Filters.Add(new HandleInstallFilter());
+			}
+
         }
 
         public override string GetVaryByCustomString(HttpContext context, string custom)
         {
             string result = string.Empty;
             
-            if (DataSettingsHelper.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
             {
                 custom = custom.ToLower();
                 
@@ -202,53 +183,35 @@ namespace SmartStore.Web
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            // must be at head, because the BizUrlMapper must also handle static html files
-            EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppBeginRequestEvent
-            {
-                Context = HttpContext.Current
-            });
-            
-            // ignore static resources
-			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-			if (webHelper.IsStaticResource(this.Request))
+			//var installed = DataSettings.DatabaseIsInstalled();
+
+			// ignore static resources
+			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 
-            if (DataSettingsHelper.DatabaseIsInstalled() && 
-                EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
-            {
-                MiniProfiler.Start();
-            }
+			_profilingEnabled = this.ProfilingEnabled;
+
+			if (_profilingEnabled)
+			{
+				MiniProfiler.Start();
+			}
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
+			// Don't resolve dependencies from now on.
+			
 			// ignore static resources
-			var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-			if (webHelper.IsStaticResource(this.Request))
+			if (WebHelper.IsStaticResourceRequested(this.Request))
 				return;
 
-            if (DataSettingsHelper.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
-            {
-                // stop as early as you can, even earlier with MvcMiniProfiler.MiniProfiler.Stop(discardResults: true);
-                MiniProfiler.Stop();
-            }
-
-			// codehint: sm-add
-			EngineContext.Current.Resolve<IEventPublisher>().Publish(new AppEndRequestEvent {
-				Context = HttpContext.Current
-			});
-
-            //////dispose registered resources
-            //////we do not register AutofacRequestLifetimeHttpModule as IHttpModule 
-            //////because it disposes resources before this Application_EndRequest method is called
-            //////and this case the code above will throw an exception
-            //try
-            //{
-            //    AutofacRequestLifetimeHttpModule.ContextEndRequest(sender, e);
-            //}
-            //catch { }
+			if (_profilingEnabled)
+			{
+				// stop mini profiler
+				MiniProfiler.Stop();
+			}
         }
-
+		
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
             // [...]
@@ -266,7 +229,7 @@ namespace SmartStore.Web
             if (exc == null)
                 return;
             
-            if (!DataSettingsHelper.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
             
             try
@@ -280,6 +243,15 @@ namespace SmartStore.Web
                 //don't throw new exception if occurs
             }
         }
+
+		protected bool ProfilingEnabled
+		{
+			get
+			{
+				return DataSettings.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
+			}
+		}
+
     }
 
 }

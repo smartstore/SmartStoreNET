@@ -48,6 +48,12 @@ namespace SmartStore.Core.Domain.Logging
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
+		public DateTime? UpdatedOnUtc { get; set; }
+
+		public int Frequency { get; set; }
+
+		public string ContentHash { get; set; }
+
         /// <summary>
         /// Gets or sets the log level
         /// </summary>

@@ -1,0 +1,188 @@
+﻿@model ProductModel.ProductVariantAttributeValueModel
+
+@using SmartStore.Core.Domain.Catalog;
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ProductVariantAttributeId)
+
+<script type="text/javascript">
+	@if (ViewBag.RefreshPage == true)
+	{
+		<text>
+		try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+		catch (e){}
+		window.close();
+		</text>
+	}
+
+	$(document).ready(function () {
+
+		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
+			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.ValueTypeId)').val();
+
+			if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.Simple)') {
+				$('#group-linked-product').hide();
+				$('#group-quantity').hide();
+				$('#group-price-adjustment').show();
+				$('#group-weight-adjustment').show();
+			}
+			else if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.ProductLinkage)') {
+				$('#group-linked-product').show();
+				$('#group-quantity').show();
+				$('#group-price-adjustment').hide();
+				$('#group-weight-adjustment').hide();
+			}
+		}).trigger('change');
+
+		$('#remove-product-linkage').click(function () {
+			$('#linked-product-name').empty();
+			$('#@Html.FieldIdFor(model => model.LinkedProductId)').val('0');
+			toggleLinkageButtons();
+		});
+
+		toggleLinkageButtons();
+	});
+
+	function toggleLinkageButtons() {
+		var unlinked = ($('#@Html.FieldIdFor(model => model.LinkedProductId)').val() === '0');
+		$('#add-product-linkage').toggle(unlinked);
+		$('#remove-product-linkage').toggle(!unlinked);
+	}
+</script>
+
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ValueTypeId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ValueTypeId, ((ProductVariantAttributeValueType)Model.ValueTypeId).ToSelectList())
+            @Html.ValidationMessageFor(model => model.ValueTypeId)
+        </td>
+    </tr>
+    <tr id="group-linked-product">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.LinkedProductId)
+        </td>
+        <td class="adminData">
+			@Html.HiddenFor(model => model.LinkedProductId)
+			<div id="linked-product-name">@Model.LinkedProductName</div>
+
+			<button id="add-product-linkage" type="button" class="btn btn-below"
+				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueLinkagePopup", "Product", new { openerProductId = Html.FieldIdFor(model => model.LinkedProductId), openerProductName = Html.FieldIdFor(model => model.Name) }))', 1000, 800, true); return false;">
+				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
+			</button>
+			<button id="remove-product-linkage" type="button" class="btn btn-below">
+				<i class="icon-remove"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
+			</button>
+
+            @Html.ValidationMessageFor(model => model.LinkedProductId)
+        </td>
+    </tr>
+    <tr id="group-quantity">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Quantity)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Quantity)
+            @Html.ValidationMessageFor(model => model.Quantity)
+        </td>
+    </tr>
+</table>
+
+<p></p>
+
+@(Html.LocalizedEditor<ProductModel.ProductVariantAttributeValueModel, ProductModel.ProductVariantAttributeValueLocalizedModel>("productattributevalue-localized",
+@<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.Locales[item].Name)
+            @Html.ValidationMessageFor(model => model.Locales[item].Name)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.HiddenFor(model => model.Locales[item].LanguageId)
+        </td>
+    </tr>
+</table>
+,
+@<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </td>
+    </tr>
+</table>
+))
+
+@Html.HiddenFor(model => model.DisplayColorSquaresRgb)
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Alias)
+            @Html.ValidationMessageFor(model => model.Alias)
+        </td>
+    </tr>
+    @if (Model.DisplayColorSquaresRgb)
+    {
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ColorSquaresRgb)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.ColorSquaresRgb)
+            @Html.ValidationMessageFor(model => model.ColorSquaresRgb)
+        </td>
+    </tr>
+    }
+    <tr id="group-price-adjustment">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PriceAdjustment)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.PriceAdjustment)
+            @Html.ValidationMessageFor(model => model.PriceAdjustment)
+        </td>
+    </tr>
+	<tr id="group-weight-adjustment">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.WeightAdjustment)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.WeightAdjustment)
+            @Html.ValidationMessageFor(model => model.WeightAdjustment)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsPreSelected)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.IsPreSelected)
+            @Html.ValidationMessageFor(model => model.IsPreSelected)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayOrder)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplayOrder)
+            @Html.ValidationMessageFor(model => model.DisplayOrder)
+        </td>
+    </tr>
+</table>
+

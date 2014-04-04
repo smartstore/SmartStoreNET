@@ -1,0 +1,30 @@
+
+div.mce-fullscreen {
+	z-index: 1000;
+}
+
+.mce-container, .mce-container *, .mce-widget, .mce-widget * {
+	font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 13px;
+}
+
+.mce-ico {
+	font-family: 'tinymce';
+	font-size: 16px;
+}
+
+.mce-btn i {
+	text-shadow: none;
+}
+
+.mce-btn button {
+	font-size: 12px;
+}
+
+.mce-btn > button {
+	opacity: .6;
+}
+
+.mce-btn:hover > button {
+	opacity: 1;
+}

@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Stores
@@ -18,6 +18,7 @@ namespace SmartStore.Services.Stores
 		#region Constants
 		private const string STORES_ALL_KEY = "SmartStore.stores.all";
 		private const string STORES_PATTERN_KEY = "SmartStore.stores.";
+        private const string STORES_BY_ID_KEY = "SmartStore.stores.id-{0}";
 		#endregion
 
 		#region Fields
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Stores
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICacheManager _cacheManager;
+		private bool? _isSingleStoreMode = null;
 
 		#endregion
 
@@ -97,7 +99,11 @@ namespace SmartStore.Services.Stores
 			if (storeId == 0)
 				return null;
 
-            return _storeRepository.GetById(storeId);
+            string key = string.Format(STORES_BY_ID_KEY, storeId);
+            return _cacheManager.Get(key, () => 
+            { 
+                return _storeRepository.GetById(storeId); 
+            });
 		}
 
 		/// <summary>
@@ -137,10 +143,16 @@ namespace SmartStore.Services.Stores
 		/// <summary>
 		/// True if there's only one store. Otherwise False.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual bool IsSingleStoreMode()
 		{
-			return GetAllStores().Count <= 1;
+			if (!_isSingleStoreMode.HasValue)
+			{
+				var query = from s in _storeRepository.Table
+							select s;
+				_isSingleStoreMode = query.Count() <= 1;
+			}
+
+			return _isSingleStoreMode.Value;
 		}
 
 		#endregion

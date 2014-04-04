@@ -15,8 +15,12 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
 
-            <a href="#sendemail-window" data-toggle="modal" class="btn">@T("Admin.Customers.Customers.SendEmail")</a>
-            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn">@T("Admin.Customers.Customers.SendPM")</a>
+            <a href="#sendemail-window" data-toggle="modal" class="btn">
+				<i class="icon-envelope"></i>&nbsp;@T("Admin.Customers.Customers.SendEmail")
+			</a>
+            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn">
+				<i class="icon-envelope"></i>&nbsp;@T("Admin.Customers.Customers.SendPM")
+			</a>
             <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>

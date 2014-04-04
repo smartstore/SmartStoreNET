@@ -3,19 +3,41 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Reflection;
+using SmartStore.Core.Data;
+using SmartStore.Data.Migrations;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
 {
-    /// <summary>
+	
+	/// <summary>
     /// Object context
     /// </summary>
-    public class SmartObjectContext : ObjectContextBase
+	public class SmartObjectContext : ObjectContextBase
     {
 
-        public SmartObjectContext(string nameOrConnectionString)
+		static SmartObjectContext()
+		{
+			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
+			{
+				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" }
+			};
+			Database.SetInitializer<SmartObjectContext>(initializer);
+		}
+
+		/// <summary>
+		/// For tooling support, e.g. EF Migrations
+		/// </summary>
+		public SmartObjectContext()
+			: base()
+		{
+		}
+
+		public SmartObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
         }
@@ -32,7 +54,6 @@ namespace SmartStore.Data
             //        && type.BaseType.IsGenericType 
             //        && type.BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>));
 
-            // codehint: sm-edit
             var typesToRegister = from t in Assembly.GetExecutingAssembly().GetTypes()
                         where t.Namespace.HasValue() && 
                               t.BaseType != null &&
@@ -48,7 +69,6 @@ namespace SmartStore.Data
             }
             //...or do it manually below. For example,
             //modelBuilder.Configurations.Add(new LanguageMap());
-
 
             base.OnModelCreating(modelBuilder);
         }

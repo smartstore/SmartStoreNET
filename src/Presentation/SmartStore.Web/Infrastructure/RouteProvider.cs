@@ -76,24 +76,24 @@ namespace SmartStore.Web.Infrastructure
                             new[] { "SmartStore.Web.Controllers" });
             //downloads
             routes.MapRoute("GetSampleDownload",
-                            "download/sample/{productvariantid}",
+							"download/sample/{productid}",
                             new { controller = "Download", action = "Sample"},
-                            new { productvariantid = @"\d+" },
+							new { productid = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapRoute("GetDownload",
-                            "download/getdownload/{opvid}/{agree}",
+							"download/getdownload/{orderItemId}/{agree}",
                             new { controller = "Download", action = "GetDownload", agree = UrlParameter.Optional },
-                            new { opvid = new GuidConstraint(false) },
+							new { orderItemId = new GuidConstraint(false) },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapRoute("GetLicense",
-                            "download/getlicense/{opvid}/",
+							"download/getlicense/{orderItemId}/",
                             new { controller = "Download", action = "GetLicense" },
-                            new { opvid = new GuidConstraint(false) },
+							new { orderItemId = new GuidConstraint(false) },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("DownloadUserAgreement",
-                            "customer/useragreement/{opvid}",
+							"customer/useragreement/{orderItemId}",
                             new { controller = "Customer", action = "UserAgreement" },
-                            new { opvid = new GuidConstraint(false) },
+							new { orderItemId = new GuidConstraint(false) },
                             new[] { "SmartStore.Web.Controllers" });
 
             //reviews
@@ -108,9 +108,9 @@ namespace SmartStore.Web.Infrastructure
 
             //back in stock notifications
             routes.MapLocalizedRoute("BackInStockSubscribePopup",
-                            "backinstocksubscribe/{productVariantId}",
+							"backinstocksubscribe/{productId}",
                             new { controller = "Catalog", action = "BackInStockSubscribePopup" },
-                            new { productVariantId = @"\d+" },
+							new { productId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("DeleteBackInStockSubscription",
                             "backinstocksubscribe/delete/{subscriptionId}",
@@ -159,23 +159,23 @@ namespace SmartStore.Web.Infrastructure
                             "emailwishlist",
                             new { controller = "ShoppingCart", action = "EmailWishlist" },
                             new[] { "SmartStore.Web.Controllers" });
-            //add product to cart (without any attributes and options)
-            routes.MapLocalizedRoute("AddProductToCart",
-                            "addproducttocart/{productId}",
-                            new { controller = "ShoppingCart", action = "AddProductToCart" },
+			//add product to cart (without any attributes and options). used on catalog pages.
+			routes.MapLocalizedRoute("AddProductToCart-Catalog",
+							"addproducttocart/catalog/{productId}",
+							new { controller = "ShoppingCart", action = "AddProductToCart_Catalog" },
                             new { productId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
-            //add product variant to cart (with attributes and options)
-            routes.MapLocalizedRoute("AddProductVariantToCart",
-                            "addproductvarianttocart/{productVariantId}/{shoppingCartTypeId}",
-                            new { controller = "ShoppingCart", action = "AddProductVariantToCart" },
-                            new { productVariantId = @"\d+", shoppingCartTypeId = @"\d+" },
+            //add product to cart (with attributes and options). used on the product details pages.
+			routes.MapLocalizedRoute("AddProductToCart-Details",
+							"addproducttocart/details/{productId}/{shoppingCartTypeId}",
+							new { controller = "ShoppingCart", action = "AddProductToCart_Details" },
+							new { productId = @"\d+", shoppingCartTypeId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             //product attributes with "upload file" type
             routes.MapLocalizedRoute("UploadFileProductAttribute",
-                            "uploadfileproductattribute/{productVariantId}/{productAttributeId}",
+							"uploadfileproductattribute/{productId}/{productAttributeId}",
                             new { controller = "ShoppingCart", action = "UploadFileProductAttribute" },
-                            new { productVariantId = @"\d+", productAttributeId = @"\d+" },
+							new { productId = @"\d+", productAttributeId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
             
             //checkout
@@ -619,7 +619,7 @@ namespace SmartStore.Web.Infrastructure
                             new { controller = "Common", action = "CurrencySelected" },
                             new { customercurrency = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
-            routes.MapLocalizedRoute("ChangeLanguage",
+            routes.MapRoute("ChangeLanguage",
                             "changelanguage/{langid}",
                             new { controller = "Common", action = "SetLanguage" },
                             new { langid = @"\d+" },

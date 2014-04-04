@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Orders
     /// <summary>
     /// Represents a recurring payment
     /// </summary>
-    public partial class RecurringPayment : BaseEntity
+	public partial class RecurringPayment : BaseEntity, ISoftDeletable
     {
         private ICollection<RecurringPaymentHistory> _recurringPaymentHistory;
 

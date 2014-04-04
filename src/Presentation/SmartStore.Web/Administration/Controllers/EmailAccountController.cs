@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Email;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
@@ -117,7 +119,7 @@ namespace SmartStore.Admin.Controllers
                 var emailAccount = model.ToEntity();
                 _emailAccountService.InsertEmailAccount(emailAccount);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
             }
 
@@ -155,7 +157,7 @@ namespace SmartStore.Admin.Controllers
                 emailAccount = model.ToEntity(emailAccount);
                 _emailAccountService.UpdateEmailAccount(emailAccount);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
             }
 
@@ -181,16 +183,18 @@ namespace SmartStore.Admin.Controllers
                     throw new SmartException("Enter test email address");
 
 
-                var from = new MailAddress(emailAccount.Email, emailAccount.DisplayName);
-                var to = new MailAddress(model.SendTestEmailTo);
+				var to = new EmailAddress(model.SendTestEmailTo);
+				var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
 				string subject = _storeContext.CurrentStore.Name + ". Testing email functionality.";
                 string body = "Email works fine.";
-                _emailSender.SendEmail(emailAccount, subject, body, from, to);
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+
+				_emailSender.SendEmail(new SmtpContext(emailAccount), new EmailMessage(to, subject, body, from));
+
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message, false);
+				NotifyError(exc.Message, false);
             }
 
             //If we got this far, something failed, redisplay form
@@ -208,7 +212,7 @@ namespace SmartStore.Admin.Controllers
                 //No email account found with the specified id
                 return RedirectToAction("List");
 
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
             _emailAccountService.DeleteEmailAccount(emailAccount);
             return RedirectToAction("List");
         }

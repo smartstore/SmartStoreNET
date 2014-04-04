@@ -22,14 +22,15 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Orders
 {
@@ -531,7 +532,7 @@ namespace SmartStore.Services.Orders
                     if (customer.BillingAddress == null)
                         throw new SmartException("Billing address is not provided");
 
-                    if (!CommonHelper.IsValidEmail(customer.BillingAddress.Email))
+					if (!customer.BillingAddress.Email.IsEmail())
                         throw new SmartException("Email is not valid");
 
                     //clone billing address
@@ -553,14 +554,11 @@ namespace SmartStore.Services.Orders
 				var storeId = _storeContext.CurrentStore.Id;
                 
                 //load and validate customer shopping cart
-                IList<ShoppingCartItem> cart = null;
+                IList<OrganizedShoppingCartItem> cart = null;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     //load shopping cart
-					cart = customer.ShoppingCartItems
-						.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart)
-						.Where(sci => sci.StoreId == processPaymentRequest.StoreId)
-						.ToList();
+					cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
 
                     if (cart.Count == 0)
                         throw new SmartException("Cart is empty");
@@ -583,9 +581,9 @@ namespace SmartStore.Services.Orders
                     //validate individual cart items
                     foreach (var sci in cart)
                     {
-                        var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.ShoppingCartType,
-							sci.ProductVariant, processPaymentRequest.StoreId, sci.AttributesXml,
-                            sci.CustomerEnteredPrice, sci.Quantity, false);
+                        var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, sci.Item.ShoppingCartType,
+							sci.Item.Product, processPaymentRequest.StoreId, sci.Item.AttributesXml,
+                            sci.Item.CustomerEnteredPrice, sci.Item.Quantity, false, childItems: sci.ChildItems);
                         if (sciWarnings.Count > 0)
                         {
                             var warningsSb = new StringBuilder();
@@ -707,7 +705,7 @@ namespace SmartStore.Services.Orders
                         if (customer.ShippingAddress == null)
                             throw new SmartException("Shipping address is not provided");
 
-                        if (!CommonHelper.IsValidEmail(customer.ShippingAddress.Email))
+						if (!customer.ShippingAddress.Email.IsEmail())
                             throw new SmartException("Email is not valid");
 
                         //clone shipping address
@@ -864,7 +862,7 @@ namespace SmartStore.Services.Orders
                         int recurringCycleLength = 0;
                         RecurringProductCyclePeriod recurringCyclePeriod;
                         int recurringTotalCycles = 0;
-                        string recurringCyclesError = cart.GetRecurringCycleInfo(out recurringCycleLength, out recurringCyclePeriod, out recurringTotalCycles);
+                        string recurringCyclesError = cart.GetRecurringCycleInfo(_localizationService, out recurringCycleLength, out recurringCyclePeriod, out recurringTotalCycles);
                         if (!string.IsNullOrEmpty(recurringCyclesError))
                             throw new SmartException(recurringCyclesError);
                         processPaymentRequest.RecurringCycleLength = recurringCycleLength;
@@ -1040,69 +1038,88 @@ namespace SmartStore.Services.Orders
 
                         if (!processPaymentRequest.IsRecurringPayment)
                         {
-                            //move shopping cart items to order product variants
+                            //move shopping cart items to order products
                             foreach (var sc in cart)
                             {
                                 //prices
                                 decimal taxRate = decimal.Zero;
                                 decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
                                 decimal scSubTotal = _priceCalculationService.GetSubTotal(sc, true);
-                                decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.ProductVariant, scUnitPrice, true, customer, out taxRate);
-                                decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.ProductVariant, scUnitPrice, false, customer, out taxRate);
-                                decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.ProductVariant, scSubTotal, true, customer, out taxRate);
-                                decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.ProductVariant, scSubTotal, false, customer, out taxRate);
+                                decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, true, customer, out taxRate);
+                                decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, false, customer, out taxRate);
+                                decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, true, customer, out taxRate);
+                                decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, false, customer, out taxRate);
 
                                 //discounts
                                 Discount scDiscount = null;
                                 decimal discountAmount = _priceCalculationService.GetDiscountAmount(sc, out scDiscount);
-                                decimal discountAmountInclTax = _taxService.GetProductPrice(sc.ProductVariant, discountAmount, true, customer, out taxRate);
-                                decimal discountAmountExclTax = _taxService.GetProductPrice(sc.ProductVariant, discountAmount, false, customer, out taxRate);
+                                decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, true, customer, out taxRate);
+                                decimal discountAmountExclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, false, customer, out taxRate);
                                 if (scDiscount != null && !appliedDiscounts.ContainsDiscount(scDiscount))
                                     appliedDiscounts.Add(scDiscount);
 
                                 //attributes
-                                string attributeDescription = _productAttributeFormatter.FormatAttributes(sc.ProductVariant, sc.AttributesXml, customer);
+                                string attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Item.Product, sc.Item.AttributesXml, customer);
 
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
 
                                 //save order item
-                                var opv = new OrderProductVariant()
+                                var orderItem = new OrderItem()
                                 {
-                                    OrderProductVariantGuid = Guid.NewGuid(),
+                                    OrderItemGuid = Guid.NewGuid(),
                                     Order = order,
-                                    ProductVariantId = sc.ProductVariantId,
+                                    ProductId = sc.Item.ProductId,
                                     UnitPriceInclTax = scUnitPriceInclTax,
                                     UnitPriceExclTax = scUnitPriceExclTax,
                                     PriceInclTax = scSubTotalInclTax,
                                     PriceExclTax = scSubTotalExclTax,
                                     AttributeDescription = attributeDescription,
-                                    AttributesXml = sc.AttributesXml,
-                                    Quantity = sc.Quantity,
+                                    AttributesXml = sc.Item.AttributesXml,
+                                    Quantity = sc.Item.Quantity,
                                     DiscountAmountInclTax = discountAmountInclTax,
                                     DiscountAmountExclTax = discountAmountExclTax,
                                     DownloadCount = 0,
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
                                     ItemWeight = itemWeight,
+									ProductCost = _priceCalculationService.GetProductCost(sc.Item.Product, sc.Item.AttributesXml)
                                 };
-                                order.OrderProductVariants.Add(opv);
+
+								if (sc.Item.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
+								{
+									var listBundleData = new List<ProductBundleItemOrderData>();
+
+									foreach (var childItem in sc.ChildItems)
+									{
+										decimal bundleItemSubTotal = _taxService.GetProductPrice(childItem.Item.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
+
+										string attributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Item.Product, childItem.Item.AttributesXml, order.Customer,
+											renderPrices: false, allowHyperlinks: false);
+
+										childItem.BundleItemData.ToOrderData(listBundleData, bundleItemSubTotal, childItem.Item.AttributesXml, attributesInfo);
+									}
+
+									orderItem.SetBundleData(listBundleData);
+								}
+
+                                order.OrderItems.Add(orderItem);
                                 _orderService.UpdateOrder(order);
 
                                 //gift cards
-                                if (sc.ProductVariant.IsGiftCard)
+                                if (sc.Item.Product.IsGiftCard)
                                 {
                                     string giftCardRecipientName, giftCardRecipientEmail,
                                         giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-                                    _productAttributeParser.GetGiftCardAttribute(sc.AttributesXml,
+                                    _productAttributeParser.GetGiftCardAttribute(sc.Item.AttributesXml,
                                         out giftCardRecipientName, out giftCardRecipientEmail,
                                         out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
 
-                                    for (int i = 0; i < sc.Quantity; i++)
+                                    for (int i = 0; i < sc.Item.Quantity; i++)
                                     {
                                         var gc = new GiftCard()
                                         {
-                                            GiftCardType = sc.ProductVariant.GiftCardType,
-                                            PurchasedWithOrderProductVariant = opv,
+                                            GiftCardType = sc.Item.Product.GiftCardType,
+                                            PurchasedWithOrderItem = orderItem,
                                             Amount = scUnitPriceExclTax,
                                             IsGiftCardActivated = false,
                                             GiftCardCouponCode = _giftCardService.GenerateGiftCardCode(),
@@ -1119,57 +1136,59 @@ namespace SmartStore.Services.Orders
                                 }
 
                                 //inventory
-                                _productService.AdjustInventory(sc.ProductVariant, true, sc.Quantity, sc.AttributesXml);
+								_productService.AdjustInventory(sc, true);
                             }
 
                             //clear shopping cart
-                            cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci, false));
+                            cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
                         }
                         else
                         {
                             //recurring payment
-                            var initialOrderProductVariants = initialOrder.OrderProductVariants;
-                            foreach (var opv in initialOrderProductVariants)
+                            var initialOrderItems = initialOrder.OrderItems;
+                            foreach (var orderItem in initialOrderItems)
                             {
                                 //save item
-                                var newOpv = new OrderProductVariant()
+                                var newOrderItem = new OrderItem()
                                 {
-                                    OrderProductVariantGuid = Guid.NewGuid(),
+                                    OrderItemGuid = Guid.NewGuid(),
                                     Order = order,
-                                    ProductVariantId = opv.ProductVariantId,
-                                    UnitPriceInclTax = opv.UnitPriceInclTax,
-                                    UnitPriceExclTax = opv.UnitPriceExclTax,
-                                    PriceInclTax = opv.PriceInclTax,
-                                    PriceExclTax = opv.PriceExclTax,
-                                    AttributeDescription = opv.AttributeDescription,
-                                    AttributesXml = opv.AttributesXml,
-                                    Quantity = opv.Quantity,
-                                    DiscountAmountInclTax = opv.DiscountAmountInclTax,
-                                    DiscountAmountExclTax = opv.DiscountAmountExclTax,
+                                    ProductId = orderItem.ProductId,
+                                    UnitPriceInclTax = orderItem.UnitPriceInclTax,
+                                    UnitPriceExclTax = orderItem.UnitPriceExclTax,
+                                    PriceInclTax = orderItem.PriceInclTax,
+                                    PriceExclTax = orderItem.PriceExclTax,
+                                    AttributeDescription = orderItem.AttributeDescription,
+                                    AttributesXml = orderItem.AttributesXml,
+                                    Quantity = orderItem.Quantity,
+                                    DiscountAmountInclTax = orderItem.DiscountAmountInclTax,
+                                    DiscountAmountExclTax = orderItem.DiscountAmountExclTax,
                                     DownloadCount = 0,
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
-                                    ItemWeight = opv.ItemWeight,
+                                    ItemWeight = orderItem.ItemWeight,
+									BundleData = orderItem.BundleData,
+									ProductCost = orderItem.ProductCost
                                 };
-                                order.OrderProductVariants.Add(newOpv);
+                                order.OrderItems.Add(newOrderItem);
                                 _orderService.UpdateOrder(order);
 
                                 //gift cards
-                                if (opv.ProductVariant.IsGiftCard)
+                                if (orderItem.Product.IsGiftCard)
                                 {
                                     string giftCardRecipientName, giftCardRecipientEmail,
                                         giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-                                    _productAttributeParser.GetGiftCardAttribute(opv.AttributesXml,
+                                    _productAttributeParser.GetGiftCardAttribute(orderItem.AttributesXml,
                                         out giftCardRecipientName, out giftCardRecipientEmail,
                                         out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
 
-                                    for (int i = 0; i < opv.Quantity; i++)
+                                    for (int i = 0; i < orderItem.Quantity; i++)
                                     {
                                         var gc = new GiftCard()
                                         {
-                                            GiftCardType = opv.ProductVariant.GiftCardType,
-                                            PurchasedWithOrderProductVariant = newOpv,
-                                            Amount = opv.UnitPriceExclTax,
+                                            GiftCardType = orderItem.Product.GiftCardType,
+                                            PurchasedWithOrderItem = newOrderItem,
+                                            Amount = orderItem.UnitPriceExclTax,
                                             IsGiftCardActivated = false,
                                             GiftCardCouponCode = _giftCardService.GenerateGiftCardCode(),
                                             RecipientName = giftCardRecipientName,
@@ -1185,7 +1204,7 @@ namespace SmartStore.Services.Orders
                                 }
 
                                 //inventory
-                                _productService.AdjustInventory(opv.ProductVariant, true, opv.Quantity, opv.AttributesXml);
+								_productService.AdjustInventory(orderItem, true);
                             }
                         }
 
@@ -1398,8 +1417,10 @@ namespace SmartStore.Services.Orders
             }
 
             //Adjust inventory
-            foreach (var opv in order.OrderProductVariants)
-                _productService.AdjustInventory(opv.ProductVariant, false, opv.Quantity, opv.AttributesXml);
+			foreach (var orderItem in order.OrderItems)
+			{
+				_productService.AdjustInventory(orderItem, false);
+			}
 
             //add a note
             order.OrderNotes.Add(new OrderNote()
@@ -1764,8 +1785,10 @@ namespace SmartStore.Services.Orders
             }
 
             //Adjust inventory
-            foreach (var opv in order.OrderProductVariants)
-                _productService.AdjustInventory(opv.ProductVariant, false, opv.Quantity, opv.AttributesXml);
+			foreach (var orderItem in order.OrderItems)
+			{
+				_productService.AdjustInventory(orderItem, false);
+			}
         }
 
 
@@ -2481,11 +2504,28 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-            foreach (var opv in order.OrderProductVariants)
+			int parentItemId, childItemId;
+
+            foreach (var orderItem in order.OrderItems)
             {
-                _shoppingCartService.AddToCart(opv.Order.Customer, opv.ProductVariant,
-					 ShoppingCartType.ShoppingCart, opv.Order.StoreId, opv.AttributesXml,
-                    opv.UnitPriceExclTax, opv.Quantity, false);
+				bool isBundle = (orderItem.Product.ProductType == ProductType.BundledProduct);
+
+                var warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, orderItem.Product, ShoppingCartType.ShoppingCart, orderItem.Order.StoreId,
+					orderItem.AttributesXml, isBundle ? decimal.Zero : orderItem.UnitPriceExclTax, orderItem.Quantity, false, out parentItemId);
+
+				if (isBundle && orderItem.BundleData.HasValue() && warnings.Count <= 0)
+				{
+					foreach (var bundleData in orderItem.GetBundleData())
+					{
+						var bundleItem = _productService.GetBundleItemById(bundleData.BundleItemId);
+
+						warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, bundleItem.Product, ShoppingCartType.ShoppingCart,
+							orderItem.Order.StoreId, bundleData.AttributesXml, decimal.Zero, bundleData.Quantity, false, out childItemId, parentItemId, bundleItem);
+
+						if (warnings.Count > 0)
+							_shoppingCartService.DeleteShoppingCartItem(parentItemId);
+					}
+				}
             }
         }
         
@@ -2525,7 +2565,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order sub-total amount is not reached</returns>
-        public virtual bool ValidateMinOrderSubtotalAmount(IList<ShoppingCartItem> cart)
+        public virtual bool ValidateMinOrderSubtotalAmount(IList<OrganizedShoppingCartItem> cart)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -2554,7 +2594,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order total amount is not reached</returns>
-        public virtual bool ValidateMinOrderTotalAmount(IList<ShoppingCartItem> cart)
+		public virtual bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");

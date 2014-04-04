@@ -21,9 +21,12 @@ namespace SmartStore.Admin.Models.Orders
         public int CustomerId { get; set; }
 		public string CustomerFullName { get; set; }
 
-        public int ProductVariantId { get; set; }
-        [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Product")]
+        public int ProductId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.Product")]
         public string ProductName { get; set; }
+		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Quantity")]
         public int Quantity { get; set; }

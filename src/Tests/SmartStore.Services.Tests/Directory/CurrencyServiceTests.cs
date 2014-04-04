@@ -9,10 +9,11 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Tests.Directory
 {
@@ -20,7 +21,7 @@ namespace SmartStore.Services.Tests.Directory
     public class CurrencyServiceTests : ServiceTest
     {
         IRepository<Currency> _currencyRepository;
-		IRepository<StoreMapping> _storeMappingRepo;
+		IStoreMappingService _storeMappingService;
         CurrencySettings _currencySettings;
         IEventPublisher _eventPublisher;
         ICurrencyService _currencyService;
@@ -75,7 +76,7 @@ namespace SmartStore.Services.Tests.Directory
             _currencyRepository.Expect(x => x.GetById(currencyEUR.Id)).Return(currencyEUR);
             _currencyRepository.Expect(x => x.GetById(currencyRUR.Id)).Return(currencyRUR);
 
-			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
 
             var cacheManager = new NullCache();
 
@@ -88,7 +89,7 @@ namespace SmartStore.Services.Tests.Directory
             
             var pluginFinder = new PluginFinder();
             _currencyService = new CurrencyService(cacheManager,
-				_currencyRepository, _storeMappingRepo, 
+				_currencyRepository, _storeMappingService, 
                 _currencySettings, pluginFinder, _eventPublisher);
         }
         

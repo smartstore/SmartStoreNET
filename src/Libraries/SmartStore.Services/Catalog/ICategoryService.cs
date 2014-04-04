@@ -23,8 +23,9 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
+        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
         /// <returns>Categories</returns>
-        IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null);
+        IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true);
 
         /// <summary>
         /// Gets all categories filtered by parent category identifier
@@ -89,13 +90,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product category mapping collection</returns>
         IList<ProductCategory> GetProductCategoriesByProductId(int productId, bool showHidden = false);
-
-        /// <summary>
-        /// Get a total number of featured products by category identifier
-        /// </summary>
-        /// <param name="categoryId">Category identifier</param>
-        /// <returns>Number of featured products</returns>
-        int GetTotalNumberOfFeaturedProducts(int categoryId);
 
         /// <summary>
         /// Gets a product category mapping 

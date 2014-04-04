@@ -138,7 +138,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(deliveryTime, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.DeliveryTime.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTime.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
             }
 
@@ -180,10 +180,10 @@ namespace SmartStore.Admin.Controllers
             {
                 deliveryTime = model.ToEntity(deliveryTime);
                 
-                //locales
                 UpdateLocales(deliveryTime, model);
+				_deliveryTimeService.UpdateDeliveryTime(deliveryTime);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
             }
 
@@ -206,12 +206,12 @@ namespace SmartStore.Admin.Controllers
 
                 _deliveryTimeService.DeleteDeliveryTime(deliveryTime);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = deliveryTime.Id });
             }
         }

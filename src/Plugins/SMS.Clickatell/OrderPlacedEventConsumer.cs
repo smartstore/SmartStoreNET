@@ -1,6 +1,6 @@
 ﻿using System;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
 using SmartStore.Core;

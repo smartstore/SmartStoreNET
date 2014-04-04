@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using NUnit.Framework;
 

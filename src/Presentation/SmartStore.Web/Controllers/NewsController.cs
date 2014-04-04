@@ -14,7 +14,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.News;
@@ -30,7 +30,7 @@ using SmartStore.Web.Models.News;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.No)]
-    public partial class NewsController : SmartController
+    public partial class NewsController : PublicControllerBase
     {
         #region Fields
 

@@ -12,12 +12,17 @@ var content;
 var webRoot;
 
 function edToolbar(obj) {
-    document.write("<div class=\"toolbar\">");
-    document.write("<img class=\"button\" src=\"" + webRoot + "editors/BBEditor/images/bold.gif\" name=\"btnBold\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
-    document.write("<img class=\"button\" src=\"" + webRoot + "editors/BBEditor/images/italic.gif\" name=\"btnItalic\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
-    document.write("<img class=\"button\" src=\"" + webRoot + "editors/BBEditor/images/underline.gif\" name=\"btnUnderline\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
-    document.write("<img class=\"button\" src=\"" + webRoot + "editors/BBEditor/images/link.gif\" name=\"btnLink\" onClick=\"doURL('" + obj + "')\">");
-    document.write("<img class=\"button\" src=\"" + webRoot + "editors/BBEditor/images/code.gif\" name=\"btnCode\" onClick=\"doAddTags('[code]','[/code]','" + obj + "')\">");
+    document.write("<div class=\"bb-toolbar btn-toolbar\">");
+    document.write("<div class='btn-group'>");
+    document.write("<button type='button' class='btn btn-small' name='btnBold' onClick=\"doAddTags('[b]','[/b]','" + obj + "')\"><i class='icon-bold'></i></button>");
+    document.write("<button type='button' class='btn btn-small' name='btnItalic' onClick=\"doAddTags('[i]','[/i]','" + obj + "')\"><i class='icon-italic'></i></button>");
+    document.write("<button type='button' class='btn btn-small' name='btnUnderline' onClick=\"doAddTags('[u]','[/u]','" + obj + "')\"><i class='icon-underline'></i></button>");
+    document.write("</div>");
+    document.write("<button type='button' class='btn btn-small' name='btnLink' onClick=\"doURL('" + obj + "')\"><i class='icon-link'></i></button>");
+    document.write("<div class='btn-group'>");
+    document.write("<button type='button' class='btn btn-small' name='btnCode' onClick=\"doAddTags('[code]','[/code]','" + obj + "')\"><i class='icon-code'></i></button>");
+    document.write("<button type='button' class='btn btn-small' name='btnQuote' onClick=\"doAddTags('[quote]','[/quote]','" + obj + "')\"><i class='icon-quote-left'></i></button>");
+    document.write("</div>");
     document.write("</div>");
 }
 

@@ -40,7 +40,7 @@ namespace SmartStore.Services.Tasks
             this._isRunning = true;
             foreach (Task task in this._tasks.Values)
             {
-                task.Execute();
+				task.Execute();
             }
             this._isRunning = false;
         }

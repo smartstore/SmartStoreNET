@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Data;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {
@@ -190,9 +191,9 @@ namespace SmartStore.Services.Logging
             if (activityType == null || !activityType.Enabled)
                 return null;
 
-            comment = CommonHelper.EnsureNotNull(comment);
+			comment = comment.EmptyNull();
             comment = string.Format(comment, commentParams);
-            comment = CommonHelper.EnsureMaximumLength(comment, 4000);
+			comment = comment.Truncate(4000);
 
             var activity = new ActivityLog();
             activity.ActivityLogTypeId = activityType.Id;
@@ -270,7 +271,7 @@ namespace SmartStore.Services.Logging
         /// </summary>
         public virtual void ClearAllActivities()
         {
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduredSupported)
+            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {
                 //although it's not a stored procedure we use it to ensure that a database supports them
                 //we cannot wait until EF team has it implemented - http://data.uservoice.com/forums/72025-entity-framework-feature-suggestions/suggestions/1015357-batch-cud-support

@@ -1,27 +1,32 @@
 using System;
 using SmartStore.Core.Domain.Localization;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
     /// Represents a currency
     /// </summary>
-    public partial class DeliveryTime : BaseEntity, ILocalizedEntity
+	[DataContract]
+	public partial class DeliveryTime : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the hex value
         /// </summary>
-        public string ColorHexValue { get; set; }
+		[DataMember]
+		public string ColorHexValue { get; set; }
 
         /// <summary>
         /// Gets or sets the display locale
         /// </summary>
-        public string DisplayLocale { get; set; }
+		[DataMember]
+		public string DisplayLocale { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
@@ -31,7 +36,8 @@ namespace SmartStore.Core.Domain.Directory
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
+		[DataMember]
+		public int DisplayOrder { get; set; }
 
     }
 

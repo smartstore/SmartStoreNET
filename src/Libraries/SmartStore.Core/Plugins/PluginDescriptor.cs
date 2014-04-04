@@ -6,9 +6,11 @@ using System.Xml;
 using SmartStore.Core.Infrastructure;
 using System.Linq;
 using SmartStore.Utilities;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Plugins
 {
+	[DataContract]
     public class PluginDescriptor : IComparable<PluginDescriptor>
     {
         private string _resourceRootKey;
@@ -20,8 +22,7 @@ namespace SmartStore.Core.Plugins
             this.MinAppVersion = SmartStoreVersion.FullVersion;
         }
 
-        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile,
-            Type pluginType)
+        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
             : this()
         {
             this.ReferencedAssembly = referencedAssembly;
@@ -30,11 +31,10 @@ namespace SmartStore.Core.Plugins
         }
 
         /// <summary>
-        /// Plugin type
+        /// Plugin file name
         /// </summary>
         public string PluginFileName { get; set; }
 
-        // codehint: sm-add
         /// <summary>
         /// The physical path of the runtime plugin
         /// </summary>
@@ -96,10 +96,9 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets or sets the plugin group
         /// </summary>
-        /// <remarks>codehint:sm-add</remarks>
-        public string Group { get; internal set; }
+		[DataMember]
+		public string Group { get; internal set; }
 
-        // codehint: sm-add
         public bool IsInKnownGroup
         {
             get
@@ -111,50 +110,62 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets or sets the friendly name
         /// </summary>
-        public string FriendlyName { get; set; }
+		[DataMember]
+		public string FriendlyName { get; set; }
+
+		/// <summary>
+		/// Gets the folder name
+		/// </summary>
+		[DataMember]
+		public string FolderName { get; internal set; }
 
         /// <summary>
         /// Gets or sets the system name
         /// </summary>
-        public string SystemName { get; set; }
+		[DataMember]
+		public string SystemName { get; set; }
 
         /// <summary>
         /// Gets the plugin description
         /// </summary>
-        /// <remarks>codehint:sm-add</remarks>
-        public string Description { get; internal set; }
+		[DataMember]
+		public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the version
         /// </summary>
-        public Version Version { get; set; }
+		[DataMember]
+		public Version Version { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum supported app version
         /// </summary>
-        public Version MinAppVersion { get; set; }
+		[DataMember]
+		public Version MinAppVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the author
         /// </summary>
-        public string Author { get; set; }
+		[DataMember]
+		public string Author { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
+		[DataMember]
+		public int DisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether plugin is installed
         /// </summary>
-        public bool Installed { get; set; }
+		[DataMember]
+		public bool Installed { get; set; }
 
 		/// <summary>
 		/// Gets or sets the root key of string resources.
 		/// </summary>
 		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.
 		/// Otherwise you get the wrong root key.</remarks>
-		/// <remarks>codehint: sm-add</remarks>
 		public string ResourceRootKey {
 			get {
 				if (_resourceRootKey == null) {
@@ -192,7 +203,7 @@ namespace SmartStore.Core.Plugins
         public T Instance<T>() where T : class, IPlugin
         {
             object instance;
-            if (!EngineContext.Current.ContainerManager.TryResolve(PluginType, out instance))
+            if (!EngineContext.Current.ContainerManager.TryResolve(PluginType, null, out instance))
             {
                 //not resolved
                 instance = EngineContext.Current.ContainerManager.ResolveUnregistered(PluginType);

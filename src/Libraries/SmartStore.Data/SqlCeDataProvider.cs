@@ -2,34 +2,27 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
-using SmartStore.Data.Initializers;
+using SmartStore.Core.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data
 {
-    public class SqlCeDataProvider : BaseEfDataProvider
+	public class SqlCeDataProvider : IEfDataProvider
     {
         /// <summary>
         /// Get connection factory
         /// </summary>
         /// <returns>Connection factory</returns>
-        public override IDbConnectionFactory GetConnectionFactory()
+        public virtual IDbConnectionFactory GetConnectionFactory()
         {
             return new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
         }
 
         /// <summary>
-        /// Set database initializer
-        /// </summary>
-        public override void SetDatabaseInitializer()
-        {
-            var initializer = new CreateCeDatabaseIfNotExists<SmartObjectContext>();
-            Database.SetInitializer(initializer);
-        }
-
-        /// <summary>
         /// A value indicating whether this data provider supports stored procedures
         /// </summary>
-        public override bool StoredProceduredSupported
+        public bool StoredProceduresSupported
         {
             get { return false; }
         }
@@ -38,9 +31,14 @@ namespace SmartStore.Data
         /// Gets a support database parameter object (used by stored procedures)
         /// </summary>
         /// <returns>Parameter</returns>
-        public override DbParameter GetParameter()
+        public DbParameter GetParameter()
         {
             return new SqlParameter();
         }
+
+		public string ProviderInvariantName
+		{
+			get { return "System.Data.SqlServerCe.4.0"; }
+		}
     }
 }

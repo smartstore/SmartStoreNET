@@ -195,7 +195,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(newsItem, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
             }
 
@@ -250,7 +250,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(newsItem, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
             }
 
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 
             _newsService.DeleteNews(newsItem);
 
-            SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Deleted"));
             return RedirectToAction("List");
         }
 

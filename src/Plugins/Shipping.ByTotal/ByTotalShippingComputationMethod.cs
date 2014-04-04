@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Shipping.ByTotal.Data;
+using SmartStore.Plugin.Shipping.ByTotal.Data.Migrations;
 using SmartStore.Plugin.Shipping.ByTotal.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
 
@@ -99,7 +101,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
 
             if (shippingByTotalRecord == null)
             {
-                if (!_shippingByTotalSettings.LimitMethodsToCreated)
+                if (_shippingByTotalSettings.LimitMethodsToCreated)
                 {
                     return null;
                 }
@@ -182,7 +184,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
 
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {
-                if (shoppingCartItem.IsFreeShipping || !shoppingCartItem.IsShipEnabled)
+                if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
                 {
                     continue;
                 }
@@ -261,8 +263,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                 SmallQuantitySurcharge = 0
             };
             _settingService.SaveSetting(settings);
-            
-            _objectContext.Install();
 
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -278,10 +278,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         {
             _settingService.DeleteSetting<ShippingByTotalSettings>();
 
-            _objectContext.Uninstall();
-
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 			_localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Shipping.ByTotal", false);
+
+			var migrator = new DbMigrator(new Configuration());
+			migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

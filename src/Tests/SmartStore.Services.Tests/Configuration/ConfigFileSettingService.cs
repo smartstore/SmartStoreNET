@@ -7,7 +7,7 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Caching;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Tests.Configuration
@@ -45,7 +45,7 @@ namespace SmartStore.Services.Tests.Configuration
 			}
 
 			if (setting != null)
-				return CommonHelper.To<T>(setting.Value);
+				return setting.Value.Convert<T>();
 
 			return defaultValue;
         }

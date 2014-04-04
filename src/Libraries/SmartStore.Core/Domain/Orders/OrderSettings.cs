@@ -5,7 +5,19 @@ namespace SmartStore.Core.Domain.Orders
 {
     public class OrderSettings : ISettings
     {
-        /// <summary>
+		public OrderSettings()
+		{
+			IsReOrderAllowed = true;
+			AnonymousCheckoutAllowed = true;
+			TermsOfServiceEnabled = true;
+			ReturnRequestsEnabled = true;
+			ReturnRequestActions = new List<string>() { "Repair", "Replacement", "Store Credit" };
+			ReturnRequestReasons = new List<string>() { "Received Wrong Product", "Wrong Product Ordered", "There Was A Problem With The Product" };
+			NumberOfDaysReturnRequestAvailable = 365;
+			MinimumOrderPlacementInterval = 30;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether customer can make re-order
         /// </summary>
         public bool IsReOrderAllowed { get; set; }
@@ -39,6 +51,11 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether order totals should be displayed on 'Payment info' tab of 'One-page checkout' page
         /// </summary>
         public bool OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether "Order completed" page should be skipped
+		/// </summary>
+		public bool DisableOrderCompletedPage { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether "Return requests" are allowed

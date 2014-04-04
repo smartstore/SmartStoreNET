@@ -1,7 +1,8 @@
+@import "~/.db/themevars.less";
 @import "variables.less";
 @import "variables.custom.less";
-@import "../../../Content/bootstrap/mixins.less";
-@import "../../../Content/bootstrap/custom/mixins.less";
+@import "~/Content/bootstrap/mixins.less";
+@import "~/Content/bootstrap/custom/mixins.less";
 
 /*
 Theme created for use with Sequence.js (http://www.sequencejs.com/)
@@ -20,16 +21,16 @@ Aside from these comments, you may modify and distribute this file as you please
 @sliderBackgroundColor:		@var_SliderBackgroundColor;
 
 @sliderTitleColor:			@var_SliderTitleColor;
-@sliderTitleShadowColor:	contrast(@sliderTitleColor);
+@sliderTitleShadowColor:	contrast(@sliderTitleColor, #000, #fff, 50%);
 @sliderTitleFontFamily:		@var_SliderTitleFontFamily;
 @sliderTitleFontWeight:		@var_SliderTitleFontWeight;
 
 @sliderInfoColor:			@var_SliderInfoColor;
-@sliderInfoShadowColor:		contrast(@sliderInfoColor);
+@sliderInfoShadowColor:		contrast(@sliderInfoColor, #000, #fff, 50%);
 @sliderInfoFontFamily:		@var_SliderInfoFontFamily;
 @sliderInfoFontWeight:		@var_SliderInfoFontWeight;
 
-@navOutlineColor:			contrast(@sliderBackgroundColor);
+@navOutlineColor:			contrast(@sliderBackgroundColor, #000, #fff, 50%);
 
 
 .radial-bg()  when ( @sliderUseRadialBg = true) {

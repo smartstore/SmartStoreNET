@@ -5,7 +5,7 @@ using Autofac.Integration.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Services.Installation;
+using SmartStore.Data.Setup;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Installation;
@@ -16,25 +16,24 @@ namespace SmartStore.Web.Infrastructure
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            //we cache presentation models between requests
-            builder.RegisterType<BlogController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<CatalogController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<CountryController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<CommonController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<NewsController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<PollController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<ShoppingCartController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
-            builder.RegisterType<TopicController>().WithParameter(ResolvedParameter.ForNamed<ICacheManager>("sm_cache_static"));
+			//we cache presentation models between requests
+			builder.RegisterType<BlogController>().WithStaticCache();
+			builder.RegisterType<CatalogController>().WithStaticCache();
+			builder.RegisterType<CountryController>().WithStaticCache();
+			builder.RegisterType<CommonController>().WithStaticCache();
+			builder.RegisterType<NewsController>().WithStaticCache();
+			builder.RegisterType<PollController>().WithStaticCache();
+			builder.RegisterType<ShoppingCartController>().WithStaticCache();
+			builder.RegisterType<TopicController>().WithStaticCache();
 
-            builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerHttpRequest();
+			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().WithRequestCache().InstancePerHttpRequest();
             
             // installation localization service
             builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerHttpRequest();
 
-            // codehint: sm-add
             // register app languages for installation
-            builder.RegisterType<EnUSInstallationData>()
-                .As<InvariantInstallationData>()
+			builder.RegisterType<EnUSSeedData>()
+                .As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>
                 { 
                     m.For(em => em.Culture, "en-US");
@@ -43,8 +42,8 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.FlagImageFileName, "us.png");
                 })
                 .InstancePerHttpRequest();
-            builder.RegisterType<DeDEInstallationData>()
-                .As<InvariantInstallationData>()
+            builder.RegisterType<DeDESeedData>()
+				.As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>
                 {
                     m.For(em => em.Culture, "de-DE");

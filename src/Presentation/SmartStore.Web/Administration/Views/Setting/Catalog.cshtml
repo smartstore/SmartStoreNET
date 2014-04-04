@@ -387,7 +387,15 @@
                     @Html.ValidationMessageFor(model => model.ShowColorSquaresInLists)
                 </td>
             </tr>
-
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.HideBuyButtonInLists)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.HideBuyButtonInLists)
+                    @Html.ValidationMessageFor(model => model.HideBuyButtonInLists)
+                </td>
+            </tr>
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.LabelAsNewForMaxDays)
@@ -608,6 +616,42 @@
                 @Html.ValidationMessageFor(model => model.EnableDynamicPriceUpdate)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.BundleItemShowBasePrice)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.BundleItemShowBasePrice)
+				@Html.ValidationMessageFor(model => model.BundleItemShowBasePrice)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowVariantCombinationPriceAdjustment)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowVariantCombinationPriceAdjustment)
+                @Html.ValidationMessageFor(model => model.ShowVariantCombinationPriceAdjustment)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueQuantity)
+                @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowLinkedAttributeValueImage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueImage)
+                @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueImage)
+            </td>
+        </tr>
     </table>
 }    
 @helper TabProductSearchSettings()
@@ -657,6 +701,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
                 @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SuppressSkuSearch)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SuppressSkuSearch)
+                @Html.ValidationMessageFor(model => model.SuppressSkuSearch)
             </td>
         </tr>
     </table>

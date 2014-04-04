@@ -5,7 +5,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Shipping
 {
@@ -17,7 +17,7 @@ namespace SmartStore.Services.Shipping
         #region Fields
 
         private readonly IRepository<Shipment> _shipmentRepository;
-        private readonly IRepository<ShipmentOrderProductVariant> _sopvRepository;
+        private readonly IRepository<ShipmentItem> _siRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IEventPublisher _eventPublisher;
         
@@ -29,16 +29,16 @@ namespace SmartStore.Services.Shipping
         /// Ctor
         /// </summary>
         /// <param name="shipmentRepository">Shipment repository</param>
-        /// <param name="sopvRepository">Shipment order product variant repository</param>
+        /// <param name="siRepository">shipment item repository</param>
         /// <param name="orderRepository">Order repository</param>
         /// <param name="eventPublisher">Event published</param>
         public ShipmentService(IRepository<Shipment> shipmentRepository,
-            IRepository<ShipmentOrderProductVariant> sopvRepository,
+            IRepository<ShipmentItem> siRepository,
             IRepository<Order> orderRepository,
             IEventPublisher eventPublisher)
         {
             this._shipmentRepository = shipmentRepository;
-            this._sopvRepository = sopvRepository;
+            this._siRepository = siRepository;
             this._orderRepository = orderRepository;
             _eventPublisher = eventPublisher;
         }
@@ -65,15 +65,18 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Search shipments
         /// </summary>
+		/// <param name="trackingNumber">Search by tracking number</param>
         /// <param name="createdFrom">Created date from; null to load all records</param>
         /// <param name="createdTo">Created date to; null to load all records</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Customer collection</returns>
-        public virtual IPagedList<Shipment> GetAllShipments(DateTime? createdFrom, DateTime? createdTo, 
+		public virtual IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo, 
             int pageIndex, int pageSize)
         {
             var query = _shipmentRepository.Table;
+			if (!String.IsNullOrEmpty(trackingNumber))
+				query = query.Where(s => s.TrackingNumber.Contains(trackingNumber));
             if (createdFrom.HasValue)
                 query = query.Where(s => createdFrom.Value <= s.CreatedOnUtc);
             if (createdTo.HasValue)
@@ -157,63 +160,64 @@ namespace SmartStore.Services.Shipping
 
         
         /// <summary>
-        /// Deletes a shipment order product variant
+        /// Deletes a shipment item
         /// </summary>
-        /// <param name="sopv">Shipment order product variant</param>
-        public virtual void DeleteShipmentOrderProductVariant(ShipmentOrderProductVariant sopv)
+        /// <param name="shipmentItem">Shipment item</param>
+        public virtual void DeleteShipmentItem(ShipmentItem shipmentItem)
         {
-            if (sopv == null)
-                throw new ArgumentNullException("sopv");
+            if (shipmentItem == null)
+				throw new ArgumentNullException("shipmentItem");
 
-            _sopvRepository.Delete(sopv);
+            _siRepository.Delete(shipmentItem);
 
             //event notification
-            _eventPublisher.EntityDeleted(sopv);
+            _eventPublisher.EntityDeleted(shipmentItem);
         }
 
         /// <summary>
-        /// Gets a shipment order product variant
+        /// Gets a shipment item
         /// </summary>
-        /// <param name="sopvId">Shipment order product variant identifier</param>
-        /// <returns>Shipment order product variant</returns>
-        public virtual ShipmentOrderProductVariant GetShipmentOrderProductVariantById(int sopvId)
+        /// <param name="shipmentItemId">shipment item identifier</param>
+        /// <returns>shipment item</returns>
+        public virtual ShipmentItem GetShipmentItemById(int shipmentItemId)
         {
-            if (sopvId == 0)
+            if (shipmentItemId == 0)
                 return null;
 
-            var sopv = _sopvRepository.GetById(sopvId);
-            return sopv;
+            var si = _siRepository.GetById(shipmentItemId);
+            return si;
         }
         
         /// <summary>
-        /// Inserts a shipment order product variant
+        /// Inserts a shipment item
         /// </summary>
-        /// <param name="sopv">Shipment order product variant</param>
-        public virtual void InsertShipmentOrderProductVariant(ShipmentOrderProductVariant sopv)
+        /// <param name="shipmentItem">shipment item</param>
+        public virtual void InsertShipmentItem(ShipmentItem shipmentItem)
         {
-            if (sopv == null)
-                throw new ArgumentNullException("sopv");
+            if (shipmentItem == null)
+				throw new ArgumentNullException("shipmentItem");
 
-            _sopvRepository.Insert(sopv);
+            _siRepository.Insert(shipmentItem);
 
             //event notification
-            _eventPublisher.EntityInserted(sopv);
+            _eventPublisher.EntityInserted(shipmentItem);
         }
 
         /// <summary>
-        /// Updates the shipment order product variant
+        /// Updates the shipment item
         /// </summary>
-        /// <param name="sopv">Shipment order product variant</param>
-        public virtual void UpdateShipmentOrderProductVariant(ShipmentOrderProductVariant sopv)
+        /// <param name="shipmentItem">shipment item</param>
+        public virtual void UpdateShipmentItem(ShipmentItem shipmentItem)
         {
-            if (sopv == null)
-                throw new ArgumentNullException("sopv");
+            if (shipmentItem == null)
+				throw new ArgumentNullException("shipmentItem");
 
-            _sopvRepository.Update(sopv);
+            _siRepository.Update(shipmentItem);
 
             //event notification
-            _eventPublisher.EntityUpdated(sopv);
+            _eventPublisher.EntityUpdated(shipmentItem);
         }
-        #endregion
+        
+		#endregion
     }
 }

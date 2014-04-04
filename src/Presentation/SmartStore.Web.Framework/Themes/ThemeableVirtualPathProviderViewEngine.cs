@@ -11,14 +11,14 @@ using SmartStore.Services.Common;
 
 namespace SmartStore.Web.Framework.Themes
 {
-    public abstract class ThemeableVirtualPathProviderViewEngine : VirtualPathProviderViewEngine
+    public abstract class ThemeableVirtualPathProviderViewEngine : BuildManagerViewEngine
     {
         #region Fields
 
         internal Func<string, string> GetExtensionThunk;
 
         private readonly string[] _emptyLocations = null;
-        private readonly string _mobileViewModifier = "Mobile";
+		private readonly string _mobileViewModifier = "Mobile";
         // format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}:{lang}"
         private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}:{6}";
 
@@ -42,10 +42,12 @@ namespace SmartStore.Web.Framework.Themes
             {
                 return string.Empty;
             }
+			
             string areaName = GetAreaName(controllerContext.RouteData);
+			bool isArea = !string.IsNullOrEmpty(areaName);
 
-            //little hack to get sm's admin area to be in /Administration/ instead of /SmartStore/Admin/ or Areas/Admin/
-            if (!string.IsNullOrEmpty(areaName) && areaName.Equals("admin", StringComparison.InvariantCultureIgnoreCase))
+            // Little hack to get sm's admin area to be in /Administration/ instead of /SmartStore/Admin/ or Areas/Admin/
+			if (isArea && areaName.Equals("admin", StringComparison.InvariantCultureIgnoreCase))
             {
                 //admin area does not support mobile devices
                 if (mobile)
@@ -59,27 +61,18 @@ namespace SmartStore.Web.Framework.Themes
                 newLocations.Insert(0, "~/Administration/Views/{1}/{0}.vbhtml");
                 newLocations.Insert(0, "~/Administration/Views/Shared/{0}.cshtml");
                 newLocations.Insert(0, "~/Administration/Views/Shared/{0}.vbhtml");
-                //newLocations.Insert(0, "~/Administration/Themes/{3}/Views/Shared/{0}.vbhtml");
-                //newLocations.Insert(0, "~/Administration/Themes/{3}/Views/Shared/{0}.cshtml");
-                //newLocations.Insert(0, "~/Administration/Themes/{3}/Views/{1}/{0}.vbhtml");
-                //newLocations.Insert(0, "~/Administration/Themes/{3}/Views/{1}/{0}.cshtml");
-
-                /*newLocations.Insert(0, "~/Administration/Views/{1}/{0}.cshtml");
-                newLocations.Insert(0, "~/Administration/Views/{1}/{0}.vbhtml");
-                newLocations.Insert(0, "~/Administration/Views/Shared/{0}.cshtml");
-                newLocations.Insert(0, "~/Administration/Views/Shared/{0}.vbhtml");*/
 
                 areaLocations = newLocations.ToArray();
             }
 
-            bool isArea = !string.IsNullOrEmpty(areaName);
+            
             List<ViewLocation> viewLocations = GetViewLocations(locations, isArea ? areaLocations : null);
             if (viewLocations.Count == 0)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Properties cannot be null or empty.", new object[] { locationsPropertyName }));
             }
 
-            string lang = this.GetCurrentLanguageSeoCode();
+			string lang = this.GetCurrentLanguageSeoCode();
             bool isSpecificPath = IsSpecificPath(name);
             string key = this.CreateCacheKey(cacheKeyPrefix, name, isSpecificPath ? string.Empty : controllerName, areaName, theme, lang);
             if (useCache)
@@ -269,8 +262,7 @@ namespace SmartStore.Web.Framework.Themes
                 throw new ArgumentException("View name cannot be null or empty.", "viewName");
             }
 
-            // codehint: sm-edit
-            var theme = GetCurrentTheme(controllerContext, mobile);
+			var theme = GetCurrentTheme(controllerContext, mobile);
 
             string controllerName = controllerContext.RouteData.GetRequiredString("controller");
             string viewPath = this.GetPath(controllerContext, this.ViewLocationFormats, this.AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, mobile, out viewLocationsSearched);
@@ -299,7 +291,6 @@ namespace SmartStore.Web.Framework.Themes
                 throw new ArgumentException("Partial view name cannot be null or empty.", "partialViewName");
             }
 
-            // codehint: sm-edit
             var theme = GetCurrentTheme(controllerContext, mobile);
 
             string controllerName = controllerContext.RouteData.GetRequiredString("controller");
@@ -318,46 +309,46 @@ namespace SmartStore.Web.Framework.Themes
 
         public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
         {
-            var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
-            bool useMobileDevice = this.IsMobileDevice();
+			var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
+			bool useMobileDevice = this.IsMobileDevice();
 
-            string overrideViewName = useMobileDevice ?
-                string.Format("{0}.{1}", viewName, _mobileViewModifier)
-                : viewName;
+			string overrideViewName = useMobileDevice ?
+				string.Format("{0}.{1}", viewName, _mobileViewModifier)
+				: viewName;
 
-            ViewEngineResult result = FindThemeableView(controllerContext, overrideViewName, masterName, useCache, useMobileDevice);
+			ViewEngineResult result = FindThemeableView(controllerContext, overrideViewName, masterName, useCache, useMobileDevice);
 
-            // If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
-            if (useMobileDevice && (result == null || result.View == null))
-            {
+			// If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
+			if (useMobileDevice && (result == null || result.View == null))
+			{
                 result = FindThemeableView(controllerContext, viewName, masterName, useCache, false);
-            }
+			}
 
             return result;
         }
 
         public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
         {
-            var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
-            bool useMobileDevice = this.IsMobileDevice();
+			var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
+			bool useMobileDevice = this.IsMobileDevice();
 
-            string overrideViewName = useMobileDevice ?
-                string.Format("{0}.{1}", partialViewName, _mobileViewModifier)
-                : partialViewName;
+			string overrideViewName = useMobileDevice ?
+				string.Format("{0}.{1}", partialViewName, _mobileViewModifier)
+				: partialViewName;
 
-            ViewEngineResult result = FindThemeablePartialView(controllerContext, overrideViewName, useCache, useMobileDevice);
+			ViewEngineResult result = FindThemeablePartialView(controllerContext, overrideViewName, useCache, useMobileDevice);
 
-            // If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
-            if (useMobileDevice && (result == null || result.View == null))
-            {
+			// If we're looking for a Mobile view and couldn't find it try again without modifying the viewname
+			if (useMobileDevice && (result == null || result.View == null))
+			{
                 result = FindThemeablePartialView(controllerContext, partialViewName, useCache, false);
-            }
+			}
 
             return result;
         }
     
         #endregion
-}
+	}
 
     public class AreaAwareViewLocation : ViewLocation
     {

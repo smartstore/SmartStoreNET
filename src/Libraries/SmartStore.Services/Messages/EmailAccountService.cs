@@ -4,7 +4,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Messages
 {
@@ -37,11 +37,11 @@ namespace SmartStore.Services.Messages
             if (emailAccount == null)
                 throw new ArgumentNullException("emailAccount");
 
-            emailAccount.Email = CommonHelper.EnsureNotNull(emailAccount.Email);
-            emailAccount.DisplayName = CommonHelper.EnsureNotNull(emailAccount.DisplayName);
-            emailAccount.Host = CommonHelper.EnsureNotNull(emailAccount.Host);
-            emailAccount.Username = CommonHelper.EnsureNotNull(emailAccount.Username);
-            emailAccount.Password = CommonHelper.EnsureNotNull(emailAccount.Password);
+			emailAccount.Email = emailAccount.Email.EmptyNull();
+			emailAccount.DisplayName = emailAccount.DisplayName.EmptyNull();
+			emailAccount.Host = emailAccount.Host.EmptyNull();
+			emailAccount.Username = emailAccount.Username.EmptyNull();
+			emailAccount.Password = emailAccount.Password.EmptyNull();
 
             emailAccount.Email = emailAccount.Email.Trim();
             emailAccount.DisplayName = emailAccount.DisplayName.Trim();
@@ -49,11 +49,11 @@ namespace SmartStore.Services.Messages
             emailAccount.Username = emailAccount.Username.Trim();
             emailAccount.Password = emailAccount.Password.Trim();
 
-            emailAccount.Email = CommonHelper.EnsureMaximumLength(emailAccount.Email, 255);
-            emailAccount.DisplayName = CommonHelper.EnsureMaximumLength(emailAccount.DisplayName, 255);
-            emailAccount.Host = CommonHelper.EnsureMaximumLength(emailAccount.Host, 255);
-            emailAccount.Username = CommonHelper.EnsureMaximumLength(emailAccount.Username, 255);
-            emailAccount.Password = CommonHelper.EnsureMaximumLength(emailAccount.Password, 255);
+			emailAccount.Email = emailAccount.Email.Truncate(255);
+			emailAccount.DisplayName = emailAccount.DisplayName.Truncate(255);
+			emailAccount.Host = emailAccount.Host.Truncate(255);
+			emailAccount.Username = emailAccount.Username.Truncate(255);
+			emailAccount.Password = emailAccount.Password.Truncate(255);
 
             _emailAccountRepository.Insert(emailAccount);
 
@@ -70,11 +70,11 @@ namespace SmartStore.Services.Messages
             if (emailAccount == null)
                 throw new ArgumentNullException("emailAccount");
 
-            emailAccount.Email = CommonHelper.EnsureNotNull(emailAccount.Email);
-            emailAccount.DisplayName = CommonHelper.EnsureNotNull(emailAccount.DisplayName);
-            emailAccount.Host = CommonHelper.EnsureNotNull(emailAccount.Host);
-            emailAccount.Username = CommonHelper.EnsureNotNull(emailAccount.Username);
-            emailAccount.Password = CommonHelper.EnsureNotNull(emailAccount.Password);
+			emailAccount.Email = emailAccount.Email.EmptyNull();
+			emailAccount.DisplayName = emailAccount.DisplayName.EmptyNull();
+			emailAccount.Host = emailAccount.Host.EmptyNull();
+			emailAccount.Username = emailAccount.Username.EmptyNull();
+			emailAccount.Password = emailAccount.Password.EmptyNull();
 
             emailAccount.Email = emailAccount.Email.Trim();
             emailAccount.DisplayName = emailAccount.DisplayName.Trim();
@@ -82,11 +82,11 @@ namespace SmartStore.Services.Messages
             emailAccount.Username = emailAccount.Username.Trim();
             emailAccount.Password = emailAccount.Password.Trim();
 
-            emailAccount.Email = CommonHelper.EnsureMaximumLength(emailAccount.Email, 255);
-            emailAccount.DisplayName = CommonHelper.EnsureMaximumLength(emailAccount.DisplayName, 255);
-            emailAccount.Host = CommonHelper.EnsureMaximumLength(emailAccount.Host, 255);
-            emailAccount.Username = CommonHelper.EnsureMaximumLength(emailAccount.Username, 255);
-            emailAccount.Password = CommonHelper.EnsureMaximumLength(emailAccount.Password, 255);
+			emailAccount.Email = emailAccount.Email.Truncate(255);
+			emailAccount.DisplayName = emailAccount.DisplayName.Truncate(255);
+			emailAccount.Host = emailAccount.Host.Truncate(255);
+			emailAccount.Username = emailAccount.Username.Truncate(255);
+			emailAccount.Password = emailAccount.Password.Truncate(255);
 
             _emailAccountRepository.Update(emailAccount);
 

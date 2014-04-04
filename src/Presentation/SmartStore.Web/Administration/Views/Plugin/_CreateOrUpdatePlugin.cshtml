@@ -8,7 +8,7 @@
 @if (ViewBag.RefreshPage == true)
 {
     <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+        try {window.opener.document.forms['@(ViewBag.formId)']['@(ViewBag.btnId)'].click();}
         catch (e){} 
         window.close();
     </script>
@@ -37,6 +37,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => Model.Locales[item].Description)
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">
 				@Html.HiddenFor(model => model.Locales[item].LanguageId)
 			</td>
@@ -53,8 +62,18 @@
 				@Html.ValidationMessageFor(model => model.FriendlyName)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.Description)
+				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
 	</table>
 	))
+	
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">

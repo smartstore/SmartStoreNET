@@ -1,0 +1,161 @@
+﻿@model ProductModel
+
+@using Telerik.Web.Mvc.UI;
+
+@if (Model.Id > 0)
+{
+    <div>
+        @(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-bundle-localized",
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].BundleTitleText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.Locales[item].BundleTitleText)
+                        @Html.ValidationMessageFor(model => model.Locales[item].BundleTitleText)
+                    </td>
+                </tr>
+            </table>        
+        ,
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.BundleTitleText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.BundleTitleText)
+                        @Html.ValidationMessageFor(model => model.BundleTitleText)
+                    </td>
+                </tr>
+            </table>
+        ))
+
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BundlePerItemPricing)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.BundlePerItemPricing)
+                    @Html.ValidationMessageFor(model => model.BundlePerItemPricing)
+                </td>
+            </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.BundlePerItemShipping)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.BundlePerItemShipping)
+					@Html.ValidationMessageFor(model => model.BundlePerItemShipping)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.BundlePerItemShoppingCart)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.BundlePerItemShoppingCart)
+					@Html.ValidationMessageFor(model => model.BundlePerItemShoppingCart)
+				</td>
+			</tr>
+        </table>
+    </div>    
+    
+    <div style="margin: 20px 0">
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<ProductModel.BundleItemModel>()
+                        .Name("bundleitems-grid")
+                        .DataKeys(keys =>
+                        {
+                            keys.Add(x => x.Id);
+                        })
+                        .DataBinding(dataBinding =>
+                        {
+                            dataBinding.Ajax()
+                                .Select("BundleItemList", "Product", new { productId = Model.Id })
+                                .Delete("BundleItemDelete", "Product");
+                        })
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.ProductName)
+                                .ReadOnly()
+								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                            columns.Bound(x => x.Sku)
+                                .ReadOnly();
+							columns.Bound(x => x.Quantity)
+								.Width(80)
+								.Centered();
+							columns.Bound(x => x.Discount)
+								.Width(80)
+								.Centered();
+							columns.Bound(x => x.Visible)
+								.Width(100)
+								.Template(item => @Html.SymbolForBool(item.Visible))
+								.ClientTemplate(@Html.SymbolForBool("Visible"))
+								.Centered();
+                            columns.Bound(x => x.Published)
+                                .Width(100)
+                                .Template(item => @Html.SymbolForBool(item.Published))
+                                .ClientTemplate(@Html.SymbolForBool("Published"))
+                                .Centered();
+                            columns.Bound(x => x.DisplayOrder)
+                                .Width(100)
+                                .Centered();
+                            columns.Bound(x => x.Id)
+                                .Width(90)
+                                .Centered()
+                                .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form', 1000, 600, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+                                .Title("");
+                            columns.Command(commands =>
+                            {
+                                commands.Delete().Localize(T);
+                            })
+                            .Width(90);
+                        })
+                        .ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
+                        .EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+					<button type="submit" id="btnAddNewBundleItem" name="btnAddNewBundleItem" class="btn btn-warning btn-below"
+							onclick="javascript:OpenWindow('@(Url.Action("BundleItemAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshBundleItems", formId = "product-form" }))', 1000, 730, true); return false;">
+						<i class="icon-plus"></i>
+						@T("Common.AddNew")
+					</button>
+
+                    <input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" style="display: none" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnRefreshBundleItems').click(function () {
+                $("#bundleitems-grid").data('tGrid').ajaxRequest();
+                return false;
+            });
+
+        	$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').change(function () {
+        		$('#TierPriceContainer').toggle(
+					!$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').is(':checked')
+				);
+        	}).trigger('change');
+        });
+
+        function onRowDataBound_bundleItems(e) {
+            if (!e.dataItem.Published) {
+                $(e.row).find('td').wrapInner('<span class="muted" />');
+            }
+        }
+    </script>
+}
+else
+{
+    @T("Admin.Catalog.Products.BundleItems.SaveBeforeEdit")
+}

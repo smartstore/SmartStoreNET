@@ -17,5 +17,6 @@ namespace SmartStore.Core.Data.Hooks
         {
             get { return EntityState.Modified; }
         }
-    }
+
+	}
 }

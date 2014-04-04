@@ -1,4 +1,4 @@
-﻿@model IList<ProductDetailsModel.ProductVariantModel.ProductVariantAttributeModel>
+﻿@model IList<ProductDetailsModel.ProductVariantAttributeModel>
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Infrastructure;
@@ -7,6 +7,7 @@
 @using System.Globalization;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Security;
+@using SmartStore.Web.Extensions;
 @{
     var hidePrices = !EngineContext.Current.Resolve<IPermissionService>().Authorize(StandardPermissionProvider.DisplayPrices);
 }
@@ -15,9 +16,11 @@
     <div class="attributes">
         <dl>
             @foreach (var attribute in Model)
-            {
-                string controlId = string.Format("product_attribute_{0}_{1}_{2}", attribute.ProductVariantId, attribute.ProductAttributeId, attribute.Id);
+			{
+				string controlId = string.Format("product_attribute_{0}_{1}_{2}_{3}", attribute.ProductId, attribute.BundleItemId, attribute.ProductAttributeId, attribute.Id);
                 string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
+				string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
+				
                 <dt><span class="text-prompt">
                     @textPrompt
                 </span>
@@ -37,16 +40,14 @@
                     {
                         case AttributeControlType.DropdownList:
                             {
-                        <select name="@(controlId)" id="@(controlId)">
+                        <select name="@(controlId)" id="@(controlId)"@(Html.Raw(disabled))>
                             @if (!attribute.IsRequired)
                             {
                                 <option value="0">---</option>
                             }
                             @foreach (var pvaValue in attribute.Values)
                             {
-                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@pvaValue.Name
-                                    @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)
-                                </option>
+                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
                             }
                         </select>
                             }
@@ -58,8 +59,8 @@
                             @foreach (var pvaValue in attribute.Values)
                             {
                                 <li>
-                                    <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" />
-                                    <label for="@(controlId)_@(pvaValue.Id)">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</label>
+                                    <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
+                                    <label for="@(controlId)_@(pvaValue.Id)">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</label>
                                 </li>
                             }
                         </ul>
@@ -71,8 +72,8 @@
                             @foreach (var pvaValue in attribute.Values)
                             {
                                 <li>
-                                    <input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" />
-                                    <label for="@(controlId)_@(pvaValue.Id)">@pvaValue.Name @(!String.IsNullOrEmpty(pvaValue.PriceAdjustment) ? " [" + pvaValue.PriceAdjustment + "]" : null)</label>
+                                    <input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
+                                    <label for="@(controlId)_@(pvaValue.Id)">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</label>
                                 </li>
                             }
                         </ul>
@@ -80,22 +81,22 @@
                             break;
                         case AttributeControlType.TextBox:
                             {
-                        <input name="@(controlId)" type="text" class="textbox" id="@(controlId)" value="@attribute.TextValue" />
+                        <input name="@(controlId)" type="text" class="textbox" id="@(controlId)" value="@attribute.TextValue"@(Html.Raw(disabled)) />
                             }
                             break;
                         case AttributeControlType.MultilineTextbox:
                             {
-                        <textarea id="@(controlId)" name="@(controlId)">@attribute.TextValue</textarea>
+                        <textarea id="@(controlId)" name="@(controlId)"@(Html.Raw(disabled))>@attribute.TextValue</textarea>
                             }
                             break;
                         case AttributeControlType.Datepicker:
                             {
-                        @Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear)
+                        @Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
                             }
                             break;
                         case AttributeControlType.FileUpload:
                             {
-                        <input type="file" id="@(controlId)" name="@(controlId)"></input>
+                        <input type="file" id="@(controlId)" name="@(controlId)"@(Html.Raw(disabled))></input>
                             }
                             break;
                     }

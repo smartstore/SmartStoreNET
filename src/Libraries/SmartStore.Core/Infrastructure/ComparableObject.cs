@@ -132,10 +132,12 @@ namespace SmartStore
             if (s_signatureProperties == null)
                 s_signatureProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
 
-            if (s_signatureProperties.TryGetValue(GetType(), out properties))
+			var t = GetType();
+
+            if (s_signatureProperties.TryGetValue(t, out properties))
                 return properties;
 
-            return (s_signatureProperties[GetType()] = GetSignaturePropertiesCore());
+            return (s_signatureProperties[t] = GetSignaturePropertiesCore());
         }
 
         /// <summary>
@@ -200,7 +202,6 @@ namespace SmartStore
     /// </summary>
     [Serializable]
     public abstract class ComparableObject<T> : ComparableObject, IEquatable<T>
-        where T : ComparableObject<T>
     {
 
         /// <summary>

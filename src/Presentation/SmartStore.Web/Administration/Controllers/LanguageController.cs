@@ -7,8 +7,7 @@ using SmartStore.Admin.Models.Localization;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Services;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
@@ -16,6 +15,8 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using System.Collections.Generic;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -31,6 +32,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IPluginFinder _pluginFinder;
 
         #endregion
 
@@ -42,7 +44,8 @@ namespace SmartStore.Admin.Controllers
 			IStoreMappingService storeMappingService,
             IPermissionService permissionService,
             IWebHelper webHelper,
-            AdminAreaSettings adminAreaSettings)
+            AdminAreaSettings adminAreaSettings,
+			IPluginFinder pluginFinder)
         {
             this._localizationService = localizationService;
             this._languageService = languageService;
@@ -51,6 +54,7 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
             this._webHelper = webHelper;
             this._adminAreaSettings = adminAreaSettings;
+			this._pluginFinder = pluginFinder;
         }
 
         #endregion 
@@ -184,7 +188,15 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(language, model);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Added"));
+				var plugins = _pluginFinder.GetPluginDescriptors(true);
+				var filterLanguages = new List<Language>() { language };
+
+				foreach (var plugin in plugins)
+				{
+					_localizationService.ImportPluginResourcesFromXml(plugin, null, false, filterLanguages);
+				}
+
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Languages.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
             }
 
@@ -238,7 +250,7 @@ namespace SmartStore.Admin.Controllers
                 if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id &&
                     !model.Published)
                 {
-                    ErrorNotification("At least one published language is required.");
+					NotifyError("At least one published language is required.");
                     return RedirectToAction("Edit", new { id = language.Id });
                 }
 
@@ -250,7 +262,7 @@ namespace SmartStore.Admin.Controllers
 				SaveStoreMappings(language, model);
 
                 //notification
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
             }
 
@@ -278,7 +290,7 @@ namespace SmartStore.Admin.Controllers
             var allLanguages = _languageService.GetAllLanguages();
             if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id)
             {
-                ErrorNotification("At least one published language is required.");
+				NotifyError("At least one published language is required.");
                 return RedirectToAction("Edit", new { id = language.Id });
             }
 
@@ -286,7 +298,7 @@ namespace SmartStore.Admin.Controllers
             _languageService.DeleteLanguage(language);
 
             //notification
-            SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Languages.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -472,13 +484,13 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("List");
             }
         }
 
         [HttpPost]
-        public ActionResult ImportXml(int id, FormCollection form, DataImportModeFlags mode, bool updateTouched)
+        public ActionResult ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
                 return AccessDeniedView();
@@ -505,16 +517,16 @@ namespace SmartStore.Admin.Controllers
                 }
                 else
                 {
-                    ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
+					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
                     return RedirectToAction("Edit", new { id = language.Id });
                 }
 
-                SuccessNotification(_localizationService.GetResource("Admin.Configuration.Languages.Imported"));
+                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Languages.Imported"));
                 return RedirectToAction("Edit", new { id = language.Id });
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = language.Id });
             }
 

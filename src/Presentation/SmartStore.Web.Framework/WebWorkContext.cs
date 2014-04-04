@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -12,10 +13,12 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Fakes;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework
@@ -33,13 +36,15 @@ namespace SmartStore.Web.Framework
         private readonly IAuthenticationService _authenticationService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
-		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IGenericAttributeService _attrService;
         private readonly TaxSettings _taxSettings;
         private readonly CurrencySettings _currencySettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly IStoreService _storeService;
+        private readonly ISettingService _settingService;
+		private readonly Lazy<ITaxService> _taxService;
 
         private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
@@ -47,31 +52,33 @@ namespace SmartStore.Web.Framework
         private Currency _cachedCurrency;
         private Customer _originalCustomerIfImpersonated; 
 
-        public WebWorkContext(ICacheManager cacheManager,
+        public WebWorkContext(Func<string, ICacheManager> cacheManager,
             HttpContextBase httpContext,
             ICustomerService customerService,
 			IStoreContext storeContext,
             IAuthenticationService authenticationService,
             ILanguageService languageService,
             ICurrencyService currencyService,
-			IGenericAttributeService genericAttributeService,
+			IGenericAttributeService attrService,
             TaxSettings taxSettings, CurrencySettings currencySettings,
-            LocalizationSettings localizationSettings,
-            IWebHelper webHelper, IStoreService storeService)
+            LocalizationSettings localizationSettings, Lazy<ITaxService> taxService,
+            IWebHelper webHelper, IStoreService storeService, ISettingService settingService)
         {
-            this._cacheManager = cacheManager;
+			this._cacheManager = cacheManager("static");
             this._httpContext = httpContext;
             this._customerService = customerService;
 			this._storeContext = storeContext;
             this._authenticationService = authenticationService;
             this._languageService = languageService;
-			this._genericAttributeService = genericAttributeService;
+			this._attrService = attrService;
             this._currencyService = currencyService;
             this._taxSettings = taxSettings;
+			this._taxService = taxService;
             this._currencySettings = currencySettings;
             this._localizationSettings = localizationSettings;
             this._webHelper = webHelper;
             this._storeService = storeService;
+            this._settingService = settingService;
         }
 
         protected HttpCookie GetCustomerCookie()
@@ -103,6 +110,8 @@ namespace SmartStore.Web.Framework
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
+
+        //public Lazy<ITaxService> TaxService { get; set; }
 
         /// <summary>
         /// Gets or sets the current customer
@@ -224,14 +233,14 @@ namespace SmartStore.Web.Framework
                 {
                     customerLangId = this.CurrentCustomer.GetAttribute<int>(
                         SystemCustomerAttributeNames.LanguageId, 
-                        _genericAttributeService, 
+                        _attrService, 
                         _storeContext.CurrentStore.Id);
                 }
 
                 #region Get language from URL (if possible)
                 if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext != null)
                 {
-                    var helper = new LocalizedUrlHelper(_httpContext.Request, false);
+                    var helper = new LocalizedUrlHelper(_httpContext.Request, true);
                     string seoCode;
                     if (helper.IsLocalizedUrl(out seoCode))
                     {
@@ -266,7 +275,7 @@ namespace SmartStore.Web.Framework
                             foreach (var culture in userLangs)
                             {
                                 browserLanguage = _languageService.GetLanguageByCulture(culture);
-                                if (this.IsPublishedLanguage(browserLanguage.Id, storeId))
+								if (browserLanguage != null && this.IsPublishedLanguage(browserLanguage.Id, storeId))
                                 {
                                     // the language is found. now we need to save it
                                     if (this.CurrentCustomer != null && customerLangId != browserLanguage.Id)
@@ -307,7 +316,7 @@ namespace SmartStore.Web.Framework
 
         private void SetCustomerLanguage(int languageId, int storeId)
         {
-            _genericAttributeService.SaveAttribute(
+            _attrService.SaveAttribute(
                 this.CurrentCustomer,
                 SystemCustomerAttributeNames.LanguageId,
                 languageId,
@@ -323,7 +332,8 @@ namespace SmartStore.Web.Framework
             {
                 if (_cachedCurrency != null)
                     return _cachedCurrency;
-                
+
+                bool fixPrimaryStoreCurrency = false;
                 Currency currency = null;
                 // return primary store currency when we're in admin area/mode
                 if (this.IsAdmin)
@@ -334,35 +344,43 @@ namespace SmartStore.Web.Framework
                 if (currency == null)
                 {
                     // find current customer language
-                    var customerCurrencyId = this.CurrentCustomer.GetAttribute<int>(
-                        SystemCustomerAttributeNames.CurrencyId,
-                        _genericAttributeService,
-                        _storeContext.CurrentStore.Id);
+                    var customer = this.CurrentCustomer;
 
-                    var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
-                    foreach (var cur in allStoreCurrencies)
+                    if (customer != null && !customer.IsSearchEngineAccount())
                     {
-                        if (customerCurrencyId == cur.Id)
+                        // search engines should always crawl by primary store currency
+                        var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
+                        if (customerCurrencyId.GetValueOrDefault() > 0)
                         {
-                            currency = cur;
-                            break;
+                            currency = VerifyCurrency(_currencyService.GetCurrencyById(customerCurrencyId.Value));
+                            if (currency == null)
+                            {
+                                _attrService.SaveAttribute<int?>(customer, SystemCustomerAttributeNames.CurrencyId, null, _storeContext.CurrentStore.Id);
+                            }
                         }
                     }
 
+					// find currency by domain ending
+					if (currency == null)
+					{
+						currency = _currencyService
+							.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)
+							.GetByDomainEnding(_httpContext.Request.Url.Authority);
+					}
+
+                    // get PrimaryStoreCurrency
                     if (currency == null)
                     {
-                        // codehint: sm-edit
-                        currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-                        if (currency != null && !currency.Published)
-                        {
-                            currency = null;
-                        }
+                        currency = VerifyCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
+                        fixPrimaryStoreCurrency = (currency == null);
                     }
 
+                    // get the first published currency for current store
                     if (currency == null)
                     {
+                        var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
                         if (allStoreCurrencies.Count > 0)
-                        {
+                        { 
                             currency = allStoreCurrencies.FirstOrDefault();
                         }
                     }
@@ -374,18 +392,42 @@ namespace SmartStore.Web.Framework
                     currency = _currencyService.GetAllCurrencies().FirstOrDefault();
                 }
 
+                // no published currency available (fix it)
+                if (currency == null)
+                {
+                    currency = _currencyService.GetAllCurrencies(true).FirstOrDefault();
+                    if (currency != null)
+                    {
+                        currency.Published = true;
+                        _currencyService.UpdateCurrency(currency);
+                    }
+                }
+
+                if (fixPrimaryStoreCurrency)
+                {
+                    _currencySettings.PrimaryStoreCurrencyId = currency.Id;
+                    _settingService.UpdateSetting(_currencySettings, x => x.PrimaryStoreCurrencyId, true, _storeContext.CurrentStore.Id);
+                } 
+
+
                 _cachedCurrency = currency;
                 return _cachedCurrency;
             }
             set
             {
-				var currencyId = value != null ? value.Id : 0;
-				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
-					SystemCustomerAttributeNames.CurrencyId,
-					currencyId, _storeContext.CurrentStore.Id);
+                int? id = value != null ? value.Id : (int?)null;
+				_attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, id, _storeContext.CurrentStore.Id);
                 _cachedCurrency = null;
-
 			}
+        }
+
+        private Currency VerifyCurrency(Currency currency)
+        {
+            if (currency != null && !currency.Published)
+            {
+                return null;
+            }
+            return currency;
         }
 
         /// <summary>
@@ -402,7 +444,7 @@ namespace SmartStore.Web.Framework
                 if (!_taxSettings.AllowCustomersToSelectTaxDisplayType)
                     return;
 
-				_genericAttributeService.SaveAttribute(this.CurrentCustomer,
+				_attrService.SaveAttribute(this.CurrentCustomer,
 					 SystemCustomerAttributeNames.TaxDisplayTypeId,
 					 (int)value, _storeContext.CurrentStore.Id);
             }
@@ -420,6 +462,14 @@ namespace SmartStore.Web.Framework
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
             {
 		        taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
+            }
+
+            if (!taxDisplayType.HasValue && _taxSettings.EuVatEnabled)
+            {
+				if (customer != null && _taxService.Value.IsVatExempt(null, customer))
+                {
+                    taxDisplayType = (int)TaxDisplayType.ExcludingTax;
+                }
             }
 
             if (!taxDisplayType.HasValue)

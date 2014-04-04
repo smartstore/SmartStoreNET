@@ -261,7 +261,7 @@ namespace SmartStore.Data.Tests.Orders
         }
 
         [Test]
-        public void Can_save_and_load_order_with_orderProductVariants()
+        public void Can_save_and_load_order_with_orderItems()
         {
             var order = new Order
             {
@@ -270,20 +270,20 @@ namespace SmartStore.Data.Tests.Orders
                 BillingAddress = GetTestBillingAddress(),
                 CreatedOnUtc = new DateTime(2010, 01, 01)
             };
-            order.OrderProductVariants.Add
+            order.OrderItems.Add
                 (
-                    new OrderProductVariant()
+                    new OrderItem()
                     {
-                        ProductVariant = GetTestProductVariant(),
+						Product = GetTestProduct(),
                         Quantity = 1
                     }
                 );
             var fromDb = SaveAndLoadEntity(order);
             fromDb.ShouldNotBeNull();
 
-            fromDb.OrderProductVariants.ShouldNotBeNull();
-            fromDb.OrderProductVariants.Count.ShouldEqual(1);
-            fromDb.OrderProductVariants.First().Quantity.ShouldEqual(1);
+            fromDb.OrderItems.ShouldNotBeNull();
+            fromDb.OrderItems.Count.ShouldEqual(1);
+            fromDb.OrderItems.First().Quantity.ShouldEqual(1);
         }
         
         [Test]
@@ -314,23 +314,15 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.Shipments.First().TrackingNumber.ShouldEqual("TrackingNumber 1");
         }
 
-        protected ProductVariant GetTestProductVariant()
-        {
-            return new ProductVariant
-            {
-                Name = "Product variant name 1",
-                Sku = "sku 1",
-                Description = "description",
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                UpdatedOnUtc = new DateTime(2010, 01, 04),
-                Product = new Product()
-                {
-                    Name = "Name 1",
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    UpdatedOnUtc = new DateTime(2010, 01, 02)
-                }
-            };
-        }
+		protected Product GetTestProduct()
+		{
+			return new Product
+			{
+				Name = "Product name 1",
+				CreatedOnUtc = new DateTime(2010, 01, 03),
+				UpdatedOnUtc = new DateTime(2010, 01, 04),
+			};
+		}
         
         protected Affiliate GetTestAffiliate()
         {

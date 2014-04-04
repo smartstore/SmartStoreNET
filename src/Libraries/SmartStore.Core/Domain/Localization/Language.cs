@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Stores;
+using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Localization
 {
     /// <summary>
     /// Represents a language
     /// </summary>
+	[DataContract]
 	public partial class Language : BaseEntity, IStoreMappingSupported
     {
         private ICollection<LocaleStringResource> _localeStringResources;
@@ -13,42 +15,50 @@ namespace SmartStore.Core.Domain.Localization
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the language culture
         /// </summary>
-        public string LanguageCulture { get; set; }
+		[DataMember]
+		public string LanguageCulture { get; set; }
 
         /// <summary>
         /// Gets or sets the unique SEO code
         /// </summary>
-        public string UniqueSeoCode { get; set; }
+		[DataMember]
+		public string UniqueSeoCode { get; set; }
         
         /// <summary>
         /// Gets or sets the flag image file name
         /// </summary>
-        public string FlagImageFileName { get; set; }
+		[DataMember]
+		public string FlagImageFileName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the language supports "Right-to-left"
         /// </summary>
-        public bool Rtl { get; set; }
+		[DataMember]
+		public bool Rtl { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
 		/// </summary>
+		[DataMember]
 		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the language is published
         /// </summary>
-        public bool Published { get; set; }
+		[DataMember]
+		public bool Published { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
-        public int DisplayOrder { get; set; }
+		[DataMember]
+		public int DisplayOrder { get; set; }
         
         /// <summary>
         /// Gets or sets locale string resources

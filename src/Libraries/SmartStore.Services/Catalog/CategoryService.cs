@@ -7,7 +7,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
+using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
@@ -22,6 +24,7 @@ namespace SmartStore.Services.Catalog
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
         private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
         private const string PRODUCTCATEGORIES_PATTERN_KEY = "SmartStore.productcategory.";
+        private const string CATEGORIES_BY_ID_KEY = "SmartStore.category.id-{0}";
 
         #endregion
 
@@ -36,6 +39,9 @@ namespace SmartStore.Services.Catalog
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
+		private readonly IStoreMappingService _storeMappingService;
+		private readonly IAclService _aclService;
+        private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
 
         #endregion
         
@@ -61,7 +67,10 @@ namespace SmartStore.Services.Catalog
 			IRepository<StoreMapping> storeMappingRepository,
             IWorkContext workContext,
 			IStoreContext storeContext,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			IStoreMappingService storeMappingService,
+			IAclService aclService,
+            Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters)
         {
             this._cacheManager = cacheManager;
             this._categoryRepository = categoryRepository;
@@ -71,8 +80,15 @@ namespace SmartStore.Services.Catalog
 			this._storeMappingRepository = storeMappingRepository;
             this._workContext = workContext;
 			this._storeContext = storeContext;
-            _eventPublisher = eventPublisher;
+            this._eventPublisher = eventPublisher;
+			this._storeMappingService = storeMappingService;
+			this._aclService = aclService;
+            this._navigationFilters = navigationFilters;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -90,8 +106,8 @@ namespace SmartStore.Services.Catalog
             category.Deleted = true;
             UpdateCategory(category);
 
-            //set a ParentCategory property of the children to 0
-            var subcategories = GetAllCategoriesByParentCategoryId(category.Id);
+			//reset a "Parent category" property of all child subcategories
+            var subcategories = GetAllCategoriesByParentCategoryId(category.Id, true);
             foreach (var subcategory in subcategories)
             {
                 subcategory.ParentCategoryId = 0;
@@ -107,9 +123,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
+        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
         /// <returns>Categories</returns>
 		/// <remarks>codehint: sm-edit</remarks>
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null)
+        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true)
         {
             var query = _categoryRepository.Table;
             if (!showHidden)
@@ -123,7 +140,7 @@ namespace SmartStore.Services.Catalog
             
             if (!showHidden)
             {
-                query = ApplyHiddenCategoriesFilter(query);
+                query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters);
 				query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
             }
 
@@ -156,7 +173,7 @@ namespace SmartStore.Services.Catalog
 
                 if (!showHidden)
                 {
-                    query = ApplyHiddenCategoriesFilter(query);
+                    query = ApplyHiddenCategoriesFilter(query, false);
 					query = query.OrderBy(c => c.DisplayOrder);
                 }
 
@@ -166,27 +183,32 @@ namespace SmartStore.Services.Catalog
 
         }
 
-		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query)
+        protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, bool applyNavigationFilters)
         {
             // ACL (access control list)
-            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
-                .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
-			query = from c in query
-					join acl in _aclRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-					from acl in c_acl.DefaultIfEmpty()
-					where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-					select c;
+			if (!QuerySettings.IgnoreAcl)
+			{
+				query = from c in query
+						join acl in _aclRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
+						from acl in c_acl.DefaultIfEmpty()
+						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+						select c;
+			}
 
-			//Store mapping
-			var currentStoreId = _storeContext.CurrentStore.Id;
-			query = from c in query
-					join sm in _storeMappingRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-					from sm in c_sm.DefaultIfEmpty()
-					where !c.LimitedToStores || currentStoreId == sm.StoreId
-					select c;
+			if (!QuerySettings.IgnoreMultiStore)
+			{
+				//Store mapping
+				var currentStoreId = _storeContext.CurrentStore.Id;
+				query = from c in query
+						join sm in _storeMappingRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
+						from sm in c_sm.DefaultIfEmpty()
+						where !c.LimitedToStores || currentStoreId == sm.StoreId
+						select c;
+			}
 
             //only distinct categories (group by ID)
             query = from c in query
@@ -194,7 +216,25 @@ namespace SmartStore.Services.Catalog
                     orderby cGroup.Key
                     select cGroup.FirstOrDefault();
 
+            if (applyNavigationFilters)
+            {
+                var filters = _navigationFilters.Value;
+                if (filters.Any())
+                {
+                    filters.Each(x => {
+                        query = x.Apply(query);
+                    });
+                }
+            }
+
 			return query;
+        }
+
+        private void ApplyMisc(ref IQueryable<Category> query)
+        {
+            query = from c in query
+                    where c.Id != 56
+                    select c;
         }
         
         /// <summary>
@@ -224,7 +264,11 @@ namespace SmartStore.Services.Catalog
             if (categoryId == 0)
                 return null;
 
-            return _categoryRepository.GetById(categoryId);
+            string key = string.Format(CATEGORIES_BY_ID_KEY, categoryId);
+            return _cacheManager.Get(key, () =>
+            {
+                return  _categoryRepository.GetById(categoryId);
+            });
         }
 
         /// <summary>
@@ -366,14 +410,24 @@ namespace SmartStore.Services.Catalog
                             orderby pc.DisplayOrder
                             select pc;
 
-                if (!showHidden)
-                {
-                    query = ApplyHiddenProductCategoriesFilter(query);
-					query = query.OrderBy(pc => pc.DisplayOrder);
-                }
-
-                var productCategories = query.ToList();
-                return productCategories;
+				var allProductCategories = query.ToList();
+				var result = new List<ProductCategory>();
+				if (!showHidden)
+				{
+					foreach (var pc in allProductCategories)
+					{
+						// ACL (access control list) and store mapping
+						var category = pc.Category;
+						if (_aclService.Authorize(category) && _storeMappingService.Authorize(category))
+							result.Add(pc);
+					}
+				}
+				else
+				{
+					// No filtering
+					result.AddRange(allProductCategories);
+				}
+				return result;
             });
         }
 
@@ -408,24 +462,6 @@ namespace SmartStore.Services.Catalog
                     select pcGroup.FirstOrDefault();
 
 			return query;
-        }
-
-        /// <summary>
-        /// Get a total number of featured products by category identifier
-        /// </summary>
-        /// <param name="categoryId">Category identifier</param>
-        /// <returns>Number of featured products</returns>
-        public virtual int GetTotalNumberOfFeaturedProducts(int categoryId)
-        {
-            if (categoryId == 0)
-                return 0;
-
-            var query = from pc in _productCategoryRepository.Table
-                        where pc.CategoryId == categoryId &&
-                              pc.IsFeaturedProduct
-                        select pc;
-            var result = query.Count();
-            return result;
         }
 
         /// <summary>
@@ -487,6 +523,7 @@ namespace SmartStore.Services.Catalog
 		/// <remarks>codehint: sm-add</remarks>
 		public virtual string GetCategoryBreadCrumb(Product product)
 		{
+			var alreadyProcessedCategoryIds = new List<int>();
 			var categories = new List<string>();
 			string result = "";
 
@@ -497,12 +534,15 @@ namespace SmartStore.Services.Catalog
 				if (productCategory != null && productCategory.Category != null && !productCategory.Category.Deleted && productCategory.Category.Published)
 				{
 					categories.Add(productCategory.Category.Name);
+					alreadyProcessedCategoryIds.Add(productCategory.Category.Id);
 
 					var category = GetCategoryById(productCategory.Category.ParentCategoryId);
 
-					while (category != null && !category.Deleted && category.Published)
+					while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
 					{
 						categories.Add(category.Name);
+						alreadyProcessedCategoryIds.Add(category.Id);
+
 						category = GetCategoryById(category.ParentCategoryId);
 					}
 					categories.Reverse();

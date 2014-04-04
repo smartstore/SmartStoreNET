@@ -7,7 +7,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
@@ -82,7 +81,7 @@ namespace SmartStore.Admin.Controllers
                         CustomerEmail = x.IsGuest() ?
                         _localizationService.GetResource("Admin.Customers.Guest") :
                         x.Email,
-                        TotalItems = x.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList().GetTotalProducts()
+                        TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
                     };
                 }),
                 Total = customers.TotalCount
@@ -100,26 +99,26 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var customer = _customerService.GetCustomerById(customerId);
-            var cart = customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart);
 
             var gridModel = new GridModel<ShoppingCartItemModel>()
             {
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
-					var store = _storeService.GetStoreById(sci.StoreId);
+					var store = _storeService.GetStoreById(sci.Item.StoreId);
                     var sciModel = new ShoppingCartItemModel()
                     {
-                        Id = sci.Id,
+                        Id = sci.Item.Id,
 						Store = store != null ? store.Name : "Unknown",
-                        ProductVariantId = sci.ProductVariantId,
-                        Quantity = sci.Quantity,
-                        FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?
-                            string.Format("{0} ({1})", sci.ProductVariant.Product.Name, sci.ProductVariant.Name) :
-                            sci.ProductVariant.Product.Name,
-                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
-                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
-                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.UpdatedOnUtc, DateTimeKind.Utc)
+						ProductId = sci.Item.ProductId,
+                        Quantity = sci.Item.Quantity,
+						ProductName = sci.Item.Product.Name,
+						ProductTypeName = sci.Item.Product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = sci.Item.Product.ProductTypeLabelHint,
+                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
+                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
+                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.Item.UpdatedOnUtc, DateTimeKind.Utc)
                     };
                     return sciModel;
                 }),
@@ -130,9 +129,6 @@ namespace SmartStore.Admin.Controllers
                 Data = gridModel
             };
         }
-
-
-
 
 
         //wishlists
@@ -164,7 +160,7 @@ namespace SmartStore.Admin.Controllers
                         CustomerEmail = x.IsGuest() ?
                         _localizationService.GetResource("Admin.Customers.Guest") :
                         x.Email,
-                        TotalItems = x.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.Wishlist).ToList().GetTotalProducts()
+                        TotalItems = x.CountProductsInCart(ShoppingCartType.Wishlist)
                     };
                 }),
                 Total = customers.TotalCount
@@ -182,26 +178,26 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var customer = _customerService.GetCustomerById(customerId);
-            var cart = customer.ShoppingCartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist).ToList();
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist);
 
             var gridModel = new GridModel<ShoppingCartItemModel>()
             {
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
-					var store = _storeService.GetStoreById(sci.StoreId); 
+					var store = _storeService.GetStoreById(sci.Item.StoreId); 
                     var sciModel = new ShoppingCartItemModel()
                     {
-                        Id = sci.Id,
+                        Id = sci.Item.Id,
 						Store = store != null ? store.Name : "Unknown",
-                        ProductVariantId = sci.ProductVariantId,
-                        Quantity = sci.Quantity,
-                        FullProductName = !String.IsNullOrEmpty(sci.ProductVariant.Name) ?
-                            string.Format("{0} ({1})", sci.ProductVariant.Product.Name, sci.ProductVariant.Name) :
-                            sci.ProductVariant.Product.Name,
-                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
-                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.ProductVariant, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
-                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.UpdatedOnUtc, DateTimeKind.Utc)
+                        ProductId = sci.Item.ProductId,
+                        Quantity = sci.Item.Quantity,
+						ProductName = sci.Item.Product.Name,
+						ProductTypeName = sci.Item.Product.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = sci.Item.Product.ProductTypeLabelHint,
+                        UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
+                        Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
+                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.Item.UpdatedOnUtc, DateTimeKind.Utc)
                     };
                     return sciModel;
                 }),

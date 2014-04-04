@@ -1,0 +1,53 @@
+﻿@*@model Telerik.Web.Mvc.GridModel<ProductModel>*@
+
+@using Telerik.Web.Mvc.UI
+@using SmartStore.Web.Framework.UI;
+
+@{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+
+    ViewBag.Title = T("Admin.Catalog.LowStockReport").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="icon icon-bar-chart"></i>
+            @T("Admin.Catalog.LowStockReport")
+        </div>
+        <div class="options">
+        </div>
+    </div>
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel>()
+                    .Name("products-grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.Name)
+							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+                        columns.Bound(p => p.Sku);
+                        columns.Bound(p => p.Price);
+                        columns.Bound(p => p.StockQuantity);
+                        columns.Bound(p => p.Published)
+                            .Width(100)
+                            .Template(item => @Html.SymbolForBool(item.Published))
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.Id)
+                            .Width(90)
+                            .Centered()
+                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+                            .Title(T("Admin.Common.Edit").Text);
+                    })
+                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+}

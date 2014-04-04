@@ -24,10 +24,16 @@
 
 
 	function normalizeOptions(element, opt) {
-		opt.type = (_.isUndefined(opt.type) ? 'POST' : opt.type);
 		opt.ask = (_.isUndefined(opt.ask) ? $(element).attr('data-ask') : opt.ask);
 
-		//if (opt.type === 'POST' && $(element).is('form')) {
+		if (_.isUndefined(opt.type)) {
+			opt.type = (_.isUndefined(opt.autoContainer) ? 'POST' : 'GET');
+		}
+
+		if (!_.isUndefined(opt.autoContainer)) {
+			opt.smallIcon = opt.autoContainer;
+		}
+
         if ($(element).is('form')) {
 			if (_.isUndefined(opt.data))
 				opt.data = $(element).serialize();
@@ -35,7 +41,7 @@
 			    opt.url = $(element).attr('action');
 		}
 
-		opt.url = (_.isUndefined(opt.url) ? findUrl(element) : opt.url);
+        opt.url = (_.isUndefined(opt.url) ? findUrl(element) : opt.url);
 	}
 
 	function findUrl(element) {
@@ -83,10 +89,16 @@
 			url: opt.url + (_.isEmpty(opt.appendToUrl) ? '' : opt.appendToUrl),
 			async: opt.async,
 			beforeSend: function () {
+				if (!_.isUndefined(opt.autoContainer))
+					$(opt.autoContainer).empty();
+
 				_.call(opt.callbackBeforeSend);
 			},
-			success: function (resp) {
-				_.call(opt.callbackSuccess, resp);
+			success: function (response) {
+				if (!_.isUndefined(opt.autoContainer))
+					$(opt.autoContainer).html(response);
+
+				_.call(opt.callbackSuccess, response);
 			},
 			error: function (objXml) {
 				try {
@@ -109,7 +121,6 @@
 	}
 
 	function doRequestSwitch(opt) {
-		// TODO: implement overlayable message/confirm box... $.overlayer('confirm', opt.ask, doRequest);
 		if (_.isEmpty(opt.ask)) {
 			doRequest(opt);
 		}
@@ -117,6 +128,5 @@
 			doRequest(opt);
 		}
 	}
-
 
 })(jQuery, window, document);

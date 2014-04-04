@@ -1,9 +1,11 @@
+using System.Runtime.Serialization;
 namespace SmartStore.Core.Domain.Configuration
 {
     /// <summary>
     /// Represents a setting
     /// </summary>
-    public partial class Setting : BaseEntity
+	[DataContract]
+	public partial class Setting : BaseEntity
     {
         public Setting() { }
 
@@ -17,16 +19,19 @@ namespace SmartStore.Core.Domain.Configuration
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+		[DataMember]
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the value
         /// </summary>
-        public string Value { get; set; }
+		[DataMember]
+		public string Value { get; set; }
 
 		/// <summary>
 		/// Gets or sets the store for which this setting is valid. 0 is set when the setting is for all stores
 		/// </summary>
+		[DataMember]
 		public int StoreId { get; set; }
 
         public override string ToString()

@@ -66,6 +66,8 @@ namespace SmartStore.Admin.Models.Plugins
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }
+
+
     public class PluginLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
@@ -73,5 +75,9 @@ namespace SmartStore.Admin.Models.Plugins
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.FriendlyName")]
         [AllowHtml]
         public string FriendlyName { get; set; }
+
+		[SmartResourceDisplayName("Common.Description")]
+		[AllowHtml]
+		public string Description { get; set; }
     }
 }

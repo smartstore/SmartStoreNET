@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Controllers
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Promotions.Campaigns.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
@@ -169,7 +169,7 @@ namespace SmartStore.Admin.Controllers
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Promotions.Campaigns.Updated"));
+                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
@@ -214,12 +214,12 @@ namespace SmartStore.Admin.Controllers
                     _campaignService.SendCampaign(campaign, emailAccount, model.TestEmail);
                 }
 
-                SuccessNotification(_localizationService.GetResource("Admin.Promotions.Campaigns.TestEmailSentToCustomers"), false);
+                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.TestEmailSentToCustomers"), false);
                 return View(model);
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
             }
 
             //If we got this far, something failed, redisplay form
@@ -249,12 +249,12 @@ namespace SmartStore.Admin.Controllers
 
                 var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0 ,int.MaxValue, false);
                 var totalEmailsSent = _campaignService.SendCampaign(campaign, emailAccount, subscriptions);
-                SuccessNotification(string.Format(_localizationService.GetResource("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), totalEmailsSent), false);
+                NotifySuccess(string.Format(_localizationService.GetResource("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), totalEmailsSent), false);
                 return View(model);
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc, false);
+                NotifyError(exc, false);
             }
 
             //If we got this far, something failed, redisplay form
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 
             _campaignService.DeleteCampaign(campaign);
 
-            SuccessNotification(_localizationService.GetResource("Admin.Promotions.Campaigns.Deleted"));
+            NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.Deleted"));
 			return RedirectToAction("List");
 		}
 	}

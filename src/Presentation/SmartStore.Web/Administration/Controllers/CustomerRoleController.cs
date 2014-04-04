@@ -6,7 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework;
@@ -142,7 +142,7 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCustomerRole", _localizationService.GetResource("ActivityLog.AddNewCustomerRole"), customerRole.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.CustomerRoles.Added"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.CustomerRoles.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = customerRole.Id }) : RedirectToAction("List");
             }
 
@@ -214,7 +214,7 @@ namespace SmartStore.Admin.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("EditCustomerRole", _localizationService.GetResource("ActivityLog.EditCustomerRole"), customerRole.Name);
 
-                    SuccessNotification(_localizationService.GetResource("Admin.Customers.CustomerRoles.Updated"));
+                    NotifySuccess(_localizationService.GetResource("Admin.Customers.CustomerRoles.Updated"));
                     return continueEditing ? RedirectToAction("Edit", customerRole.Id) : RedirectToAction("List");
                 }
 
@@ -223,7 +223,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc);
+                NotifyError(exc);
                 return RedirectToAction("Edit", new { id = customerRole.Id });
             }
         }
@@ -246,12 +246,12 @@ namespace SmartStore.Admin.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("DeleteCustomerRole", _localizationService.GetResource("ActivityLog.DeleteCustomerRole"), customerRole.Name);
 
-                SuccessNotification(_localizationService.GetResource("Admin.Customers.CustomerRoles.Deleted"));
+                NotifySuccess(_localizationService.GetResource("Admin.Customers.CustomerRoles.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
             {
-                ErrorNotification(exc.Message);
+				NotifyError(exc.Message);
                 return RedirectToAction("Edit", new { id = customerRole.Id });
             }
 

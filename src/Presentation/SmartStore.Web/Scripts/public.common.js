@@ -14,6 +14,9 @@
     }
 
     window.displayAjaxLoading = function(display) {
+        if ($.throbber === undefined)
+            return;
+
         if (display) {
             $.throbber.show({ speed: 50, white: true });
         }
@@ -22,8 +25,9 @@
         }
     }
 
-    // codehint: sm-edit (renamed and edited - former "displayBarNotification")
     window.displayNotification = function(message, type, sticky, delay) {
+        if (window.EventBroker === undefined || window._ === undefined)
+            return;
 
         var notify = function (msg) {
             EventBroker.publish("message", {
@@ -60,14 +64,24 @@
     var _commonPluginFactories = [
         // select2
         function (ctx) {
-            ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            if (!Modernizr.touch) {
+                if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
+                    return;
+                ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            }
         },
         // tooltips
         function (ctx) {
-            ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
+            if ($.fn.tooltip === undefined)
+                return;
+            if (!Modernizr.touch) {
+                ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
+            }
         },
         // column equalizer
         function (ctx) {
+            if ($.fn.equalizeColumns === undefined)
+                return;
             ctx.find(".equalized-column").equalizeColumns({ /*deep: true,*/ responsive: true });
         }
     ];
@@ -84,15 +98,18 @@
     }
 
     // global notification subscriber
-    var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
-    EventBroker.subscribe("message", function (message, data) {
-        var opts = _.isString(data) ? { text: data } : data;
+    if (window.EventBroker && window._ && $.pnotify) {
+    	//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+    	var stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 60 };
+        EventBroker.subscribe("message", function (message, data) {
+            var opts = _.isString(data) ? { text: data } : data;
 
-        opts.stack = stack_bottomright;
-        opts.addclass = "stack-bottomright";
+            opts.stack = stack_topright;
+            //opts.addclass = "stack-bottomright";
 
-        $.pnotify(opts);
-    });
+            $.pnotify(opts);
+        });
+    }
 
     // on document ready
     // TODO: reorganize > public.globalinit.js
@@ -103,50 +120,59 @@
         }
 
         // adjust pnotify global defaults
-        $.extend($.pnotify.defaults, {
-            history: false,
-            animate_speed: "fast"
-        });
+        if ($.pnotify) {
+            $.extend($.pnotify.defaults, {
+                history: false,
+                animate_speed: "fast"
+            });
 
-        // intercept window.alert with pnotify
-        window.alert = function (message) {
-        	if (message == null || message.length <= 0)
-        		return;
+            // intercept window.alert with pnotify
+            window.alert = function (message) {
+                if (message == null || message.length <= 0)
+                    return;
 
-            $.pnotify({
-                title: window.Res["Common.Notification"],
-                text: message,
-                type: "info",
-                animate_speed: 'fast',
-                closer_hover: false,
-                stack: false,
-                before_open: function (pnotify) {
-                    // Position this notice in the center of the screen.
-                    pnotify.css({
-                        "top": ($(window).height() / 2) - (pnotify.height() / 2),
-                        "left": ($(window).width() / 2) - (pnotify.width() / 2)
-                    });
+                $.pnotify({
+                    title: window.Res["Common.Notification"],
+                    text: message,
+                    type: "info",
+                    animate_speed: 'fast',
+                    closer_hover: false,
+                    stack: false,
+                    before_open: function (pnotify) {
+                        // Position this notice in the center of the screen.
+                        pnotify.css({
+                            "top": ($(window).height() / 2) - (pnotify.height() / 2),
+                            "left": ($(window).width() / 2) - (pnotify.width() / 2)
+                        });
+                    }
+                });
+            }
+        }
+
+        // notify subscribers about page/content width change
+        if (window.EventBroker) {
+            pageWidth = getPageWidth(); // initial width
+            $(window).on("resize", function () {
+                // check if page width has changed
+                var newWidth = getPageWidth();
+                if (newWidth !== pageWidth) {
+                    // ...and publish event
+                    EventBroker.publish("page.resized", { oldWidth: pageWidth, newWidth: newWidth });
+                    pageWidth = newWidth;
                 }
             });
         }
 
-        // notify subscribers about page/content width change
-        pageWidth = getPageWidth(); // initial width
-        $(window).on("resize", function () {
-            // check if page width has changed
-            var newWidth = getPageWidth();
-            if (newWidth !== pageWidth) {
-                // ...and publish event
-                EventBroker.publish("page.resized", { oldWidth: pageWidth, newWidth: newWidth });
-                pageWidth = newWidth;
-            }
-        });
-
         // create navbar
-        $('.navbar ul.nav-smart > li.dropdown').navbar();
+        if ($.fn.navbar)
+        {
+            $('.navbar ul.nav-smart > li.dropdown').navbar();
+        }
 
         // shrink menu
-        $(".shrink-menu").shrinkMenu({ responsive: true });
+        if ($.fn.shrinkMenu) {
+            $(".shrink-menu").shrinkMenu({ responsive: true });
+        }
 
         
         applyCommonPlugins($("body"));

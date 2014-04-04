@@ -26,6 +26,9 @@ namespace SmartStore.Admin.Models.Shipping
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges")]
+		public bool IgnoreCharges { get; set; }
+
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
     }
 

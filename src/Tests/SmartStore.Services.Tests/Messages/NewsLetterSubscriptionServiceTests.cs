@@ -1,6 +1,6 @@
 ﻿using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Data;
 using SmartStore.Services.Messages;
 using NUnit.Framework;

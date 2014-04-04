@@ -1,0 +1,269 @@
+﻿@using Telerik.Web.Mvc.UI;
+
+@model ProductBundleItemModel
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+}
+
+@using (Html.BeginForm(new { btnId = ViewBag.BtnId, formId = ViewBag.FormId }))
+{
+    @Html.ValidationSummary(false)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ProductId)
+    @Html.HiddenFor(model => model.BundleProductId)
+    
+    <div class="section-header">
+        <div class="title">@ViewBag.Title</div>
+		<div class="options">
+			<button type="submit" name="save-continue" value="save-continue" class="btn">
+				@T("Admin.Common.SaveContinue")
+			</button>
+			<button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+			</button>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			@foreach (var attribute in Model.Attributes)
+			{
+				<text>
+				$('#attribute_@attribute.Id').selectWrapper();
+				</text>
+			}
+
+			$('#@Html.FieldIdFor(model => model.FilterAttributes)').change(function () {
+				$('#AttributeFilters').toggle(
+					$('#@Html.FieldIdFor(model => model.FilterAttributes)').is(':checked')
+				);
+			}).trigger('change');
+		});
+
+		@if (ViewBag.RefreshPage)
+		{
+			<text>
+            try {window.opener.document.forms['@(ViewBag.FormId)'].@(ViewBag.BtnId).click();}
+			catch (e){}
+			</text>
+		}
+		@if (ViewBag.RefreshPage && ViewBag.CloseWindow)
+		{
+			<text>
+			window.close();
+			</text>
+		}
+	</script>
+    	
+	@Html.SmartStore().TabStrip().Name("bundleitem-edit").Items(x =>
+	{
+		x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
+		x.Add().Text(T("Admin.Catalog.Products.BundleItems.Attributes").Text).Content(TabAttributeFilters());
+
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "bundleitem-edit", this.Html, this.Model));
+	})
+
+	@helper TabInfo()
+	{
+		<div id="BundleItemsLocalizedContainer">
+			@(Html.LocalizedEditor<ProductBundleItemModel, ProductBundleItemLocalizedModel>("productbundleitem-localized",
+			@<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Locales[item].Name)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => Model.Locales[item].Name)
+						@Html.ValidationMessageFor(model => model.Locales[item].Name)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.Locales[item].ShortDescription)
+						@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+					</td>
+				</tr>
+			</table>
+			,
+			@<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Name)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.Name)
+						@Html.ValidationMessageFor(model => model.Name)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.ShortDescription)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(x => x.ShortDescription)
+						@Html.ValidationMessageFor(model => model.ShortDescription)
+					</td>
+				</tr>
+			</table>
+			))
+		</div>
+
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Quantity)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Quantity)
+					@Html.ValidationMessageFor(model => model.Quantity)
+				</td>
+			</tr>
+			@if (Model.IsPerItemPricing)
+			{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Discount)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Discount)
+					@Html.ValidationMessageFor(model => model.Discount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DiscountPercentage)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.DiscountPercentage)
+					@Html.ValidationMessageFor(model => model.DiscountPercentage)
+				</td>
+			</tr>
+			}
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.HideThumbnail)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.HideThumbnail)
+					@Html.ValidationMessageFor(model => model.HideThumbnail)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Visible)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Visible)
+					@Html.ValidationMessageFor(model => model.Visible)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Published)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Published)
+					@Html.ValidationMessageFor(model => model.Published)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DisplayOrder)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.DisplayOrder)
+					@Html.ValidationMessageFor(model => model.DisplayOrder)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CreatedOn)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.CreatedOn)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UpdatedOn)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.UpdatedOn)
+				</td>
+			</tr>
+		</table>
+	}
+	
+	@helper TabAttributeFilters()
+	{
+		<div>
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.FilterAttributes)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.FilterAttributes)
+						@Html.ValidationMessageFor(model => model.FilterAttributes)
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="AttributeFilters" style="margin-top:10px;">
+			<table class="adminContent">
+				@foreach (var attribute in Model.Attributes)
+				{
+					if(Model.Attributes.IndexOf(attribute) != 0)
+					{
+						<tr class="adminSeparator">
+							<td colspan="2">
+								<hr />
+							</td>
+						</tr>
+					}
+					<tr>
+						<td class="adminTitle">
+							<div class="ctl-label">
+								<label for="@attribute.AttributeControlId">@attribute.Name</label>
+							</div>
+						</td>
+						<td class="adminData">
+							@Html.DropDownList(attribute.AttributeControlId, attribute.Values, null, new { multiple = "multiple" })
+						</td>
+					</tr>
+					if (attribute.PreSelect.Count > 0)
+					{
+						<tr>
+							<td class="adminTitle">
+								<div class="ctl-label">
+									<label for="@attribute.PreSelectControlId">@T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect")</label>
+									@Html.Hint(T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint"))
+								</div>
+							</td>
+							<td class="adminData">
+								@Html.DropDownList(attribute.PreSelectControlId, attribute.PreSelect)
+							</td>
+						</tr>
+					}
+				}
+			</table>
+			@if (Model.Attributes.Count == 0)
+			{
+				<div class="alert alert-info">
+					@T("Admin.Catalog.Products.BundleItems.Fields.FilterAttributes.NoneNote")
+				</div>
+			}
+		</div>
+	}
+}

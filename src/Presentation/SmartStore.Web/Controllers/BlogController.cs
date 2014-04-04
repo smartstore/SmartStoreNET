@@ -16,7 +16,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
@@ -31,7 +31,7 @@ using SmartStore.Web.Models.Blogs;
 namespace SmartStore.Web.Controllers
 {
     [RequireHttpsByConfigAttribute(SslRequirement.No)]
-    public partial class BlogController : SmartController
+    public partial class BlogController : PublicControllerBase
     {
         #region Fields
 

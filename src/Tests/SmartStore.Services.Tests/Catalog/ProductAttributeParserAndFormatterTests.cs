@@ -6,15 +6,17 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using System;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -25,8 +27,10 @@ namespace SmartStore.Services.Tests.Catalog
         IRepository<ProductVariantAttribute> _productVariantAttributeRepo;
         IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepo;
         IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepo;
+		IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilter;
         IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
+		IPriceCalculationService _priceCalculationService;
         IEventPublisher _eventPublisher;
         IPictureService _pictureService;
 
@@ -38,6 +42,7 @@ namespace SmartStore.Services.Tests.Catalog
         IDownloadService _downloadService;
         IWebHelper _webHelper;
         IProductAttributeFormatter _productAttributeFormatter;
+		ShoppingCartSettings _shoppingCartSettings;
 
         ProductAttribute pa1, pa2, pa3;
         ProductVariantAttribute pva1_1, pva2_1, pva3_1;
@@ -57,7 +62,7 @@ namespace SmartStore.Services.Tests.Catalog
             pva1_1 = new ProductVariantAttribute
             {
                 Id = 11,
-                ProductVariantId = 1,
+                ProductId = 1,
                 TextPrompt = "Select color:",
                 IsRequired = true,
                 AttributeControlType = AttributeControlType.DropdownList,
@@ -93,7 +98,7 @@ namespace SmartStore.Services.Tests.Catalog
             pva2_1 = new ProductVariantAttribute
             {
                 Id = 21,
-                ProductVariantId = 1,
+                ProductId = 1,
                 TextPrompt = "Select at least one option:",
                 IsRequired = true,
                 AttributeControlType = AttributeControlType.Checkboxes,
@@ -129,7 +134,7 @@ namespace SmartStore.Services.Tests.Catalog
             pva3_1 = new ProductVariantAttribute
             {
                 Id = 31,
-                ProductVariantId = 1,
+                ProductId = 1,
                 TextPrompt = "Enter custom text:",
                 IsRequired = true,
                 AttributeControlType = AttributeControlType.TextBox,
@@ -163,6 +168,8 @@ namespace SmartStore.Services.Tests.Catalog
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_1.Id)).Return(pvav2_1);
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_2.Id)).Return(pvav2_2);
 
+			_productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
+
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
@@ -175,6 +182,7 @@ namespace SmartStore.Services.Tests.Catalog
                 _productVariantAttributeRepo,
                 _productVariantAttributeCombinationRepo,
                 _productVariantAttributeValueRepo,
+				_productBundleItemAttributeFilter,
                 _eventPublisher,
                 _pictureService);
 
@@ -195,16 +203,20 @@ namespace SmartStore.Services.Tests.Catalog
             _priceFormatter = MockRepository.GenerateMock<IPriceFormatter>();
             _downloadService = MockRepository.GenerateMock<IDownloadService>();
             _webHelper = MockRepository.GenerateMock<IWebHelper>();
+			_priceCalculationService = MockRepository.GenerateMock<IPriceCalculationService>();
+			_shoppingCartSettings = MockRepository.GenerateMock<ShoppingCartSettings>();
 
             _productAttributeFormatter = new ProductAttributeFormatter(_workContext,
                 _productAttributeService,
                 _productAttributeParser,
+				_priceCalculationService,
                 _currencyService,
                 _localizationService,
                 _taxService,
                 _priceFormatter,
                 _downloadService,
-                _webHelper);
+                _webHelper,
+				_shoppingCartSettings);
         }
 
         //[Test]
@@ -261,13 +273,13 @@ namespace SmartStore.Services.Tests.Catalog
                 "recipientName 1", "recipientEmail@gmail.com",
                 "senderName 1", "senderEmail@gmail.com", "custom message");
 
-            var productVariant = new ProductVariant()
+            var product = new Product()
             {
                 IsGiftCard = true,
                 GiftCardType = GiftCardType.Virtual,
             };
             var customer = new Customer();
-            string formattedAttributes = _productAttributeFormatter.FormatAttributes(productVariant,
+            string formattedAttributes = _productAttributeFormatter.FormatAttributes(product,
                 attributes, customer, "<br />", false, false, true, true);
             formattedAttributes.ShouldEqual("From: senderName 1 <senderEmail@gmail.com><br />For: recipientName 1 <recipientEmail@gmail.com>");
         }
@@ -279,13 +291,13 @@ namespace SmartStore.Services.Tests.Catalog
                 "recipientName 1", "recipientEmail@gmail.com",
                 "senderName 1", "senderEmail@gmail.com", "custom message");
 
-            var productVariant = new ProductVariant()
+            var product = new Product()
             {
                 IsGiftCard = true,
                 GiftCardType = GiftCardType.Physical,
             };
             var customer = new Customer();
-            string formattedAttributes = _productAttributeFormatter.FormatAttributes(productVariant,
+            string formattedAttributes = _productAttributeFormatter.FormatAttributes(product,
                 attributes, customer, "<br />", false, false, true, true);
             formattedAttributes.ShouldEqual("From: senderName 1<br />For: recipientName 1");
         }
@@ -307,13 +319,13 @@ namespace SmartStore.Services.Tests.Catalog
         //        "recipientName 1", "recipientEmail@gmail.com",
         //        "senderName 1", "senderEmail@gmail.com", "custom message");
 
-        //    var productVariant = new ProductVariant()
+        //    var product = new Product()
         //    {
         //        IsGiftCard = true,
         //        GiftCardType = GiftCardType.Virtual,
         //    };
         //    var customer = new Customer();
-        //    string formattedAttributes = _productAttributeFormatter.FormatAttributes(productVariant,
+        //    string formattedAttributes = _productAttributeFormatter.FormatAttributes(product,
         //        attributes, customer, "<br />", false, false, true, true);
         //    formattedAttributes.ShouldEqual("Color: Green<br />Some custom option: Option 1<br />Some custom option: Option 2<br />Color: Some custom text goes here<br />From: senderName 1 <senderEmail@gmail.com><br />For: recipientName 1 <recipientEmail@gmail.com>");
         //}

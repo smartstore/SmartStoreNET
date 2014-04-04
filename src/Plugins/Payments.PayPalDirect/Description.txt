@@ -1,7 +1,0 @@
-﻿FriendlyName: PayPal Direct
-SystemName: Payments.PayPalDirect
-Version: 1.3
-MinAppVersion: 1.2.1
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Payments.PayPalDirect.dll
-ResourceRootKey: Plugins.Payments.PayPalDirect

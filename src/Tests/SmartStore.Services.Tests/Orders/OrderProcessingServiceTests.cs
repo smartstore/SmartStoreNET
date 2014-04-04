@@ -19,8 +19,9 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Events;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
@@ -106,8 +107,7 @@ namespace SmartStore.Services.Tests.Orders
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
-				_discountService, _categoryService,
-				_productAttributeParser, _shoppingCartSettings, _catalogSettings);
+				_discountService, _categoryService,	_productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings);
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
@@ -124,6 +124,7 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingMethodRepository,
                 _logger,
                 _productAttributeParser,
+				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,
@@ -145,7 +146,7 @@ namespace SmartStore.Services.Tests.Orders
             _taxSettings.DefaultTaxAddressId = 10;
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
-            _taxService = new TaxService(_addressService, _workContext, _taxSettings, pluginFinder);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService);
 
             _rewardPointsSettings = new RewardPointsSettings();
 

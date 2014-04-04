@@ -14,6 +14,10 @@ namespace SmartStore.Data.Mapping.Catalog
             this.Property(m => m.MetaTitle).HasMaxLength(400);
             this.Property(m => m.PriceRanges).HasMaxLength(400);
             this.Property(m => m.PageSizeOptions).HasMaxLength(200);
+			this.HasOptional(p => p.Picture)
+				.WithMany()
+				.HasForeignKey(p => p.PictureId)
+				.WillCascadeOnDelete(false);
         }
     }
 }

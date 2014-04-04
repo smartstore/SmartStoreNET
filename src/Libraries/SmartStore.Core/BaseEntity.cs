@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -15,7 +16,7 @@ namespace SmartStore.Core
         /// <summary>
         /// Gets or sets the entity identifier
         /// </summary>
-        [DataMember]
+		[DataMember, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public override bool Equals(object obj)
@@ -28,9 +29,15 @@ namespace SmartStore.Core
             return obj != null && Equals(obj.Id, default(int));
         }
 
-        private Type GetUnproxiedType()
+        public Type GetUnproxiedType()
         {
-            return GetType();
+			var t = GetType();
+			if (t.AssemblyQualifiedName.StartsWith("System.Data.Entity."))
+			{
+				// it's a proxied type
+				t = t.BaseType;
+			}
+			return t;
         }
 
         public virtual bool Equals(BaseEntity other)
@@ -69,41 +76,6 @@ namespace SmartStore.Core
         public static bool operator !=(BaseEntity x, BaseEntity y)
         {
             return !(x == y);
-        }
-        protected virtual void SetParent(dynamic child)
-        {
-
-        }
-        protected virtual void SetParentToNull(dynamic child)
-        {
-
-        }
-
-        protected void ChildCollectionSetter<T>(ICollection<T> collection, ICollection<T> newCollection) where T : class
-        {
-            if (CommonHelper.OneToManyCollectionWrapperEnabled)
-            {
-                collection.Clear();
-                if (newCollection != null)
-                    newCollection.ToList().ForEach(x => collection.Add(x));
-            }
-            else
-            {
-                collection = newCollection;
-            }
-        }
-
-
-        protected ICollection<T> ChildCollectionGetter<T>(ref ICollection<T> collection, ref ICollection<T> wrappedCollection) where T : class
-        {
-            return ChildCollectionGetter(ref collection, ref wrappedCollection, SetParent, SetParentToNull);
-        }
-
-        protected ICollection<T> ChildCollectionGetter<T>(ref ICollection<T> collection, ref ICollection<T> wrappedCollection, Action<dynamic> setParent, Action<dynamic> setParentToNull) where T : class
-        {
-            if (CommonHelper.OneToManyCollectionWrapperEnabled)
-                return wrappedCollection ?? (wrappedCollection = (collection ?? (collection = new List<T>())).SetupBeforeAndAfterActions(setParent, SetParentToNull));
-            return collection ?? (collection = new List<T>());
         }
     }
 }

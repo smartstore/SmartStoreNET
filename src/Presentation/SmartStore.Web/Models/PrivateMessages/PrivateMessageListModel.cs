@@ -4,7 +4,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.PrivateMessages
 {
-    public partial class PrivateMessageListModel : PageableBase
+    public partial class PrivateMessageListModel : PagedListBase
     {
         public PrivateMessageListModel(IPageable pageable) : base(pageable)
         {

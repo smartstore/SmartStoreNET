@@ -139,7 +139,7 @@ namespace SmartStore.Services.Customers
                 result.AddError(_localizationService.GetResource("Account.Register.Errors.EmailIsNotProvided"));
                 return result;
             }
-            if (!CommonHelper.IsValidEmail(request.Email))
+			if (!request.Email.IsEmail())
             {
                 result.AddError(_localizationService.GetResource("Common.WrongEmail"));
                 return result;
@@ -325,7 +325,7 @@ namespace SmartStore.Services.Customers
             newEmail = newEmail.Trim();
             string oldEmail = customer.Email;
 
-            if (!CommonHelper.IsValidEmail(newEmail))
+			if (!newEmail.IsEmail())
                 throw new SmartException(_localizationService.GetResource("Account.EmailUsernameErrors.NewEmailIsNotValid"));
 
             if (newEmail.Length > 100)

@@ -3,14 +3,14 @@
 ##SmartStore.NET 2.0.0#
 
 ###Highlights###
-* RESTFul WebApi
-* Highly optimized and simplified product management
-* Bundle Products
-* Considerably faster app startup and page processing
-* New variant attribute type: Linked Product
-* Package upload for plugins and themes
-* Lightning fast asynchronous Excel import with progress indicators and detailed reports
-* (Developer) Code-based Entity Framework database migrations
+* RESTFul **WebApi**
+* Highly optimized and **simplified product management**
+* **Bundle** Products
+* Considerably **faster app startup** and page processing
+* New variant attribute type: **Linked Product**
+* **Package upload** for plugins and themes
+* Lightning **fast asynchronous Excel import** with progress indicators and detailed reports
+* (Developer) Code-based Entity Framework database **migrations**
 
 ###New Features###
 * Package upload for plugins and themes
@@ -143,7 +143,7 @@
  - (Developer) Added new interface __IPreApplicationStart__ allowing plugins to register HttpModules very early in the app bootstrap stage
 
 ###Improvements###
- - Minor improvements for _SOFORT Überweisung_ plugin
+ - Minor improvements for _SOFORT Ãœberweisung_ plugin
  - ContentSlider: updated 'sequence js' to most recent version and optimized html & css code
  - Content slider: the background slide behaviour is configurable now (NoSlide, Slide, SlideOpposite)
  - Some email templates sent to the store owner now have customer's address in the 'from' field
@@ -179,48 +179,48 @@
 
 ###Bug###
 
-    * [SMNET-1] - Die Anzahl der eingetragenen Mengen bei Varianten wird nicht richtig im Warenkorb übernommen.
+    * [SMNET-1] - Die Anzahl der eingetragenen Mengen bei Varianten wird nicht richtig im Warenkorb Ã¼bernommen.
     * [SMNET-5] - Fehler beim Hochladen von Bildern im IE
     * [SMNET-6] - Texte in IFrame werden nicht komplett dargestellt
-    * [SMNET-7] - Versandart  „Shipping by total“ funktioniert nicht.
+    * [SMNET-7] - Versandart  â€žShipping by totalâ€œ funktioniert nicht.
     * [SMNET-18] - Megamenu: Expand/collapse schneidet u.U. Submenu ab
-    * [SMNET-19] - Im Firefox können keine Inhalte im TinyMCE-Editor per Kontextmenu eingefügt werden.
+    * [SMNET-19] - Im Firefox kÃ¶nnen keine Inhalte im TinyMCE-Editor per Kontextmenu eingefÃ¼gt werden.
     * [SMNET-23] - Im HTTPS Modus wird (LESS)-CSS nicht interpretiert
-    * [SMNET-25] - Bei Eingabe einer falschen SSL-URL im Admin-Bereich ist kein Einloggen mehr möglich
+    * [SMNET-25] - Bei Eingabe einer falschen SSL-URL im Admin-Bereich ist kein Einloggen mehr mÃ¶glich
     * [SMNET-34] - Fehlermeldung nach dem Hochladen einer sbk-Datei 
-    * [SMNET-46] - Es können keine NULL_Werte in SpecificationAttribute-Tabelle eingefügt werden
+    * [SMNET-46] - Es kÃ¶nnen keine NULL_Werte in SpecificationAttribute-Tabelle eingefÃ¼gt werden
     * [SMNET-58] - Katalog-Einstellungen - Productlist PageSize wird nicht gespeichert
     * [SMNET-59] - ContentSlider: Wenn bei einem Slide kein Titel hinterlegt ist, kommt es zu einem Fehler
     * [SMNET-61] - Wenn man beim Produktnamen in einer anderen Sprache einen Eintrag macht, erfolgt eine Fehlermeldung
-    * [SMNET-83] - Theme-Export schlägt mit Runtime-Error fehl
+    * [SMNET-83] - Theme-Export schlÃ¤gt mit Runtime-Error fehl
     * [SMNET-142] - Die prozentuale Berechnung des Aufpreises bei der Zahlungsart Kreditkarte funktioniert nicht.
-    * [SMNET-150] - Die Angaben aus dem Voraussetzungstyp "Benötigte Kundengruppe" bei der Einrichtung eines Rabatts werden nicht gespeichert.
+    * [SMNET-150] - Die Angaben aus dem Voraussetzungstyp "BenÃ¶tigte Kundengruppe" bei der Einrichtung eines Rabatts werden nicht gespeichert.
     * [SMNET-152] - Fehler beim Speichern von Produkten, wenn lokalisierte Felder (aber nicht alle) mit Werten belegt werden.
-    * [SMNET-166] - GIF-Dateien werden nach dem Import mit schwarzem Hintergrund übernommen.
-    * [SMNET-167] - Produkte sind nach Spezifikations-Attributen filterbar, obwohl dieses Spezifikations-Attribut überhaupt nicht dem Produkt zugeordnet wurde.
-    * [SMNET-171] - Import von Newsletter-Adressen scheint bei zu vielen Datensätzen irgendwann "auszusteigen" (Performance-Problem)
+    * [SMNET-166] - GIF-Dateien werden nach dem Import mit schwarzem Hintergrund Ã¼bernommen.
+    * [SMNET-167] - Produkte sind nach Spezifikations-Attributen filterbar, obwohl dieses Spezifikations-Attribut Ã¼berhaupt nicht dem Produkt zugeordnet wurde.
+    * [SMNET-171] - Import von Newsletter-Adressen scheint bei zu vielen DatensÃ¤tzen irgendwann "auszusteigen" (Performance-Problem)
     * [SMNET-174] - Bezahloption Lastschrift: Kontodaten des Kunden im Backend nirgendwo einsehbar
-    * [SMNET-196] - Preisberechnung für Variant-Kombis fehlerhaft (Rabatte werden nicht berücksichtigt)
-    * [SMNET-198] - upgrade.sql für Order.DirectDebit[...] fehlerhaft
-    * [SMNET-199] - CategoryNavigationModel: Children von inaktiven Warengruppen müssen in Navigationsleisten ignoriert werden
+    * [SMNET-196] - Preisberechnung fÃ¼r Variant-Kombis fehlerhaft (Rabatte werden nicht berÃ¼cksichtigt)
+    * [SMNET-198] - upgrade.sql fÃ¼r Order.DirectDebit[...] fehlerhaft
+    * [SMNET-199] - CategoryNavigationModel: Children von inaktiven Warengruppen mÃ¼ssen in Navigationsleisten ignoriert werden
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
 ###Improvement###
     
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
-    * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
+    * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fÃ¼nften Element)
     * [SMNET-30] - MessageTemplates teilweise auf Englisch
-    * [SMNET-31] - Die Bestellbestätigung enthält keine Widerrufsbelehrung.
+    * [SMNET-31] - Die BestellbestÃ¤tigung enthÃ¤lt keine Widerrufsbelehrung.
     * [SMNET-33] - Falsche Beschriftung bei MWST-Befeiung (incl. VAT (0%)) 
     * [SMNET-39] - CSS-Klasse .category-description sollte etwas margin nach unten haben 
-    * [SMNET-40] - Beim Löschen von lokalisierte Ressourcen erscheint eine Englische Meldung
-    * [SMNET-43] - Bilder und der Langtext von Warengruppen werden beim Import nicht übernommen.
-    * [SMNET-47] - Fehlermeldung: Zeichenfolgen- oder Binärdaten würden abgeschnitten [...]
-    * [SMNET-48] - Legt man als nicht angemeldeter Kunde ein Produkt in den Warenkorb und geht anschl. in den Checkout, hat man kein Möglichkeit mehr, als Gast zu bestellen.
+    * [SMNET-40] - Beim LÃ¶schen von lokalisierte Ressourcen erscheint eine Englische Meldung
+    * [SMNET-43] - Bilder und der Langtext von Warengruppen werden beim Import nicht Ã¼bernommen.
+    * [SMNET-47] - Fehlermeldung: Zeichenfolgen- oder BinÃ¤rdaten wÃ¼rden abgeschnitten [...]
+    * [SMNET-48] - Legt man als nicht angemeldeter Kunde ein Produkt in den Warenkorb und geht anschl. in den Checkout, hat man kein MÃ¶glichkeit mehr, als Gast zu bestellen.
     * [SMNET-49] - Varianten: Normalpreis > Variantpreis > Rabatt, u.U. inkonsistent und unlogisch
-    * [SMNET-56] - Der Hinweis „Preis auf Anfrage“ wird nicht auf der Produktdetailseite angezeigt.
-    * [SMNET-69] - Beschreibung für Parameter in den MessageTemplates
-    * [SMNET-138] - Währungsformatierung für EUR überdenken (Tausender-Trenner fehlt)
+    * [SMNET-56] - Der Hinweis â€žPreis auf Anfrageâ€œ wird nicht auf der Produktdetailseite angezeigt.
+    * [SMNET-69] - Beschreibung fÃ¼r Parameter in den MessageTemplates
+    * [SMNET-138] - WÃ¤hrungsformatierung fÃ¼r EUR Ã¼berdenken (Tausender-Trenner fehlt)
     * [SMNET-139] - Feld 'Alias' in Attribut-Grid aufgenommen
     * [SMNET-140] - ProductAttribute.Description beim Import sollte nicht mehr vom Varianttyp-Namen abgeleitet werden
     * [SMNET-147] - ColorSquares Admin: kleines Farbquadrat im Admin-Grid links neben Beschriftung anzeigen
@@ -228,10 +228,10 @@
     * [SMNET-153] - MiniBasket: "Zur Kasse" Button per Default aktivieren
     * [SMNET-160] - Fehlermeldungen beim Anlegen eines Kunden sind nicht lokalisiert.
     * [SMNET-180] - Leichten Border und Verlauf in Lieferzeit-Indikator eingebaut
-    * [SMNET-188] - Lokalisierung: IsDirty-Flag und Option "Nur neue anfügen"
+    * [SMNET-188] - Lokalisierung: IsDirty-Flag und Option "Nur neue anfÃ¼gen"
 
 ###New Feature###
 
-    * [SMNET-14] - Brutto/Netto Preisanzeige über Kundengruppen steuerbar
+    * [SMNET-14] - Brutto/Netto Preisanzeige Ã¼ber Kundengruppen steuerbar
 
 

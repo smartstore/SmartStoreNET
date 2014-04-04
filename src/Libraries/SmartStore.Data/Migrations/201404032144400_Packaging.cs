@@ -22,6 +22,13 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+			context.MigrateSettings(x =>
+			{
+				x.Add("ShoppingCartSettings.ShowDeliveryTimes", true);
+				x.Add("ShoppingCartSettings.ShowShortDesc", true);
+				x.Add("ShoppingCartSettings.ShowBasePrice", false);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -90,6 +97,48 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Packaging.BackupSuccess",
 				"Successfully backed up local package to local folder '{0}'",
 				"Lokales Paket im Ordner '{0}' erfolgreich gesichert.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.IsShipEnabled")
+				.Value("de", "Versand erforderlich");
+
+
+
+			builder.Delete("Admin.Configuration.Plugins.Description.Step5");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.Description",
+				"Install or update plugins",
+				"Plugins installieren oder aktualisieren");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.Description.Step1",
+				"Use the <a id='{0}' href='{1}' data-toggle='modal'>package uploader</a> or upload the plugin manually - eg. via FTP - to the <i>/Plugins</i> folder in your SmartStore.NET directory.",
+				"Verwenden Sie den <a id='{0}' href='{1}' data-toggle='modal'>Paket Uploader</a> oder laden Sie das Plugin manuell - bspw. per FTP - in den <i>/Plugins</i> Ordner hoch.");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.Description.Step2",
+				"With manual uploads: restart your application (or click <i>Reload list of plugins</i> button).",
+				"Bei manuellem Upload: starten Sie die Anwendung neu (oder klicken Sie <i>Plugin-Liste erneut laden</i>).");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.Description.Step3",
+				"Scroll down the list to find the newly installed plugin.",
+				"Scrollen Sie runter, um die neu installierten Plugins zu sehen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.Description.Step4",
+				"Click the <i>Install</i> button to install the plugin.",
+				"Klicken Sie <i>Installieren</i>, um das Plugin zu installieren.");
+
+
+
+			builder.AddOrUpdate("Products.Bundle.BundleIncludes")
+				.Value("Bundle includes")
+				.Value("de", "Besteht aus");
+
+			builder.AddOrUpdate("Basket.Bundle.BundleIncludes")
+				.Value("Bundle includes")
+				.Value("de", "Besteht aus");
+
+			builder.AddOrUpdate("Products.Bundle.YouSave")
+				.Value("Bundle for just {0} instead of {1}")
+				.Value("de", "Im Set für nur {0} statt {1}");
+
 
 		}
     }

@@ -4103,22 +4103,19 @@
 		<Value>Plugins</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description">
-		<Value>Manual plugin installation</Value>
+		<Value>Install or update plugins</Value>
 	</LocaleResource>
 	<LocaleResource Name="admin.configuration.plugins.description.step1">
-		<Value>Upload the plugin to the /plugins folder in your SmartStore.NET directory.</Value>
+		<Value>Use the <a id='{0}' href='{1}' data-toggle='modal'>package uploader</a> or upload the plugin manually - eg. via FTP - to the <i>/Plugins</i> folder in your SmartStore.NET directory.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step2">
-		<Value>Restart your application (or click 'Reload list of plugins' button).</Value>
+		<Value>With manual uploads: restart your application (or click <i>Reload list of plugins</i> button).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step3">
-		<Value>Scroll down through the list of plugins to find the newly installed plugin.</Value>
+		<Value>Scroll down the list to find the newly installed plugin.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step4">
-		<Value>Click on the 'Install' link to install the plugin.</Value>
-	</LocaleResource>
-	<LocaleResource Name="admin.configuration.plugins.description.step5">
-		<Value>Note: If you're running SmartStore.NET in medium trust, then it's recommended to clear your \Plugins\bin\ directory</Value>
+		<Value>Click the <i>Install</i> button to install the plugin.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.EditDetails">
 		<Value>Edit plugin details</Value>

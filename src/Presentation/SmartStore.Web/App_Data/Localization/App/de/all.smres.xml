@@ -2201,7 +2201,7 @@
 		<Value>Legt fest, ob das Produkt wiederkehrend ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsShipEnabled">
-		<Value>Versand möglich</Value>
+		<Value>Versand erforderlich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsShipEnabled.Hint">
 		<Value>Legt fest, ob der Versand bei diesem Produkt möglich ist.</Value>
@@ -3956,22 +3956,19 @@
 		<Value>Plugins</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description">
-		<Value>Manuelle Plugin-Installation</Value>
+		<Value>Plugins installieren oder aktualisieren</Value>
 	</LocaleResource>
 	<LocaleResource Name="admin.configuration.plugins.description.step1">
-		<Value>Laden Sie das Plugin in den /plugins Ordner Ihres SmartStore-Verzeichnisses.</Value>
+		<Value>Verwenden Sie den <a id='{0}' href='{1}' data-toggle='modal'>Paket Uploader</a> oder laden Sie das Plugin manuell - bspw. per FTP - in den <i>/Plugins</i> Ordner hoch.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step2">
-		<Value>Starten Sie die Anwendung neu (oder laden Sie die Plugin-Liste erneut).</Value>
+		<Value>Bei manuellem Upload: starten Sie die Anwendung neu (oder klicken Sie <i>Plugin-Liste erneut laden</i>).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step3">
 		<Value>Scrollen Sie runter, um die neu installierten Plugins zu sehen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description.Step4">
-		<Value>Klicken Sie auf den Installations-Link um das Plugin zu installieren.</Value>
-	</LocaleResource>
-	<LocaleResource Name="admin.configuration.plugins.description.step5">
-		<Value>Achtung: Wenn Sie SmartStore.NET in Medium Trust hosten, wird empfohlen, den \Plugins\bin\ Ordner zu leeren.</Value>
+		<Value>Klicken Sie <i>Installieren</i>, um das Plugin zu installieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.EditDetails">
 		<Value>Plugin Details bearbeiten</Value>

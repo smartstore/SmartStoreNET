@@ -56,11 +56,10 @@
         <button class="close" data-dismiss="alert">x</button>
         <p style="font-weight: bold">@T("Admin.Configuration.Plugins.Description")</p>
         <ol>
-            <li>@T("Admin.Configuration.Plugins.Description.Step1")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step2")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step3")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step4")</li>
-            <li>@T("Admin.Configuration.Plugins.Description.Step5")</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step1", "uploadpackage", "#uploadpackage-window"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step2"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step3"))</li>
+            <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step4"))</li>
         </ol>
     </div>
     

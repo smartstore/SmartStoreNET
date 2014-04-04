@@ -320,6 +320,9 @@ namespace SmartStore.Web.Framework
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+			
 			var implementationType = registration.Activator.LimitType;
 
 			// build an array of actions on this type to assign loggers to member properties

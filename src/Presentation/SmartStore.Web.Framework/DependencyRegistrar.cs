@@ -339,31 +339,34 @@ namespace SmartStore.Web.Framework
 
 		private IEnumerable<Action<IComponentContext, object>> BuildLoggerInjectors(Type componentType)
 		{
-			// Look for settable properties of type "ILogger" 
-			var loggerProperties = componentType
-				.GetProperties(BindingFlags.SetProperty | BindingFlags.Public | BindingFlags.Instance)
-				.Select(p => new
-				{
-					PropertyInfo = p,
-					p.PropertyType,
-					IndexParameters = p.GetIndexParameters(),
-					Accessors = p.GetAccessors(false)
-				})
-				.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
-				.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
-				.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)); //must have get/set, or only set
-
-			// Return an array of actions that resolve a logger and assign the property
-			foreach (var entry in loggerProperties)
+			if (DataSettings.DatabaseIsInstalled())
 			{
-				var propertyInfo = entry.PropertyInfo;
+				// Look for settable properties of type "ILogger" 
+				var loggerProperties = componentType
+					.GetProperties(BindingFlags.SetProperty | BindingFlags.Public | BindingFlags.Instance)
+					.Select(p => new
+					{
+						PropertyInfo = p,
+						p.PropertyType,
+						IndexParameters = p.GetIndexParameters(),
+						Accessors = p.GetAccessors(false)
+					})
+					.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
+					.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
+					.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)); //must have get/set, or only set
 
-				yield return (ctx, instance) =>
+				// Return an array of actions that resolve a logger and assign the property
+				foreach (var entry in loggerProperties)
 				{
-					string component = componentType.ToString();
-					var logger = ctx.Resolve<ILogger>();
-					propertyInfo.SetValue(instance, logger, null);
-				};
+					var propertyInfo = entry.PropertyInfo;
+
+					yield return (ctx, instance) =>
+					{
+						string component = componentType.ToString();
+						var logger = ctx.Resolve<ILogger>();
+						propertyInfo.SetValue(instance, logger, null);
+					};
+				}
 			}
 		}
 	}

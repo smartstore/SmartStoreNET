@@ -764,6 +764,10 @@ namespace SmartStore.Admin.Controllers
                 var product = model.ToEntity();
                 product.CreatedOnUtc = DateTime.UtcNow;
                 product.UpdatedOnUtc = DateTime.UtcNow;
+
+                if (product.ProductType == ProductType.BundledProduct)
+                    product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
+
                 _productService.InsertProduct(product);
                 //search engine name
                 model.SeName = product.ValidateSeName(model.SeName, product.Name, true);

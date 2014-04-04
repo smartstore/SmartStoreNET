@@ -34,10 +34,12 @@
 
 			@if (!String.IsNullOrWhiteSpace(item.ShortDescription))
 			{
-				<div class="bundle-item-description">
-					@Html.Raw(item.ShortDescription)
-				</div>
+                <div class="bundle-item-description" title="@(item.ShortDescription.Length < 170 ? "" : item.ShortDescription)">
+                    @Html.Raw(item.ShortDescription.Truncate(170))
+                    @if (item.ShortDescription.Length > 170) { <text>...</text> }
+                </div>
 			}
+
 			<div class="attributes bundle-item-attributes">
 				<table>
 					<tr class="stock attr-stock @(String.IsNullOrWhiteSpace(item.StockAvailability) ? "hide fade" : "")">

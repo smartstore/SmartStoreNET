@@ -116,6 +116,14 @@
 {
 	if (parentItem.ChildItems != null)
 	{	
+        
+        <tr class="product-bundle-row">
+            <td colspan="2">&nbsp;</td>
+            <td colspan="4" class="bundle-headline">
+                @T("Basket.Bundle.BundleIncludes")
+            </td>
+        </tr>
+             
 		foreach (var item in parentItem.ChildItems.OrderBy(x => x.BundleItem.DisplayOrder))
 		{
 			<tr class="product-bundle-row">
@@ -161,7 +169,7 @@
 							</div>
 							@if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
 							{
-								<div class="bundle-item-description">
+								<div class="bundle-item-description short-desc">
 									@Html.Raw(item.ShortDesc)
 								</div>
 							}

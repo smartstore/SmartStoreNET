@@ -862,7 +862,6 @@ namespace SmartStore.Web.Controllers
             var model = new MiniShoppingCartModel()
             {
                 ShowProductImages = _shoppingCartSettings.ShowProductImagesInMiniShoppingCart,
-                // codehint: sm-add
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
                 //let's always display it
                 DisplayShoppingCartButton = true,
@@ -873,7 +872,7 @@ namespace SmartStore.Web.Controllers
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             model.TotalProducts = cart.GetTotalProducts();
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber); // codehint: sm-add
+            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
 
             if (cart.Count > 0)
             {
@@ -917,7 +916,6 @@ namespace SmartStore.Web.Controllers
 						ProductName = sci.Item.Product.GetLocalized(x => x.Name),
                         ProductSeName = sci.Item.Product.GetSeName(),
                         Quantity = sci.Item.Quantity,
-                        // codehint: sm-edit
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
                             sci.Item.Product, 
                             sci.Item.AttributesXml, 
@@ -927,6 +925,24 @@ namespace SmartStore.Web.Controllers
                             renderGiftCardAttributes: false, 
                             allowHyperlinks: false)
                     };
+
+                    if (sci.Item.Product.ProductType == ProductType.BundledProduct)
+                    {                        
+                        var bundleItems = _productService.GetBundleItems(sci.Item.Product.Id);
+                        foreach (var bundleItem in bundleItems)
+                        {
+                            var bundleItemModel = new MiniShoppingCartModel.ShoppingCartItemBundleItem();
+                            bundleItemModel.ProductName = bundleItem.Item.Product.GetLocalized(x => x.Name);
+                            var bundlePic = _pictureService.GetPicturesByProductId(bundleItem.Item.ProductId).FirstOrDefault();
+                            if(bundlePic != null)
+                                bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(bundlePic.Id, 32);
+
+                            bundleItemModel.ProductSeName = bundleItem.Item.Product.GetSeName();
+
+                            if (!bundleItem.Item.HideThumbnail) 
+                                cartItemModel.BundleItems.Add(bundleItemModel);
+                        }
+                    }
 
                     //unit prices
                     if (sci.Item.Product.CallForPrice)
@@ -2020,7 +2036,6 @@ namespace SmartStore.Web.Controllers
         }
 
         // Ajax
-        // codehint: sm-add
         public ActionResult ShoppingCartSummary(bool isWishlist = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))

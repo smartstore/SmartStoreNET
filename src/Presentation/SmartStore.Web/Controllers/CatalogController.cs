@@ -682,7 +682,6 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        // codehint: sm-add (mc)
         private CategoryNavigationModel GetCategoryNavigationModel(int currentCategoryId, int currentProductId)
         {
             var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
@@ -1344,14 +1343,17 @@ namespace SmartStore.Web.Controllers
 							if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
 								preSelectedValueId = attributeFilter.AttributeValueId;
 
-							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel()
-							{
-								Id = pvaValue.Id,
-								Name = pvaValue.GetLocalized(x => x.Name),
-								Alias = pvaValue.Alias,
-								ColorSquaresRgb = pvaValue.ColorSquaresRgb, //used with "Color squares" attribute type
-								IsPreSelected = pvaValue.IsPreSelected
-							};
+                            var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+
+							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
+							pvaValueModel.Id = pvaValue.Id;
+							pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
+							pvaValueModel.Alias = pvaValue.Alias;
+							pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
+                            pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
+
+                            if (linkedProduct != null && linkedProduct.VisibleIndividually) 
+                                pvaValueModel.SeName = linkedProduct.GetSeName();
 
 							if (hasSelectedAttributes)
 								pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant

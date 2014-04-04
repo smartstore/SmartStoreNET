@@ -20,7 +20,10 @@ namespace SmartStore.Core.Domain.Orders
 			MiniShoppingCartEnabled = true;
 			ShowProductImagesInMiniShoppingCart = true;
 			MiniShoppingCartProductNumber = 5;
-			RoundPricesDuringCalculation = true;
+			//RoundPricesDuringCalculation = false;
+            ShowBasePrice = true;
+            ShowDeliveryTimes = true;
+            ShowShortDesc = true;
 		}
 		
 		/// <summary>

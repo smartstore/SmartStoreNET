@@ -192,6 +192,11 @@
                             @Html.Raw(Model.ShortDescription)
                         </div>
 
+                        @if (Model.ProductType == ProductType.BundledProduct)
+                        {
+                            @Html.Partial("_ProductBundleItemsAddToCart", Model)
+                        }
+
                         <!--product reviews-->
                         @Html.Action("ProductReviewOverview", "Catalog", new { productId = Model.Id })
 
@@ -239,13 +244,13 @@
                         }
                     
                         <!-- addd to cart -->
-						<div id="AddToCart">
-                        @{       
+                        <div id="AddToCart" class="@(Model.ProductType == ProductType.BundledProduct ? "bundled-product" : "")">
+                            @{
                             var dataDictAddToCart = new ViewDataDictionary();
-                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);                
-                            @Html.Partial("_AddToCart", Model, dataDictAddToCart)                    
-                        }
-						</div>
+                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+                            @Html.Partial("_AddToCart", Model, dataDictAddToCart)
+                            }
+                        </div>
 
                     <!-- quick links -->
                     <!-- TODO: _DownloadSample.cshtml ist jetzt eigentlich obsolete -->

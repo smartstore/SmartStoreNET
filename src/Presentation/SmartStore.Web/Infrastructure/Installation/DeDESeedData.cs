@@ -3572,6 +3572,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "500GB PlayStation®3 Console, 2 × DUALSHOCK®3 wireless controller und Assassin's Creed® III.";
 					x.FullDescription = ps3FullDescription;
+                    x.BundleTitleText = "Produktset besteht aus";
 				})
 				.Alter("PlayStation 4", x =>
 				{
@@ -3593,6 +3594,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "PlayStation®4 Console, DUALSHOCK®4 wireless controller und PS4 Kamera.";
 					x.FullDescription = ps4FullDescription;
+                    x.BundleTitleText = "Produktset besteht aus";
 				})
 				.Alter("Accessories for unlimited gaming experience", x =>
 				{

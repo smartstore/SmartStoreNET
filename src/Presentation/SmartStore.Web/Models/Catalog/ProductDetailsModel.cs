@@ -270,6 +270,7 @@ namespace SmartStore.Web.Models.Catalog
 		public partial class ProductVariantAttributeValueModel : EntityModelBase
 		{
 			public string Name { get; set; }
+            public string SeName { get; set; }
 			public string Alias { get; set; }
 			public string ColorSquaresRgb { get; set; }
 			public string PriceAdjustment { get; set; }

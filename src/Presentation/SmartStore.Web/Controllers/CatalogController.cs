@@ -374,8 +374,12 @@ namespace SmartStore.Web.Controllers
 										foreach (var associatedProduct in associatedProducts)
 										{
 											//calculate for the maximum quantity (in case if we have tier prices)
-											var tmpPrice = _priceCalculationService.GetFinalPrice(associatedProduct,
-												_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+											var tmpPrice = _priceCalculationService.GetFinalPrice(associatedProduct, _workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+											decimal? lowestCombinationPrice = _productAttributeService.GetLowestCombinationPrice(associatedProduct.Id);
+
+											if (lowestCombinationPrice.HasValue && lowestCombinationPrice.Value < tmpPrice)
+												tmpPrice = lowestCombinationPrice.Value;
+
 											if (!minPossiblePrice.HasValue || tmpPrice < minPossiblePrice.Value)
 											{
 												minPriceProduct = associatedProduct;
@@ -467,6 +471,10 @@ namespace SmartStore.Web.Controllers
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 											decimal finalPriceBase = _taxService.GetProductPrice(product, minPossiblePrice.Value, out taxRate);
+											decimal? lowestCombinationPrice = _productAttributeService.GetLowestCombinationPrice(product.Id);
+
+											if (lowestCombinationPrice.HasValue && lowestCombinationPrice.Value < finalPriceBase)
+												finalPriceBase = lowestCombinationPrice.Value;
 
 											decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
 											decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, _workContext.WorkingCurrency);

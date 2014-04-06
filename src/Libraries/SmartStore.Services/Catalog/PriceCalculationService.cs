@@ -485,16 +485,25 @@ namespace SmartStore.Services.Catalog
 				}
                 else
                 {
-					decimal attributesTotalPrice = decimal.Zero;
+					var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, shoppingCartItem.Item.AttributesXml);
 
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
-					if (pvaValues != null)
+					if (combination != null && combination.Price.HasValue)
 					{
-						foreach (var pvaValue in pvaValues)
-							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						finalPrice = combination.Price.Value;
 					}
+					else
+					{
+						decimal attributesTotalPrice = decimal.Zero;
+						var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
-					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
+						if (pvaValues != null)
+						{
+							foreach (var pvaValue in pvaValues)
+								attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						}
+
+						finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
+					}
                 }
             }
 

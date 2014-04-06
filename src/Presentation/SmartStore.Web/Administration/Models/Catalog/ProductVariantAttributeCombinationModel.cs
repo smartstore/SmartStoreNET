@@ -24,8 +24,6 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
         public bool AllowOutOfStockOrders { get; set; }
 
-        // codehint: sm-add
-
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		public string Sku { get; set; }
 
@@ -34,6 +32,9 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManufacturerPartNumber")]
 		public string ManufacturerPartNumber { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Price")]
+		public decimal? Price { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
         public int? DeliveryTimeId { get; set; }
@@ -80,7 +81,6 @@ namespace SmartStore.Admin.Models.Catalog
 
         #region Nested classes
 
-        // codehint: sm-add
         public class PictureSelectItemModel : EntityModelBase
         {
             public string PictureUrl { get; set; }

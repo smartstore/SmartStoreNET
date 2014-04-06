@@ -3457,8 +3457,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				// is a new entity, so initialize it properly
 				model.StockQuantity = 10000;
-				model.IsActive = true;	// codehint: sm-add
-				model.AllowOutOfStockOrders = true;		// codehint: sm-add
+				model.IsActive = true;
+				model.AllowOutOfStockOrders = true;
 			}
 
 			if (formatAttributes && entity != null)

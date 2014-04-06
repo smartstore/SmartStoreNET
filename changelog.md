@@ -1,4 +1,11 @@
-#Release Notes#
+﻿#Release Notes#
+
+##SmartStore.NET 2.0.1#
+
+###New Features###
+* #292 Allow specific price for attribute combinations
+
+
 
 ##SmartStore.NET 2.0.0#
 

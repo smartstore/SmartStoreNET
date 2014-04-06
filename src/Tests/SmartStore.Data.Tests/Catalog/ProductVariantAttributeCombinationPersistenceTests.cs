@@ -15,6 +15,8 @@ namespace SmartStore.Data.Tests.Catalog
                        {
                            AttributesXml = "Some XML",
                            StockQuantity = 2,
+						   Sku = "X1000",
+						   Price = 9.80M,
                            AllowOutOfStockOrders = true,
 						   Product = GetTestProduct()
                        };
@@ -23,6 +25,8 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.ShouldNotBeNull();
             fromDb.AttributesXml.ShouldEqual("Some XML");
             fromDb.StockQuantity.ShouldEqual(2);
+			fromDb.Sku.ShouldEqual("X1000");
+			fromDb.Price.ShouldEqual(9.80M);
             fromDb.AllowOutOfStockOrders.ShouldEqual(true);
         }
 

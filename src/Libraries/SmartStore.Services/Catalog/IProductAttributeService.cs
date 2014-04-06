@@ -147,6 +147,13 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute combination collection</returns>
         IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId);
 
+		/// <summary>
+		/// Get the lowest price of all combinations for a product
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <returns>Lowest price</returns>
+		decimal? GetLowestCombinationPrice(int productId);
+
         /// <summary>
         /// Gets a product variant attribute combination
         /// </summary>

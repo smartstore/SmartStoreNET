@@ -457,12 +457,14 @@ namespace SmartStore.Services.Catalog
 					Sku = combination.Sku,
 					Gtin = combination.Gtin,
 					ManufacturerPartNumber = combination.ManufacturerPartNumber,
+					Price = combination.Price,
 					AssignedPictureIds = copyImages ? combination.AssignedPictureIds : null,
 					Length = combination.Length,
 					Width = combination.Width,
 					Height = combination.Height,
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
+					DeliveryTimeId = combination.DeliveryTimeId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};

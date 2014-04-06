@@ -13,7 +13,6 @@
 }
 
 <div class="well" style="margin-bottom:8px;">
-	@*codehint: sm-edit*@
 	@if (ViewBag.IsEdit) {
 	<div>
 		@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
@@ -49,15 +48,6 @@
                 @Html.ValidationMessageFor(model => model.IsActive)
             </td>
         </tr>
-@*        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IsDefaultCombination)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.IsDefaultCombination)
-                @Html.ValidationMessageFor(model => model.IsDefaultCombination)
-            </td>
-        </tr>*@
         <tr class="adminSeparator">
             <td colspan="2"><hr /></td>
         </tr>
@@ -102,6 +92,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.Gtin)
                 @Html.ValidationMessageFor(model => model.Gtin)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Price)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Price)
+                @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
 		<tr>
@@ -185,7 +184,6 @@
     </table>
 </div>
 
-@*codehint: sm-add*@
 <script type="text/javascript">
 	$(document).ready(function () {
 		var container = $('#ProductVariantAttributeContainer'),

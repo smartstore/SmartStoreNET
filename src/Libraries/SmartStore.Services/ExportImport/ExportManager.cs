@@ -397,6 +397,8 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("Sku", null, combination.Sku);
 					if (combination.ManufacturerPartNumber.HasValue())
 						xmlWriter.WriteElementString("ManufacturerPartNumber", null, combination.ManufacturerPartNumber);
+					if (combination.Price.HasValue)
+						xmlWriter.WriteElementString("Price", null, combination.Price.Value.ToString());
 
 					xmlWriter.WriteEndElement();	// ProductVariantAttributeCombination
 				}

@@ -164,6 +164,7 @@
                             .Centered()
                             .ClientTemplate("<a href=\"<#= ProductUrl #>\" target=\"_blank\"><#= ProductUrlTitle #></a>");
                         columns.Bound(x => x.Sku);
+						columns.Bound(x => x.Price);
                         columns.Bound(x => x.StockQuantity)
                             .Width(160)
                             .Centered();

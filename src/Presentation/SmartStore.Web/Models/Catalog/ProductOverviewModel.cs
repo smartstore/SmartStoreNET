@@ -25,7 +25,6 @@ namespace SmartStore.Web.Models.Catalog
         public string FullDescription { get; set; }
         public string SeName { get; set; }
 
-        //codehint: sm-add begin
         public int ThumbDimension { get; set; }
         public bool ShowSku { get; set; }
         public string Sku { get; set; }
@@ -55,7 +54,6 @@ namespace SmartStore.Web.Models.Catalog
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
 		public bool HideBuyButtonInLists { get; set; }
-        //codehint: sm-add end
 
         //price
         public ProductPriceModel ProductPrice { get; set; }
@@ -72,7 +70,7 @@ namespace SmartStore.Web.Models.Catalog
         {
             public string OldPrice { get; set; }
 
-            public string Price {get;set;}
+            public string Price { get; set;}
 
             public bool HasDiscount { get; set; }
 
@@ -80,7 +78,6 @@ namespace SmartStore.Web.Models.Catalog
 
             public bool DisableBuyButton { get; set; }
 
-            //codehint: sm-add
             public bool DisableWishListButton { get; set; }
 
             public bool AvailableForPreOrder { get; set; }

@@ -33,6 +33,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private string _sku;
 		private string _gtin;
 		private string _manufacturerPartNumber;
+		private decimal _price;
 		private int? _deliveryTimeId;
 		private decimal _length;
 		private decimal _width;
@@ -467,7 +468,17 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the price
 		/// </summary>
 		[DataMember]
-		public decimal Price { get; set; }
+		public decimal Price
+		{
+			get
+			{
+				return this.GetMergedDataValue<decimal>("Price", _price);
+			}
+			set
+			{
+				_price = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the old price

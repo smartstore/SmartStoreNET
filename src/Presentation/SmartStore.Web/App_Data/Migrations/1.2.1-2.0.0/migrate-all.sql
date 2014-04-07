@@ -1868,12 +1868,12 @@ SET @resources='
 		<Value lang="de">Attribut</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
-		<Value>Control type</Value>
-		<Value lang="de">Darstellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
 		<Value></Value>
 		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
+		<Value>Control type</Value>
+		<Value lang="de">Darstellung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.DisplayOrder">
 		<Value></Value>
@@ -2759,6 +2759,15 @@ SET @resources='
 	<LocaleResource Name="Admin.Orders.Products.AddNew.Note2">
 		<Value>Do not to forget to update order totals after adding this product.</Value>
 		<Value lang="de">Vergessen Sie nicht, die Auftragssummen zu aktualisieren, nachdem Sie das Produkt hinzugefügt haben.</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchStore">
+		<Value>Store</Value>
+		<Value lang="de">Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchStore.Hint">
+		<Value>Search by a specific store.</Value>
+		<Value lang="de">Nach bestimmten Shop suchen.</Value>
 	</LocaleResource>
 
 </Language>

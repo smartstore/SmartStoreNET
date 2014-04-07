@@ -1544,12 +1544,12 @@ SET @resources='
 		<Value lang="de">Attribut</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
-		<Value>Control type</Value>
-		<Value lang="de">Darstellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
 		<Value></Value>
 		<Value lang="de"></Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType">
+		<Value>Control type</Value>
+		<Value lang="de">Darstellung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.Attributes.Fields.DisplayOrder">
 		<Value></Value>

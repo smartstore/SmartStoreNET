@@ -5,6 +5,9 @@
 ###New Features###
 * #292 Allow specific price for attribute combinations
 
+###Improvements###
+* Content slider slides can be filtered by store
+
 
 
 ##SmartStore.NET 2.0.0#

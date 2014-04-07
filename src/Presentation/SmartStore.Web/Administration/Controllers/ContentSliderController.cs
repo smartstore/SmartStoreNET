@@ -11,6 +11,7 @@ using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Stores;
 using SmartStore.Core;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -58,31 +59,64 @@ namespace SmartStore.Admin.Controllers
 
         #region Methods
 
+		private ContentSliderSettingsModel PrepareContentSliderSettingsModel(ContentSliderSettingsModel modelIn = null)
+		{
+			int rowIndex = 0;
+			var model = _contentSliderSettings.ToModel();
+
+			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var s in _storeService.GetAllStores())
+			{
+				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
+
+			foreach (var slide in model.Slides)
+			{
+				slide.SlideIndex = rowIndex++;
+
+				var language = _languageService.GetLanguageByCulture(slide.LanguageCulture);
+				if (language != null)
+				{
+					slide.LanguageName = language.Name;
+				}
+				else
+				{
+					var seoCode = _workContext.GetDefaultLanguageSeoCode();
+					slide.LanguageName = _languageService.GetLanguageBySeoCode(seoCode).Name;
+				}
+			}
+
+			// note order: first SlideIndex then search filter.
+			if (modelIn != null && modelIn.SearchStoreId > 0)
+			{
+				model.Slides = model.Slides
+					.Where(x => x.LimitedToStores && x.SelectedStoreIds != null && x.SelectedStoreIds.Contains(modelIn.SearchStoreId))
+					.ToList();
+			}
+
+			return model;
+		}
+
         public ActionResult Index()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
                 return AccessDeniedView();
 
-			int rowIndex = 0;
-            var model = _contentSliderSettings.ToModel();
-
-            foreach (ContentSliderSlideModel slide in model.Slides)
-            {
-				slide.SlideIndex = rowIndex++;
-
-                var language = _languageService.GetLanguageByCulture(slide.LanguageCulture);
-                if (language != null)
-                {
-                    slide.LanguageName = language.Name;
-                }
-                else {
-                    var seoCode = _workContext.GetDefaultLanguageSeoCode();
-                    slide.LanguageName = _languageService.GetLanguageBySeoCode(seoCode).Name;
-                }
-            }
+			var model = PrepareContentSliderSettingsModel();
 
             return View(model);
         }
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult SlideList(GridCommand command, ContentSliderSettingsModel model)
+		{
+			var gridModel = new GridModel();
+			var viewModel = PrepareContentSliderSettingsModel(model);
+
+			gridModel.Data = viewModel.Slides.OrderBy(s => s.LanguageName).ThenBy(s => s.DisplayOrder);
+
+            return new JsonResult { Data = gridModel };
+		}
         
         [HttpPost]
         public ActionResult Index(ContentSliderSettingsModel model)
@@ -99,7 +133,9 @@ namespace SmartStore.Admin.Controllers
 
             _settingService.SaveSetting(_contentSliderSettings);
 
-            return View(_contentSliderSettings.ToModel());
+			var viewModel = PrepareContentSliderSettingsModel(model);
+
+            return View(viewModel);
         }
 
         #endregion

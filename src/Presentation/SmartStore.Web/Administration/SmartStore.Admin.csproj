@@ -151,7 +151,7 @@
     <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageBrowserController.cs" />
-    <Compile Include="Controllers\JbimagesController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManufacturerController.cs" />
@@ -1189,7 +1189,7 @@
     <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Jbimages\Upload.cshtml" />
+    <Content Include="Views\Media\UploadImage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\About.cshtml" />

@@ -4,6 +4,7 @@
 
 ###New Features###
 * #292 Allow specific price for attribute combinations
+* Added image upload support to Summernote editor
 
 ###Improvements###
 * Content slider slides can be filtered by store

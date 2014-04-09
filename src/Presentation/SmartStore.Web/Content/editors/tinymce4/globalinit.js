@@ -41,6 +41,7 @@ var tiny_mce_global_config;
         relative_urls: false,
         resize: 'both',
         plugins: tiny_mce_plugins.join(","),
+		image_advtab: true,
         toolbar: "undo redo | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor | link image jbimages | fullscreen"
     };
 

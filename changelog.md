@@ -7,6 +7,8 @@
 
 ###Improvements###
 * Content slider slides can be filtered by store
+* TinyMCE now shows advanced tab for images
+* Added JavaScriptEngineSwitcher.Msie (disabled by default). Useful in scenarios where target server has problems calling the V8 native libs.
 
 
 

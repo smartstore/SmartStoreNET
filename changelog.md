@@ -8,8 +8,11 @@
 ###Improvements###
 * Content slider slides can be filtered by store
 * TinyMCE now shows advanced tab for images
+* Updated BundleTransformer to the latest version 1.8.25
 * Added JavaScriptEngineSwitcher.Msie (disabled by default). Useful in scenarios where target server has problems calling the V8 native libs.
 
+###Bugfixes###
+* UI notifications get displayed repeatedly
 
 
 ##SmartStore.NET 2.0.0#

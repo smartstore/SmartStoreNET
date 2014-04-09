@@ -57,9 +57,9 @@
     <PackageAsSingleFile>false</PackageAsSingleFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.7.5124.21494, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.8.5172.27703, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\..\packages\AjaxMin.5.8.5172.27710\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,13 +77,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\BundleTransformer.Core.1.8.23\lib\net40\BundleTransformer.Core.dll</HintPath>
     </Reference>
-    <Reference Include="BundleTransformer.Less, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+    <Reference Include="BundleTransformer.Less, Version=1.8.25.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\BundleTransformer.Less.1.8.23\lib\net40\BundleTransformer.Less.dll</HintPath>
+      <HintPath>..\..\packages\BundleTransformer.Less.1.8.25\lib\net40\BundleTransformer.Less.dll</HintPath>
     </Reference>
-    <Reference Include="BundleTransformer.MicrosoftAjax, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+    <Reference Include="BundleTransformer.MicrosoftAjax, Version=1.8.26.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\BundleTransformer.MicrosoftAjax.1.8.23\lib\net40\BundleTransformer.MicrosoftAjax.dll</HintPath>
+      <HintPath>..\..\packages\BundleTransformer.MicrosoftAjax.1.8.26\lib\net40\BundleTransformer.MicrosoftAjax.dll</HintPath>
     </Reference>
     <Reference Include="ClearScript">
       <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.1.1.1\lib\net40\ClearScript.dll</HintPath>

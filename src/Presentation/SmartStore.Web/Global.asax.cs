@@ -53,6 +53,7 @@ namespace SmartStore.Web
         {
             routes.IgnoreRoute("favicon.ico");
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+			routes.IgnoreRoute(".db/{*virtualpath}");
 
 			if (databaseInstalled)
 			{

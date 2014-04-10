@@ -264,6 +264,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.HasTierPrices, mo => mo.Ignore())
+				.ForMember(dest => dest.LowestAttributeCombinationPrice, mo => mo.Ignore())
 				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
 				.ForMember(dest => dest.BackorderMode, mo => mo.Ignore())
 				.ForMember(dest => dest.DownloadActivationType, mo => mo.Ignore())

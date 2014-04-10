@@ -369,24 +369,7 @@ namespace SmartStore.Web.Controllers
 
 									if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
 									{
-										decimal? minPossiblePrice = null;
-
-										//find a minimum possible price
-										foreach (var associatedProduct in associatedProducts)
-										{
-											//calculate for the maximum quantity (in case if we have tier prices)
-											var tmpPrice = _priceCalculationService.GetFinalPrice(associatedProduct, _workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
-											decimal? lowestCombinationPrice = _productAttributeService.GetLowestCombinationPrice(associatedProduct.Id);
-
-											if (lowestCombinationPrice.HasValue && lowestCombinationPrice.Value < tmpPrice)
-												tmpPrice = lowestCombinationPrice.Value;
-
-											if (!minPossiblePrice.HasValue || tmpPrice < minPossiblePrice.Value)
-											{
-												minPriceProduct = associatedProduct;
-												minPossiblePrice = tmpPrice;
-											}
-										}
+										decimal? minPossiblePrice = _priceCalculationService.GetLowestPrice(product, associatedProducts, out minPriceProduct);
 
 										if (minPriceProduct != null && !minPriceProduct.CustomerEntersPrice)
 										{
@@ -458,27 +441,10 @@ namespace SmartStore.Web.Controllers
 										else
 										{
 											//calculate prices
-											bool displayFromMessage = false;
-											IList<ProductBundleItemData> bundleItems = null;
 											bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
-											if (isBundlePerItemPricing)
-												bundleItems = _productService.GetBundleItems(product.Id);
-
-											decimal minPossiblePrice = _priceCalculationService.GetFinalPrice(product, bundleItems,
-												_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
-
-											// bundles have no attributes thus no combinations thus no combination price
-											if (product.ProductType != ProductType.BundledProduct)
-											{
-												decimal? lowestCombinationPrice = _productAttributeService.GetLowestCombinationPrice(product.Id);
-
-												if (lowestCombinationPrice.HasValue && lowestCombinationPrice.Value < minPossiblePrice)
-												{
-													minPossiblePrice = lowestCombinationPrice.Value;
-													displayFromMessage = true;
-												}
-											}
+											bool displayFromMessage = false;
+											decimal minPossiblePrice = _priceCalculationService.GetLowestPrice(product, out displayFromMessage);
 
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);

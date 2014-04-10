@@ -119,6 +119,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         void UpdateHasTierPricesProperty(Product product);
 
+		/// <summary>
+		/// Update LowestAttributeCombinationPrice property (used for performance optimization)
+		/// </summary>
+		/// <param name="product">Product</param>
+		void UpdateLowestAttributeCombinationPriceProperty(Product product);
+
         /// <summary>
         /// Update HasDiscountsApplied property (used for performance optimization)
         /// </summary>

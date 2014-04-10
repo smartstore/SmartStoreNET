@@ -82,6 +82,23 @@ namespace SmartStore.Services.Catalog
 			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null);
 
 		/// <summary>
+		/// Get the lowest possible price for a product.
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="displayFromMessage">Whether to display the from message.</param>
+		/// <returns>The lowest price.</returns>
+		decimal GetLowestPrice(Product product, out bool displayFromMessage);
+
+		/// <summary>
+		/// Get the lowest price of a grouped product.
+		/// </summary>
+		/// <param name="product">Grouped product.</param>
+		/// <param name="associatedProducts">Products associated to product.</param>
+		/// <param name="lowestPriceProduct">The associated product with the lowest price.</param>
+		/// <returns>The lowest price.</returns>
+		decimal? GetLowestPrice(Product product, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct);
+
+		/// <summary>
 		/// Gets the product cost
 		/// </summary>
 		/// <param name="product">Product</param>

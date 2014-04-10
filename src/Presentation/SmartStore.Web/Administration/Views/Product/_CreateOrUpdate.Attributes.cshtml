@@ -98,10 +98,19 @@
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
 
-                <button type="button" id="btnCreateAllCombinations" class="btn" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'>
-                    <i class="icon-tasks"></i>
-                    @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")
-                </button>
+				<div class="pull-right">
+					<button type="button" id="btnCreateAllCombinations" class="btn" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'
+						data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")">
+						<i class="icon-tasks"></i>
+						@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")
+					</button>
+
+					<button type="button" id="btnDeleteAllCombinations" class="btn" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
+						data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToDeleteAll")">
+						<i class="icon-trash"></i>
+						@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.DeleteAllCombinations")
+					</button>
+				</div>
 
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="hide" />
                 <script type="text/javascript">
@@ -123,9 +132,8 @@
                             return false;
                         });
 
-                        $('#btnCreateAllCombinations').click(function () {
+                        $('#btnCreateAllCombinations, #btnDeleteAllCombinations').click(function () {
                             $(this).doAjax({
-                                ask: '@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")',
                                 callbackSuccess: function (resp) {
                                     $('#btnRefreshCombinations').click();
                                 }
@@ -164,7 +172,8 @@
                             .Centered()
                             .ClientTemplate("<a href=\"<#= ProductUrl #>\" target=\"_blank\"><#= ProductUrlTitle #></a>");
                         columns.Bound(x => x.Sku);
-						columns.Bound(x => x.Price);
+						columns.Bound(x => x.Price)
+							.RightAlign();
                         columns.Bound(x => x.StockQuantity)
                             .Width(160)
                             .Centered();

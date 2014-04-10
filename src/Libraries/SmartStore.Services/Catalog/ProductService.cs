@@ -1185,6 +1185,23 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
+		/// <summary>
+		/// Update LowestAttributeCombinationPrice property (used for performance optimization)
+		/// </summary>
+		/// <param name="product">Product</param>
+		public virtual void UpdateLowestAttributeCombinationPriceProperty(Product product)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			var prevValue = product.LowestAttributeCombinationPrice;
+
+			product.LowestAttributeCombinationPrice = _productAttributeService.GetLowestCombinationPrice(product.Id);
+
+			if (prevValue != product.LowestAttributeCombinationPrice)
+				UpdateProduct(product);
+		}
+
         /// <summary>
         /// Update HasDiscountsApplied property (used for performance optimization)
         /// </summary>

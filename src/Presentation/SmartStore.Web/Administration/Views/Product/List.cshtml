@@ -147,8 +147,10 @@
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
                         columns.Bound(x => x.Sku);
-                        columns.Bound(x => x.Price);
-                        columns.Bound(x => x.StockQuantity);
+                        columns.Bound(x => x.Price)
+							.RightAlign();
+                        columns.Bound(x => x.StockQuantity)
+							.Centered();
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))

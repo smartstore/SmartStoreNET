@@ -537,6 +537,12 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public bool HasTierPrices { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value for the lowest attribute combination price override
+		/// </summary>
+		[DataMember]
+		public decimal? LowestAttributeCombinationPrice { get; set; }
 		
 		/// <summary>
 		/// Gets or sets a value indicating whether this product has discounts applied

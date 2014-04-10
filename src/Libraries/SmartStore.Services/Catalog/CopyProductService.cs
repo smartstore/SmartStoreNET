@@ -197,6 +197,7 @@ namespace SmartStore.Services.Catalog
 				CustomerEntersPrice = product.CustomerEntersPrice,
 				MinimumCustomerEnteredPrice = product.MinimumCustomerEnteredPrice,
 				MaximumCustomerEnteredPrice = product.MaximumCustomerEnteredPrice,
+				LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice,
 				Weight = product.Weight,
 				Length = product.Length,
 				Width = product.Width,
@@ -494,6 +495,7 @@ namespace SmartStore.Services.Catalog
 
 			// update "HasTierPrices" and "HasDiscountsApplied" properties
 			_productService.UpdateHasTierPricesProperty(productCopy);
+			_productService.UpdateLowestAttributeCombinationPriceProperty(productCopy);
 			_productService.UpdateHasDiscountsApplied(productCopy);
 
 			// associated products

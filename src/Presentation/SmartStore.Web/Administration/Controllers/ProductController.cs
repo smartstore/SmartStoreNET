@@ -3595,7 +3595,11 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException("No product variant attribute combination found with the specified id");
 
 			var productId = pvac.ProductId;
+
 			_productAttributeService.DeleteProductVariantAttributeCombination(pvac);
+
+			var product = _productService.GetProductById(productId);
+			_productService.UpdateLowestAttributeCombinationPriceProperty(product);
 
 			return ProductVariantAttributeCombinationList(command, productId);
 		}
@@ -3651,6 +3655,8 @@ namespace SmartStore.Admin.Controllers
 				combination.SetAssignedPictureIds(model.AssignedPictureIds);
 
 				_productAttributeService.InsertProductVariantAttributeCombination(combination);
+
+				_productService.UpdateLowestAttributeCombinationPriceProperty(product);
 			}
 
 			PrepareProductAttributeCombinationModel(model, null, product);
@@ -3711,6 +3717,8 @@ namespace SmartStore.Admin.Controllers
 
 				_productAttributeService.UpdateProductVariantAttributeCombination(combination);
 
+				_productService.UpdateLowestAttributeCombinationPriceProperty(combination.Product);
+
 				PrepareViewBag(btnId, formId, true);
 			}
 			return View(model);
@@ -3725,9 +3733,32 @@ namespace SmartStore.Admin.Controllers
 
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				return RedirectToAction("List", "Product");
+				throw new ArgumentException("No product found with the specified id");
 
 			_productAttributeService.CreateAllProductVariantAttributeCombinations(product);
+
+			_productService.UpdateLowestAttributeCombinationPriceProperty(product);
+
+			return new JsonResult { Data = "" };
+		}
+
+		[HttpPost]
+		[ValidateInput(false)]
+		public ActionResult DeleteAllAttributeCombinations(ProductVariantAttributeCombinationModel model, int productId)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var product = _productService.GetProductById(productId);
+			if (product == null)
+				throw new ArgumentException("No product found with the specified id");
+
+			foreach (var combination in _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id))
+			{
+				_productAttributeService.DeleteProductVariantAttributeCombination(combination);
+			}
+
+			_productService.UpdateLowestAttributeCombinationPriceProperty(product);
 
 			return new JsonResult { Data = "" };
 		}

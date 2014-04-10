@@ -7,13 +7,13 @@ namespace SmartStore.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class LowestAttributeCombinationPrice : IMigrationMetadata
+    public sealed partial class AttributeCombinationPrice : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(LowestAttributeCombinationPrice));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AttributeCombinationPrice));
         
         string IMigrationMetadata.Id
         {
-            get { return "201404092017069_LowestAttributeCombinationPrice"; }
+            get { return "201404101903014_AttributeCombinationPrice"; }
         }
         
         string IMigrationMetadata.Source

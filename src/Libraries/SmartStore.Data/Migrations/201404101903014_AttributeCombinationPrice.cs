@@ -4,16 +4,18 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
 	using SmartStore.Data.Setup;
 
-	public partial class LowestAttributeCombinationPrice : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
+	public partial class AttributeCombinationPrice : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
-			AddColumn("dbo.Product", "LowestAttributeCombinationPrice", c => c.Decimal(nullable: true, precision: 18, scale: 4));
+            AddColumn("dbo.Product", "LowestAttributeCombinationPrice", c => c.Decimal(precision: 18, scale: 4));
+            AddColumn("dbo.ProductVariantAttributeCombination", "Price", c => c.Decimal(precision: 18, scale: 4));
         }
         
         public override void Down()
         {
-			DropColumn("dbo.Product", "LowestAttributeCombinationPrice");
+            DropColumn("dbo.ProductVariantAttributeCombination", "Price");
+            DropColumn("dbo.Product", "LowestAttributeCombinationPrice");
         }
 
 		public bool RollbackOnFailure

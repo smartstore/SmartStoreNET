@@ -139,22 +139,60 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 		// actions
 
-		[HttpPost]
-		public decimal FinalPrice(int key)
+		private decimal? CalculatePrice(int key, bool lowestPrice)
 		{
-			var entity = GetEntityByKeyNotNull(key);
-			decimal result = decimal.Zero;
+			string requiredProperties = "TierPrices, AppliedDiscounts, ProductBundleItems";
+			var entity = GetExpandedEntity(key, requiredProperties);
+			decimal? result = null;
 
 			this.ProcessEntity(() =>
 			{
 				var engine = EngineContext.Current;
-				var customer = engine.Resolve<IWorkContext>().CurrentCustomer;
-				
-				result = engine.Resolve<IPriceCalculationService>().GetFinalPrice(entity, null, customer, decimal.Zero, true, 1);
+				var priceCalculationService = engine.Resolve<IPriceCalculationService>();
 
+				if (lowestPrice)
+				{
+					if (entity.ProductType == ProductType.GroupedProduct)
+					{
+						var searchContext = new ProductSearchContext()
+						{
+							Query = this.GetExpandedEntitySet(requiredProperties),
+							ParentGroupedProductId = entity.Id,
+							VisibleIndividuallyOnly = false
+						};
+
+						Product lowestPriceProduct;
+						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
+
+						result = priceCalculationService.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
+					}
+					else
+					{
+						bool displayFromMessage;
+						result = priceCalculationService.GetLowestPrice(entity, out displayFromMessage);
+					}
+				}
+				else
+				{
+					var customer = engine.Resolve<IWorkContext>().CurrentCustomer;
+
+					result = priceCalculationService.GetFinalPrice(entity, null, customer, decimal.Zero, true, 1);
+				}
 				return null;
 			});
 			return result;
+		}
+
+		[HttpPost]
+		public decimal? FinalPrice(int key)
+		{
+			return CalculatePrice(key, false);
+		}
+
+		[HttpPost]
+		public decimal? LowestPrice(int key)
+		{
+			return CalculatePrice(key, true);
 		}
 
 		//[HttpGet, WebApiQueryable]

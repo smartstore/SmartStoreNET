@@ -1,7 +1,7 @@
 ﻿Group: Api
 FriendlyName: SmartStore.NET Web Api
 SystemName: Api.WebApi
-Version: 1.1
+Version: 1.2
 MinAppVersion: 2.0.0
 Author: SmartStore AG
 DisplayOrder: 1

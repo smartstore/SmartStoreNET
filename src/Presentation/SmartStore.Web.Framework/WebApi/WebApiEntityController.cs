@@ -138,6 +138,15 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return query;
 		}
+		protected internal virtual IQueryable<TEntity> GetExpandedEntitySet(string properties)
+		{
+			var query = GetEntitySet();
+
+			foreach (var property in properties.SplitSafe(","))
+				query = this.Repository.Expand(query, property.Trim());
+
+			return query;
+		}
 
 		protected override int GetKey(TEntity entity)
 		{
@@ -176,6 +185,20 @@ namespace SmartStore.Web.Framework.WebApi
 				throw this.ExceptionInvalidModelState();
 
 			var query = GetExpandedEntitySet<TProperty>(path);
+
+			var entity = query.FirstOrDefault(x => x.Id == key);
+
+			if (entity == null)
+				throw ExceptionEntityNotFound(key);
+
+			return entity;
+		}
+		protected internal virtual TEntity GetExpandedEntity(int key, string properties)
+		{
+			if (!ModelState.IsValid)
+				throw this.ExceptionInvalidModelState();
+
+			var query = GetExpandedEntitySet(properties);
 
 			var entity = query.FirstOrDefault(x => x.Id == key);
 

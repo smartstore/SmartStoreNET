@@ -139,18 +139,6 @@ namespace SmartStore.Services.Catalog
 
         #endregion
         
-		private List<int> AllowedRoleIds {
-			get {
-				if (_allowedRoleIds == null) {
-					_allowedRoleIds = _workContext.CurrentCustomer.CustomerRoles
-						.Where(cr => cr.Active)
-						.Select(cr => cr.Id)
-						.ToList();	// TODO: cache that on session basis
-				}
-				return _allowedRoleIds;
-			}
-		}
-
         #region Methods
 
         #region Products
@@ -168,60 +156,6 @@ namespace SmartStore.Services.Catalog
             //delete product
             UpdateProduct(product);
         }
-
-		public virtual IQueryable<Product> GetAllProducts(ProductAllContext context)
-		{
-			var allowedRoleIds = AllowedRoleIds;
-
-			var query =
-				from p in _productRepository.Table
-				join acl in _aclRepository.Table
-				on new { c1 = p.Id, c2 = "Product" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into p_acl
-				from acl in p_acl.DefaultIfEmpty()
-				where p.Published && !p.Deleted && (!p.SubjectToAcl || allowedRoleIds.Contains(acl.CustomerRoleId))
-				select p;
-
-			if (context.VisibleIndividually.HasValue)
-			{
-				query = query.Where(x => x.VisibleIndividually == context.VisibleIndividually.Value);
-			}
-
-			if (context.FilterByAvailableDate)
-			{
-				var nowUtc = DateTime.UtcNow;
-
-				query = query.Where(p =>
-					(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value <= nowUtc) &&
-					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value >= nowUtc));
-			}
-
-			if (context.ProductIds != null)
-			{
-				query = query.Where(x => context.ProductIds.Contains(x.Id));
-			}
-
-			if (context.CategoryIds != null && context.CategoryIds.Count > 0)
-			{
-				query =
-					from p in query
-					from pc in p.ProductCategories.Where(pc => context.CategoryIds.Contains(pc.CategoryId))
-					where (!context.IncludeFeatured.HasValue || context.IncludeFeatured.Value == pc.IsFeaturedProduct)
-					select p;
-			}
-
-			if (context.StoreId > 0)
-			{
-				query =
-					from p in query
-					join sm in _storeMappingRepository.Table
-					on new { c1 = p.Id, c2 = "Product" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into p_sm
-					from sm in p_sm.DefaultIfEmpty()
-					where !p.LimitedToStores || context.StoreId == sm.StoreId
-					select p;
-			}
-
-			return query;
-		}
 
         /// <summary>
         /// Gets all products displayed on the home page
@@ -699,16 +633,21 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        protected virtual IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false)
+		/// <summary>
+		/// Builds a product query based on the options in ProductSearchContext parameter.
+		/// </summary>
+		/// <param name="ctx">Parameters to build the query.</param>
+		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
+		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
+        public virtual IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false)
         {
-
             if (allowedCustomerRolesIds == null)
             {
                 allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
             }
             
             // products
-            var query = _productRepository.Table;
+            var query = ctx.Query ?? _productRepository.Table;
             query = query.Where(p => !p.Deleted);
 
             if (!ctx.ShowHidden)
@@ -730,6 +669,11 @@ namespace SmartStore.Services.Catalog
 			{
 				int productTypeId = (int)ctx.ProductType.Value;
 				query = query.Where(p => p.ProductTypeId == productTypeId);
+			}
+
+			if (ctx.ProductIds != null && ctx.ProductIds.Count > 0)
+			{
+				query = query.Where(x => ctx.ProductIds.Contains(x.Id));
 			}
 
 			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 

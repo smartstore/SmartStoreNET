@@ -154,16 +154,15 @@ namespace SmartStore.Services.Filter
 		{
 			if (_products == null)
 			{
-				var allContext = new ProductAllContext()
+				var searchContext = new ProductSearchContext()
 				{
 					CategoryIds = categoryIds,
-					IncludeFeatured = IncludeFeatured,
+					FeaturedProducts = IncludeFeatured,
 					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
-					VisibleIndividually = true,
-					FilterByAvailableDate = true
+					VisibleIndividuallyOnly = true
 				};
 
-				_products = _productService.GetAllProducts(allContext);
+				_products = _productService.PrepareProductSearchQuery(searchContext);
 			}
 			return _products;
 		}

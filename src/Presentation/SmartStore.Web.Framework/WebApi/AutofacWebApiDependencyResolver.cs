@@ -12,7 +12,7 @@ namespace SmartStore.Web.Framework.WebApi
         readonly ILifetimeScope _container;
         readonly IDependencyScope _rootDependencyScope;
 
-        internal static readonly string ApiRequestTag = "httpRequest";
+		internal static readonly string ApiRequestTag = "AutofacWebRequest";
 
         public AutofacWebApiDependencyResolver()
         {

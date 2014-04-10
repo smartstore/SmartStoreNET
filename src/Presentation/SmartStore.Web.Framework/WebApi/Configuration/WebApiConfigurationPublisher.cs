@@ -22,9 +22,10 @@ namespace SmartStore.Web.Framework.WebApi.Configuration
 
 			foreach (var providerType in providerTypes)
 			{
-				var pluginDescriptor = PluginManager.ReferencedPlugins.FirstOrDefault(x => x.ReferencedAssembly == providerType.Assembly);
-				if (pluginDescriptor != null && !pluginDescriptor.Installed)
+				if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
+				{
 					continue;
+				}
 
 				var provider = Activator.CreateInstance(providerType) as IWebApiConfigurationProvider;
 				providers.Add(provider);

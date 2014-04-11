@@ -1,0 +1,31 @@
+body {
+	font-family:Tahoma;
+	font-size:0.9em;
+	background-color:#d4d0c8;
+	padding:10px;
+}
+button {
+	padding:4px 8px 4px 8px;
+}
+pre {
+	display:inline-block;
+	background-color:#C0BCB4;
+	padding:8px;
+	margin-right:20px;
+	float:left;
+	border-radius:5px; 
+	-moz-border-radius:5px; 
+	-webkit-border-radius:5px;
+}
+input {
+	padding:2px;
+}
+input[name=resource] {
+	width:400px;
+}
+input[name=service] {
+	width:60px;
+}
+.clear {
+	clear:both;
+}

@@ -9,14 +9,24 @@ using System.Web.Http;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
+using System;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
 	[WebApiAuthenticate(Permission = "ManageCatalog")]
 	public class ProductsController : WebApiEntityController<Product, IProductService>
 	{
+		private readonly Lazy<IWorkContext> _workContext;
+		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
+
+		public ProductsController(Lazy<IWorkContext> workContext,
+			Lazy<IPriceCalculationService> priceCalculationService)
+		{
+			_workContext = workContext;
+			_priceCalculationService = priceCalculationService;
+		}
+
 		protected override IQueryable<Product> GetEntitySet()
 		{
 			var query =
@@ -147,9 +157,6 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 			this.ProcessEntity(() =>
 			{
-				var engine = EngineContext.Current;
-				var priceCalculationService = engine.Resolve<IPriceCalculationService>();
-
 				if (lowestPrice)
 				{
 					if (entity.ProductType == ProductType.GroupedProduct)
@@ -164,19 +171,17 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 						Product lowestPriceProduct;
 						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
 
-						result = priceCalculationService.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
 					}
 					else
 					{
 						bool displayFromMessage;
-						result = priceCalculationService.GetLowestPrice(entity, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, out displayFromMessage);
 					}
 				}
 				else
 				{
-					var customer = engine.Resolve<IWorkContext>().CurrentCustomer;
-
-					result = priceCalculationService.GetFinalPrice(entity, null, customer, decimal.Zero, true, 1);
+					result = _priceCalculationService.Value.GetFinalPrice(entity, null, _workContext.Value.CurrentCustomer, decimal.Zero, true, 1);
 				}
 				return null;
 			});

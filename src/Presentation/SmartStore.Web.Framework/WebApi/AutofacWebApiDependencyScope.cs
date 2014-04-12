@@ -1,41 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Web.Http.Dependencies;
 using Autofac;
 
 namespace SmartStore.Web.Framework.WebApi
 {
 
-    internal class AutofacWebApiDependencyScope : IDependencyScope
-    {
-        readonly ILifetimeScope _lifetimeScope;
+	[SecurityCritical]
+	internal class AutofacWebApiDependencyScope : IDependencyScope
+	{
+		private bool _disposed;
 
-        public AutofacWebApiDependencyScope(ILifetimeScope lifetimeScope)
-        {
-            _lifetimeScope = lifetimeScope;
-        }
+		readonly ILifetimeScope _lifetimeScope;
 
-        public object GetService(Type serviceType)
-        {
-            return _lifetimeScope.ResolveOptional(serviceType);
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AutofacWebApiDependencyScope"/> class.
+		/// </summary>
+		/// <param name="lifetimeScope">The lifetime scope to resolve services from.</param>
+		public AutofacWebApiDependencyScope(ILifetimeScope lifetimeScope)
+		{
+			Guard.ArgumentNotNull(() => lifetimeScope);
+			_lifetimeScope = lifetimeScope;
+		}
 
-        public IEnumerable<object> GetServices(Type serviceType)
-        {
-            if (!_lifetimeScope.IsRegistered(serviceType))
-                return Enumerable.Empty<object>();
+		/// <summary>
+		/// Gets the lifetime scope for the current dependency scope.
+		/// </summary>
+		public ILifetimeScope LifetimeScope
+		{
+			get { return _lifetimeScope; }
+		}
 
-            var enumerableServiceType = typeof(IEnumerable<>).MakeGenericType(serviceType);
-            var instance = _lifetimeScope.Resolve(enumerableServiceType);
-            return (IEnumerable<object>)instance;
-        }
+		[SecurityCritical]
+		public object GetService(Type serviceType)
+		{
+			return _lifetimeScope.ResolveOptional(serviceType);
+		}
 
-        public void Dispose()
-        {
-            if (_lifetimeScope != null)
-                _lifetimeScope.Dispose();
-        }
-    }
+		[SecurityCritical]
+		public IEnumerable<object> GetServices(Type serviceType)
+		{
+			if (!_lifetimeScope.IsRegistered(serviceType))
+				return Enumerable.Empty<object>();
+
+			var enumerableServiceType = typeof(IEnumerable<>).MakeGenericType(serviceType);
+			var instance = _lifetimeScope.Resolve(enumerableServiceType);
+			return (IEnumerable<object>)instance;
+		}
+
+		/// <summary>
+		/// Finalizes an instance of the <see cref="AutofacWebApiDependencyScope"/> class.
+		/// </summary>
+		[SecuritySafeCritical]
+		~AutofacWebApiDependencyScope()
+		{
+			Dispose(false);
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		[SecuritySafeCritical]
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		private void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_lifetimeScope != null)
+					{
+						_lifetimeScope.Dispose();
+					}
+				}
+				_disposed = true;
+			}
+		}
+
+	}
 
 }

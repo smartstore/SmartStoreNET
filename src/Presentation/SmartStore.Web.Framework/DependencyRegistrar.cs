@@ -569,36 +569,47 @@ namespace SmartStore.Web.Framework
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{
-			Type serviceType;
-			var serviceProperty = FindServiceProperty(registration.Activator.LimitType, out serviceType);
+			var baseType = typeof(WebApiEntityController<,>);
+			var type = registration.Activator.LimitType;
+			Type implementingType;
 
-			if (serviceProperty == null || serviceType == null)
+			if (!type.IsSubClass(baseType, out implementingType))
 				return;
 
-			registration.Activated += (sender, e) =>
+			var repoProperty = FindRepositoryProperty(type, implementingType.GetGenericArguments()[0]);
+			var serviceProperty = FindServiceProperty(type, implementingType.GetGenericArguments()[1]);
+
+			if (repoProperty != null || serviceProperty != null)
 			{
-				var service = e.Context.Resolve(serviceType);
-				serviceProperty.SetValue(e.Instance, service, null);
-			};
+				registration.Activated += (sender, e) =>
+				{
+					if (repoProperty != null)
+					{
+						var repo = e.Context.Resolve(repoProperty.PropertyType);
+						repoProperty.SetValue(e.Instance, repo, null);
+					}
+
+					if (serviceProperty != null)
+					{
+						var service = e.Context.Resolve(serviceProperty.PropertyType);
+						serviceProperty.SetValue(e.Instance, service, null);
+					}
+				};
+			}
 		}
 
-		private static PropertyInfo FindServiceProperty(Type type, out Type serviceType)
+		private static PropertyInfo FindRepositoryProperty(Type type, Type entityType)
 		{
-			serviceType = null;
-			var ctlType = typeof(WebApiEntityController<,>);
-
-			if (!ctlType.IsAssignableFrom(type))
-				return null;
-			
-			var pi = type.GetProperty("Service");
-
-			if (pi != null)
-			{
-				serviceType = pi.PropertyType;
-			}
-
+			var pi = type.GetProperty("Repository", typeof(IRepository<>).MakeGenericType(entityType));
 			return pi;
 		}
+
+		private static PropertyInfo FindServiceProperty(Type type, Type serviceType)
+		{
+			var pi = type.GetProperty("Service", serviceType);
+			return pi;
+		}
+
 	}
 
 	public class UiModule : Module

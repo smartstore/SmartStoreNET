@@ -56,8 +56,6 @@ namespace SmartStore.Services.Catalog
         private readonly CommonSettings _commonSettings;
         private readonly IEventPublisher _eventPublisher;
 
-		private List<int> _allowedRoleIds;
-
         #endregion
 
         #region Ctor

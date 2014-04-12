@@ -18,8 +18,6 @@ namespace SmartStore.Web.Framework.WebApi
 	public abstract class WebApiEntityController<TEntity, TService> : EntitySetController<TEntity, int>
 		where TEntity : BaseEntity, new()
 	{
-		private IRepository<TEntity> _repository;
-		private TService _service;
 
 		protected internal HttpResponseException ExceptionEntityNotFound<TKey>(TKey key)
 		{
@@ -101,34 +99,19 @@ namespace SmartStore.Web.Framework.WebApi
 			return repository;
 		}
 
-		protected internal IRepository<TEntity> Repository
+		/// <summary>
+		/// Auto injected by Autofac
+		/// </summary>
+		public virtual IRepository<TEntity> Repository
 		{
-			get
-			{
-				if (_repository == null)
-				{
-					_repository = this.CreateRepository();
-				}
-				return _repository;
-			}
-		}
-
-		protected internal TService Service
-		{
-			get
-			{
-				if (_service == null)
-				{
-					_service = (TService)EngineContext.Current.Resolve(typeof(TService));
-				}
-				return _service;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
 		/// Auto injected by Autofac
 		/// </summary>
-		public virtual TService Service2
+		public virtual TService Service
 		{
 			get;
 			set;

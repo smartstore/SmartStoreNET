@@ -1545,16 +1545,24 @@ namespace SmartStore.Web.Controllers
 			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
 
-
-            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
-            if (deliveryTime != null) { 
-                model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
-                model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
-            }
+			if (model.IsAvailable)
+			{
+				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+				if (deliveryTime != null)
+				{
+					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+					model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				}
+			}
 
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;
             model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();
+
+			if (model.DeliveryTimeName.IsNullOrEmpty() && model.DisplayDeliveryTime)
+			{
+				model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
+			}
 
             //back in stock subscriptions)
             if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&

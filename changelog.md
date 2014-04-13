@@ -13,6 +13,7 @@
 * Updated BundleTransformer to the latest version 1.8.25
 * Added JavaScriptEngineSwitcher.Msie (disabled by default). Useful in scenarios where target server has problems calling the V8 native libs.
 * Updated some 3rd party libraries to their latest versions
+* #320 Unavailable attribute combinations: better UI indication
 
 ###Bugfixes###
 * UI notifications get displayed repeatedly

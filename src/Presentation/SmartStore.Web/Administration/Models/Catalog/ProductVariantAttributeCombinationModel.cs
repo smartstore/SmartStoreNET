@@ -62,7 +62,7 @@ namespace SmartStore.Admin.Models.Catalog
         public int? BasePriceBaseAmount { get; set; }
 
 		[SmartResourceDisplayName("Common.IsActive")]
-		public bool IsActive { get; set; }		
+		public bool IsActive { get; set; }
 
         public IList<ProductVariantAttributeModel> ProductVariantAttributes { get; set; }
 

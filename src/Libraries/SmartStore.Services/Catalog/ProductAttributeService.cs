@@ -457,7 +457,7 @@ namespace SmartStore.Services.Catalog
 
 			var query =
 				from pvac in _productVariantAttributeCombinationRepository.Table
-				where pvac.ProductId == productId && pvac.Price != null
+				where pvac.ProductId == productId && pvac.Price != null && pvac.IsActive
 				orderby pvac.Price ascending
 				select pvac.Price;
 

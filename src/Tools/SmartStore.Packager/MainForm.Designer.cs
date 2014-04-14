@@ -35,9 +35,9 @@
 			this.lblRootPath = new System.Windows.Forms.Label();
 			this.lblOutputPath = new System.Windows.Forms.Label();
 			this.tabMain = new System.Windows.Forms.TabControl();
-			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.Plugins = new System.Windows.Forms.TabPage();
 			this.lstPlugins = new System.Windows.Forms.ListBox();
-			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.Themes = new System.Windows.Forms.TabPage();
 			this.lstThemes = new System.Windows.Forms.ListBox();
 			this.btnReadDescriptions = new System.Windows.Forms.Button();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -47,8 +47,8 @@
 			this.btnBrowseOutputPath = new System.Windows.Forms.Button();
 			this.lblInfo = new System.Windows.Forms.Label();
 			this.tabMain.SuspendLayout();
-			this.tabPage1.SuspendLayout();
-			this.tabPage2.SuspendLayout();
+			this.Plugins.SuspendLayout();
+			this.Themes.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnCreatePackages
@@ -101,24 +101,24 @@
 			// 
 			// tabMain
 			// 
-			this.tabMain.Controls.Add(this.tabPage1);
-			this.tabMain.Controls.Add(this.tabPage2);
+			this.tabMain.Controls.Add(this.Plugins);
+			this.tabMain.Controls.Add(this.Themes);
 			this.tabMain.Location = new System.Drawing.Point(12, 135);
 			this.tabMain.Name = "tabMain";
 			this.tabMain.SelectedIndex = 0;
 			this.tabMain.Size = new System.Drawing.Size(458, 320);
 			this.tabMain.TabIndex = 5;
 			// 
-			// tabPage1
+			// Plugins
 			// 
-			this.tabPage1.Controls.Add(this.lstPlugins);
-			this.tabPage1.Location = new System.Drawing.Point(4, 24);
-			this.tabPage1.Name = "tabPage1";
-			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(450, 292);
-			this.tabPage1.TabIndex = 0;
-			this.tabPage1.Text = "Plugins";
-			this.tabPage1.UseVisualStyleBackColor = true;
+			this.Plugins.Controls.Add(this.lstPlugins);
+			this.Plugins.Location = new System.Drawing.Point(4, 24);
+			this.Plugins.Name = "Plugins";
+			this.Plugins.Padding = new System.Windows.Forms.Padding(3);
+			this.Plugins.Size = new System.Drawing.Size(450, 292);
+			this.Plugins.TabIndex = 0;
+			this.Plugins.Text = "Plugins";
+			this.Plugins.UseVisualStyleBackColor = true;
 			// 
 			// lstPlugins
 			// 
@@ -130,16 +130,16 @@
 			this.lstPlugins.Size = new System.Drawing.Size(426, 259);
 			this.lstPlugins.TabIndex = 0;
 			// 
-			// tabPage2
+			// Themes
 			// 
-			this.tabPage2.Controls.Add(this.lstThemes);
-			this.tabPage2.Location = new System.Drawing.Point(4, 24);
-			this.tabPage2.Name = "tabPage2";
-			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(450, 285);
-			this.tabPage2.TabIndex = 1;
-			this.tabPage2.Text = "Themes";
-			this.tabPage2.UseVisualStyleBackColor = true;
+			this.Themes.Controls.Add(this.lstThemes);
+			this.Themes.Location = new System.Drawing.Point(4, 24);
+			this.Themes.Name = "Themes";
+			this.Themes.Padding = new System.Windows.Forms.Padding(3);
+			this.Themes.Size = new System.Drawing.Size(450, 292);
+			this.Themes.TabIndex = 1;
+			this.Themes.Text = "Themes";
+			this.Themes.UseVisualStyleBackColor = true;
 			// 
 			// lstThemes
 			// 
@@ -205,8 +205,8 @@
 			this.lblInfo.Name = "lblInfo";
 			this.lblInfo.Size = new System.Drawing.Size(383, 37);
 			this.lblInfo.TabIndex = 10;
-			this.lblInfo.Text = "Point this to the root of your build web folder. Do NOT create packages from sour" +
-    "ce code folders.";
+			this.lblInfo.Text = "Point this to your root build web folder. Do NOT create packages from source code" +
+    " folders.";
 			// 
 			// MainForm
 			// 
@@ -231,8 +231,8 @@
 			this.Name = "MainForm";
 			this.Text = " SmartStore.NET Extension Packager";
 			this.tabMain.ResumeLayout(false);
-			this.tabPage1.ResumeLayout(false);
-			this.tabPage2.ResumeLayout(false);
+			this.Plugins.ResumeLayout(false);
+			this.Themes.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -246,9 +246,9 @@
 		private System.Windows.Forms.Label lblRootPath;
 		private System.Windows.Forms.Label lblOutputPath;
 		private System.Windows.Forms.TabControl tabMain;
-		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage Plugins;
 		private System.Windows.Forms.ListBox lstPlugins;
-		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.TabPage Themes;
 		private System.Windows.Forms.ListBox lstThemes;
 		private System.Windows.Forms.Button btnReadDescriptions;
 		private System.Windows.Forms.Timer timer1;

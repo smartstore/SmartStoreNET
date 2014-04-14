@@ -68,7 +68,7 @@ namespace SmartStore.Packager
 			var outputPath = txtOutputPath.Text;
 
 			var erroredIds = new List<string>();
-			string currentPackage = string.Empty;
+			ExtensionInfo currentPackage = null;
 
 			try
 			{
@@ -80,22 +80,22 @@ namespace SmartStore.Packager
 				// create plugin packages
 				foreach (var sel in lstPlugins.SelectedItems)
 				{
-					currentPackage = (string)sel;
-					var fi = creator.CreatePluginPackage((string)sel);
-					if (!LogMessage(fi, (string)sel))
+					currentPackage = (ExtensionInfo)sel;
+					var fi = creator.CreatePluginPackage(currentPackage.Path);
+					if (!LogMessage(fi, currentPackage.Name))
 					{
-						erroredIds.Add(currentPackage);
+						erroredIds.Add(currentPackage.Path);
 					}
 				}
 
 				// create theme packages
 				foreach (var sel in lstThemes.SelectedItems)
 				{
-					currentPackage = (string)sel;
-					var fi = creator.CreateThemePackage((string)sel);
-					if (!LogMessage(fi, (string)sel))
+					currentPackage = (ExtensionInfo)sel;
+					var fi = creator.CreateThemePackage(currentPackage.Path);
+					if (!LogMessage(fi, currentPackage.Name))
 					{
-						erroredIds.Add(currentPackage);
+						erroredIds.Add(currentPackage.Name);
 					}
 				}
 
@@ -151,30 +151,73 @@ namespace SmartStore.Packager
 
 			btnReadDescriptions.Enabled = false;
 
-			ReadPlugins(vpp);
-			ReadThemes(vpp);
+			ReadPackages(vpp);
 
 			btnReadDescriptions.Enabled = true;
 		}
 
-		private void ReadPlugins(IVirtualPathProvider vpp)
+
+		private void ReadPackages(IVirtualPathProvider vpp)
 		{
 			if (!ValidatePaths())
 				return;
 
+			lstPlugins.DisplayMember = "Name";
+			lstPlugins.ValueMember = "Path";
+			lstThemes.DisplayMember = "Name";
+			lstThemes.ValueMember = "Path";
+
 			lstPlugins.Items.Clear();
-			foreach (var dir in vpp.ListDirectories("~/Plugins"))
+			lstThemes.Items.Clear();
+
+			IEnumerable<string> dirs = Enumerable.Empty<string>();
+
+			if (vpp.DirectoryExists("~/Plugins") || vpp.DirectoryExists("~/Themes"))
 			{
+				if (vpp.DirectoryExists("~/Plugins"))
+				{
+					dirs = dirs.Concat(vpp.ListDirectories("~/Plugins"));
+				}
+				if (vpp.DirectoryExists("~/Themes"))
+				{
+					dirs = dirs.Concat(vpp.ListDirectories("~/Themes"));
+				}
+			}
+			else
+			{
+				dirs = vpp.ListDirectories("~/");
+			}
+
+			foreach (var dir in dirs)
+			{
+				bool isTheme = false;
+
+				// is it a plugin?
 				var filePath = vpp.Combine(dir, "Description.txt");
 				if (!vpp.FileExists(filePath))
-					continue;
+				{
+					// ...no! is it a theme?
+					filePath = vpp.Combine(dir, "theme.config");
+					if (!vpp.FileExists(filePath))
+						continue;
+
+					isTheme = true;
+				}
 
 				try
 				{
-					var descriptor = PluginFileParser.ParsePluginDescriptionFile(vpp.MapPath(filePath));
-					if (descriptor != null)
+					if (isTheme)
 					{
-						lstPlugins.Items.Add(descriptor.FolderName);
+						var manifest = ThemeManifest.Create(vpp.MapPath(dir));
+						lstThemes.Items.Add(new ExtensionInfo(dir, manifest.ThemeName));
+					}
+					else
+					{
+						var descriptor = PluginFileParser.ParsePluginDescriptionFile(vpp.MapPath(filePath));
+						if (descriptor != null)
+						{
+							lstPlugins.Items.Add(new ExtensionInfo(dir, descriptor.FolderName));
+						}
 					}
 				}
 				catch
@@ -182,29 +225,14 @@ namespace SmartStore.Packager
 					continue;
 				}
 			}
-		}
 
-		private void ReadThemes(IVirtualPathProvider vpp)
-		{
-			if (!ValidatePaths())
-				return;
-
-			lstThemes.Items.Clear();
-			foreach (var dir in vpp.ListDirectories("~/Themes"))
+			if (lstPlugins.Items.Count > 0) 
 			{
-				var filePath = vpp.Combine(dir, "theme.config");
-				if (!vpp.FileExists(filePath))
-					continue;
-
-				try
-				{
-					var manifest = ThemeManifest.Create(vpp.MapPath(dir));
-					lstThemes.Items.Add(manifest.ThemeName);
-				}
-				catch
-				{
-					continue;
-				}
+				tabMain.SelectedIndex = 0;
+			}
+			else if (lstThemes.Items.Count > 0)
+			{
+				tabMain.SelectedIndex = 1;
 			}
 		}
 
@@ -216,13 +244,6 @@ namespace SmartStore.Packager
 				txtRootPath.Focus();
 				return false;
 			}
-
-			//if (!Directory.Exists(txtOutputPath.Text))
-			//{
-			//	MessageBox.Show("Output path does not exist! Please specify an existing path", "Path error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			//	txtOutputPath.Focus();
-			//	return false;
-			//}
 
 			return true;
 		}

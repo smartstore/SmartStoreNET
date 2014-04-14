@@ -30,9 +30,9 @@ namespace SmartStore.Packager
 			_packageBuilder = new PackageBuilder(wsf, _vpp);
 		}
 
-		public FileInfo CreatePluginPackage(string folderName)
+		public FileInfo CreatePluginPackage(string path)
 		{
-			string virtualPath = "~/Plugins/{0}/Description.txt".FormatInvariant(folderName);
+			string virtualPath = _vpp.Combine(path, "Description.txt");
 
 			if (!_vpp.FileExists(virtualPath))
 			{
@@ -62,9 +62,9 @@ namespace SmartStore.Packager
 			return SavePackageFile(result);
 		}
 
-		public FileInfo CreateThemePackage(string themeName)
+		public FileInfo CreateThemePackage(string virtualPath)
 		{
-			string virtualPath = "~/Themes/{0}".FormatInvariant(themeName);
+			//string virtualPath = "~/Themes/{0}".FormatInvariant(themeName);
 
 			var manifest = ThemeManifest.Create(_vpp.MapPath(virtualPath));
 

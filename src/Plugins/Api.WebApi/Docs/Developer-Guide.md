@@ -428,7 +428,7 @@ Note that you cannot use a path `/Orders(145)/ShippingAddress` to update an addr
 
     POST http://localhost:1260/odata/v1/Products(211)/FinalPrice
 
-Note the post method. FinalPrice is an OData action because further data processing (price calculation) is required.
+Note the post method. `FinalPrice` is an OData action because further data processing (price calculation) is required. There is a second action `LowestPrice` which serves the lowest possible price for a product.
 
 #### Get email address of customer with ID 1
 

@@ -61,6 +61,9 @@ namespace SmartStore.Services.Catalog
 			if (combination.ManufacturerPartNumber.HasValue())
 				product.MergedDataValues.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
 
+			if (combination.Price.HasValue)
+				product.MergedDataValues.Add("Price", combination.Price.Value);
+
 			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
 				product.MergedDataValues.Add("DeliveryTimeId", combination.DeliveryTimeId);
 

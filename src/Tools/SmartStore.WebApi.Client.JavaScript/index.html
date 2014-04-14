@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>SmartStore.Net Web API Client Javascript</title>
+	<link rel="shortcut icon" href="favicon.ico" />
+
+	<link type="text/css" href="styles.css" rel="stylesheet" />
+
+	<!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>-->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+	<!-- see https://code.google.com/p/crypto-js/ -->
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/core-min.js"></script>
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-utf16-min.js"></script>
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-md5.js"></script>
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-sha256.js"></script>
+
+	<!-- serves smNetConsumer which wraps api related code -->
+	<script type="text/javascript" src="smwapi-consumer.js"></script>
+
+	<!-- serves smNetClient which wraps this-demo related code -->
+	<script type="text/javascript" src="smwapi-client.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			smNetConsumer.init({
+				publicKey: '0c6b33651708eb09c8a8d6036b79d739',
+				secretKey: '3025c89ebaab20b71e0e42744239bf50',
+				url: 'http://localhost:1242'
+			});
+
+			smNetClient.init();
+		});
+	</script>
+</head>
+ 
+<body>
+	<div>
+		<span>Service</span>
+		<input type="text" name="service" value="/odata/v1" spellcheck="false" />
+
+		<span>Resource</span>
+		<input type="text" name="resource" value="/Customers?$top=3&$inlinecount=allpages" spellcheck="false" />
+
+		<button id="GetData">Get</button>
+		<button id="AddOrderNote">Add order note</button>
+	</div>
+
+	<div id="Outputs"></div>
+
+	<div class="clear" style="margin-top:20px;"></div>
+</body>
+</html>

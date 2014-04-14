@@ -20,6 +20,7 @@ namespace SmartStore.Admin.Models.ContentSlider
         public ContentSliderSettingsModel()
         {
             Slides = new List<ContentSliderSlideModel>();
+			AvailableStores = new List<SelectListItem>();
         }
 
         [SmartResourceDisplayName("Admin.Configuration.ContentSlider.IsActive")]
@@ -40,7 +41,10 @@ namespace SmartStore.Admin.Models.ContentSlider
         public int AutoPlayDelay { get; set; }
 
         public IList<ContentSliderSlideModel> Slides { get; set; }
+		public IList<SelectListItem> AvailableStores { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
+		public int SearchStoreId { get; set; }
     }
 
     [Validator(typeof(ContentSliderSlideValidator))]

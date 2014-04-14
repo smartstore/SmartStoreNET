@@ -28,6 +28,7 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(p => p.Length).HasPrecision(18, 4);
 			this.Property(p => p.Width).HasPrecision(18, 4);
 			this.Property(p => p.Height).HasPrecision(18, 4);
+			this.Property(p => p.LowestAttributeCombinationPrice).HasPrecision(18, 4);
 			this.Property(p => p.RequiredProductIds).HasMaxLength(1000);
 			this.Property(p => p.AllowedQuantities).HasMaxLength(1000);
 

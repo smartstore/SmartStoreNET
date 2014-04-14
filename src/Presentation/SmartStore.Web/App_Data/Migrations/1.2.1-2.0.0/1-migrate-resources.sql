@@ -326,6 +326,15 @@ SET @resources='
 		<Value lang="de">Bestimmt, ob bei Werten von Variantattributen das Bild von verknüpften Produkten angezeigt werden soll.</Value>
 	</LocaleResource>
 
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchStore">
+		<Value>Store</Value>
+		<Value lang="de">Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchStore.Hint">
+		<Value>Search by a specific store.</Value>
+		<Value lang="de">Nach bestimmten Shop suchen.</Value>
+	</LocaleResource>
+
 </Language>
 '
 

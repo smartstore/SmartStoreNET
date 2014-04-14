@@ -1,0 +1,62 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+
+  <PropertyGroup>
+    <CopyAllDependencies Condition="'$(CopyAllDependencies)'==''">true</CopyAllDependencies>
+  </PropertyGroup>
+ 
+ 
+  <!-- BuildXxx part -->
+ 
+  <Target Name="CopyAllDependencies" Condition="'$(CopyAllDependencies)'=='true'" DependsOnTargets="DetectAllDependencies">
+    <Copy Condition="'%(IndirectDependency.FullPath)'!=''"
+          SourceFiles="%(IndirectDependency.FullPath)"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true" >
+      <Output TaskParameter="CopiedFiles" ItemName="IndirectDependencyCopied" />
+    </Copy>
+    <Message Importance="low"
+             Condition="'%(IndirectDependencyCopied.FullPath)'!='' 
+               and '%(IndirectDependencyCopied.Extension)'!='.pdb' 
+               and '%(IndirectDependencyCopied.Extension)'!='.xml'"
+             Text="Indirect dependency copied: %(IndirectDependencyCopied.FullPath)" />
+  </Target>
+ 
+  <Target Name="DetectAllDependencies" DependsOnTargets="ResolveAssemblyReferences">
+     
+    <Message Importance="low" Text="Direct dependency: %(ReferencePath.Filename)%(ReferencePath.Extension)" />
+ 	<Message Importance="low" Text="Direct dependency: %(ReferencePath.FullPath).Contains('.NETFramework')=='True'" />
+ 	
+    <!-- Creating dependency list -->
+    <CreateItem Include="%(ReferencePath.FullPath)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(ReferencePath.FullPath)', '(?i)(.*?)(mscorlib|System|System\.Web|xxxSystem\.Core|System\.Xml)\.dll')) != 'True'">
+      <Output TaskParameter="Include" ItemName="_IndirectDependency"/>
+    </CreateItem>
+ 
+    <!-- Filtering dependency list by existence -->
+    <CreateItem Include="%(_IndirectDependency.FullPath)" Condition="Exists('%(_IndirectDependency.FullPath)')">
+      <Output TaskParameter="Include" ItemName="IndirectDependency"/>
+    </CreateItem>
+ 
+    <!-- Creating copied indirect dependency list -->
+    <CreateItem Include="@(_IndirectDependency->'$(OutputPath)%(Filename)%(Extension)')">
+      <Output TaskParameter="Include" ItemName="_ExistingIndirectDependency"/>
+    </CreateItem>
+ 
+    <!-- Filtering copied indirect dependency list by existence -->
+    <CreateItem Include="%(_ExistingIndirectDependency.FullPath)" Condition="Exists('%(_ExistingIndirectDependency.FullPath)')">
+      <Output TaskParameter="Include" ItemName="ExistingIndirectDependency"/>
+    </CreateItem>
+ 
+  </Target>
+ 
+ 
+  <!-- Build sequence modification -->
+ 
+  <PropertyGroup>
+    <CoreBuildDependsOn>
+      $(CoreBuildDependsOn);
+      CopyAllDependencies
+    </CoreBuildDependsOn>
+  </PropertyGroup>
+
+</Project>

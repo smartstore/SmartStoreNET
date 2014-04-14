@@ -6,7 +6,6 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using System;
 using System.Web.Mvc;

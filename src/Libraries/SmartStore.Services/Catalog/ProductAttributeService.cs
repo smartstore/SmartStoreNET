@@ -445,6 +445,26 @@ namespace SmartStore.Services.Catalog
             return combinations;
         }
 
+		/// <summary>
+		/// Get the lowest price of all combinations for a product
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <returns>Lowest price</returns>
+		public virtual decimal? GetLowestCombinationPrice(int productId)
+		{
+			if (productId == 0)
+				return null;
+
+			var query =
+				from pvac in _productVariantAttributeCombinationRepository.Table
+				where pvac.ProductId == productId && pvac.Price != null && pvac.IsActive
+				orderby pvac.Price ascending
+				select pvac.Price;
+
+			var price = query.FirstOrDefault();
+			return price;
+		}
+
         /// <summary>
         /// Gets a product variant attribute combination
         /// </summary>

@@ -20,7 +20,7 @@ namespace SmartStore.Core
     public partial class WebHelper : IWebHelper
     {
 		private static AspNetHostingPermissionLevel? s_trustLevel = null;
-		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled);
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;

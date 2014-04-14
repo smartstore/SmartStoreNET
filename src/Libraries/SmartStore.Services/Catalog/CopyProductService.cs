@@ -197,6 +197,7 @@ namespace SmartStore.Services.Catalog
 				CustomerEntersPrice = product.CustomerEntersPrice,
 				MinimumCustomerEnteredPrice = product.MinimumCustomerEnteredPrice,
 				MaximumCustomerEnteredPrice = product.MaximumCustomerEnteredPrice,
+				LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice,
 				Weight = product.Weight,
 				Length = product.Length,
 				Width = product.Width,
@@ -457,12 +458,14 @@ namespace SmartStore.Services.Catalog
 					Sku = combination.Sku,
 					Gtin = combination.Gtin,
 					ManufacturerPartNumber = combination.ManufacturerPartNumber,
+					Price = combination.Price,
 					AssignedPictureIds = copyImages ? combination.AssignedPictureIds : null,
 					Length = combination.Length,
 					Width = combination.Width,
 					Height = combination.Height,
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
+					DeliveryTimeId = combination.DeliveryTimeId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};
@@ -492,6 +495,7 @@ namespace SmartStore.Services.Catalog
 
 			// update "HasTierPrices" and "HasDiscountsApplied" properties
 			_productService.UpdateHasTierPricesProperty(productCopy);
+			_productService.UpdateLowestAttributeCombinationPriceProperty(productCopy);
 			_productService.UpdateHasDiscountsApplied(productCopy);
 
 			// associated products

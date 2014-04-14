@@ -1,22 +1,22 @@
-﻿using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
+﻿using SmartStore.Core.Plugins;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 using System.Linq;
 using System.Web.Http;
+using System;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.Api
 {
 	[WebApiAuthenticate(Permission = "ManagePaymentMethods")]
 	public class PaymentsController : ApiController
 	{
-		private readonly IPluginFinder _pluginFinder;
+		private readonly Lazy<IPluginFinder> _pluginFinder;
 
-		public PaymentsController()
+		public PaymentsController(Lazy<IPluginFinder> pluginFinder)
 		{
-			_pluginFinder = EngineContext.Current.Resolve<IPluginFinder>();
+			_pluginFinder = pluginFinder;
 		}
 
 		[WebApiQueryable(PagingOptional = true)]
@@ -25,7 +25,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.Api
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
-			var query = _pluginFinder
+			var query = _pluginFinder.Value
 				.GetPlugins<IPaymentMethod>(false)
 				.Select(x => x.PluginDescriptor)
 				.AsQueryable();

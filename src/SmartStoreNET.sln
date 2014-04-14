@@ -116,6 +116,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{DB17E553
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Packager", "Tools\SmartStore.Packager\SmartStore.Packager.csproj", "{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.WebApi.Client", "Tools\SmartStore.WebApi.Client\SmartStore.WebApi.Client.csproj", "{CD28D50C-38C3-4371-80B3-71FE7853D61D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -496,6 +498,16 @@ Global
 		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -542,6 +554,7 @@ Global
 		{DD12934F-62E5-4A12-858A-82B2F17EA1D4} = {80D551E6-D959-413D-8470-8B02C1A122B7}
 		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8} = {B3D76228-3B52-4786-8F47-87D3060ED1AD}
 		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F} = {DB17E553-DCB5-4851-A5AB-542C09CAC7CA}
+		{CD28D50C-38C3-4371-80B3-71FE7853D61D} = {DB17E553-DCB5-4851-A5AB-542C09CAC7CA}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

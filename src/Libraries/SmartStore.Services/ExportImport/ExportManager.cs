@@ -288,6 +288,7 @@ namespace SmartStore.Services.ExportImport
 				xmlWriter.WriteElementString("CustomerEntersPrice", null, product.CustomerEntersPrice.ToString());
 				xmlWriter.WriteElementString("MinimumCustomerEnteredPrice", null, product.MinimumCustomerEnteredPrice.ToString());
 				xmlWriter.WriteElementString("MaximumCustomerEnteredPrice", null, product.MaximumCustomerEnteredPrice.ToString());
+				xmlWriter.WriteElementString("LowestAttributeCombinationPrice", null, product.LowestAttributeCombinationPrice.HasValue ? product.LowestAttributeCombinationPrice.ToString() : "");
 				xmlWriter.WriteElementString("Weight", null, product.Weight.ToString());
 				xmlWriter.WriteElementString("Length", null, product.Length.ToString());
 				xmlWriter.WriteElementString("Width", null, product.Width.ToString());
@@ -397,6 +398,8 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("Sku", null, combination.Sku);
 					if (combination.ManufacturerPartNumber.HasValue())
 						xmlWriter.WriteElementString("ManufacturerPartNumber", null, combination.ManufacturerPartNumber);
+					if (combination.Price.HasValue)
+						xmlWriter.WriteElementString("Price", null, combination.Price.Value.ToString());
 
 					xmlWriter.WriteEndElement();	// ProductVariantAttributeCombination
 				}

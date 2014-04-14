@@ -37,6 +37,9 @@ namespace SmartStore.Plugin.Api.WebApi
 		{
 			config.Action("FinalPrice")
 				.Returns<decimal>();
+
+			config.Action("LowestPrice")
+				.Returns<decimal>();
 		}
 
 		public void Configure(WebApiConfigurationBroadcaster configData)

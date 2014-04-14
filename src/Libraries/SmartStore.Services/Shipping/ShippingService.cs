@@ -255,7 +255,7 @@ namespace SmartStore.Services.Shipping
 						if (pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
 						{
 							var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
-							if (linkedProduct != null)
+							if (linkedProduct != null && linkedProduct.IsShipEnabled)
 								attributesTotalWeight += (linkedProduct.Weight * pvaValue.Quantity);
 						}
 						else

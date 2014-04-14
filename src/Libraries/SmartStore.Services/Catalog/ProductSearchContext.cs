@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
@@ -14,10 +15,21 @@ namespace SmartStore.Services.Catalog
             PageSize = 12;
         }
 
+		/// <summary>
+		/// Optional query to use to build the product query. Otherwise the repository of the product service is used (default). 
+		/// </summary>
+		public IQueryable<Product> Query { get; set; }
+
         /// <summary>
         /// Category identifiers
         /// </summary>
         public IList<int> CategoryIds { get; set; }
+
+		/// <summary>
+		/// Filter by product identifiers
+		/// </summary>
+		/// <remarks>Only implemented in LINQ mode at the moment</remarks>
+		public IList<int> ProductIds { get; set; }
 
         /// <summary>
         /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)

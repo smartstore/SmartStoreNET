@@ -20,8 +20,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         void DeleteProduct(Product product);
 
-		IQueryable<Product> GetAllProducts(ProductAllContext context);
-
         /// <summary>
         /// Gets all products displayed on the home page
         /// </summary>
@@ -63,6 +61,14 @@ namespace SmartStore.Services.Catalog
         /// Search products
         /// </summary>
         IPagedList<Product> SearchProducts(ProductSearchContext productSearchContext);
+
+		/// <summary>
+		/// Builds a product query based on the options in ProductSearchContext parameter.
+		/// </summary>
+		/// <param name="ctx">Parameters to build the query.</param>
+		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
+		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
+		IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
 
         /// <summary>
         /// Update product review totals
@@ -118,6 +124,12 @@ namespace SmartStore.Services.Catalog
         /// </summary>
 		/// <param name="product">Product</param>
         void UpdateHasTierPricesProperty(Product product);
+
+		/// <summary>
+		/// Update LowestAttributeCombinationPrice property (used for performance optimization)
+		/// </summary>
+		/// <param name="product">Product</param>
+		void UpdateLowestAttributeCombinationPriceProperty(Product product);
 
         /// <summary>
         /// Update HasDiscountsApplied property (used for performance optimization)

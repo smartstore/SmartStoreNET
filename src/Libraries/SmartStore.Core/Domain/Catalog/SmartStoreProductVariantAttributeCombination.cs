@@ -25,6 +25,9 @@ namespace SmartStore.Core.Domain.Catalog
 		public string ManufacturerPartNumber { get; set; }
 
 		[DataMember]
+		public decimal? Price { get; set; }
+
+		[DataMember]
 		public decimal? Length { get; set; }
 
 		[DataMember]

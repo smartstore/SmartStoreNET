@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Formatting;
+﻿using System;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.OData.Builder;
 using System.Web.Http.OData.Routing;
@@ -7,7 +8,6 @@ using SmartStore.Web.Framework.WebApi.Configuration;
 using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Web.Framework.WebApi.OData;
 using System.Web.Http.Cors;
-using System;
 
 namespace SmartStore.Web.Framework.WebApi
 {   

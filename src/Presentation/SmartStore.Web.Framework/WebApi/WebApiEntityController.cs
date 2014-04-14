@@ -18,8 +18,6 @@ namespace SmartStore.Web.Framework.WebApi
 	public abstract class WebApiEntityController<TEntity, TService> : EntitySetController<TEntity, int>
 		where TEntity : BaseEntity, new()
 	{
-		private IRepository<TEntity> _repository;
-		private TService _service;
 
 		protected internal HttpResponseException ExceptionEntityNotFound<TKey>(TKey key)
 		{
@@ -28,6 +26,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return new HttpResponseException(response);
 		}
+
 		protected internal HttpResponseException ExceptionNotExpanded<TProperty>(Expression<Func<TEntity, TProperty>> path)
 		{
 			// NotFound cause of nullable properties
@@ -51,6 +50,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return base.HandleUnmappedRequest(odataPath);
 		}
+
 		protected virtual internal HttpResponseMessage UnmappedGetProperty(ODataPath odataPath)
 		{
 			int key;
@@ -83,6 +83,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return Request.CreateResponse(HttpStatusCode.OK, pi.PropertyType, propertyValue);
 		}
+
 		protected virtual internal HttpResponseMessage UnmappedGetProperty(TEntity entity, string propertyName)
 		{
 			return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName));
@@ -97,27 +98,23 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return repository;
 		}
-		protected internal IRepository<TEntity> Repository
+
+		/// <summary>
+		/// Auto injected by Autofac
+		/// </summary>
+		public virtual IRepository<TEntity> Repository
 		{
-			get
-			{
-				if (_repository == null)
-				{
-					_repository = this.CreateRepository();
-				}
-				return _repository;
-			}
+			get;
+			set;
 		}
-		protected internal TService Service
+
+		/// <summary>
+		/// Auto injected by Autofac
+		/// </summary>
+		public virtual TService Service
 		{
-			get
-			{
-				if (_service == null)
-				{
-					_service = (TService)EngineContext.Current.Resolve(typeof(TService));
-				}
-				return _service;
-			}
+			get;
+			set;
 		}
 
 		public override IQueryable<TEntity> Get()
@@ -127,14 +124,25 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return this.GetEntitySet();
 		}
+
 		protected internal virtual IQueryable<TEntity> GetEntitySet()
 		{
 			return this.Repository.Table;
 		}
+
 		protected internal virtual IQueryable<TEntity> GetExpandedEntitySet<TProperty>(Expression<Func<TEntity, TProperty>> path)
 		{
 			var query = this.Repository
 				.Expand<TProperty>(GetEntitySet(), path);
+
+			return query;
+		}
+		protected internal virtual IQueryable<TEntity> GetExpandedEntitySet(string properties)
+		{
+			var query = GetEntitySet();
+
+			foreach (var property in properties.SplitSafe(","))
+				query = this.Repository.Expand(query, property.Trim());
 
 			return query;
 		}
@@ -146,6 +154,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return entity.Id;
 		}
+
 		protected override TEntity GetEntityByKey(int key)
 		{
 			if (!ModelState.IsValid)
@@ -153,6 +162,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return GetEntitySet().FirstOrDefault(x => x.Id == key);
 		}
+
 		protected internal virtual TEntity GetEntityByKeyNotNull(int key)
 		{
 			var entity = GetEntityByKey(key);
@@ -162,6 +172,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return entity;
 		}
+
 		protected internal virtual SingleResult<TEntity> GetSingleResult(int key)
 		{
 			if (!ModelState.IsValid)
@@ -184,6 +195,21 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return entity;
 		}
+		protected internal virtual TEntity GetExpandedEntity(int key, string properties)
+		{
+			if (!ModelState.IsValid)
+				throw this.ExceptionInvalidModelState();
+
+			var query = GetExpandedEntitySet(properties);
+
+			var entity = query.FirstOrDefault(x => x.Id == key);
+
+			if (entity == null)
+				throw ExceptionEntityNotFound(key);
+
+			return entity;
+		}
+
 		protected internal virtual TProperty GetExpandedProperty<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
 		{
 			var entity = GetExpandedEntity<TProperty>(key, path);
@@ -201,6 +227,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
 		}
+
 		protected override TEntity CreateEntity(TEntity entity)
 		{
 			if (!ModelState.IsValid)
@@ -213,6 +240,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return entity;
 		}
+
 		protected internal virtual void Insert(TEntity entity)
 		{
 			Repository.Insert(entity);
@@ -222,6 +250,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return Request.CreateResponse(HttpStatusCode.OK, UpdateEntity(key, update));
 		}
+
 		protected override TEntity UpdateEntity(int key, TEntity update)
 		{
 			if (!ModelState.IsValid)
@@ -235,6 +264,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			return entity;
 		}
+
 		protected internal virtual void Update(TEntity entity)
 		{
 			Repository.Update(entity);
@@ -244,6 +274,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return Request.CreateResponse(HttpStatusCode.OK, PatchEntity(key, patch));
 		}
+
 		protected override TEntity PatchEntity(int key, Delta<TEntity> patch)
 		{
 			if (!ModelState.IsValid)
@@ -268,6 +299,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			Delete(entity);
 		}
+
 		protected internal virtual void Delete(TEntity entity)
 		{
 			Repository.Delete(entity);
@@ -296,6 +328,7 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			return null;
 		}
+
 		protected internal virtual TEntity FulfillPropertiesOn(TEntity entity)
 		{
 			try

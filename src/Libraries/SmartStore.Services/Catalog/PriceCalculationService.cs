@@ -314,6 +314,77 @@ namespace SmartStore.Services.Catalog
 		}
 
 		/// <summary>
+		/// Get the lowest possible price for a product.
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="displayFromMessage">Whether to display the from message.</param>
+		/// <returns>The lowest price.</returns>
+		public virtual decimal GetLowestPrice(Product product, out bool displayFromMessage)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			if (product.ProductType == ProductType.GroupedProduct)
+				throw Error.InvalidOperation("Choose the other override for products of type grouped product.");
+
+			displayFromMessage = false;
+
+			IList<ProductBundleItemData> bundleItems = null;
+			bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
+
+			if (isBundlePerItemPricing)
+				bundleItems = _productService.GetBundleItems(product.Id);
+
+			decimal lowestPrice = GetFinalPrice(product, bundleItems, _workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+
+			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
+			{
+				lowestPrice = product.LowestAttributeCombinationPrice.Value;
+				displayFromMessage = true;
+			}
+			return lowestPrice;
+		}
+
+		/// <summary>
+		/// Get the lowest price of a grouped product.
+		/// </summary>
+		/// <param name="product">Grouped product.</param>
+		/// <param name="associatedProducts">Products associated to product.</param>
+		/// <param name="lowestPriceProduct">The associated product with the lowest price.</param>
+		/// <returns>The lowest price.</returns>
+		public virtual decimal? GetLowestPrice(Product product, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			if (associatedProducts == null)
+				throw new ArgumentNullException("associatedProducts");
+
+			if (product.ProductType != ProductType.GroupedProduct)
+				throw Error.InvalidOperation("Choose the other override for products not of type grouped product.");
+
+			lowestPriceProduct = product;
+			decimal? lowestPrice = null;
+
+			foreach (var associatedProduct in associatedProducts)
+			{
+				var tmpPrice = GetFinalPrice(associatedProduct, _workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+
+				if (associatedProduct.LowestAttributeCombinationPrice.HasValue && associatedProduct.LowestAttributeCombinationPrice.Value < tmpPrice)
+				{
+					tmpPrice = associatedProduct.LowestAttributeCombinationPrice.Value;
+				}
+
+				if (!lowestPrice.HasValue || tmpPrice < lowestPrice.Value)
+				{
+					lowestPrice = tmpPrice;
+					lowestPriceProduct = associatedProduct;
+				}
+			}
+			return lowestPrice;
+		}
+
+		/// <summary>
 		/// Gets the product cost
 		/// </summary>
 		/// <param name="product">Product</param>
@@ -485,16 +556,25 @@ namespace SmartStore.Services.Catalog
 				}
                 else
                 {
-					decimal attributesTotalPrice = decimal.Zero;
+					var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, shoppingCartItem.Item.AttributesXml);
 
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
-					if (pvaValues != null)
+					if (combination != null && combination.Price.HasValue)
 					{
-						foreach (var pvaValue in pvaValues)
-							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						finalPrice = combination.Price.Value;
 					}
+					else
+					{
+						decimal attributesTotalPrice = decimal.Zero;
+						var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
-					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
+						if (pvaValues != null)
+						{
+							foreach (var pvaValue in pvaValues)
+								attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						}
+
+						finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
+					}
                 }
             }
 

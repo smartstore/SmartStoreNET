@@ -316,7 +316,6 @@ namespace SmartStore.Web.Controllers
 
 			foreach (var product in products)
 			{
-				decimal? minPossiblePrice = null;
 				var minPriceProduct = product;
 
 				var model = new ProductOverviewModel()
@@ -370,18 +369,7 @@ namespace SmartStore.Web.Controllers
 
 									if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
 									{
-										//find a minimum possible price
-										foreach (var associatedProduct in associatedProducts)
-										{
-											//calculate for the maximum quantity (in case if we have tier prices)
-											var tmpPrice = _priceCalculationService.GetFinalPrice(associatedProduct,
-												_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
-											if (!minPossiblePrice.HasValue || tmpPrice < minPossiblePrice.Value)
-											{
-												minPriceProduct = associatedProduct;
-												minPossiblePrice = tmpPrice;
-											}
-										}
+										decimal? minPossiblePrice = _priceCalculationService.GetLowestPrice(product, associatedProducts, out minPriceProduct);
 
 										if (minPriceProduct != null && !minPriceProduct.CustomerEntersPrice)
 										{
@@ -426,15 +414,6 @@ namespace SmartStore.Web.Controllers
 							{
 								#region Simple product
 
-								IList<ProductBundleItemData> bundleItems = null;
-								bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
-
-								if (isBundlePerItemPricing)
-									bundleItems = _productService.GetBundleItems(product.Id);
-
-								minPossiblePrice = _priceCalculationService.GetFinalPrice(product, bundleItems,
-									_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
-
 								//add to cart button
 								priceModel.DisableBuyButton = product.DisableBuyButton ||
 									!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart) ||
@@ -451,8 +430,6 @@ namespace SmartStore.Web.Controllers
 								//prices
 								if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
 								{
-									//calculate for the maximum quantity (in case if we have tier prices)
-
 									if (!product.CustomerEntersPrice)
 									{
 										if (product.CallForPrice)
@@ -464,29 +441,36 @@ namespace SmartStore.Web.Controllers
 										else
 										{
 											//calculate prices
+											bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
+
+											bool displayFromMessage = false;
+											decimal minPossiblePrice = _priceCalculationService.GetLowestPrice(product, out displayFromMessage);
+
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
-											decimal finalPriceBase = _taxService.GetProductPrice(product, minPossiblePrice.Value, out taxRate);
+											decimal finalPriceBase = _taxService.GetProductPrice(product, minPossiblePrice, out taxRate);
 
 											decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _workContext.WorkingCurrency);
 											decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, _workContext.WorkingCurrency);
 
 											priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
-											//do we have tier prices configured?
-											var tierPrices = new List<TierPrice>();
-											if (product.HasTierPrices && !isBundlePerItemPricing)
+											// check tier prices
+											if (product.HasTierPrices && !isBundlePerItemPricing && !displayFromMessage)
 											{
+												var tierPrices = new List<TierPrice>();
+
 												tierPrices.AddRange(product.TierPrices
 													.OrderBy(tp => tp.Quantity)
 													.FilterByStore(_storeContext.CurrentStore.Id)
 													.FilterForCustomer(_workContext.CurrentCustomer)
 													.ToList()
 													.RemoveDuplicatedQuantities());
+
+												// When there is just one tier (with  qty 1), there are no actual savings in the list.
+												displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices[0].Quantity <= 1));
 											}
 
-											// When there is just one tier (with  qty 1), there are no actual savings in the list.
-											bool displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices[0].Quantity <= 1));
 											if (displayFromMessage)
 											{
 												priceModel.OldPrice = null;
@@ -587,12 +571,6 @@ namespace SmartStore.Web.Controllers
 					}
 
 					#endregion
-				}
-
-				if (!minPossiblePrice.HasValue)
-				{
-					minPossiblePrice = _priceCalculationService.GetFinalPrice(product,
-						_workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 				}
 
 				var currentCustomer = _workContext.CurrentCustomer;
@@ -1567,16 +1545,24 @@ namespace SmartStore.Web.Controllers
 			else if (isAssociatedProduct)
 				model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
 
-
-            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
-            if (deliveryTime != null) { 
-                model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
-                model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
-            }
+			if (model.IsAvailable)
+			{
+				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+				if (deliveryTime != null)
+				{
+					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+					model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				}
+			}
 
             model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
             model.IsShipEnabled = product.IsShipEnabled;
             model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();
+
+			if (model.DeliveryTimeName.IsNullOrEmpty() && model.DisplayDeliveryTime)
+			{
+				model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
+			}
 
             //back in stock subscriptions)
             if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&

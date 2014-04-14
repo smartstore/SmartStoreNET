@@ -7,6 +7,7 @@ using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Integration.Mvc;
+using Autofac.Integration.WebApi;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
@@ -69,6 +70,7 @@ using SmartStore.Core.Packaging;
 using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
+using SmartStore.Web.Framework.WebApi;
 
 namespace SmartStore.Web.Framework
 {
@@ -84,6 +86,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new EventModule(typeFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
+			builder.RegisterModule(new WebApiModule(typeFinder));
 			builder.RegisterModule(new UiModule(typeFinder));
 			builder.RegisterModule(new IOModule());
 			builder.RegisterModule(new PackagingModule());
@@ -540,10 +543,73 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<EmbeddedViewResolver>().As<IEmbeddedViewResolver>().SingleInstance();
 			builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
-			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>().SingleInstance();
 			builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerHttpRequest();
 		}
+	}
+
+	public class WebApiModule : Module
+	{
+		private readonly ITypeFinder _typeFinder;
+
+		public WebApiModule(ITypeFinder typeFinder)
+		{
+			_typeFinder = typeFinder;
+		}
+
+		protected override void Load(ContainerBuilder builder)
+		{
+			var foundAssemblies = _typeFinder.GetAssemblies().ToArray();
+
+			// register all api controllers
+			builder.RegisterApiControllers(foundAssemblies);
+			
+			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>().SingleInstance();
+		}
+
+		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		{
+			var baseType = typeof(WebApiEntityController<,>);
+			var type = registration.Activator.LimitType;
+			Type implementingType;
+
+			if (!type.IsSubClass(baseType, out implementingType))
+				return;
+
+			var repoProperty = FindRepositoryProperty(type, implementingType.GetGenericArguments()[0]);
+			var serviceProperty = FindServiceProperty(type, implementingType.GetGenericArguments()[1]);
+
+			if (repoProperty != null || serviceProperty != null)
+			{
+				registration.Activated += (sender, e) =>
+				{
+					if (repoProperty != null)
+					{
+						var repo = e.Context.Resolve(repoProperty.PropertyType);
+						repoProperty.SetValue(e.Instance, repo, null);
+					}
+
+					if (serviceProperty != null)
+					{
+						var service = e.Context.Resolve(serviceProperty.PropertyType);
+						serviceProperty.SetValue(e.Instance, service, null);
+					}
+				};
+			}
+		}
+
+		private static PropertyInfo FindRepositoryProperty(Type type, Type entityType)
+		{
+			var pi = type.GetProperty("Repository", typeof(IRepository<>).MakeGenericType(entityType));
+			return pi;
+		}
+
+		private static PropertyInfo FindServiceProperty(Type type, Type serviceType)
+		{
+			var pi = type.GetProperty("Service", serviceType);
+			return pi;
+		}
+
 	}
 
 	public class UiModule : Module

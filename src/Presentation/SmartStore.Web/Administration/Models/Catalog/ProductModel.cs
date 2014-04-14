@@ -250,7 +250,6 @@ namespace SmartStore.Admin.Models.Catalog
 		public decimal ProductCost { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPrice")]
-		[UIHint("DecimalNullable")]
 		public decimal? SpecialPrice { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SpecialPriceStartDateTimeUtc")]

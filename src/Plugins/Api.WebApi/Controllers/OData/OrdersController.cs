@@ -3,7 +3,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
@@ -12,12 +11,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
 	[WebApiAuthenticate(Permission = "ManageOrders")]
 	public class OrdersController : WebApiEntityController<Order, IOrderService>
 	{
+		private readonly Lazy<IOrderProcessingService> _orderProcessingService;
+
+		public OrdersController(Lazy<IOrderProcessingService> orderProcessingService)
+		{
+			_orderProcessingService = orderProcessingService;
+		}
+
 		protected override IQueryable<Order> GetEntitySet()
 		{
 			var query =
@@ -116,7 +123,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 					Service.UpdateOrder(entity);
 				}
 
-				EngineContext.Current.Resolve<IOrderProcessingService>().MarkOrderAsPaid(entity);
+				_orderProcessingService.Value.MarkOrderAsPaid(entity);
 				return null;
 			});
 			return entity;
@@ -130,18 +137,17 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			this.ProcessEntity(() =>
 			{
 				bool online = parameters.GetValue<string, bool>("Online");
-				var orderProcessingService = EngineContext.Current.Resolve<IOrderProcessingService>();
-
+				
 				if (online)
 				{
-					var errors = orderProcessingService.Refund(entity);
+					var errors = _orderProcessingService.Value.Refund(entity);
 
 					if (errors.Count > 0)
 						return errors[0];
 				}
 				else
 				{
-					orderProcessingService.RefundOffline(entity);
+					_orderProcessingService.Value.RefundOffline(entity);
 				}
 				return null;
 			});
@@ -155,7 +161,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 			this.ProcessEntity(() =>
 			{
-				EngineContext.Current.Resolve<IOrderProcessingService>().CancelOrder(entity, true);
+				_orderProcessingService.Value.CancelOrder(entity, true);
 
 				return null;
 			});

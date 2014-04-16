@@ -30,6 +30,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private ICollection<ProductBundleItem> _productBundleItems;
 
 		private int _stockQuantity;
+        private int _backorderModeId;
 		private string _sku;
 		private string _gtin;
 		private string _manufacturerPartNumber;
@@ -414,7 +415,17 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value backorder mode identifier
 		/// </summary>
 		[DataMember]
-		public int BackorderModeId { get; set; }
+		public int BackorderModeId
+        {
+            get
+            {
+                return this.GetMergedDataValue<int>("BackorderModeId", _backorderModeId);
+            }
+            set
+            {
+                _backorderModeId = value;
+            }
+        }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to back in stock subscriptions are allowed

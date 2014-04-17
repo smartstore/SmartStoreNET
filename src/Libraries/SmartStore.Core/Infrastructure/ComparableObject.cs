@@ -200,7 +200,6 @@ namespace SmartStore
     /// <summary>
     /// Generic version of <see cref="ComparableObject" />.
     /// </summary>
-    [Serializable]
     public abstract class ComparableObject<T> : ComparableObject, IEquatable<T>
     {
 

@@ -13,6 +13,7 @@ namespace SmartStore.Core.Logging
 		Error
 	}
 
+	[Serializable]
 	public class NotifyEntry : ComparableObject<NotifyEntry>
 	{
 		[ObjectSignature]

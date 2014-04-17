@@ -3,7 +3,9 @@ using System.Web;
 
 namespace SmartStore.Core.Localization
 {
-    public class LocalizedString : MarshalByRefObject, IHtmlString
+
+	[Serializable]
+	public class LocalizedString : IHtmlString
     {
         private readonly string _localized;
         private readonly string _textHint;

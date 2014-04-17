@@ -1,5 +1,12 @@
 ﻿#Release Notes#
 
+##SmartStore.NET 2.0.2#
+
+###Bugfixes###
+* Bugfix for stock issue in product variant combinations
+* #336 Product bundle: Upper add-to-cart button label shows wrong text
+
+
 ##SmartStore.NET 2.0.1#
 
 ###New Features###

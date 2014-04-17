@@ -42,7 +42,7 @@
     <!--product breadcrumb-->
     @Html.Action("ProductBreadcrumb", "Catalog", new { productId = Model.Id })
 
-    <div id="TotalPriceUpdateContainer" class="page-body update-container" data-referto="#ProductAttributes, #AddToCart" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+    <div id="TotalPriceUpdateContainer" class="page-body update-container" data-referto="#ProductAttributes, #AddToCart, #ProductBundleOverview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
         @Html.Widget("productdetails_top")
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
         {
@@ -194,7 +194,9 @@
 
                         @if (Model.ProductType == ProductType.BundledProduct)
                         {
-                            @Html.Partial("_ProductBundleItemsAddToCart", Model)
+							<div id="ProductBundleOverview">
+								@Html.Partial("_ProductBundleItemsAddToCart", Model)
+							</div>
                         }
 
                         <!--product reviews-->

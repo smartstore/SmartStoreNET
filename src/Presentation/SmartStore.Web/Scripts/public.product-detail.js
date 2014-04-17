@@ -43,7 +43,7 @@
 		    				$('#TotalPriceUpdateContainer').doAjax({
 		    					data: $('#ProductBundleItems').find(':input').serialize(),
 		    					callbackSuccess: function (response2) {
-		    						self.updateDetailData(response2, $('#AddToCart'));
+		    						self.updateDetailData(response2, $('#AddToCart, #ProductBundleOverview'));
 		    					}
 		    				});
 		    			}

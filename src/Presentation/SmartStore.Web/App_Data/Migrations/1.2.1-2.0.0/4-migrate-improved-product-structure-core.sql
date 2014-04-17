@@ -1133,6 +1133,9 @@ BEGIN
 		DECLARE @NumberOfVariants int
 		SELECT @NumberOfVariants = COUNT(1) FROM [ProductVariant] WHERE [ProductId]=@ProductId And [Deleted] = 0
 		
+		DECLARE @NumberOfAllVariants int
+		SELECT @NumberOfAllVariants = COUNT(1) FROM [ProductVariant] WHERE [ProductId]=@ProductId
+		
 		--product templates
 		DECLARE @SimpleProductTemplateId int
 		SELECT @SimpleProductTemplateId = [Id] FROM [ProductTemplate] WHERE [ViewPath] = N'ProductTemplate.Simple'
@@ -1231,7 +1234,7 @@ BEGIN
 			WHERE [Id]=@ProductId
 			
 			--deleted?
-			IF (@Deleted = 1)
+			IF (@Deleted = 1 And @NumberOfAllVariants <= 1)
 			BEGIN
 				UPDATE [Product]
 				SET [Deleted]=@Deleted
@@ -1239,7 +1242,7 @@ BEGIN
 			END
 			
 			--published?
-			IF (@Published = 0)
+			IF (@Published = 0 And @NumberOfAllVariants <= 1)
 			BEGIN
 				UPDATE [Product]
 				SET [Published]=@Published

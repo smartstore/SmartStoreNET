@@ -30,8 +30,8 @@ namespace SmartStore.Web.Framework.Controllers
 
 			string key = "sm.notifications.all";
 
-			filterContext.Controller.TempData[key] = entries.Where(x => x.Durable);
-			filterContext.Controller.ViewData[key] = entries.Where(x => !x.Durable);
+			filterContext.Controller.TempData[key] = entries.Where(x => x.Durable).ToList();
+			filterContext.Controller.ViewData[key] = entries.Where(x => !x.Durable).ToList();
 		}
 
 	}

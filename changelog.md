@@ -7,6 +7,7 @@
 * #336 Product bundle: Upper add-to-cart button label shows wrong text
 * #338 Serialization exception thrown when session state mode is _StateServer_
 * #340 Admin: Header overlays TinyMCE in fullscreen mode
+* #341 Orders are not cancellable
 
 
 ##SmartStore.NET 2.0.1##

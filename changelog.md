@@ -8,6 +8,7 @@
 * #338 Serialization exception thrown when session state mode is _StateServer_
 * #340 Admin: Header overlays TinyMCE in fullscreen mode
 * #341 Orders are not cancellable
+* #342 Backend: order total is not editable
 
 
 ##SmartStore.NET 2.0.1##

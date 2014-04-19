@@ -85,8 +85,12 @@ namespace SmartStore.Admin.Controllers
             var pluginModel = pluginDescriptor.ToModel();
 
             pluginModel.Group = _localizationService.GetResource("Plugins.KnownGroup." + pluginDescriptor.Group);
-			pluginModel.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName", 0, forList);
-			pluginModel.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description", 0, forList);
+
+			if (forList)
+			{
+				pluginModel.FriendlyName = pluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName");
+				pluginModel.Description = pluginDescriptor.GetLocalizedValue(_localizationService, "Description");
+			}
 
             //locales
             AddLocales(_languageService, pluginModel.Locales, (locale, languageId) =>

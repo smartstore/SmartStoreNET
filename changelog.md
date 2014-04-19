@@ -9,6 +9,7 @@
 * #340 Admin: Header overlays TinyMCE in fullscreen mode
 * #341 Orders are not cancellable
 * #342 Backend: order total is not editable
+* Default value for plugin description not loaded into edit popup window
 
 
 ##SmartStore.NET 2.0.1##

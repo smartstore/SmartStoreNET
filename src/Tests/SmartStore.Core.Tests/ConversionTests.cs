@@ -13,10 +13,7 @@ namespace SmartStore.Core.Tests
 		
 		[Test]
         public void Can_get_typed_value()
-        {
-			// register custom type converters
-			new CommonStartupTask().Execute();
-			
+        {	
 			"1000".Convert<int>().ShouldBe<int>();
 			"1000".Convert<int>().ShouldEqual(1000);
 

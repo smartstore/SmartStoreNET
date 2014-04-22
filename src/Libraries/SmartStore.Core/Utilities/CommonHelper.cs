@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
@@ -132,6 +133,11 @@ namespace SmartStore.Utilities
 				expando.Add(item);
 			}
 			return (ExpandoObject)expando;
+		}
+
+		public static TypeConverter GetTypeConverter(Type type)
+		{
+			return ConversionExtensions.GetTypeConverter(type);
 		}
 
     }

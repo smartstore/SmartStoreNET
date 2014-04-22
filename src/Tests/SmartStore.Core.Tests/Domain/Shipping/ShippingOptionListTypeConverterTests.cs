@@ -3,6 +3,7 @@ using System.ComponentModel;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Tests.Domain.Shipping
 {
@@ -12,14 +13,12 @@ namespace SmartStore.Core.Tests.Domain.Shipping
         [SetUp]
         public void SetUp()
         {
-            TypeDescriptor.AddAttributes(typeof(List<ShippingOption>),
-                new TypeConverterAttribute(typeof(ShippingOptionListTypeConverter)));
         }
 
         [Test]
         public void Can_get_type_converter()
         {
-            var converter = TypeDescriptor.GetConverter(typeof(List<ShippingOption>));
+			var converter = CommonHelper.GetTypeConverter(typeof(List<ShippingOption>));
             converter.GetType().ShouldEqual(typeof(ShippingOptionListTypeConverter));
         }
 
@@ -42,7 +41,7 @@ namespace SmartStore.Core.Tests.Domain.Shipping
                 ShippingRateComputationMethodSystemName = "b4"
             });
 
-            var converter = TypeDescriptor.GetConverter(shippingOptionsInput.GetType());
+			var converter = CommonHelper.GetTypeConverter(shippingOptionsInput.GetType());
             var result = converter.ConvertTo(shippingOptionsInput, typeof(string)) as string;
 
             var shippingOptionsOutput = converter.ConvertFrom(result) as List<ShippingOption>;

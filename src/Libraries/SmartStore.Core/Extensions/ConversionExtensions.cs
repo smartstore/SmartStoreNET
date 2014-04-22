@@ -15,12 +15,36 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore
 {
 
     public static class ConversionExtensions
     {
+		private readonly static IDictionary<Type, TypeConverter> s_customTypeConverters;
+
+		static ConversionExtensions() 
+		{
+			var intConverter = new GenericListTypeConverter<int>();
+			var decConverter = new GenericListTypeConverter<decimal>();
+			var stringConverter = new GenericListTypeConverter<string>();
+			var soListConverter = new ShippingOptionListTypeConverter();
+			var bundleDataListConverter = new ProductBundleDataListTypeConverter();
+
+			s_customTypeConverters = new Dictionary<Type, TypeConverter>();
+			s_customTypeConverters.Add(typeof(List<int>), intConverter);
+			s_customTypeConverters.Add(typeof(IList<int>), intConverter);
+			s_customTypeConverters.Add(typeof(List<decimal>), decConverter);
+			s_customTypeConverters.Add(typeof(IList<decimal>), decConverter);
+			s_customTypeConverters.Add(typeof(List<string>), stringConverter);
+			s_customTypeConverters.Add(typeof(IList<string>), stringConverter);
+			s_customTypeConverters.Add(typeof(ShippingOption), new ShippingOptionTypeConverter());
+			s_customTypeConverters.Add(typeof(List<ShippingOption>), soListConverter);
+			s_customTypeConverters.Add(typeof(IList<ShippingOption>), soListConverter);
+			s_customTypeConverters.Add(typeof(List<ProductBundleItemOrderData>), bundleDataListConverter);
+			s_customTypeConverters.Add(typeof(IList<ProductBundleItemOrderData>), bundleDataListConverter);
+		}
 
         #region Object
 
@@ -111,7 +135,7 @@ namespace SmartStore
                 return new Guid((string)value);
 
             // see if source or target types have a TypeConverter that converts between the two
-            TypeConverter toConverter = TypeDescriptor.GetConverter(fromType);
+            TypeConverter toConverter = GetTypeConverter(fromType);
 
 			Type nonNullableTo = to.GetNonNullableType();
 			bool isNullableTo = to != nonNullableTo;
@@ -122,7 +146,7 @@ namespace SmartStore
 				return isNullableTo ? Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(nonNullableTo), result) : result;
             }
 
-			TypeConverter fromConverter = TypeDescriptor.GetConverter(nonNullableTo);
+			TypeConverter fromConverter = GetTypeConverter(nonNullableTo);
 
             if (fromConverter != null && fromConverter.CanConvertFrom(fromType))
             {
@@ -171,6 +195,16 @@ namespace SmartStore
             //            }
             #endregion
         }
+
+		internal static TypeConverter GetTypeConverter(Type type)
+		{
+			TypeConverter converter;
+			if (s_customTypeConverters.TryGetValue(type, out converter))
+			{
+				return converter;
+			}
+			return TypeDescriptor.GetConverter(type);
+		}
 
         #endregion
 

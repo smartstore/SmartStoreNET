@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.ComponentModel;
+using SmartStore.Utilities;
 
 // codehint: sm-edit (massively: added proper dictionary binding)
 
@@ -104,7 +105,7 @@ namespace SmartStore.Web.Framework.Mvc
 
         private object ConvertType(string stringValue, Type type)
         {
-            return TypeDescriptor.GetConverter(type).ConvertFrom(stringValue);
+			return CommonHelper.GetTypeConverter(type).ConvertFrom(stringValue);
         }
 
         private IEnumerable<string> GetValueProviderKeys(ControllerContext context)

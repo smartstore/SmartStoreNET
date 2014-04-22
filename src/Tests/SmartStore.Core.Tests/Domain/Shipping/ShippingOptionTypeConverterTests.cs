@@ -2,6 +2,7 @@
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Tests.Domain.Shipping
 {
@@ -11,14 +12,12 @@ namespace SmartStore.Core.Tests.Domain.Shipping
         [SetUp]
         public void SetUp()
         {
-            TypeDescriptor.AddAttributes(typeof(ShippingOption),
-                new TypeConverterAttribute(typeof(ShippingOptionTypeConverter)));
         }
 
         [Test]
         public void Can_get_type_converter()
         {
-            var converter = TypeDescriptor.GetConverter(typeof(ShippingOption));
+			var converter = CommonHelper.GetTypeConverter(typeof(ShippingOption));
             converter.GetType().ShouldEqual(typeof(ShippingOptionTypeConverter));
         }
 

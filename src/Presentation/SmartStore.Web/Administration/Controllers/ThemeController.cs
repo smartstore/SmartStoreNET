@@ -19,6 +19,13 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Core.Packaging;
+using System.Threading.Tasks;
+using System.Net;
+using System.Web.Hosting;
+using SmartStore.Services;
+using SmartStore.Core.Localization;
+using System.Diagnostics;
+using SmartStore.Web.Framework.Themes;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -30,41 +37,35 @@ namespace SmartStore.Admin.Controllers
         private readonly ISettingService _settingService;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
-        private readonly IPermissionService _permissionService;
-        private readonly ICustomerActivityService _customerActivityService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IEventPublisher _eventPublisher;
 		private readonly IStoreService _storeService;
-		private readonly IStoreContext _storeContext;
 		private readonly IPackageManager _packageManager;
+		private readonly ICommonServices _services;
 
 	    #endregion
 
 		#region Constructors
 
         public ThemeController(
-            ISettingService settingService, IThemeRegistry themeRegistry,
+            ISettingService settingService, 
+			IThemeRegistry themeRegistry,
             IThemeVariablesService themeVarService,
-            ICustomerActivityService customerActivityService, IPermissionService permissionService,
-            ILocalizationService localizationService,
-            IEventPublisher eventPublisher,
 			IStoreService storeService,
-			IStoreContext storeContext,
-			IPackageManager packageManager)
+			IPackageManager packageManager,
+			ICommonServices services)
 		{
             this._settingService = settingService;
             this._themeVarService = themeVarService;
-            this._permissionService = permissionService;
             this._themeRegistry = themeRegistry;
-            this._customerActivityService = customerActivityService;
-            this._localizationService = localizationService;
-            this._eventPublisher = eventPublisher;
 			this._storeService = storeService;
-			this._storeContext = storeContext;
 			this._packageManager = packageManager;
+			this._services = services;
+
+			this.T = NullLocalizer.Instance;
 		}
 
 		#endregion 
+
+		public Localizer T { get; set; }
 
         #region Methods
 
@@ -75,18 +76,18 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List(int? storeId)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
-			int selectedStoreId = storeId ?? _storeContext.CurrentStore.Id;
+			int selectedStoreId = storeId ?? _services.StoreContext.CurrentStore.Id;
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(selectedStoreId);
             var model = themeSettings.ToModel();
 
             var commonListItems = new List<SelectListItem> 
             {
-                new SelectListItem { Value = "0", Text = _localizationService.GetResource("Common.Auto") },
-                new SelectListItem { Value = "1", Text = _localizationService.GetResource("Common.No") },
-                new SelectListItem { Value = "2", Text = _localizationService.GetResource("Common.Yes") }
+                new SelectListItem { Value = "0", Text = T("Common.Auto") },
+                new SelectListItem { Value = "1", Text = T("Common.No") },
+                new SelectListItem { Value = "2", Text = T("Common.Yes") }
             };
 
             model.AvailableBundleOptimizationValues.AddRange(commonListItems);
@@ -137,7 +138,7 @@ namespace SmartStore.Admin.Controllers
         [ActionName("List")]
         public ActionResult ListPost(ThemeListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
@@ -154,7 +155,7 @@ namespace SmartStore.Admin.Controllers
 
             if (themeSwitched)
             {
-                _eventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
+                _services.EventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
                     IsMobile = mobileThemeSwitched,
                     OldTheme = mobileThemeSwitched ? themeSettings.DefaultMobileTheme : themeSettings.DefaultDesktopTheme,
                     NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme
@@ -165,13 +166,13 @@ namespace SmartStore.Admin.Controllers
 			_settingService.SaveSetting(themeSettings, model.StoreId);
             
             // activity log
-            _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
+			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
-            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
+			NotifySuccess(T("Admin.Configuration.Updated"));
 
             if (showRestartNote)
             {
-                NotifyInfo(_localizationService.GetResource("Admin.Common.RestartAppRequest"));
+				NotifyInfo(T("Admin.Common.RestartAppRequest"));
             }
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
@@ -179,7 +180,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Configure(string theme, int storeId, string selectedTab)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
@@ -200,32 +201,109 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public ActionResult Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing, string selectedTab)
+		public async Task<ActionResult> Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing, string selectedTab)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
 				return RedirectToAction("List", new { storeId = storeId });
-            }
+            }		
 
+			// get current for later restore on parse error
+			var currentVars = _themeVarService.GetThemeVariables(theme, storeId);
+			
             // save now
             _themeVarService.SaveThemeVariables(theme, storeId, values);
 
-            // activity log
-            _customerActivityService.InsertActivity("EditThemeVars", _localizationService.GetResource("ActivityLog.EditThemeVars"), theme);
+			// check for parsing error
+			var manifest = _themeRegistry.GetThemeManifest(theme);
+			string error = await ValidateLess(manifest, storeId);
+			if (error.HasValue())
+			{
+				// restore previous vars
+				try
+				{
+					_themeVarService.DeleteThemeVariables(theme, storeId);
+				}
+				finally
+				{
+					// we do it here to absolutely ensure that this gets called
+					_themeVarService.SaveThemeVariables(theme, storeId, currentVars);
+				}
+				
+				TempData["LessParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
+				NotifyError(T("Admin.Configuration.Themes.Notifications.ConfigureError"));
+				return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
+			}
 
-            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
+            // activity log
+			_services.CustomerActivity.InsertActivity("EditThemeVars", T("ActivityLog.EditThemeVars"), theme);
+
+			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
 
 			return continueEditing ?
 				RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab }) :
 				RedirectToAction("List", new { storeId = storeId });
         }
 
+		/// <summary>
+		/// Validates the result LESS file by calling it's url.
+		/// </summary>
+		/// <param name="theme">Theme name</param>
+		/// <param name="storeId">Stored Id</param>
+		/// <returns>The error message when a parsing error occured, <c>null</c> otherwise</returns>
+		private async Task<string> ValidateLess(ThemeManifest manifest, int storeId)
+		{
+			string error = string.Empty;
+			var url = "{0}Themes/{1}/Content/theme.less?storeId={2}&theme={1}".FormatInvariant(
+				_services.WebHelper.GetStoreLocation().EnsureEndsWith("/"), 
+				manifest.ThemeName,
+				storeId);
+
+			HttpWebRequest request = WebRequest.CreateHttp(url);
+			WebResponse response = null;
+
+			try
+			{
+				response = await request.GetResponseAsync();
+			}
+			catch (WebException ex)
+			{
+				if (ex.Response is HttpWebResponse)
+				{
+					var webResponse = (HttpWebResponse)ex.Response;
+
+					var statusCode = webResponse.StatusCode;
+
+					if (statusCode == HttpStatusCode.InternalServerError)
+					{
+						// catch only 500, as this indicates a parsing error.
+						var stream = webResponse.GetResponseStream();
+
+						using (var streamReader = new StreamReader(stream))
+						{
+							// read the content (the error message has been put there)
+							error = streamReader.ReadToEnd();
+							streamReader.Close();
+							stream.Close();
+						}
+					}
+				}
+			}
+			finally
+			{
+				if (response != null)
+					response.Close();
+			}
+
+			return error;
+		}
+
         public ActionResult Reset(string theme, int storeId, string selectedTab)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
@@ -236,16 +314,16 @@ namespace SmartStore.Admin.Controllers
             _themeVarService.DeleteThemeVariables(theme, storeId);
 
             // activity log
-            _customerActivityService.InsertActivity("ResetThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), theme);
+			_services.CustomerActivity.InsertActivity("ResetThemeVars", T("ActivityLog.ResetThemeVars"), theme);
 
-            NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ResetSuccess"));
+			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ResetSuccess"));
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
         }
 
         [HttpPost]
         public ActionResult ImportVariables(string theme, int storeId, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
@@ -268,15 +346,15 @@ namespace SmartStore.Admin.Controllers
                     // activity log
                     try
                     {
-                        _customerActivityService.InsertActivity("ImportThemeVars", _localizationService.GetResource("ActivityLog.ResetThemeVars"), importedCount, theme);
+						_services.CustomerActivity.InsertActivity("ImportThemeVars", T("ActivityLog.ResetThemeVars"), importedCount, theme);
                     }
                     catch { }
 
-                    NotifySuccess(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.ImportSuccess").FormatInvariant(importedCount));
+					NotifySuccess(T("Admin.Configuration.Themes.Notifications.ImportSuccess", importedCount));
                 }
                 else
                 {
-					NotifyError(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.UploadFile"));
+					NotifyError(T("Admin.Configuration.Themes.Notifications.UploadFile"));
                 }
             }
             catch (Exception ex)
@@ -290,7 +368,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult ExportVariables(string theme, int storeId, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
 
             if (!_themeRegistry.ThemeManifestExists(theme))
@@ -304,7 +382,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (xml.IsEmpty())
                 {
-                    NotifyInfo(_localizationService.GetResource("Admin.Configuration.Themes.Notifications.NoExportInfo"));
+					NotifyInfo(T("Admin.Configuration.Themes.Notifications.NoExportInfo"));
                 }
                 else
                 {
@@ -314,7 +392,7 @@ namespace SmartStore.Admin.Controllers
                     // activity log
                     try
                     {
-                        _customerActivityService.InsertActivity("ExportThemeVars", _localizationService.GetResource("ActivityLog.ExportThemeVars"), theme);
+						_services.CustomerActivity.InsertActivity("ExportThemeVars", T("ActivityLog.ExportThemeVars"), theme);
                     }
                     catch { }
 

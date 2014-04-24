@@ -33,6 +33,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.Validation.ErrorReportTitle",
 				"LESS parser error report",
 				"LESS Parser Fehlerbericht");
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.Validation.RestorePrevValues",
+				"Restore previous values",
+				"Vorherige Werte widerherstellen");
 		}
     }
 }

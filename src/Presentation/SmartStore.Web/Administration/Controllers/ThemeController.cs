@@ -232,8 +232,9 @@ namespace SmartStore.Admin.Controllers
 					// we do it here to absolutely ensure that this gets called
 					_themeVarService.SaveThemeVariables(theme, storeId, currentVars);
 				}
-				
+
 				TempData["LessParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
+				TempData["OverriddenThemeVars"] = values;
 				NotifyError(T("Admin.Configuration.Themes.Notifications.ConfigureError"));
 				return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
 			}

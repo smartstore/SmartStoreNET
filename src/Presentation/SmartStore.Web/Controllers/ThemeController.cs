@@ -42,7 +42,7 @@ namespace SmartStore.Web.Controllers
                 this.ControllerContext.RouteData.DataTokens["ThemeOverride"] = theme;
             }
 
-            var model = _themeVarService.GetThemeVariables(theme, StoreId);
+            var model = TempData["OverriddenThemeVars"] ?? _themeVarService.GetThemeVariables(theme, StoreId);
 
             ViewData["SelectedTab"] = selectedTab;
             return View(model);

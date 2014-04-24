@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Hosting;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
@@ -19,6 +20,7 @@ namespace SmartStore.Core
     /// </summary>
     public partial class WebHelper : IWebHelper
     {
+		private static bool? s_optimizedCompilationsEnabled = null;
 		private static AspNetHostingPermissionLevel? s_trustLevel = null;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		
@@ -539,11 +541,14 @@ namespace SmartStore.Core
         {
             if (WebHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
             {
-                //full trust
-                HttpRuntime.UnloadAppDomain();
+				//full trust
+				HttpRuntime.UnloadAppDomain();
 
-				// not a good idea with optimized compilation!
-                //TryWriteGlobalAsax();
+				if (!OptimizedCompilationsEnabled)
+				{
+					// not a good idea with optimized compilation!
+					TryWriteGlobalAsax();
+				}
             }
             else
             {
@@ -611,11 +616,11 @@ namespace SmartStore.Core
             {
                 //When a new plugin is dropped in the Plugins folder and is installed into SmartSTore.NET, 
                 //even if the plugin has registered routes for its controllers, 
-                //these routes will not be working as the MVC framework couldn't 
-                //find the new controller types and couldn't instantiate the requested controller. 
+                //these routes will not be working as the MVC framework can't
+                //find the new controller types in order to instantiate the requested controller. 
                 //That's why you get these nasty errors 
                 //i.e "Controller does not implement IController".
-                //The solutino is to touch global.asax file
+                //The solution is to touch the 'top-level' global.asax file
                 File.SetLastWriteTimeUtc(MapPath("~/global.asax"), DateTime.UtcNow);
                 return true;
             }
@@ -624,6 +629,40 @@ namespace SmartStore.Core
                 return false;
             }
         }
+
+		private bool TryWriteBinFolder()
+		{
+			try
+			{
+				var binMarker = MapPath("~/bin/HostRestart");
+				Directory.CreateDirectory(binMarker);
+
+				using (var stream = File.CreateText(Path.Combine(binMarker, "marker.txt")))
+				{
+					stream.WriteLine("Restart on '{0}'", DateTime.UtcNow);
+					stream.Flush();
+				}
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		internal static bool OptimizedCompilationsEnabled
+		{
+			get
+			{
+				if (!s_optimizedCompilationsEnabled.HasValue)
+				{
+					var section = (CompilationSection)ConfigurationManager.GetSection("system.web/compilation");
+					s_optimizedCompilationsEnabled = section.OptimizeCompilations;
+				}
+
+				return s_optimizedCompilationsEnabled.Value;
+			}
+		}
 
         /// <summary>
         /// Get a value indicating whether the request is made by search engine (web crawler)

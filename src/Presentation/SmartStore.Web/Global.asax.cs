@@ -83,7 +83,15 @@ namespace SmartStore.Web
 			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
-            
+
+			bool installed = DataSettings.DatabaseIsInstalled();
+
+			if (installed)
+			{
+				// remove all view engines
+				ViewEngines.Engines.Clear();
+			}
+
             // initialize engine context
             EngineContext.Initialize(false);        
 
@@ -100,8 +108,6 @@ namespace SmartStore.Web
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             ModelValidatorProviders.Providers.Add(new FluentValidationModelValidatorProvider(new SmartValidatorFactory()));
 
-			bool installed = DataSettings.DatabaseIsInstalled();
-
 			// Routes
 			RegisterRoutes(RouteTable.Routes, installed);
 
@@ -109,13 +115,11 @@ namespace SmartStore.Web
 			{
 				var profilingEnabled = this.ProfilingEnabled;
 				
-				// remove all view engines...
-				ViewEngines.Engines.Clear();
-				// ...except the themeable razor view engine we use
+				// register our themeable razor view engine we use
 				IViewEngine viewEngine = new ThemeableRazorViewEngine();
 				if (profilingEnabled)
 				{
-					// ...and wrap if profiling is active
+					// ...and wrap, if profiling is active
 					viewEngine = new ProfilingViewEngine(viewEngine);
 					GlobalFilters.Filters.Add(new ProfilingActionFilter());
 				}

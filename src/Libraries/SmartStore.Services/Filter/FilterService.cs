@@ -11,6 +11,7 @@ using System.Linq.Dynamic;
 using SmartStore.Core.Data;
 using System.Globalization;
 using SmartStore.Core;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
 {
@@ -76,7 +77,7 @@ namespace SmartStore.Services.Filter
 
 			Type t = Type.GetType("System.{0}".FormatWith(ValidateValue(type, _defaultType)));
 
-			var result = TypeDescriptor.GetConverter(t).ConvertFromString(null, CultureInfo.InvariantCulture, value);
+			var result = CommonHelper.GetTypeConverter(t).ConvertFromString(null, CultureInfo.InvariantCulture, value);
 
 			return result;
 		}

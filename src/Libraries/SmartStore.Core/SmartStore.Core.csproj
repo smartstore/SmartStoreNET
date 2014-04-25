@@ -212,7 +212,6 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="Infrastructure\CommonStartupTask.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
     <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
     <Compile Include="IO\Media\IStorageFile.cs" />

@@ -1,9 +1,11 @@
-﻿@{
-    // success messages
-    var successMessages = this.SuccessMessages.ToList();
+﻿@using SmartStore.Core.Logging;
 
-    // error messages
-    var errorMessages = this.ErrorMessages.ToList();
+@{
+    // success messages
+    var successMessages = this.GetMessages(NotifyType.Success).ToList();
+
+	// error messages
+	var errorMessages = this.GetMessages(NotifyType.Error).ToList();
 }
 
 @if (successMessages.Count > 0)

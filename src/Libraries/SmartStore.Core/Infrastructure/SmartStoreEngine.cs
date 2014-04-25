@@ -87,11 +87,6 @@ namespace SmartStore.Core.Infrastructure
 				//startup tasks
 				RunStartupTasks();
 			}
-			else
-			{
-				// TODO: (MC) not really good code. Find a better pattern!
-				new CommonStartupTask().Execute();
-			}
         }
 
         public T Resolve<T>(string name = null) where T : class

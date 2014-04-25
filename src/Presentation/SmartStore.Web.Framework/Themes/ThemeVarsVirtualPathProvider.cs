@@ -13,7 +13,10 @@ namespace SmartStore.Web.Framework.Themes
 {
     public class ThemeVarsVirtualPathProvider : VirtualPathProvider
     {
-        private readonly VirtualPathProvider _previous;
+		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
+		internal const string OverriddenThemeNameKey = "OverriddenThemeName";
+
+		private readonly VirtualPathProvider _previous;
 
         public ThemeVarsVirtualPathProvider(VirtualPathProvider previous)
         {
@@ -29,13 +32,49 @@ namespace SmartStore.Web.Framework.Themes
         {
             if (ThemeHelper.PathIsThemeVars(virtualPath))
             {
-                string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
-                int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+				string themeName = ResolveCurrentThemeName();
+				int storeId = ResolveCurrentStoreId();
                 return new ThemeVarsVirtualFile(virtualPath, themeName, storeId);
             }
 
             return _previous.GetFile(virtualPath);
         }
+
+		internal static int ResolveCurrentStoreId()
+		{
+			int storeId = 0;
+
+			var httpContext = HttpContext.Current;
+			if (httpContext != null && httpContext.Items != null)
+			{
+				if (httpContext.Items[OverriddenStoreIdKey] != null)
+				{
+					storeId = (int)httpContext.Items[OverriddenStoreIdKey];
+					if (storeId > 0)
+						return storeId;
+				}
+			}
+
+			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+		}
+
+		internal static string ResolveCurrentThemeName()
+		{
+			var themeName = string.Empty;
+
+			var httpContext = HttpContext.Current;
+			if (httpContext != null && httpContext.Items != null)
+			{
+				if (httpContext.Items[OverriddenThemeNameKey] != null)
+				{
+					themeName = (string)httpContext.Items[OverriddenThemeNameKey];
+					if (themeName.HasValue())
+						return themeName;
+				}
+			}
+
+			return EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
+		}
         
         public override CacheDependency GetCacheDependency(
             string virtualPath,
@@ -78,8 +117,8 @@ namespace SmartStore.Web.Framework.Themes
 
                 if (arrPathDependencies.Any())
                 {
-                    int storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-                    string themeName = EngineContext.Current.Resolve<IThemeContext>().WorkingDesktopTheme;
+                    int storeId = ResolveCurrentStoreId();
+                    string themeName = ResolveCurrentThemeName();
                     // invalidate the cache when variables change
                     string cacheKey = AspNetCache.BuildKey(FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId));
                     var cacheDependency = new CacheDependency(fileDependencies.Select(x => HostingEnvironment.MapPath(x)).ToArray(), new string[] { cacheKey }, utcStart);

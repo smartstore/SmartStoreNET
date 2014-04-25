@@ -19,6 +19,10 @@ namespace SmartStore.Core.Packaging
 			switch (level)
 			{
 				case MessageLevel.Debug:
+					//_logger.Debug(String.Format(message, args));
+					//break;
+				case MessageLevel.Error:
+					_logger.Error(String.Format(message, args));
 					break;
 				case MessageLevel.Info:
 					_logger.Information(String.Format(message, args));
@@ -31,7 +35,7 @@ namespace SmartStore.Core.Packaging
 
 		public FileConflictResolution ResolveFileConflict(string message)
 		{
-			return FileConflictResolution.Ignore;
+			return FileConflictResolution.OverwriteAll;
 		}
 	}
 }

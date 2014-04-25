@@ -240,6 +240,7 @@
     <Compile Include="Logging\Notifier.cs" />
     <Compile Include="Logging\NotifyEntry.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Logging\TraceLogger.cs" />
     <Compile Include="Packaging\ExtensionDescriptor.cs" />
     <Compile Include="Packaging\FolderUpdater.cs" />
     <Compile Include="Packaging\IPackageBuilder.cs" />
@@ -551,6 +552,7 @@
     <Compile Include="PagedList`T.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlHelper.cs" />
+    <Compile Include="Packaging\Updater\ApplicationUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

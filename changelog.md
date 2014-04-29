@@ -3,6 +3,7 @@
 ##SmartStore.NET 2.0.2#
 
 ###Bugfixes###
+* IMPORTANT FIX: Memory leak leads to _OutOfMemoryException_ in application after a while
 * Bugfix for stock issue in product variant combinations
 * #336 Product bundle: Upper add-to-cart button label shows wrong text
 * #338 Serialization exception thrown when session state mode is _StateServer_

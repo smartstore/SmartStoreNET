@@ -169,6 +169,8 @@ namespace SmartStore.Services.Messages
                 //deliverytime
                 if (_shoppingCartSettings.ShowDeliveryTimes && product.DeliveryTime != null && product.IsShipEnabled)
                 {
+                    product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+
                     sb.AppendLine("<br />");
 
                     sb.AppendLine("<div class=\"delivery-time\">");

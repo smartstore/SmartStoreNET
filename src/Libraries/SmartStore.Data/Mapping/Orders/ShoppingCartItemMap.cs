@@ -11,6 +11,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.HasKey(sci => sci.Id);
 
             this.Property(sci => sci.CustomerEnteredPrice).HasPrecision(18, 4);
+			this.Property(sci => sci.AttributesXml).IsMaxLength();
 
             this.Ignore(sci => sci.ShoppingCartType);
             this.Ignore(sci => sci.IsFreeShipping);

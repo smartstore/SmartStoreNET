@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Orders
 			this.ToTable("OrderItem");
             this.HasKey(orderItem => orderItem.Id);
             this.Property(orderItem => orderItem.AttributeDescription);
-            this.Property(orderItem => orderItem.AttributesXml);
+            this.Property(orderItem => orderItem.AttributesXml).IsMaxLength();
 			this.Property(orderItem => orderItem.BundleData).IsMaxLength();
 
             this.Property(orderItem => orderItem.UnitPriceInclTax).HasPrecision(18, 4);

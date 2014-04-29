@@ -11,9 +11,7 @@ using Autofac.Integration.Mvc;
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
 	public class AutofacLifetimeScopeProvider : ILifetimeScopeProvider
-	{
-		private static readonly ThreadLocal<ILifetimeScope> _lifetimeScope = new ThreadLocal<ILifetimeScope>(false);
-		
+	{	
 		private readonly ILifetimeScope _container;
 		internal static readonly object HttpRequestTag = "AutofacWebRequest";
 
@@ -39,6 +37,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				if (lifetimeScope != null)
 				{
 					lifetimeScope.Dispose();
+					HttpContext.Current.Items.Remove(typeof(ILifetimeScope));
 				}
 			}
 			catch { }

@@ -56,8 +56,8 @@ namespace SmartStore.Web.Infrastructure
         }
 
         public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone)
-        {
-            string actionName;
+        {		
+			string actionName;
             string controllerName;
             RouteValueDictionary routeValues;
 
@@ -117,7 +117,7 @@ namespace SmartStore.Web.Infrastructure
                                  }
                              };
 
-                return result; 
+                return result.ToList(); 
             });
 
             foreach (var topicWidget in topicsByZone)
@@ -206,7 +206,7 @@ namespace SmartStore.Web.Infrastructure
                                          x.Key, 
                                          x.Value.OrderBy(w => w.Ordinal).Select(w => w.Widget.GetType().FullName));
 
-                    s_simpleWidgetsMap = new ConcurrentDictionary<string, IEnumerable<string>>(orderedMap, StringComparer.InvariantCultureIgnoreCase);
+                    s_simpleWidgetsMap = new ConcurrentDictionary<string, IEnumerable<string>>(orderedMap.ToList(), StringComparer.InvariantCultureIgnoreCase);
 
                     s_hasSimpleWidgets = s_simpleWidgetsMap.Count > 0;
                 }

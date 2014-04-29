@@ -31,6 +31,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Messages
 {
@@ -60,13 +61,12 @@ namespace SmartStore.Services.Messages
 
         private readonly IEventPublisher _eventPublisher;
 
-        //codehint: sm-add begin
         private readonly CompanyInformationSettings _companyInfoSettings;
         private readonly BankConnectionSettings _bankConnectionSettings;
         private readonly ContactDataSettings _contactDataSettings;
         private readonly ITopicService _topicService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-        //codehint: sm-add end
+		private readonly IDeliveryTimeService _deliveryTimeService;
 
         #endregion
 
@@ -84,7 +84,8 @@ namespace SmartStore.Services.Messages
             EmailAccountSettings emailAccountSettings, CatalogSettings catalogSettings,
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
-            ContactDataSettings contactDataSettings, ITopicService topicService)
+            ContactDataSettings contactDataSettings, ITopicService topicService,
+			IDeliveryTimeService deliveryTimeService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -107,12 +108,12 @@ namespace SmartStore.Services.Messages
             this._taxSettings = taxSettings;
             this._eventPublisher = eventPublisher;
             
-            //codehint: sm-add
             this._companyInfoSettings = companyInfoSettings;
             this._bankConnectionSettings = bankConnectionSettings;
             this._contactDataSettings = contactDataSettings;
             this._topicService = topicService;
             this._shoppingCartSettings = shoppingCartSettings;
+			this._deliveryTimeService = deliveryTimeService;
         }
 
         #endregion
@@ -150,6 +151,19 @@ namespace SmartStore.Services.Messages
                 if (product == null)
                     continue;
 
+				DeliveryTime deliveryTime = null;
+
+				// merging attribute combination data required?
+				if (_catalogSettings.ShowProductSku || (_shoppingCartSettings.ShowDeliveryTimes && product.IsShipEnabled))
+				{
+					product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+				}
+
+				if (_shoppingCartSettings.ShowDeliveryTimes && product.IsShipEnabled)
+				{
+					deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId ?? 0);
+				}
+
                 sb.AppendLine(string.Format("<tr style=\"background-color: {0};text-align: center;\">", _templatesSettings.Color2));
                 //product name
 				string productName = product.GetLocalized(x => x.Name, languageId);
@@ -167,16 +181,15 @@ namespace SmartStore.Services.Messages
                 }
 
                 //deliverytime
-                if (_shoppingCartSettings.ShowDeliveryTimes && product.DeliveryTime != null && product.IsShipEnabled)
+				if (deliveryTime != null)
                 {
-                    product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
+					string deliveryTimeName = HttpUtility.HtmlEncode(deliveryTime.GetLocalized(x => x.Name));
 
                     sb.AppendLine("<br />");
-
                     sb.AppendLine("<div class=\"delivery-time\">");
                     sb.AppendLine("<span class=\"delivery-time-label\">" + _localizationService.GetResource("Products.DeliveryTime") + "</span>");
-                    sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + product.DeliveryTime.ColorHexValue + " title=\"" + product.DeliveryTime.Name + "\"></span>");
-                    sb.AppendLine("<span class=\"delivery-time-value\">" + product.DeliveryTime.Name + "</span>");
+                    sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + deliveryTime.ColorHexValue + "\" title=\"" + deliveryTimeName + "\"></span>");
+                    sb.AppendLine("<span class=\"delivery-time-value\">" + deliveryTimeName + "</span>");
                     sb.AppendLine("</div>");
                 }
 
@@ -189,8 +202,6 @@ namespace SmartStore.Services.Messages
                 //sku
                 if (_catalogSettings.ShowProductSku)
                 {
-                    product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser);
-
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
                         sb.AppendLine("<br />");

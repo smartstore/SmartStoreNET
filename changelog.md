@@ -12,6 +12,7 @@
 * #348 Messaging: OrderPlacedStoreOwnerNotification overwrites email account sender name with the customer's name
 * Default value for plugin description not loaded into edit popup window
 * Fixed "Controller does not implement IController" (concerning plugin controllers)
+* #361 Wrong delivery time in order confirmation
 
 ###Improvements###
 * #250 Implemented validation to theme configuration editing

@@ -73,10 +73,13 @@ namespace SmartStore.Web.Framework.UI
         public string ToHtmlString()
         {
             string str;
-            using (StringWriter stringWriter = new StringWriter())
+            using (var stringWriter = new StringWriter())
             {
-                this.WriteHtml(new HtmlTextWriter(stringWriter));
-                str = stringWriter.ToString();
+				using (var htmlWriter = new HtmlTextWriter(stringWriter))
+				{
+					this.WriteHtml(htmlWriter);
+					str = stringWriter.ToString();
+				}
             }
             return str;
         }

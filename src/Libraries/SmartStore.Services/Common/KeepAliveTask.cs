@@ -15,9 +15,7 @@ namespace SmartStore.Services.Common
         {
 			this._storeContext = storeContext;
         }
-        /// <summary>
-        /// Executes a task
-        /// </summary>
+
         public void Execute()
         {
 			var storeUrl = _storeContext.CurrentStore.Url.TrimEnd('\\').EnsureEndsWith("/");

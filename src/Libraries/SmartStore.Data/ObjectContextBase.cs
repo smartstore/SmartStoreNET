@@ -139,6 +139,12 @@ namespace SmartStore.Data
 
         #region IDbContext members
 
+		protected override void Dispose(bool disposing)
+		{
+			this.EventPublisher = null;
+			base.Dispose(disposing);
+		}
+
         public virtual string CreateDatabaseScript()
         {
             return ((IObjectContextAdapter)this).ObjectContext.CreateDatabaseScript();

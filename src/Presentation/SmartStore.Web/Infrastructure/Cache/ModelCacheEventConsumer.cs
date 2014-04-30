@@ -247,14 +247,22 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for TopicWidget caching
         /// </summary>
         /// <remarks>
-        /// {0} : widget zone
-        /// {1} : store id
-        /// {2} : language id
+        /// {0} : store id
+        /// {1} : language id
         /// </remarks>
-        public const string TOPIC_WIDGET_PATTERN_KEY        = "sm.pres.topic.widget";
-        public const string TOPIC_WIDGET_ALL_MODEL_KEY      = "sm.pres.topic.widget-all-{0}";
-        public const string TOPIC_WIDGET_BYZONE_PATTERN_KEY = "sm.pres.topic.widget-byzone";
-        public const string TOPIC_WIDGET_BYZONE_MODEL_KEY   = "sm.pres.topic.widget-byzone-{0}-{1}-{2}";
+        public const string TOPIC_WIDGET_PATTERN_KEY = "sm.pres.topic.widget";
+        public const string TOPIC_WIDGET_ALL_MODEL_KEY = "sm.pres.topic.widget-all-{0}-{1}";
+
+		/// <summary>
+		/// Key for TopicWidget by zone caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : widget zone
+		/// {1} : store id
+		/// {2} : language id
+		/// </remarks>
+		public const string TOPIC_WIDGET_BYZONE_PATTERN_KEY = "sm.pres.topic.widget-byzone";
+		public const string TOPIC_WIDGET_BYZONE_MODEL_KEY = "sm.pres.topic.widget-byzone-{0}-{1}-{2}";
 
         /// <summary>
         /// Key for CategoryTemplate caching

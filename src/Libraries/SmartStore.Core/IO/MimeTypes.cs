@@ -31,9 +31,11 @@ namespace SmartStore.Core.IO
 
             try
             {
-                var key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false);
-                object value = key != null ? key.GetValue("Extension", null) : null;
-                result = value != null ? value.ToString().Trim('.') : null;
+				using (var key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false))
+				{
+					object value = key != null ? key.GetValue("Extension", null) : null;
+					result = value != null ? value.ToString().Trim('.') : null;
+				}
             }
             catch (SecurityException)
             {

@@ -185,18 +185,15 @@ namespace SmartStore.Services.Orders
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{
 					// Gross > Net RoundFix
-					int temQuantity = shoppingCartItem.Item.Quantity;
-					shoppingCartItem.Item.Quantity = 1;
+					int qty = shoppingCartItem.Item.Quantity;
 
-					sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+					sciSubTotal = _priceCalculationService.GetUnitPrice(shoppingCartItem, true);
 
 					// Adaption to eliminate rounding issues
 					sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
-					sciExclTax = Math.Round(sciExclTax, 2) * temQuantity;
+					sciExclTax = Math.Round(sciExclTax, 2) * qty;
 					sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
-					sciInclTax = Math.Round(sciInclTax, 2) * temQuantity;
-
-					shoppingCartItem.Item.Quantity = temQuantity;
+					sciInclTax = Math.Round(sciInclTax, 2) * qty;
 				}
 				else
 				{

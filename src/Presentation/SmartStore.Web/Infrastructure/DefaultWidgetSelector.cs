@@ -56,8 +56,8 @@ namespace SmartStore.Web.Infrastructure
         }
 
         public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone)
-        {
-            string actionName;
+        {		
+			string actionName;
             string controllerName;
             RouteValueDictionary routeValues;
 
@@ -81,20 +81,31 @@ namespace SmartStore.Web.Infrastructure
             #region Topic Widgets
 
             // add special "topic widgets" to the list
-            var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, _storeContext.CurrentStore.Id);
+			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, _storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
             var topicWidgets = _cacheManager.Get(allTopicsCacheKey, () =>
             {
-                var result = _topicService.GetAllTopics(_storeContext.CurrentStore.Id);
-                var list = result.Where(x => x.RenderAsWidget).ToList();
-                list.Each(x => _dbContext.DetachEntity(x));
-                return list;
+				var allTopicWidgets = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).Where(x => x.RenderAsWidget).ToList();
+				var stubs = allTopicWidgets
+					.Select(t => new TopicWidgetStub 
+					{
+ 						Id = t.Id,
+						Bordered = t.WidgetBordered,
+						ShowTitle = t.WidgetShowTitle,
+						SystemName = t.SystemName.SanitizeHtmlId(),
+						Title = t.GetLocalized(x => t.Title),
+						Body = t.GetLocalized(x => t.Body),
+						WidgetZones = t.GetWidgetZones().ToArray(),
+						Priority = t.Priority
+					})
+					.ToList();
+                return stubs;
             });
 
             var byZoneTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_BYZONE_MODEL_KEY, widgetZone, _storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
             var topicsByZone = _cacheManager.Get(byZoneTopicsCacheKey, () =>
             {
                 var result = from t in topicWidgets
-                             where t.GetWidgetZones().Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
+                             where t.WidgetZones.Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
                              orderby t.Priority
                              select new WidgetRouteInfo
                              {
@@ -108,16 +119,16 @@ namespace SmartStore.Web.Infrastructure
                                     {"model", new TopicWidgetModel 
                                     { 
                                         Id = t.Id,
-                                        SystemName = t.SystemName.SanitizeHtmlId(),
-                                        ShowTitle = t.WidgetShowTitle,
-                                        IsBordered = t.WidgetBordered,
-                                        Title = t.GetLocalized(x => t.Title),
-                                        Html = t.GetLocalized(x => t.Body)
+                                        SystemName = t.SystemName,
+                                        ShowTitle = t.ShowTitle,
+                                        IsBordered = t.Bordered,
+                                        Title = t.Title,
+                                        Html = t.Body
                                     } }
                                  }
                              };
 
-                return result; 
+                return result.ToList(); 
             });
 
             foreach (var topicWidget in topicsByZone)
@@ -206,7 +217,7 @@ namespace SmartStore.Web.Infrastructure
                                          x.Key, 
                                          x.Value.OrderBy(w => w.Ordinal).Select(w => w.Widget.GetType().FullName));
 
-                    s_simpleWidgetsMap = new ConcurrentDictionary<string, IEnumerable<string>>(orderedMap, StringComparer.InvariantCultureIgnoreCase);
+                    s_simpleWidgetsMap = new ConcurrentDictionary<string, IEnumerable<string>>(orderedMap.ToList(), StringComparer.InvariantCultureIgnoreCase);
 
                     s_hasSimpleWidgets = s_simpleWidgetsMap.Count > 0;
                 }
@@ -218,6 +229,18 @@ namespace SmartStore.Web.Infrastructure
             public IWidget Widget { get; set; }
             public int Ordinal { get; set; }
         }
+
+		class TopicWidgetStub
+		{
+			public int Id { get; set; }
+			public string[] WidgetZones { get; set; }
+			public string SystemName { get; set; }
+			public bool ShowTitle { get; set; }
+			public bool Bordered { get; set; }
+			public string Title { get; set; }
+			public string Body { get; set; }
+			public int Priority { get; set; }
+		}
 
         #endregion
 

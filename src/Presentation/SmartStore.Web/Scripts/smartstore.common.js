@@ -70,6 +70,7 @@
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
 				opts.stack = stack_bottomright;
+				opts.addclass = "stack-bottomright";
 				$.pnotify(opts);
 			});
 		}

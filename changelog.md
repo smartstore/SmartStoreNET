@@ -3,6 +3,8 @@
 ##SmartStore.NET 2.0.2#
 
 ###Bugfixes###
+* IMPORTANT FIX: Memory leak leads to _OutOfMemoryException_ in application after a while
+* Installation fix: some varchar(MAX) columns get created as varchar(4000). Added a migration to fix the column specs.
 * Bugfix for stock issue in product variant combinations
 * #336 Product bundle: Upper add-to-cart button label shows wrong text
 * #338 Serialization exception thrown when session state mode is _StateServer_
@@ -12,6 +14,7 @@
 * #348 Messaging: OrderPlacedStoreOwnerNotification overwrites email account sender name with the customer's name
 * Default value for plugin description not loaded into edit popup window
 * Fixed "Controller does not implement IController" (concerning plugin controllers)
+* #361 Wrong delivery time in order confirmation
 
 ###Improvements###
 * #250 Implemented validation to theme configuration editing

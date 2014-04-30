@@ -40,11 +40,14 @@ namespace SmartStore.Web.Framework.Themes
         private Stream GenerateStreamFromString(string value)
         {
             var stream = new MemoryStream();
-            var writer = new StreamWriter(stream, Encoding.Unicode);
-            writer.Write(value);
-            writer.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
+
+			using (var writer = new StreamWriter(stream, Encoding.Unicode, 1024, true))
+			{
+				writer.Write(value);
+				writer.Flush();
+				stream.Seek(0, SeekOrigin.Begin);
+				return stream;
+			}
         }
 
     }

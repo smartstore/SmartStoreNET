@@ -44,7 +44,7 @@ namespace SmartStore.Core.Data
 		{
 			if (this.Assembly == null)
 			{
-				this.Assembly = Assembly.GetCallingAssembly();
+				this.Assembly = Assembly.GetExecutingAssembly();
 			}
 			
 			using (var reader = ReadSqlFile())
@@ -67,7 +67,7 @@ namespace SmartStore.Core.Data
 				string path = CommonHelper.MapPath(fileName);
 				if (!File.Exists(path))
 				{
-					return StreamReader.Null;
+					throw new FileNotFoundException("Sql file '{0}' not found".FormatInvariant(this.FileName));
 				}
 
 				return new StreamReader(File.OpenRead(path));
@@ -78,9 +78,16 @@ namespace SmartStore.Core.Data
 			var asmName = assembly.FullName.Substring(0, assembly.FullName.IndexOf(','));
 			var location = this.Location ?? asmName + ".Sql";
 			var name = String.Format("{0}.{1}", location, fileName);
-			var stream = assembly.GetManifestResourceStream(name);
-			Debug.Assert(stream != null);
-			return new StreamReader(stream);
+
+			try
+			{
+				var stream = assembly.GetManifestResourceStream(name);
+				return new StreamReader(stream);
+			}
+			catch (Exception ex)
+			{
+				throw new FileLoadException("Error while loading embedded sql resource '{0}'".FormatInvariant(name), ex);
+			}
 		}
 
 		private string ReadNextSqlStatement(TextReader reader)

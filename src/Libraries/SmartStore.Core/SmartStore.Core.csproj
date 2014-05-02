@@ -552,7 +552,7 @@
     <Compile Include="PagedList`T.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlHelper.cs" />
-    <Compile Include="Packaging\Updater\ApplicationUpdater.cs" />
+    <Compile Include="Packaging\Updater\AppUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

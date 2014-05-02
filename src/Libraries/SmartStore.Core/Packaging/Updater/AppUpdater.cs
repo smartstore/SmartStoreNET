@@ -16,7 +16,7 @@ using SmartStore.Core.Data;
 namespace SmartStore.Core.Packaging
 {
 	
-	internal sealed class ApplicationUpdater : DisposableObject
+	internal sealed class AppUpdater : DisposableObject
 	{
 		private const string UpdatePackagePath = "~/App_Data/Update";
 		

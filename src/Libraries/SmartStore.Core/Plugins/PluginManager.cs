@@ -85,7 +85,7 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
-			var updater = new ApplicationUpdater();
+			var updater = new AppUpdater();
 			if (updater.TryUpdate())
 			{
 				// [...]

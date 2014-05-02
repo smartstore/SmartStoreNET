@@ -78,27 +78,24 @@
                 @Model.BasePriceInfo
             </div>
 
-            <!-- delivery time -->
-            @if (Model.DisplayDeliveryTime) 
-            {
-                <div class="delivery-time">
-                    @if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
-                    {
-                        <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
-                    
-                        if (Model.DisplayDeliveryTimeAccordingToStock)
-                        {
-                            <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
-                            <span class="delivery-time-value">@Model.DeliveryTimeName</span>
-                        } 
-                        else
-                        {
-                            <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailability"></span>
-                            <span class="delivery-time-value">@Model.StockAvailability</span>
-                        }
-                    }
-                </div>
-            }
+            <!-- delivery time -->			
+			@if (Model.DisplayDeliveryTime && Model.IsShipEnabled)
+			{
+				<div class="delivery-time">
+					<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+
+					@if (Model.DisplayDeliveryTimeAccordingToStock)
+					{
+                        <span class="delivery-time-color" style="background-color:@(Model.DeliveryTimeHexValue);@(Model.DeliveryTimeHexValue.HasValue() ? "" : "display:none;")" title="@Model.DeliveryTimeName"></span>
+                        <span class="delivery-time-value">@Model.DeliveryTimeName</span>
+					}
+					else
+					{
+						<span class="delivery-time-color" style="display: none;" title="@Model.StockAvailability"></span>
+                        <span class="delivery-time-value">@Model.StockAvailability</span>
+					}
+				</div>
+			}
 
             @if(Model.ShowLegalInfo)
             {

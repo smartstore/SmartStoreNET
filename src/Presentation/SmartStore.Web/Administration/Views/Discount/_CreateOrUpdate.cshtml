@@ -285,7 +285,7 @@
                     dataType: "html",
                     success: function (result) {
                     	$(placeholderName).html(result);
-                    	$(placeholderName).find('select').selectWrapper();@*codehint: sm-add*@
+                    	$(placeholderName).find('select').selectWrapper();
                     },
                     error:function (xhr, ajaxOptions, thrownError) {
                         $(placeholderName).html('Failed to load requirement content.');

@@ -55,8 +55,6 @@
                 toggleSqlConnectionInfo();
                 toggleSqlAuthenticationType();
                 toggleCollation();
-
-                $("#language").selectWrapper();
             });
 
             function hide(el, thenShow) {
@@ -94,10 +92,10 @@
             function toggleSqlAuthenticationType() {
                 var selectedProvider = $("input[name=SqlAuthenticationType]:checked").attr('id');
                 if (selectedProvider == 'sqlauthenticationtype_sql') {
-                    $('#pnlSqlAuth input[type=text]').removeAttr("disabled");
+                	$('#pnlSqlAuth input').removeAttr("disabled");
                 }
                 else if (selectedProvider == 'sqlauthenticationtype_windows') {
-                    $('#pnlSqlAuth input[type=text]').attr("disabled", "disabled");
+                    $('#pnlSqlAuth input').attr("disabled", "disabled");
                 }
             }
 
@@ -335,8 +333,6 @@
 
     <script src='~/Scripts/jquery.transit.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery.addeasing.js' type='text/javascript'></script>
-    <script src='~/Scripts/select2.min.js' type='text/javascript'></script>
-    <script src='~/Scripts/smartstore.selectwrapper.js' type='text/javascript'></script>
     <script src='~/Scripts/smartstore.throbber.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery.scrollTo.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery.serialScroll.js' type='text/javascript'></script>

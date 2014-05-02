@@ -25,9 +25,6 @@ namespace SmartStore.Core.Packaging
 
 		public bool TryUpdate()
 		{
-			//if (!DataSettings.DatabaseIsInstalled())
-			//	return false;
-			
 			// NEVER EVER (!!!) make an attempt to auto-update in a dev environment!!!!!!!
 			if (CommonHelper.IsDevEnvironment)
 				return false;
@@ -96,13 +93,43 @@ namespace SmartStore.Core.Packaging
 
 		private bool CheckEnvironment()
 		{
+			// TODO: Check it :-)
 			return true;
+		}
+
+		private void Backup()
+		{
+			var source = new DirectoryInfo(CommonHelper.MapPath("~/"));
+
+			var tempPath = "~/App_Data/_Backup/App/SmartStore";
+			string localTempPath = null;
+			for (int i = 0; i < 50; i++)
+			{
+				localTempPath = CommonHelper.MapPath(tempPath) + (i == 0 ? "" : "." + i.ToString());
+				if (!Directory.Exists(localTempPath))
+				{
+					Directory.CreateDirectory(localTempPath);
+					break;
+				}
+				localTempPath = null;
+			}
+
+			if (localTempPath == null)
+			{
+				var exception = new SmartException("Too many backups in '{0}'.".FormatInvariant(tempPath));
+				_logger.Error(exception.Message, exception);
+				throw exception;
+			}
+
+			var backupFolder = new DirectoryInfo(localTempPath);
+			var folderUpdater = new FolderUpdater(_logger);
+			folderUpdater.Backup(source, backupFolder, "App_Data", "Media");
 		}
 
 		private PackageInfo ExecuteUpdate(IPackage package)
 		{
-			var appPath = CommonHelper.MapPath("~/");
-			//var appPath = "D:\\_temp\\AppUpdater";
+			//var appPath = CommonHelper.MapPath("~/");
+			var appPath = "D:\\_temp\\AppUpdater\\Restore";
 			
 			var logger = new NugetLogger(_logger);
 

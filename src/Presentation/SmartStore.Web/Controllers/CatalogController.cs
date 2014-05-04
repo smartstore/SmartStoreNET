@@ -1474,7 +1474,7 @@ namespace SmartStore.Web.Controllers
             model.Name = product.GetLocalized(x => x.Name);
             model.ShowSku = _catalogSettings.ShowProductSku;
             model.Sku = product.Sku;
-			model.ShortDescription = product.ShortDescription;
+			model.ShortDescription = product.GetLocalized(x => x.ShortDescription);
             model.FullDescription = product.GetLocalized(x => x.FullDescription);
 			model.MetaKeywords = product.GetLocalized(x => x.MetaKeywords);
 			model.MetaDescription = product.GetLocalized(x => x.MetaDescription);

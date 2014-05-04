@@ -227,7 +227,7 @@ namespace SmartStore.Web.Controllers
 				VisibleIndividually = product.VisibleIndividually,
 				Quantity = item.Quantity,
 				IsShipEnabled = product.IsShipEnabled,
-				ShortDesc = product.ShortDescription,
+				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
                 BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter)
 			};
@@ -393,7 +393,7 @@ namespace SmartStore.Web.Controllers
 				ProductName = product.GetLocalized(x => x.Name),
 				ProductSeName = product.GetSeName(),
 				Quantity = item.Quantity,
-				ShortDesc = product.ShortDescription,
+				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually
 			};

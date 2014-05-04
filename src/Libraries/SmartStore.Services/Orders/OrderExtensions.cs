@@ -24,7 +24,7 @@ namespace SmartStore.Services.Orders
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
 
-            text = SmartStore.Core.Html.HtmlUtils.FormatText(text, false, true, false, false, false, false);
+            text = SmartStore.Core.Html.HtmlUtils.FormatText(text, false, true, true, false, false, false);
 
             return text;
         }

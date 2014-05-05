@@ -148,8 +148,8 @@
 		<Delete Files="$(StageFolder)\Administration\packages.config; $(StageFolder)\packages.config"/>
 
 		<!-- copy \Media\uploaded\ folder to stage -->
-		<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
-		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<!--<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
+		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />-->
 
 		<!-- copy SQL Compact native binaries-->
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />

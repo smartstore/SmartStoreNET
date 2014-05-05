@@ -66,21 +66,14 @@ namespace SmartStore.Utilities
 				// not hosted. For example, running in unit tests or EF tooling
 				string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				path = path.Replace("~/", "").TrimStart('/').Replace('/', '\\');
-
+				
 				var testPath = Path.Combine(baseDirectory, path);
 
 				if (findAppRoot /* && !Directory.Exists(testPath)*/)
 				{
 					// most likely we're in unit tests or design-mode (EF migration scaffolding)...
 					// find solution root directory first
-					var dir = Directory.GetParent(baseDirectory);
-					while (true)
-					{
-						if (dir == null || IsSolutionRoot(dir))
-							break;
-
-						dir = dir.Parent;
-					}
+					var dir = FindSolutionRoot(baseDirectory);
 
 					// concat the web root
 					if (dir != null)
@@ -92,6 +85,42 @@ namespace SmartStore.Utilities
 
 				return testPath;
 			}
+		}
+
+		public static bool IsDevEnvironment
+		{
+			get 
+			{
+				if (!HostingEnvironment.IsHosted)
+					return true;
+
+				if (HostingEnvironment.IsDevelopmentEnvironment)
+					return true;
+
+				if (System.Diagnostics.Debugger.IsAttached)
+					return true;
+
+				// if there's a 'SmartStore.NET.sln' in one of the parent folders,
+				// then we're likely in a dev environment
+				if (FindSolutionRoot(HostingEnvironment.MapPath("~/")) != null)
+					return true;
+
+				return false;
+			}
+		}
+
+		private static DirectoryInfo FindSolutionRoot(string currentDir)
+		{
+			var dir = Directory.GetParent(currentDir);
+			while (true)
+			{
+				if (dir == null || IsSolutionRoot(dir))
+					break;
+
+				dir = dir.Parent;
+			}
+			
+			return dir;
 		}
 
 		private static bool IsSolutionRoot(DirectoryInfo dir)

@@ -16,6 +16,7 @@ using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
@@ -84,6 +85,13 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
+			var updater = new AppUpdater();
+			if (updater.TryUpdate())
+			{
+				// [...]
+			}
+			updater.Dispose();
+			
 			// adding a process-specific environment path (either bin/x86 or bin/amd64)
 			// ensures that unmanaged native dependencies can be resolved successfully.
 			SetPrivateEnvPath();
@@ -97,7 +105,6 @@ namespace SmartStore.Core.Plugins
                 var pluginFolderPath = CommonHelper.MapPath(_pluginsPath);
 				_shadowCopyFolder = new DirectoryInfo(CommonHelper.MapPath(_shadowCopyPath));
 
-                //var referencedPlugins = new List<PluginDescriptor>();
                 var incompatiblePlugins = new List<string>();
 
                 _clearShadowDirectoryOnStartup = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]) &&

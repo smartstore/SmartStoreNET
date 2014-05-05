@@ -78,6 +78,14 @@ namespace SmartStore.Core.Packaging
 			return InstallPackage(package, packageRepository, location, applicationPath);
 		}
 
+		/// <summary>
+		/// Tries to install the package
+		/// </summary>
+		/// <param name="package">The package to install</param>
+		/// <param name="packageRepository">The repository</param>
+		/// <param name="location">The virtual location of the package file, usually <c>~/App_Data</c></param>
+		/// <param name="applicationPath">The virtual app root path, usually <c>~/</c></param>
+		/// <returns>An instance of <see cref="PackageInfo"/> type</returns>
 		protected PackageInfo InstallPackage(IPackage package, IPackageRepository packageRepository, string location, string applicationPath)
 		{
 
@@ -145,7 +153,6 @@ namespace SmartStore.Core.Packaging
 		/// <returns>The package information.</returns>
 		protected PackageInfo ExecuteInstall(IPackage package, IPackageRepository packageRepository, string sourceLocation, string targetPath)
 		{
-			// this logger is used to render NuGet's log on the notifier
 			var logger = new NugetLogger(_logger);
 
 			var project = new FileBasedProjectSystem(targetPath) { Logger = logger };

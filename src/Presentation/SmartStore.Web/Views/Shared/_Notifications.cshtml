@@ -1,4 +1,6 @@
-﻿@if (this.HasMessages)
+﻿@using SmartStore.Core.Logging;
+
+@if (this.HasMessages)
 {
 	<script type="text/javascript">
         $(function () {
@@ -22,19 +24,19 @@
 	</script>
 
 	<div id="notification-list" style="display:none; position:absolute; left:-9999px">
-		@foreach (var message in this.ErrorMessages)
+		@foreach (var message in this.GetMessages(NotifyType.Error))
 		{
 			<div class="msg" data-type="error">@Html.Raw(message)</div>
 		}
-		@foreach (var message in this.SuccessMessages)
+		@foreach (var message in this.GetMessages(NotifyType.Success))
 		{
 			<div class="msg" data-type="success">@Html.Raw(message)</div>
 		}
-		@foreach (var message in this.InfoMessages)
+		@foreach (var message in this.GetMessages(NotifyType.Info))
 		{
 			<div class="msg" data-type="info">@Html.Raw(message)</div>
 		}
-		@foreach (var message in this.WarningMessages)
+		@foreach (var message in this.GetMessages(NotifyType.Warning))
 		{
 			<div class="msg" data-type="warning">@Html.Raw(message)</div>
 		}

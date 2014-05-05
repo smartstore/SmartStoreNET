@@ -9,50 +9,6 @@
 
         html.removeClass("not-ready").addClass("ready");
 
-        if (!Modernizr.csstransitions) {
-            $.fn.transition = $.fn.animate;
-        }
-
-        // adjust pnotify global defaults
-        $.extend($.pnotify.defaults, {
-            history: false,
-            animate_speed: "fast"
-        });
-
-        // intercept window.alert with pnotify
-        /*window.alert = function (message) {
-        	if (message == null || message.length <= 0)
-        		return;
-
-            $.pnotify({
-                title: "Alert", // TODO (mc): T("Common.Notification")
-                text: message,
-                type: "info",
-                animate_speed: 'fast',
-                closer_hover: false,
-                stack: false,
-                before_open: function (pnotify) {
-                    // Position this notice in the center of the screen.
-                    pnotify.css({
-                        "top": ($(window).height() / 2) - (pnotify.height() / 2),
-                        "left": ($(window).width() / 2) - (pnotify.width() / 2)
-                    });
-                }
-            });
-        }*/
-
-        // global notification subscriber
-        //var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
-        var stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 130, "firstpos2": 45 };
-        EventBroker.subscribe("message", function (message, data) {
-            var opts = _.isString(data) ? { text: data } : data;
-            
-            opts.stack = stack_topright;
-            //opts.addclass = "stack-bottomright";
-
-            $.pnotify(opts);
-        });
-
         $(".adminData select:not(.noskin), .adminData input:hidden[data-select]").selectWrapper();
         Hacks.Telerik.handleTextBox($(".text-box.single-line, textarea"));
         Hacks.Telerik.handleButton($(".t-button").filter(function (index) {

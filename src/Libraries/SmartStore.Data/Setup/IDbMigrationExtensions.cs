@@ -20,7 +20,7 @@ namespace SmartStore.Data.Setup
 		{
 			Guard.ArgumentNotEmpty(() => fileName);
 
-			var tokenizer = new SqlFileTokenizer(fileName, assembly ?? Assembly.GetCallingAssembly(), location);
+			var tokenizer = new SqlFileTokenizer(fileName, assembly ?? Assembly.GetExecutingAssembly(), location);
 			foreach (var cmd in tokenizer.Tokenize())
 			{
 				if (cmd.HasValue())

@@ -255,7 +255,7 @@ namespace SmartStore.Services.Tax
         /// <returns>Tax rate</returns>
         public virtual decimal GetTaxRate(Product product, Customer customer)
         {
-            return GetTaxRate(product, 0, customer);
+            return GetTaxRate(product, product.TaxCategoryId, customer);
         }
 
         /// <summary>

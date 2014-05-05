@@ -19,6 +19,7 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Collections;
 using System.Linq;
 using SmartStore.Core.Logging;
+using SmartStore.Web.Framework.Controllers;
 
 #endregion
 
@@ -30,6 +31,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 		private IText _text;
         private IWorkContext _workContext;
 
+		private IList<NotifyEntry> _internalNotifications;
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
         private ThemeManifest _themeManifest;
@@ -95,76 +97,56 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             }
         }
 
-		protected ICollection<LocalizedString> InfoMessages
-		{
-			get { return ResolveMessages(NotifyType.Info).AsReadOnly(); }
-		}
-
-		protected ICollection<LocalizedString> SuccessMessages
-		{
-			get { return ResolveMessages(NotifyType.Success).AsReadOnly(); }
-		}
-
-		protected ICollection<LocalizedString> WarningMessages
-		{
-			get { return ResolveMessages(NotifyType.Warning).AsReadOnly(); }
-		}
-
-		protected ICollection<LocalizedString> ErrorMessages
-		{
-			get { return ResolveMessages(NotifyType.Error).AsReadOnly(); }
-		}
-
 		protected bool HasMessages
 		{
 			get
 			{
-				string key = "sm.notifications.all";
-				IEnumerable<NotifyEntry> entries;
-
-				if (TempData[key] != null)
-				{
-					entries = TempData[key] as IEnumerable<NotifyEntry>;
-					if (entries != null && entries.Any())
-						return true;
-				}
-
-				if (ViewData[key] != null)
-				{
-					entries = ViewData[key] as IEnumerable<NotifyEntry>;
-					if (entries != null && entries.Any())
-						return true;
-				}
-
-				return false;
+				return ResolveNotifications(null).Any();
 			}
 		}
 
-		private IEnumerable<LocalizedString> ResolveMessages(NotifyType type)
+		protected ICollection<LocalizedString> GetMessages(NotifyType type)
 		{
-			string key = "sm.notifications.all";
-			IEnumerable<NotifyEntry> entries;
-			IEnumerable<LocalizedString> result = Enumerable.Empty<LocalizedString>();
+			return ResolveNotifications(type).AsReadOnly();
+		}
 
-			if (TempData[key] != null)
+		private IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
+		{	
+						
+			IEnumerable<NotifyEntry> result = Enumerable.Empty<NotifyEntry>();
+
+			if (_internalNotifications == null)
 			{
-				entries = TempData[key] as IEnumerable<NotifyEntry>;
-				if (entries != null)
+				string key = NotifyAttribute.NotificationsKey;
+				IList<NotifyEntry> entries;
+				
+				if (TempData.ContainsKey(key))
 				{
-					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
+					entries = TempData[key] as IList<NotifyEntry>;
+					if (entries != null)
+					{
+						result = result.Concat(entries);
+					}
 				}
+
+				if (ViewData.ContainsKey(key))
+				{
+					entries = ViewData[key] as IList<NotifyEntry>;
+					if (entries != null)
+					{
+						result = result.Concat(entries);
+					}
+				}
+
+				_internalNotifications = new List<NotifyEntry>(result);
 			}
 
-			if (ViewData[key] != null)
+			if (type == null)
 			{
-				entries = ViewData[key] as IEnumerable<NotifyEntry>;
-				if (entries != null)
-				{
-					result = result.Concat(entries.Where(x => x.Type == type).Select(x => x.Message));
-				}
+				return _internalNotifications.Select(x => x.Message);
 			}
 
-			return result;
+			return _internalNotifications.Where(x => x.Type == type.Value).Select(x => x.Message);
 		}
 
         /// <summary>

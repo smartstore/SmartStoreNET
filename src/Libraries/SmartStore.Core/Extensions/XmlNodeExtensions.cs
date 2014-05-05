@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace SmartStore
 {
-	/// <remarks>codehint: sm-add</remarks>
+
 	public static class XmlNodeExtensions
 	{
 		/// <summary>Safe way to get inner text of an attribute.</summary>

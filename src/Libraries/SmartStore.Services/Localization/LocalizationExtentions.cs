@@ -15,7 +15,7 @@ namespace SmartStore.Services.Localization
 {
     public static class LocalizationExtentions
     {
-		private static readonly ConcurrentDictionary<LambdaExpression, object> _compiledExpressions = new ConcurrentDictionary<LambdaExpression, object>();
+		//private static readonly ConcurrentDictionary<LambdaExpression, object> _compiledExpressions = new ConcurrentDictionary<LambdaExpression, object>(); // --> MEM LEAK
 		
 		/// <summary>
         /// Get localized property of an entity
@@ -114,8 +114,8 @@ namespace SmartStore.Services.Localization
             //set default value if required
             if (String.IsNullOrEmpty(resultStr) && returnDefaultValue)
             {
-				var localizer = (Func<T, TPropType>)_compiledExpressions.GetOrAdd(keySelector, exp => exp.Compile());
-                //var localizer = keySelector.Compile();
+				//var localizer = (Func<T, TPropType>)_compiledExpressions.GetOrAdd(keySelector, exp => exp.Compile()); // --> MEM LEAK
+                var localizer = keySelector.Compile();
                 result = localizer(entity);
             }
             

@@ -392,7 +392,7 @@ namespace SmartStore.Services.Messages
 
             // use buyer's email as reply address
             var replyToEmail = order.BillingAddress.Email;
-            var replyToName = emailAccount.DisplayName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
+            var replyToName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
             if (order.BillingAddress.Company.HasValue())
             {
 				replyToName += ", " + order.BillingAddress.Company;

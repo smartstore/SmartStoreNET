@@ -140,6 +140,18 @@
     <Compile Include="Migrations\201404101903014_AttributeCombinationPrice.Designer.cs">
       <DependentUpon>201404101903014_AttributeCombinationPrice.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404170814451_BundleYouSaveLabelFix.cs" />
+    <Compile Include="Migrations\201404170814451_BundleYouSaveLabelFix.Designer.cs">
+      <DependentUpon>201404170814451_BundleYouSaveLabelFix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404232319321_LessValidation.cs" />
+    <Compile Include="Migrations\201404232319321_LessValidation.Designer.cs">
+      <DependentUpon>201404232319321_LessValidation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404292222025_FixMaxLength.cs" />
+    <Compile Include="Migrations\201404292222025_FixMaxLength.Designer.cs">
+      <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -300,6 +312,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404101903014_AttributeCombinationPrice.resx">
       <DependentUpon>201404101903014_AttributeCombinationPrice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404170814451_BundleYouSaveLabelFix.resx">
+      <DependentUpon>201404170814451_BundleYouSaveLabelFix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404232319321_LessValidation.resx">
+      <DependentUpon>201404232319321_LessValidation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404292222025_FixMaxLength.resx">
+      <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

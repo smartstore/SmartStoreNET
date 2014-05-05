@@ -11429,7 +11429,7 @@
 	<LocaleResource Name="DownloadableProducts.UserAgreement">
 		<Value>User agreement</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.Nop.Core.Domain.Catalog.ProductSortingEnum.CreatedOnAsc">
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOnAsc">
 		<Value>Date: Oldest first</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Checkboxes">

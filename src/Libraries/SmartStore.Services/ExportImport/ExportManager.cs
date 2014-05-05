@@ -1487,7 +1487,7 @@ namespace SmartStore.Services.ExportImport
                     var stateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                     var phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                     var fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
-					var vatNumber = customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumber);
+					var vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 					var vatNumberStatusId = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumberStatusId);
 					var timeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
 

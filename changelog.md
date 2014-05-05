@@ -1,6 +1,27 @@
 ﻿#Release Notes#
 
-##SmartStore.NET 2.0.1#
+##SmartStore.NET 2.0.2#
+
+###Bugfixes###
+* IMPORTANT FIX: Memory leak leads to _OutOfMemoryException_ in application after a while
+* Installation fix: some varchar(MAX) columns get created as varchar(4000). Added a migration to fix the column specs.
+* Installation fix: Setup fails with exception _Value cannot be null. Parameter name: stream_
+* Bugfix for stock issue in product variant combinations
+* #336 Product bundle: Upper add-to-cart button label shows wrong text
+* #338 Serialization exception thrown when session state mode is _StateServer_
+* #340 Admin: Header overlays TinyMCE in fullscreen mode
+* #341 Orders are not cancellable
+* #342 Backend: order total is not editable
+* #348 Messaging: OrderPlacedStoreOwnerNotification overwrites email account sender name with the customer's name
+* Default value for plugin description not loaded into edit popup window
+* Fixed "Controller does not implement IController" (concerning plugin controllers)
+* #361 Wrong delivery time in order confirmation
+
+###Improvements###
+* #250 Implemented validation to theme configuration editing
+
+
+##SmartStore.NET 2.0.1##
 
 ###New Features###
 * #292 Allow specific price for attribute combinations

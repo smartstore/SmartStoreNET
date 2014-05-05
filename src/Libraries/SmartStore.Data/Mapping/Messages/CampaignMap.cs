@@ -12,7 +12,7 @@ namespace SmartStore.Data.Mapping.Messages
 
             this.Property(ea => ea.Name).IsRequired();
             this.Property(ea => ea.Subject).IsRequired();
-            this.Property(ea => ea.Body).IsRequired();
+            this.Property(ea => ea.Body).IsRequired().IsMaxLength();
         }
     }
 }

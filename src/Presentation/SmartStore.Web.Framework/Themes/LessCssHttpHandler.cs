@@ -9,6 +9,7 @@ using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
 using BundleTransformer.Core.FileSystem;
 using BundleTransformer.Less.HttpHandlers;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
@@ -55,8 +56,25 @@ namespace SmartStore.Web.Framework.Themes
 
             if (IsThemeableRequest())
             {
-                var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-                cacheKey += "_" + storeContext.CurrentStore.Id.ToString();
+				var qs = QueryString.Current;
+				if (qs.Count > 0)
+				{
+					var httpContext = HttpContext.Current;
+					if (httpContext != null && httpContext.Items != null)
+					{
+						// required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
+						if (qs.Contains("storeId"))
+						{
+							httpContext.Items.Add(ThemeVarsVirtualPathProvider.OverriddenStoreIdKey, qs["storeId"].ToInt());
+						}
+						if (qs.Contains("theme"))
+						{
+							httpContext.Items.Add(ThemeVarsVirtualPathProvider.OverriddenThemeNameKey, qs["theme"]);
+						}
+					}
+				}
+				
+				cacheKey += "_" + ThemeVarsVirtualPathProvider.ResolveCurrentStoreId();
             }
 
             return cacheKey;

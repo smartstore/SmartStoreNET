@@ -10,6 +10,7 @@ namespace SmartStore.Data.Mapping.Forums
             this.ToTable("Forums_Group");
             this.HasKey(fg => fg.Id);
             this.Property(fg => fg.Name).IsRequired().HasMaxLength(200);
+			this.Property(fg => fg.Description).IsMaxLength();
         }
     }
 }

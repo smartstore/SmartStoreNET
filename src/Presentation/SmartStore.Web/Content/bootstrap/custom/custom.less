@@ -233,6 +233,12 @@ select {
 	min-width: 120px; // ...but too small is also bad
 }
 
+select, 
+input[type="file"] {
+    height: 30px;
+    line-height: 30px;
+}
+
 // FORMS (PROMPTS)
 // ---------------
 // (MC): add neat shadow and hover effect to prompts
@@ -267,6 +273,14 @@ input[type="color"],
 		outline: thin dotted \9; /* IE6-9 */
 	}	
 
+}
+
+// FORMS (CHECKBOX / RADIO)
+// ------------------------
+input[type="radio"], 
+input[type="checkbox"] {
+	margin-top: 4px;
+	margin-top: 1px \9;
 }
 
 

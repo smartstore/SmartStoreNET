@@ -19,7 +19,7 @@ using System.Collections.Concurrent;
 
 namespace SmartStore.Web.Framework.Themes
 {
-    public partial class DefaultThemeRegistry : IThemeRegistry
+    public partial class DefaultThemeRegistry : DisposableObject, IThemeRegistry
     {
 		#region Fields
 
@@ -27,7 +27,10 @@ namespace SmartStore.Web.Framework.Themes
 
 		private readonly SmartStoreConfig _cfg;
 		private readonly IEventPublisher _eventPublisher;
-		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string,ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
+		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
+
+		private FileSystemWatcher _watcherCfg;
+		private FileSystemWatcher _watcherFolders;
 
 		#endregion
 
@@ -54,32 +57,32 @@ namespace SmartStore.Web.Framework.Themes
 
 		private void WatchConfigFiles()
 		{
-			var watcher = new FileSystemWatcher();
+			_watcherCfg = new FileSystemWatcher();
 
-			watcher.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
-			watcher.Filter = "theme.config";
-			watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-			watcher.IncludeSubdirectories = true;
-			watcher.EnableRaisingEvents = true;
+			_watcherCfg.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			_watcherCfg.Filter = "theme.config";
+			_watcherCfg.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+			_watcherCfg.IncludeSubdirectories = true;
+			_watcherCfg.EnableRaisingEvents = true;
 
-			watcher.Changed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			watcher.Deleted += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			watcher.Created += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			watcher.Renamed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			_watcherCfg.Changed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			_watcherCfg.Deleted += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			_watcherCfg.Created += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
+			_watcherCfg.Renamed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
 		}
 
 		private void WatchFolders()
 		{
-			var watcher = new FileSystemWatcher();
+			_watcherFolders = new FileSystemWatcher();
 
-			watcher.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
-			watcher.Filter = "*";
-			watcher.NotifyFilter = NotifyFilters.DirectoryName;
-			watcher.IncludeSubdirectories = false;
-			watcher.EnableRaisingEvents = true;
+			_watcherFolders.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			_watcherFolders.Filter = "*";
+			_watcherFolders.NotifyFilter = NotifyFilters.DirectoryName;
+			_watcherFolders.IncludeSubdirectories = false;
+			_watcherFolders.EnableRaisingEvents = true;
 
-			watcher.Renamed += (s, e) => ThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
-			watcher.Deleted += (s, e) => TryRemoveManifest(e.Name);
+			_watcherFolders.Renamed += (s, e) => ThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
+			_watcherFolders.Deleted += (s, e) => TryRemoveManifest(e.Name);
 		}
 
 		private void ThemeConfigChanged(string name, string fullPath)
@@ -195,6 +198,18 @@ namespace SmartStore.Web.Framework.Themes
 
         #endregion
 
+
+		protected override void OnDispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_watcherCfg.Dispose();
+				_watcherFolders.Dispose();
+
+				_watcherCfg = null;
+				_watcherFolders = null;
+			}
+		}
 	}
 
 }

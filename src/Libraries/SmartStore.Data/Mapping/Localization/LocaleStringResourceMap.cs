@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Localization
             this.ToTable("LocaleStringResource");
             this.HasKey(lsr => lsr.Id);
             this.Property(lsr => lsr.ResourceName).IsRequired().HasMaxLength(200);
-            this.Property(lsr => lsr.ResourceValue).IsRequired();
+            this.Property(lsr => lsr.ResourceValue).IsRequired().IsMaxLength();
 
 
             this.HasRequired(lsr => lsr.Language)

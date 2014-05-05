@@ -160,7 +160,7 @@ namespace SmartStore
             var properties = t.GetProperties()
                             .Where(p => Attribute.IsDefined(p, typeof(ObjectSignatureAttribute), true));
 
-            return properties.Union(_extraSignatureProperties);
+            return properties.Union(_extraSignatureProperties).ToList();
         }
 
         /// <summary>
@@ -200,7 +200,6 @@ namespace SmartStore
     /// <summary>
     /// Generic version of <see cref="ComparableObject" />.
     /// </summary>
-    [Serializable]
     public abstract class ComparableObject<T> : ComparableObject, IEquatable<T>
     {
 

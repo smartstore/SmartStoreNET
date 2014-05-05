@@ -12,7 +12,7 @@ namespace SmartStore.Data.Mapping.Common
 
             this.Property(ga => ga.KeyGroup).IsRequired().HasMaxLength(400);
             this.Property(ga => ga.Key).IsRequired().HasMaxLength(400);
-            this.Property(ga => ga.Value).IsRequired();
+            this.Property(ga => ga.Value).IsRequired().IsMaxLength();
         }
     }
 }

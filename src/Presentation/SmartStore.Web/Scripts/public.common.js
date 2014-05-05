@@ -1,18 +1,5 @@
 ﻿(function ($, window, document, undefined) {
 
-    window.OpenWindow = function(query, w, h, scroll) {
-        var l = (screen.width - w) / 2;
-        var t = (screen.height - h) / 2;
-
-        winprops = 'resizable=0, height=' + h + ',width=' + w + ',top=' + t + ',left=' + l + 'w';
-        if (scroll) winprops += ',scrollbars=1';
-        var f = window.open(query, "_blank", winprops);
-    }
-
-    window.setLocation = function(url) {
-        window.location.href = url;
-    }
-
     window.displayAjaxLoading = function(display) {
         if ($.throbber === undefined)
             return;
@@ -25,42 +12,10 @@
         }
     }
 
-    window.displayNotification = function(message, type, sticky, delay) {
-        if (window.EventBroker === undefined || window._ === undefined)
-            return;
-
-        var notify = function (msg) {
-            EventBroker.publish("message", {
-                text: msg,
-                type: type,
-                delay: delay || 5000,
-                hide: !sticky
-            })
-        };
-
-        if (_.isArray(message)) {
-            $.each(message, function (i, val) {
-                notify(val)
-            });
-        }
-        else {
-            notify(message);
-        }
-    }
-
-    window.htmlEncode = function(value) {
-        return $('<div/>').text(value).html();
-    }
-
-    window.htmlDecode = function(value) {
-        return $('<div/>').html(value).text();
-    }
-
     window.getPageWidth = function() {
         return parseFloat($("#content").css("width"));
     }
 
-    // codehint: sm-add
     var _commonPluginFactories = [
         // select2
         function (ctx) {
@@ -97,34 +52,12 @@
         });
     }
 
-    // global notification subscriber
-    if (window.EventBroker && window._ && $.pnotify) {
-    	//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
-    	var stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 60 };
-        EventBroker.subscribe("message", function (message, data) {
-            var opts = _.isString(data) ? { text: data } : data;
-
-            opts.stack = stack_topright;
-            //opts.addclass = "stack-bottomright";
-
-            $.pnotify(opts);
-        });
-    }
-
     // on document ready
     // TODO: reorganize > public.globalinit.js
     $(function () {
 
-        if (!Modernizr.csstransitions) {
-            $.fn.transition = $.fn.animate;
-        }
-
         // adjust pnotify global defaults
         if ($.pnotify) {
-            $.extend($.pnotify.defaults, {
-                history: false,
-                animate_speed: "fast"
-            });
 
             // intercept window.alert with pnotify
             window.alert = function (message) {

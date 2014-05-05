@@ -89,7 +89,7 @@
         </div>
 
         <div class="span8">
-            @if (Model.HideNewsletterBlock)
+            @if (!Model.HideNewsletterBlock)
             {
                 <div class="footer-newsletter last-col">
                     <h4>@T("Newsletter.Title")</h4>
@@ -128,7 +128,7 @@
 <div class="footer-disclaimer container">
     <div class="row">
 		<div class="span8">
-			@if (!Model.ShowLegalInfo)
+			@if (Model.ShowLegalInfo)
 			{
 				<div class="footer-legal">
 					@Html.Raw(Model.LegalInfo)

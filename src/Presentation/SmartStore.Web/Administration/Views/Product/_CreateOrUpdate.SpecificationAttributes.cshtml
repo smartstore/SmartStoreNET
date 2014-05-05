@@ -55,8 +55,6 @@
             $(function() {
                 $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").change(function() {
 
-                    alert("changed");
-
                     var selectedItem = $(this).val();
                     var ddlSpecOptions = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeOptionId)")
                     $.ajax({
@@ -69,7 +67,7 @@
                             $.each(data, function(id, option) {
                                 ddlSpecOptions.append($('<option></option>').val(option.id).html(option.name));
                             });
-                            ddlSpecOptions.trigger("change"); // codehint: sm-add
+                            ddlSpecOptions.trigger("change");
                         },
                         error:function (xhr, ajaxOptions, thrownError){
                             alert('Failed to retrieve specification options.')

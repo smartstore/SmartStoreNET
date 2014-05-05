@@ -10,6 +10,7 @@ namespace SmartStore.Data.Mapping.Forums
             this.ToTable("Forums_Forum");
             this.HasKey(f => f.Id);
             this.Property(f => f.Name).IsRequired().HasMaxLength(200);
+			this.Property(f => f.Description).IsMaxLength();
             
             this.HasRequired(f => f.ForumGroup)
                 .WithMany(fg => fg.Forums)

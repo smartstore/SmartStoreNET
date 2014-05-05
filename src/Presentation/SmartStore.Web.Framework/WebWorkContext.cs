@@ -238,7 +238,7 @@ namespace SmartStore.Web.Framework
                 }
 
                 #region Get language from URL (if possible)
-                if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext != null)
+				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext != null && _httpContext.Request != null)
                 {
                     var helper = new LocalizedUrlHelper(_httpContext.Request, true);
                     string seoCode;
@@ -361,7 +361,7 @@ namespace SmartStore.Web.Framework
                     }
 
 					// find currency by domain ending
-					if (currency == null)
+					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
 					{
 						currency = _currencyService
 							.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)

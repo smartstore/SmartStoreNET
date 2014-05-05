@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Packaging
 {
 
 	public interface IFolderUpdater
 	{
-		void Backup(DirectoryInfo existingFolder, DirectoryInfo backupfolder);
+		void Backup(DirectoryInfo existingFolder, DirectoryInfo backupfolder, params string[] ignorePatterns);
 		void Restore(DirectoryInfo backupfolder, DirectoryInfo existingFolder);
 	}
 
@@ -28,14 +29,15 @@ namespace SmartStore.Core.Packaging
 			_logger = logger;
 		}
 
-		public void Backup(DirectoryInfo existingFolder, DirectoryInfo backupfolder)
+		public void Backup(DirectoryInfo existingFolder, DirectoryInfo backupfolder, params string[] ignorePatterns)
 		{
-			CopyFolder(GetFolderContent(existingFolder), backupfolder);
+			var ignores = ignorePatterns.Select(x => new Wildcard(x));
+			CopyFolder(GetFolderContent(existingFolder, ignores), backupfolder);
 		}
 
 		public void Restore(DirectoryInfo backupfolder, DirectoryInfo existingFolder)
 		{
-			CopyFolder(GetFolderContent(backupfolder), existingFolder);
+			CopyFolder(GetFolderContent(backupfolder, Enumerable.Empty<Wildcard>()), existingFolder);
 		}
 
 		private void CopyFolder(FolderContent source, DirectoryInfo dest)
@@ -74,26 +76,34 @@ namespace SmartStore.Core.Packaging
 			File.Copy(sourceFile.FullName, destFile.FullName, true);
 		}
 
-		private FolderContent GetFolderContent(DirectoryInfo folder)
+		private FolderContent GetFolderContent(DirectoryInfo folder, IEnumerable<Wildcard> ignores)
 		{
 			var files = new List<string>();
-			GetFolderContent(folder, "", files);
+			GetFolderContent(folder, "", files, ignores);
 			return new FolderContent { Folder = folder, Files = files };
 		}
 
-		private void GetFolderContent(DirectoryInfo folder, string prefix, List<string> files)
+		private void GetFolderContent(DirectoryInfo folder, string prefix, List<string> files, IEnumerable<Wildcard> ignores)
 		{
 			if (!folder.Exists)
 				return;
 
+			if (ignores.Any(w => w.IsMatch(prefix)))
+				return;
+			
 			foreach (var file in folder.GetFiles())
 			{
-				files.Add(Path.Combine(prefix, file.Name));
+				var path = Path.Combine(prefix, file.Name);
+				var ignore = ignores.Any(w => w.IsMatch(path));
+				if (!ignore)
+				{
+					files.Add(path);
+				}
 			}
 
 			foreach (var child in folder.GetDirectories())
 			{
-				GetFolderContent(child, Path.Combine(prefix, child.Name), files);
+				GetFolderContent(child, Path.Combine(prefix, child.Name), files, ignores);
 			}
 		}
 

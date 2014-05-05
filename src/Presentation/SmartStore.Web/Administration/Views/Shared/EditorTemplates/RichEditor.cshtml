@@ -10,6 +10,12 @@
     {
         lang = "en";
     }
+
+	var forceRootBlock = "'p'";
+	if (ViewData.ContainsKey("ForceRootBlock") && (bool)ViewData["ForceRootBlock"] == false)
+	{
+		forceRootBlock = "false";
+	}
 }
 <script type="text/javascript">
 
@@ -24,6 +30,7 @@
     				selector: '#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)',
                 	language: '@lang',
                 	content_css: '@Url.Content("~/Content/editors/tinymce4/skins/smartstore/content.smartstore.css")',
+					forced_root_block: @Html.Raw(forceRootBlock)
                 }
             )
         );

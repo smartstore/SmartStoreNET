@@ -20,7 +20,7 @@ namespace SmartStore.Core.Packaging
 			{
 				case MessageLevel.Debug:
 					//_logger.Debug(String.Format(message, args));
-					//break;
+					break;
 				case MessageLevel.Error:
 					_logger.Error(String.Format(message, args));
 					break;

@@ -31,24 +31,46 @@ namespace SmartStore.Core.Packaging
 			
 			using (_rwLock.GetUpgradeableReadLock())
 			{
-				var package = FindPackage();
-
-				if (package == null)
-					return false;
-
-				if (!ValidatePackage(package))
-					return false;
-
-				if (!CheckEnvironment())
-					return false;
-
-				using (_rwLock.GetWriteLock())
+				try
 				{
-					var info = ExecuteUpdate(package);
+					string packagePath = null;
+					var package = FindPackage(out packagePath);
 
-					FinalizeUpdate();
+					if (package == null)
+						return false;
 
-					return true;
+					if (!ValidatePackage(package))
+						return false;
+
+					if (!CheckEnvironment())
+						return false;
+
+					using (_rwLock.GetWriteLock())
+					{
+						Backup();
+
+						var info = ExecuteUpdate(package);
+
+						if (info != null)
+						{
+							var newPath = packagePath + ".applied";
+							if (File.Exists(newPath))
+							{
+								File.Delete(packagePath);
+							}
+							else
+							{
+								File.Move(packagePath, newPath);
+							}						
+						}
+
+						return info != null;
+					}
+				}
+				catch (Exception ex)
+				{
+					_logger.Error("An error occured while updating the application: {0}".FormatCurrent(ex.Message), ex);
+					return false;
 				}
 			}
 		}
@@ -59,8 +81,9 @@ namespace SmartStore.Core.Packaging
 			return new TraceLogger(logFile);
 		}
 
-		private IPackage FindPackage()
+		private IPackage FindPackage(out string path)
 		{
+			path = null;
 			var dir = CommonHelper.MapPath(UpdatePackagePath, false);
 			var files = Directory.GetFiles(dir, "SmartStore.*.nupkg", SearchOption.TopDirectoryOnly);
 
@@ -72,6 +95,7 @@ namespace SmartStore.Core.Packaging
 
 			try
 			{
+				path = files[0];
 				package = new ZipPackage(files[0]);
 				_logger = CreateLogger(package);
 				_logger.Information("Found update package '{0}'".FormatInvariant(package.GetFullName()));
@@ -101,11 +125,11 @@ namespace SmartStore.Core.Packaging
 		{
 			var source = new DirectoryInfo(CommonHelper.MapPath("~/"));
 
-			var tempPath = "~/App_Data/_Backup/App/SmartStore";
+			var tempPath = CommonHelper.MapPath("~/App_Data/_Backup/App/SmartStore");
 			string localTempPath = null;
 			for (int i = 0; i < 50; i++)
 			{
-				localTempPath = CommonHelper.MapPath(tempPath) + (i == 0 ? "" : "." + i.ToString());
+				localTempPath = tempPath + (i == 0 ? "" : "." + i.ToString());
 				if (!Directory.Exists(localTempPath))
 				{
 					Directory.CreateDirectory(localTempPath);
@@ -113,7 +137,7 @@ namespace SmartStore.Core.Packaging
 				}
 				localTempPath = null;
 			}
-
+			
 			if (localTempPath == null)
 			{
 				var exception = new SmartException("Too many backups in '{0}'.".FormatInvariant(tempPath));
@@ -124,12 +148,13 @@ namespace SmartStore.Core.Packaging
 			var backupFolder = new DirectoryInfo(localTempPath);
 			var folderUpdater = new FolderUpdater(_logger);
 			folderUpdater.Backup(source, backupFolder, "App_Data", "Media");
+
+			_logger.Information("Backup successfully created in folder '{0}'.".FormatInvariant(localTempPath));
 		}
 
 		private PackageInfo ExecuteUpdate(IPackage package)
 		{
-			//var appPath = CommonHelper.MapPath("~/");
-			var appPath = "D:\\_temp\\AppUpdater\\Restore";
+			var appPath = CommonHelper.MapPath("~/");
 			
 			var logger = new NugetLogger(_logger);
 
@@ -147,7 +172,7 @@ namespace SmartStore.Core.Packaging
 			// Perform the update
 			projectManager.AddPackageReference(package, true, false);
 
-			return new PackageInfo
+			var info = new PackageInfo
 			{
 				Id = package.Id,
 				Name = package.Title ?? package.Id,
@@ -155,12 +180,11 @@ namespace SmartStore.Core.Packaging
 				Type = "App",
 				Path = appPath
 			};
-		}
 
-		private void FinalizeUpdate()
-		{
-		}
+			_logger.Information("Update '{0}' successfully executed.".FormatInvariant(info.Name));
 
+			return info;
+		}
 
 		protected override void OnDispose(bool disposing)
 		{

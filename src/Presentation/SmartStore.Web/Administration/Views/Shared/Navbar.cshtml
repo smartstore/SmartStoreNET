@@ -32,7 +32,7 @@
         {
             <text>
                 <div class="btn-group pull-right">
-                    <a id="current-user" class="btn btn-inverse navbar-tool" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id })'>
+                    <a id="current-user" class="btn btn-inverse navbar-tool" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
                         <i class="icon-user"></i>
                         <span>@userName</span>
                      </a>
@@ -41,7 +41,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-							<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id })">
+							<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
 								<i class="icon-user"></i>
 								Account
 							</a>
@@ -77,14 +77,14 @@
 						<li class="divider"></li>
 					}
                     <li>
-                        <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl })">
-                            <i class="icon-remove"></i>
+                        <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+                            <i class="icon-trash"></i>
                             @T("Admin.Header.ClearCache")
                         </a>
                     </li>
                     <li>
-                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl })">
-                            <i class="icon-refresh"></i>
+                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+                            <i class="icon-power-off"></i>
                             @T("Admin.Header.RestartApplication")
                         </a>
                     </li>

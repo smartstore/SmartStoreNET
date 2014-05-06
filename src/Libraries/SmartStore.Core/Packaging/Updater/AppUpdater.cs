@@ -85,6 +85,10 @@ namespace SmartStore.Core.Packaging
 		{
 			path = null;
 			var dir = CommonHelper.MapPath(UpdatePackagePath, false);
+
+			if (!Directory.Exists(dir))
+				return null;
+
 			var files = Directory.GetFiles(dir, "SmartStore.*.nupkg", SearchOption.TopDirectoryOnly);
 
 			// TODO: allow more than one package in folder and return newest

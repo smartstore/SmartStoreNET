@@ -152,6 +152,10 @@
     <Compile Include="Migrations\201404292222025_FixMaxLength.Designer.cs">
       <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.cs" />
+    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.Designer.cs">
+      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -321,6 +325,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404292222025_FixMaxLength.resx">
       <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405080948530_ProductBulkEditInfo.resx">
+      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

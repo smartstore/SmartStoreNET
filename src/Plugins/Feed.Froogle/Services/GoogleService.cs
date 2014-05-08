@@ -329,7 +329,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			});
 
 			writer.WriteStartElement("description");
-			writer.WriteCData(description);
+			writer.WriteCData(description.RemoveInvalidXmlChars());
 			writer.WriteEndElement();
 
 			writer.WriteStartElement("g", "google_product_category", _googleNamespace);
@@ -547,7 +547,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			string breakingError = null;
 			var xmlSettings = new XmlWriterSettings
 			{
-				Encoding = Encoding.UTF8
+				Encoding = Encoding.UTF8,
+				CheckCharacters = false
 			};
 
 			using (var writer = XmlWriter.Create(stream, xmlSettings))

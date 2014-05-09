@@ -82,7 +82,7 @@
 
     @{
         string name = null, nameTitle = null;
-        name = Model.Name.Truncate(50);
+        name = Model.Name.Truncate(50, "...");
         if (Model.Name.Length > name.Length)
         {
             nameTitle = Model.Name;
@@ -100,7 +100,7 @@
     @{
         string desc = null, descTitle = null;
         if (Model.ShortDescription.HasValue()) {
-            desc = Model.ShortDescription.Truncate(50);
+            desc = Model.ShortDescription.Truncate(50, "...");
             if (Model.ShortDescription.Length > desc.Length) {
                 descTitle = Model.ShortDescription;
             }

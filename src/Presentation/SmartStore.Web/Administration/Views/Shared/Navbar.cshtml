@@ -68,7 +68,8 @@
 					{
 						<li>
 							<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
-								<i class="icon-globe"></i>&nbsp;@store.Name.Truncate(32)
+								<i class="icon-globe"></i>
+								@store.Name.Truncate(32, "...")
 							</a>
 						</li>
 					}

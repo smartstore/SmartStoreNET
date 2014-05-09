@@ -9,7 +9,7 @@
 <div class="data">
     @{
         string name = null, nameTitle = null;
-        name = Model.Name.Truncate(50);
+        name = Model.Name.Truncate(50, "...");
         if (Model.Name.Length > name.Length)
         {
             nameTitle = Model.Name;

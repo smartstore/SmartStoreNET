@@ -14,7 +14,7 @@
         {
             <div>
                 @T("Forum.In"):
-                @Html.RouteLink(Model.ForumTopicSubject.Truncate(30), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
+                @Html.RouteLink(Model.ForumTopicSubject.Truncate(30, "..."), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
             </div>
         }
         @if (Model.CustomerId > 0)

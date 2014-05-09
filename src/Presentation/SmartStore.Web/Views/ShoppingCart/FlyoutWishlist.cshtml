@@ -42,7 +42,7 @@
                         {
                             <br />    
                             <span class="attributes muted" title="@item.AttributeInfo">
-                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength))
+                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength, "..."))
                             </span>
                         }
                     </div>

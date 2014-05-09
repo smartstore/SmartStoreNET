@@ -11142,7 +11142,7 @@
 		<Value>Error while sending the email. Please try again later.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Export">
-		<Value>Exportieren</Value>
+		<Value>Export</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.FileType.Audio">
 		<Value>Audio</Value>
@@ -11187,7 +11187,7 @@
 		<Value>Home</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Import">
-		<Value>Importieren</Value>
+		<Value>Import</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Inactive">
 		<Value>Inactive</Value>

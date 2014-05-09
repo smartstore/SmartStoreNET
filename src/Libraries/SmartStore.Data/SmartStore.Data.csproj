@@ -156,6 +156,10 @@
     <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.Designer.cs">
       <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405071457441_FixRes1.cs" />
+    <Compile Include="Migrations\201405071457441_FixRes1.Designer.cs">
+      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -328,6 +332,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405080948530_ProductBulkEditInfo.resx">
       <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405071457441_FixRes1.resx">
+      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

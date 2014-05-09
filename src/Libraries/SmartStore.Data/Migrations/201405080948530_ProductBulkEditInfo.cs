@@ -28,7 +28,7 @@ namespace SmartStore.Data.Migrations
         {
             builder.AddOrUpdate("Admin.Catalog.BulkEdit.Info",
                 "Click on the values of the products you want to change within the grid and change them as desired. Accept the changes with a click on [Save changes] or discard them by clicking [Cancel changes]",
-                "Klicken Sie in der Tabelle auf die Werte der Produkte die Sie bearbeiten wollen, ändern Sie die Werte wie gewünscht und übernehmen Sie Ihre Änderungen mit einem Klick auf [Änderungen speichern] oder verwerfen Sie sie, mit einem Klick auf [Änderungen verwerfen]");
+                "Klicken Sie in der Tabelle auf die Werte der Produkte, die Sie bearbeiten wollen. Ändern Sie die Werte wie gewünscht und übernehmen Sie Ihre Änderungen mit einem Klick auf [Änderungen speichern] oder verwerfen Sie sie mit einem Klick auf [Änderungen verwerfen]");
         }
     }
 }

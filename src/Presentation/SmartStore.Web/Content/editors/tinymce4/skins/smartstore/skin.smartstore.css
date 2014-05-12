@@ -28,3 +28,7 @@ div.mce-fullscreen {
 .mce-btn:hover > button {
 	opacity: 1;
 }
+
+.mce-menubtn.mce-fixed-width span {
+	width: auto;
+}

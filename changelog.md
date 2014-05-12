@@ -2,6 +2,9 @@
 
 ##SmartStore.NET 2.1#
 
+###Improvements###
+* TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
+
 ###Bugfixes###
 * #376 Product filtering: Category price range filter not working anymore
 

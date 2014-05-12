@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -68,7 +67,7 @@ namespace SmartStore.Services.Filter
 
 			//if (value == "__UtcNow__")
 			//	return DateTime.UtcNow;
-			
+
 			//if (value == "__Now__")
 			//	return DateTime.Now;
 
@@ -85,6 +84,8 @@ namespace SmartStore.Services.Filter
 		{
 			if (itm.Entity == ShortcutPrice)
 			{
+				// TODO: where clause of special price not correct. product can appear in price and in special price range.
+
 				if (itm.IsRange)
 				{
 					string valueLeft, valueRight;
@@ -115,7 +116,7 @@ namespace SmartStore.Services.Filter
 			else if (itm.Entity == ShortcutSpecAttribute)
 			{
 				context.WhereClause.AppendFormat("SpecificationAttributeOptionId {0} {1}", itm.Operator == null ? "=" : itm.Operator.ToString(), FormatParameterIndex(ref index));
-				
+
 				context.Values.Add(itm.ID ?? 0);
 			}
 			else
@@ -140,7 +141,7 @@ namespace SmartStore.Services.Filter
 				var data = (
 					from c in criteria
 					group c by c.Entity).Where(g => g.Count() > 1);
-					//group c by c.Name).Where(g => g.Count() > 1);
+				//group c by c.Name).Where(g => g.Count() > 1);
 
 				foreach (var grp in data)
 				{
@@ -197,7 +198,8 @@ namespace SmartStore.Services.Filter
 						{
 							criteria.MatchCount = ProductFilter(tmp).Count();
 						}
-						catch (Exception exc) {
+						catch (Exception exc)
+						{
 							exc.Dump();
 						}
 
@@ -338,8 +340,8 @@ namespace SmartStore.Services.Filter
 					string valueLeft, valueRight;
 					itm.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
-					context.WhereClause.AppendFormat("({0} >= {1} And {0} {2} {3})", 
-						itm.SqlName, 
+					context.WhereClause.AppendFormat("({0} >= {1} And {0} {2} {3})",
+						itm.SqlName,
 						FormatParameterIndex(ref index),
 						itm.Operator == FilterOperator.RangeGreaterEqualLessEqual ? "<=" : "<",
 						FormatParameterIndex(ref index)
@@ -352,7 +354,8 @@ namespace SmartStore.Services.Filter
 				{
 					context.WhereClause.AppendFormat("ASCII({0}) Is Null", itm.SqlName);		// true if null or empty (string)
 				}
-				else {
+				else
+				{
 					context.WhereClause.Append(itm.SqlName);
 
 					if (itm.Operator == FilterOperator.Contains)
@@ -388,15 +391,20 @@ namespace SmartStore.Services.Filter
 
 		public virtual IQueryable<Product> ProductFilter(FilterProductContext context)
 		{
-			var nowUtc = DateTime.UtcNow;
 			var sql = new FilterSql();
 			var query = AllProducts(context.CategoryIds);
+
+			// prices
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == ShortcutPrice))
+			{
+				query = query.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
+			}
 
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
 				bool includeFeatured = IncludeFeatured;
-				
+
 				var pmq = (
 					from p in query
 					from pm in p.ProductManufacturers
@@ -470,7 +478,7 @@ namespace SmartStore.Services.Filter
 			//query.ToString().Dump();
 			return query;
 		}
-		
+
 		public virtual void ProductFilterable(FilterProductContext context)
 		{
 			if (context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutPrice) == null)

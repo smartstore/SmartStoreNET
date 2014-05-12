@@ -1,5 +1,11 @@
 ﻿#Release Notes#
 
+##SmartStore.NET 2.1#
+
+###Bugfixes###
+* #376 Product filtering: Category price range filter not working anymore
+
+
 ##SmartStore.NET 2.0.2#
 
 ###Bugfixes###

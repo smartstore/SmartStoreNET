@@ -470,6 +470,54 @@ nav ul, nav li {
 }
 
 
+/* Navigations
+================================================ */
+
+.block-category-navigation.block.block-bordered .listbox {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.block-category-navigation ul,
+.block-account-navigation ul {
+	.small();
+	margin: 0 0 0 0.4em; 
+}
+
+.block-category-navigation ul ul,
+.block-account-navigation ul ul { 
+	margin-left: 1.1em 
+}
+
+/* deeper hierarchy fonts are smaller */
+.block-category-navigation ul > li > ul,
+.block-account-navigation ul > li > ul { .smaller() }
+
+.block-category-navigation ul > li > ul > li,
+.block-account-navigation ul > li > ul > li { line-height: 16px }
+
+.block-category-navigation ul > li > ul ul,
+.block-account-navigation ul > li > ul ul { font-size: 1em }
+
+.nav-category > ul > li,
+.block-account-navigation .listbox > ul > li {
+	a {
+		display: inline-block;
+		padding: .3em 0;
+	}
+
+	.active {
+		font-weight: bold;
+		color: inherit;
+	}
+}
+
+.nav-category > ul li.expanded > a,
+.block-account-navigation .listbox > ul li.expanded > a {
+	font-weight: bold;
+}
+
+
 /* Content
 ================================================ */
 

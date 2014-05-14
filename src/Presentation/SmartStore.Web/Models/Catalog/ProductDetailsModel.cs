@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -120,13 +121,13 @@ namespace SmartStore.Web.Models.Catalog
         {
             public ProductBreadcrumbModel()
             {
-                CategoryBreadcrumb = new List<CategoryModel>();
+				CategoryBreadcrumb = new List<MenuItem>();
             }
 
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductSeName { get; set; }
-            public IList<CategoryModel> CategoryBreadcrumb { get; set; }
+            public IList<MenuItem> CategoryBreadcrumb { get; set; }
         }
 
 		public partial class AddToCartModel : ModelBase

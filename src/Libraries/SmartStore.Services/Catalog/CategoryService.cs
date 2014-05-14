@@ -229,13 +229,6 @@ namespace SmartStore.Services.Catalog
 
 			return query;
         }
-
-        private void ApplyMisc(ref IQueryable<Category> query)
-        {
-            query = from c in query
-                    where c.Id != 56
-                    select c;
-        }
         
         /// <summary>
         /// Gets all categories displayed on the home page

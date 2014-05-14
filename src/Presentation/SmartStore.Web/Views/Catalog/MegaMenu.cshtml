@@ -1,4 +1,4 @@
-﻿@model CategoryNavigationModel
+﻿@model NavigationModel
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Services.Catalog;
@@ -6,18 +6,23 @@
 @using SmartStore.Collections;
 
 @functions {
-    private string GetCssClassForNode(TreeNode<CategoryNavigationModel.CategoryModel> node, NodePathState state) 
+	private string GetNodeLink(TreeNode<MenuItem> node)
+	{
+		return node.Value.GenerateUrl(this.Url);
+	}
+	
+	private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state) 
     {
         var liClasses = new List<string>();
 
-        if (node.Value.Level == 1)
+        if (node.Depth == 1)
         {
             liClasses.Add("drop-list-item");
-        }
-        
-        if (node.Value.Level <= 1 && node.HasChildren)
-        {
-            liClasses.Add(node.Value.Level > 0 ? "dropdown-submenu" : "dropdown");
+		}
+
+		if (node.Depth <= 1 && node.HasChildren)
+		{
+			liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
         }
         
         if ((state & NodePathState.Expanded) == NodePathState.Expanded)
@@ -41,13 +46,22 @@
 	    	<div class="container">
                 <ul class="nav nav-smart shrinkable" style="margin-right: 0;">
                     @foreach (var node in Model.Root.Children)
-                    {
-                        var state = Model.GetNodePathState(node);
-                        <li class='@(GetCssClassForNode(node, state))'> 
-                        <a href="@Url.RouteUrl("Category", new { SeName = node.Value.SeName })" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@node.Value.Name
-                            @if (node.Value.NumberOfProducts.HasValue)
+					{
+						var item = node.Value;
+
+						if (!item.Visible)
+						{
+							continue;
+						}
+
+						var itemUrl = GetNodeLink(node);				
+						var itemState = node.GetNodePathState(Model.Path);
+						
+                        <li class='@(GetCssClassForNode(node, itemState))'> 
+                        <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@item.Text
+                            @if (item.ElementsCount.HasValue)
                             {
-                                <text> (@(node.Value.NumberOfProducts))</text>
+                                <text> (@(item.ElementsCount))</text>
                             }
                             
                             @if (node.HasChildren)
@@ -83,7 +97,7 @@
     </div>
 </div>
 
-@helper CreateDrilldownMenu(IEnumerable<TreeNode<CategoryNavigationModel.CategoryModel>> nodes, bool isRoot)
+@helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
 {
     if (isRoot)
     {
@@ -92,11 +106,20 @@
     
     <ul class='@(isRoot ? "drop-list" : "dropdown-menu")'>
     @foreach (var node in nodes)
-    {
-        var state = Model.GetNodePathState(node);
-        <li class='@(GetCssClassForNode(node, state))'> 
-            <a href="@Url.RouteUrl("Category", new { SeName = node.Value.SeName })">@node.Value.Name</a>
-            @if (node.Value.Level <= 2 && node.HasChildren)
+	{
+		var item = node.Value;
+
+		if (!item.Visible)
+		{
+			continue;
+		}
+
+		var itemUrl = GetNodeLink(node);
+		var itemState = node.GetNodePathState(Model.Path);
+		
+        <li class='@(GetCssClassForNode(node, itemState))'> 
+            <a href="@itemUrl">@item.Text</a>
+            @if (node.Depth <= 2 && node.HasChildren)
             {
                 @CreateDrilldownMenu(node.Children, false)
             }

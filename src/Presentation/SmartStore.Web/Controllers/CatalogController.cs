@@ -42,6 +42,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Controllers
 {
@@ -92,6 +93,7 @@ namespace SmartStore.Web.Controllers
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
+		private readonly Func<string, Lazy<ICacheManager>> _cacheFactory;
         private readonly ICacheManager _cacheManager;
         private readonly CaptchaSettings _captchaSettings;
 		private readonly CurrencySettings _currencySettings;
@@ -111,13 +113,16 @@ namespace SmartStore.Web.Controllers
 
         public CatalogController(ICommonServices services,
 			ICategoryService categoryService,
-            IManufacturerService manufacturerService, IProductService productService,
+            IManufacturerService manufacturerService, 
+			IProductService productService,
             IProductTemplateService productTemplateService,
             ICategoryTemplateService categoryTemplateService,
             IManufacturerTemplateService manufacturerTemplateService,
-            IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
+            IProductAttributeService productAttributeService, 
+			IProductAttributeParser productAttributeParser,
 			IProductAttributeFormatter productAttributeFormatter,
-			ITaxService taxService, ICurrencyService currencyService,
+			ITaxService taxService, 
+			ICurrencyService currencyService,
             IPictureService pictureService,
             IPriceCalculationService priceCalculationService, IPriceFormatter priceFormatter,
             ISpecificationAttributeService specificationAttributeService,
@@ -137,7 +142,8 @@ namespace SmartStore.Web.Controllers
             /* codehint: sm-add */
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
             IDeliveryTimeService deliveryTimeService, ISettingService settingService,
-			ICustomerActivityService customerActivityService
+			ICustomerActivityService customerActivityService,
+			Func<string, Lazy<ICacheManager>> cacheFactory
             )
         {
 			this._services = services;
@@ -195,6 +201,7 @@ namespace SmartStore.Web.Controllers
             this._captchaSettings = captchaSettings;
 			this._currencySettings = currencySettings;
             this._cacheManager = _services.Cache;
+			this._cacheFactory = cacheFactory;
 
 			T = NullLocalizer.Instance;
         }
@@ -214,93 +221,61 @@ namespace SmartStore.Web.Controllers
 		#region Utilities
 
 		[NonAction]
-        protected List<int> GetChildCategoryIds(int parentCategoryId, bool showHidden = false)
+        protected List<int> GetChildCategoryIds(int parentCategoryId)
         {
-            var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles
-                .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+            var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY, 
-				parentCategoryId, showHidden, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
+				parentCategoryId, 
+				false, 
+				string.Join(",", customerRolesIds), 
+				_storeContext.CurrentStore.Id);
+
             return _cacheManager.Get(cacheKey, () =>
             {
-                var categoriesIds = new List<int>();
-                var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, showHidden);
-                foreach (var category in categories)
-                {
-                    categoriesIds.Add(category.Id);
-                    categoriesIds.AddRange(GetChildCategoryIds(category.Id, showHidden));
-                }
-                return categoriesIds;
+				var root = GetCategoryMenu();
+				var node = root.SelectNode(x => x.Value.EntityId == parentCategoryId);
+				if (node != null)
+				{
+					var ids = node.Flatten(false).Select(x => x.EntityId).ToList();
+					return ids;
+				}
+				return new List<int>();
             });
         }
 
-        private IList<int> GetCurrentCategoryPath(int currentCategoryId, int currentProductId)
+		private IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
         {
-            string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
+			var requestCache = _cacheFactory("request").Value;
+			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
-            if (TempData.ContainsKey(cacheKey))
-            {
-                return TempData[cacheKey] as IList<int>;
-            }
+			var breadcrumb = requestCache.Get(cacheKey, () => {
+				var root = GetCategoryMenu();
+				TreeNode<MenuItem> node = null;
 
-            var path = GetCategoryBreadCrumb(currentCategoryId, currentProductId).Select(x => x.Id).ToList();
-            TempData[cacheKey] = path;
+				if (currentCategoryId > 0)
+				{
+					node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+				}
+				if (node == null && currentProductId > 0)
+				{
+					var productCategories = _categoryService.GetProductCategoriesByProductId(currentProductId);
+					if (productCategories.Count > 0)
+					{
+						currentCategoryId = productCategories[0].Category.Id;
+						node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+					}
+				}
 
-            return path;
-        }
+				if (node != null)
+				{
+					var path = node.GetBreadcrumb();
+					return path;
+				}
 
-        // codehint: sm-add
-        [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId, IDictionary<int, Category> mappedCategories = null)
-        {
-            Category currentCategory = null;
-            if (currentCategoryId > 0)
-                currentCategory = _categoryService.GetCategoryById(currentCategoryId);
+				return new List<MenuItem>();			
+			});
 
-            if (currentCategory == null && currentProductId > 0)
-            {
-                var productCategories = _categoryService.GetProductCategoriesByProductId(currentProductId);
-                if (productCategories.Count > 0)
-                    currentCategory = productCategories[0].Category;
-            }
-
-            if (currentCategory != null)
-            {
-                return GetCategoryBreadCrumb(currentCategory, mappedCategories);
-            }
-
-            return new List<Category>();
-        }
-
-        [NonAction]
-        protected IList<Category> GetCategoryBreadCrumb(Category category, IDictionary<int, Category> mappedCategories = null)
-        {
-            if (category == null)
-                throw new ArgumentNullException("category");
-
-            var breadCrumb = new List<Category>();
-			var alreadyProcessedCategoryIds = new List<int>();
-
-            while (category != null && //category is not null
-                !category.Deleted && //category is not deleted
-                category.Published && //category is published
-				_aclService.Authorize(category) && //ACL
-				_storeMappingService.Authorize(category) &&	//Store mapping
-				!alreadyProcessedCategoryIds.Contains(category.Id))
-            {
-                breadCrumb.Add(category);
-                var parentId = category.ParentCategoryId;
-                if (mappedCategories == null)
-                {
-                    category = _categoryService.GetCategoryById(parentId);
-                }
-                else
-                {
-                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : _categoryService.GetCategoryById(parentId);
-                }
-            }
-
-            breadCrumb.Reverse();
-            return breadCrumb;
+			return breadcrumb;
         }
 
 		[NonAction]
@@ -660,51 +635,42 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        private CategoryNavigationModel GetCategoryNavigationModel(int currentCategoryId, int currentProductId)
+        private NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
         {
-            var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY,
-				_workContext.WorkingLanguage.Id, string.Join(",", customerRolesIds), _storeContext.CurrentStore.Id);
-
-            var categories = _cacheManager.Get(cacheKey, () =>
-            {
-                return PrepareCategoryNavigationModel();
-            });
-
-            var breadcrumb = GetCurrentCategoryPath(currentCategoryId, currentProductId);
+            var root =  GetCategoryMenu();
+            var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
             // resolve number of products
             if (_catalogSettings.ShowCategoryProductNumber)
             {
-                var curId = breadcrumb.LastOrDefault();
-                var curNode = curId == 0 ? categories.Root : categories.SelectNode(x => x.Value.Id == curId);
+				var curItem = breadcrumb.LastOrDefault();
+				var curNode = curItem == null ? root.Root : root.Find(curItem);
 
                 this.ResolveCategoryProductsCount(curNode);
             }
 
-            var model = new CategoryNavigationModel
+            var model = new NavigationModel
             {
-                Root = categories,
+                Root = root,
                 Path = breadcrumb,
-                CurrentCategoryId = breadcrumb.LastOrDefault()
             };
 
             return model;
         }
 
         [NonAction]
-        protected void ResolveCategoryProductsCount(TreeNode<CategoryNavigationModel.CategoryModel> curNode)
+        protected void ResolveCategoryProductsCount(TreeNode<MenuItem> curNode)
         {
 			try
 			{
 				// Perf: only resolve counts for categories in the current path.
 				while (curNode != null)
 				{
-					if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
+					if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 					{
 						lock (s_lock)
 						{
-							if (curNode.Children.Any(x => !x.Value.NumberOfProducts.HasValue))
+							if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 							{
 								foreach (var node in curNode.Children)
 								{
@@ -713,17 +679,17 @@ namespace SmartStore.Web.Controllers
 									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
 									{
 										// include subcategories
-										node.TraverseTree(x => categoryIds.Add(x.Value.Id));
+										node.TraverseTree(x => categoryIds.Add(x.Value.EntityId));
 									}
 									else
 									{
-										categoryIds.Add(node.Value.Id);
+										categoryIds.Add(node.Value.EntityId);
 									}
 
 									var ctx = new ProductSearchContext();
 									ctx.CategoryIds = categoryIds;
 									ctx.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
-									node.Value.NumberOfProducts = _productService.CountProducts(ctx);
+									node.Value.ElementsCount = _productService.CountProducts(ctx);
 								}
 							}
 						}
@@ -738,73 +704,76 @@ namespace SmartStore.Web.Controllers
 			}
         }
 
-        // codehint: sm-add (mc)
         [NonAction]
-        protected TreeNode<CategoryNavigationModel.CategoryModel> PrepareCategoryNavigationModel()
+        protected TreeNode<MenuItem> GetCategoryMenu()
         {
+			var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY, 
+				_workContext.WorkingLanguage.Id, 
+				string.Join(",", customerRolesIds), 
+				_storeContext.CurrentStore.Id);
 
-            var curParent = new TreeNode<CategoryNavigationModel.CategoryModel>(new CategoryNavigationModel.CategoryModel()
-            {
-                Id = 0,
-                Name = "_ROOT_",
-                Level = -1 // important
-            });
-            
-            Category prevCat = null;
-            int level = 0;
+			var model = _cacheManager.Get(cacheKey, () => {
+				var curParent = new TreeNode<MenuItem>(new MenuItem
+				{
+					EntityId = 0,
+					Text = "Home",
+					RouteName = "HomePage"
+				});
 
-            var categories = _categoryService.GetAllCategories();
-            foreach (var category in categories)
-            {
-                var model = new CategoryNavigationModel.CategoryModel()
-                {
-                    Id = category.Id,
-                    Name = category.GetLocalized(x => x.Name),
-                    SeName = category.GetSeName()
-                };
+				Category prevCat = null;
 
-                // determine parent
-                if (prevCat != null)
-                {
-                    if (category.ParentCategoryId != curParent.Value.Id)
-                    {
-                        if (category.ParentCategoryId == prevCat.Id)
-                        {
-                            // level +1
-                            curParent = curParent.LastChild;
-                            level++;
-                        }
-                        else
-                        {
-                            // level -x
-                            while (!curParent.IsRoot)
-                            {
-                                if (curParent.Value.Id == category.ParentCategoryId)
-                                {
-                                    break;
-                                }
-                                curParent = curParent.Parent;
-                                level--;
-                            }
-                        }
-                    }
-                }
+				var categories = _categoryService.GetAllCategories();
+				foreach (var category in categories)
+				{
+					var menuItem = new MenuItem
+					{
+						EntityId = category.Id,
+						Text = category.GetLocalized(x => x.Name),
+						RouteName = "Category"
+					};
+					menuItem.RouteValues.Add("SeName", category.GetSeName());
 
-                // set level
-                model.Level = level;
+					// determine parent
+					if (prevCat != null)
+					{
+						if (category.ParentCategoryId != curParent.Value.EntityId)
+						{
+							if (category.ParentCategoryId == prevCat.Id)
+							{
+								// level +1
+								curParent = curParent.LastChild;
+							}
+							else
+							{
+								// level -x
+								while (!curParent.IsRoot)
+								{
+									if (curParent.Value.EntityId == category.ParentCategoryId)
+									{
+										break;
+									}
+									curParent = curParent.Parent;
+								}
+							}
+						}
+					}
 
-                // add to parent
-                curParent.Append(model);
+					// add to parent
+					curParent.Append(menuItem);
 
-                prevCat = category;
-            }
+					prevCat = category;
+				}
 
-            var root = curParent.Root;
+				var root = curParent.Root;
 
-            // event
-            _eventPublisher.Publish(new NavigationModelBuiltEvent(root));
+				// event
+				_eventPublisher.Publish(new NavigationModelBuiltEvent(root));
 
-            return root;
+				return root;		
+			});
+
+			return model;
         }
 
         // codehing: sm-add
@@ -1799,15 +1768,7 @@ namespace SmartStore.Web.Controllers
             model.DisplayCategoryBreadcrumb = _catalogSettings.CategoryBreadcrumbEnabled;
             if (model.DisplayCategoryBreadcrumb)
             {
-                foreach (var catBr in GetCategoryBreadCrumb(category))
-                {
-                    model.CategoryBreadcrumb.Add(new CategoryModel()
-                    {
-                        Id = catBr.Id,
-                        Name = catBr.GetLocalized(x => x.Name),
-                        SeName = catBr.GetSeName()
-                    });
-                }
+				model.CategoryBreadcrumb = GetCategoryBreadCrumb(category.Id, 0);
             }
 
 
@@ -1967,15 +1928,14 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult CategoryNavigation(int currentCategoryId, int currentProductId)
         {
-            var model = GetCategoryNavigationModel(currentCategoryId, currentProductId);
+            var model = PrepareCategoryNavigationModel(currentCategoryId, currentProductId);
             return PartialView(model);
         }
 
-        /// <![CDATA[ codehint: sm-add ]]>
         [ChildActionOnly]
         public ActionResult Megamenu(int currentCategoryId, int currentProductId)
         {
-            var model = GetCategoryNavigationModel(currentCategoryId, currentProductId);
+            var model = PrepareCategoryNavigationModel(currentCategoryId, currentProductId);
             return PartialView(model);
         }
 
@@ -2423,15 +2383,8 @@ namespace SmartStore.Web.Controllers
                     var category = productCategories[0].Category;
                     if (category != null)
                     {
-                        foreach (var catBr in GetCategoryBreadCrumb(category))
-                        {
-                            model.CategoryBreadcrumb.Add(new CategoryModel()
-                            {
-                                Id = catBr.Id,
-                                Name = catBr.GetLocalized(x => x.Name),
-                                SeName = catBr.GetSeName()
-                            });
-                        }
+						var breadcrumb = GetCategoryBreadCrumb(category.Id, 0);
+						model.CategoryBreadcrumb = breadcrumb;
                     }
                 }
                 return model;
@@ -3661,21 +3614,14 @@ namespace SmartStore.Web.Controllers
 				Text = T("Common.All")
             });
 
-            var navModel = GetCategoryNavigationModel(0, 0);
+            var navModel = PrepareCategoryNavigationModel(0, 0);
 
             navModel.Root.TraverseTree((node) => {
                 if (node.IsRoot)
                     return;
 
-                int id = node.Value.Id;
-
-                var breadcrumb = new List<string>();
-                while (node != null && !node.IsRoot)
-                {
-                    breadcrumb.Add(node.Value.Name);
-                    node = node.Parent;
-                }
-                breadcrumb.Reverse();
+                int id = node.Value.EntityId;
+                var breadcrumb = node.GetBreadcrumb().Select(x => x.Text).ToArray();
 
                 model.AvailableCategories.Add(new SelectListItem()
                 {

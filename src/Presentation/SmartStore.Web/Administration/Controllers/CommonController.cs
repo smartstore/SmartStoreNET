@@ -273,6 +273,17 @@ namespace SmartStore.Admin.Controllers
 
         #endregion
 
+		[HttpPost]
+		public JsonResult SetSelectedTab(string navId, string tabId, string path)
+		{
+			if (navId.HasValue() && tabId.HasValue() && path.HasValue())
+			{
+				var info = new SelectedTabInfo { TabId = tabId, Path = path };
+				TempData["SelectedTab." + navId] = info;
+			}
+			return Json(new { Success = true });
+		}
+
         public ActionResult SystemInfo()
         {
             var model = new SystemInfoModel();

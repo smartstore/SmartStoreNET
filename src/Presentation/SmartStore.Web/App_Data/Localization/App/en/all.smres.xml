@@ -2669,7 +2669,7 @@
 		<Value>Would you like to combine all attributes? Existing combinations will be deleted!</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists">
-		<Value>The selected attribut combination already exists. Please choose a non existing combination.</Value>
+		<Value>The selected attribute combination already exists. Please choose a non existing combination.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations">
 		<Value>Create all combinations</Value>

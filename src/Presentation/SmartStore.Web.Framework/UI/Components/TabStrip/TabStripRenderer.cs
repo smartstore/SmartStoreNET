@@ -20,21 +20,24 @@ namespace SmartStore.Web.Framework.UI
             var tab = base.Component;
             var hasContent = tab.Items.Any(x => x.Content != null);
             var isTabbable = tab.Position != TabsPosition.Top;
+			var urlHelper = new UrlHelper(this.ViewContext.RequestContext);
 
             tab.HtmlAttributes.AppendCssClass("tabbable");
 
-            if (isTabbable)
-            {
-                tab.HtmlAttributes.AppendCssClass("tabs-{0}".FormatInvariant(tab.Position.ToString().ToLower()));
-            }
+			if (isTabbable)
+			{
+				tab.HtmlAttributes.AppendCssClass("tabs-{0}".FormatInvariant(tab.Position.ToString().ToLower()));
+			}
+
+			if (tab.SmartTabSelection)
+			{
+				tab.HtmlAttributes.AppendCssClass("tabs-autoselect");
+				tab.HtmlAttributes.Add("data-tabselector-href", urlHelper.Action("SetSelectedTab", "Common", new { area = "admin" }));
+			}
 
             writer.AddAttributes(tab.HtmlAttributes);
+			
             writer.RenderBeginTag("div"); // root div
-            
-            if (tab.SmartTabSelection)
-            {
-                this.WriteSelectionScript(writer);
-            }
 
             if (tab.Position == TabsPosition.Below && hasContent)
                 RenderTabContent(writer);
@@ -49,6 +52,29 @@ namespace SmartStore.Web.Framework.UI
             writer.AddAttributes(ulAttrs);
             writer.RenderBeginTag("ul");
 
+			// enable smart tab selection
+			if (tab.SmartTabSelection && tab.Id.HasValue())
+			{
+				var selectedTab = (SelectedTabInfo)ViewContext.TempData["SelectedTab." + tab.Id];
+				if (selectedTab != null && selectedTab.Path.Equals(ViewContext.HttpContext.Request.RawUrl, StringComparison.OrdinalIgnoreCase))
+				{
+					// get tab to select
+					var tabToSelect = GetTabById(selectedTab.TabId);
+
+					if (tabToSelect != null)
+					{
+						// unselect former selected tab(s)
+						tab.Items.Each(x => x.Selected = false);
+
+						// select the new tab
+						tabToSelect.Selected = true;
+
+						// persist again for the next request
+						ViewContext.TempData["SelectedTab." + tab.Id] = selectedTab;
+					}
+				}
+			}
+
             int i = 1;
             foreach (var item in tab.Items)
             {
@@ -61,19 +87,27 @@ namespace SmartStore.Web.Framework.UI
             if (tab.Position != TabsPosition.Below && hasContent)
                 RenderTabContent(writer);
 
-            writer.RenderEndTag(); // div.tabbable
-            
+            writer.RenderEndTag(); // div.tabbable      
         }
 
-        protected virtual void WriteSelectionScript(HtmlTextWriter writer)
-        {
-            var onReady = "<script>$(function() {{ {0} }});</script>";
-            var script = "TabSelector.selectTab('#{0}'); $('#{0} > ul.nav a[data-toggle=tab]').on('shown', TabSelector.shownHandler);".FormatInvariant(this.Component.Id);
+		private Tab GetTabById(string tabId)
+		{
+			int i = 1;
+			foreach (var item in Component.Items)
+			{
+				var id = BuildItemId(item, i);
+				if (id == tabId)
+				{
+					if (!item.Visible || !item.Enabled)
+						break;
 
-            writer.Write("<input type='hidden' id='selectedTab' name='selectedTab' value='{0}' />".FormatInvariant(base.ViewContext.ViewData["SelectedTab"]));
+					return item;
+				}
+				i++;
+			}
 
-            writer.Write(onReady.FormatInvariant(script));
-        }
+			return null;
+		}
 
         protected virtual void RenderTabContent(HtmlTextWriter writer)
         {

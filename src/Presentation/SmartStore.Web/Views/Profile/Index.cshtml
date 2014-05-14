@@ -17,7 +17,7 @@
             var postsTabSelected = Model.PagingPosts;
         }
 
-        @Html.SmartStore().TabStrip().Name("tabs").Items(c => 
+        @Html.SmartStore().TabStrip().Name("tabs").SmartTabSelection(false).Items(c => 
         {
             c.Add().Text(T("Profile.PersonalInfo").Text)
                 .Selected(!postsTabSelected)

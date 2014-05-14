@@ -1281,8 +1281,6 @@ namespace SmartStore.Admin.Controllers
                 //No order found with the specified id
                 return RedirectToAction("List");
 
-            ViewData["selectedTab"] = "products";
-
             //get order item identifier
             int orderItemId = 0;
             foreach (var formValue in form.AllKeys)
@@ -1345,8 +1343,6 @@ namespace SmartStore.Admin.Controllers
                 //No order found with the specified id
                 return RedirectToAction("List");
 
-            ViewData["selectedTab"] = "products";
-
             //get order item identifier
             int orderItemId = 0;
             foreach (var formValue in form.AllKeys)
@@ -1376,8 +1372,6 @@ namespace SmartStore.Admin.Controllers
             if (order == null)
                 //No order found with the specified id
                 return RedirectToAction("List");
-
-            ViewData["selectedTab"] = "products";
 
             //get order item identifier
             int orderItemId = 0;
@@ -1409,8 +1403,6 @@ namespace SmartStore.Admin.Controllers
             if (order == null)
                 //No order found with the specified id
                 return RedirectToAction("List");
-
-            ViewData["selectedTab"] = "products";
 
             //get order item identifier
             int orderItemId = 0;

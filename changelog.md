@@ -3,6 +3,7 @@
 ##SmartStore.NET 2.1#
 
 ###Improvements###
+* UI: TabStrips remember their last selected tab across page requests in an unobtrusive way (removed old selection code)
 * TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.

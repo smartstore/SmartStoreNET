@@ -29,38 +29,12 @@
     
     @Html.SmartStore().TabStrip().Name("order-edit").Items(x =>
 {
-    var tabInfo = x.Add().Text(T("Admin.Orders.Info").Text).Content(TabInfo());
+    var tabInfo = x.Add().Text(T("Admin.Orders.Info").Text).Content(TabInfo()).Selected(true);
     var tabBillingInfo = x.Add().Text(T("Admin.Orders.BillingInfo").Text).Content(TabBillingInfo());
     var tabShippingInfo = x.Add().Text(T("Admin.Orders.ShippingInfo").Text).Content(TabShippingInfo());
     var tabProducts = x.Add().Text(T("Admin.Orders.Products").Text).Content(TabProducts());
     var tabOrderNotes = x.Add().Text(T("Admin.Orders.OrderNotes").Text).Content(TabOrderNotes());
     var tabAttributes = x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabOrderAttributes());
-
-    var selectedTab = (string)ViewData["selectedTab"];
-    switch (selectedTab)
-    {
-        case "info":
-            tabInfo.Selected(true);
-            break;
-        case "billinginfo":
-            tabBillingInfo.Selected(true);
-            break;
-        case "shippinginfo":
-            tabShippingInfo.Selected(true);
-            break;
-        case "products":
-            tabProducts.Selected(true);
-            break;
-        case "ordernotes":
-            tabOrderNotes.Selected(true);
-            break;
-        case "orderattributes":
-            tabAttributes.Selected(true);
-            break;
-        default:
-            tabInfo.Selected(true);
-            break;
-    }
 
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "order-edit", this.Html, this.Model));

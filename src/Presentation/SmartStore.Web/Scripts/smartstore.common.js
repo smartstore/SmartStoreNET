@@ -75,6 +75,27 @@
 			});
 		}
 
+		// tab strip smart auto selection
+		$('.tabs-autoselect > ul.nav a[data-toggle=tab]').on('shown', function(e) {
+			var tab = $(e.target),
+				strip = tab.closest('.tabbable'),
+				href = strip.data("tabselector-href"),
+				hash = tab.attr("href");
+
+			if (hash)
+				hash = hash.replace(/#/, "");
+
+			if (href) {
+				$.ajax({
+					type: "POST",
+					url: href,
+					async: true,
+					data: { navId: strip.attr('id'), tabId: hash, path: location.pathname + location.search },
+					global: false
+				});
+			}		
+		});
+
 		// Handle ajax notifications
 		$(document)
 			.ajaxSuccess(function (ev, xhr) {

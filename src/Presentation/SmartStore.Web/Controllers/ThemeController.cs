@@ -35,7 +35,7 @@ namespace SmartStore.Web.Controllers
         #region Methods
 
         [ChildActionOnly]
-        public ActionResult ConfigureTheme(string theme, int StoreId, string selectedTab)
+        public ActionResult ConfigureTheme(string theme, int StoreId)
         {
             if (theme.HasValue())
             {
@@ -44,7 +44,6 @@ namespace SmartStore.Web.Controllers
 
             var model = TempData["OverriddenThemeVars"] ?? _themeVarService.GetThemeVariables(theme, StoreId);
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 

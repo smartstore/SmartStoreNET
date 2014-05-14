@@ -106,7 +106,7 @@
     
     @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
     {
-        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings());
+        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());

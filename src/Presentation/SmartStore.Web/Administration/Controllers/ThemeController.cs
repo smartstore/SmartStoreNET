@@ -178,7 +178,7 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List", new { storeId = model.StoreId });
         }
 
-        public ActionResult Configure(string theme, int storeId, string selectedTab)
+        public ActionResult Configure(string theme, int storeId)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -195,13 +195,12 @@ namespace SmartStore.Admin.Controllers
 				AvailableStores = _storeService.GetAllStores().ToSelectListItems()
             };
 
-			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme, selectedTab = selectedTab });
-            ViewData["SelectedTab"] = selectedTab;
+			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme });
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public async Task<ActionResult> Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing, string selectedTab)
+		public async Task<ActionResult> Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -236,7 +235,7 @@ namespace SmartStore.Admin.Controllers
 				TempData["LessParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
 				TempData["OverriddenThemeVars"] = values;
 				NotifyError(T("Admin.Configuration.Themes.Notifications.ConfigureError"));
-				return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
+				return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
 			}
 
             // activity log
@@ -245,7 +244,7 @@ namespace SmartStore.Admin.Controllers
 			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
 
 			return continueEditing ?
-				RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab }) :
+				RedirectToAction("Configure", new { theme = theme, storeId = storeId }) :
 				RedirectToAction("List", new { storeId = storeId });
         }
 
@@ -302,7 +301,7 @@ namespace SmartStore.Admin.Controllers
 			return error;
 		}
 
-        public ActionResult Reset(string theme, int storeId, string selectedTab)
+        public ActionResult Reset(string theme, int storeId)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -318,7 +317,7 @@ namespace SmartStore.Admin.Controllers
 			_services.CustomerActivity.InsertActivity("ResetThemeVars", T("ActivityLog.ResetThemeVars"), theme);
 
 			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ResetSuccess"));
-            return RedirectToAction("Configure", new { theme = theme, storeId = storeId, selectedTab = selectedTab });
+            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
 
         [HttpPost]

@@ -539,7 +539,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult Catalog(string selectedTab)
+        public ActionResult Catalog()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -558,11 +558,10 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
 			);
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult Catalog(CatalogSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult Catalog(CatalogSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -581,7 +580,7 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("Catalog", new { selectedTab = selectedTab });
+            return RedirectToAction("Catalog");
         }
 
 
@@ -650,7 +649,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult Order(string selectedTab)
+        public ActionResult Order()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -689,11 +688,10 @@ namespace SmartStore.Admin.Controllers
             //order ident
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult Order(OrderSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult Order(OrderSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -758,7 +756,7 @@ namespace SmartStore.Admin.Controllers
                     foreach (var error in modelState.Errors)
 						NotifyError(error.ErrorMessage);
             }
-            return RedirectToAction("Order", new { selectedTab = selectedTab });
+            return RedirectToAction("Order");
         }
 
 
@@ -880,7 +878,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult CustomerUser(string selectedTab)
+        public ActionResult CustomerUser()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -910,11 +908,10 @@ namespace SmartStore.Admin.Controllers
 
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult CustomerUser(CustomerUserSettingsModel model, string selectedTab)
+        public ActionResult CustomerUser(CustomerUserSettingsModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -942,7 +939,7 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("CustomerUser", new { selectedTab = selectedTab });
+            return RedirectToAction("CustomerUser");
         }
 
 
@@ -950,7 +947,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult GeneralCommon(string selectedTab)
+        public ActionResult GeneralCommon()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -1115,9 +1112,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _settingService, false);
 
-			//codehint: sm-add end
-
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 
@@ -1129,7 +1123,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [FormValueRequired("save")]
-        public ActionResult GeneralCommon(GeneralCommonSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult GeneralCommon(GeneralCommonSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -1293,7 +1287,7 @@ namespace SmartStore.Admin.Controllers
 			_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("GeneralCommon", new { selectedTab = selectedTab });
+            return RedirectToAction("GeneralCommon");
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("changeencryptionkey")]
@@ -1400,7 +1394,7 @@ namespace SmartStore.Admin.Controllers
             {
                 NotifyError(exc);
             }
-			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-3" });
+			return RedirectToAction("GeneralCommon");
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("togglefulltext")]
@@ -1440,7 +1434,7 @@ namespace SmartStore.Admin.Controllers
             {
                 NotifyError(exc);
             }
-			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-9" });
+			return RedirectToAction("GeneralCommon");
         }
 
 

@@ -7,22 +7,8 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("recurringpayment-edit").Items(x =>
 {
-    var tabInfo = x.Add().Text(T("Admin.RecurringPayments.Info").Text).Content(TabInfo());
+    var tabInfo = x.Add().Text(T("Admin.RecurringPayments.Info").Text).Content(TabInfo()).Selected(true);
     var tabHistory = x.Add().Text(T("Admin.RecurringPayments.History").Text).Content(TabHistory());
-
-    var selectedTab = (string)ViewData["selectedTab"];
-    switch (selectedTab)
-    {
-        case "info":
-            tabInfo.Selected(true);
-            break;
-        case "history":
-            tabHistory.Selected(true);
-            break;
-        default:
-            tabInfo.Selected(true);
-            break;
-    }
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "recurringpayment-edit", this.Html, this.Model));

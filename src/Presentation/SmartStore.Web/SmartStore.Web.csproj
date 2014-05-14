@@ -1076,7 +1076,6 @@
     <Content Include="Scripts\jquery.menu-aim.js" />
     <Content Include="Scripts\jquery.sequence.js" />
     <Content Include="Scripts\jquery.sequence.custom.js" />
-    <Content Include="Scripts\smartstore.tabselector.js" />
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
     <Content Include="Scripts\public.reviews.js" />

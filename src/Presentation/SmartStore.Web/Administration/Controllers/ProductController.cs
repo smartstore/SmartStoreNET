@@ -735,7 +735,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         //create product
-        public ActionResult Create(string selectedTab)
+        public ActionResult Create()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -748,12 +748,11 @@ namespace SmartStore.Admin.Controllers
             PrepareAclModel(model, null, false);
 			PrepareStoresMappingModel(model, null, false);
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Create(ProductModel model, bool continueEditing, string selectedTab)
+        public ActionResult Create(ProductModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -794,7 +793,7 @@ namespace SmartStore.Admin.Controllers
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = product.Id, selectedTab = selectedTab }) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
@@ -805,7 +804,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         //edit product
-        public ActionResult Edit(int id, string selectedTab)
+        public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -834,12 +833,11 @@ namespace SmartStore.Admin.Controllers
             PrepareAclModel(model, product, false);
 			PrepareStoresMappingModel(model, product, false);
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Edit(ProductModel model, bool continueEditing, string selectedTab)
+        public ActionResult Edit(ProductModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -913,7 +911,7 @@ namespace SmartStore.Admin.Controllers
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
-                return continueEditing ? RedirectToAction("Edit", new { id = product.Id, selectedTab = selectedTab }) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form

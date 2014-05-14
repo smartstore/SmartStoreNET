@@ -303,7 +303,7 @@
             <div class="bottom-content">
 
                 <!-- tabs -->
-                @Html.SmartStore().TabStrip().Name("product-detail-tabs").Items(x =>
+                @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
                 {
                     var specificationAttributes = Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id }).ToString();
                     var reviews = Html.Action("ProductDetailReviews", "Catalog", new { productId = Model.Id }).ToString();

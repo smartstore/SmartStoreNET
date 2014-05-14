@@ -56,13 +56,13 @@
 			<pre>
 				@parsingError
 			</pre>
-			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId, selectedTab = ViewData["SelectedTab"] })'>
+			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
 			</a>	
 		</div>
 	}
 	
-    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null, selectedTab = ViewData["SelectedTab"] })
+    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null })
 }
 
 @*import variables window*@

@@ -5,7 +5,7 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("customer-edit").Items(x =>
 {
-    var tabInfo = x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo());
+    var tabInfo = x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo()).Selected(true);
     var tabCustomerRoles = x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text).Content(TabCustomerRoles());
 
     TabBuilder tabOrders = null;
@@ -31,38 +31,6 @@
     TabBuilder tabImpersonate = null;
     if (Model.Id > 0)
         tabImpersonate = x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
-
-    var selectedTab = (string)ViewData["selectedTab"];
-    switch (selectedTab)
-    {
-        case "info":
-            tabInfo.Selected(true);
-            break;
-        case "customerroles":
-            tabCustomerRoles.Selected(true);
-            break;
-        case "orders":
-            tabOrders.Selected(true);
-            break;
-        case "rewardpoints":
-            tabRewardPoints.Selected(true);
-            break;
-        case "addresses":
-            tabAddresses.Selected(true);
-            break;
-        case "shoppingcart":
-            tabShoppingCart.Selected(true);
-            break;
-        case "wishlist":
-            tabWishlist.Selected(true);
-            break;
-        case "impersonate":
-            tabImpersonate.Selected(true);
-            break;
-        default:
-            tabInfo.Selected(true);
-            break;
-    }
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));

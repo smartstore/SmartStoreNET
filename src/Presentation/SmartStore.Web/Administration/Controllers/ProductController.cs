@@ -2540,7 +2540,7 @@ namespace SmartStore.Admin.Controllers
 
 							var result = t.Result;
 
-							// Saving the result enabled us to show a report for last import.
+							// Saving the result enables us to show a report for last import.
 							AsyncState.Current.Set(result, neverExpires: true);
 						}
 						catch (AggregateException ae)
@@ -2555,7 +2555,7 @@ namespace SmartStore.Admin.Controllers
 						{
 							AsyncState.Current.Remove<ImportProgressInfo>();
 						}
-						
+
 					}, cts.Token, options, scheduler);
 				}
 				else

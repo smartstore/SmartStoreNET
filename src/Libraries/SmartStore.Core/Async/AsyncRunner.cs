@@ -51,6 +51,23 @@ namespace SmartStore.Core.Async
 			return t;
 		}
 
+		public static Task Run(Action<ILifetimeScope, object> action, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		{
+			Guard.ArgumentNotNull(() => state);
+			Guard.ArgumentNotNull(() => action);
+			Guard.ArgumentNotNull(() => scheduler);
+
+			var t = Task.Factory.StartNew((o) =>
+			{
+				using (var container = EngineContext.Current.ContainerManager.Container.BeginLifetimeScope(AutofacLifetimeScopeProvider.HttpRequestTag))
+				{
+					action(container, o);
+				}
+			}, state, cancellationToken, options, scheduler);
+
+			return t;
+		}
+
 	}
 
 }

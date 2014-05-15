@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using SmartStore.Web.Framework;
 using SmartStore.Services.Directory;
 using SmartStore.Core;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -545,6 +546,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		public virtual void CreateFeed(Stream stream, Store store)
 		{
 			string breakingError = null;
+			string logPath = Path.ChangeExtension((stream as FileStream).Name, ".txt");
+
 			var xmlSettings = new XmlWriterSettings
 			{
 				Encoding = Encoding.UTF8,
@@ -552,54 +555,64 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			};
 
 			using (var writer = XmlWriter.Create(stream, xmlSettings))
+			using (var logFile = new TraceLogger(logPath))
 			{
-				writer.WriteStartDocument();
-				writer.WriteStartElement("rss");
-				writer.WriteAttributeString("version", "2.0");
-				writer.WriteAttributeString("xmlns", "g", null, _googleNamespace);
-				writer.WriteStartElement("channel");
-				writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(store.Name));
-				writer.WriteElementString("link", "http://base.google.com/base/");
-				writer.WriteElementString("description", "Information about products");
+				logFile.Information("Log file - Google Merchant Center feed.");
 
-				var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-				var searchContext = new ProductSearchContext()
+				try
 				{
-					OrderBy = ProductSortingEnum.CreatedOn,
-					PageSize = int.MaxValue,
-					StoreId = store.Id,
-					VisibleIndividuallyOnly = true
-				};
-
-				var products = _productService.SearchProducts(searchContext);
-
-				foreach (var product in products)
-				{
-					var qualifiedProducts = Helper.QualifiedProductsByProduct(_productService, product, store);
-
-					foreach (var qualifiedProduct in qualifiedProducts)
+					var searchContext = new ProductSearchContext()
 					{
-						writer.WriteStartElement("item");
+						OrderBy = ProductSortingEnum.CreatedOn,
+						PageSize = int.MaxValue,
+						StoreId = store.Id,
+						VisibleIndividuallyOnly = true
+					};
 
-						try
+					var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
+					var products = _productService.SearchProducts(searchContext);
+
+					writer.WriteStartDocument();
+					writer.WriteStartElement("rss");
+					writer.WriteAttributeString("version", "2.0");
+					writer.WriteAttributeString("xmlns", "g", null, _googleNamespace);
+					writer.WriteStartElement("channel");
+					writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(store.Name));
+					writer.WriteElementString("link", "http://base.google.com/base/");
+					writer.WriteElementString("description", "Information about products");
+
+					foreach (var product in products)
+					{
+						var qualifiedProducts = Helper.QualifiedProductsByProduct(_productService, product, store);
+
+						foreach (var qualifiedProduct in qualifiedProducts)
 						{
-							breakingError = WriteItem(writer, store, qualifiedProduct, currency);
-						}
-						catch (Exception exc)
-						{
-							exc.Dump();
+							writer.WriteStartElement("item");
+
+							try
+							{
+								breakingError = WriteItem(writer, store, qualifiedProduct, currency);
+							}
+							catch (Exception exc)
+							{
+								logFile.Error(exc.Message, exc);
+							}
+
+							writer.WriteEndElement(); // item
 						}
 
-						writer.WriteEndElement(); // item
+						if (breakingError.HasValue())
+							break;
 					}
 
-					if (breakingError.HasValue())
-						break;
+					writer.WriteEndElement(); // channel
+					writer.WriteEndElement(); // rss
+					writer.WriteEndDocument();
 				}
-
-				writer.WriteEndElement(); // channel
-				writer.WriteEndElement(); // rss
-				writer.WriteEndDocument();
+				catch (Exception exc)
+				{
+					logFile.Error(exc.Message, exc);
+				}
 			}
 
 			if (breakingError.HasValue())

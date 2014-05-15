@@ -1320,16 +1320,12 @@ SET @resources='
 		<Value lang="de"></Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists">
-		<Value>The selected attribut combination already exists. Please choose a non existing combination.</Value>
+		<Value>The selected attribute combination already exists. Please choose a non existing combination.</Value>
 		<Value lang="de">Die gewählte Attribut-Kombination existiert bereits. Bitte wählen Sie eine noch nicht existierende Kombination aus.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CombiNotExists">
-		<Value>The selected attribut combination does not exist yet.</Value>
+		<Value>The selected attribute combination does not exist yet.</Value>
 		<Value lang="de">Die gewählte Attribut-Kombination existiert noch nicht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiNotExists">
-		<Value></Value>
-		<Value lang="de"></Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations">
 		<Value></Value>

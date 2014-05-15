@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.Mvc;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -53,26 +54,9 @@ namespace SmartStore.Web.Framework.UI
             writer.RenderBeginTag("ul");
 
 			// enable smart tab selection
-			if (tab.SmartTabSelection && tab.Id.HasValue())
+			if (tab.SmartTabSelection)
 			{
-				var selectedTab = (SelectedTabInfo)ViewContext.TempData["SelectedTab." + tab.Id];
-				if (selectedTab != null && selectedTab.Path.Equals(ViewContext.HttpContext.Request.RawUrl, StringComparison.OrdinalIgnoreCase))
-				{
-					// get tab to select
-					var tabToSelect = GetTabById(selectedTab.TabId);
-
-					if (tabToSelect != null)
-					{
-						// unselect former selected tab(s)
-						tab.Items.Each(x => x.Selected = false);
-
-						// select the new tab
-						tabToSelect.Selected = true;
-
-						// persist again for the next request
-						ViewContext.TempData["SelectedTab." + tab.Id] = selectedTab;
-					}
-				}
+				TrySelectRememberedTab();
 			}
 
             int i = 1;
@@ -89,6 +73,40 @@ namespace SmartStore.Web.Framework.UI
 
             writer.RenderEndTag(); // div.tabbable      
         }
+
+		private void TrySelectRememberedTab()
+		{
+			var tab = this.Component;
+
+			if (tab.Id.IsEmpty())
+				return;
+
+			var model = ViewContext.ViewData.Model as EntityModelBase;
+			if (model != null && model.Id == 0)
+			{
+				// it's a "create" operation: don't select
+				return;
+			}
+
+			var rememberedTab = (SelectedTabInfo)ViewContext.TempData["SelectedTab." + tab.Id];
+			if (rememberedTab != null && rememberedTab.Path.Equals(ViewContext.HttpContext.Request.RawUrl, StringComparison.OrdinalIgnoreCase))
+			{
+				// get tab to select
+				var tabToSelect = GetTabById(rememberedTab.TabId);
+
+				if (tabToSelect != null)
+				{
+					// unselect former selected tab(s)
+					tab.Items.Each(x => x.Selected = false);
+
+					// select the new tab
+					tabToSelect.Selected = true;
+
+					// persist again for the next request
+					ViewContext.TempData["SelectedTab." + tab.Id] = rememberedTab;
+				}
+			}
+		}
 
 		private Tab GetTabById(string tabId)
 		{

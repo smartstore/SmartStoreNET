@@ -10,7 +10,10 @@ namespace SmartStore.Web.Framework.Controllers
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited=true, AllowMultiple=true)]
     public class AdminAuthorizeAttribute : FilterAttribute, IAuthorizationFilter
     {
-        private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
+
+		public IPermissionService PermissionService { get; set; }
+		
+		private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             filterContext.Result = new HttpUnauthorizedResult();
         }
@@ -47,8 +50,7 @@ namespace SmartStore.Web.Framework.Controllers
 
         public virtual bool HasAdminAccess(AuthorizationContext filterContext)
         {
-            var permissionService = EngineContext.Current.Resolve<IPermissionService>();
-            bool result = permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel);
+			bool result = PermissionService.Authorize(StandardPermissionProvider.AccessAdminPanel);
             return result;
         }
     }

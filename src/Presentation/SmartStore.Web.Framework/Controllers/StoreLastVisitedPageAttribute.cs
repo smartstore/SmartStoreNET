@@ -10,7 +10,13 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class StoreLastVisitedPageAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+		public Lazy<IWebHelper> WebHelper { get; set; }
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<CustomerSettings> CustomerSettings { get; set; }
+		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -26,16 +32,16 @@ namespace SmartStore.Web.Framework.Controllers
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var customerSettings = EngineContext.Current.Resolve<CustomerSettings>();
+            var customerSettings = CustomerSettings.Value;
             if (!customerSettings.StoreLastVisitedPage)
                 return;
 
-            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+            var webHelper = this.WebHelper.Value;
             var pageUrl = webHelper.GetThisPageUrl(true);
             if (!String.IsNullOrEmpty(pageUrl))
             {
-                var workContext = EngineContext.Current.Resolve<IWorkContext>();
-                var genericAttributeService = EngineContext.Current.Resolve<IGenericAttributeService>();
+                var workContext = WorkContext.Value;
+                var genericAttributeService = GenericAttributeService.Value;
 
                 var previousPageUrl = workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
                 if (!pageUrl.Equals(previousPageUrl))

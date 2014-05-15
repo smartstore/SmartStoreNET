@@ -9,7 +9,11 @@ namespace SmartStore.Web.Framework.Security
 {
     public class AdminValidateIpAddressAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+		public Lazy<IWebHelper> WebHelper { get; set; }
+		public Lazy<SecuritySettings> SecuritySettings { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -21,11 +25,12 @@ namespace SmartStore.Web.Framework.Security
             //don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
+
             bool ok = false;
-            var ipAddresses = EngineContext.Current.Resolve<SecuritySettings>().AdminAreaAllowedIpAddresses;
+			var ipAddresses = SecuritySettings.Value.AdminAreaAllowedIpAddresses;
             if (ipAddresses != null && ipAddresses.Count > 0)
             {
-                var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+				var webHelper = WebHelper.Value;
                 foreach (string ip in ipAddresses)
                     if (ip.Equals(webHelper.GetCurrentIpAddress(), StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -42,13 +47,12 @@ namespace SmartStore.Web.Framework.Security
             if (!ok)
             {
                 //ensure that it's not 'Access denied' page
-                var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+				var webHelper = WebHelper.Value;
                 var thisPageUrl = webHelper.GetThisPageUrl(false);
                 if (!thisPageUrl.StartsWith(string.Format("{0}admin/security/accessdenied", webHelper.GetStoreLocation()), StringComparison.InvariantCultureIgnoreCase))
                 {
                     //redirect to 'Access denied' page
                     filterContext.Result = new RedirectResult(webHelper.GetStoreLocation() + "admin/security/accessdenied");
-                    //filterContext.Result = RedirectToAction("AccessDenied", "Security");
                 }
             }
         }

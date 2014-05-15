@@ -36,14 +36,16 @@ namespace SmartStore.Web.Framework.Controllers
             base.Order = ordinal;
         }
 
+		public Func<string, IDbContext> DbContext { get; set; }
+
         public string Alias { get; set; }
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (filterContext.Exception != null)
                 return;
-            
-            var context = EngineContext.Current.Resolve<IDbContext>(this.Alias);
+
+			var context = DbContext(this.Alias);
             
             if (context != null && context.HasChanges)
             {

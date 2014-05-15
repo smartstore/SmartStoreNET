@@ -10,7 +10,12 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class CheckAffiliateAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+		public Lazy<IAffiliateService> AffiliateService { get; set; }
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<ICustomerService> CustomerService { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -29,16 +34,16 @@ namespace SmartStore.Web.Framework.Controllers
 
                 if (affiliateId > 0)
                 {
-                    var affiliateService = EngineContext.Current.Resolve<IAffiliateService>();
+                    var affiliateService = AffiliateService.Value;
                     var affiliate = affiliateService.GetAffiliateById(affiliateId);
                     if (affiliate != null && !affiliate.Deleted && affiliate.Active)
                     {
-                        var workContext = EngineContext.Current.Resolve<IWorkContext>();
+                        var workContext = WorkContext.Value;
                         if (workContext.CurrentCustomer != null &&
                             workContext.CurrentCustomer.AffiliateId != affiliate.Id)
                         {
                             workContext.CurrentCustomer.AffiliateId = affiliate.Id;
-                            var customerService = EngineContext.Current.Resolve<ICustomerService>();
+                            var customerService = CustomerService.Value;
                             customerService.UpdateCustomer(workContext.CurrentCustomer);
                         }
                     }

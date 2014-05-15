@@ -17,6 +17,8 @@ namespace SmartStore.Web.Framework.Controllers
     public class SetWorkingCultureAttribute : FilterAttribute, IAuthorizationFilter
     {
 
+		public Lazy<IWorkContext> WorkContext { get; set; }
+
         public void OnAuthorization(AuthorizationContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
@@ -33,7 +35,7 @@ namespace SmartStore.Web.Framework.Controllers
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            var workContext = WorkContext.Value;
             var workingLanguage = workContext.WorkingLanguage;
 
             CultureInfo culture;

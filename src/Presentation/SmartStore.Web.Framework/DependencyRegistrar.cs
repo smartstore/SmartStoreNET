@@ -208,10 +208,6 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<FilterService>().As<IFilterService>().InstancePerHttpRequest();          
 			builder.RegisterType<CommonServices>().As<ICommonServices>().WithStaticCache().InstancePerHttpRequest();
-
-            //// codehint: sm-add (enable mvc action filter property injection) >>> CRASHES! :-(
-            //builder.RegisterFilterProvider();
-
         }
 
         public int Order
@@ -281,6 +277,12 @@ namespace SmartStore.Web.Framework
 			{
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString)).InstancePerHttpRequest();
 			}
+
+			builder.Register<Func<string, IDbContext>>(c =>
+			{
+				var cc = c.Resolve<IComponentContext>();
+				return named => cc.ResolveNamed<IDbContext>(named);
+			});
 
 			builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerHttpRequest();
 
@@ -545,6 +547,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
 			builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerHttpRequest();
+
+			builder.RegisterFilterProvider();
 		}
 	}
 

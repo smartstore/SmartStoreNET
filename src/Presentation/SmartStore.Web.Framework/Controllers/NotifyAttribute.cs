@@ -18,21 +18,21 @@ namespace SmartStore.Web.Framework.Controllers
 	{
 		internal const string NotificationsKey = "sm.notifications.all";
 
+		public INotifier Notifier { get; set; }
+
 		public override void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-			var notifier = EngineContext.Current.Resolve<INotifier>();
-
-			if (notifier == null || !notifier.Entries.Any())
+			if (Notifier == null || !Notifier.Entries.Any())
 				return;
 
 			if (filterContext.HttpContext.Request.IsAjaxRequest())
 			{
-				HandleAjaxRequest(notifier.Entries.FirstOrDefault(), filterContext.HttpContext.Response);
+				HandleAjaxRequest(Notifier.Entries.FirstOrDefault(), filterContext.HttpContext.Response);
 				return;
 			}
 
-			Persist(filterContext.Controller.ViewData, notifier.Entries.Where(x => x.Durable == false));
-			Persist(filterContext.Controller.TempData, notifier.Entries.Where(x => x.Durable == true));
+			Persist(filterContext.Controller.ViewData, Notifier.Entries.Where(x => x.Durable == false));
+			Persist(filterContext.Controller.TempData, Notifier.Entries.Where(x => x.Durable == true));
 		}
 
 		private void Persist(IDictionary<string, object> bag, IEnumerable<NotifyEntry> source)

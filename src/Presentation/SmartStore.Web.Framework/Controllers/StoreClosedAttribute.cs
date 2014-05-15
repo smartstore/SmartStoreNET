@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -11,7 +12,19 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class StoreClosedAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
+		{
+ 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Login"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Logout"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "StoreClosed"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
+		};
+
+
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -19,6 +32,10 @@ namespace SmartStore.Web.Framework.Controllers
             HttpRequestBase request = filterContext.HttpContext.Request;
             if (request == null)
                 return;
+
+			//don't apply filter to child methods
+			if (filterContext.IsChildAction)
+				return;
 
             string actionName = filterContext.ActionDescriptor.ActionName;
             if (String.IsNullOrEmpty(actionName))
@@ -28,27 +45,16 @@ namespace SmartStore.Web.Framework.Controllers
             if (String.IsNullOrEmpty(controllerName))
                 return;
 
-            //don't apply filter to child methods
-            if (filterContext.IsChildAction)
-                return;
-
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            var storeInformationSettings = EngineContext.Current.Resolve<StoreInformationSettings>();
+            var storeInformationSettings = StoreInformationSettings.Value;
             if (!storeInformationSettings.StoreClosed)
                 return;
 
-            if (//ensure it's not the Login page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("Login", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Logout page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("Logout", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the store closed page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CommonController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("StoreClosed", StringComparison.InvariantCultureIgnoreCase)) &&
-				//ensure it's not the change language page (request)
-				!(controllerName.Equals("SmartStore.Web.Controllers.CommonController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("SetLanguage", StringComparison.InvariantCultureIgnoreCase)))
-            {
-                if (storeInformationSettings.StoreClosedAllowForAdmins && EngineContext.Current.Resolve<IWorkContext>().CurrentCustomer.IsAdmin())
+            if (!IsPermittedRoute(controllerName, actionName)) 
+			{
+                if (storeInformationSettings.StoreClosedAllowForAdmins && WorkContext.Value.CurrentCustomer.IsAdmin())
                 {
                     //do nothing - allow admin access
                 }
@@ -59,5 +65,18 @@ namespace SmartStore.Web.Framework.Controllers
                 }
             }
         }
+
+		private static bool IsPermittedRoute(string controllerName, string actionName)
+		{
+			foreach (var route in s_permittedRoutes)
+			{
+				if (controllerName.IsCaseInsensitiveEqual(route.Item1) && actionName.IsCaseInsensitiveEqual(route.Item2))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
     }
 }

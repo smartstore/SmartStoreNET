@@ -16,6 +16,9 @@ namespace SmartStore.Web.Framework.Controllers
     public class LanguageSeoCodeAttribute : ActionFilterAttribute
     {
 
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
@@ -40,12 +43,12 @@ namespace SmartStore.Web.Framework.Controllers
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            var localizationSettings = EngineContext.Current.Resolve<LocalizationSettings>();
+            var localizationSettings = LocalizationSettings.Value;
             if (!localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 return;
             
             // process current URL
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            var workContext = WorkContext.Value;
             var workingLanguage = workContext.WorkingLanguage;
             var helper = new LocalizedUrlHelper(filterContext.HttpContext.Request, true);
             string defaultSeoCode = workContext.GetDefaultLanguageSeoCode();

@@ -28,9 +28,9 @@
     <div class="control-group">
         @Html.LabelFor(model => model.ExpireMonth, new { @class="control-label required" })
         <div class="controls">
-            @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths)
+            @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths, new { @class = "dropdownlists", style = "min-width: 83px;" })
             /
-            @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears)
+            @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears, new { @class = "dropdownlists", style = "min-width: 83px;" })
         </div>
     </div>
     <div class="control-group">

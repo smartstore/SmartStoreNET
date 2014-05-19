@@ -224,6 +224,13 @@
 	@Html.Widget("order_summary_content_before")
 	@Html.Partial("_OrderReviewData", Model.OrderReviewData)
 
+    @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
+    {
+    <div class="selected-checkout-attributes well well-small" style="text-align: left">
+        @Html.Raw(Model.CheckoutAttributeInfo)
+    </div>
+    }
+
 	@if (Model.Items.Count > 0)
 	{
 		if (Model.Warnings.Count > 0)
@@ -290,13 +297,6 @@
 				}
 			}
 		</table>
-
-		if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
-		{
-			<div class="selected-checkout-attributes well well-small" style="text-align: right">
-				@Html.Raw(Model.CheckoutAttributeInfo)
-			</div>
-		}
 
 		if (Model.IsEditable)
 		{

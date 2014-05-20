@@ -147,13 +147,16 @@ namespace SmartStore.Core.Plugins
 					foreach (var pluginPath in pluginPaths)
 					{
 						var result = LoadPluginFromFolder(pluginPath);
-						if (result.IsIncompatible)
+						if (result != null)
 						{
-							incompatiblePlugins.Add(result.Descriptor.SystemName);
-						}
-						else if (result.Success)
-						{
-							_referencedPlugins[result.Descriptor.SystemName] = result.Descriptor;
+							if (result.IsIncompatible)
+							{
+								incompatiblePlugins.Add(result.Descriptor.SystemName);
+							}
+							else if (result.Success)
+							{
+								_referencedPlugins[result.Descriptor.SystemName] = result.Descriptor;
+							}
 						}
 					}
 

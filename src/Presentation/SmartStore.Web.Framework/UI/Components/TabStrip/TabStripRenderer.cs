@@ -23,6 +23,9 @@ namespace SmartStore.Web.Framework.UI
             var isTabbable = tab.Position != TabsPosition.Top;
 			var urlHelper = new UrlHelper(this.ViewContext.RequestContext);
 
+			if (tab.Items.Count == 0)
+				return;
+
             tab.HtmlAttributes.AppendCssClass("tabbable");
 
 			if (isTabbable)

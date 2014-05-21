@@ -42,6 +42,7 @@ namespace SmartStore.Core.Plugins
             "Security", // NEW
             "Widget",
             "Developer", // NEW
+			"Sales",
             "Misc"
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();

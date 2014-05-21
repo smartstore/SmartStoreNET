@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Caching;
+﻿using System;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Tasks;
 
@@ -9,13 +10,19 @@ namespace SmartStore.Services.Caching
     /// </summary>
     public partial class ClearCacheTask : ITask
     {
-        /// <summary>
+		private readonly ICacheManager _cacheManager;
+		
+		public ClearCacheTask(Func<string, ICacheManager> cache)
+		{
+			_cacheManager = cache("static");
+		}
+		
+		/// <summary>
         /// Executes a task
         /// </summary>
         public void Execute()
         {
-            var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
-            cacheManager.Clear();
+			_cacheManager.Clear();
         }
     }
 }

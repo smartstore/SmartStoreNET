@@ -11,7 +11,7 @@
 
 ###Bugfixes###
 * #376 Product filtering: Category price range filter not working anymore
-
+* Return requests: Products to return won't be listed
 
 ##SmartStore.NET 2.0.2#
 

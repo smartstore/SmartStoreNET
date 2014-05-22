@@ -112,6 +112,7 @@ namespace SmartStore.Web.Controllers
                     AttributeInfo = orderItem.AttributeDescription,
                     Quantity = orderItem.Quantity
                 };
+                model.Items.Add(orderItemModel);
 
                 //unit price
                 switch (order.CustomerTaxDisplayType)

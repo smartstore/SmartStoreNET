@@ -163,10 +163,5 @@ namespace SmartStore.Web.Framework.Localization
             return result;
         }
 
-        public static bool IsRoutableLanguage(string seoCode, int storeId = 0)
-        {
-            return seoCode == "de" || seoCode == "en" || seoCode == "it";
-        }
-
     }
 }

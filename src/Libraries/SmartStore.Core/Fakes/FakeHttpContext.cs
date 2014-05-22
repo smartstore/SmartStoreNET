@@ -26,28 +26,35 @@ namespace SmartStore.Core.Fakes
             return new FakeHttpContext("~/");
         }
 
+		public FakeHttpContext(string relativeUrl)
+			: this(relativeUrl, null, null, null, null, null, null)
+		{
+		}
+
         public FakeHttpContext(string relativeUrl, string method)
             : this(relativeUrl, method, null, null, null, null, null, null)
         {
         }
 
-        public FakeHttpContext(string relativeUrl)
-            : this(relativeUrl, null, null, null, null, null, null)
-        {
-        }
-
         public FakeHttpContext(string relativeUrl, 
-            IPrincipal principal, NameValueCollection formParams,
-            NameValueCollection queryStringParams, HttpCookieCollection cookies,
-            SessionStateItemCollection sessionItems, NameValueCollection serverVariables)
+            IPrincipal principal, 
+			NameValueCollection formParams,
+            NameValueCollection queryStringParams, 
+			HttpCookieCollection cookies,
+            SessionStateItemCollection sessionItems, 
+			NameValueCollection serverVariables)
             : this(relativeUrl, null, principal, formParams, queryStringParams, cookies, sessionItems, serverVariables)
         {
         }
 
-        public FakeHttpContext(string relativeUrl, string method,
-            IPrincipal principal, NameValueCollection formParams,
-            NameValueCollection queryStringParams, HttpCookieCollection cookies,
-            SessionStateItemCollection sessionItems, NameValueCollection serverVariables)
+        public FakeHttpContext(string relativeUrl, 
+			string method,
+            IPrincipal principal, 
+			NameValueCollection formParams,
+            NameValueCollection queryStringParams, 
+			HttpCookieCollection cookies,
+            SessionStateItemCollection sessionItems, 
+			NameValueCollection serverVariables)
         {
             _relativeUrl = relativeUrl;
             _method = method;
@@ -61,12 +68,13 @@ namespace SmartStore.Core.Fakes
             _items = new Dictionary<object, object>();
         }
 
+		public override IHttpHandler Handler { get; set; }
+
         public override HttpRequestBase Request
         {
             get
             {
-                return _request ??
-                       new FakeHttpRequest(_relativeUrl, _method, _formParams, _queryStringParams, _cookies, _serverVariables);
+                return _request ?? new FakeHttpRequest(_relativeUrl, _method, _formParams, _queryStringParams, _cookies, _serverVariables);
             }
         }
 
@@ -96,7 +104,7 @@ namespace SmartStore.Core.Fakes
 
         public override HttpSessionStateBase Session
         {
-            get { return new FakeHttpSessionState(_sessionItems); }
+            get { return new FakeHttpSessionState(_sessionItems ?? new SessionStateItemCollection()); }
         }
 
         public override System.Collections.IDictionary Items
@@ -106,7 +114,6 @@ namespace SmartStore.Core.Fakes
                 return _items;
             }
         }
-
 
         public override bool SkipAuthorization { get; set; }
 

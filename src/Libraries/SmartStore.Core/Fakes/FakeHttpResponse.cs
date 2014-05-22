@@ -6,11 +6,12 @@ namespace SmartStore.Core.Fakes
     public class FakeHttpResponse : HttpResponseBase
     {
         private readonly HttpCookieCollection _cookies;
+		private readonly StringBuilder _outputString = new StringBuilder();
+
         public FakeHttpResponse()
         {
             this._cookies = new HttpCookieCollection();
-        }
-        private readonly StringBuilder _outputString = new StringBuilder();
+        } 
 
         public string ResponseOutput
         {

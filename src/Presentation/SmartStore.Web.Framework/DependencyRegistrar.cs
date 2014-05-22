@@ -532,13 +532,7 @@ namespace SmartStore.Web.Framework
 			var foundAssemblies = _typeFinder.GetAssemblies().ToArray();
 
 			builder.RegisterModule(new AutofacWebTypesModule());
-			builder.Register(c =>
-				//register FakeHttpContext when HttpContext is not available
-				HttpContext.Current != null ?
-				(new HttpContextWrapper(HttpContext.Current) as HttpContextBase) :
-				(new FakeHttpContext("~/") as HttpContextBase))
-				.As<HttpContextBase>()
-				.InstancePerHttpRequest();
+			builder.Register(HttpContextBaseFactory).As<HttpContextBase>().InstancePerHttpRequest();
 
 			// register all controllers
 			builder.RegisterControllers(foundAssemblies);
@@ -549,6 +543,37 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerHttpRequest();
 
 			builder.RegisterFilterProvider();
+		}
+
+		static HttpContextBase HttpContextBaseFactory(IComponentContext ctx)
+		{
+			if (IsRequestValid())
+			{
+				return new HttpContextWrapper(HttpContext.Current);
+			}
+
+			// TODO: determine store url
+
+			// register FakeHttpContext when HttpContext is not available
+			return new FakeHttpContext("~/");
+		}
+
+		static bool IsRequestValid()
+		{
+			if (HttpContext.Current == null)
+				return false;
+
+			try
+			{
+				// The "Request" property throws at application startup on IIS integrated pipeline mode
+				var req = HttpContext.Current.Request;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 

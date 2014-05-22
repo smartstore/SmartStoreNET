@@ -124,7 +124,7 @@ namespace SmartStore.Web.Framework
                     return _cachedCustomer;
 
                 Customer customer = null;
-                if (_httpContext == null || _httpContext is FakeHttpContext)
+                if (_httpContext == null || _httpContext.IsFakeContext())
                 {
                     //check whether request is made by a background task
                     //in this case return built-in customer record for background task

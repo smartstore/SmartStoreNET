@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -8,6 +9,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
@@ -395,7 +397,8 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
-                var query = from pc in _productCategoryRepository.Table
+				var table = _productCategoryRepository.Table;
+				var query = from pc in _productCategoryRepository.Expand(table, x => x.Category)
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                             where pc.ProductId == productId &&
                                   !c.Deleted &&
@@ -508,47 +511,48 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productCategory);
         }
 
-		/// <summary>
-		/// Builds a category bread crump for a particular product
-		/// </summary>
-		/// <param name="product">The product</param>
-		/// <returns>Category bread crump for product</returns>
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual string GetCategoryBreadCrumb(Product product)
+		public virtual string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup)
 		{
+			if (product == null)
+				return string.Empty;
+
+			pathLookup = pathLookup ?? ((i) => { return string.Empty; });
+			categoryLookup = categoryLookup ?? ((i) => { return GetCategoryById(i); });
+			addPathToCache = addPathToCache ?? ((i, val) => { });
+
 			var alreadyProcessedCategoryIds = new List<int>();
-			var categories = new List<string>();
-			string result = "";
+			var path = new List<string>();
 
-			if (product != null)
+			var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+
+			if (productCategory != null && productCategory.Category != null)
 			{
-				var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-
-				if (productCategory != null && productCategory.Category != null && !productCategory.Category.Deleted && productCategory.Category.Published)
+				string cached = pathLookup(productCategory.CategoryId);
+				if (cached.HasValue()) 
 				{
-					categories.Add(productCategory.Category.Name);
-					alreadyProcessedCategoryIds.Add(productCategory.Category.Id);
-
-					var category = GetCategoryById(productCategory.Category.ParentCategoryId);
-
-					while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
-					{
-						categories.Add(category.Name);
-						alreadyProcessedCategoryIds.Add(category.Id);
-
-						category = GetCategoryById(category.ParentCategoryId);
-					}
-					categories.Reverse();
+					return cached;
 				}
+
+				var category = productCategory.Category;
+
+				path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
+				alreadyProcessedCategoryIds.Add(category.Id);
+
+				category = categoryLookup(category.ParentCategoryId);
+				while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
+				{
+					path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
+					alreadyProcessedCategoryIds.Add(category.Id);
+					category = categoryLookup(category.ParentCategoryId);
+				}
+
+				path.Reverse();
+				string result = String.Join(" > ", path);
+				addPathToCache(productCategory.CategoryId, result);
+				return result;
 			}
 
-			for (int i = 0; i < categories.Count; ++i)
-			{
-				result = result + categories[i];
-				if (i != categories.Count - 1)
-					result = result + " > ";
-			}
-			return result;
+			return string.Empty;
 		}
 
         #endregion

@@ -123,6 +123,7 @@ namespace SmartStore.Services.Catalog
                     category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
                 }
             }
+
             return result;
         }
 

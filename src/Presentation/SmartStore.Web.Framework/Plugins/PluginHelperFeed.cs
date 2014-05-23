@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
 using System.IO;
 using System.Web;
@@ -20,10 +21,12 @@ namespace SmartStore.Web.Framework.Plugins
 	public partial class PluginHelperFeed : PluginHelperBase
 	{
 		private readonly string _namespace;
+		private IDictionary<int, Category> _cachedCategories;
+		private IDictionary<int, string> _cachedPathes;
 		private ScheduleTask _scheduleTask;
 		private Func<PromotionFeedSettings> _settingsFunc;
 
-		public PluginHelperFeed(string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) : 
+		public PluginHelperFeed(string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
 			base(systemName)
 		{
 			_namespace = rootNamespace;
@@ -39,6 +42,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return "{0}.StaticFileGenerationTask, {0}".FormatWith(_namespace);
 			}
 		}
+
 		public ScheduleTask ScheduledTask
 		{
 			get
@@ -75,6 +79,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return input;
 		}
+
 		public string ReplaceCsvChars(string value)
 		{
 			if (value.HasValue())
@@ -86,10 +91,12 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return "";
 		}
+
 		public string DecimalUsFormat(decimal value)
 		{
 			return Math.Round(value, 2).ToString(new CultureInfo("en-US", false).NumberFormat);
 		}
+
 		public string BuildProductDescription(Product product, ProductManufacturer manu, Func<string, string> updateResult = null)
 		{
 			if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual(NotSpecified))
@@ -164,6 +171,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return description;
 		}
+
 		public string ManufacturerPartNumber(Product product)
 		{
 			if (product.ManufacturerPartNumber.HasValue())
@@ -174,6 +182,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return "";
 		}
+
 		public string ShippingCost(Product product, decimal? shippingCost = null)
 		{
 			if (product.IsFreeShipping)
@@ -186,6 +195,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return DecimalUsFormat(cost);
 		}
+
 		public string BasePrice(Product product)
 		{
 			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
@@ -198,6 +208,7 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return "";
 		}
+
 		public string ProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
@@ -239,6 +250,7 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return null;
 		}
+
 		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
 		{
 			var lst = new List<GeneratedFeedFile>();
@@ -252,6 +264,7 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return lst;
 		}
+
 		public void StartCreatingFeeds(IStoreService storeService, Func<FileStream, Store, bool> createFeed)
 		{
 			var stores = new List<Store>();
@@ -267,6 +280,9 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				stores.AddRange(storeService.GetAllStores());
 			}
+
+			_cachedPathes = null;
+			_cachedCategories = null;
 
 			foreach (var store in stores)
 			{
@@ -296,6 +312,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return url;
 		}
+
 		public List<string> AdditionalProductImages(Store store, Product product, string mainImageUrl, int maxImages = 10)
 		{
 			var urls = new List<string>();
@@ -322,6 +339,7 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return urls;
 		}
+
 		public List<Product> QualifiedProductsByProduct(IProductService productService, Product product, Store store)
 		{
 			var lst = new List<Product>();
@@ -345,6 +363,48 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return lst;
 		}
+
+		internal string LookupCategoryPath(int id)
+		{
+			if (_cachedPathes.ContainsKey(id))
+			{
+				return _cachedPathes[id];
+			}
+			return null;
+		}
+
+		internal void AddPathToCache(int id, string value)
+		{
+			_cachedPathes[id] = value;
+		}
+
+		internal Category LookupCategory(int id)
+		{
+			if (_cachedCategories.ContainsKey(id))
+			{
+				return _cachedCategories[id];
+			}
+			return null;
+		}
+
+		public string GetCategoryPath(ICategoryService categoryService, Product product)
+		{
+			if (_cachedPathes == null)
+			{
+				_cachedPathes = new Dictionary<int, string>();
+			}
+
+			if (_cachedCategories == null)
+			{
+				var allCategories = categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false);
+				_cachedCategories = allCategories.ToDictionary(x => x.Id);
+			}
+
+			string path = categoryService.GetCategoryPath(product, null, LookupCategoryPath, AddPathToCache, (i) => LookupCategory(i) ?? categoryService.GetCategoryById(i));
+
+			return path;
+		}
+
 		public void ScheduleTaskUpdate(bool enabled, int seconds)
 		{
 			var task = ScheduledTask;
@@ -356,6 +416,7 @@ namespace SmartStore.Web.Framework.Plugins
 				EngineContext.Current.Resolve<IScheduleTaskService>().UpdateTask(task);
 			}
 		}
+
 		public void ScheduleTaskInsert(int minutes = 360)
 		{
 			var task = ScheduledTask;
@@ -371,6 +432,7 @@ namespace SmartStore.Web.Framework.Plugins
 				});
 			}
 		}
+
 		public void ScheduleTaskDelete() {
 			var task = ScheduledTask;
 			if (task != null)

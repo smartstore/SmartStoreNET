@@ -435,5 +435,6 @@ namespace SmartStore.Services.Catalog
 			if (item != null && item.ProductId != 0 && item.BundleItemId != 0)
 				bundleData.Add(item);
 		}
+
     }
 }

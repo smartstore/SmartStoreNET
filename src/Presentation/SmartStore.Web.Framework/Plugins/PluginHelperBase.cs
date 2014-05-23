@@ -38,6 +38,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return "__nospec__";	// explicitly do not set a field
 			}
 		}
+
 		public string SystemName { get; set; }
 
 		public PluginDescriptor Plugin
@@ -52,6 +53,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return _plugin;
 			}
 		}
+
 		public string InterfaceVersion
 		{
 			get
@@ -63,6 +65,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return _interfaceVersion;
 			}
 		}
+
 		public Language Language
 		{
 			get
@@ -74,6 +77,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return _language;
 			}
 		}
+
 		public bool IsLanguageGerman
 		{
 			get
@@ -81,6 +85,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return Language.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
 			}
 		}
+
 		public int CurrencyID
 		{
 			get
@@ -92,6 +97,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return _currencyID ?? 1;
 			}
 		}
+
 		public string CurrencyCode
 		{
 			get
@@ -107,6 +113,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return _currencyCode ?? "EUR";
 			}
 		}
+
 		public Currency EuroCurrency
 		{
 			get
@@ -151,6 +158,7 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return res;
 		}
+
 		public XmlDocument CreateXmlDocument(Func<XmlWriter, bool> content)
 		{
 			XmlDocument doc = null;
@@ -173,6 +181,7 @@ namespace SmartStore.Web.Framework.Plugins
 				return doc;
 			}
 		}
+
 		public Currency GetUsedCurrency(int currencyId)
 		{
 			var currencyService = EngineContext.Current.Resolve<ICurrencyService>();
@@ -183,10 +192,12 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return currency;
 		}
+
 		public decimal ConvertFromStoreCurrency(decimal price, Currency currency)
 		{
 			return EngineContext.Current.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(price, currency);
 		}
+
 		public List<SelectListItem> AvailableCurrencies()
 		{
 			var lst = new List<SelectListItem>();
@@ -202,5 +213,6 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 			return lst;
 		}
+
 	}
 }

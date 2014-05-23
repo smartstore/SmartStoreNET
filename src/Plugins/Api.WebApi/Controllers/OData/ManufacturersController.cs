@@ -1,16 +1,26 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System;
+using System.Linq;
+using System.Web.Http;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Security;
-using System.Linq;
 using SmartStore.Web.Framework.WebApi.OData;
-using System.Web.Http;
+using SmartStore.Plugin.Api.WebApi.Extensions;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
 	[WebApiAuthenticate(Permission = "ManageCatalog")]
 	public class ManufacturersController : WebApiEntityController<Manufacturer, IManufacturerService>
 	{
+		private readonly Lazy<IUrlRecordService> _urlRecordService;
+
+		public ManufacturersController(Lazy<IUrlRecordService> urlRecordService)
+		{
+			_urlRecordService = urlRecordService;
+		}
+
 		protected override IQueryable<Manufacturer> GetEntitySet()
 		{
 			var query =
@@ -23,10 +33,22 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		protected override void Insert(Manufacturer entity)
 		{
 			Service.InsertManufacturer(entity);
+
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Manufacturer>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Update(Manufacturer entity)
 		{
 			Service.UpdateManufacturer(entity);
+
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Manufacturer>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Delete(Manufacturer entity)
 		{

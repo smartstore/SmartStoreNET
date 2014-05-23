@@ -12,6 +12,8 @@ using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
 using System.Reflection;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Core.Metadata.Edm;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -256,9 +258,16 @@ namespace SmartStore.Web.Framework.WebApi
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
-			var entity = GetEntityByKeyNotNull(key);
+			var originalEntity = GetEntityByKeyNotNull(key);
+		
+			var context = ((IObjectContextAdapter)this.Repository.Context).ObjectContext;
+			var container = context.MetadataWorkspace.GetEntityContainer(context.DefaultContainerName, DataSpace.CSpace);
 
-			entity.Id = key; // ignore the ID in the entity use the ID in the URL.
+			string entityName = typeof(TEntity).Name;
+			string entitySetName = container.BaseEntitySets.First(x => x.ElementType.Name == entityName).Name;
+			
+			update.Id = key;
+			var entity = context.ApplyCurrentValues(entitySetName, update);
 
 			Update(FulfillPropertiesOn(entity));
 

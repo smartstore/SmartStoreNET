@@ -1,18 +1,28 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System;
+using System.Linq;
+using System.Web.Http;
+using System.Collections.Generic;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+using SmartStore.Plugin.Api.WebApi.Extensions;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
 	[WebApiAuthenticate(Permission = "ManageCatalog")]
 	public class CategoriesController : WebApiEntityController<Category, ICategoryService>
 	{
+		private readonly Lazy<IUrlRecordService> _urlRecordService;
+
+		public CategoriesController(Lazy<IUrlRecordService> urlRecordService)
+		{
+			_urlRecordService = urlRecordService;
+		}
+
 		protected override IQueryable<Category> GetEntitySet()
 		{
 			var query =
@@ -25,10 +35,22 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		protected override void Insert(Category entity)
 		{
 			Service.InsertCategory(entity);
+
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Category>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Update(Category entity)
 		{
 			Service.UpdateCategory(entity);
+
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Category>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Delete(Category entity)
 		{
@@ -50,6 +72,5 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 			return entity.AppliedDiscounts.AsQueryable();
 		}
-
 	}
 }

@@ -8,6 +8,7 @@
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.
+* #384 Web API: Inserting sluged recources like products require an URL record
 
 ###Bugfixes###
 * #376 Product filtering: Category price range filter not working anymore

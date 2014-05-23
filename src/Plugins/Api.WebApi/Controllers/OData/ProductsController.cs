@@ -1,16 +1,18 @@
-﻿using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Catalog;
-using SmartStore.Web.Framework.WebApi;
-using SmartStore.Web.Framework.WebApi.OData;
-using SmartStore.Web.Framework.WebApi.Security;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Web.Http;
+using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core;
-using System;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Seo;
+using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.OData;
+using SmartStore.Web.Framework.WebApi.Security;
+using SmartStore.Plugin.Api.WebApi.Extensions;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
@@ -19,12 +21,16 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 	{
 		private readonly Lazy<IWorkContext> _workContext;
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
+		private readonly Lazy<IUrlRecordService> _urlRecordService;
 
-		public ProductsController(Lazy<IWorkContext> workContext,
-			Lazy<IPriceCalculationService> priceCalculationService)
+		public ProductsController(
+			Lazy<IWorkContext> workContext,
+			Lazy<IPriceCalculationService> priceCalculationService,
+			Lazy<IUrlRecordService> urlRecordService)
 		{
 			_workContext = workContext;
 			_priceCalculationService = priceCalculationService;
+			_urlRecordService = urlRecordService;
 		}
 
 		protected override IQueryable<Product> GetEntitySet()
@@ -39,10 +45,22 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		protected override void Insert(Product entity)
 		{
 			Service.InsertProduct(entity);
+			
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Product>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Update(Product entity)
 		{
 			Service.UpdateProduct(entity);
+
+			this.ProcessEntity(() =>
+			{
+				_urlRecordService.Value.EnsureUrlRecord<Product>(entity, x => x.Name);
+				return null;
+			});
 		}
 		protected override void Delete(Product entity)
 		{

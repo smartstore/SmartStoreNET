@@ -11,7 +11,7 @@
     }
     <div class="btn-group @floatClass">
         <a class="btn" href="@selectedOption.Url" title="@selectedOption.Text">@selectedOption.Text</a>
-        <a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:void()">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:void()" rel="nofollow">
             <span class="icon-caret-down"></span>
         </a>
         <ul class="dropdown-menu">
@@ -32,7 +32,7 @@
             <div class="btn-group" data-toggle="buttons-radio">
                 @foreach (var mode in Model.AvailableViewModes)
                 {
-                    <a href="@mode.Url" class='btn@(mode.Selected ? " active" : "")' rel="tooltip" title='@T("Categories.ViewMode"): @mode.Text'>
+                    <a href="@mode.Url" class='btn@(mode.Selected ? " active" : "")' rel="tooltip nofollow" title='@T("Categories.ViewMode"): @mode.Text'>
                         @if ((string)mode.ExtraData == "grid") {
                             <i class="icon-th"></i>
                         }

@@ -113,7 +113,7 @@
                                     <strong>@T("Reviews.From"):</strong>
                                     @if (review.AllowViewingProfiles)
                                     {
-                                        <a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })">@(review.CustomerName)</a>
+                                        <a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
                                     }
                                     else
                                     {

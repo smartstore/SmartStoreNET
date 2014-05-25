@@ -171,7 +171,7 @@
                     @if (Model.DisplayAdminLink) { 
                         //IMPORTANT: first element must have a margin of 10px otherwise columns aren't eqalized
                         <div class="clearfix" style="margin-top:10px">
-                            <a class="btn btn-primary pull-right" href="@Url.Content("~/admin/product/edit/" + Model.Id)" target="admin-product">
+                            <a class="btn btn-primary pull-right" href="@Url.Content("~/admin/product/edit/" + Model.Id)" target="admin-product" rel="nofollow">
 								<i class="icon icon-edit"></i>
                                 @T("Common.Catalog.EditProduct")
                             </a>
@@ -275,6 +275,7 @@
                             <a data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                                 href="#"
                                 class="ajax-cart-link" 
+							    rel="nofollow"
                                 data-form-selector="#product-details-form"
                                 data-type="wishlist"
                                 data-action="add">
@@ -384,7 +385,7 @@
         </text>)
     .FooterContent(@<text>
         <button id="sendquestion" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendEmail")</button>
-        <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true">@T("Common.Close")</a>
+        <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true" rel="nofollow">@T("Common.Close")</a>
     </text>)
     .Width(600)
     .Height(460)

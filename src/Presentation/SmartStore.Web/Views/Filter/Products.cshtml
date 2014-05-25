@@ -27,7 +27,7 @@
 	}
 	if (criteria.Count() > 0) {
 		<div class="foot">
-			<a href="#" class="more" data-toggle="modal" data-target="#product-filter-modal" data-multiselect="@criteria.First().ToString()">
+			<a href="#" class="more" rel="nofollow" data-toggle="modal" data-target="#product-filter-modal" data-multiselect="@criteria.First().ToString()">
 				@T(criteria.IsShowAllText() ? "Products.Filter.ShowAll" : "Products.Filter.SelectMultiple")
 			</a>
 		</div>

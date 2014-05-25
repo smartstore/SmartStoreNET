@@ -13,7 +13,7 @@
             @foreach (var lang in Model.AvailableLanguages)
             {
                 <li @Html.Attr("class", "selected", Model.CurrentLanguageId == lang.Id)>
-                    <a title="@lang.NativeName" rel="tooltip" class='language @(Model.UseImages ? "flag" : "regional-label")'
+                    <a title="@lang.NativeName" rel="tooltip nofollow" class='language @(Model.UseImages ? "flag" : "regional-label")'
                         href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Model.ReturnUrls[lang.SeoCode], null)">
                         @if (Model.UseImages) 
                         {

@@ -26,7 +26,7 @@
         @if (Model.DisplayAdminLink)
         {
             <li>
-                <a href="@Url.Content("~/admin")" target="_admin">
+                <a href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
                     <i class="icon-cog"></i> 
                     @T("Account.Administration")
                 </a>
@@ -75,7 +75,7 @@
         }
         <li class="divider"></li>
         <li>
-            <a href="@Url.RouteUrl("Logout")">
+            <a href="@Url.RouteUrl("Logout")" rel="nofollow">
                 <i class="icon-signout"></i>
                 @T("Account.Logout")</a>
         </li>

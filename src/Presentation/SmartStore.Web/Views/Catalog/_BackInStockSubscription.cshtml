@@ -5,7 +5,7 @@
     <div class="back-in-stock-subscription">
         @if (Model.IsCurrentCustomerRegistered)
         {
-            <a class="read subscribe-for-back-in-stock" data-toggle="modal" href="#back-in-stock-subscription-modal">
+            <a class="read subscribe-for-back-in-stock" data-toggle="modal" href="#back-in-stock-subscription-modal" rel="nofollow">
                 @T("BackInStockSubscriptions.NotifyMeWhenAvailable")
             </a>
             
@@ -27,7 +27,7 @@
         }
         else
         {
-            <a href='@Url.RouteUrl("Login")'>@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+            <a href='@Url.RouteUrl("Login")' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
         }
     </div>
 }

@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 <div class="ask-a-question">
-    <a href="@Url.RouteUrl("ProductAskQuestion", new { productId = Model.ProductId })">
+    <a href="@Url.RouteUrl("ProductAskQuestion", new { productId = Model.ProductId })" rel="nofollow">
         <i class="icon-question-sign"></i>
         @T("Products.AskQuestion")
     </a>

@@ -130,13 +130,13 @@
             </div>
 
             <div class="print-buttons pull-right" style="margin-top: 12px">
-                <a href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="btn print-order-button">
+                <a href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="btn print-order-button" rel="nofollow">
                     <i class="icon icon-print"></i>
                     @T("Order.Print")
                 </a>
                 @if (Model.DisplayPdfInvoice)
                 {
-                    <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId = Model.Id })" class="btn pdf-order-button">
+                    <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId = Model.Id })" class="btn pdf-order-button" rel="nofollow">
 						<i class="icon icon-download-alt"></i>
                         @T("Order.GetPDFInvoice")
                     </a>

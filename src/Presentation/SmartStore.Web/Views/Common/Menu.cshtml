@@ -7,7 +7,7 @@
     @if (Model.IsCustomerImpersonated)
     {
         <li class="finish-impersonation">
-            <a href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")">
+            <a href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
                 <i class="icon-signout"></i>
                 @Model.CustomerEmailUsername
             </a>
@@ -21,7 +21,7 @@
     @if (Model.AllowPrivateMessages)
     {
         <li>
-            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
+            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" rel="nofollow">
                 @T("PrivateMessages.Inbox")
                 @if (Model.UnreadPrivateMessages > 0) 
                 {
@@ -72,7 +72,7 @@
         @if (Model.DisplayAdminLink)
         {
             <li>
-                <a href="@Url.Content("~/admin")" target="_admin">
+                <a href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
                     <i class="icon-cog"></i> 
                     @T("Account.Administration")
                 </a>

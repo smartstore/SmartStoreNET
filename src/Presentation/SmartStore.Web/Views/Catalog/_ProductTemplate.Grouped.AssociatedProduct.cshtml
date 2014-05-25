@@ -173,7 +173,7 @@
 				{
 					if (Model.IsCurrentCustomerRegistered)
 					{
-						<a class="subscribe-for-back-in-stock" data-toggle="modal" href="#back-in-stock-subscription-modal">
+						<a class="subscribe-for-back-in-stock" data-toggle="modal" href="#back-in-stock-subscription-modal" rel="nofollow">
 							@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
 							<i class="icon-phone"></i>
 						</a>
@@ -194,7 +194,7 @@
 					}
 					else
 					{
-						<a href='@Url.RouteUrl("Login")'>
+						<a href='@Url.RouteUrl("Login")' rel="nofollow">
 							@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
 							<i class="icon-phone"></i>
 						</a>

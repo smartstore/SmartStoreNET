@@ -36,7 +36,7 @@
         @if (Model.Products.Count > 0)
         {
             <div class="ar">
-                <a class="btn" href='@Url.RouteUrl("ClearCompareList")' style="margin-bottom: 12px">
+                <a class="btn" href='@Url.RouteUrl("ClearCompareList")' style="margin-bottom: 12px" rel="nofollow">
 					<i class="icon icon-trash"></i>
                     @T("Products.Compare.Clear")
                 </a>
@@ -56,7 +56,7 @@
                                         <img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />
                                     </p>
                                     <p>
-                                        <a class="btn btn-mini btn-danger remove-button" href='@Url.RouteUrl("RemoveProductFromCompareList", new { productId = product.Id })'>
+                                        <a class="btn btn-mini btn-danger remove-button" href='@Url.RouteUrl("RemoveProductFromCompareList", new { productId = product.Id })' rel="nofollow">
                                             @T("Common.Remove")
                                         </a>
                                     </p>

@@ -6,18 +6,18 @@
         @if (Model.IsCustomerImpersonated)
         {
             <li><span class="impersonate">(@(string.Format(T("Account.ImpersonatedAs").Text, Model.CustomerEmailUsername)))
-                - <a href="@Url.RouteUrl("Logout")" class="finish-impersonation" title="@T("Account.ImpersonatedAs.Finish.Hint")">@T("Account.ImpersonatedAs.Finish")</a>
+                - <a href="@Url.RouteUrl("Logout")" class="finish-impersonation" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">@T("Account.ImpersonatedAs.Finish")</a>
                 ) </span></li>
         }
         @if (Model.DisplayAdminLink)
         {
-            <li><a href="@Url.Content("~/admin")" class="ico-admin">@T("Account.Administration")</a>
+            <li><a href="@Url.Content("~/admin")" class="ico-admin" rel="nofollow">@T("Account.Administration")</a>
             </li>
         }
         @if (Model.IsAuthenticated)
         {
             <li><a href="@Url.RouteUrl("CustomerInfo")" class="account">@Model.CustomerEmailUsername</a></li>
-            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout" rel="nofollow">@T("Account.Logout")</a></li>
             
             if (Model.AllowPrivateMessages)
             {

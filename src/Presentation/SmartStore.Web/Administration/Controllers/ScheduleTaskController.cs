@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
@@ -22,7 +24,7 @@ namespace SmartStore.Admin.Controllers
     {
         #region Fields
 
-        private readonly IScheduleTaskService _scheduleTaskService;
+		private readonly IScheduleTaskService _scheduleTaskService;
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
 
@@ -30,15 +32,17 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-        public ScheduleTaskController(IScheduleTaskService scheduleTaskService, IPermissionService permissionService,
-            IDateTimeHelper dateTimeHelper)
+		public ScheduleTaskController(IScheduleTaskService scheduleTaskService, IPermissionService permissionService, IDateTimeHelper dateTimeHelper)
         {
             this._scheduleTaskService = scheduleTaskService;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
+			T = NullLocalizer.Instance;
         }
 
         #endregion
+
+		public Localizer T { get; set; }
 
         #region Utility
 

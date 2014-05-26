@@ -46,8 +46,8 @@ namespace SmartStore.Services.Tasks
                 this._taskThreads.Add(taskThread);
                 foreach (var scheduleTask in scheduleTaskGrouped)
                 {
-                    var task = new Task(scheduleTask);
-                    taskThread.AddTask(task);
+                    var task = new Job(scheduleTask);
+                    taskThread.AddJob(task);
                 }
             }
 

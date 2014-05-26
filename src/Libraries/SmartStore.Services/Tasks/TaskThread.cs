@@ -15,18 +15,18 @@ namespace SmartStore.Services.Tasks
         private bool _disposed;
         private DateTime _startedUtc;
         private bool _isRunning;
-        private readonly Dictionary<string, Task> _tasks;
+        private readonly Dictionary<string, Job> _jobs;
         private int _seconds;
 
         internal TaskThread()
         {
-            this._tasks = new Dictionary<string, Task>();
+            this._jobs = new Dictionary<string, Job>();
             this._seconds = 10 * 60;
         }
 
         internal TaskThread(ScheduleTask scheduleTask)
         {
-            this._tasks = new Dictionary<string, Task>();
+            this._jobs = new Dictionary<string, Job>();
             this._seconds = scheduleTask.Seconds;
             this._isRunning = false;
         }
@@ -38,9 +38,9 @@ namespace SmartStore.Services.Tasks
 
             this._startedUtc = DateTime.UtcNow;
             this._isRunning = true;
-            foreach (Task task in this._tasks.Values)
+            foreach (Job job in this._jobs.Values)
             {
-				task.Execute();
+				job.Execute();
             }
             this._isRunning = false;
         }
@@ -80,20 +80,20 @@ namespace SmartStore.Services.Tasks
         }
 
         /// <summary>
-        /// Adds a task to the thread
+        /// Adds a job to the thread
         /// </summary>
-        /// <param name="task">The task to be added</param>
-        public void AddTask(Task task)
+        /// <param name="job">The task to be added</param>
+        public void AddJob(Job job)
         {
-            if (!this._tasks.ContainsKey(task.Name))
+            if (!this._jobs.ContainsKey(job.Name))
             {
-                this._tasks.Add(task.Name, task);
+                this._jobs.Add(job.Name, job);
             }
         }
 
 
         /// <summary>
-        /// Gets or sets the interval in seconds at which to run the tasks
+        /// Gets or sets the interval in seconds at which to run the jobs
         /// </summary>
         public int Seconds
         {
@@ -130,23 +130,23 @@ namespace SmartStore.Services.Tasks
         }
 
         /// <summary>
-        /// Get a list of tasks
+        /// Get a list of jobs
         /// </summary>
-        public IList<Task> Tasks
+        public IList<Job> Jobs
         {
             get
             {
-                var list = new List<Task>();
-                foreach (var task in this._tasks.Values)
+                var list = new List<Job>();
+                foreach (var jobs in this._jobs.Values)
                 {
-                    list.Add(task);
+                    list.Add(jobs);
                 }
-                return new ReadOnlyCollection<Task>(list);
+                return new ReadOnlyCollection<Job>(list);
             }
         }
 
         /// <summary>
-        /// Gets the interval at which to run the tasks
+        /// Gets the interval at which to run the jobs
         /// </summary>
         public int Interval
         {

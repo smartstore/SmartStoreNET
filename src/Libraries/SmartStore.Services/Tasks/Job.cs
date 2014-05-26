@@ -8,12 +8,15 @@ namespace SmartStore.Services.Tasks
     /// <summary>
     /// Task
     /// </summary>
-    public partial class Task
+	/// <remarks>
+	/// Formerly <c>Task</c>. Had to rename to <c>Job</c> in order to prevent naming conflicts with <c>System.Threading.Tasks.Task</c>
+	/// </remarks>
+    public partial class Job
     {
         /// <summary>
         /// Ctor for Task
         /// </summary>
-        private Task()
+        private Job()
         {
             this.Enabled = true;
         }
@@ -22,7 +25,7 @@ namespace SmartStore.Services.Tasks
         /// Ctor for Task
         /// </summary>
         /// <param name="task">Task </param>
-        public Task(ScheduleTask task)
+        public Job(ScheduleTask task)
         {
             this.Type = task.Type;
             this.Enabled = task.Enabled;
@@ -55,7 +58,7 @@ namespace SmartStore.Services.Tasks
         /// <summary>
         /// Executes the task
         /// </summary>
-        public void Execute()
+        public void Execute(bool throwOnError = false)
         {
             this.IsRunning = true;
 
@@ -80,14 +83,18 @@ namespace SmartStore.Services.Tasks
                     this.LastEndUtc = this.LastSuccessUtc = DateTime.UtcNow;
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 this.Enabled = !this.StopOnError;
                 this.LastEndUtc = DateTime.UtcNow;
 
                 //log error
                 var logger = EngineContext.Current.Resolve<ILogger>();
-                logger.Error(string.Format("Error while running the '{0}' schedule task. {1}", this.Name, exc.Message), exc);
+                logger.Error(string.Format("Error while running the '{0}' schedule task. {1}", this.Name, ex.Message), ex);
+				if (throwOnError)
+				{
+					throw;
+				}
             }
 
             if (scheduleTask != null)
@@ -139,6 +146,6 @@ namespace SmartStore.Services.Tasks
         /// <summary>
         /// A value indicating whether the task is enabled
         /// </summary>
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; set; }
     }
 }

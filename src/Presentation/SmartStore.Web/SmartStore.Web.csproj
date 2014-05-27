@@ -1941,6 +1941,7 @@
     <Content Include="Views\Shared\_ClientRes.cshtml" />
     <Content Include="Views\Catalog\_ProductBundleItems.cshtml" />
     <Content Include="Views\Catalog\_ProductBundleItemsAddToCart.cshtml" />
+    <Content Include="Themes\Alpha\Content\user.less" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

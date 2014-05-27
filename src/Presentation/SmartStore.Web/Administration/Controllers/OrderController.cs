@@ -33,6 +33,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using SmartStore.Services.Tax;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -72,6 +73,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly ITaxService _taxService;
 		private readonly IPriceCalculationService _priceCalculationService;
+		private readonly IEventPublisher _eventPublisher;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -104,6 +106,7 @@ namespace SmartStore.Admin.Controllers
 			IShipmentService shipmentService, IStoreService storeService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
+			IEventPublisher eventPublisher,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings)
 		{
@@ -138,6 +141,7 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._taxService = taxService;
 			this._priceCalculationService = priceCalculationService;
+			this._eventPublisher = eventPublisher;
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -1818,7 +1822,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(model.OrderId);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             var address = _addressService.GetAddressById(model.Address.Id);
@@ -1829,6 +1832,8 @@ namespace SmartStore.Admin.Controllers
             {
                 address = model.Address.ToEntity(address);
                 _addressService.UpdateAddress(address);
+
+				_eventPublisher.PublishOrderUpdated(order);
 
                 return RedirectToAction("AddressEdit", new { addressId = model.Address.Id, orderId = model.OrderId });
             }

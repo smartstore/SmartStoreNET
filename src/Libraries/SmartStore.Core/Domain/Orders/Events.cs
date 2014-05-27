@@ -29,4 +29,19 @@ namespace SmartStore.Core.Domain.Orders
             get { return _order; }
         }
     }
+
+	public class OrderUpdatedEvent
+	{
+		private readonly Order _order;
+
+		public OrderUpdatedEvent(Order order)
+		{
+			this._order = order;
+		}
+
+		public Order Order
+		{
+			get { return _order; }
+		}
+	}
 }

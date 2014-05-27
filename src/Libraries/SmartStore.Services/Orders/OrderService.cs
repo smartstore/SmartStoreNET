@@ -293,8 +293,9 @@ namespace SmartStore.Services.Orders
 
             _orderRepository.Update(order);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityUpdated(order);
+			_eventPublisher.PublishOrderUpdated(order);
         }
 
         /// <summary>
@@ -306,10 +307,15 @@ namespace SmartStore.Services.Orders
             if (orderNote == null)
                 throw new ArgumentNullException("orderNote");
 
+			int orderId = orderNote.OrderId;
+
             _orderNoteRepository.Delete(orderNote);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(orderNote);
+
+			var order = GetOrderById(orderId);
+			_eventPublisher.PublishOrderUpdated(order);
         }
 
         /// <summary>
@@ -335,7 +341,7 @@ namespace SmartStore.Services.Orders
         
         #endregion
         
-        #region Orders product variants
+        #region Order items
 
         /// <summary>
         /// Gets an Order item
@@ -425,10 +431,15 @@ namespace SmartStore.Services.Orders
             if (orderItem == null)
                 throw new ArgumentNullException("orderItem");
 
+			int orderId = orderItem.OrderId;
+
             _orderItemRepository.Delete(orderItem);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(orderItem);
+
+			var order = GetOrderById(orderId);
+			_eventPublisher.PublishOrderUpdated(order);
         }
 
         #endregion
@@ -474,6 +485,7 @@ namespace SmartStore.Services.Orders
 
             //event notification
             _eventPublisher.EntityInserted(recurringPayment);
+			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
         /// <summary>
@@ -489,6 +501,7 @@ namespace SmartStore.Services.Orders
 
             //event notification
             _eventPublisher.EntityUpdated(recurringPayment);
+			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
         /// <summary>
@@ -543,10 +556,15 @@ namespace SmartStore.Services.Orders
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
+			int orderItemId = returnRequest.OrderItemId;
+
             _returnRequestRepository.Delete(returnRequest);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(returnRequest);
+
+			var orderItem = GetOrderItemById(orderItemId);
+			_eventPublisher.PublishOrderUpdated(orderItem.Order);
         }
 
         /// <summary>

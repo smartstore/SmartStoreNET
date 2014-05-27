@@ -14,6 +14,7 @@ namespace SmartStore.Services.Orders
         {
             eventPublisher.Publish(new OrderPaidEvent(order));
         }
+
         /// <summary>
         /// Publishes the order placed event.
         /// </summary>
@@ -23,5 +24,16 @@ namespace SmartStore.Services.Orders
         {
             eventPublisher.Publish(new OrderPlacedEvent(order));
         }
+
+		/// <summary>
+		/// Publishes the order updated event.
+		/// </summary>
+		/// <param name="eventPublisher">The event publisher.</param>
+		/// <param name="order">The order.</param>
+		public static void PublishOrderUpdated(this IEventPublisher eventPublisher, Order order)
+		{
+			if (order != null)
+				eventPublisher.Publish(new OrderUpdatedEvent(order));
+		}
     }
 }

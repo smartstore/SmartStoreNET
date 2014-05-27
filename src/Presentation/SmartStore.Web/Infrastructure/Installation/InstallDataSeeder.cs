@@ -30,6 +30,7 @@ using SmartStore.Services.Seo;
 using System.Data.Entity.Migrations;
 using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -497,7 +498,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rs = new EfRepository<GenericAttribute>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance);
+					var rsOrder = new EfRepository<Order>(_ctx);
+					rs.AutoCommitEnabled = false;
+
+					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
 				}
 
 				return _gaService;

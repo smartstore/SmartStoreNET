@@ -77,7 +77,7 @@ namespace SmartStore.Services.Catalog
         public virtual IList<SpecificationAttribute> GetSpecificationAttributes()
         {
             var query = from sa in _specificationAttributeRepository.Table
-                        orderby sa.DisplayOrder
+                        orderby sa.DisplayOrder, sa.Name
                         select sa;
             var specificationAttributes = query.ToList();
             return specificationAttributes;

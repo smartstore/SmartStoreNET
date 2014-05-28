@@ -133,14 +133,14 @@
         </td>
         <td class="adminData">
 			@Html.DropDownList("BuildDescription", new List<SelectListItem> {
-				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
-				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
-				new SelectListItem { Text = Model.Helper.Resource("DescShort"), Value = "short" },
-				new SelectListItem { Text = Model.Helper.Resource("DescLong"), Value = "long" },
-				new SelectListItem { Text = Model.Helper.Resource("DescTitleAndShort"), Value = "titleAndShort" },
-				new SelectListItem { Text = Model.Helper.Resource("DescTitleAndLong"), Value = "titleAndLong" },
-				new SelectListItem { Text = Model.Helper.Resource("DescManuAndTitleAndShort"), Value = "manuAndTitleAndShort" },
-				new SelectListItem { Text = Model.Helper.Resource("DescManuAndTitleAndLong"), Value = "manuAndTitleAndLong" }
+				new SelectListItem { Text = Model.Helper.GetResource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = PluginHelper.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.GetResource("DescShort"), Value = "short" },
+				new SelectListItem { Text = Model.Helper.GetResource("DescLong"), Value = "long" },
+				new SelectListItem { Text = Model.Helper.GetResource("DescTitleAndShort"), Value = "titleAndShort" },
+				new SelectListItem { Text = Model.Helper.GetResource("DescTitleAndLong"), Value = "titleAndLong" },
+				new SelectListItem { Text = Model.Helper.GetResource("DescManuAndTitleAndShort"), Value = "manuAndTitleAndShort" },
+				new SelectListItem { Text = Model.Helper.GetResource("DescManuAndTitleAndLong"), Value = "manuAndTitleAndLong" }
 			})
             @Html.ValidationMessageFor(m => m.BuildDescription)
         </td>
@@ -210,11 +210,11 @@
         </td>
         <td class="adminData">
 			@Html.DropDownList("Condition", new List<SelectListItem> {
-				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
-				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
-				new SelectListItem { Text = Model.Helper.Resource("ConditionNew"), Value = "new" },
-				new SelectListItem { Text = Model.Helper.Resource("ConditionUsed"), Value = "used" },
-				new SelectListItem { Text = Model.Helper.Resource("ConditionRefurbished"), Value = "refurbished" }
+				new SelectListItem { Text = Model.Helper.GetResource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = PluginHelper.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.GetResource("ConditionNew"), Value = "new" },
+				new SelectListItem { Text = Model.Helper.GetResource("ConditionUsed"), Value = "used" },
+				new SelectListItem { Text = Model.Helper.GetResource("ConditionRefurbished"), Value = "refurbished" }
 			})
             @Html.ValidationMessageFor(m => m.Condition)
         </td>
@@ -225,12 +225,12 @@
         </td>
         <td class="adminData">
 			@Html.DropDownList("Availability", new List<SelectListItem> {
-				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
-				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
-				new SelectListItem { Text = Model.Helper.Resource("AvailabilityInStock"), Value = "in stock" },
-				new SelectListItem { Text = Model.Helper.Resource("AvailabilityAvailableForOrder"), Value = "available for order" },
-				new SelectListItem { Text = Model.Helper.Resource("AvailabilityOutOfStock"), Value = "out of stock" },
-				new SelectListItem { Text = Model.Helper.Resource("AvailabilityPreorder"), Value = "preorder" }
+				new SelectListItem { Text = Model.Helper.GetResource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = PluginHelper.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.GetResource("AvailabilityInStock"), Value = "in stock" },
+				new SelectListItem { Text = Model.Helper.GetResource("AvailabilityAvailableForOrder"), Value = "available for order" },
+				new SelectListItem { Text = Model.Helper.GetResource("AvailabilityOutOfStock"), Value = "out of stock" },
+				new SelectListItem { Text = Model.Helper.GetResource("AvailabilityPreorder"), Value = "preorder" }
 			})
             @Html.ValidationMessageFor(m => m.Availability)
         </td>
@@ -241,11 +241,11 @@
         </td>
         <td class="adminData">
 			@Html.DropDownList("Gender", new List<SelectListItem> {
-				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },	
-				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },
-				new SelectListItem { Text = Model.Helper.Resource("GenderMale"), Value = "male" },
-				new SelectListItem { Text = Model.Helper.Resource("GenderFemale"), Value = "female" },
-				new SelectListItem { Text = Model.Helper.Resource("GenderUnisex"), Value = "unisex" }
+				new SelectListItem { Text = Model.Helper.GetResource("Automatic"), Value = "" },	
+				new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = PluginHelper.NotSpecified },
+				new SelectListItem { Text = Model.Helper.GetResource("GenderMale"), Value = "male" },
+				new SelectListItem { Text = Model.Helper.GetResource("GenderFemale"), Value = "female" },
+				new SelectListItem { Text = Model.Helper.GetResource("GenderUnisex"), Value = "unisex" }
 			})
             @Html.ValidationMessageFor(m => m.Gender)
         </td>
@@ -256,10 +256,10 @@
         </td>
         <td class="adminData">
 			@Html.DropDownList("AgeGroup", new List<SelectListItem> {
-				new SelectListItem { Text = Model.Helper.Resource("Automatic"), Value = "" },		
-				new SelectListItem { Text = Model.Helper.Resource("Common.Unspecified"), Value = PluginHelperBase.NotSpecified },	
-				new SelectListItem { Text = Model.Helper.Resource("AgeGroupAdult"), Value = "adult" },
-				new SelectListItem { Text = Model.Helper.Resource("AgeGroupKids"), Value = "kids" }
+				new SelectListItem { Text = Model.Helper.GetResource("Automatic"), Value = "" },		
+				new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = PluginHelper.NotSpecified },	
+				new SelectListItem { Text = Model.Helper.GetResource("AgeGroupAdult"), Value = "adult" },
+				new SelectListItem { Text = Model.Helper.GetResource("AgeGroupKids"), Value = "kids" }
 			})
             @Html.ValidationMessageFor(m => m.AgeGroup)
         </td>
@@ -493,11 +493,11 @@
     	function OnGridDataBound(e) {
     		var grid = $('#froogleproducts-grid'),
 				options = {
-					emptytext: '@Model.Helper.Resource("EmptyGridCell")',
+					emptytext: '@Model.Helper.GetResource("EmptyGridCell")',
 					url: '@Model.GridEditUrl'
 				},
     			select2Options = {
-    				placeholder: '@Model.Helper.Resource("EmptyGridCell")',
+    				placeholder: '@Model.Helper.GetResource("EmptyGridCell")',
     				minimumResultsForSearch: 20,
     				allowClear: true
     			};
@@ -509,17 +509,17 @@
     		grid.find('a.edit-link-gender').editable($.extend(options, {
     			select2: select2Options,
     			source: [
-					{ id: 'male', text: '@Model.Helper.Resource("GenderMale")' },
-					{ id: 'female', text: '@Model.Helper.Resource("GenderFemale")' },
-					{ id: 'unisex', text: '@Model.Helper.Resource("GenderUnisex")' }
+					{ id: 'male', text: '@Model.Helper.GetResource("GenderMale")' },
+					{ id: 'female', text: '@Model.Helper.GetResource("GenderFemale")' },
+					{ id: 'unisex', text: '@Model.Helper.GetResource("GenderUnisex")' }
 				]
 			}));
 
     		grid.find('a.edit-link-agegroup').editable($.extend(options, {
     			select2: select2Options,
     			source: [
-					{ id: 'adult', text: '@Model.Helper.Resource("AgeGroupAdult")' },
-					{ id: 'kids', text: '@Model.Helper.Resource("AgeGroupKids")' }
+					{ id: 'adult', text: '@Model.Helper.GetResource("AgeGroupAdult")' },
+					{ id: 'kids', text: '@Model.Helper.GetResource("AgeGroupKids")' }
     			]
 			}));
 

@@ -25,7 +25,7 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Executes a task
         /// </summary>
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
             if (!_currencySettings.AutoUpdateEnabled)
                 return;

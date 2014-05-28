@@ -2,6 +2,8 @@
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using Autofac;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Tasks
 {
@@ -13,7 +15,8 @@ namespace SmartStore.Services.Tasks
 	/// </remarks>
     public partial class Job
     {
-        /// <summary>
+		
+		/// <summary>
         /// Ctor for Task
         /// </summary>
         private Job()
@@ -27,13 +30,15 @@ namespace SmartStore.Services.Tasks
         /// <param name="task">Task </param>
         public Job(ScheduleTask task)
         {
-            this.Type = task.Type;
+			this.Type = task.Type;
             this.Enabled = task.Enabled;
             this.StopOnError = task.StopOnError;
             this.Name = task.Name;
+			this.LastError = task.LastError;
+			this.IsRunning = task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault();
         }
 
-        private ITask CreateTask()
+        private ITask CreateTask(ILifetimeScope scope)
         {
             ITask task = null;
             if (this.Enabled)
@@ -41,13 +46,11 @@ namespace SmartStore.Services.Tasks
                 var type2 = System.Type.GetType(this.Type);
                 if (type2 != null)
                 {
-					var scope = EngineContext.Current.ContainerManager.Scope();
-					
 					object instance;
-                    if (!EngineContext.Current.ContainerManager.TryResolve(type2, scope, out instance))
+					if (!EngineContext.Current.ContainerManager.TryResolve(type2, scope, out instance))
                     {
                         //not resolved
-                        instance = EngineContext.Current.ContainerManager.ResolveUnregistered(type2, scope);
+						instance = EngineContext.Current.ContainerManager.ResolveUnregistered(type2, scope);
                     }
                     task = instance as ITask;
                 }
@@ -58,54 +61,71 @@ namespace SmartStore.Services.Tasks
         /// <summary>
         /// Executes the task
         /// </summary>
-        public void Execute(bool throwOnError = false)
+        public void Execute(ILifetimeScope scope = null, bool throwOnError = false)
         {
             this.IsRunning = true;
 
-            var scheduleTaskService = EngineContext.Current.Resolve<IScheduleTaskService>();
-            var scheduleTask = scheduleTaskService.GetTaskByType(this.Type);
+			scope = scope ?? EngineContext.Current.ContainerManager.Scope();
+			var scheduleTaskService = scope.Resolve<IScheduleTaskService>();
+			var scheduleTask = scheduleTaskService.GetTaskByType(this.Type);
+			var faulted = false;
 
-            try
-            {
-                var task = this.CreateTask();
-                if (task != null)
-                {
-                    this.LastStartUtc = DateTime.UtcNow;
-                    if (scheduleTask != null)
-                    {
-                        //update appropriate datetime properties
-                        scheduleTask.LastStartUtc = this.LastStartUtc;
-                        scheduleTaskService.UpdateTask(scheduleTask);
-                    }
+			try
+			{
+				var task = this.CreateTask(scope);
+				if (task != null)
+				{
+					this.LastStartUtc = DateTime.UtcNow;
+					if (scheduleTask != null)
+					{
+						//update appropriate datetime properties
+						scheduleTask.LastStartUtc = this.LastStartUtc;
+						scheduleTaskService.UpdateTask(scheduleTask);
+					}
 
-                    //execute task
-                    task.Execute();
-                    this.LastEndUtc = this.LastSuccessUtc = DateTime.UtcNow;
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Enabled = !this.StopOnError;
-                this.LastEndUtc = DateTime.UtcNow;
+					//execute task
+					var ctx = new TaskExecutionContext { LifetimeScope = scope };
+					task.Execute(ctx);
+					this.LastEndUtc = this.LastSuccessUtc = DateTime.UtcNow;
+					this.LastError = null;
+				}
+				else 
+				{
+					faulted = true;
+					this.LastError = "Could not create task instance";
+				}
+			}
+			catch (Exception ex)
+			{
+				faulted = true;
+				this.Enabled = !this.StopOnError;
+				this.LastEndUtc = DateTime.UtcNow;
+				this.LastError = ex.Message.Truncate(995, "...");
 
-                //log error
-                var logger = EngineContext.Current.Resolve<ILogger>();
-                logger.Error(string.Format("Error while running the '{0}' schedule task. {1}", this.Name, ex.Message), ex);
+				//log error
+				var logger = scope.Resolve<ILogger>();
+				logger.Error(string.Format("Error while running the '{0}' schedule task. {1}", this.Name, ex.Message), ex);
 				if (throwOnError)
 				{
 					throw;
 				}
-            }
+			}
+			finally
+			{
+				if (scheduleTask != null)
+				{
+					// update appropriate properties
+					scheduleTask.LastError = this.LastError;
+					scheduleTask.LastEndUtc = this.LastEndUtc;
+					if (!faulted)
+					{
+						scheduleTask.LastSuccessUtc = this.LastSuccessUtc;
+					}
+					scheduleTaskService.UpdateTask(scheduleTask);
+				}
 
-            if (scheduleTask != null)
-            {
-                //update appropriate datetime properties
-                scheduleTask.LastEndUtc = this.LastEndUtc;
-                scheduleTask.LastSuccessUtc = this.LastSuccessUtc;
-                scheduleTaskService.UpdateTask(scheduleTask);
-            }
-
-            this.IsRunning = false;
+				this.IsRunning = false;
+			}
         }
 
         /// <summary>
@@ -127,6 +147,11 @@ namespace SmartStore.Services.Tasks
         /// Datetime of the last success
         /// </summary>
         public DateTime? LastSuccessUtc { get; private set; }
+
+		/// <summary>
+		/// Message of the last error
+		/// </summary>
+		public string LastError { get; private set; }
 
         /// <summary>
         /// A value indicating type of the task

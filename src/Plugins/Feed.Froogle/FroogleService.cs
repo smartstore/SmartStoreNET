@@ -65,7 +65,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			_googleService.Helper.ScheduleTaskInsert();
+			_googleService.Helper.InsertScheduleTask();
 
             base.Install();
         }
@@ -79,7 +79,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
 			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
-			_googleService.Helper.ScheduleTaskDelete();
+			_googleService.Helper.DeleteScheduleTask();
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

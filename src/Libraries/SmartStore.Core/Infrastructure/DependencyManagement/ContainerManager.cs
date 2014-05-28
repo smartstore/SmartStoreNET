@@ -189,6 +189,15 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return (scope ?? Scope()).ResolveOptional(serviceType);
         }
 
+		public T InjectProperties<T>(T instance, ILifetimeScope scope = null)
+		{
+			return (scope ?? Scope()).InjectProperties(instance);
+		}
+
+		public T InjectUnsetProperties<T>(T instance, ILifetimeScope scope = null)
+		{
+			return (scope ?? Scope()).InjectUnsetProperties(instance);
+		}
 
         public void UpdateContainer(Action<ContainerBuilder> action)
         {

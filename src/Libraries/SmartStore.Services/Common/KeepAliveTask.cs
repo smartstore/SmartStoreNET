@@ -16,7 +16,7 @@ namespace SmartStore.Services.Common
 			this._storeContext = storeContext;
         }
 
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
 			var storeUrl = _storeContext.CurrentStore.Url.TrimEnd('\\').EnsureEndsWith("/");
             string url = storeUrl + "keepalive/index";

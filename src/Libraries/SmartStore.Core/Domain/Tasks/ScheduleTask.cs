@@ -35,5 +35,7 @@ namespace SmartStore.Core.Domain.Tasks
         public DateTime? LastEndUtc { get; set; }
 
         public DateTime? LastSuccessUtc { get; set; }
+
+		public string LastError { get; set; }
     }
 }

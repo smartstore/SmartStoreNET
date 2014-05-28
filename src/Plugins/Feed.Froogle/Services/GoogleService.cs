@@ -21,6 +21,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Services.Directory;
 using SmartStore.Core;
 using SmartStore.Core.Logging;
+using Autofac;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -28,7 +29,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
     {
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
 
-		private readonly PluginHelperFeed _helper;
+		private readonly FeedPluginHelper _helper;
         private readonly IRepository<GoogleProductRecord> _gpRepository;
 		private readonly IProductService _productService;
 		private readonly IManufacturerService _manufacturerService;
@@ -49,7 +50,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
 			IPriceCalculationService priceCalculationService,
-			IWorkContext workContext)
+			IWorkContext workContext,
+			IComponentContext ctx)
         {
             _gpRepository = gpRepository;
 			_productService = productService;
@@ -62,14 +64,14 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			_priceCalculationService = priceCalculationService;
 			_workContext = workContext;
 
-			_helper = new PluginHelperFeed("PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
+			_helper = new FeedPluginHelper(ctx, "PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
 			{
 				return Settings as PromotionFeedSettings;
 			});
         }
 
 		public FroogleSettings Settings { get; set; }
-		public PluginHelperFeed Helper { get { return _helper; } }
+		public FeedPluginHelper Helper { get { return _helper; } }
 
         private GoogleProductRecord GetByProductId(int productId)
         {
@@ -135,7 +137,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		}
 		private string Condition()
 		{
-			if (Settings.Condition.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
+			if (Settings.Condition.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
 			if (Settings.Condition.IsNullOrEmpty())
@@ -145,7 +147,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		}
 		private string Availability(Product product)
 		{
-			if (Settings.Availability.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
+			if (Settings.Availability.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
 			if (Settings.Availability.IsNullOrEmpty())
@@ -167,7 +169,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		}
 		private string Gender(GoogleProductRecord googleProduct)
 		{
-			if (Settings.Gender.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
+			if (Settings.Gender.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
 			if (googleProduct != null && googleProduct.Gender.HasValue())
@@ -177,7 +179,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		}
 		private string AgeGroup(GoogleProductRecord googleProduct)
 		{
-			if (Settings.AgeGroup.IsCaseInsensitiveEqual(PluginHelperBase.NotSpecified))
+			if (Settings.AgeGroup.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
 			if (googleProduct != null && googleProduct.AgeGroup.HasValue())
@@ -293,15 +295,15 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
 		{
 			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
-			var mainImageUrl = Helper.MainProductImageUrl(store, product);
+			var mainImageUrl = Helper.GetMainProductImageUrl(store, product);
 			var googleProduct = GetByProductId(product.Id);
 			var category = ProductCategory(googleProduct);
 
 			if (category.IsNullOrEmpty())
-				return Helper.Resource("MissingDefaultCategory");
+				return Helper.GetResource("MissingDefaultCategory");
 
 			var brand = (manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand);
-			var mpn = Helper.ManufacturerPartNumber(product);
+			var mpn = Helper.GetManufacturerPartNumber(product);
 
 			bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
 
@@ -335,9 +337,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			writer.WriteStartElement("g", "google_product_category", _googleNamespace);
 			writer.WriteCData(category);
-			writer.WriteFullEndElement(); 
+			writer.WriteFullEndElement();
 
-			string productType = _categoryService.GetCategoryBreadCrumb(product);
+			string productType = Helper.GetCategoryPath(product);
 			if (productType.HasValue())
 			{
 				writer.WriteStartElement("g", "product_type", _googleNamespace);
@@ -345,10 +347,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				writer.WriteFullEndElement();
 			}
 
-			writer.WriteElementString("link", Helper.ProductDetailUrl(store, product));
+			writer.WriteElementString("link", Helper.GetProductDetailUrl(store, product));
 			writer.WriteElementString("g", "image_link", _googleNamespace, mainImageUrl);
 
-			foreach (string additionalImageUrl in Helper.AdditionalProductImages(store, product, mainImageUrl))
+			foreach (string additionalImageUrl in Helper.GetAdditionalProductImages(store, product, mainImageUrl))
 			{
 				writer.WriteElementString("g", "additional_image_link", _googleNamespace, additionalImageUrl);
 			}
@@ -525,10 +527,10 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 					gModel.GoogleSize = googleProduct.Size;
 
 					if (gModel.Gender.HasValue())
-						gModel.GenderLocalize = Helper.Resource("Gender" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.Gender));
+						gModel.GenderLocalize = Helper.GetResource("Gender" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.Gender));
 
 					if (gModel.AgeGroup.HasValue())
-						gModel.AgeGroupLocalize = Helper.Resource("AgeGroup" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.AgeGroup));
+						gModel.AgeGroupLocalize = Helper.GetResource("AgeGroup" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.AgeGroup));
 				}
 
 				return gModel;
@@ -583,7 +585,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 					foreach (var product in products)
 					{
-						var qualifiedProducts = Helper.QualifiedProductsByProduct(_productService, product, store);
+						var qualifiedProducts = Helper.GetQualifiedProductsByProduct(product, store);
 
 						foreach (var qualifiedProduct in qualifiedProducts)
 						{
@@ -620,7 +622,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		}
 		public virtual void CreateFeed()
 		{
-			Helper.StartCreatingFeeds(_storeService, (stream, store) =>
+			Helper.StartCreatingFeeds((stream, store) =>
 			{
 				CreateFeed(stream, store);
 				return true;
@@ -632,11 +634,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();
-			model.GeneratedFiles = Helper.FeedFiles(stores);
+			model.GeneratedFiles = Helper.GenerateFeedFiles(stores);
 			model.Helper = Helper;
 
 			model.AvailableStores = new List<SelectListItem>();
-			model.AvailableStores.Add(new SelectListItem() { Text = Helper.Resource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.Add(new SelectListItem() { Text = Helper.GetResource("Admin.Common.All"), Value = "0" });
 			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
 
 			if (task != null)

@@ -13,22 +13,25 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using Autofac;
 
 namespace SmartStore.Web.Framework.Plugins
 {
-	public partial class PluginHelperBase
+	public partial class PluginHelper
 	{
+		protected readonly IComponentContext _ctx;
 		private PluginDescriptor _plugin;
 		private string _interfaceVersion;
 		private Language _language;
 		private int? _currencyID;
 		private string _currencyCode;
 		private Currency _euroCurrency;
-		private Dictionary<string, string> _key2ResString = new Dictionary<string, string>();
+		private Dictionary<string, string> _resMap = new Dictionary<string, string>();
 
-		public PluginHelperBase(string systemName)
+		public PluginHelper(IComponentContext componentContext, string systemName)
 		{
 			SystemName = systemName;
+			_ctx = componentContext;
 		}
 
 		public static string NotSpecified
@@ -47,8 +50,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (_plugin == null)
 				{
-					_plugin = EngineContext.Current.Resolve<IPluginFinder>()
-						.GetPluginDescriptors().FirstOrDefault(p => p.SystemName.IsCaseInsensitiveEqual(SystemName));
+					_plugin = _ctx.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(SystemName);
 				}
 				return _plugin;
 			}
@@ -72,7 +74,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (_language == null)
 				{
-					_language = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
+					_language = _ctx.Resolve<IWorkContext>().WorkingLanguage;
 				}
 				return _language;
 			}
@@ -92,7 +94,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (!_currencyID.HasValue)
 				{
-					_currencyID = EngineContext.Current.Resolve<CurrencySettings>().PrimaryStoreCurrencyId;
+					_currencyID = _ctx.Resolve<CurrencySettings>().PrimaryStoreCurrencyId;
 				}
 				return _currencyID ?? 1;
 			}
@@ -105,7 +107,9 @@ namespace SmartStore.Web.Framework.Plugins
 				try
 				{
 					if (_currencyCode == null)
-						_currencyCode = EngineContext.Current.Resolve<IWorkContext>().WorkingCurrency.CurrencyCode;
+					{
+						_currencyCode = _ctx.Resolve<IWorkContext>().WorkingCurrency.CurrencyCode;
+					}
 				}
 				catch (Exception)
 				{
@@ -120,13 +124,13 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (_euroCurrency == null)
 				{
-					_euroCurrency = EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode("EUR");
+					_euroCurrency = _ctx.Resolve<ICurrencyService>().GetCurrencyByCode("EUR");
 				}
 				return _euroCurrency;
 			}
 		}
 
-		public string Resource(string keyOrShortKey)
+		public string GetResource(string keyOrShortKey)
 		{
 			string res = "";
 			try
@@ -136,20 +140,26 @@ namespace SmartStore.Web.Framework.Plugins
 					if (!keyOrShortKey.Contains('.'))
 					{
 						if (Plugin.ResourceRootKey.HasValue())
+						{
 							keyOrShortKey = "{0}.{1}".FormatWith(Plugin.ResourceRootKey, keyOrShortKey);
+						}
 						else
+						{
 							keyOrShortKey = "Plugins.{0}.{1}".FormatWith(SystemName, keyOrShortKey);
+						}
 					}
 
-					if (_key2ResString.ContainsKey(keyOrShortKey))
-						return _key2ResString[keyOrShortKey];
+					if (_resMap.ContainsKey(keyOrShortKey))
+					{
+						return _resMap[keyOrShortKey];
+					}
 
-					res = EngineContext.Current.Resolve<ILocalizationService>().GetResource(keyOrShortKey);
+					res = _ctx.Resolve<ILocalizationService>().GetResource(keyOrShortKey);
 
 					if (res.IsNullOrEmpty())
 						res = keyOrShortKey;
 
-					_key2ResString.Add(keyOrShortKey, res);
+					_resMap.Add(keyOrShortKey, res);
 				}
 			}
 			catch (Exception exc)
@@ -166,42 +176,46 @@ namespace SmartStore.Web.Framework.Plugins
 			settings.Encoding = new UTF8Encoding(false);
 
 			using (MemoryStream ms = new MemoryStream())
-			using (XmlWriter xw = XmlWriter.Create(ms, settings))
 			{
-				if (content(xw))
+				using (XmlWriter xw = XmlWriter.Create(ms, settings))
 				{
-					xw.Flush();
+					if (content(xw))
+					{
+						xw.Flush();
 
-					doc = new XmlDocument();
-					doc.LoadXml(Encoding.UTF8.GetString(ms.ToArray()));
+						doc = new XmlDocument();
+						doc.LoadXml(Encoding.UTF8.GetString(ms.ToArray()));
+					}
+
+					xw.Close();
+					ms.Close();
+					return doc;
 				}
-
-				xw.Close();
-				ms.Close();
-				return doc;
 			}
 		}
 
 		public Currency GetUsedCurrency(int currencyId)
 		{
-			var currencyService = EngineContext.Current.Resolve<ICurrencyService>();
+			var currencyService = _ctx.Resolve<ICurrencyService>();
 			var currency = currencyService.GetCurrencyById(currencyId);
 
 			if (currency == null || !currency.Published)
+			{
 				currency = currencyService.GetCurrencyById(CurrencyID);
+			}
 
 			return currency;
 		}
 
 		public decimal ConvertFromStoreCurrency(decimal price, Currency currency)
 		{
-			return EngineContext.Current.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(price, currency);
+			return _ctx.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(price, currency);
 		}
 
 		public List<SelectListItem> AvailableCurrencies()
 		{
 			var lst = new List<SelectListItem>();
-			var allCurrencies = EngineContext.Current.Resolve<ICurrencyService>().GetAllCurrencies(false);
+			var allCurrencies = _ctx.Resolve<ICurrencyService>().GetAllCurrencies(false);
 
 			foreach (var c in allCurrencies)
 			{

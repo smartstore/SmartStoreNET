@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
+using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
@@ -29,7 +30,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 	{
 		#region Fields
 
-		private readonly PluginHelperBase _helper;
+		private readonly PluginHelper _helper;
 		private readonly PayPalStandardPaymentSettings _paypalStandardPaymentSettings;
 		private readonly ISettingService _settingService;
 		private readonly ICurrencyService _currencyService;
@@ -49,7 +50,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			CurrencySettings currencySettings, IWebHelper webHelper,
 			ICheckoutAttributeParser checkoutAttributeParser, ITaxService taxService,
 			IOrderTotalCalculationService orderTotalCalculationService, HttpContextBase httpContext,
-			ILocalizationService localizationService)
+			ILocalizationService localizationService,
+			IComponentContext ctx)
 		{
 			this._paypalStandardPaymentSettings = paypalStandardPaymentSettings;
 			this._settingService = settingService;
@@ -62,7 +64,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			this._httpContext = httpContext;
 			this._localizationService = localizationService;	// codehint: sm-add
 
-			_helper = new PluginHelperBase("Payments.PayPalStandard");	// codehint: sm-add
+			_helper = new PluginHelper(ctx, "Payments.PayPalStandard");	// codehint: sm-add
 		}
 
 		#endregion
@@ -246,7 +248,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 				var orderShippingExclTaxRounded = Math.Round(orderShippingExclTax, 2);
 				if (orderShippingExclTax > decimal.Zero)
 				{
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.Resource("ShippingFee")));
+					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("ShippingFee")));
 					builder.AppendFormat("&amount_" + x + "={0}", orderShippingExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
 					builder.AppendFormat("&quantity_" + x + "={0}", 1);
 					x++;
@@ -258,7 +260,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 				var paymentMethodAdditionalFeeExclTaxRounded = Math.Round(paymentMethodAdditionalFeeExclTax, 2);
 				if (paymentMethodAdditionalFeeExclTax > decimal.Zero)
 				{
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.Resource("PaymentMethodFee")));
+					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("PaymentMethodFee")));
 					builder.AppendFormat("&amount_" + x + "={0}", paymentMethodAdditionalFeeExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
 					builder.AppendFormat("&quantity_" + x + "={0}", 1);
 					x++;
@@ -273,7 +275,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 					//builder.AppendFormat("&tax_1={0}", orderTax.ToString("0.00", CultureInfo.InvariantCulture));
 
 					//add tax as item
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.Resource("SalesTax")));
+					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("SalesTax")));
 					builder.AppendFormat("&amount_" + x + "={0}", orderTaxRounded.ToString("0.00", CultureInfo.InvariantCulture)); //amount
 					builder.AppendFormat("&quantity_" + x + "={0}", 1); //quantity
 

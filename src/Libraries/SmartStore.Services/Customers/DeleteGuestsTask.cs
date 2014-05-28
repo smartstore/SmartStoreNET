@@ -18,7 +18,7 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Executes a task
         /// </summary>
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
             //60*24 = 1 day
             var olderThanMinutes = 1440; //TODO: move to settings

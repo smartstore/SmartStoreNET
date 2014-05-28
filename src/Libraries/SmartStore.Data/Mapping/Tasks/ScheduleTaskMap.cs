@@ -11,6 +11,7 @@ namespace SmartStore.Data.Mapping.Tasks
             this.HasKey(t => t.Id);
             this.Property(t => t.Name).IsRequired();
             this.Property(t => t.Type).IsRequired();
+			this.Property(t => t.LastError).HasMaxLength(1000);
         }
     }
 }

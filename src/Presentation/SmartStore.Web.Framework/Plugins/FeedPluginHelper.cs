@@ -15,10 +15,11 @@ using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Services.Seo;
+using Autofac;
 
 namespace SmartStore.Web.Framework.Plugins
 {
-	public partial class PluginHelperFeed : PluginHelperBase
+	public partial class FeedPluginHelper : PluginHelper
 	{
 		private readonly string _namespace;
 		private IDictionary<int, Category> _cachedCategories;
@@ -26,14 +27,45 @@ namespace SmartStore.Web.Framework.Plugins
 		private ScheduleTask _scheduleTask;
 		private Func<PromotionFeedSettings> _settingsFunc;
 
-		public PluginHelperFeed(string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
-			base(systemName)
+		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
+			base(componentContext, systemName)
 		{
 			_namespace = rootNamespace;
 			_settingsFunc = settings;
 		}
 
-		private PromotionFeedSettings BaseSettings { get { return _settingsFunc(); } }
+		#region Dependencies
+
+		private IScheduleTaskService _scheduleTaskService;
+		private IScheduleTaskService ScheduleTaskService
+		{
+			get { return _scheduleTaskService ?? (_scheduleTaskService = _ctx.Resolve<IScheduleTaskService>()); }
+		}
+
+		private IPictureService _pictureService;
+		private IPictureService PictureService
+		{
+			get { return _pictureService ?? (_pictureService = _ctx.Resolve<IPictureService>()); }
+		}
+
+		private IProductService _productService;
+		private IProductService ProductService
+		{
+			get { return _productService ?? (_productService = _ctx.Resolve<IProductService>()); }
+		}
+
+		private ICategoryService _categoryService;
+		private ICategoryService CategoryService
+		{
+			get { return _categoryService ?? (_categoryService = _ctx.Resolve<ICategoryService>()); }
+		}
+
+		#endregion
+
+		private PromotionFeedSettings BaseSettings 
+		{ 
+			get { return _settingsFunc(); } 
+		}
 
 		private string ScheduleTaskType
 		{
@@ -49,7 +81,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (_scheduleTask == null)
 				{
-					_scheduleTask = EngineContext.Current.Resolve<IScheduleTaskService>().GetTaskByType(ScheduleTaskType);
+					_scheduleTask = ScheduleTaskService.GetTaskByType(ScheduleTaskType);
 				}
 				return _scheduleTask;
 			}
@@ -172,7 +204,7 @@ namespace SmartStore.Web.Framework.Plugins
 			return description;
 		}
 
-		public string ManufacturerPartNumber(Product product)
+		public string GetManufacturerPartNumber(Product product)
 		{
 			if (product.ManufacturerPartNumber.HasValue())
 				return product.ManufacturerPartNumber;
@@ -183,7 +215,7 @@ namespace SmartStore.Web.Framework.Plugins
 			return "";
 		}
 
-		public string ShippingCost(Product product, decimal? shippingCost = null)
+		public string GetShippingCost(Product product, decimal? shippingCost = null)
 		{
 			if (product.IsFreeShipping)
 				return "0";
@@ -196,68 +228,68 @@ namespace SmartStore.Web.Framework.Plugins
 			return DecimalUsFormat(cost);
 		}
 
-		public string BasePrice(Product product)
+		public string GetBasePrice(Product product)
 		{
 			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
 			{
 				decimal price = Convert.ToDecimal(product.Price / (product.BasePriceAmount * product.BasePriceBaseAmount));
 
-				string priceFormatted = EngineContext.Current.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
+				string priceFormatted = _ctx.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
 
 				return "{0} / {1} {2}".FormatWith(priceFormatted, product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 			}
 			return "";
 		}
 
-		public string ProductDetailUrl(Store store, Product product)
+		public string GetProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
 		}
 		
-		public GeneratedFeedFile FeedFileByStore(Store store, string secondFileName = null, string extension = null)
+		public GeneratedFeedFile GenerateFeedFileByStore(Store store, string secondFileName = null, string extension = null)
 		{
-			if (store != null)
+			if (store == null)
+				return null;
+			
+			string ext = extension ?? BaseSettings.ExportFormat;
+			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
+			string fname = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+
+			if (ext.HasValue())
+				fname = Path.GetFileNameWithoutExtension(fname) + (ext.StartsWith(".") ? "" : ".") + ext;
+
+			string url = "{0}content/files/exportimport/".FormatWith(store.Url.EnsureEndsWith("/"));
+
+			if (!(url.StartsWith("http://") || url.StartsWith("https://")))
+				url = "http://" + url;
+
+			if (!Directory.Exists(dir))
+				Directory.CreateDirectory(dir);
+
+			var feedFile = new GeneratedFeedFile()
 			{
-				string ext = extension ?? BaseSettings.ExportFormat;
-				string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
-				string fname = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+				StoreName = store.Name,
+				FilePath = Path.Combine(dir, fname),
+				FileUrl = url + fname
+			};
 
-				if (ext.HasValue())
-					fname = Path.GetFileNameWithoutExtension(fname) + (ext.StartsWith(".") ? "" : ".") + ext;
-
-				string url = "{0}content/files/exportimport/".FormatWith(store.Url.EnsureEndsWith("/"));
-
-				if (!(url.StartsWith("http://") || url.StartsWith("https://")))
-					url = "http://" + url;
-
-				if (!Directory.Exists(dir))
-					Directory.CreateDirectory(dir);
-
-				var feedFile = new GeneratedFeedFile()
-				{
-					StoreName = store.Name,
-					FilePath = Path.Combine(dir, fname),
-					FileUrl = url + fname
-				};
-
-				if (secondFileName.HasValue())
-				{
-					string fname2 = store.Id + "_" + secondFileName;
-					feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, fname2));
-					feedFile.CustomProperties.Add("SecondFileUrl", url + fname2);
-				}
-				return feedFile;
+			if (secondFileName.HasValue())
+			{
+				string fname2 = store.Id + "_" + secondFileName;
+				feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, fname2));
+				feedFile.CustomProperties.Add("SecondFileUrl", url + fname2);
 			}
-			return null;
+			return feedFile;
+
 		}
 
-		public List<GeneratedFeedFile> FeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
+		public List<GeneratedFeedFile> GenerateFeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
 		{
 			var lst = new List<GeneratedFeedFile>();
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store, secondFileName, extension);
+				var feedFile = GenerateFeedFileByStore(store, secondFileName, extension);
 
 				if (feedFile != null && File.Exists(feedFile.FilePath))
 					lst.Add(feedFile);
@@ -265,8 +297,9 @@ namespace SmartStore.Web.Framework.Plugins
 			return lst;
 		}
 
-		public void StartCreatingFeeds(IStoreService storeService, Func<FileStream, Store, bool> createFeed)
+		public void StartCreatingFeeds(Func<FileStream, Store, bool> createFeed)
 		{
+			var storeService = _ctx.Resolve<IStoreService>();
 			var stores = new List<Store>();
 
 			if (BaseSettings.StoreId != 0)
@@ -286,7 +319,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			foreach (var store in stores)
 			{
-				var feedFile = FeedFileByStore(store, null);
+				var feedFile = GenerateFeedFileByStore(store, null);
 				if (feedFile != null)
 				{
 					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
@@ -298,10 +331,10 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public string MainProductImageUrl(Store store, Product product)
+		public string GetMainProductImageUrl(Store store, Product product)
 		{
 			string url;
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			var pictureService = PictureService;
 			var picture = product.GetDefaultProductPicture(pictureService);
 
 			//always use HTTP when getting image URL
@@ -313,13 +346,13 @@ namespace SmartStore.Web.Framework.Plugins
 			return url;
 		}
 
-		public List<string> AdditionalProductImages(Store store, Product product, string mainImageUrl, int maxImages = 10)
+		public List<string> GetAdditionalProductImages(Store store, Product product, string mainImageUrl, int maxImages = 10)
 		{
 			var urls = new List<string>();
 
 			if (BaseSettings.AdditionalImages)
 			{
-				var pictureService = EngineContext.Current.Resolve<IPictureService>();
+				var pictureService = PictureService;
 				var pics = pictureService.GetPicturesByProductId(product.Id, 0);
 
 				foreach (var pic in pics)
@@ -340,8 +373,9 @@ namespace SmartStore.Web.Framework.Plugins
 			return urls;
 		}
 
-		public List<Product> QualifiedProductsByProduct(IProductService productService, Product product, Store store)
+		public List<Product> GetQualifiedProductsByProduct(Product product, Store store)
 		{
+			var productService = ProductService;
 			var lst = new List<Product>();
 
 			if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
@@ -387,8 +421,10 @@ namespace SmartStore.Web.Framework.Plugins
 			return null;
 		}
 
-		public string GetCategoryPath(ICategoryService categoryService, Product product)
+		public string GetCategoryPath(Product product)
 		{
+			var categoryService = CategoryService;
+
 			if (_cachedPathes == null)
 			{
 				_cachedPathes = new Dictionary<int, string>();
@@ -405,7 +441,7 @@ namespace SmartStore.Web.Framework.Plugins
 			return path;
 		}
 
-		public void ScheduleTaskUpdate(bool enabled, int seconds)
+		public void UpdateScheduleTask(bool enabled, int seconds)
 		{
 			var task = ScheduledTask;
 			if (task != null)
@@ -413,16 +449,16 @@ namespace SmartStore.Web.Framework.Plugins
 				task.Enabled = enabled;
 				task.Seconds = seconds;
 
-				EngineContext.Current.Resolve<IScheduleTaskService>().UpdateTask(task);
+				ScheduleTaskService.UpdateTask(task);
 			}
 		}
 
-		public void ScheduleTaskInsert(int minutes = 360)
+		public void InsertScheduleTask(int minutes = 360)
 		{
 			var task = ScheduledTask;
 			if (task == null)
 			{
-				EngineContext.Current.Resolve<IScheduleTaskService>().InsertTask(new ScheduleTask 
+				ScheduleTaskService.InsertTask(new ScheduleTask 
 				{
 					Name = "{0} feed file generation".FormatWith(SystemName),
 					Seconds = minutes * 60,
@@ -433,10 +469,10 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public void ScheduleTaskDelete() {
+		public void DeleteScheduleTask() {
 			var task = ScheduledTask;
 			if (task != null)
-				EngineContext.Current.Resolve<IScheduleTaskService>().DeleteTask(task);
+				ScheduleTaskService.DeleteTask(task);
 		}
 	}
 

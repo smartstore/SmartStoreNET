@@ -44,7 +44,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
         [SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
         public int GenerateStaticFileEachMinutes { get; set; }
 
-		public PluginHelperFeed Helper { get; set; }
+		public FeedPluginHelper Helper { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.BuildDescription")]
 		public string BuildDescription { get; set; }

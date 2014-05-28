@@ -20,7 +20,7 @@ namespace SmartStore.Services.Caching
 		/// <summary>
         /// Executes a task
         /// </summary>
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
 			_cacheManager.Clear();
         }

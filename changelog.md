@@ -2,7 +2,15 @@
 
 ##SmartStore.NET 2.1#
 
+###New Features###
+* (Developer) New IoC method ContainerManager.InjectProperties()
+
 ###Improvements###
+* Task Scheduler:
+	- Can run tasks manually now (async)
+	- Better UI
+	- Shows last error
+	- (Developer) Breaking change: New parameter _TaskExecutionContext_ for _ITask.Execute()_
 * UI: TabStrips remember their last selected tab across page requests in an unobtrusive way (removed old selection code)
 * TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
 * Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency

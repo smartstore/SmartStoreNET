@@ -20,7 +20,7 @@ namespace SmartStore.Services.Logging
         /// <summary>
         /// Executes a task
         /// </summary>
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
             var olderThanDays = 7; // TODO: move to settings
             var toUtc = DateTime.UtcNow.AddDays(-olderThanDays);

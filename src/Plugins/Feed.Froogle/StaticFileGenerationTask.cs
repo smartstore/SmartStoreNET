@@ -16,7 +16,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 		/// <summary>
 		/// Execute task
 		/// </summary>
-		public void Execute()
+		public void Execute(TaskExecutionContext ctx)
 		{
 			_googService.CreateFeed();
 		}

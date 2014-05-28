@@ -10,7 +10,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
     public partial interface IGoogleService
     {
 		FroogleSettings Settings { get; set; }
-		PluginHelperFeed Helper { get; }
+		FeedPluginHelper Helper { get; }
 
 		string[] GetTaxonomyList();
 		void UpdateInsert(int pk, string name, string value);

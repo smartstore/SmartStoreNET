@@ -45,9 +45,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			model.Copy(_googleService.Settings, false);
 			_settingService.SaveSetting(_googleService.Settings);
 
-			_googleService.Helper.ScheduleTaskUpdate(model.TaskEnabled, model.GenerateStaticFileEachMinutes * 60);
+			_googleService.Helper.UpdateScheduleTask(model.TaskEnabled, model.GenerateStaticFileEachMinutes * 60);
 
-			NotifySuccess(_googleService.Helper.Resource("ConfigSaveNote"), true);
+			NotifySuccess(_googleService.Helper.GetResource("ConfigSaveNote"), true);
 
 			_googleService.SetupModel(model);
 
@@ -65,7 +65,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			{
 				_googleService.CreateFeed();
 
-				model.GenerateFeedResult = _googleService.Helper.Resource("SuccessResult");
+				model.GenerateFeedResult = _googleService.Helper.GetResource("SuccessResult");
             }
             catch (Exception exc)
 			{

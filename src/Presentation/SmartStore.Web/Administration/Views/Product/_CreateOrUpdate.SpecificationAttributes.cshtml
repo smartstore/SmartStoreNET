@@ -7,48 +7,7 @@
     /*hide "add spec" table if no attributes are defined*/
     if (Model.AddSpecificationAttributeModel.AvailableAttributes.Count > 0)
     {
-        <div>
-            @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
-                .Name("specificationattributes-grid")
-                .DataKeys(x =>
-                {
-                    x.Add(y => y.Id).RouteKey("psaId");
-                })
-                .Columns(columns =>
-                {
-                    columns.Bound(x => x.SpecificationAttributeName).Width(200).ReadOnly();
-                    columns.Bound(x => x.SpecificationAttributeOptionName).Width(200).ReadOnly();
-                    columns.Bound(x => x.AllowFiltering)
-                        .Width(100)
-                        .Template(item => @Html.SymbolForBool(item.AllowFiltering))
-                        .ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
-                        .Centered();
-                    columns.Bound(x => x.ShowOnProductPage)
-                        .Width(100)
-                        .Template(item => @Html.SymbolForBool(item.ShowOnProductPage))
-                        .ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"))
-                        .Centered();
-                    columns.Bound(x => x.DisplayOrder).Width(100);
-                    columns.Command(commands =>
-                    {
-                        commands.Edit().Localize(T);
-                        commands.Delete().Localize(T);
-                    }).Width(180);
-
-                })
-                .Editable(x =>
-                {
-                    x.Mode(GridEditMode.InLine);
-                })
-                .DataBinding(dataBinding =>
-                {
-                    dataBinding.Ajax().Select("ProductSpecAttrList", "Product", new { productId = Model.Id })
-                        .Update("ProductSpecAttrUpdate", "Product")
-                        .Delete("ProductSpecAttrDelete", "Product");
-                })
-                .EnableCustomBinding(true))
-        </div>
-        <div style="margin-top:10px;">
+                <div style="margin-top:10px;">
             <h3 class="bordered">@T("Admin.Catalog.Products.SpecificationAttributes.AddNew")</h3>
         </div>
         <script type="text/javascript">
@@ -102,7 +61,7 @@
                 });
             });
         </script>
-        <table class="adminContent">
+        <table class="adminContent" style="margin-bottom:10px">
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)
@@ -158,6 +117,48 @@
                 </td>
             </tr>
         </table>
+        
+        <div>
+            @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
+                .Name("specificationattributes-grid")
+                .DataKeys(x =>
+                {
+                    x.Add(y => y.Id).RouteKey("psaId");
+                })
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.SpecificationAttributeName).Width(200).ReadOnly();
+                    columns.Bound(x => x.SpecificationAttributeOptionName).Width(200).ReadOnly();
+                    columns.Bound(x => x.AllowFiltering)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.AllowFiltering))
+                        .ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
+                        .Centered();
+                    columns.Bound(x => x.ShowOnProductPage)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.ShowOnProductPage))
+                        .ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"))
+                        .Centered();
+                    columns.Bound(x => x.DisplayOrder).Width(100);
+                    columns.Command(commands =>
+                    {
+                        commands.Edit().Localize(T);
+                        commands.Delete().Localize(T);
+                    }).Width(180);
+
+                })
+                .Editable(x =>
+                {
+                    x.Mode(GridEditMode.InLine);
+                })
+                .DataBinding(dataBinding =>
+                {
+                    dataBinding.Ajax().Select("ProductSpecAttrList", "Product", new { productId = Model.Id })
+                        .Update("ProductSpecAttrUpdate", "Product")
+                        .Delete("ProductSpecAttrDelete", "Product");
+                })
+                .EnableCustomBinding(true))
+        </div>
     }
     else
     {

@@ -271,7 +271,7 @@ namespace SmartStore.Data.Setup
 				CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
 				CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),
 				CreateCurrency("de-DE", rate: 0.79M, order: 20/*, formatting: string.Format("0.00 {0}", "\u20ac")*/),
-				CreateCurrency("de-CH", rate: 0.93M, order: 25),
+				CreateCurrency("de-CH", rate: 0.93M, order: 25, formatting: "CHF #,##0.00"),
 				CreateCurrency("zh-CN", rate: 6.48M, order: 30),
 				CreateCurrency("zh-HK", rate: 7.75M, order: 35),
 				CreateCurrency("ja-JP", rate: 80.07M, order: 40),

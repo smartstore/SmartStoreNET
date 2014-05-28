@@ -5,9 +5,12 @@
 ###Improvements###
 * UI: TabStrips remember their last selected tab across page requests in an unobtrusive way (removed old selection code)
 * TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
+* Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
+* Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.
+* (Developer) Added _user.less_ to Alpha theme for user defined css overrides and tweaks
 * #384 Web API: Inserting sluged recources like products require an URL record
 
 ###Bugfixes###

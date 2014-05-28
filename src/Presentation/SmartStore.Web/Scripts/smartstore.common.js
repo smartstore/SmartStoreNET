@@ -30,6 +30,10 @@
 			return;
 
 		var notify = function (msg) {
+
+		    if (!msg)
+		        return;
+
 			EventBroker.publish("message", {
 				text: msg,
 				type: type,

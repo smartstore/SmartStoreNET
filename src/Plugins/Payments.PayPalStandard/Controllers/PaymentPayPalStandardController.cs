@@ -14,14 +14,14 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Plugins;
+using SmartStore.Plugin.Payments.PayPalStandard.Services;
+using SmartStore.Services.Localization;
 using Autofac;
 
 namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 {
 	public class PaymentPayPalStandardController : PaymentControllerBase
 	{
-		private readonly PluginHelper _helper;
 		private readonly ISettingService _settingService;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
@@ -31,6 +31,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 		private readonly IWebHelper _webHelper;
 		private readonly PayPalStandardPaymentSettings _paypalStandardPaymentSettings;
 		private readonly PaymentSettings _paymentSettings;
+		private readonly ILocalizationService _localizationService;
+		private readonly IPayPalStandardService _payPalStandardService;
 
 		public PaymentPayPalStandardController(ISettingService settingService,
 			IPaymentService paymentService, IOrderService orderService,
@@ -40,7 +42,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			IWebHelper webHelper,
 			PayPalStandardPaymentSettings paypalStandardPaymentSettings,
 			PaymentSettings paymentSettings,
-			IComponentContext ctx)
+			ILocalizationService localizationService,
+			IPayPalStandardService payPalStandardService)
 		{
 			this._settingService = settingService;
 			this._paymentService = paymentService;
@@ -51,8 +54,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			this._webHelper = webHelper;
 			this._paypalStandardPaymentSettings = paypalStandardPaymentSettings;
 			this._paymentSettings = paymentSettings;
-
-			_helper = new PluginHelper(ctx, "Payments.PayPalStandard");
+			this._localizationService = localizationService;
+			this._payPalStandardService = payPalStandardService;
 		}
 
 		[AdminAuthorize]
@@ -125,7 +128,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 
 			var processor = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard") as PayPalStandardPaymentProcessor;
 			if (processor == null || !processor.IsPaymentMethodActive(_paymentSettings) || !processor.PluginDescriptor.Installed)
-				throw new SmartException(_helper.GetResource("NoModuleLoading"));	// codehint: sm-edit
+				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
 			if (processor.GetPDTDetails(tx, out values, out response))
 			{
@@ -147,7 +150,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					}
 					catch (Exception exc)
 					{
-						Logger.Error(_helper.GetResource("FailedGetGross"), exc);
+						Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.FailedGetGross"), exc);
 					}
 
 					string payer_status = string.Empty;
@@ -171,8 +174,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					string payment_fee = string.Empty;
 					values.TryGetValue("payment_fee", out payment_fee);
 
-					string paymentNote = _helper.GetResource("PaymentNote").FormatWith(total, mc_currency, payer_status, payment_status, pending_reason, txn_id, payment_type,
-						payer_id, receiver_id, invoice, payment_fee);
+					string paymentNote = _localizationService.GetResource("Plugins.Payments.PayPalStandard.PaymentNote").FormatWith(
+						total, mc_currency, payer_status, payment_status, pending_reason, txn_id, payment_type,	payer_id, receiver_id, invoice, payment_fee);
 
 					//order note
 					order.OrderNotes.Add(new OrderNote()
@@ -186,7 +189,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					//validate order total
 					if (_paypalStandardPaymentSettings.PdtValidateOrderTotal && !Math.Round(total, 2).Equals(Math.Round(order.OrderTotal, 2)))
 					{
-						Logger.Error(_helper.GetResource("UnequalTotalOrder").FormatWith(total, order.OrderTotal));
+						Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.UnequalTotalOrder").FormatWith(total, order.OrderTotal));
 
 						return RedirectToAction("Index", "Home", new { area = "" });
 					}
@@ -219,7 +222,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					//order note
 					order.OrderNotes.Add(new OrderNote()
 					{
-						Note = "{0} {1}".FormatWith(_helper.GetResource("PdtFailed"), response),
+						Note = "{0} {1}".FormatWith(_localizationService.GetResource("Plugins.Payments.PayPalStandard.PdtFailed"), response),
 						DisplayToCustomer = false,
 						CreatedOnUtc = DateTime.UtcNow
 					});
@@ -240,7 +243,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 
 			var processor = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard") as PayPalStandardPaymentProcessor;
 			if (processor == null || !processor.IsPaymentMethodActive(_paymentSettings) || !processor.PluginDescriptor.Installed)
-				throw new SmartException(_helper.GetResource("NoModuleLoading"));
+				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
 			if (processor.VerifyIPN(strRequest, out values))
 			{
@@ -286,8 +289,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					sb.AppendLine(kvp.Key + ": " + kvp.Value);
 				}
 
-				var newPaymentStatus = PaypalHelper.GetPaymentStatus(payment_status, pending_reason);
-				sb.AppendLine("{0}: {1}".FormatWith(_helper.GetResource("NewPaymentStatus"), newPaymentStatus));
+				var newPaymentStatus = _payPalStandardService.GetPaymentStatus(payment_status, pending_reason);
+				sb.AppendLine("{0}: {1}".FormatWith(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NewPaymentStatus"), newPaymentStatus));
 
 				switch (txn_type)
 				{
@@ -338,11 +341,11 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 								}
 
 								//this.OrderService.InsertOrderNote(newOrder.OrderId, sb.ToString(), DateTime.UtcNow);
-								Logger.Information(_helper.GetResource("IpnLogInfo"), new SmartException(sb.ToString()));
+								Logger.Information(_localizationService.GetResource("Plugins.Payments.PayPalStandard.IpnLogInfo"), new SmartException(sb.ToString()));
 							}
 							else
 							{
-								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -416,7 +419,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 							}
 							else
 							{
-								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -425,7 +428,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			}
 			else
 			{
-				Logger.Error(_helper.GetResource("IpnFailed"), new SmartException(strRequest));
+				Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.IpnFailed"), new SmartException(strRequest));
 			}
 
 			//nothing should be rendered to visitor

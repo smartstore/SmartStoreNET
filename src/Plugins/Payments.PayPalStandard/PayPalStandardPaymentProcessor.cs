@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using Autofac;
@@ -13,13 +14,13 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Plugin.Payments.PayPalStandard.Controllers;
+using SmartStore.Plugin.Payments.PayPalStandard.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Plugin.Payments.PayPalStandard
 {
@@ -30,7 +31,6 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 	{
 		#region Fields
 
-		private readonly PluginHelper _helper;
 		private readonly PayPalStandardPaymentSettings _paypalStandardPaymentSettings;
 		private readonly ISettingService _settingService;
 		private readonly ICurrencyService _currencyService;
@@ -40,7 +40,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		private readonly ITaxService _taxService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly HttpContextBase _httpContext;
-		private readonly ILocalizationService _localizationService;	// codehint: sm-add
+		private readonly ILocalizationService _localizationService;
+		private readonly IPayPalStandardService _payPalStandardService;
+
 		#endregion
 
 		#region Ctor
@@ -51,7 +53,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			ICheckoutAttributeParser checkoutAttributeParser, ITaxService taxService,
 			IOrderTotalCalculationService orderTotalCalculationService, HttpContextBase httpContext,
 			ILocalizationService localizationService,
-			IComponentContext ctx)
+			IPayPalStandardService payPalStandardService)
 		{
 			this._paypalStandardPaymentSettings = paypalStandardPaymentSettings;
 			this._settingService = settingService;
@@ -62,9 +64,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			this._taxService = taxService;
 			this._orderTotalCalculationService = orderTotalCalculationService;
 			this._httpContext = httpContext;
-			this._localizationService = localizationService;	// codehint: sm-add
-
-			_helper = new PluginHelper(ctx, "Payments.PayPalStandard");	// codehint: sm-add
+			this._localizationService = localizationService;
+			this._payPalStandardService = payPalStandardService;
 		}
 
 		#endregion
@@ -75,15 +76,17 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// Gets Paypal URL
 		/// </summary>
 		/// <returns></returns>
-		private string GetPaypalUrl() {
+		private string GetPaypalUrl()
+		{
 			//return _paypalStandardPaymentSettings.UseSandbox ? "https://www.sandbox.paypal.com/us/cgi-bin/webscr" :
 			//	"https://www.paypal.com/us/cgi-bin/webscr";
 
 			// codehint: sm-edit (url that paypal actually publish)
-			return _paypalStandardPaymentSettings.UseSandbox ? 
+			return _paypalStandardPaymentSettings.UseSandbox ?
 				"https://www.sandbox.paypal.com/cgi-bin/webscr" :
 				"https://www.paypal.com/cgi-bin/webscr";
 		}
+
 		/// <summary>
 		/// Gets PDT details
 		/// </summary>
@@ -91,7 +94,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="values">Values</param>
 		/// <param name="response">Response</param>
 		/// <returns>Result</returns>
-		public bool GetPDTDetails(string tx, out Dictionary<string, string> values, out string response) {
+		public bool GetPDTDetails(string tx, out Dictionary<string, string> values, out string response)
+		{
 			var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
@@ -108,13 +112,16 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 
 			values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			bool firstLine = true, success = false;
-			foreach (string l in response.Split('\n')) {
+			foreach (string l in response.Split('\n'))
+			{
 				string line = l.Trim();
-				if (firstLine) {
+				if (firstLine)
+				{
 					success = line.Equals("SUCCESS", StringComparison.OrdinalIgnoreCase);
 					firstLine = false;
 				}
-				else {
+				else
+				{
 					int equalPox = line.IndexOf('=');
 					if (equalPox >= 0)
 						values.Add(line.Substring(0, equalPox), line.Substring(equalPox + 1));
@@ -130,7 +137,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="formString">Form string</param>
 		/// <param name="values">Values</param>
 		/// <returns>Result</returns>
-		public bool VerifyIPN(string formString, out Dictionary<string, string> values) {
+		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
+		{
 			var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
@@ -138,18 +146,21 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			string formContent = string.Format("{0}&cmd=_notify-validate", formString);
 			req.ContentLength = formContent.Length;
 
-			using (var sw = new StreamWriter(req.GetRequestStream(), Encoding.ASCII)) {
+			using (var sw = new StreamWriter(req.GetRequestStream(), Encoding.ASCII))
+			{
 				sw.Write(formContent);
 			}
 
 			string response = null;
-			using (var sr = new StreamReader(req.GetResponse().GetResponseStream())) {
+			using (var sr = new StreamReader(req.GetResponse().GetResponseStream()))
+			{
 				response = HttpUtility.UrlDecode(sr.ReadToEnd());
 			}
 			bool success = response.Trim().Equals("VERIFIED", StringComparison.OrdinalIgnoreCase);
 
 			values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			foreach (string l in formString.Split('&')) {
+			foreach (string l in formString.Split('&'))
+			{
 				string line = HttpUtility.UrlDecode(l).Trim();		// codehint: sm-edit
 				int equalPox = line.IndexOf('=');
 				if (equalPox >= 0)
@@ -158,21 +169,24 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 
 			return success;
 		}
+
 		#endregion
 
 		#region Methods
-		
+
 		/// <summary>
 		/// Process a payment
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
 		/// <returns>Process payment result</returns>
-		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest) {
+		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+		{
 			var result = new ProcessPaymentResult();
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
 			// codehint: sm-add
-			if (_paypalStandardPaymentSettings.BusinessEmail.IsNullOrEmpty() || _paypalStandardPaymentSettings.PdtToken.IsNullOrEmpty()) {
+			if (_paypalStandardPaymentSettings.BusinessEmail.IsNullOrEmpty() || _paypalStandardPaymentSettings.PdtToken.IsNullOrEmpty())
+			{
 				result.AddError(_localizationService.GetResource("Plugins.Payments.PayPalStandard.InvalidCredentials"));
 			}
 
@@ -187,101 +201,114 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		{
 			var builder = new StringBuilder();
 			builder.Append(GetPaypalUrl());
-			string cmd = string.Empty;
-			if (_paypalStandardPaymentSettings.PassProductNamesAndTotals)
-			{
-				cmd = "_cart";
-			}
-			else
-			{
-				cmd = "_xclick";
-			}
+
+			string orderNumber = postProcessPaymentRequest.Order.GetOrderNumber();
+			string cmd = (_paypalStandardPaymentSettings.PassProductNamesAndTotals ? "_cart" : "_xclick");
+
 			builder.AppendFormat("?cmd={0}&business={1}", cmd, HttpUtility.UrlEncode(_paypalStandardPaymentSettings.BusinessEmail));
+
 			if (_paypalStandardPaymentSettings.PassProductNamesAndTotals)
 			{
 				builder.AppendFormat("&upload=1");
 
-				//get the items in the cart
+				int index = 0;
 				decimal cartTotal = decimal.Zero;
-				var cartItems = postProcessPaymentRequest.Order.OrderItems;
-				int x = 1;
-				foreach (var item in cartItems)
-				{
-					var unitPriceExclTax = item.UnitPriceExclTax;
-					var priceExclTax = item.PriceExclTax;
-					//round
-					var unitPriceExclTaxRounded = Math.Round(unitPriceExclTax, 2);
-
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(item.Product.Name));
-					builder.AppendFormat("&amount_" + x + "={0}", unitPriceExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
-					builder.AppendFormat("&quantity_" + x + "={0}", item.Quantity);
-					x++;
-					cartTotal += priceExclTax;
-				}
-
-				//the checkout attributes that have a dollar value and send them to Paypal as items to be paid for
 				var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(postProcessPaymentRequest.Order.CheckoutAttributesXml);
-				foreach (var val in caValues)
+
+				var lineItems = _payPalStandardService.GetLineItems(postProcessPaymentRequest, caValues, out cartTotal);
+
+				_payPalStandardService.AdjustLineItemAmounts(lineItems, postProcessPaymentRequest);
+
+				foreach (var item in lineItems.OrderBy(x => (int)x.Type))
 				{
-					var attPrice = _taxService.GetCheckoutAttributePrice(val, false, postProcessPaymentRequest.Order.Customer);
-					//round
-					var attPriceRounded = Math.Round(attPrice, 2);
-					if (attPrice > decimal.Zero) //if it has a price
-                    {
-						var ca = val.CheckoutAttribute;
-						if (ca != null)
-						{
-							var attName = ca.Name; //set the name
-							builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(attName)); //name
-							builder.AppendFormat("&amount_" + x + "={0}", attPriceRounded.ToString("0.00", CultureInfo.InvariantCulture)); //amount
-							builder.AppendFormat("&quantity_" + x + "={0}", 1); //quantity
-							x++;
-							cartTotal += attPrice;
-						}
-					}
+					++index;
+					builder.AppendFormat("&item_name_" + index + "={0}", HttpUtility.UrlEncode(item.Name));
+					builder.AppendFormat("&amount_" + index + "={0}", item.AmountRounded.ToString("0.00", CultureInfo.InvariantCulture));
+					builder.AppendFormat("&quantity_" + index + "={0}", item.Quantity);
 				}
 
-				//order totals
+				#region old code
 
-				//shipping
-				var orderShippingExclTax = postProcessPaymentRequest.Order.OrderShippingExclTax;
-				var orderShippingExclTaxRounded = Math.Round(orderShippingExclTax, 2);
-				if (orderShippingExclTax > decimal.Zero)
-				{
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("ShippingFee")));
-					builder.AppendFormat("&amount_" + x + "={0}", orderShippingExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
-					builder.AppendFormat("&quantity_" + x + "={0}", 1);
-					x++;
-					cartTotal += orderShippingExclTax;
-				}
+				//var cartItems = postProcessPaymentRequest.Order.OrderItems;
+				//int x = 1;
+				//foreach (var item in cartItems)
+				//{
+				//	var unitPriceExclTax = item.UnitPriceExclTax;
+				//	var priceExclTax = item.PriceExclTax;
+				//	//round
+				//	var unitPriceExclTaxRounded = Math.Round(unitPriceExclTax, 2);
 
-				//payment method additional fee
-				var paymentMethodAdditionalFeeExclTax = postProcessPaymentRequest.Order.PaymentMethodAdditionalFeeExclTax;
-				var paymentMethodAdditionalFeeExclTaxRounded = Math.Round(paymentMethodAdditionalFeeExclTax, 2);
-				if (paymentMethodAdditionalFeeExclTax > decimal.Zero)
-				{
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("PaymentMethodFee")));
-					builder.AppendFormat("&amount_" + x + "={0}", paymentMethodAdditionalFeeExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
-					builder.AppendFormat("&quantity_" + x + "={0}", 1);
-					x++;
-					cartTotal += paymentMethodAdditionalFeeExclTax;
-				}
+				//	builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(item.Product.Name));
+				//	builder.AppendFormat("&amount_" + x + "={0}", unitPriceExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
+				//	builder.AppendFormat("&quantity_" + x + "={0}", item.Quantity);
+				//	x++;
+				//	cartTotal += priceExclTax;
+				//}
 
-				//tax
-				var orderTax = postProcessPaymentRequest.Order.OrderTax;
-				var orderTaxRounded = Math.Round(orderTax, 2);
-				if (orderTax > decimal.Zero)
-				{
-					//builder.AppendFormat("&tax_1={0}", orderTax.ToString("0.00", CultureInfo.InvariantCulture));
+				////the checkout attributes that have a dollar value and send them to Paypal as items to be paid for
+				//foreach (var val in caValues)
+				//{
+				//	var attPrice = _taxService.GetCheckoutAttributePrice(val, false, postProcessPaymentRequest.Order.Customer);
+				//	//round
+				//	var attPriceRounded = Math.Round(attPrice, 2);
+				//	if (attPrice > decimal.Zero) //if it has a price
+				//	{
+				//		var ca = val.CheckoutAttribute;
+				//		if (ca != null)
+				//		{
+				//			var attName = ca.Name; //set the name
+				//			builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(attName)); //name
+				//			builder.AppendFormat("&amount_" + x + "={0}", attPriceRounded.ToString("0.00", CultureInfo.InvariantCulture)); //amount
+				//			builder.AppendFormat("&quantity_" + x + "={0}", 1); //quantity
+				//			x++;
+				//			cartTotal += attPrice;
+				//		}
+				//	}
+				//}
 
-					//add tax as item
-					builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_helper.GetResource("SalesTax")));
-					builder.AppendFormat("&amount_" + x + "={0}", orderTaxRounded.ToString("0.00", CultureInfo.InvariantCulture)); //amount
-					builder.AppendFormat("&quantity_" + x + "={0}", 1); //quantity
+				////order totals
 
-					cartTotal += orderTax;
-					x++;
-				}
+				////shipping
+				//var orderShippingExclTax = postProcessPaymentRequest.Order.OrderShippingExclTax;
+				//var orderShippingExclTaxRounded = Math.Round(orderShippingExclTax, 2);
+				//if (orderShippingExclTax > decimal.Zero)
+				//{
+				//	builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_localizationService.GetResource("Plugins.Payments.PayPalStandard.ShippingFee")));
+				//	builder.AppendFormat("&amount_" + x + "={0}", orderShippingExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
+				//	builder.AppendFormat("&quantity_" + x + "={0}", 1);
+				//	x++;
+				//	cartTotal += orderShippingExclTax;
+				//}
+
+				////payment method additional fee
+				//var paymentMethodAdditionalFeeExclTax = postProcessPaymentRequest.Order.PaymentMethodAdditionalFeeExclTax;
+				//var paymentMethodAdditionalFeeExclTaxRounded = Math.Round(paymentMethodAdditionalFeeExclTax, 2);
+				//if (paymentMethodAdditionalFeeExclTax > decimal.Zero)
+				//{
+				//	builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_localizationService.GetResource("Plugins.Payments.PayPalStandard.PaymentMethodFee")));
+				//	builder.AppendFormat("&amount_" + x + "={0}", paymentMethodAdditionalFeeExclTaxRounded.ToString("0.00", CultureInfo.InvariantCulture));
+				//	builder.AppendFormat("&quantity_" + x + "={0}", 1);
+				//	x++;
+				//	cartTotal += paymentMethodAdditionalFeeExclTax;
+				//}
+
+				////tax
+				//var orderTax = postProcessPaymentRequest.Order.OrderTax;
+				//var orderTaxRounded = Math.Round(orderTax, 2);
+				//if (orderTax > decimal.Zero)
+				//{
+				//	//builder.AppendFormat("&tax_1={0}", orderTax.ToString("0.00", CultureInfo.InvariantCulture));
+
+				//	//add tax as item
+				//	builder.AppendFormat("&item_name_" + x + "={0}", HttpUtility.UrlEncode(_localizationService.GetResource("Plugins.Payments.PayPalStandard.SalesTax")));
+				//	builder.AppendFormat("&amount_" + x + "={0}", orderTaxRounded.ToString("0.00", CultureInfo.InvariantCulture)); //amount
+				//	builder.AppendFormat("&quantity_" + x + "={0}", 1); //quantity
+
+				//	cartTotal += orderTax;
+				//	x++;
+				//}
+
+				#endregion
 
 				if (cartTotal > postProcessPaymentRequest.Order.OrderTotal)
 				{
@@ -297,16 +324,18 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			else
 			{
 				//pass order total
-                builder.AppendFormat("&item_name=Order Number {0}", postProcessPaymentRequest.Order.GetOrderNumber());
+				string totalItemName = "{0} {1}".FormatWith(_localizationService.GetResource("Checkout.OrderNumber"), orderNumber);
+				builder.AppendFormat("&item_name={0}", HttpUtility.UrlEncode(totalItemName));
 				var orderTotal = Math.Round(postProcessPaymentRequest.Order.OrderTotal, 2);
 				builder.AppendFormat("&amount={0}", orderTotal.ToString("0.00", CultureInfo.InvariantCulture));
 			}
 
 			builder.AppendFormat("&custom={0}", postProcessPaymentRequest.Order.OrderGuid);
-            builder.AppendFormat("&charset={0}", "utf-8");
+			builder.AppendFormat("&charset={0}", "utf-8");
 			builder.Append(string.Format("&no_note=1&currency_code={0}", HttpUtility.UrlEncode(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode)));
-            builder.AppendFormat("&invoice={0}", postProcessPaymentRequest.Order.GetOrderNumber());
+			builder.AppendFormat("&invoice={0}", HttpUtility.UrlEncode(orderNumber));
 			builder.AppendFormat("&rm=2", new object[0]);
+
 			if (postProcessPaymentRequest.Order.ShippingStatus != ShippingStatus.ShippingNotRequired)
 				builder.AppendFormat("&no_shipping=2", new object[0]);
 			else
@@ -349,12 +378,15 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 				builder.AppendFormat("&state={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.StateProvince.Abbreviation));
 			else
 				builder.AppendFormat("&state={0}", "");
+
 			if (postProcessPaymentRequest.Order.BillingAddress.Country != null)
 				builder.AppendFormat("&country={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Country.TwoLetterIsoCode));
 			else
 				builder.AppendFormat("&country={0}", "");
+
 			builder.AppendFormat("&zip={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.ZipPostalCode));
 			builder.AppendFormat("&email={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Email));
+
 			_httpContext.Response.Redirect(builder.ToString());
 		}
 
@@ -394,7 +426,8 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="actionName">Action name</param>
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
-		public override void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+		public override void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		{
 			actionName = "Configure";
 			controllerName = "PaymentPayPalStandard";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", null } };
@@ -406,13 +439,15 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="actionName">Action name</param>
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
-		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues) {
+		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		{
 			actionName = "PaymentInfo";
 			controllerName = "PaymentPayPalStandard";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", null } };
 		}
 
-		public override Type GetControllerType() {
+		public override Type GetControllerType()
+		{
 			return typeof(PaymentPayPalStandardController);
 		}
 
@@ -449,9 +484,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 
 		#region Properties
 
-		public override PaymentMethodType PaymentMethodType 
+		public override PaymentMethodType PaymentMethodType
 		{
-			get 
+			get
 			{
 				return PaymentMethodType.Redirection;
 			}

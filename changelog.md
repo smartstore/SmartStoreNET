@@ -25,6 +25,7 @@
 * #376 Product filtering: Category price range filter not working anymore
 * Return requests: Products to return won't be listed
 * #372 Biz-Importer sometimes shows inactive tier prices
+* PayPal Standard: Sending more localized values. Adjustment of net prices to avoid wrong PayPal total amount calculation.
 
 ##SmartStore.NET 2.0.2#
 

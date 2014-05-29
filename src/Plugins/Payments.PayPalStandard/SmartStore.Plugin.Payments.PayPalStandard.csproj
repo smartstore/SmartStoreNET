@@ -72,7 +72,11 @@
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc">
+      <HintPath>..\..\packages\Autofac.Mvc5.3.2.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -117,13 +121,16 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="PaypalHelper.cs" />
+    <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="PayPalStandardPaymentProcessor.cs" />
     <Compile Include="PayPalStandardPaymentSettings.cs" />
     <Compile Include="Controllers\PaymentPayPalStandardController.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
+    <Compile Include="Services\IPayPalStandardService.cs" />
+    <Compile Include="Services\PayPalStandardCore.cs" />
+    <Compile Include="Services\PayPalStandardService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
@@ -142,6 +149,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Views\PaymentPayPalStandard\Configure.cshtml" />
     <EmbeddedResource Include="Views\PaymentPayPalStandard\PaymentInfo.cshtml" />
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="web.config" />
   </ItemGroup>

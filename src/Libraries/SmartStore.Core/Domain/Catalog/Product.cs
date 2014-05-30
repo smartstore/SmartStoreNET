@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -167,6 +168,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string Sku
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<string>("Sku", _sku);
@@ -183,6 +185,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string ManufacturerPartNumber
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<string>("ManufacturerPartNumber", _manufacturerPartNumber);
@@ -199,6 +202,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string Gtin
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<string>("Gtin", _gtin);
@@ -371,6 +375,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int StockQuantity
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<int>("StockQuantity", _stockQuantity);
@@ -417,7 +422,8 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int BackorderModeId
         {
-            get
+			[DebuggerStepThrough]
+			get
             {
                 return this.GetMergedDataValue<int>("BackorderModeId", _backorderModeId);
             }
@@ -481,6 +487,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal Price
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<decimal>("Price", _price);
@@ -577,6 +584,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal Length
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<decimal>("Length", _length);
@@ -593,6 +601,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal Width
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<decimal>("Width", _width);
@@ -609,6 +618,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal Height
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<decimal>("Height", _height);
@@ -666,6 +676,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int? DeliveryTimeId
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<int?>("DeliveryTimeId", _deliveryTimeId);
@@ -698,6 +709,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal? BasePriceAmount
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<decimal?>("BasePriceAmount", _basePriceAmount);
@@ -715,6 +727,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int? BasePriceBaseAmount
 		{
+			[DebuggerStepThrough]
 			get
 			{
 				return this.GetMergedDataValue<int?>("BasePriceBaseAmount", _basePriceBaseAmount);

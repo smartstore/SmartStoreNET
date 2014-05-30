@@ -65,6 +65,9 @@ namespace SmartStore.Services.Seo
         /// <param name="entity">Entity</param>
         /// <param name="slug">Slug</param>
         /// <param name="languageId">Language ID</param>
-        void SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported;
+		/// <returns>
+		/// A <see cref="UrlRecord"/> instance when a new record had to be inserted, <c>null</c> otherwise.
+		/// </returns>
+        UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported;
     }
 }

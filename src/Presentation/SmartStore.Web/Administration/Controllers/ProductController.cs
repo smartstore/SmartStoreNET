@@ -2523,7 +2523,7 @@ namespace SmartStore.Admin.Controllers
 					var cts = new CancellationTokenSource();
 					var scheduler = TaskScheduler.Default;
 
-					AsyncRunner.Run(c =>
+					var task = AsyncRunner.Run(c =>
 					{
 						var progress = new Progress<ImportProgressInfo>(p =>
 						{
@@ -2555,6 +2555,8 @@ namespace SmartStore.Admin.Controllers
 						}
 
 					}, cts.Token, options, scheduler);
+
+					task.Wait(500);
 				}
 				else
 				{

@@ -510,6 +510,15 @@ namespace SmartStore.Data
 			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
 		}
 
+		public int DetachAll() 
+		{
+			var attachedEntities = this.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Detached)
+				.ToList();
+			attachedEntities.Each(x => this.Entry(x.Entity).State = System.Data.Entity.EntityState.Detached);
+			return attachedEntities.Count;
+		}
+
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();

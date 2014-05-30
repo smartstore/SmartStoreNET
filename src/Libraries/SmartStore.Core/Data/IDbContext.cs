@@ -73,6 +73,17 @@ namespace SmartStore.Core.Data
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to detach</param>
         void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+
+		/// <summary>
+		/// Detaches an entity from the current object context
+		/// </summary>
+		/// <param name="entity">The entity instance to detach</param>
 		void Detach(object entity);
+
+		/// <summary>
+		/// Detaches all entities from the current object context
+		/// </summary>
+		/// <returns>The count of detached entities</returns>
+		int DetachAll();
     }
 }

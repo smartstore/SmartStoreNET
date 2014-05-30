@@ -208,7 +208,14 @@ namespace SmartStore.Services.Seo
 				languageId);
         }
 
-		public static string ValidateSeName<T>(this T entity, string seName, string name, bool ensureNotEmpty, IUrlRecordService urlRecordService, SeoSettings seoSettings, int? languageId = null)
+		public static string ValidateSeName<T>(this T entity, 
+			string seName, 
+			string name, 
+			bool ensureNotEmpty, 
+			IUrlRecordService urlRecordService, 
+			SeoSettings seoSettings, 
+			int? languageId = null,
+			Func<string, UrlRecord> extraSlugLookup = null)
 			where T : BaseEntity, ISlugSupported
 		{
 			Guard.ArgumentNotNull(() => urlRecordService);
@@ -222,7 +229,7 @@ namespace SmartStore.Services.Seo
 				seName = name;
 
 			//validation
-			seName = GetSeName(seName);
+			seName = GetSeName(seName, seoSettings);
 
 			//max length
 			seName = seName.Truncate(400);
@@ -245,10 +252,13 @@ namespace SmartStore.Services.Seo
 			string entityName = typeof(T).Name;
 			int i = 2;
 			var tempSeName = seName;
+
+			extraSlugLookup = extraSlugLookup ?? ((s) => null);
+
 			while (true)
 			{
 				//check whether such slug already exists (and that is not the current product)
-				var urlRecord = urlRecordService.GetBySlug(tempSeName);
+				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
 				if (!reserved1 && urlRecord != null && languageId.HasValue)	// codehint: sm-add
@@ -269,15 +279,29 @@ namespace SmartStore.Services.Seo
 
 
         /// <summary>
-        /// Get SE name
+        /// Get SEO friendly name
         /// </summary>
         /// <param name="name">Name</param>
         /// <returns>Result</returns>
         public static string GetSeName(string name)
         {
             var seoSettings = EngineContext.Current.Resolve<SeoSettings>();
-			return SeoHelper.GetSeName(name, seoSettings.ConvertNonWesternChars, seoSettings.AllowUnicodeCharsInUrls);
+			return GetSeName(name, seoSettings);
         }
+
+		/// <summary>
+		/// Get SEO friendly name
+		/// </summary>
+		/// <param name="name">Name</param>
+		/// <param name="seoSettings">SEO settings</param>
+		/// <returns>Result</returns>
+		public static string GetSeName(string name, SeoSettings seoSettings)
+		{
+			return SeoHelper.GetSeName(
+				name,
+				seoSettings == null ? false : seoSettings.ConvertNonWesternChars,
+				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls);
+		}
 
         #endregion
     }

@@ -330,7 +330,7 @@
             </text>)
         .FooterContent(@<text>
             <button id="importexcelsubmit" type="submit" data-action="import" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
-            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Close")</a>
         </text>)
         .Modal(true)
         .Visible(false)
@@ -415,11 +415,10 @@
     	function updateProgress(data) {
     		var el = $('#importexcel-progress');
     		var percent = Math.round(data.ProcessedPercent) + '%';
-
     		el.find('.iep-bar').css('width', percent).text(percent);
     		el.find('.iep-processed').text(data.TotalProcessed);
     		el.find('.iep-records').text(data.TotalRecords);
-    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.Seconds));
+    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.TotalSeconds));
     		el.find('.iep-new').text(data.NewRecords);
     		el.find('.iep-modified').text(data.ModifiedRecords);
     		el.find('.iep-warnings').text(data.TotalWarnings);

@@ -54,7 +54,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>
-        public void GetDisplayWidgetRoute(string widgetZone, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "PublicInfo";
             controllerName = "TrustedShopsSeal";

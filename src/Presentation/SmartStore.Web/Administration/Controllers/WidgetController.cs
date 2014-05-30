@@ -113,7 +113,6 @@ namespace SmartStore.Admin.Controllers
                     //mark as disabled
                     _widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
                     _settingService.SaveSetting(_widgetSettings);
-
                 }
             }
             else
@@ -172,7 +171,7 @@ namespace SmartStore.Admin.Controllers
                 string actionName;
                 string controllerName;
                 RouteValueDictionary routeValues;
-                widget.GetDisplayWidgetRoute(widgetZone, out actionName, out controllerName, out routeValues);
+                widget.GetDisplayWidgetRoute(widgetZone, null, 0, out actionName, out controllerName, out routeValues);
                 widgetModel.ActionName = actionName;
                 widgetModel.ControllerName = controllerName;
                 widgetModel.RouteValues = routeValues;

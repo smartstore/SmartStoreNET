@@ -55,18 +55,19 @@ namespace SmartStore.Web.Infrastructure
             this._simpleWidgets = simpleWidgets;
         }
 
-        public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone)
+        public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model)
         {		
 			string actionName;
             string controllerName;
             RouteValueDictionary routeValues;
+			var storeId = _storeContext.CurrentStore.Id;
 
             #region Plugin Widgets
 
-            var widgets = _widgetService.LoadActiveWidgetsByWidgetZone(widgetZone, _storeContext.CurrentStore.Id);
+			var widgets = _widgetService.LoadActiveWidgetsByWidgetZone(widgetZone, storeId);
             foreach (var widget in widgets)
             {
-                widget.GetDisplayWidgetRoute(widgetZone, out actionName, out controllerName, out routeValues);
+                widget.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
 
                 yield return new WidgetRouteInfo 
                 { 
@@ -81,10 +82,10 @@ namespace SmartStore.Web.Infrastructure
             #region Topic Widgets
 
             // add special "topic widgets" to the list
-			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, _storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
+			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id);
             var topicWidgets = _cacheManager.Get(allTopicsCacheKey, () =>
             {
-				var allTopicWidgets = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).Where(x => x.RenderAsWidget).ToList();
+				var allTopicWidgets = _topicService.GetAllTopics(storeId).Where(x => x.RenderAsWidget).ToList();
 				var stubs = allTopicWidgets
 					.Select(t => new TopicWidgetStub 
 					{
@@ -163,7 +164,7 @@ namespace SmartStore.Web.Infrastructure
                     var simpleWidget = EngineContext.Current.Resolve<IWidget>(widgetName);
                     if (simpleWidget != null)
                     {
-                        simpleWidget.GetDisplayWidgetRoute(widgetZone, out actionName, out controllerName, out routeValues);
+                        simpleWidget.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
 
                         yield return new WidgetRouteInfo
                         {

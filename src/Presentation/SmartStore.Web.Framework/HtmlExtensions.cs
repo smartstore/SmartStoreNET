@@ -403,20 +403,25 @@ namespace SmartStore.Web.Framework
 
         public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone)
         {
-            if (widgetZone.HasValue())
-            {
-                var widgetSelector = EngineContext.Current.Resolve<IWidgetSelector>();
-                var widgets = widgetSelector.GetWidgets(widgetZone);
-
-                if (widgets.Any())
-                {
-                    var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets });
-                    return result;
-                }
-            }
-
-            return MvcHtmlString.Create("");
+			return helper.Widget(widgetZone, null);
         }
+
+		public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone, object model)
+		{
+			if (widgetZone.HasValue())
+			{
+				model = model ?? helper.ViewData.Model;
+				var widgetSelector = EngineContext.Current.Resolve<IWidgetSelector>();
+				var widgets = widgetSelector.GetWidgets(widgetZone, model);
+				if (widgets.Any())
+				{
+					var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets, model = model });
+					return result;
+				}
+			}
+
+			return MvcHtmlString.Create("");
+		}
 
         // codehint: sm-add
         public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)

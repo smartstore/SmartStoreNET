@@ -3,6 +3,7 @@
 ##SmartStore.NET 2.1#
 
 ###New Features###
+* (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
 
 ###Improvements###

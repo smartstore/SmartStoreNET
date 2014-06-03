@@ -21,10 +21,18 @@ namespace SmartStore.Web.Framework.Controllers
             base.Initialize(requestContext);
         }
 
+		/// <summary>
+		/// Access denied view
+		/// </summary>
+		/// <returns>Access denied view</returns>
+		protected ActionResult AccessDeniedView()
+		{
+			return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl });
+		}
+
         /// <summary>
         /// Renders default access denied view as a partial
         /// </summary>
-        /// <remarks>codehint: sm-add</remarks>
         protected ActionResult AccessDeniedPartialView()
         {
             return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");

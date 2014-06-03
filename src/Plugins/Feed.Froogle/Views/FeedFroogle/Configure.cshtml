@@ -18,9 +18,9 @@
         "~/Content/x-editable/bootstrap-editable.js");
 }
 
-<p>
-	<img src="@Url.Content("~/Plugins/PromotionFeed.Froogle/Content/images/logo298x40.gif")" alt="Google Merchant Center" class="config-logo" />
-</p>
+<a href="http://www.google.com/merchants/" rel="nofollow" target="_blank" class="pull-right">
+	<img src="@Url.Content("~/Plugins/PromotionFeed.Froogle/Content/images/mc_logo.png")" alt="Google Merchant Center" class="config-logo" />
+</a>
 
 @(Html.SmartStore().TabStrip().Name("googlebase-configure").Items(x => {
 	x.Add().Text(T("Plugins.Feed.Froogle.General").Text).Content(@TabGeneral()).Selected(true);
@@ -43,56 +43,78 @@
     <table class="adminContent">
     <tr>
         <td colspan="2">
-			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
+			<div class="alert alert-info">
+				<button class="close" data-dismiss="alert">×</button>
+				@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
+			</div>
         </td>
     </tr>
-	@if (Model.GenerateFeedResult.HasValue() || Model.GeneratedFiles.Count > 0)
+    @if (Model.GeneratedFiles.Count > 0 && !Model.IsRunning)
 	{
-    <tr class="adminSeparator">
-        <td colspan="2">
-            <hr />
-        </td>
-    </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(m => m.GeneratedFiles)
+			</td>
+			<td class="adminData">
+				@foreach (var group in Model.GeneratedFiles.GroupBy(x => x.StoreId))
+				{
+					<p>
+						@(group.First().StoreName):
+						@foreach (var file in group)
+						{
+							<br /><a href="@file.FileUrl" target="_blank">@file.FileUrl</a>
+						}
+					</p>
+				}
+			</td>
+		</tr>
 	}
-    @if (Model.GenerateFeedResult.HasValue()) {
-    <tr>
+	else if (Model.IsRunning)
+	{
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<i class="icon-refresh icon-spin"></i>
+				<span id="ProgressInfo">@Model.ProcessInfo</span>
+			</td>
+		</tr>
+	}
+	<tr>
 		<td class="adminTitle">&nbsp;</td>
 		<td class="adminData">
-			<p class="feed-result">@Html.Raw(Model.GenerateFeedResult)</p>
+			@if (Model.IsRunning)
+			{
+				<a id="ProgressInfoButton" href="javascript:void(0)" data-url="@Model.GenerateFeedProgressUrl" class="btn btn-info">
+					<i class="icon-info"></i>&nbsp;@T("Admin.Common.Update")
+				</a>
+			}
+			else
+			{
+				<a href="@Model.GenerateFeedUrl" class="btn btn-warning">
+					<i class="icon-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
+				</a>
+				
+				if (Model.GeneratedFiles.Count > 0)
+				{
+					<a href="@Model.DeleteFilesUrl" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon-trash"></i>&nbsp;@T("Admin.Common.Delete")
+					</a>
+				}
+			}
 		</td>
-    </tr>
-	}
-    @if (Model.GeneratedFiles.Count > 0)
-	{
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(m => m.GeneratedFiles)
-        </td>
-        <td class="adminData">
-            @for (int i = 0; i <= Model.GeneratedFiles.Count - 1; i++)
-            {
-                var generatedFile = Model.GeneratedFiles[i];
-                @generatedFile.StoreName <text>-</text> <a href="@generatedFile.FileUrl" target="_blank">@generatedFile.FileUrl</a> 
-                if (i != Model.GeneratedFiles.Count - 1)
-                {
-                <br />
-                }
-            }
-        </td>
-    </tr>
-	}
-    <tr class="adminSeparator">
-        <td colspan="2">
-            <hr />
-        </td>
-    </tr>
+	</tr>
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<hr />
+		</td>
+	</tr>	
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(m => m.DefaultGoogleCategory)
         </td>
         <td class="adminData">
 			<input type="text" id="DefaultGoogleCategory" name="DefaultGoogleCategory" class="text-box single-line valid" style="width:98%;" data-provide="typeahead" data-items="18" 
-				value="@Model.DefaultGoogleCategory" data-source="@Model.AvailableGoogleCategoriesAsJson">
+				value="@Model.DefaultGoogleCategory" data-source="@Model.AvailableGoogleCategoriesAsJson" />
         </td>
     </tr>
     <tr>
@@ -401,9 +423,6 @@
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
             </button>
-            <button type="submit" name="generate" value="generate" class="btn" onclick="$.throbber.show('@T("Plugins.Feed.Froogle.GeneratingNow")');">
-				<i class="icon-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
-            </button>
         </td>
     </tr>
     </table>
@@ -475,6 +494,17 @@
     <script type="text/javascript">
     	$(document).ready(function () {
     		$.fn.editable.defaults.mode = 'inline';
+    	});
+
+    	$('#ProgressInfoButton').click(function() {
+    		$(this).doAjax({
+    			callbackSuccess: function (resp) {
+    				if (resp.message.length > 0)
+    					$('#ProgressInfo').html(resp.message);
+    				else
+    					location.reload();    					
+    			}
+    		});
     	});
 
     	$('#search-products').click(function () {

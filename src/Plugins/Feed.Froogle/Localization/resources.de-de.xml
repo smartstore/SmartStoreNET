@@ -18,9 +18,6 @@
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Standard-Google-Kategorie fehlt</Value>
 	</LocaleResource>
-	<LocaleResource Name="GeneratingNow">
-		<Value>Feed wird erstellt...</Value>
-	</LocaleResource>
 	<LocaleResource Name="Currency">
 		<Value>Währung</Value>
 	</LocaleResource>
@@ -66,9 +63,6 @@
 	<LocaleResource Name="Products.Size">
 		<Value>Größe</Value>
 	</LocaleResource>
-	<LocaleResource Name="SuccessResult">
-		<Value>Feed wurde erfolgreich erstellt.</Value>
-	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Feed automatisch erstellen</Value>
 	</LocaleResource>
@@ -83,12 +77,6 @@
 	</LocaleResource>
 	<LocaleResource Name="ConfigSaveNote">
 		<Value>Einstellungen wurden erfolgreich gespeichert. Starten Sie die Anwendung bitte neu, falls "Feed automatisch erstellen" geändert wurde.</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileUrl">
-		<Value>URL der Feed-Datei (statisch)</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileUrl.Hint">
-		<Value>Die URL der erzeugten Feed-Datei. Sie ist in Bezug auf Ihren Shop statisch, kann also direkt für den Google-Service verwendet werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="BuildDescription">
 		<Value>Artikelbeschreibung</Value>

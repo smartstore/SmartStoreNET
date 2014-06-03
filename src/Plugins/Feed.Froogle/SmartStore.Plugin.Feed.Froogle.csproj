@@ -183,7 +183,7 @@
     <EmbeddedResource Include="Views\FeedFroogle\Configure.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\logo298x40.gif">
+    <Content Include="Content\images\mc_logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\smartstore.feed.froogle.css">

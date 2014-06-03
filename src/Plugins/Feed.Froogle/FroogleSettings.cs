@@ -1,10 +1,21 @@
 ﻿using SmartStore.Core.Configuration;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Plugin.Feed.Froogle
 {
 	public class FroogleSettings : PromotionFeedSettings, ISettings
     {
+		public FroogleSettings()
+		{
+            ProductPictureSize = 125;
+			StaticFileName = "google_merchant_center_{0}.xml".FormatWith(CommonHelper.GenerateRandomDigitCode(10));
+			Condition = "new";
+			OnlineOnly = true;
+			AdditionalImages = true;
+			SpecialPrice = true;
+		}
+
         public string DefaultGoogleCategory { get; set; }
 		public string Condition { get; set; }
 		public bool SpecialPrice { get; set; }

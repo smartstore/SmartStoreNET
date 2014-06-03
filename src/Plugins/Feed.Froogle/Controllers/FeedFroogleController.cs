@@ -1,45 +1,53 @@
 ﻿using System;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.Logging;
+using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Plugin.Feed.Froogle.Controllers
 {
+	public class FeedFroogleController : PluginControllerBase
+	{
+		private readonly IGoogleService _googleService;
+		private readonly ISettingService _settingService;
+		private readonly IPermissionService _permissionService;
 
-    public class FeedFroogleController : PluginControllerBase
-    {
-        private readonly IGoogleService _googleService;
-        private readonly ISettingService _settingService;
-
-        public FeedFroogleController(
-			IGoogleService googleService, 
-			ISettingService settingService)
+		public FeedFroogleController(
+			IGoogleService googleService,
+			ISettingService settingService,
+			IPermissionService permissionService)
 		{
-			this._googleService = googleService;
-			this._settingService = settingService;
+			_googleService = googleService;
+			_settingService = settingService;
+			_permissionService = permissionService;
 		}
-        
-        public ActionResult Configure()
-        {
-			// codehint: sm-edit
-            var model = new FeedFroogleModel();
+
+		private ActionResult RedirectToConfig()
+		{
+			return RedirectToAction("ConfigureMiscPlugin", "Plugin", new { systemName = _googleService.Helper.SystemName, area = "Admin" });
+		}
+
+		public ActionResult Configure()
+		{
+			var model = new FeedFroogleModel();
 			model.Copy(_googleService.Settings, true);
 
-			_googleService.SetupModel(model, _googleService.Helper.ScheduledTask);
+			if (TempData["GenerateFeedRunning"] != null)
+				model.IsRunning = (bool)TempData["GenerateFeedRunning"];
 
-            return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
-        }
+			_googleService.SetupModel(model);
 
-        [HttpPost]
-        [FormValueRequired("save")]
-        public ActionResult Configure(FeedFroogleModel model)
-        {
-            if (!ModelState.IsValid)
+			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
+		}
+
+		[HttpPost]
+		[FormValueRequired("save")]
+		public ActionResult Configure(FeedFroogleModel model)
+		{
+			if (!ModelState.IsValid)
 				return Configure();
 
 			model.Copy(_googleService.Settings, false);
@@ -52,44 +60,48 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 			_googleService.SetupModel(model);
 
 			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
-        }
+		}
 
-        [HttpPost, ActionName("Configure")]
-        [FormValueRequired("generate")]
-        public ActionResult GenerateFeed(FeedFroogleModel model)
-        {
-			if (!ModelState.IsValid)
-				return Configure();
+		public ActionResult GenerateFeed()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+				return AccessDeniedView();
 
-            try
-			{
-				_googleService.CreateFeed();
+			if (_googleService.Helper.RunScheduleTask())
+				TempData["GenerateFeedRunning"] = true;
 
-				model.GenerateFeedResult = _googleService.Helper.GetResource("SuccessResult");
-            }
-            catch (Exception exc)
-			{
-				NotifyError(exc.Message, true);
-            }
-
-			_googleService.SetupModel(model, _googleService.Helper.ScheduledTask);
-
-			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
-        }
+			return RedirectToConfig();
+		}
 
 		[HttpPost]
-		public ActionResult GoogleProductEdit(int pk, string name, string value) {
+		public ActionResult GenerateFeedProgress()
+		{
+			string message = _googleService.Helper.GetProgressInfo(true);
+			return Json(new { message = message	}, JsonRequestBehavior.DenyGet);
+		}
+
+		public ActionResult DeleteFiles()
+		{
+			_googleService.Helper.DeleteFeedFiles();
+
+			return RedirectToConfig();
+		}
+
+		[HttpPost]
+		public ActionResult GoogleProductEdit(int pk, string name, string value)
+		{
 			_googleService.UpdateInsert(pk, name, value);
 
 			return this.Content("");
 		}
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
+		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult GoogleProductList(GridCommand command, string searchProductName)
-        {
-            return new JsonResult {
-                Data = _googleService.GetGridModel(command, searchProductName)
-            };
-        }
-    }
+		{
+			return new JsonResult
+			{
+				Data = _googleService.GetGridModel(command, searchProductName)
+			};
+		}
+	}
 }

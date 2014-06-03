@@ -4,27 +4,30 @@ using System.Linq;
 using System.Globalization;
 using System.IO;
 using System.Web;
+using Autofac;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
-using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Async;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Services.Seo;
-using Autofac;
+using System.Web.Mvc;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SmartStore.Web.Framework.Plugins
 {
 	public partial class FeedPluginHelper : PluginHelper
 	{
 		private readonly string _namespace;
+		private ScheduleTask _scheduleTask;
 		private IDictionary<int, Category> _cachedCategories;
 		private IDictionary<int, string> _cachedPathes;
-		private ScheduleTask _scheduleTask;
 		private Func<PromotionFeedSettings> _settingsFunc;
 
 		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
@@ -60,6 +63,18 @@ namespace SmartStore.Web.Framework.Plugins
 			get { return _categoryService ?? (_categoryService = _ctx.Resolve<ICategoryService>()); }
 		}
 
+		private INotifier _notifier;
+		private INotifier Notifier
+		{
+			get { return _notifier ?? (_notifier = _ctx.Resolve<INotifier>()); }
+		}
+
+		private ILogger _logger;
+		private ILogger Logger
+		{
+			get { return _logger ?? (_logger = _ctx.Resolve<ILogger>()); }
+		}
+
 		#endregion
 
 		private PromotionFeedSettings BaseSettings 
@@ -75,14 +90,13 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public ScheduleTask ScheduledTask
+		public ScheduleTask ScheduleTask
 		{
 			get
 			{
 				if (_scheduleTask == null)
-				{
 					_scheduleTask = ScheduleTaskService.GetTaskByType(ScheduleTaskType);
-				}
+
 				return _scheduleTask;
 			}
 		}
@@ -246,17 +260,18 @@ namespace SmartStore.Web.Framework.Plugins
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
 		}
 		
-		public GeneratedFeedFile GenerateFeedFileByStore(Store store, string secondFileName = null, string extension = null)
+		public FeedFileData GetFeedFileByStore(Store store, string secondFileName = null, string extension = null)
 		{
 			if (store == null)
 				return null;
 			
 			string ext = extension ?? BaseSettings.ExportFormat;
 			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
-			string fname = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+			string fileName = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
+			string logName = Path.GetFileNameWithoutExtension(fileName) + ".txt";
 
 			if (ext.HasValue())
-				fname = Path.GetFileNameWithoutExtension(fname) + (ext.StartsWith(".") ? "" : ".") + ext;
+				fileName = Path.GetFileNameWithoutExtension(fileName) + (ext.StartsWith(".") ? "" : ".") + ext;
 
 			string url = "{0}content/files/exportimport/".FormatWith(store.Url.EnsureEndsWith("/"));
 
@@ -266,11 +281,13 @@ namespace SmartStore.Web.Framework.Plugins
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 
-			var feedFile = new GeneratedFeedFile()
+			var feedFile = new FeedFileData()
 			{
+				StoreId = store.Id,
 				StoreName = store.Name,
-				FilePath = Path.Combine(dir, fname),
-				FileUrl = url + fname
+				FilePath = Path.Combine(dir, fileName),
+				FileUrl = url + fileName,
+				LogPath = Path.Combine(dir, logName)
 			};
 
 			if (secondFileName.HasValue())
@@ -280,16 +297,15 @@ namespace SmartStore.Web.Framework.Plugins
 				feedFile.CustomProperties.Add("SecondFileUrl", url + fname2);
 			}
 			return feedFile;
-
 		}
 
-		public List<GeneratedFeedFile> GenerateFeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
+		public List<FeedFileData> GetFeedFiles(List<Store> stores, string secondFileName = null, string extension = null)
 		{
-			var lst = new List<GeneratedFeedFile>();
+			var lst = new List<FeedFileData>();
 
 			foreach (var store in stores)
 			{
-				var feedFile = GenerateFeedFileByStore(store, secondFileName, extension);
+				var feedFile = GetFeedFileByStore(store, secondFileName, extension);
 
 				if (feedFile != null && File.Exists(feedFile.FilePath))
 					lst.Add(feedFile);
@@ -297,37 +313,96 @@ namespace SmartStore.Web.Framework.Plugins
 			return lst;
 		}
 
-		public void StartCreatingFeeds(Func<FileStream, Store, bool> createFeed)
+		public void StartCreatingFeeds(Func<FeedFileCreationContext, bool> createFeed, string secondFileName = null)
 		{
-			var storeService = _ctx.Resolve<IStoreService>();
-			var stores = new List<Store>();
-
-			if (BaseSettings.StoreId != 0)
+			try
 			{
-				var storeById = storeService.GetStoreById(BaseSettings.StoreId);
-				if (storeById != null)
-					stores.Add(storeById);
-			}
+				_cachedPathes = null;
+				_cachedCategories = null;
 
-			if (stores.Count == 0)
-			{
-				stores.AddRange(storeService.GetAllStores());
-			}
+				var storeService = _ctx.Resolve<IStoreService>();
+				var stores = new List<Store>();
 
-			_cachedPathes = null;
-			_cachedCategories = null;
-
-			foreach (var store in stores)
-			{
-				var feedFile = GenerateFeedFileByStore(store, null);
-				if (feedFile != null)
+				if (BaseSettings.StoreId != 0)
 				{
-					using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+					var storeById = storeService.GetStoreById(BaseSettings.StoreId);
+					if (storeById != null)
+						stores.Add(storeById);
+				}
+
+				if (stores.Count == 0)
+				{
+					stores.AddRange(storeService.GetAllStores());
+				}
+
+				var context = new FeedFileCreationContext()
+				{
+					StoreCount = stores.Count,
+					Progress = new Progress<FeedFileCreationProgress>(x =>
 					{
-						if (!createFeed(stream, store))
-							break;
+						AsyncState.Current.Set(x, SystemName);
+					})
+				};
+
+				foreach (var store in stores)
+				{
+					var feedFile = GetFeedFileByStore(store, secondFileName);
+					if (feedFile != null)
+					{
+						using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+						using (var logger = new TraceLogger(feedFile.LogPath))
+						{
+							context.Stream = stream;
+							context.Logger = logger;
+							context.Store = store;
+							context.FeedFileUrl = feedFile.FileUrl;
+
+							if (secondFileName.HasValue())
+								context.SecondFilePath = feedFile.CustomProperties["SecondFilePath"] as string;
+
+							if (!createFeed(context))
+								break;
+						}
 					}
 				}
+			}
+			finally
+			{
+				AsyncState.Current.Remove<FeedFileCreationProgress>(SystemName);
+			}
+		}
+
+		public void DeleteFeedFiles(string secondFileName = null)
+		{
+			try
+			{
+				var extensions = new List<string>() { "xml", "csv" };
+
+				if (!extensions.Contains(BaseSettings.ExportFormat))
+					extensions.Add(BaseSettings.ExportFormat);
+
+				var storeService = _ctx.Resolve<IStoreService>();
+				var stores = storeService.GetAllStores();
+
+				foreach (var store in stores)
+				{
+					foreach (var ext in extensions)
+					{
+						var feedFile = GetFeedFileByStore(store, secondFileName, ext);
+						if (feedFile != null)
+						{
+							AppPath.Delete(feedFile.FilePath);
+							AppPath.Delete(feedFile.LogPath);
+
+							if (secondFileName.HasValue())
+								AppPath.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
+						}
+					}
+				}
+			}
+			catch (Exception exc)
+			{
+				Notifier.Error(exc.Message);
 			}
 		}
 
@@ -443,7 +518,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void UpdateScheduleTask(bool enabled, int seconds)
 		{
-			var task = ScheduledTask;
+			var task = ScheduleTask;
 			if (task != null)
 			{
 				task.Enabled = enabled;
@@ -455,7 +530,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void InsertScheduleTask(int minutes = 360)
 		{
-			var task = ScheduledTask;
+			var task = ScheduleTask;
 			if (task == null)
 			{
 				ScheduleTaskService.InsertTask(new ScheduleTask 
@@ -469,36 +544,138 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public void DeleteScheduleTask() {
-			var task = ScheduledTask;
+		public void DeleteScheduleTask()
+		{
+			var task = ScheduleTask;
 			if (task != null)
 				ScheduleTaskService.DeleteTask(task);
 		}
-	}
 
+		public bool RunScheduleTask()
+		{
+			if (ScheduleTask.IsRunning)
+			{
+				Notifier.Information(GetProgressInfo());
+				return true;
+			}
 
-	public class PromotionFeedSettings
-	{
-		public int ProductPictureSize { get; set; }
-		public int CurrencyId { get; set; }
-		public string StaticFileName { get; set; }
-		public string BuildDescription { get; set; }
-		public bool DescriptionToPlainText { get; set; }
-		public bool AdditionalImages { get; set; }
-		public string Availability { get; set; }
-		public decimal ShippingCost { get; set; }
-		public string ShippingTime { get; set; }
-		public string Brand { get; set; }
-		public bool UseOwnProductNo { get; set; }
-		public int StoreId { get; set; }
-		public string ExportFormat { get; set; }
-	}
+			// TODO: redundant code (ScheduleTaskController.RunJob). running scheduled task that way is not bullet-proof.
+			// define a timeout (setting) and run task with cancellation token. ScheduleTask.IsRunning should test against timeout too.
+			//
+			//var cts = new CancellationTokenSource(TimeSpan.FromHours(4.0));
+			//var token = cts.Token;
+			//token.ThrowIfCancellationRequested();
 
+			string scheduleTaskType = ScheduleTaskType;
 
-	public class GeneratedFeedFile : ModelBase
-	{
-		public string StoreName { get; set; }
-		public string FilePath { get; set; }
-		public string FileUrl { get; set; }
+			var task = AsyncRunner.Run(container =>
+			{
+				try
+				{
+					var svc = container.Resolve<IScheduleTaskService>();
+
+					var scheduleTask = svc.GetTaskByType(scheduleTaskType);
+
+					if (scheduleTask == null)
+						throw new Exception("Schedule task cannot be loaded");
+
+					var job = new Job(scheduleTask);
+					job.Enabled = true;
+					job.Execute(container, false);
+				}
+				catch (Exception exc)
+				{
+					exc.Dump();
+				}
+			});
+
+			task.Wait(100);
+
+			if (task.IsCompleted)
+			{
+				if (!task.IsFaulted)
+				{
+					Notifier.Success(GetResource("Admin.System.ScheduleTasks.RunNow.Completed"));
+				}
+				else
+				{
+					var exc = task.Exception.Flatten().InnerException;
+					Notifier.Error(exc.Message);
+					Logger.Error(exc.Message, exc);					
+				}
+			}
+			else
+			{
+				Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
+				return true;
+			}
+			return false;
+		}
+
+		public string GetProgressInfo(bool checkIfRunnning = false)
+		{
+			if (checkIfRunnning)
+			{
+				var task = ScheduleTask;
+				if (task != null && !task.IsRunning)
+					return "";
+			}
+
+			string result = GetResource("Admin.System.ScheduleTasks.RunNow.Progress");
+
+			try
+			{
+				var progress = AsyncState.Current.Get<FeedFileCreationProgress>(SystemName);
+
+				if (progress != null)
+				{
+					int percent = (int)progress.ProcessedPercent;
+
+					if (percent > 0 && percent <= 100)
+						result = "{0}... {1}%".FormatWith(result, percent);
+				}
+			}
+			catch (Exception) { }
+
+			return result;
+		}
+
+		public void SetupConfigModel(PromotionFeedConfigModel model, string controller, string secondFileName = null, string[] extensions = null)
+		{
+			var storeService = _ctx.Resolve<IStoreService>();
+			var stores = storeService.GetAllStores().ToList();
+
+			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+			var routeValues = new { Namespaces = _namespace + ".Controllers", area = "" };
+
+			model.GenerateFeedUrl = urlHelper.Action("GenerateFeed", controller, routeValues);
+			model.GenerateFeedProgressUrl = urlHelper.Action("GenerateFeedProgress", controller, routeValues);
+			model.DeleteFilesUrl = urlHelper.Action("DeleteFiles", controller, routeValues);
+
+			model.Helper = this;
+			model.AvailableStores = new List<SelectListItem>();
+			model.AvailableStores.Add(new SelectListItem() { Text = GetResource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.AddRange(stores.ToSelectListItems());
+
+			if (!model.IsRunning)
+				model.IsRunning = (ScheduleTask != null && ScheduleTask.IsRunning);
+
+			if (model.IsRunning)
+			{
+				model.ProcessInfo = GetProgressInfo();
+			}
+			else
+			{
+				if (extensions != null)
+				{
+					foreach (var ext in extensions)
+						model.GeneratedFiles.AddRange(GetFeedFiles(stores, null, ext));
+				}
+				else
+				{
+					model.GeneratedFiles = GetFeedFiles(stores, secondFileName);
+				}
+			}
+		}
 	}
 }

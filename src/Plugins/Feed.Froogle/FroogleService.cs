@@ -1,8 +1,5 @@
-﻿using System;
-using System.Data.Entity.Migrations;
-using System.Web;
+﻿using System.Data.Entity.Migrations;
 using System.Web.Routing;
-using SmartStore.Core;
 using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Feed.Froogle.Data;
 using SmartStore.Plugin.Feed.Froogle.Data.Migrations;
@@ -10,7 +7,6 @@ using SmartStore.Plugin.Feed.Froogle.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Feed.Froogle
 {
@@ -51,16 +47,9 @@ namespace SmartStore.Plugin.Feed.Froogle
         /// </summary>
         public override void Install()
         {
-            var settings = new FroogleSettings()
-            {
-                ProductPictureSize = 125,
-				StaticFileName = "google_merchant_center_{0}.xml".FormatWith(CommonHelper.GenerateRandomDigitCode(10)),
-				CurrencyId = _googleService.Helper.CurrencyID,
-				Condition = "new",
-				OnlineOnly = true,
-				AdditionalImages = true,
-				SpecialPrice = true
-			};
+			var settings = new FroogleSettings();
+			settings.CurrencyId = _googleService.Helper.CurrencyID;
+
             _settingService.SaveSetting(settings);
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -75,11 +64,12 @@ namespace SmartStore.Plugin.Feed.Froogle
         /// </summary>
         public override void Uninstall()
         {
+			_googleService.Helper.DeleteFeedFiles();
+			_googleService.Helper.DeleteScheduleTask();
+
             _settingService.DeleteSetting<FroogleSettings>();
 
 			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-
-			_googleService.Helper.DeleteScheduleTask();
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

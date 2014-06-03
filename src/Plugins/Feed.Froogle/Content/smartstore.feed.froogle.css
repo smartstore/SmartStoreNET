@@ -1,11 +1,6 @@
 ﻿.config-logo {
-	margin: 0 0 10px 0;
-	width: 298px;
-	height: 40px;
-}
-.feed-result,
-.feed-result a:hover {
-	font-weight: bold;
+	width: 274px;
+	height: 31px;
 }
 .edit-googlecategory {
 	min-width: 460px;

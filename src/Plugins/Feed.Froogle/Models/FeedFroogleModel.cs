@@ -5,46 +5,39 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using Newtonsoft.Json;
-using System.Web;
-using System.Web.Routing;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Plugin.Feed.Froogle.Models
 {
-    public class FeedFroogleModel
-    {
-		private string _gridEditUrl;
+	public class FeedFroogleModel : PromotionFeedConfigModel
+	{
+		public string GridEditUrl { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.ProductPictureSize")]
-        public int ProductPictureSize { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ProductPictureSize")]
+		public int ProductPictureSize { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.Currency")]
-        public int CurrencyId { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Currency")]
+		public int CurrencyId { get; set; }
 		public List<SelectListItem> AvailableCurrencies { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.DefaultGoogleCategory")]
-        public string DefaultGoogleCategory { get; set; }
-        
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.DefaultGoogleCategory")]
+		public string DefaultGoogleCategory { get; set; }
+
 		public string[] AvailableGoogleCategories { get; set; }
-		public string AvailableGoogleCategoriesAsJson {
-			get {
+		public string AvailableGoogleCategoriesAsJson
+		{
+			get
+			{
 				if (AvailableGoogleCategories != null && AvailableGoogleCategories.Length > 0)
 					return JsonConvert.SerializeObject(AvailableGoogleCategories);
 				return "";
 			}
 		}
 
-        public string GenerateFeedResult { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.StaticFileUrl")]
-		public List<GeneratedFeedFile> GeneratedFiles { get; set; }
-
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.TaskEnabled")]
-        public bool TaskEnabled { get; set; }
-        [SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
-        public int GenerateStaticFileEachMinutes { get; set; }
-
-		public FeedPluginHelper Helper { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.TaskEnabled")]
+		public bool TaskEnabled { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.GenerateStaticFileEachMinutes")]
+		public int GenerateStaticFileEachMinutes { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.BuildDescription")]
 		public string BuildDescription { get; set; }
@@ -103,7 +96,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Store")]
 		public int StoreId { get; set; }
-		public List<SelectListItem> AvailableStores { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExpirationDays")]
 		public int ExpirationDays { get; set; }
@@ -113,20 +105,6 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportBasePrice")]
 		public bool ExportBasePrice { get; set; }
-
-		public string GridEditUrl
-		{
-			get
-			{
-				if (_gridEditUrl == null)
-				{
-					var uh = new UrlHelper(HttpContext.Current.Request.RequestContext);
-					_gridEditUrl = uh.Action("GoogleProductEdit", "FeedFroogle", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", "" } });
-				}
-				return _gridEditUrl;
-			}
-		}
-
 
 		public void Copy(FroogleSettings settings, bool fromSettings)
 		{
@@ -191,7 +169,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.ExportBasePrice = ExportBasePrice;
 			}
 		}
-    }
+	}
 
 
 	public class GoogleProductModel : ModelBase

@@ -18,9 +18,6 @@
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Default Google category is not set</Value>
 	</LocaleResource>
-	<LocaleResource Name="GeneratingNow">
-		<Value>Generating the feed...</Value>
-	</LocaleResource>
 	<LocaleResource Name="Currency">
 		<Value>Currency</Value>
 	</LocaleResource>
@@ -66,9 +63,6 @@
 	<LocaleResource Name="Products.Size">
 		<Value>Size</Value>
 	</LocaleResource>
-	<LocaleResource Name="SuccessResult">
-		<Value>Feed has been successfully generated.</Value>
-	</LocaleResource>	
 	<LocaleResource Name="TaskEnabled">
 		<Value>Automatically generate feed</Value>
 	</LocaleResource>
@@ -83,12 +77,6 @@
 	</LocaleResource>
 	<LocaleResource Name="ConfigSaveNote">
 		<Value>Settings successfully saved. Please restart the application if "Automatically generate feed" has been changed.</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileUrl">
-		<Value>URL of the feed file (static)</Value>
-	</LocaleResource>
-	<LocaleResource Name="StaticFileUrl.Hint">
-		<Value>URL of the generated feed file. It's static for your store and can be shared with the Google service.</Value>
 	</LocaleResource>
 	<LocaleResource Name="BuildDescription">
 		<Value>Product description</Value>

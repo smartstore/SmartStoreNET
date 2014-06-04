@@ -1232,6 +1232,7 @@ namespace SmartStore.Web.Controllers
 			bool isBundlePricing = (productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemPricing);
 			int bundleItemId = (productBundleItem == null ? 0 : productBundleItem.Item.Id);
 
+			bool hasSelectedAttributesValues = false;
             bool hasSelectedAttributes = (selectedAttributes.Count > 0);
             List<ProductVariantAttributeValue> selectedAttributeValues = null;
 
@@ -1391,6 +1392,7 @@ namespace SmartStore.Web.Controllers
 						_downloadService, _catalogSettings, this.Request, warnings, true, bundleItemId);
 
 					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
+					hasSelectedAttributesValues = (selectedAttributeValues.Count > 0);
 
 					if (isBundlePricing)
 					{
@@ -1428,8 +1430,10 @@ namespace SmartStore.Web.Controllers
 
             #region Properties
 
-			if (productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemShoppingCart)
+			if ((productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemShoppingCart) ||
+				(product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes && !hasSelectedAttributesValues))
 			{
+				// cases where stock inventory is not functional. determined by what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory is not handling.
 				model.IsAvailable = true;
 				model.StockAvailability = "";
 			}			

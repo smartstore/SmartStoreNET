@@ -29,6 +29,7 @@
 * Return requests: Products to return won't be listed
 * #372 Biz-Importer sometimes shows inactive tier prices
 * PayPal Standard: Sending more localized values. Adjustment of net prices to avoid wrong PayPal total amount calculation.
+* #391 Show delivery time if out-of-stock orders are allowed by attribute combination
 
 ##SmartStore.NET 2.0.2#
 

@@ -54,7 +54,7 @@ namespace SmartStore.Services.Catalog
             if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
             {
                 product.MergedDataValues.Add("StockQuantity", combination.StockQuantity);
-                product.MergedDataValues.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : product.BackorderModeId);
+				product.MergedDataValues.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
             }
 
 			if (combination.Sku.HasValue())

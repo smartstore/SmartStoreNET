@@ -17,8 +17,25 @@ namespace SmartStore.Services.Messages
         public IList<Token> Tokens { get; internal set; }
         public IMessageTokenProvider MessagenTokenProvider { get; internal set; }
         public Customer Customer { get; set; }
-        public bool ReplyToCustomer { get; set; }
         public string ToEmail { get; set; }
         public string ToName { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value specifying whether customer's email should be used as reply address
+		/// </summary>
+		/// <remarks>Value is ignored, if <c>Customer</c> property is <c>null</c></remarks>
+		public bool ReplyToCustomer { get; set; }
+
+		/// <summary>
+		/// Gets or sets the reply email address
+		/// </summary>
+		/// <remarks>Value is ignored, if <c>ReplyToCustomer</c> is <c>true</c> AND <c>Customer</c> property is not <c>null</c></remarks>
+		public string ReplyToEmail { get; set; }
+
+		/// <summary>
+		/// Gets or sets the reply to name
+		/// </summary>
+		/// <remarks>Value is ignored, if <c>ReplyToCustomer</c> is <c>true</c> AND <c>Customer</c> property is not <c>null</c></remarks>
+		public string ReplyToName { get; set; }
     }
 }

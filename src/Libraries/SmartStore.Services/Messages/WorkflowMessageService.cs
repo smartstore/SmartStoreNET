@@ -1124,17 +1124,15 @@ namespace SmartStore.Services.Messages
             var toEmail = ctx.ToEmail.HasValue() ? ctx.ToEmail : emailAccount.Email;
             var toName = ctx.ToName.HasValue() ? ctx.ToName : emailAccount.DisplayName;
 
-			string replyToEmail = null;
-			string replyToName = null;
-            if (ctx.ReplyToCustomer)
+            if (ctx.ReplyToCustomer && ctx.Customer != null)
             {
                 // use customer email as reply address
 				var replyTo = GetReplyToEmail(ctx.Customer);
-				replyToEmail = replyTo.Item1;
-				replyToName = replyTo.Item2;
+				ctx.ReplyToEmail = replyTo.Item1;
+				ctx.ReplyToName = replyTo.Item2;
             }
 
-			return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName, replyToEmail, replyToName);
+			return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName, ctx.ReplyToEmail, ctx.ReplyToName);
         }
 
         /// <summary>

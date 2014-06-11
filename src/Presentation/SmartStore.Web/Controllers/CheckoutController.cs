@@ -126,11 +126,11 @@ namespace SmartStore.Web.Controllers
                 result = false;
 
             //Check whether paymethod needs workflow
-			//var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-			//if (processPaymentRequest != null)
-			//{
-			//	result = processPaymentRequest.RequiresPaymentWorkflow;
-			//}
+            var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
+            if (processPaymentRequest != null)
+            {
+                result = processPaymentRequest.RequiresPaymentWorkflow;
+            }
 
             return result;
         }

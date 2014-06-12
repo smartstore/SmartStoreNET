@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Cms;
@@ -51,19 +55,36 @@ using SmartStore.Services.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Admin.Models.Stores;
+using AutoMapper.Mappers;
 
 namespace SmartStore.Admin.Infrastructure
 {
     public class AutoMapperStartupTask : IStartupTask
     {
-        public void Execute()
+		class OptionalFkConverter : ITypeConverter<int, int?>
+		{
+			public int? Convert(ResolutionContext context)
+			{
+				var srcName = context.PropertyMap.SourceMember.Name;
+
+				if (context.PropertyMap.SourceMember.MemberType == MemberTypes.Property && srcName.EndsWith("Id") && !context.SourceType.IsNullable())
+				{
+					var src = (int)context.SourceValue;
+					return src == 0 ? (int?)null : src;
+				}
+
+				return (int?)context.SourceValue;
+			}
+		}
+		
+		public void Execute()
         {
             //TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
 
 			// special mapper, that avoids DbUpdate exceptions in cases where
 			// optional (nullable) int FK properties are 0 instead of null 
 			// after mapping model > entity.
-			Mapper.CreateMap<int, int?>().ConvertUsing((src) => src == 0 ? (int?)null : src);
+			Mapper.CreateMap<int, int?>().ConvertUsing(new OptionalFkConverter());
 
             //address
             Mapper.CreateMap<Address, AddressModel>()
@@ -523,9 +544,11 @@ namespace SmartStore.Admin.Infrastructure
             //customer roles
             Mapper.CreateMap<CustomerRole, CustomerRoleModel>()
                 .ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore())
-                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore());
-            Mapper.CreateMap<CustomerRoleModel, CustomerRole>()
-                .ForMember(dest => dest.PermissionRecords, mo => mo.Ignore());
+                .ForMember(dest => dest.CustomProperties, mo => mo.Ignore())
+				/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/;
+			Mapper.CreateMap<CustomerRoleModel, CustomerRole>()
+				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore())
+				/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/;
 
             //product attributes
             Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()

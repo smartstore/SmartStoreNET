@@ -30,6 +30,7 @@
 * #372 Biz-Importer sometimes shows inactive tier prices
 * PayPal Standard: Sending more localized values. Adjustment of net prices to avoid wrong PayPal total amount calculation.
 * #391 Show delivery time if out-of-stock orders are allowed by attribute combination
+* CustomerRole > TaxDisplayType _Including VAT_ could not be saved
 
 ##SmartStore.NET 2.0.2#
 

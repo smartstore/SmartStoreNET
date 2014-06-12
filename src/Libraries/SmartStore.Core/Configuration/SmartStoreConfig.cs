@@ -44,22 +44,31 @@ namespace SmartStore.Core.Configuration
                     config.ThemeBasePath = attribute.Value;
             }
 
+			if (config.ThemeBasePath.IsEmpty())
+			{
+				config.ThemeBasePath = "~/Themes/";
+			}
+			else
+			{
+				config.ThemeBasePath = config.ThemeBasePath.EnsureEndsWith("/");
+			}
+
             return config;
         }
         
         /// <summary>
         /// In addition to configured assemblies examine and load assemblies in the bin directory.
         /// </summary>
-        public bool DynamicDiscovery { get; set; }
+        public bool DynamicDiscovery { get; private set; }
 
         /// <summary>
         /// A custom <see cref="IEngine"/> to manage the application instead of the default.
         /// </summary>
-        public string EngineType { get; set; }
+		public string EngineType { get; private set; }
 
         /// <summary>
         /// Specifices where the themes will be stored (~/Themes/)
         /// </summary>
-        public string ThemeBasePath { get; set; }
+		public string ThemeBasePath { get; private set; }
     }
 }

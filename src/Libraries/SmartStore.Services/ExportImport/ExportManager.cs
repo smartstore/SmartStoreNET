@@ -518,6 +518,10 @@ namespace SmartStore.Services.ExportImport
 
                 // get handle to the existing worksheet
                 var worksheet = xlPackage.Workbook.Worksheets.Add("Products");
+
+				// get handle to the cells range of the worksheet
+				var cells = worksheet.Cells;
+
                 //Create Headers and format them 
                 var properties = new string[]
                 {
@@ -609,10 +613,10 @@ namespace SmartStore.Services.ExportImport
                 };
                 for (int i = 0; i < properties.Length; i++)
                 {
-                    worksheet.Cells[1, i + 1].Value = properties[i];
-                    worksheet.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                    cells[1, i + 1].Value = properties[i];
+                    cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+                    cells[1, i + 1].Style.Font.Bold = true;
                 }
 
 
@@ -621,214 +625,214 @@ namespace SmartStore.Services.ExportImport
                 {
                     int col = 1;
 
-					worksheet.Cells[row, col].Value = p.ProductTypeId;
+					cells[row, col].Value = p.ProductTypeId;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.ParentGroupedProductId;
+					cells[row, col].Value = p.ParentGroupedProductId;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.VisibleIndividually;
+					cells[row, col].Value = p.VisibleIndividually;
 					col++;
 
-                    worksheet.Cells[row, col].Value = p.Name;
+                    cells[row, col].Value = p.Name;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ShortDescription;
+                    cells[row, col].Value = p.ShortDescription;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.FullDescription;
+                    cells[row, col].Value = p.FullDescription;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ProductTemplateId;
+                    cells[row, col].Value = p.ProductTemplateId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ShowOnHomePage;
+                    cells[row, col].Value = p.ShowOnHomePage;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MetaKeywords;
+                    cells[row, col].Value = p.MetaKeywords;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MetaDescription;
+                    cells[row, col].Value = p.MetaDescription;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MetaTitle;
+                    cells[row, col].Value = p.MetaTitle;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.GetSeName(0);
+                    cells[row, col].Value = p.GetSeName(0);
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.AllowCustomerReviews;
+                    cells[row, col].Value = p.AllowCustomerReviews;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Published;
+                    cells[row, col].Value = p.Published;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Sku;
+                    cells[row, col].Value = p.Sku;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ManufacturerPartNumber;
+                    cells[row, col].Value = p.ManufacturerPartNumber;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Gtin;
+                    cells[row, col].Value = p.Gtin;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsGiftCard;
+                    cells[row, col].Value = p.IsGiftCard;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.GiftCardTypeId;
+                    cells[row, col].Value = p.GiftCardTypeId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.RequireOtherProducts;
+                    cells[row, col].Value = p.RequireOtherProducts;
                     col++;
 
-					worksheet.Cells[row, col].Value = p.RequiredProductIds;
+					cells[row, col].Value = p.RequiredProductIds;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.AutomaticallyAddRequiredProducts;
+					cells[row, col].Value = p.AutomaticallyAddRequiredProducts;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsDownload;
+                    cells[row, col].Value = p.IsDownload;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DownloadId;
+                    cells[row, col].Value = p.DownloadId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.UnlimitedDownloads;
+                    cells[row, col].Value = p.UnlimitedDownloads;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MaxNumberOfDownloads;
+                    cells[row, col].Value = p.MaxNumberOfDownloads;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DownloadActivationTypeId;
+                    cells[row, col].Value = p.DownloadActivationTypeId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.HasSampleDownload;
+                    cells[row, col].Value = p.HasSampleDownload;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.SampleDownloadId;
+                    cells[row, col].Value = p.SampleDownloadId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.HasUserAgreement;
+                    cells[row, col].Value = p.HasUserAgreement;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.UserAgreementText;
+                    cells[row, col].Value = p.UserAgreementText;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsRecurring;
+                    cells[row, col].Value = p.IsRecurring;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.RecurringCycleLength;
+                    cells[row, col].Value = p.RecurringCycleLength;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.RecurringCyclePeriodId;
+                    cells[row, col].Value = p.RecurringCyclePeriodId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.RecurringTotalCycles;
+                    cells[row, col].Value = p.RecurringTotalCycles;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsShipEnabled;
+                    cells[row, col].Value = p.IsShipEnabled;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsFreeShipping;
+                    cells[row, col].Value = p.IsFreeShipping;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.AdditionalShippingCharge;
+                    cells[row, col].Value = p.AdditionalShippingCharge;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.IsTaxExempt;
+                    cells[row, col].Value = p.IsTaxExempt;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.TaxCategoryId;
+                    cells[row, col].Value = p.TaxCategoryId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ManageInventoryMethodId;
+                    cells[row, col].Value = p.ManageInventoryMethodId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.StockQuantity;
+                    cells[row, col].Value = p.StockQuantity;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DisplayStockAvailability;
+                    cells[row, col].Value = p.DisplayStockAvailability;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DisplayStockQuantity;
+                    cells[row, col].Value = p.DisplayStockQuantity;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MinStockQuantity;
+                    cells[row, col].Value = p.MinStockQuantity;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.LowStockActivityId;
+                    cells[row, col].Value = p.LowStockActivityId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.NotifyAdminForQuantityBelow;
+                    cells[row, col].Value = p.NotifyAdminForQuantityBelow;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.BackorderModeId;
+                    cells[row, col].Value = p.BackorderModeId;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.AllowBackInStockSubscriptions;
+                    cells[row, col].Value = p.AllowBackInStockSubscriptions;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.OrderMinimumQuantity;
+                    cells[row, col].Value = p.OrderMinimumQuantity;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.OrderMaximumQuantity;
+                    cells[row, col].Value = p.OrderMaximumQuantity;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.AllowedQuantities;
+                    cells[row, col].Value = p.AllowedQuantities;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DisableBuyButton;
+                    cells[row, col].Value = p.DisableBuyButton;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.DisableWishlistButton;
+                    cells[row, col].Value = p.DisableWishlistButton;
                     col++;
 
-					worksheet.Cells[row, col].Value = p.AvailableForPreOrder;
+					cells[row, col].Value = p.AvailableForPreOrder;
 					col++;
 
-                    worksheet.Cells[row, col].Value = p.CallForPrice;
+                    cells[row, col].Value = p.CallForPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Price;
+                    cells[row, col].Value = p.Price;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.OldPrice;
+                    cells[row, col].Value = p.OldPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.ProductCost;
+                    cells[row, col].Value = p.ProductCost;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPrice;
+                    cells[row, col].Value = p.SpecialPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPriceStartDateTimeUtc;
+                    cells[row, col].Value = p.SpecialPriceStartDateTimeUtc;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPriceEndDateTimeUtc;
+                    cells[row, col].Value = p.SpecialPriceEndDateTimeUtc;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.CustomerEntersPrice;
+                    cells[row, col].Value = p.CustomerEntersPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MinimumCustomerEnteredPrice;
+                    cells[row, col].Value = p.MinimumCustomerEnteredPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.MaximumCustomerEnteredPrice;
+                    cells[row, col].Value = p.MaximumCustomerEnteredPrice;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Weight;
+                    cells[row, col].Value = p.Weight;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Length;
+                    cells[row, col].Value = p.Length;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Width;
+                    cells[row, col].Value = p.Width;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.Height;
+                    cells[row, col].Value = p.Height;
                     col++;
 
-                    worksheet.Cells[row, col].Value = p.CreatedOnUtc.ToOADate();
+                    cells[row, col].Value = p.CreatedOnUtc.ToOADate();
                     col++;
 
                     //category identifiers
@@ -838,7 +842,7 @@ namespace SmartStore.Services.ExportImport
                         categoryIds += pc.CategoryId;
                         categoryIds += ";";
                     }
-                    worksheet.Cells[row, col].Value = categoryIds;
+                    cells[row, col].Value = categoryIds;
                     col++;
 
                     //manufacturer identifiers
@@ -848,7 +852,7 @@ namespace SmartStore.Services.ExportImport
                         manufacturerIds += pm.ManufacturerId;
                         manufacturerIds += ";";
                     }
-                    worksheet.Cells[row, col].Value = manufacturerIds;
+                    cells[row, col].Value = manufacturerIds;
                     col++;
 
                     //pictures (up to 3 pictures)
@@ -872,34 +876,34 @@ namespace SmartStore.Services.ExportImport
                                 break;
                         }
                     }
-                    worksheet.Cells[row, col].Value = picture1;
+                    cells[row, col].Value = picture1;
                     col++;
-                    worksheet.Cells[row, col].Value = picture2;
+                    cells[row, col].Value = picture2;
                     col++;
-                    worksheet.Cells[row, col].Value = picture3;
+                    cells[row, col].Value = picture3;
                     col++;
 
-					worksheet.Cells[row, col].Value = p.DeliveryTimeId;
+					cells[row, col].Value = p.DeliveryTimeId;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceEnabled;
+					cells[row, col].Value = p.BasePriceEnabled;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceMeasureUnit;
+					cells[row, col].Value = p.BasePriceMeasureUnit;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceAmount;
+					cells[row, col].Value = p.BasePriceAmount;
 					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceBaseAmount;
-					col++;
-
-					worksheet.Cells[row, col].Value = p.BundleTitleText;
+					cells[row, col].Value = p.BasePriceBaseAmount;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemShipping;
+					cells[row, col].Value = p.BundleTitleText;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemPricing;
+					cells[row, col].Value = p.BundlePerItemShipping;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemShoppingCart;
+					cells[row, col].Value = p.BundlePerItemPricing;
+					col++;
+
+					cells[row, col].Value = p.BundlePerItemShoppingCart;
 					col++;
 
 					string bundleItemSkus = "";
@@ -909,7 +913,7 @@ namespace SmartStore.Services.ExportImport
 						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Item.Product.Sku));
 					}
 
-					worksheet.Cells[row, col].Value = bundleItemSkus;
+					cells[row, col].Value = bundleItemSkus;
 					col++;
 
                     row++;
@@ -934,6 +938,11 @@ namespace SmartStore.Services.ExportImport
                 // save the new spreadsheet
                 xlPackage.Save();
             }
+
+			// EPPLus has serious memory leak problems.
+			// We enforce the garbage collector to release unused memory,
+ 			// it's not perfect, but better than nothing.
+			GC.Collect();
         }
 
         /// <summary>

@@ -612,6 +612,7 @@
     <Content Include="Content\editors\tinymce4\skins\smartstore\fonts\icomoon.woff" />
     <Content Include="Content\editors\tinymce4\skins\smartstore\fonts\readme.md" />
     <Content Include="Content\editors\tinymce4\skins\smartstore\skin.json" />
+    <Content Include="Content\files\ExportImport\placeholder" />
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />
@@ -1145,8 +1146,6 @@
     <Content Include="Content\bootstrap\js\bootstrap-tooltip.js" />
     <Content Include="Content\bootstrap\js\bootstrap-transition.js" />
     <Content Include="Content\bootstrap\js\bootstrap-typeahead.js" />
-    <Content Include="Content\files\ExportImport\Index.htm" />
-    <Content Include="Content\files\Index.htm" />
     <Content Include="Content\bootstrap\custom\image-gallery.less" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-image-gallery.js" />
     <Content Include="Content\bootstrap\custom\images\loading.gif" />

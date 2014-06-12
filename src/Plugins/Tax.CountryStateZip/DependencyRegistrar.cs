@@ -15,21 +15,21 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-			builder.RegisterType<TaxRateService>().As<ITaxRateService>().WithRequestCache().InstancePerHttpRequest();
+			builder.RegisterType<TaxRateService>().As<ITaxRateService>().WithRequestCache().InstancePerRequest();
 
 			//register named context
 			builder.Register<IDbContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
 				.Named<IDbContext>(TaxRateObjectContext.ALIASKEY)
-				.InstancePerHttpRequest();
+				.InstancePerRequest();
 
 			builder.Register<TaxRateObjectContext>(c => new TaxRateObjectContext(DataSettings.Current.DataConnectionString))
-				.InstancePerHttpRequest();
+				.InstancePerRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<TaxRate>>()
                 .As<IRepository<TaxRate>>()
                 .WithParameter(ResolvedParameter.ForNamed<IDbContext>(TaxRateObjectContext.ALIASKEY))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
         }
 
         public int Order

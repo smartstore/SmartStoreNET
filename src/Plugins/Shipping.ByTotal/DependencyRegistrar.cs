@@ -15,22 +15,22 @@ namespace SmartStore.Plugin.Shipping.ByTotal
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-			builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().WithRequestCache().InstancePerHttpRequest();
+			builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().WithRequestCache().InstancePerRequest();
 
             //data layer
             //register named context
 			builder.Register<IDbContext>(c => new ShippingByTotalObjectContext(DataSettings.Current.DataConnectionString))
                 .Named<IDbContext>(ShippingByTotalObjectContext.ALIASKEY)
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
 			builder.Register<ShippingByTotalObjectContext>(c => new ShippingByTotalObjectContext(DataSettings.Current.DataConnectionString))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<ShippingByTotalRecord>>()
                 .As<IRepository<ShippingByTotalRecord>>()
                 .WithParameter(ResolvedParameter.ForNamed<IDbContext>(ShippingByTotalObjectContext.ALIASKEY))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
         }
 
         public int Order

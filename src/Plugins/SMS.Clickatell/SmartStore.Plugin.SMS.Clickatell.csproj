@@ -146,6 +146,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Service References\Clickatell\webservice_vs.wsdl" />
     <EmbeddedResource Include="Views\SmsClickatell\Configure.cshtml" />

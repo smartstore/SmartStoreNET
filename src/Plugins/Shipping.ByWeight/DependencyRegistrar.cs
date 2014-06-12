@@ -15,22 +15,22 @@ namespace SmartStore.Plugin.Shipping.ByWeight
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-			builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().WithRequestCache().InstancePerHttpRequest();
+			builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().WithRequestCache().InstancePerRequest();
 
             // data layer
             // register named context
             builder.Register<IDbContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
                 .Named<IDbContext>(ShippingByWeightObjectContext.ALIASKEY)
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
 			builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
             // override required repository with our custom context
             builder.RegisterType<EfRepository<ShippingByWeightRecord>>()
                 .As<IRepository<ShippingByWeightRecord>>()
                 .WithParameter(ResolvedParameter.ForNamed<IDbContext>(ShippingByWeightObjectContext.ALIASKEY))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
         }
 
         public int Order

@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\WidgetsGoogleAnalytics\Configure.cshtml" />
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="web.config">
       <SubType>Designer</SubType>

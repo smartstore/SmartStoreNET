@@ -15,21 +15,21 @@ namespace SmartStore.Plugin.Feed.Froogle
     {
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
         {
-            builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerHttpRequest();
+            builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerRequest();
 
             //register named context
 			builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
                 .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
 			builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
 
             //override required repository with our custom context
             builder.RegisterType<EfRepository<GoogleProductRecord>>()
                 .As<IRepository<GoogleProductRecord>>()
                 .WithParameter(ResolvedParameter.ForNamed<IDbContext>(GoogleProductObjectContext.ALIASKEY))
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
         }
 
         public int Order

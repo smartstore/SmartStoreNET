@@ -138,6 +138,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Views\PaymentPayInStore\Configure.cshtml" />
     <EmbeddedResource Include="Views\PaymentPayInStore\PaymentInfo.cshtml" />
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="web.config" />
   </ItemGroup>

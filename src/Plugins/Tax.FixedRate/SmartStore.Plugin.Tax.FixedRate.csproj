@@ -153,6 +153,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="web.config" />
   </ItemGroup>
   <ItemGroup>

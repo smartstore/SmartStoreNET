@@ -10,7 +10,7 @@ namespace SmartStore.Plugin.Api.WebApi
 	{
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
 		{
-			builder.RegisterType<WebApiPluginService>().As<IWebApiPluginService>().InstancePerHttpRequest();
+			builder.RegisterType<WebApiPluginService>().As<IWebApiPluginService>().InstancePerRequest();
 		}
 
 		public int Order

@@ -233,7 +233,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             switch (lifeStyle)
             {
                 case ComponentLifeStyle.LifetimeScope:
-                    return HttpContext.Current != null ? builder.InstancePerHttpRequest() : builder.InstancePerLifetimeScope();
+                    return HttpContext.Current != null ? builder.InstancePerRequest() : builder.InstancePerLifetimeScope();
                 case ComponentLifeStyle.Transient:
                     return builder.InstancePerDependency();
                 case ComponentLifeStyle.Singleton:

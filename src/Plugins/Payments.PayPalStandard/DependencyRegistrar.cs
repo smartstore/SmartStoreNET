@@ -10,7 +10,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 	{
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
 		{
-			builder.RegisterType<PayPalStandardService>().As<IPayPalStandardService>().InstancePerHttpRequest();
+			builder.RegisterType<PayPalStandardService>().As<IPayPalStandardService>().InstancePerRequest();
 		}
 
 		public int Order

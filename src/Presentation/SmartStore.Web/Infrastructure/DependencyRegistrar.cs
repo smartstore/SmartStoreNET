@@ -26,10 +26,10 @@ namespace SmartStore.Web.Infrastructure
 			builder.RegisterType<ShoppingCartController>().WithStaticCache();
 			builder.RegisterType<TopicController>().WithStaticCache();
 
-			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().WithStaticCache().InstancePerHttpRequest();
+			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().WithStaticCache().InstancePerRequest();
             
             // installation localization service
-            builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerHttpRequest();
+            builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerRequest();
 
             // register app languages for installation
 			builder.RegisterType<EnUSSeedData>()
@@ -41,7 +41,7 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.UniqueSeoCode, "en");
                     m.For(em => em.FlagImageFileName, "us.png");
                 })
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
             builder.RegisterType<DeDESeedData>()
 				.As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>
@@ -51,7 +51,7 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.UniqueSeoCode, "de");
                     m.For(em => em.FlagImageFileName, "de.png");
                 })
-                .InstancePerHttpRequest();
+                .InstancePerRequest();
         }
 
         public int Order

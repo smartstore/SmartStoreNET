@@ -10,6 +10,7 @@ using System.Web.Configuration;
 using System.Web.Hosting;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
@@ -26,6 +27,8 @@ namespace SmartStore.Core
 		
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
+
+		private Store _currentStore;
 
         /// <summary>
         /// Ctor
@@ -203,20 +206,27 @@ namespace SmartStore.Core
             {
 				//let's resolve IWorkContext  here.
 				//Do not inject it via contructor because it'll cause circular references
-				IStoreContext storeContext;
-				if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
-				{
-					var currentStore = storeContext.CurrentStore;
-					if (currentStore == null)
-						throw new Exception("Current store cannot be loaded");
 
-					var securityMode = currentStore.GetSecurityMode(useSsl);
+				if (_currentStore == null)
+				{
+					IStoreContext storeContext;
+					if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
+					{
+						_currentStore = storeContext.CurrentStore;
+						if (_currentStore == null)
+							throw new Exception("Current store cannot be loaded");
+					}
+				}
+
+				if (_currentStore != null)
+				{
+					var securityMode = _currentStore.GetSecurityMode(useSsl);
 
 					if (httpHost.IsEmpty())
 					{
 						//HTTP_HOST variable is not available.
 						//It's possible only when HttpContext is not available (for example, running in a schedule task)
-						result = currentStore.Url.EnsureEndsWith("/");
+						result = _currentStore.Url.EnsureEndsWith("/");
 
 						appPathPossiblyAppended = true;
 					}
@@ -228,7 +238,7 @@ namespace SmartStore.Core
 							// Secure URL for shared ssl specified. 
 							// So a store owner doesn't want it to be resolved automatically.
 							// In this case let's use the specified secure URL
-							result = currentStore.SecureUrl.EmptyNull();
+							result = _currentStore.SecureUrl.EmptyNull();
 
 							if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
 							{
@@ -252,7 +262,7 @@ namespace SmartStore.Core
 							// So a store owner doesn't want it to be resolved automatically.
 							// In this case let's use the specified non-secure URL
 
-							result = currentStore.Url;
+							result = _currentStore.Url;
 							appPathPossiblyAppended = true;
 						}
 					}

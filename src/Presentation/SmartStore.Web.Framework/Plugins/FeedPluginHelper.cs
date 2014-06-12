@@ -19,6 +19,7 @@ using SmartStore.Services.Seo;
 using System.Web.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -73,6 +74,18 @@ namespace SmartStore.Web.Framework.Plugins
 		private ILogger Logger
 		{
 			get { return _logger ?? (_logger = _ctx.Resolve<ILogger>()); }
+		}
+
+		private IUrlRecordService _urlRecordService;
+		private IUrlRecordService UrlRecordService
+		{
+			get { return _urlRecordService ?? (_urlRecordService = _ctx.Resolve<IUrlRecordService>()); }
+		}
+
+		private ILanguageService _languageService;
+		private ILanguageService LanguageService
+		{
+			get { return _languageService ?? (_languageService = _ctx.Resolve<ILanguageService>()); }
 		}
 
 		#endregion
@@ -257,7 +270,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public string GetProductDetailUrl(Store store, Product product)
 		{
-			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id));
+			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));
 		}
 		
 		public FeedFileData GetFeedFileByStore(Store store, string secondFileName = null, string extension = null)

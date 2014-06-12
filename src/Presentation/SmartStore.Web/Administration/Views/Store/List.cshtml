@@ -24,6 +24,8 @@
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 						columns.Bound(x => x.Url)
 							.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
+						columns.Bound(x => x.ContentDeliveryNetwork)
+							.ClientTemplate("<a href=\"<#= ContentDeliveryNetwork #>\" target=\"_blank\"><#= ContentDeliveryNetwork #></a>");
 						columns.Bound(x => x.Hosts);
 						columns.Bound(x => x.SslEnabled)
 							.Template(item => @Html.SymbolForBool(item.SslEnabled))

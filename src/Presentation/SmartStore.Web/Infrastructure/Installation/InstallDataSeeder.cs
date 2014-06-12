@@ -532,7 +532,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullEventPublisher.Instance,
 						mediaSettings,
 						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper));
+						new ImageCache(mediaSettings, webHelper, null, null));
 				}
 
 				return _pictureService;

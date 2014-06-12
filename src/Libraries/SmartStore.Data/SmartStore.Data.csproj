@@ -167,6 +167,10 @@
     <Compile Include="Migrations\201405282243489_TaskUpdate.Designer.cs">
       <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.cs" />
+    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.Designer.cs">
+      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -346,6 +350,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405282243489_TaskUpdate.resx">
       <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406122329031_ContentDeliveryNetwork.resx">
+      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

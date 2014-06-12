@@ -38,5 +38,9 @@ namespace SmartStore.Admin.Models.Stores
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.HtmlBodyId")]
 		public string HtmlBodyId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.ContentDeliveryNetwork")]
+	    [AllowHtml]
+	    public string ContentDeliveryNetwork { get; set; }
 	}
 }

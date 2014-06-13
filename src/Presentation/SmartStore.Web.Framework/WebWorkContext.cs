@@ -106,7 +106,13 @@ namespace SmartStore.Web.Framework
                     cookie.Expires = DateTime.Now.AddHours(cookieExpires);
                 }
 
-                _httpContext.Response.Cookies.Remove(CustomerCookieName);
+				try
+				{
+					if (_httpContext.Response.Cookies[CustomerCookieName] != null)
+						_httpContext.Response.Cookies.Remove(CustomerCookieName);
+				}
+				catch (Exception) { }
+
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }

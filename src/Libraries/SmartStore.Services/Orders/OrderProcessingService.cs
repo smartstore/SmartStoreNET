@@ -1176,8 +1176,8 @@ namespace SmartStore.Services.Orders
                                 //gift cards
                                 if (orderItem.Product.IsGiftCard)
                                 {
-                                    string giftCardRecipientName, giftCardRecipientEmail,
-                                        giftCardSenderName, giftCardSenderEmail, giftCardMessage;
+                                    string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
+
                                     _productAttributeParser.GetGiftCardAttribute(orderItem.AttributesXml,
                                         out giftCardRecipientName, out giftCardRecipientEmail,
                                         out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
@@ -1209,34 +1209,37 @@ namespace SmartStore.Services.Orders
                         }
 
                         //discount usage history
-                        if (!processPaymentRequest.IsRecurringPayment)
-                            foreach (var discount in appliedDiscounts)
-                            {
-                                var duh = new DiscountUsageHistory()
-                                {
-                                    Discount = discount,
-                                    Order = order,
-                                    CreatedOnUtc = DateTime.UtcNow
-                                };
-                                _discountService.InsertDiscountUsageHistory(duh);
-                            }
+						if (!processPaymentRequest.IsRecurringPayment)
+						{
+							foreach (var discount in appliedDiscounts)
+							{
+								var duh = new DiscountUsageHistory()
+								{
+									Discount = discount,
+									Order = order,
+									CreatedOnUtc = DateTime.UtcNow
+								};
+								_discountService.InsertDiscountUsageHistory(duh);
+							}
+						}
 
                         //gift card usage history
-                        if (!processPaymentRequest.IsRecurringPayment)
-                            if (appliedGiftCards != null)
-                                foreach (var agc in appliedGiftCards)
-                                {
-                                    decimal amountUsed = agc.AmountCanBeUsed;
-                                    var gcuh = new GiftCardUsageHistory()
-                                    {
-                                        GiftCard = agc.GiftCard,
-                                        UsedWithOrder = order,
-                                        UsedValue = amountUsed,
-                                        CreatedOnUtc = DateTime.UtcNow
-                                    };
-                                    agc.GiftCard.GiftCardUsageHistory.Add(gcuh);
-                                    _giftCardService.UpdateGiftCard(agc.GiftCard);
-                                }
+						if (!processPaymentRequest.IsRecurringPayment && appliedGiftCards != null)
+						{
+							foreach (var agc in appliedGiftCards)
+							{
+								decimal amountUsed = agc.AmountCanBeUsed;
+								var gcuh = new GiftCardUsageHistory()
+								{
+									GiftCard = agc.GiftCard,
+									UsedWithOrder = order,
+									UsedValue = amountUsed,
+									CreatedOnUtc = DateTime.UtcNow
+								};
+								agc.GiftCard.GiftCardUsageHistory.Add(gcuh);
+								_giftCardService.UpdateGiftCard(agc.GiftCard);
+							}
+						}
 
                         //reward points history
                         if (redeemedRewardPointsAmount > decimal.Zero)

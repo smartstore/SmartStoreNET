@@ -309,7 +309,7 @@ namespace SmartStore.Admin.Controllers
             RouteValueDictionary routeValues;
             plugin.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
             var model = new MiscPluginModel();
-            model.FriendlyName = descriptor.FriendlyName;
+			model.FriendlyName = descriptor.GetLocalizedValue(_localizationService, "FriendlyName");
             model.ConfigurationActionName = actionName;
             model.ConfigurationControllerName = controllerName;
             model.ConfigurationRouteValues = routeValues;

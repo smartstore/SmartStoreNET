@@ -1054,7 +1054,20 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-		public virtual void AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
+		/// <summary>
+		/// Adds a product to the shopping cart and also adds bundle items if the product is a bundle.
+		/// </summary>
+		/// <param name="warnings">List with warnings</param>
+		/// <param name="product">Product</param>
+		/// <param name="form">Collection with selected attribute data</param>
+		/// <param name="cartType">Shopping cart type</param>
+		/// <param name="customerEnteredPrice">The price enter by a customer</param>
+		/// <param name="quantity">Quantity</param>
+		/// <param name="addRequiredProducts">Automatically add required products if enabled</param>
+		/// <param name="parentCartItemId">Parent cart item if it is a bundle item</param>
+		/// <param name="bundleItem">Bundle item object if it is a bundle item</param>
+		/// <returns>Identifier of inserted (parent) shopping cart item</returns>
+		public virtual int AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
 			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null)
 		{
 			int newCartItemId;
@@ -1069,7 +1082,7 @@ namespace SmartStore.Services.Orders
 			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
 			{
 				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
-				return;
+				return 0;
 			}
 
 			if (product.IsGiftCard)
@@ -1092,6 +1105,7 @@ namespace SmartStore.Services.Orders
 				if (warnings.Count > 0)
 					DeleteShoppingCartItem(newCartItemId);
 			}
+			return newCartItemId;
 		}
 
         /// <summary>

@@ -5,7 +5,6 @@
 @using SmartStore.Core.Domain.Localization;
 
 @{
-    var displayMiniProfiler = EngineContext.Current.Resolve<SmartStore.Core.Domain.StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
     var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
     
     var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
@@ -112,14 +111,10 @@
     @Html.Widget("head_html_tag")
 
     @Html.CanonicalUrls()
-    @Html.Action("RssHeaderLink", "News")
-    @Html.Action("RssHeaderLink", "Blog")
+    @Html.Action("RssHeaderLink", "News", new { area = "" })
+    @Html.Action("RssHeaderLink", "Blog", new { area = "" })
     @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
-    @Html.Action("Favicon", "Common")
-    @if (displayMiniProfiler)
-    {
-        @StackExchange.Profiling.MiniProfiler.RenderIncludes();
-    }
+    @Html.Action("Favicon", "Common", new { area = "" })
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>

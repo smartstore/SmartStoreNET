@@ -407,7 +407,7 @@ namespace SmartStore.Web.Framework
         }
 
 		public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone, object model)
-		{
+		{ 
 			if (widgetZone.HasValue())
 			{
 				model = model ?? helper.ViewData.Model;
@@ -415,7 +415,7 @@ namespace SmartStore.Web.Framework
 				var widgets = widgetSelector.GetWidgets(widgetZone, model);
 				if (widgets.Any())
 				{
-					var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets, model = model });
+					var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets, model = model, area = "" });
 					return result;
 				}
 			}

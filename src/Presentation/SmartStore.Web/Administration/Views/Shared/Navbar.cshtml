@@ -23,7 +23,7 @@
     <div id="ajax-busy"></div>
 
     @Html.Widget("admin_menu_before")
-    @Html.Action("Menu", "Common")
+    @Html.Action("Menu", "Common", new { area = "Admin" })
     @Html.Widget("admin_menu_before")
 
     <div id="navbar-tools" class="btn-toolbar">
@@ -92,7 +92,7 @@
                 </ul>
             </div>
 
-            @Html.Action("LanguageSelector", "Common")
+            @Html.Action("LanguageSelector", "Common", new { area = "Admin" })
 
             <div class="btn-group pull-right">
                 <button class="btn btn-inverse dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
@@ -112,7 +112,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="@Url.Action("About", "Home")">
+						<a href="@Url.Action("About", "Home", new { area = "Admin" })">
 							<i class="icon-info-sign"></i>
 							@T("Admin.Common.About") SmartStore.NET
 						</a>

@@ -20,8 +20,6 @@ using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Themes;
-using StackExchange.Profiling;
-using StackExchange.Profiling.MVCHelpers;
 using SmartStore.Core.Events;
 using System.Web;
 using SmartStore.Core.Domain.Themes;
@@ -39,7 +37,6 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
-		private bool _profilingEnabled = false;
 
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
@@ -100,8 +97,8 @@ namespace SmartStore.Web
 
             // Add some functionality on top of the default ModelMetadataProvider
             ModelMetadataProviders.Current = new SmartMetadataProvider();
-
-            // Registering some regular mvc stuff
+            
+            // Register MVC areas
             AreaRegistration.RegisterAllAreas();
             
             // fluent validation
@@ -113,17 +110,8 @@ namespace SmartStore.Web
 
 			if (installed)
 			{
-				var profilingEnabled = this.ProfilingEnabled;
-				
 				// register our themeable razor view engine we use
-				IViewEngine viewEngine = new ThemeableRazorViewEngine();
-				if (profilingEnabled)
-				{
-					// ...and wrap, if profiling is active
-					viewEngine = new ProfilingViewEngine(viewEngine);
-					GlobalFilters.Filters.Add(new ProfilingActionFilter());
-				}
-				ViewEngines.Engines.Add(viewEngine);
+				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
 
 				// Global filters
 				RegisterGlobalFilters(GlobalFilters.Filters);
@@ -185,37 +173,6 @@ namespace SmartStore.Web
 
             return base.GetVaryByCustomString(context, custom);
         }
-
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-			//var installed = DataSettings.DatabaseIsInstalled();
-
-			// ignore static resources
-			if (WebHelper.IsStaticResourceRequested(this.Request))
-				return;
-
-			_profilingEnabled = this.ProfilingEnabled;
-
-			if (_profilingEnabled)
-			{
-				MiniProfiler.Start();
-			}
-        }
-
-        protected void Application_EndRequest(object sender, EventArgs e)
-        {
-			// Don't resolve dependencies from now on.
-			
-			// ignore static resources
-			if (WebHelper.IsStaticResourceRequested(this.Request))
-				return;
-
-			if (_profilingEnabled)
-			{
-				// stop mini profiler
-				MiniProfiler.Stop();
-			}
-        }
 		
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
@@ -248,14 +205,6 @@ namespace SmartStore.Web
                 //don't throw new exception if occurs
             }
         }
-
-		protected bool ProfilingEnabled
-		{
-			get
-			{
-				return DataSettings.DatabaseIsInstalled() && EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore;
-			}
-		}
 
     }
 

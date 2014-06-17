@@ -33,7 +33,10 @@ namespace SmartStore.Web.Framework.Mvc.Routes
                 routeProviders.Add(provider);
             }
             routeProviders = routeProviders.OrderByDescending(rp => rp.Priority).ToList();
-            routeProviders.Each(rp => rp.RegisterRoutes(routes));
+            routeProviders.Each(rp => 
+			{
+				rp.RegisterRoutes(routes);
+			});
         }
     }
 }

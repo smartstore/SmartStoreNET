@@ -315,7 +315,9 @@ namespace SmartStore.Services.ExportImport
 				var discounts = product.AppliedDiscounts;
 				foreach (var discount in discounts)
 				{
+					xmlWriter.WriteStartElement("ProductDiscount");
 					xmlWriter.WriteElementString("DiscountId", null, discount.Id.ToString());
+					xmlWriter.WriteEndElement();
 				}
 				xmlWriter.WriteEndElement();
 
@@ -324,11 +326,13 @@ namespace SmartStore.Services.ExportImport
 				var tierPrices = product.TierPrices;
 				foreach (var tierPrice in tierPrices)
 				{
+					xmlWriter.WriteStartElement("TierPrice");
 					xmlWriter.WriteElementString("TierPriceId", null, tierPrice.Id.ToString());
 					xmlWriter.WriteElementString("StoreId", null, tierPrice.StoreId.ToString());
 					xmlWriter.WriteElementString("CustomerRoleId", null, tierPrice.CustomerRoleId.HasValue ? tierPrice.CustomerRoleId.ToString() : "0");
 					xmlWriter.WriteElementString("Quantity", null, tierPrice.Quantity.ToString());
 					xmlWriter.WriteElementString("Price", null, tierPrice.Price.ToString());
+					xmlWriter.WriteEndElement();
 				}
 				xmlWriter.WriteEndElement();
 
@@ -348,6 +352,7 @@ namespace SmartStore.Services.ExportImport
 					var productVariantAttributeValues = productVariantAttribute.ProductVariantAttributeValues;
 					foreach (var productVariantAttributeValue in productVariantAttributeValues)
 					{
+						xmlWriter.WriteStartElement("ProductVariantAttributeValue");
 						xmlWriter.WriteElementString("ProductVariantAttributeValueId", null, productVariantAttributeValue.Id.ToString());
 						xmlWriter.WriteElementString("Name", null, productVariantAttributeValue.Name);
 						xmlWriter.WriteElementString("PriceAdjustment", null, productVariantAttributeValue.PriceAdjustment.ToString());
@@ -357,6 +362,7 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("ValueTypeId", null, productVariantAttributeValue.ValueTypeId.ToString());
 						xmlWriter.WriteElementString("LinkedProductId", null, productVariantAttributeValue.LinkedProductId.ToString());
 						xmlWriter.WriteElementString("Quantity", null, productVariantAttributeValue.Quantity.ToString());
+						xmlWriter.WriteEndElement();
 					}
 					xmlWriter.WriteEndElement();
 

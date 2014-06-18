@@ -29,8 +29,9 @@ namespace SmartStore.Web.Infrastructure
         private readonly ICacheManager _cacheManager;
         private readonly IWorkContext _workContext;
         private readonly IDbContext _dbContext;
-
         private readonly Lazy<IEnumerable<IWidget>> _simpleWidgets;
+		private readonly IWidgetProvider _widgetProvider;
+
         private static ConcurrentDictionary<string, IEnumerable<string>> s_simpleWidgetsMap;
         private static bool? s_hasSimpleWidgets;
         private static readonly object _lock = new object();
@@ -44,7 +45,8 @@ namespace SmartStore.Web.Infrastructure
             ICacheManager cacheManager, 
             IWorkContext workContext, 
             IDbContext dbContext,
-            Lazy<IEnumerable<IWidget>> simpleWidgets)
+            Lazy<IEnumerable<IWidget>> simpleWidgets,
+			IWidgetProvider widgetProvider)
         {
             this._widgetService = widgetService;
             this._topicService = topicService;
@@ -53,6 +55,7 @@ namespace SmartStore.Web.Infrastructure
             this._workContext = workContext;
             this._dbContext = dbContext;
             this._simpleWidgets = simpleWidgets;
+			this._widgetProvider = widgetProvider;
         }
 
         public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model)
@@ -139,9 +142,22 @@ namespace SmartStore.Web.Infrastructure
 
             #endregion
 
-            #region Simple Widgets
+			#region Request scoped widgets (provided by IWidgetProvider)
 
-            if (s_hasSimpleWidgets.HasValue && s_hasSimpleWidgets.Value == false)
+			var requestScopedWidgets = _widgetProvider.GetWidgets(widgetZone);
+			if (requestScopedWidgets != null)
+			{
+				foreach (var widget in requestScopedWidgets)
+				{
+					yield return widget;
+				}
+			}
+
+			#endregion
+
+			#region Simple Widgets
+
+			if (s_hasSimpleWidgets.HasValue && s_hasSimpleWidgets.Value == false)
             {
                 yield break;
             }
@@ -165,7 +181,7 @@ namespace SmartStore.Web.Infrastructure
                     if (simpleWidget != null)
                     {
                         simpleWidget.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
-
+						
                         yield return new WidgetRouteInfo
                         {
                             ActionName = actionName,

@@ -33,8 +33,7 @@ namespace SmartStore.Core.Infrastructure
 
 		public SmartStoreEngine(EventBroker broker, ContainerConfigurer configurer)
 		{
-            var config = ConfigurationManager.GetSection("SmartStoreConfig") as SmartStoreConfig;
-            InitializeContainer(configurer, broker, config);
+            InitializeContainer(configurer, broker);
 		}
         
         #endregion
@@ -64,11 +63,11 @@ namespace SmartStore.Core.Infrastructure
 			
         }
         
-        private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker, SmartStoreConfig config)
+        private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker)
         {
             var builder = new ContainerBuilder();
 			_containerManager = new ContainerManager(builder.Build());
-            configurer.Configure(this, _containerManager, broker, config);
+            configurer.Configure(this, _containerManager, broker);
         }
 
         #endregion
@@ -79,7 +78,7 @@ namespace SmartStore.Core.Infrastructure
         /// Initialize components and plugins in the sm environment.
         /// </summary>
         /// <param name="config">Config</param>
-        public void Initialize(SmartStoreConfig config)
+        public void Initialize()
         {
             bool databaseInstalled = DataSettings.DatabaseIsInstalled();
 			if (databaseInstalled)

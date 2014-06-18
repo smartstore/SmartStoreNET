@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Web.Hosting;
 using System.IO;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
@@ -11,7 +12,7 @@ namespace SmartStore
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			string path = ConfigurationManager.AppSettings.Get("TempDirectory");
+			string path = CommonHelper.GetAppSetting<string>("sm:TempDirectory", "~/App_Data/_temp");
 			path = HostingEnvironment.MapPath(path);
 
 			if (!Directory.Exists(path))

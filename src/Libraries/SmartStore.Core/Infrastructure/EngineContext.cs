@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SmartStore.Core.Configuration;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Infrastructure
 {
@@ -19,11 +20,10 @@ namespace SmartStore.Core.Infrastructure
         {
             if (Singleton<IEngine>.Instance == null || forceRecreate)
             {
-                var config = ConfigurationManager.GetSection("SmartStoreConfig") as SmartStoreConfig;
                 Debug.WriteLine("Constructing engine " + DateTime.Now);
-                Singleton<IEngine>.Instance = CreateEngineInstance(config);
+                Singleton<IEngine>.Instance = CreateEngineInstance();
                 Debug.WriteLine("Initializing engine " + DateTime.Now);
-                Singleton<IEngine>.Instance.Initialize(config);
+                Singleton<IEngine>.Instance.Initialize();
             }
             return Singleton<IEngine>.Instance;
         }
@@ -40,15 +40,16 @@ namespace SmartStore.Core.Infrastructure
         /// Creates a factory instance and adds a http application injecting facility.
         /// </summary>
         /// <returns>A new factory</returns>
-        public static IEngine CreateEngineInstance(SmartStoreConfig config)
+        public static IEngine CreateEngineInstance()
         {
-            if (config != null && !string.IsNullOrEmpty(config.EngineType))
+			var engineTypeSetting = CommonHelper.GetAppSetting<string>("sm:EngineType");
+			if (engineTypeSetting.HasValue())
             {
-                var engineType = Type.GetType(config.EngineType);
+				var engineType = Type.GetType(engineTypeSetting);
                 if (engineType == null)
-                    throw new ConfigurationErrorsException("The type '" + engineType + "' could not be found. Please check the configuration at /configuration/SmartStoreConfig/engine[@engineType] or check for missing assemblies.");
+					throw new ConfigurationErrorsException("The type '" + engineType + "' could not be found. Please check the configuration at /configuration/appSettings/add[@key=sm:EngineType] or check for missing assemblies.");
                 if (!typeof(IEngine).IsAssignableFrom(engineType))
-                    throw new ConfigurationErrorsException("The type '" + engineType + "' doesn't implement 'SmartStore.Core.Infrastructure.IEngine' and cannot be configured in /configuration/SmartStoreConfig/engine[@engineType] for that purpose.");
+					throw new ConfigurationErrorsException("The type '" + engineType + "' doesn't implement 'SmartStore.Core.Infrastructure.IEngine' and cannot be configured in /configuration/appSettings/add[@key=sm:EngineType] for that purpose.");
                 return Activator.CreateInstance(engineType) as IEngine;
             }
 

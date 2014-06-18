@@ -662,11 +662,16 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<PagerRenderer>().As<ComponentRenderer<Pager>>();
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
 
+			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
+
 			// Register simple (code) widgets
 			var widgetTypes = _typeFinder.FindClassesOfType(typeof(IWidget)).Where(x => !typeof(IWidgetPlugin).IsAssignableFrom(x));
 			foreach (var widgetType in widgetTypes)
 			{
-				builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerRequest();
+				if (PluginManager.IsActivePluginAssembly(widgetType.Assembly))
+				{
+					builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerRequest();
+				}
 			}
 		}
 	}
@@ -691,6 +696,29 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<FolderUpdater>().As<IFolderUpdater>().InstancePerRequest();
 		}
 	}
+
+	//public class PluginsModule : Module
+	//{
+	//	private readonly ITypeFinder _typeFinder;
+
+	//	public PluginsModule(ITypeFinder typeFinder)
+	//	{
+	//		_typeFinder = typeFinder;
+	//	}
+
+	//	protected override void Load(ContainerBuilder builder)
+	//	{
+	//		// Register payment methods
+	//		var types = _typeFinder.FindClassesOfType(typeof(IPaymentMethod));
+	//		foreach (var type in types)
+	//		{
+	//			if (PluginManager.IsActivePluginAssembly(type.Assembly))
+	//			{
+	//				builder.RegisterType(type).As<IPaymentMethod>().Named<IPaymentMethod>(type.FullName).InstancePerRequest();
+	//			}
+	//		}
+	//	}
+	//}
 
 	#endregion
 

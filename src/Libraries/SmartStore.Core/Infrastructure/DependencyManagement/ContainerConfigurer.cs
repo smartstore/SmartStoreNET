@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Autofac.Integration.Mvc;
-using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
@@ -12,10 +11,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
     /// </summary>
     public class ContainerConfigurer
     {
-        public virtual void Configure(IEngine engine, ContainerManager containerManager, EventBroker broker, SmartStoreConfig configuration)
+        public virtual void Configure(IEngine engine, ContainerManager containerManager, EventBroker broker)
         {
             //other dependencies
-            containerManager.AddComponentInstance<SmartStoreConfig>(configuration, "sm.configuration");
             containerManager.AddComponentInstance<IEngine>(engine, "sm.engine");
             containerManager.AddComponentInstance<ContainerConfigurer>(this, "sm.containerConfigurer");
 

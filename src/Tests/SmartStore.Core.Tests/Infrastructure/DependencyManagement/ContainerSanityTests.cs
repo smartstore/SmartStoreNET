@@ -1,5 +1,4 @@
-﻿using SmartStore.Core.Configuration;
-using SmartStore.Core.Infrastructure;
+﻿using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using NUnit.Framework;
 
@@ -34,7 +33,6 @@ namespace SmartStore.Core.Tests.Infrastructure.DependencyManagement
         [Test]
         public void CanRetrieve_ImportantServices()
         {
-            Assert.That(container.Resolve<SmartStoreConfig>(), Is.Not.Null);
             Assert.That(container.Resolve<IEngine>(), Is.Not.Null);
         }
         

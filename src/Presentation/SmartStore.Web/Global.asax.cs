@@ -28,6 +28,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using System.IO;
 using System.Diagnostics;
+using SmartStore.Web.Framework.Plugins;
 
 
 namespace SmartStore.Web
@@ -127,6 +128,12 @@ namespace SmartStore.Web
 				var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
 				var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
 				HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
+
+				// register plugin debug view virtual path provider
+				if (HttpContext.Current.IsDebuggingEnabled)
+				{
+					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
+				}
 
 				// start scheduled tasks
 				TaskManager.Instance.Initialize();

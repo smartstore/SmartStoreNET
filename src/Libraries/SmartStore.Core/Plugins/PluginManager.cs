@@ -106,10 +106,7 @@ namespace SmartStore.Core.Plugins
 				_shadowCopyFolder = new DirectoryInfo(CommonHelper.MapPath(_shadowCopyPath));
 
                 var incompatiblePlugins = new List<string>();
-
-                _clearShadowDirectoryOnStartup = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]) &&
-                   Convert.ToBoolean(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]);
-
+				_clearShadowDirectoryOnStartup = CommonHelper.GetAppSetting<bool>("sm:ClearPluginsShadowDirectoryOnStartup", true);
                 try
                 {
 					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);

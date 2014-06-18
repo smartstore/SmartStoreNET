@@ -14,8 +14,8 @@ namespace SmartStore.Plugin.Developer.DevTools
         public void BuildMenu(TreeNode<MenuItem> pluginsNode)
         {
             var menuItem = new MenuItem().ToBuilder()
-                .Text("FilterTest Plugin")
-				.Action("Index", "FilterTestAdmin", new { area = "Misc.FilterTest" })
+                .Text("DevTools Plugin")
+				.Action("Index", "DevTools Admin", new { area = "Developer.DevTools" })
                 .ToItem();
 
             pluginsNode.Append(menuItem);

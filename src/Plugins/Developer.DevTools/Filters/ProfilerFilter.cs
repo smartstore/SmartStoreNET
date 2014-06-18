@@ -12,6 +12,7 @@ using SmartStore.Plugin.Developer.DevTools.Services;
 using SmartStore.Core;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Plugin.Developer.DevTools.Filters
 {
@@ -19,11 +20,13 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 	{
 		private readonly IProfilerService _profiler;
 		private readonly ICommonServices _services;
+		private readonly IWidgetProvider _widgetProvider;
 
-		public ProfilerFilter(IProfilerService profiler, ICommonServices services)
+		public ProfilerFilter(IProfilerService profiler, ICommonServices services, IWidgetProvider widgetProvider)
 		{
 			this._profiler = profiler;
 			this._services = services;
+			this._widgetProvider = widgetProvider;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -54,6 +57,12 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 			{
 				return;
 			}
+
+			_widgetProvider.RegisterAction(
+				"head_html_tag",
+				"MiniProfiler",
+				"MyCheckout",
+				new { Namespaces = "SmartStore.Plugin.Developer.DevTools.Controllers", area = "Developer.DevTools" });
 
 			this._profiler.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));
 		}

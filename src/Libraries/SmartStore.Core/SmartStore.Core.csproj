@@ -332,7 +332,6 @@
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
-    <Compile Include="Configuration\SmartStoreConfig.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
     <Compile Include="Domain\Blogs\BlogSettings.cs" />
     <Compile Include="Domain\Blogs\BlogPost.cs" />

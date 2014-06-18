@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
@@ -167,6 +168,27 @@ namespace SmartStore.Utilities
 		public static TypeConverter GetTypeConverter(Type type)
 		{
 			return ConversionExtensions.GetTypeConverter(type);
+		}
+
+		/// <summary>
+		/// Gets a setting from the application's <c>web.config</c> <c>appSettings</c> node
+		/// </summary>
+		/// <typeparam name="T">The type to convert the setting value to</typeparam>
+		/// <param name="key">The key of the setting</param>
+		/// <param name="defValue">The default value to return if the setting does not exist</param>
+		/// <returns>The casted setting value</returns>
+		public static T GetAppSetting<T>(string key, T defValue = default(T))
+		{
+			Guard.ArgumentNotEmpty(() => key);
+
+			var setting = ConfigurationManager.AppSettings[key];
+
+			if (setting == null)
+			{
+				return defValue;
+			}
+
+			return setting.Convert<T>();
 		}
 
     }

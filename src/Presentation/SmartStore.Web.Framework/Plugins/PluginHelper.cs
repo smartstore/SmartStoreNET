@@ -14,6 +14,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using Autofac;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -62,7 +63,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				if (_interfaceVersion == null)
 				{
-					_interfaceVersion = "{0}_v{1}".FormatWith(ConfigurationManager.AppSettings.Get("ApplicationName"), Plugin.Version);
+					_interfaceVersion = "{0}_v{1}".FormatWith(CommonHelper.GetAppSetting<string>("sm:ApplicationName"), Plugin.Version);
 				}
 				return _interfaceVersion;
 			}

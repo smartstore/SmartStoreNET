@@ -25,6 +25,7 @@ using System.Data.Entity;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using System.Configuration;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Controllers
 {
@@ -520,9 +521,10 @@ namespace SmartStore.Web.Controllers
 						.ThenBy(x => x.PluginDescriptor.DisplayOrder)
 						.ToList();
 
-					var pluginsIgnoredDuringInstallation = String.IsNullOrEmpty(ConfigurationManager.AppSettings["PluginsIgnoredDuringInstallation"]) ?
+					var ignoredPluginsSetting = CommonHelper.GetAppSetting<string>("sm:PluginsIgnoredDuringInstallation");
+					var pluginsIgnoredDuringInstallation = String.IsNullOrEmpty(ignoredPluginsSetting) ?
 						new List<string>() :
-						ConfigurationManager.AppSettings["PluginsIgnoredDuringInstallation"]
+						ignoredPluginsSetting
 							.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
 							.Select(x => x.Trim())
 						.ToList();

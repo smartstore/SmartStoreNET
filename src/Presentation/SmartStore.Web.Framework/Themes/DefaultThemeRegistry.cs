@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Xml;
 using SmartStore.Core;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Themes;
@@ -25,7 +24,7 @@ namespace SmartStore.Web.Framework.Themes
 
 		internal const string THEME_MANIFESTS_ALL_KEY = "sm.theme-manifests.all";
 
-		private readonly SmartStoreConfig _cfg;
+		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -36,13 +35,11 @@ namespace SmartStore.Web.Framework.Themes
 
 		#region Constructors
 
-		public DefaultThemeRegistry(
-			SmartStoreConfig cfg,
-			IEventPublisher eventPublisher)
+		public DefaultThemeRegistry(IEventPublisher eventPublisher)
         {
-			this._cfg = cfg;
+			this._themesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
-
+			
 			// load all themes initially
 			LoadThemes();
 
@@ -59,7 +56,7 @@ namespace SmartStore.Web.Framework.Themes
 		{
 			_watcherCfg = new FileSystemWatcher();
 
-			_watcherCfg.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			_watcherCfg.Path = CommonHelper.MapPath(_themesBasePath);
 			_watcherCfg.Filter = "theme.config";
 			_watcherCfg.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
 			_watcherCfg.IncludeSubdirectories = true;
@@ -75,7 +72,7 @@ namespace SmartStore.Web.Framework.Themes
 		{
 			_watcherFolders = new FileSystemWatcher();
 
-			_watcherFolders.Path = CommonHelper.MapPath(_cfg.ThemeBasePath);
+			_watcherFolders.Path = CommonHelper.MapPath(_themesBasePath);
 			_watcherFolders.Filter = "*";
 			_watcherFolders.NotifyFilter = NotifyFilters.DirectoryName;
 			_watcherFolders.IncludeSubdirectories = false;
@@ -178,7 +175,7 @@ namespace SmartStore.Web.Framework.Themes
 		private void LoadThemes()
 		{
 			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
-			var virtualBasePath = _cfg.ThemeBasePath;
+			var virtualBasePath = _themesBasePath;
 			foreach (var path in folder.ListDirectories(virtualBasePath))
 			{
 				try

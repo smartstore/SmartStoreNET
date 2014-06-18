@@ -4,7 +4,7 @@ using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 
-namespace SmartStore.Plugin.Misc.FilterTest
+namespace SmartStore.Plugin.Developer.DevTools
 {
     /// <summary>
     /// Filter test plugin

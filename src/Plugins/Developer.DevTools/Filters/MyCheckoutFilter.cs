@@ -29,7 +29,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
 			var routeValues = new { action = "MyBillingAddress" };
-			filterContext.Result = new RedirectToRouteResult("FilterTest.MyCheckout", new RouteValueDictionary(routeValues));
+			filterContext.Result = new RedirectToRouteResult("Developer.DevTools.MyCheckout", new RouteValueDictionary(routeValues));
 		}
 	}
 }

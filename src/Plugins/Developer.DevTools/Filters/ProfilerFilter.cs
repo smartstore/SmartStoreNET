@@ -18,35 +18,50 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 {
 	public class ProfilerFilter : IActionFilter, IResultFilter
 	{
-		private readonly IProfilerService _profiler;
+		private readonly Lazy<IProfilerService> _profiler;
 		private readonly ICommonServices _services;
-		private readonly IWidgetProvider _widgetProvider;
+		private readonly Lazy<IWidgetProvider> _widgetProvider;
+		private readonly ProfilerSettings _profilerSettings;
 
-		public ProfilerFilter(IProfilerService profiler, ICommonServices services, IWidgetProvider widgetProvider)
+		public ProfilerFilter(
+			Lazy<IProfilerService> profiler, 
+			ICommonServices services, 
+			Lazy<IWidgetProvider> widgetProvider, 
+			ProfilerSettings profilerSettings)
 		{
 			this._profiler = profiler;
 			this._services = services;
 			this._widgetProvider = widgetProvider;
+			this._profilerSettings = profilerSettings;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
+			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+				return;
+			
 			var tokens = filterContext.RouteData.DataTokens;
 			string area = tokens.ContainsKey("area") && !string.IsNullOrEmpty(tokens["area"].ToString()) ?
 				string.Concat(tokens["area"], ".") :
 				string.Empty;
 			string controller = string.Concat(filterContext.Controller.ToString().Split('.').Last(), ".");
 			string action = filterContext.ActionDescriptor.ActionName;
-			this._profiler.StepStart("ActionFilter", "Controller: " + area + controller + action);
+			this._profiler.Value.StepStart("ActionFilter", "Controller: " + area + controller + action);
 		}
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-			this._profiler.StepStop("ActionFilter");
+			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+				return;
+
+			this._profiler.Value.StepStop("ActionFilter");
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
+			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+				return;
+			
 			// should only run on a full view rendering result
 			if (!(filterContext.Result is ViewResultBase))
 			{
@@ -60,18 +75,21 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 
 			if (!filterContext.IsChildAction)
 			{
-				_widgetProvider.RegisterAction(
+				_widgetProvider.Value.RegisterAction(
 					"head_html_tag",
 					"MiniProfiler",
-					"MyCheckout",
+					"DevTools",
 					new { Namespaces = "SmartStore.Plugin.Developer.DevTools.Controllers", area = "Developer.DevTools" });
 			}
 
-			this._profiler.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));
+			this._profiler.Value.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
+			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+				return;
+			
 			// should only run on a full view rendering result
 			if (!(filterContext.Result is ViewResultBase))
 			{
@@ -83,7 +101,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 				return;
 			}
 
-			this._profiler.StepStop("ResultFilter");
+			this._profiler.Value.StepStop("ResultFilter");
 		}
 
 		private bool ShouldProfile(HttpContextBase ctx)

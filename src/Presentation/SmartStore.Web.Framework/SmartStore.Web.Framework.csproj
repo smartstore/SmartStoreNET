@@ -214,6 +214,7 @@
     </Compile>
     <Compile Include="AppPath.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
+    <Compile Include="Controllers\PublicControllerBase.cs" />
     <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />
     <Compile Include="Controllers\PluginControllerBase.cs" />
     <Compile Include="Controllers\CheckAffiliateAttribute.cs" />

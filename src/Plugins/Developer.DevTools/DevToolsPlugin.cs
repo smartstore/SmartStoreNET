@@ -1,37 +1,38 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Routing;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Plugin.Developer.DevTools
 {
-    /// <summary>
-    /// Filter test plugin
-    /// </summary>
+
 	public class DevToolsPlugin : BasePlugin, IMiscPlugin
     {
+		private readonly ISettingService _settingService;
 
-        public DevToolsPlugin()
+		public DevToolsPlugin(ISettingService settingService)
         {
+			this._settingService = settingService;
+			this.Logger = NullLogger.Instance;
         }
 
-        /// <summary>
-        /// Gets a route for provider configuration
-        /// </summary>
-        /// <param name="actionName">Action name</param>
-        /// <param name="controllerName">Controller name</param>
-        /// <param name="routeValues">Route values</param>
+		public ILogger Logger { get; set; }
+
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
-            controllerName = "FilterTestAdmin";
+            controllerName = "DevTools";
 			routeValues = new RouteValueDictionary(new { area = "Developer.DevTools" });
         }
 
         public override void Install()
         {
-            base.Install();
+			_settingService.SaveSetting(new ProfilerSettings());
+			base.Install();
+			Logger.Information(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
         /// <summary>
@@ -39,7 +40,8 @@ namespace SmartStore.Plugin.Developer.DevTools
         /// </summary>
         public override void Uninstall()
         {
-            base.Uninstall();
+			_settingService.DeleteSetting<ProfilerSettings>();
+			base.Uninstall();
         }
     }
 }

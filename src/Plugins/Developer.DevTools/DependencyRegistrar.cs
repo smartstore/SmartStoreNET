@@ -11,8 +11,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Plugin.Developer.DevTools.Filters;
-using SmartStore.Web.Controllers;
 using SmartStore.Plugin.Developer.DevTools.Services;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Plugin.Developer.DevTools
 {
@@ -24,12 +24,14 @@ namespace SmartStore.Plugin.Developer.DevTools
 			
 			if (PluginManager.IsActivePluginAssembly(this.GetType().Assembly))
 			{
-				builder.RegisterType<TestResultFilter>().AsResultFilterFor<CatalogController>(x => x.Product(default(int), default(string))).InstancePerRequest();
-				builder.RegisterType<HideBannerFilter>().AsResultFilterFor<CommonController>(x => x.Footer()).InstancePerRequest();
-				builder.RegisterType<TestActionFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
-				builder.RegisterType<MyCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
-
+				// intercept ALL public store controller actions
 				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<PublicControllerBase>();
+
+				//// intercept CatalogController's Product action
+				//builder.RegisterType<SampleResultFilter>().AsResultFilterFor<CatalogController>(x => x.Product(default(int), default(string))).InstancePerRequest();
+				//builder.RegisterType<SampleActionFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
+				//// intercept CheckoutController's Index action (to hijack the checkout or payment workflow)
+				//builder.RegisterType<SampleCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
 			}
         }
 

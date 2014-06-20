@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Web.Models.Catalog;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Plugin.Developer.DevTools.Filters
 {
-	public class TestResultFilter : IResultFilter
+	public class SampleResultFilter : IResultFilter
 	{
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
@@ -19,12 +19,13 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 			var result = filterContext.Result as ViewResultBase;
 			if (result != null)
 			{
-				var model = result.Model as ProductDetailsModel;
+				var model = result.Model as ModelBase;
 				if (model != null)
 				{
-					model.ProductPrice.OldPrice = "999,99 EUR";
-					model.ProductPrice.Price = "55,11 EUR";
-					model.ProductPrice.PriceValue = 55.11M;
+					// Do something with model here!
+					// If you want to use view models from SmartStore.Web
+					// or SmartStore.Admin make sure you have added
+					// the project reference first.
 				}
 			}
 		}

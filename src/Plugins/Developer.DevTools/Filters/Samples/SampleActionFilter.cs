@@ -11,11 +11,11 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Plugin.Developer.DevTools.Filters
 {
-	public class TestActionFilter : IActionFilter
+	public class SampleActionFilter : IActionFilter
 	{
 		private readonly INotifier _notifier;
 
-		public TestActionFilter(INotifier notifier)
+		public SampleActionFilter(INotifier notifier)
 		{
 			this._notifier = notifier;
 		}
@@ -24,6 +24,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 		{
 			Debug.WriteLine("Executing: {0} - {1}".FormatInvariant(filterContext.ActionDescriptor.ControllerDescriptor.ControllerName, filterContext.ActionDescriptor.ActionName));
 			_notifier.Information("Yeah, my plugin action filter works. NICE!");
+			// Do somethid meaningful here ;-)
 		}
 		
 		public void OnActionExecuted(ActionExecutedContext filterContext)

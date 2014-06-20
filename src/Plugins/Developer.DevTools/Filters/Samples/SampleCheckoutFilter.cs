@@ -13,11 +13,11 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Developer.DevTools.Filters
 {
-	public class MyCheckoutFilter : IActionFilter
+	public class SampleCheckoutFilter : IActionFilter
 	{
 		private readonly INotifier _notifier;
 
-		public MyCheckoutFilter(INotifier notifier)
+		public SampleCheckoutFilter(INotifier notifier)
 		{
 			this._notifier = notifier;
 		}

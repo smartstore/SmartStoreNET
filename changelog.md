@@ -3,6 +3,13 @@
 ##SmartStore.NET 2.1#
 
 ###New Features###
+* (Developer) Overhauled plugin architecture:
+	- Plugins are regular MVC areas now
+	- No embedded views anymore. Views get copied to the deployment folder
+	- No cumbersome return View("Very.Long.View.Identifier") anymore
+	- Views in plugin source folders can be edited during debug. The changes are reflected without plugin recompilation.
+* Added _CDN_ setting to store configuration. Allows static files to be served through a content delivery network, e.g. cloudfront. (contributed by 'normalc')
+* (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
 
@@ -21,6 +28,7 @@
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.
 * (Developer) Added _user.less_ to Alpha theme for user defined css overrides and tweaks
+* (Developer) Moved _PublicControllerBase_ to SmartStore.Web.Framework
 * #384 Web API: Inserting sluged recources like products require an URL record
 * Promotion feed plugins: Asynchronous feed creation
 
@@ -32,6 +40,7 @@
 * Return requests: Products to return won't be listed
 * #372 Biz-Importer sometimes shows inactive tier prices
 * PayPal Standard: Sending more localized values. Adjustment of net prices to avoid wrong PayPal total amount calculation.
+* Globalization fix in plugin data grids: inline editing for decimal values did not take current culture into account
 * #391 Show delivery time if out-of-stock orders are allowed by attribute combination
 * CustomerRole > TaxDisplayType _Including VAT_ could not be saved
 * Product.DisableBuyButton was never updated when the stock quantity has been increased (e.g. as a result of order canceling)

@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using SmartStore.Web.Framework.Controllers;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Web;
+//using System.Web.Mvc;
+//using SmartStore.Web.Controllers;
+//using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Plugin.Developer.DevTools.Controllers
-{
-	public class MyCheckoutController : PluginControllerBase
-    {
-
-        public ActionResult MyBillingAddress()
-        {
-			return View();
-        }
-
-		public ActionResult MiniProfiler()
-		{
-			return View();
-		}
-
-	}
-}
+//namespace SmartStore.Plugin.Developer.DevTools.Controllers
+//{
+//	public class MyCheckoutController : PublicControllerBase
+//	{
+//		public ActionResult MyBillingAddress()
+//		{
+//			return View();
+//		}
+//	}
+//}

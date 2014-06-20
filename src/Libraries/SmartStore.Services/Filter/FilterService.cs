@@ -257,7 +257,7 @@ namespace SmartStore.Services.Filter
 			var attributes =
 				from p in query
 				from sa in p.ProductSpecificationAttributes
-				where sa.AllowFiltering && sa.ShowOnProductPage
+				where sa.AllowFiltering
 				orderby sa.DisplayOrder
 				select sa.SpecificationAttributeOption;
 
@@ -432,7 +432,7 @@ namespace SmartStore.Services.Filter
 				var specRepository = EngineContext.Current.Resolve<IRepository<ProductSpecificationAttribute>>();
 
 				var saq = specRepository.Table
-					.Where(a => a.AllowFiltering && a.ShowOnProductPage)
+					.Where(a => a.AllowFiltering)
 					.Where(sql.WhereClause.ToString(), sql.Values.ToArray())
 					.GroupBy(a => a.ProductId)
 					.Where(grp => (grp.Count() >= countSameNameAttributes));

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Payments
@@ -9,6 +10,11 @@ namespace SmartStore.Services.Payments
     [Serializable]
     public partial class ProcessPaymentRequest
     {
+		public ProcessPaymentRequest()
+		{
+			this.CustomProperties = new Dictionary<string, object>();
+		}
+
 		/// <summary>
 		/// Gets or sets a store identifier
 		/// </summary>
@@ -30,11 +36,14 @@ namespace SmartStore.Services.Payments
         public decimal OrderTotal { get; set; }
 
         /// <summary>
-        /// /// <summary>
         /// Gets or sets a payment method identifier
         /// </summary>
-        /// </summary>
         public string PaymentMethodSystemName { get; set; }
+
+		/// <summary>
+		/// Use that dictionary for any payment method or checkout flow specific data
+		/// </summary>
+		public Dictionary<string, object> CustomProperties { get; set; }
 
         #region Payment method specific properties 
 
@@ -88,7 +97,6 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public string PurchaseOrderNumber { get; set; }
 
-		//codehint: sm-add begin
 		public int CreditCardStartYear { get; set; }
 		public int CreditCardStartMonth { get; set; }
 		public string CreditCardIssueNumber { get; set; }
@@ -102,7 +110,6 @@ namespace SmartStore.Services.Payments
 
         public bool IsShippingMethodSet { get; set; }
         public bool RequiresPaymentWorkflow { get; set; }
-		//codehint: sm-add end
 
         #endregion
 

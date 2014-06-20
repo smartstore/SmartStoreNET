@@ -8,16 +8,9 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.Widgets.TrustedShopsSeal.Configure",
-                 "Plugins/TrustedShopsSeal/Configure",
+            routes.MapRoute("Widgets.TrustedShopsSeal",
+                 "Plugins/TrustedShopsSeal/{action}",
                  new { controller = "TrustedShopsSeal", action = "Configure" },
-                 new[] { "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }
-            )
-			.DataTokens["area"] = "Widgets.TrustedShopsSeal";
-
-            routes.MapRoute("Plugin.Widgets.TrustedShopsSeal.PublicInfo",
-                 "Plugins/TrustedShopsSeal/PublicInfo",
-                 new { controller = "TrustedShopsSeal", action = "PublicInfo" },
                  new[] { "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }
             )
 			.DataTokens["area"] = "Widgets.TrustedShopsSeal";

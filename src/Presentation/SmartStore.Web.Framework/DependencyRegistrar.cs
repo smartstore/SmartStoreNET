@@ -46,7 +46,6 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Framework.EmbeddedViews;
 using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Themes;
@@ -537,7 +536,6 @@ namespace SmartStore.Web.Framework
 			// register all controllers
 			builder.RegisterControllers(foundAssemblies);
 
-			builder.RegisterType<EmbeddedViewResolver>().As<IEmbeddedViewResolver>().SingleInstance();
 			builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
 			builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerRequest();

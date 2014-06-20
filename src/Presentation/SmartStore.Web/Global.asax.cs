@@ -15,7 +15,6 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.EmbeddedViews;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
@@ -123,11 +122,6 @@ namespace SmartStore.Web
 				// register virtual path provider for theme variables
 				HostingEnvironment.RegisterVirtualPathProvider(new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
 				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
-
-				// register virtual path provider for embedded views
-				var embeddedViewResolver = EngineContext.Current.Resolve<IEmbeddedViewResolver>();
-				var embeddedProvider = new EmbeddedViewVirtualPathProvider(embeddedViewResolver.GetEmbeddedViews());
-				HostingEnvironment.RegisterVirtualPathProvider(embeddedProvider);
 
 				// register plugin debug view virtual path provider
 				if (HttpContext.Current.IsDebuggingEnabled)

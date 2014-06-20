@@ -58,11 +58,14 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 				return;
 			}
 
-			_widgetProvider.RegisterAction(
-				"head_html_tag",
-				"MiniProfiler",
-				"MyCheckout",
-				new { Namespaces = "SmartStore.Plugin.Developer.DevTools.Controllers", area = "Developer.DevTools" });
+			if (!filterContext.IsChildAction)
+			{
+				_widgetProvider.RegisterAction(
+					"head_html_tag",
+					"MiniProfiler",
+					"MyCheckout",
+					new { Namespaces = "SmartStore.Plugin.Developer.DevTools.Controllers", area = "Developer.DevTools" });
+			}
 
 			this._profiler.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));
 		}

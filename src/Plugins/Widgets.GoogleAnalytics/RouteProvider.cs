@@ -8,8 +8,8 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.Widgets.GoogleAnalytics.Configure",
-                 "Plugins/WidgetsGoogleAnalytics/Configure",
+            routes.MapRoute("Widgets.GoogleAnalytics",
+                 "Plugins/WidgetsGoogleAnalytics/{action}",
                  new { controller = "WidgetsGoogleAnalytics", action = "Configure" },
                  new[] { "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }
             )

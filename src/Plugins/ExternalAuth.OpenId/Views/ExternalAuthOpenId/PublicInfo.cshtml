@@ -14,7 +14,7 @@
     var storeLocation = EngineContext.Current.Resolve<SmartStore.Core.IWebHelper>().GetStoreLocation();
 }
 
-@using (Html.BeginRouteForm("Plugin.ExternalAuth.OpenId.Login", new { ReturnUrl = HttpContext.Current.Request.QueryString["ReturnUrl"] }, FormMethod.Post, new { id = "openid_form" }))
+@using (Html.BeginRouteForm("ExternalAuth.OpenId", new { ReturnUrl = HttpContext.Current.Request.QueryString["ReturnUrl"], action = "Login" }, FormMethod.Post, new { id = "openid_form" }))
 {
     <input type="hidden" name="action" value="verify" />
     <fieldset class="oauth-login-openid">

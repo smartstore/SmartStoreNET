@@ -8,14 +8,14 @@ namespace SmartStore.Web.Framework
         {
             if (!string.IsNullOrEmpty(returnUrl))
                 return urlHelper.Action("Login", "Customer", new { ReturnUrl = returnUrl, area = "" });
-            return urlHelper.Action("Login", "Customer");
+			return urlHelper.Action("Login", "Customer", new { area = "" });
         }
 
         public static string LogOff(this UrlHelper urlHelper, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl))
                 return urlHelper.Action("Logout", "Customer", new { ReturnUrl = returnUrl, area = "" });
-            return urlHelper.Action("Logout", "Customer");
+			return urlHelper.Action("Logout", "Customer", new { area = "" });
         }
     }
 }

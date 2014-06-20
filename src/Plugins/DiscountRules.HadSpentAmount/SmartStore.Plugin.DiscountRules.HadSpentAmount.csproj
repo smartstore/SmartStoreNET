@@ -150,7 +150,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\DiscountRulesHadSpentAmount\Configure.cshtml" />
+    <Content Include="Views\DiscountRulesHadSpentAmount\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt">

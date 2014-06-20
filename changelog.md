@@ -25,6 +25,9 @@
 * Promotion feed plugins: Asynchronous feed creation
 
 ###Bugfixes###
+* Twitter Auth: fixed _SecurityTransparent_ error
+* Facebook Auth: fixed _SecurityTransparent_ error
+* OpenID Auth: fixed _SecurityTransparent_ error
 * #376 Product filtering: Category price range filter not working anymore
 * Return requests: Products to return won't be listed
 * #372 Biz-Importer sometimes shows inactive tier prices

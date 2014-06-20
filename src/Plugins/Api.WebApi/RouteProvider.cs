@@ -8,7 +8,12 @@ namespace SmartStore.Plugin.Api.WebApi
 	{
 		public void RegisterRoutes(RouteCollection routes)
 		{
-            routes.MapRoute("Plugin.Api.WebApi.Action", "Plugins/WebApi/{action}", new { controller = "WebApi" }, new[] { "SmartStore.Plugin.Api.WebApi.Controllers" });
+            routes.MapRoute("Plugin.Api.WebApi.Action", 
+				"Plugins/WebApi/{action}", 
+				new { controller = "WebApi" }, 
+				new[] { "SmartStore.Plugin.Api.WebApi.Controllers" }
+			)
+			.DataTokens["area"] = "Api.WebApi";
 		}
 		public int Priority
 		{

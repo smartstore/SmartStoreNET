@@ -8,11 +8,12 @@ namespace SmartStore.Plugin.Feed.Froogle
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.Feed.Froogle.Configure",
-                 "Plugins/FeedFroogle/Configure",
+            routes.MapRoute("Feed.Froogle",
+                 "Plugins/FeedFroogle/{action}",
                  new { controller = "FeedFroogle", action = "Configure" },
                  new[] { "SmartStore.Plugin.Feed.Froogle.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "PromotionFeed.Froogle";
         }
         public int Priority
         {

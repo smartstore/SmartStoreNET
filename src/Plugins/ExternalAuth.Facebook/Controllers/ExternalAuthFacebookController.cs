@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
 {
     //[UnitOfWork]
-    public class ExternalAuthFacebookController : Controller
+	public class ExternalAuthFacebookController : PluginControllerBase
     {
         private readonly ISettingService _settingService;
         private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
@@ -50,7 +50,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             model.ClientKeyIdentifier = _facebookExternalAuthSettings.ClientKeyIdentifier;
             model.ClientSecret = _facebookExternalAuthSettings.ClientSecret;
             
-            return View("SmartStore.Plugin.ExternalAuth.Facebook.Views.ExternalAuthFacebook.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -69,13 +69,13 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
             _facebookExternalAuthSettings.ClientSecret = model.ClientSecret;
             _settingService.SaveSetting(_facebookExternalAuthSettings);
             
-            return View("SmartStore.Plugin.ExternalAuth.Facebook.Views.ExternalAuthFacebook.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]
         public ActionResult PublicInfo()
         {
-            return View("SmartStore.Plugin.ExternalAuth.Facebook.Views.ExternalAuthFacebook.PublicInfo");
+            return View();
         }
 
 		[NonAction]
@@ -99,7 +99,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
                     {
                         if (!result.Success)
                             foreach (var error in result.Errors)
-                                ExternalAuthorizerHelper.AddErrorsToDisplay(error);
+								NotifyError(error);
 
                         return new RedirectResult(Url.LogOn(returnUrl));
                     }

@@ -74,7 +74,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers
 
 			AddButtonText();
 
-			return View("SmartStore.Plugin.Api.WebApi.Views.WebApi.Configure", model);
+			return View(model);
 		}
 
 		[HttpPost, ActionName("Configure")]

@@ -34,26 +34,5 @@ namespace SmartStore.Services.Authentication.External
             var session = GetSession();
             session.Remove("sm.externalauth.parameters");
         }
-
-        public static void AddErrorsToDisplay(string error)
-        {
-            var session = GetSession();
-            var errors = session["sm.externalauth.errors"] as IList<string>;
-            if (errors == null)
-            {
-                errors = new List<string>();
-                session.Add("sm.externalauth.errors", errors);
-            }
-            errors.Add(error);
-        }
-
-        public static IList<string> RetrieveErrorsToDisplay(bool removeOnRetrieval)
-        {
-            var session = GetSession();
-            var errors = session["sm.externalauth.errors"] as IList<string>;
-            if (errors != null && removeOnRetrieval)
-                session.Remove("sm.externalauth.errors");
-            return errors;
-        }
     }
 }

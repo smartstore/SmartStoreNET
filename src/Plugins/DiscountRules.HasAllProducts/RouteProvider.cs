@@ -12,7 +12,8 @@ namespace SmartStore.Plugin.DiscountRules.HasAllProducts
                  "Plugins/DiscountRulesHasAllProducts/Configure",
                  new { controller = "DiscountRulesHasAllProducts", action = "Configure" },
                  new[] { "SmartStore.Plugin.DiscountRules.HasAllProducts.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "DiscountRules.HasAllProducts";
         }
         public int Priority
         {

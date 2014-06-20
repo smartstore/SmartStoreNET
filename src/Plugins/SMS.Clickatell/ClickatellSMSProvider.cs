@@ -76,7 +76,7 @@ namespace SmartStore.Plugin.SMS.Clickatell
         {
             actionName = "Configure";
             controllerName = "SmsClickatell";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.SMS.Clickatell.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.SMS.Clickatell.Controllers" }, { "area", "SMS.Clickatell" } };
         }
 
         /// <summary>

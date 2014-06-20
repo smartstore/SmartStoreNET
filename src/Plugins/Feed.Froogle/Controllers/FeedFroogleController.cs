@@ -40,7 +40,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 
 			_googleService.SetupModel(model);
 
-			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
+			return View( model);
 		}
 
 		[HttpPost]
@@ -59,7 +59,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 
 			_googleService.SetupModel(model);
 
-			return View("SmartStore.Plugin.Feed.Froogle.Views.FeedFroogle.Configure", model);
+			return View(model);
 		}
 
 		public ActionResult GenerateFeed()

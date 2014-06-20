@@ -39,7 +39,7 @@ namespace SmartStore.Plugin.Feed.Froogle
         {
             actionName = "Configure";
             controllerName = "FeedFroogle";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", "PromotionFeed.Froogle" } };
         }
 
         /// <summary>

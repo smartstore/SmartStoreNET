@@ -6,11 +6,12 @@ using SmartStore.Plugin.ExternalAuth.OpenId.Models;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Plugin.ExternalAuth.OpenId.Controllers
 {
     //[UnitOfWork]
-    public class ExternalAuthOpenIdController : Controller
+	public class ExternalAuthOpenIdController : PluginControllerBase
     {
         private readonly IOpenIdProviderAuthorizer _openIdProviderAuthorizer;
         private readonly IOpenAuthenticationService _openAuthenticationService;
@@ -34,7 +35,7 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId.Controllers
         [ChildActionOnly]
         public ActionResult PublicInfo()
         {
-            return View("SmartStore.Plugin.ExternalAuth.OpenId.Views.ExternalAuthOpenId.PublicInfo");
+            return View();
         }
 
         public ActionResult Login(string returnUrl)
@@ -59,9 +60,9 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId.Controllers
             {
                 case OpenAuthenticationStatus.Error:
                     {
-                        if (!result.Success)
-                            foreach (var error in result.Errors)
-                                ExternalAuthorizerHelper.AddErrorsToDisplay(error);
+						if (!result.Success)
+							foreach (var error in result.Errors)
+								NotifyError(error);
 
                         return new RedirectResult(Url.LogOn(returnUrl));
                     }

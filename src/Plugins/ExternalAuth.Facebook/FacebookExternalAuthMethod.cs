@@ -35,9 +35,9 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
         /// <param name="routeValues">Route values</param>
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
-            actionName = "Configure";
-            controllerName = "ExternalAuthFacebook";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }, { "area", null } };
+			actionName = "Configure";
+			controllerName = "ExternalAuthFacebook";
+			routeValues = new RouteValueDictionary( new { Namespaces = "SmartStore.Plugin.ExternalAuth.Facebook.Controllers", area = "ExternalAuth.Facebook" } );
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthFacebook";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.Plugin.ExternalAuth.Facebook.Controllers", area = "ExternalAuth.Facebook" });
         }
 
         /// <summary>

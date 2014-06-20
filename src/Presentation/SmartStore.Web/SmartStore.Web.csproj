@@ -1774,7 +1774,6 @@
     <Content Include="Views\Shared\Header.cshtml" />
     <Content Include="Views\Customer\_ExternalAuthentication.AssociateMessage.cshtml" />
     <Content Include="Views\ExternalAuthentication\ExternalMethods.cshtml" />
-    <Content Include="Views\Customer\_ExternalAuthentication.Errors.cshtml" />
     <Content Include="Views\Catalog\ProductTemplate.Grouped.cshtml" />
     <Content Include="Views\Catalog\ProductTemplate.Simple.cshtml" />
     <Content Include="Views\Catalog\_ProductDetailsPictures.cshtml" />

@@ -1,6 +1,7 @@
 //Contributor:  Nicholas Mayne
 
-
+using System;
+using System.Web.Mvc;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OpenId.RelyingParty;
 using SmartStore.Services.Authentication.External;
@@ -74,7 +75,7 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId.Core
 
                 return new AuthorizeState(returnUrl, OpenAuthenticationStatus.RequiresRedirect)
                 {
-                    Result = request.RedirectingResponse.AsActionResult()
+                    Result = request.RedirectingResponse.AsActionResult2()
                 };
             }
             catch (ProtocolException ex)
@@ -92,4 +93,30 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId.Core
             get { return _openIdRelyingPartyService.HasResponse; }
         }
     }
+
+	internal static class Extensions
+	{
+		public static ActionResult AsActionResult2(this OutgoingWebResponse response)
+		{
+			Guard.ArgumentNotNull(() => response);
+			return new OutgoingWebResponseActionResult2(response);
+		}
+	}
+
+	internal class OutgoingWebResponseActionResult2 : ActionResult
+	{
+		private readonly OutgoingWebResponse _response;
+		
+		public OutgoingWebResponseActionResult2(OutgoingWebResponse response)
+		{
+			_response = response;
+		}
+		
+		public override void ExecuteResult(ControllerContext context)
+		{
+			_response.Respond(context.HttpContext);
+			context.HttpContext.Response.Flush();
+
+		}
+	}
 }

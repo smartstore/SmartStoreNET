@@ -12,7 +12,8 @@ namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
                  "Plugins/DiscountRulesHadSpentAmount/Configure",
                  new { controller = "DiscountRulesHadSpentAmount", action = "Configure" },
                  new[] { "SmartStore.Plugin.DiscountRules.HadSpentAmount.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "DiscountRules.HadSpentAmount";
         }
         public int Priority
         {

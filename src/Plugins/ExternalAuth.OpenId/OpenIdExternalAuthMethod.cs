@@ -44,7 +44,7 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthOpenId";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.ExternalAuth.OpenId.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary( new { Namespaces = "SmartStore.Plugin.ExternalAuth.OpenId.Controllers", area = "ExternalAuth.OpenId" } );
         }
 
         /// <summary>

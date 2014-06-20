@@ -42,7 +42,7 @@ namespace SmartStore.Plugin.DiscountRules.HasOneProduct.Controllers
             //add a prefix
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesHasOneProduct{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
 
-            return View("SmartStore.Plugin.DiscountRules.HasOneProduct.Views.DiscountRulesHasOneProduct.Configure", model);
+            return View(model);
         }
 
         [HttpPost]

@@ -58,7 +58,7 @@ namespace SmartStore.Plugin.DiscountRules.CustomerRoles.Controllers
             //add a prefix
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesCustomerRoles{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
 
-            return View("SmartStore.Plugin.DiscountRules.CustomerRoles.Views.DiscountRulesCustomerRoles.Configure", model);
+            return View(model);
         }
 
         [HttpPost]

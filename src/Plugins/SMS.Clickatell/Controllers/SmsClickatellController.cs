@@ -35,7 +35,7 @@ namespace SmartStore.Plugin.Sms.Clickatell.Controllers
             model.ApiId = _clickatellSettings.ApiId;
             model.Username = _clickatellSettings.Username;
             model.Password = _clickatellSettings.Password;
-            return View("SmartStore.Plugin.SMS.Clickatell.Views.SmsClickatell.Configure", model);
+            return View(model);
         }
 
         [HttpPost, ActionName("Configure")]
@@ -55,7 +55,7 @@ namespace SmartStore.Plugin.Sms.Clickatell.Controllers
             _clickatellSettings.Password = model.Password;
             _settingService.SaveSetting(_clickatellSettings);
 
-            return View("SmartStore.Plugin.SMS.Clickatell.Views.SmsClickatell.Configure", model);
+            return View(model);
         }
 
         [HttpPost, ActionName("Configure")]
@@ -92,7 +92,7 @@ namespace SmartStore.Plugin.Sms.Clickatell.Controllers
                 model.TestSmsResult = exc.ToString();
             }
 
-            return View("SmartStore.Plugin.SMS.Clickatell.Views.SmsClickatell.Configure", model);
+            return View("Configure", model);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace SmartStore.Plugin.DiscountRules.Store.Controllers
 			//add a prefix
 			ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("DiscountRulesStore{0}", discountRequirementId.HasValue ? discountRequirementId.Value.ToString() : "0");
 
-			return View("SmartStore.Plugin.DiscountRules.Store.Views.DiscountRulesStore.Configure", model);
+			return View(model);
         }
 
         [HttpPost]

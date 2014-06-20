@@ -8,11 +8,12 @@ namespace SmartStore.Plugin.SMS.Clickatell
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.SMS.Clickatell.Configure",
-                 "Plugins/SMSClickatell/Configure",
+            routes.MapRoute("SMS.Clickatell",
+                 "Plugins/SMSClickatell/{action}",
                  new { controller = "SmsClickatell", action = "Configure" },
                  new[] { "SmartStore.Plugin.SMS.Clickatell.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "SMS.Clickatell";
         }
         public int Priority
         {

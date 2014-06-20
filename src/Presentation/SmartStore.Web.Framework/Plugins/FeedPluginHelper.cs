@@ -659,7 +659,7 @@ namespace SmartStore.Web.Framework.Plugins
 			var stores = storeService.GetAllStores().ToList();
 
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-			var routeValues = new { Namespaces = _namespace + ".Controllers", area = "" };
+			var routeValues = new { Namespaces = _namespace + ".Controllers"/*, area = ""*/ };
 
 			model.GenerateFeedUrl = urlHelper.Action("GenerateFeed", controller, routeValues);
 			model.GenerateFeedProgressUrl = urlHelper.Action("GenerateFeedProgress", controller, routeValues);

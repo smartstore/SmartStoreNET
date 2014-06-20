@@ -8,23 +8,12 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.ExternalAuth.OpenId.Configure",
-                 "Plugins/ExternalAuthOpenId/Configure",
-                 new { controller = "ExternalAuthOpenId", action = "Configure" },
-                 new[] { "SmartStore.Plugin.ExternalAuth.OpenId.Controllers" }
-            );
-
-            routes.MapRoute("Plugin.ExternalAuth.OpenId.PublicInfo",
-                 "Plugins/ExternalAuthOpenId/PublicInfo",
-                 new { controller = "ExternalAuthOpenId", action = "PublicInfo" },
-                 new[] { "SmartStore.Plugin.ExternalAuth.OpenId.Controllers" }
-            );
-
-            routes.MapRoute("Plugin.ExternalAuth.OpenId.Login",
-                 "Plugins/ExternalAuthOpenId/Login",
+            routes.MapRoute("ExternalAuth.OpenId",
+                 "Plugins/ExternalAuthOpenId/{action}",
                  new { controller = "ExternalAuthOpenId", action = "Login" },
                  new[] { "SmartStore.Plugin.ExternalAuth.OpenId.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "ExternalAuth.OpenId";
         }
         public int Priority
         {

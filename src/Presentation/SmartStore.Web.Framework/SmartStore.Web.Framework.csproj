@@ -213,6 +213,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="AppPath.cs" />
+    <Compile Include="Controllers\AdminControllerBase.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
     <Compile Include="Controllers\PublicControllerBase.cs" />
     <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />

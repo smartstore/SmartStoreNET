@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Admin.Controllers
+namespace SmartStore.Web.Framework.Controllers
 {
 	
     [RequireHttpsByConfig(SslRequirement.Yes)]
@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Controllers
         /// <returns>Access denied view</returns>
         protected ActionResult AccessDeniedView()
         {
-            return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl });
+            return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });
         }
 
 		/// <summary>

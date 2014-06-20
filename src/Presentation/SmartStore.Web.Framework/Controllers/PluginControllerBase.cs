@@ -27,7 +27,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <returns>Access denied view</returns>
 		protected ActionResult AccessDeniedView()
 		{
-			return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl });
+			return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });
 		}
 
         /// <summary>

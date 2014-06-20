@@ -29,6 +29,7 @@
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.
 * (Developer) Added _user.less_ to Alpha theme for user defined css overrides and tweaks
 * (Developer) Moved _PublicControllerBase_ to SmartStore.Web.Framework
+* (Developer) Moved 'AdminControllerBase' to SmartStore.Web.Framework
 * #384 Web API: Inserting sluged recources like products require an URL record
 * Promotion feed plugins: Asynchronous feed creation
 

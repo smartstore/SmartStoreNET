@@ -133,7 +133,6 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\ActivityLogController.cs" />
-    <Compile Include="Controllers\AdminControllerBase.cs" />
     <Compile Include="Controllers\AffiliateController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CampaignController.cs" />

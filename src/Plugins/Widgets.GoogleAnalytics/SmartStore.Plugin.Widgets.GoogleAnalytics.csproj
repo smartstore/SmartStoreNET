@@ -146,7 +146,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\WidgetsGoogleAnalytics\Configure.cshtml" />
+    <Content Include="Views\WidgetsGoogleAnalytics\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="web.config">
       <SubType>Designer</SubType>

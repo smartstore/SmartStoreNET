@@ -151,7 +151,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
         {
             actionName = "Configure";
             controllerName = "PaymentCashOnDelivery";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }, { "area", "Payments.CashOnDelivery" } };
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentCashOnDelivery";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }, { "area", "Payments.CashOnDelivery" } };
         }
 
         public override Type GetControllerType()

@@ -2,7 +2,7 @@
 using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc.Routes;
 
-namespace SmartStore.Plugin.Shipping.FixedRateShipping
+namespace SmartStore.Plugin.Shipping.FixedRate
 {
     public partial class RouteProvider : IRouteProvider
     {
@@ -12,8 +12,10 @@ namespace SmartStore.Plugin.Shipping.FixedRateShipping
                  "Plugins/ShippingFixedRate/Configure",
                  new { controller = "ShippingFixedRate", action = "Configure" },
                  new[] { "SmartStore.Plugin.Shipping.FixedRate.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Shipping.FixedRate";
         }
+
         public int Priority
         {
             get

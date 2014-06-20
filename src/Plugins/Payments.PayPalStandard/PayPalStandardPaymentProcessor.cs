@@ -430,7 +430,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		{
 			actionName = "Configure";
 			controllerName = "PaymentPayPalStandard";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", "Payments.PayPalStandard" } };
 		}
 
 		/// <summary>
@@ -443,7 +443,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		{
 			actionName = "PaymentInfo";
 			controllerName = "PaymentPayPalStandard";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }, { "area", "Payments.PayPalStandard" } };
 		}
 
 		public override Type GetControllerType()

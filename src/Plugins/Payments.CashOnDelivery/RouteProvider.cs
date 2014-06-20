@@ -12,13 +12,15 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
                  "Plugins/PaymentCashOnDelivery/Configure",
                  new { controller = "PaymentCashOnDelivery", action = "Configure" },
                  new[] { "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.CashOnDelivery";
 
             routes.MapRoute("Plugin.Payments.CashOnDelivery.PaymentInfo",
                  "Plugins/PaymentCashOnDelivery/PaymentInfo",
                  new { controller = "PaymentCashOnDelivery", action = "PaymentInfo" },
                  new[] { "SmartStore.Plugin.Payments.CashOnDelivery.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.CashOnDelivery";
         }
         public int Priority
         {

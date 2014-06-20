@@ -12,13 +12,15 @@ namespace SmartStore.Plugin.Payments.DirectDebit
                  "Plugins/PaymentDirectDebit/Configure",
                  new { controller = "PaymentDirectDebit", action = "Configure" },
                  new[] { "SmartStore.Plugin.Payments.DirectDebit.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.DirectDebit";
 
             routes.MapRoute("Plugin.Payments.DirectDebit.PaymentInfo",
                  "Plugins/PaymentDirectDebit/PaymentInfo",
                  new { controller = "PaymentDirectDebit", action = "PaymentInfo" },
                  new[] { "SmartStore.Plugin.Payments.DirectDebit.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.DirectDebit";
         }
         public int Priority
         {

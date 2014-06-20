@@ -147,10 +147,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\PaymentCashOnDelivery\Configure.cshtml" />
+    <Content Include="Views\PaymentCashOnDelivery\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\PaymentCashOnDelivery\PaymentInfo.cshtml" />
+    <Content Include="Views\PaymentCashOnDelivery\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt">

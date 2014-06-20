@@ -33,7 +33,7 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
 			model.AdditionalFee = _payInStorePaymentSettings.AdditionalFee;
 			model.AdditionalFeePercentage = _payInStorePaymentSettings.AdditionalFeePercentage;
             
-            return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -51,7 +51,7 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
 			_payInStorePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 			_settingService.SaveSetting(_payInStorePaymentSettings);
             
-            return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]
@@ -70,7 +70,7 @@ namespace SmartStore.Plugin.Payments.PayInStore.Controllers
                 model.DescriptionText = _payInStorePaymentSettings.DescriptionText;
             }
 
-            return View("SmartStore.Plugin.Payments.PayInStore.Views.PaymentPayInStore.PaymentInfo", model);
+            return View(model);
         }
 
         [NonAction]

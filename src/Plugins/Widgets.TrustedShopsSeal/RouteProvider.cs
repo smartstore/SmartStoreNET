@@ -12,14 +12,17 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
                  "Plugins/TrustedShopsSeal/Configure",
                  new { controller = "TrustedShopsSeal", action = "Configure" },
                  new[] { "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Widgets.TrustedShopsSeal";
 
             routes.MapRoute("Plugin.Widgets.TrustedShopsSeal.PublicInfo",
                  "Plugins/TrustedShopsSeal/PublicInfo",
                  new { controller = "TrustedShopsSeal", action = "PublicInfo" },
                  new[] { "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Widgets.TrustedShopsSeal";
         }
+
         public int Priority
         {
             get

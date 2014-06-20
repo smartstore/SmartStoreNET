@@ -108,7 +108,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                 })
                 .ToList();
 
-            return View("SmartStore.Plugin.Shipping.ByWeight.Views.ShippingByWeight.Configure", model);
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

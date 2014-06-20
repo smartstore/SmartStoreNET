@@ -12,8 +12,10 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
                  "Plugins/TaxCountryStateZip/Configure",
                  new { controller = "TaxCountryStateZip", action = "Configure" },
                  new[] { "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Tax.CountryStateZip";
         }
+
         public int Priority
         {
             get

@@ -172,7 +172,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         {
             actionName = "Configure";
             controllerName = "ShippingByWeight";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "Shipping.ByWeight" } };
         }
         
         /// <summary>

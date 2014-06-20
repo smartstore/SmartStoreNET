@@ -36,7 +36,7 @@ namespace SmartStore.Plugin.Payments.Manual.Controllers
 			model.AdditionalFeePercentage = _manualPaymentSettings.AdditionalFeePercentage;
             model.TransactModeValues = _manualPaymentSettings.TransactMode.ToSelectList();
 
-            return View("SmartStore.Plugin.Payments.Manual.Views.PaymentManual.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace SmartStore.Plugin.Payments.Manual.Controllers
 
 			model.TransactModeValues = _manualPaymentSettings.TransactMode.ToSelectList();
 
-            return View("SmartStore.Plugin.Payments.Manual.Views.PaymentManual.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]

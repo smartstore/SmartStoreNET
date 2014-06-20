@@ -21,9 +21,9 @@
                     .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
                     .DataBinding(dataBinding => dataBinding
                         .Ajax()
-                            .Select("RatesList", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
-                            .Update("RateUpdate", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
-                            .Delete("RateDelete", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
+						.Select("RatesList", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
+						.Update("RateUpdate", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
+						.Delete("RateDelete", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
                     )
                     .Columns(columns =>
                     {

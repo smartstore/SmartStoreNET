@@ -150,7 +150,7 @@ namespace SmartStore.Plugin.Payments.Prepayment
         {
             actionName = "Configure";
             controllerName = "PaymentPrepayment";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Prepayment.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Prepayment.Controllers" }, { "area", "Payments.Prepayment" } };
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace SmartStore.Plugin.Payments.Prepayment
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentPrepayment";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Prepayment.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.Prepayment.Controllers" }, { "area", "Payments.Prepayment" } };
         }
 
         public override Type GetControllerType()

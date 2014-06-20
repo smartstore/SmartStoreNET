@@ -79,7 +79,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			storeDependingSettingHelper.GetOverrideKeys(trustedShopsSealSettings, model, storeScope, _settingService);
             
-            return View("SmartStore.Plugin.Widgets.TrustedShopsSeal.Views.TrustedShopsSeal.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -134,7 +134,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers
             model.ShopName = trustedShopsSealSettings.ShopName;
             model.ShopText = trustedShopsSealSettings.ShopText;
 
-            return View("SmartStore.Plugin.Widgets.TrustedShopsSeal.Views.TrustedShopsSeal.PublicInfo", model);
+            return View(model);
         }
     }
 }

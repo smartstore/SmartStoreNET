@@ -148,7 +148,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         {
             actionName = "Configure";
             controllerName = "PaymentPayInStore";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayInStore.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayInStore.Controllers" }, { "area", "Payments.PayInStore" } };
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentPayInStore";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayInStore.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.PayInStore.Controllers" }, { "area", "Payments.PayInStore" } };
         }
 
         public override Type GetControllerType()

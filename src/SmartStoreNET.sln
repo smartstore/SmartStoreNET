@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Shipping.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Shipping.ByWeight", "Plugins\Shipping.ByWeight\SmartStore.Plugin.Shipping.ByWeight.csproj", "{0793FB50-67BB-461E-B961-2F45887464CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Shipping.FixedRateShipping", "Plugins\Shipping.FixedRateShipping\SmartStore.Plugin.Shipping.FixedRateShipping.csproj", "{2DCB7949-24C2-49C7-872C-C948E43717E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Shipping.FixedRate", "Plugins\Shipping.FixedRate\SmartStore.Plugin.Shipping.FixedRate.csproj", "{2DCB7949-24C2-49C7-872C-C948E43717E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Plugin.Payments.CashOnDelivery", "Plugins\Payments.CashOnDelivery\SmartStore.Plugin.Payments.CashOnDelivery.csproj", "{3D61DE73-5B82-40BD-A980-EA54533179C4}"
 EndProject

@@ -18,8 +18,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartStore.Plugin.Shipping.FixedRateShipping</RootNamespace>
-    <AssemblyName>SmartStore.Plugin.Shipping.FixedRateShipping</AssemblyName>
+    <RootNamespace>SmartStore.Plugin.Shipping.FixedRate</RootNamespace>
+    <AssemblyName>SmartStore.Plugin.Shipping.FixedRate</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -148,7 +148,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\ShippingFixedRate\Configure.cshtml" />
+    <Content Include="Views\ShippingFixedRate\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt">

@@ -46,7 +46,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
         {
             actionName = "Configure";
             controllerName = "WidgetsGoogleAnalytics";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }, { "area", "Widgets.GoogleAnalytics" } };
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
             routeValues = new RouteValueDictionary()
             {
                 {"Namespaces", "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers"},
-                {"area", null},
+                {"area", "Widgets.GoogleAnalytics"},
                 {"widgetZone", widgetZone}
             };
         }

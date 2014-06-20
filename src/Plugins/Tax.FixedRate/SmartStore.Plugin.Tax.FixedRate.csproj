@@ -169,7 +169,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\TaxFixedRate\Configure.cshtml" />
+    <Content Include="Views\TaxFixedRate\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config">

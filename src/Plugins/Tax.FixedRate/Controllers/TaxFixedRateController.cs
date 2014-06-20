@@ -45,7 +45,7 @@ namespace SmartStore.Plugin.Tax.FixedRate.Controllers
                 Total = tmp.Count
             };
 
-            return View("SmartStore.Plugin.Tax.FixedRate.Views.TaxFixedRate.Configure", gridModel);
+            return View(gridModel);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

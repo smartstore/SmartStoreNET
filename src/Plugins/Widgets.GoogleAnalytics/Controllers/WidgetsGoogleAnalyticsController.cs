@@ -61,7 +61,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			storeDependingSettingHelper.GetOverrideKeys(googleAnalyticsSettings, model, storeScope, _settingService);
 
-            return View("SmartStore.Plugin.Widgets.GoogleAnalytics.Views.WidgetsGoogleAnalytics.Configure", model);
+            return View(model);
         }
 
         [HttpPost]

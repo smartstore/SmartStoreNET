@@ -8,35 +8,35 @@
 <table class="adminContent">
     <tr>
         <td>
-                    @(Html.Telerik().Grid(Model.TaxRates)
-                    .Name("Grid")
-                    .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.CountryName).Width(200).ReadOnly();
-                        columns.Bound(x => x.StateProvinceName).Width(200).ReadOnly();
-                        columns.Bound(x => x.Zip).Width(100);
-                        columns.Bound(x => x.TaxCategoryName).Width(200).ReadOnly();
-                        columns.Bound(x => x.Percentage).Width(100).Format("{0:G29}");
-                        columns.Command(commands =>
-                        {
-                            commands.Edit();
-                            commands.Delete();
-                        }).Width(180);
+            @(Html.Telerik().Grid(Model.TaxRates)
+				.Name("Grid")
+				.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.CountryName).Width(200).ReadOnly();
+					columns.Bound(x => x.StateProvinceName).Width(200).ReadOnly();
+					columns.Bound(x => x.Zip).Width(100);
+					columns.Bound(x => x.TaxCategoryName).Width(200).ReadOnly();
+					columns.Bound(x => x.Percentage).Width(100).Format("{0:G29}");
+					columns.Command(commands =>
+					{
+						commands.Edit();
+						commands.Delete();
+					}).Width(180);
 
-                    })
-                    .Editable(x =>
-                    {
-                        x.Mode(GridEditMode.InLine);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("RatesList", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } })
-                            .Update("RateUpdate", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } })
-                            .Delete("RateDelete", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } });
-                    })
-                    .EnableCustomBinding(true))
+				})
+				.Editable(x =>
+				{
+					x.Mode(GridEditMode.InLine);
+				})
+				.DataBinding(dataBinding =>
+				{
+					dataBinding.Ajax()
+						.Select("RatesList", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } })
+						.Update("RateUpdate", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } })
+						.Delete("RateDelete", "TaxCountryStateZip", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "" } });
+				})
+				.EnableCustomBinding(true))
         </td>
     </tr>
 </table>

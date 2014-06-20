@@ -44,7 +44,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
         {
             actionName = "Configure";
             controllerName = "TrustedShopsSeal";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers" }, { "area", "Widgets.TrustedShopsSeal" } };
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
             routeValues = new RouteValueDictionary()
             {
                 {"Namespaces", "SmartStore.Plugin.Widgets.TrustedShopsSeal.Controllers"},
-                {"area", null},
+                {"area", "Widgets.TrustedShopsSeal"},
                 {"widgetZone", widgetZone}
             };
         }

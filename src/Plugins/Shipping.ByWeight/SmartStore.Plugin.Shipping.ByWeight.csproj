@@ -183,7 +183,9 @@
     <EmbeddedResource Include="Data\Migrations\201403080200108_Initial.resx">
       <DependentUpon>201403080200108_Initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ShippingByWeight\Configure.cshtml" />
+    <Content Include="Views\ShippingByWeight\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

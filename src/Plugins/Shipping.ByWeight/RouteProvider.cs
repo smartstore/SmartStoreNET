@@ -12,8 +12,10 @@ namespace SmartStore.Plugin.Shipping.ByWeight
                  "Plugins/ShippingByWeight/Configure",
                  new { controller = "ShippingByWeight", action = "Configure" },
                  new[] { "SmartStore.Plugin.Shipping.ByWeight.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Shipping.ByWeight";
         }
+
         public int Priority
         {
             get

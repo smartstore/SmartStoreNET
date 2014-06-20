@@ -1,0 +1,13 @@
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Framework.Themes;
+
+@{
+    var supportRtl = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Rtl;
+}
+@{
+    Html.AppendCssFileParts(false, "~/Themes/Beta/Content/theme.less");
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+}
+
+@Html.Partial("ConditionalComments")

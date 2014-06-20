@@ -26,9 +26,9 @@
                     })
                     .DataBinding(dataBinding =>
                     {
-                        dataBinding.Ajax()
-                            .Select("Configure", "TaxFixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", "" } })
-                            .Update("TaxRateUpdate", "TaxFixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", "" } });
+						dataBinding.Ajax()
+							.Select("Configure", "TaxFixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", "" } })
+							.Update("TaxRateUpdate", "TaxFixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", "" } });
                     })
                     .EnableCustomBinding(true))
         </td>

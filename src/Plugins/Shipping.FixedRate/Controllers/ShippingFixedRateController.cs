@@ -3,14 +3,14 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
-using SmartStore.Plugin.Shipping.FixedRateShipping.Models;
+using SmartStore.Plugin.Shipping.FixedRate.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
-namespace SmartStore.Plugin.Shipping.FixedRateShipping.Controllers
+namespace SmartStore.Plugin.Shipping.FixedRate.Controllers
 {
 
     public class ShippingFixedRateController : PluginControllerBase
@@ -45,7 +45,7 @@ namespace SmartStore.Plugin.Shipping.FixedRateShipping.Controllers
                 Total = tmp.Count
             };
 
-            return View("SmartStore.Plugin.Shipping.FixedRateShipping.Views.ShippingFixedRate.Configure", gridModel);
+            return View(gridModel);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

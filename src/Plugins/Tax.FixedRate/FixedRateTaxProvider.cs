@@ -55,7 +55,7 @@ namespace SmartStore.Plugin.Tax.FixedRate
         {
             actionName = "Configure";
             controllerName = "TaxFixedRate";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.FixedRate.Controllers" }, { "area", "Tax.FixedRate" } };
         }
 
         public override void Install()

@@ -32,7 +32,7 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
 			model.AdditionalFee = _prepaymentPaymentSettings.AdditionalFee;
 			model.AdditionalFeePercentage = _prepaymentPaymentSettings.AdditionalFeePercentage;
             
-            return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -50,7 +50,7 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
 			_prepaymentPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 			_settingService.SaveSetting(_prepaymentPaymentSettings);
             
-            return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]
@@ -69,7 +69,7 @@ namespace SmartStore.Plugin.Payments.Prepayment.Controllers
 				model.DescriptionText = _prepaymentPaymentSettings.DescriptionText;
             }
 
-            return View("SmartStore.Plugin.Payments.Prepayment.Views.PaymentPrepayment.PaymentInfo", model);
+            return View(model);
         }
 
         [NonAction]

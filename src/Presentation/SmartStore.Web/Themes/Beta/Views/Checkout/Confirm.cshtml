@@ -1,0 +1,147 @@
+﻿@model CheckoutConfirmModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.Checkout;
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_Checkout.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+
+    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
+    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
+    string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
+}
+@section teaser {
+
+}
+@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm })
+
+<div class="page checkout-confirm-page">
+    <div class="page-title">
+        <h1>@T("Checkout.ConfirmYourOrder")</h1>
+    </div>
+    <div class="page-body checkout-data">
+        @using (Html.BeginRouteForm("CheckoutConfirm", FormMethod.Post, new { id = "confirm-order-form" }))
+        {
+            @Html.Widget("checkout_confirm_top")
+            <div class="page-intro">
+                @Html.Raw(@T("Checkout.ConfirmHint"))
+            </div>
+            
+            if (Model.TermsOfServiceEnabled)
+            {
+            <div class="terms-of-service alert alert-info">
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#terms-of-service-trigger").click(function () {
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" scrolling="yes" frameBorder="0" />');
+                        });
+                        $("#disclaimer-trigger").click(function () {
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" frameBorder="0" />');
+                        });
+
+
+                    });
+                </script>
+                <label class="checkbox">
+                    <input id="termsofservice" type="checkbox" name="termsofservice" />
+                    @Html.Raw(terms)
+                </label>
+
+                <!-- Terms of service -->
+                <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1">
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
+                    </div>
+                </div>
+
+            </div>
+            }
+            
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#confirm-order-form').submit(function () {
+                        $('input[type=submit]', this).attr('disabled', 'disabled');
+                    });
+                });
+            </script>
+            
+            <div class="confirm-order">
+                @if (Model.Warnings.Count > 0)
+                {
+                    <div class="alert alert-error">
+                        <ul>
+                            @for (int i = 0; i < Model.Warnings.Count; i++)
+                            {
+                                <li>@Model.Warnings[i]</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>  
+        }
+        
+        @Html.Widget("checkout_confirm_bottom")
+
+        <div class="order-summary-body">
+            @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
+        </div>
+
+        @if (Model.ShowConfirmOrderLegalHint) 
+            { 
+                <div class="confirm-order-legal-hint alert alert-info">
+                    @T("OrderSummary.ConfirmOrderLegalHint")
+                </div>
+            }
+
+        <div class="confirm-order">
+            
+            <div class="select-button bottom clearfix">
+                @if (!String.IsNullOrEmpty(Model.MinOrderTotalWarning))
+                {
+                    @Model.MinOrderTotalWarning
+                }
+                else
+                {
+                    <script type="text/javascript">
+                        $(function () {
+                            $('.confirm-order-next-step-button').click(function () {
+                                //terms of services
+                                var termOfServiceOk = true;
+                                @if (Model.TermsOfServiceEnabled)
+                                {
+                                        <text>
+                                if (!$('#termsofservice').is(':checked')) {
+                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                    termOfServiceOk = false;
+                                    $.scrollTo($('#termsofservice'), 800, { offset: -70 });
+                                }
+                                else {
+                                    termOfServiceOk = true;
+                                }
+                                        </text>
+                                }
+                                if (termOfServiceOk) {
+                                    //$('#startcheckout').trigger("click");
+                                    $('#confirm-order-form').submit();
+                                }
+                            });
+                        });
+                    </script>
+                    
+                    <a class="btn pull-left" href="@Url.RouteUrl(Model.BypassPaymentMethodInfo ? "CheckoutPaymentMethod" : "CheckoutPaymentInfo")">
+                        <i class="icon-caret-left"></i>&nbsp;
+                        @T("Common.Back")
+                    </a>
+                    
+                    <button class="btn btn-danger btn-large pull-right confirm-order-next-step-button" onclick="return false;" >
+                        @T("Checkout.ConfirmButton")
+                        &nbsp;<i class="icon-caret-right"></i> 
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

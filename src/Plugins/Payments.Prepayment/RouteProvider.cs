@@ -12,14 +12,17 @@ namespace SmartStore.Plugin.Payments.Prepayment
                  "Plugins/PaymentPrepayment/Configure",
                  new { controller = "PaymentPrepayment", action = "Configure" },
                  new[] { "SmartStore.Plugin.Payments.Prepayment.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.Prepayment";
 
             routes.MapRoute("Plugin.Payments.Prepayment.PaymentInfo",
                  "Plugins/PaymentPrepayment/PaymentInfo",
                  new { controller = "PaymentPrepayment", action = "PaymentInfo" },
                  new[] { "SmartStore.Plugin.Payments.Prepayment.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.Prepayment";
         }
+
         public int Priority
         {
             get

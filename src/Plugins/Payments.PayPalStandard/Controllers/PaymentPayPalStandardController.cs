@@ -73,7 +73,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			model.EnableIpn = _paypalStandardPaymentSettings.EnableIpn;
 			model.IpnUrl = _paypalStandardPaymentSettings.IpnUrl;
 
-			return View("SmartStore.Plugin.Payments.PayPalStandard.Views.PaymentPayPalStandard.Configure", model);
+			return View(model);
 		}
 
 		[HttpPost]
@@ -96,13 +96,13 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			_paypalStandardPaymentSettings.IpnUrl = model.IpnUrl;
 			_settingService.SaveSetting(_paypalStandardPaymentSettings);
 
-			return View("SmartStore.Plugin.Payments.PayPalStandard.Views.PaymentPayPalStandard.Configure", model);
+			return View(model);
 		}
 
 		[ChildActionOnly]
 		public ActionResult PaymentInfo()
 		{
-			return View("SmartStore.Plugin.Payments.PayPalStandard.Views.PaymentPayPalStandard.PaymentInfo");
+			return View();
 		}
 
 		[NonAction]
@@ -445,7 +445,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 				return RedirectToRoute("OrderDetails", new { orderId = order.Id });
 			}
 
-			return RedirectToAction("Index", "Home", new { area = "" });
+			return RedirectToAction("Index", "Home", new { area = "Payments.PayPalStandard" });
 		}
 	}
 }

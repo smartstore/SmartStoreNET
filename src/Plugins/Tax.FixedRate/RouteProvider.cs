@@ -12,8 +12,10 @@ namespace SmartStore.Plugin.Tax.FixedRate
                  "Plugins/TaxFixedRate/Configure",
                  new { controller = "TaxFixedRate", action = "Configure" },
                  new[] { "SmartStore.Plugin.Tax.FixedRate.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Tax.FixedRate";
         }
+
         public int Priority
         {
             get

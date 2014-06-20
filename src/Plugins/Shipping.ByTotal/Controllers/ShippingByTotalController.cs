@@ -120,7 +120,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                 })
                 .ToList();
 
-            return View("SmartStore.Plugin.Shipping.ByTotal.Views.ShippingByTotal.Configure", model);
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

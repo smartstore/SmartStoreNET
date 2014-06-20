@@ -200,10 +200,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\TrustedShopsSeal\Configure.cshtml" />
+    <Content Include="Views\TrustedShopsSeal\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\TrustedShopsSeal\PublicInfo.cshtml" />
+    <Content Include="Views\TrustedShopsSeal\PublicInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

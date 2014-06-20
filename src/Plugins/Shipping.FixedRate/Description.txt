@@ -3,5 +3,5 @@ SystemName: Shipping.FixedRate
 Version: 1.3
 MinAppVersion: 2.0.0
 DisplayOrder: 1
-FileName: SmartStore.Plugin.Shipping.FixedRateShipping.dll
+FileName: SmartStore.Plugin.Shipping.FixedRate.dll
 ResourceRootKey: Plugins.Shipping.FixedRateShipping

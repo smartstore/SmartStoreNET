@@ -8,7 +8,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
 
-namespace SmartStore.Plugin.Shipping.FixedRateShipping
+namespace SmartStore.Plugin.Shipping.FixedRate
 {
     /// <summary>
     /// Fixed rate shipping computation method
@@ -115,7 +115,7 @@ namespace SmartStore.Plugin.Shipping.FixedRateShipping
         {
             actionName = "Configure";
             controllerName = "ShippingFixedRate";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.FixedRateShipping.Controllers" }, { "area", null } };
+            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.FixedRate.Controllers" }, { "area", "Shipping.FixedRate" } };
         }
 
         /// <summary>

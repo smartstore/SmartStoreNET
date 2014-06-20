@@ -62,7 +62,7 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
         {
             actionName = "Configure";
             controllerName = "TaxCountryStateZip";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Tax.CountryStateZip.Controllers" }, { "area", "Tax.CountryStateZip" } };
         }
 
         /// <summary>

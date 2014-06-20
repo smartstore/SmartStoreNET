@@ -153,7 +153,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit
         {
             actionName = "Configure";
             controllerName = "PaymentDirectDebit";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.DirectDebit.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.DirectDebit.Controllers" }, { "area", "Payments.DirectDebit" } };
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit
         {
             actionName = "PaymentInfo";
             controllerName = "PaymentDirectDebit";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.DirectDebit.Controllers" }, { "area", null } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Payments.DirectDebit.Controllers" }, { "area", "Payments.DirectDebit" } };
         }
 
         public override Type GetControllerType()

@@ -12,13 +12,15 @@ namespace SmartStore.Plugin.Payments.Invoice
                  "Plugins/PaymentInvoice/Configure",
                  new { controller = "PaymentInvoice", action = "Configure" },
                  new[] { "SmartStore.Plugin.Payments.Invoice.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.Invoice";
 
             routes.MapRoute("Plugin.Payments.Invoice.PaymentInfo",
                  "Plugins/PaymentInvoice/PaymentInfo",
                  new { controller = "PaymentInvoice", action = "PaymentInfo" },
                  new[] { "SmartStore.Plugin.Payments.Invoice.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.Invoice";
         }
         public int Priority
         {

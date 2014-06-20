@@ -12,33 +12,38 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
                  "Plugins/PaymentPayPalStandard/Configure",
                  new { controller = "PaymentPayPalStandard", action = "Configure" },
                  new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.PayPalStandard";
 
             routes.MapRoute("Plugin.Payments.PayPalStandard.PaymentInfo",
                  "Plugins/PaymentPayPalStandard/PaymentInfo",
                  new { controller = "PaymentPayPalStandard", action = "PaymentInfo" },
                  new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.PayPalStandard";
             
-            //PDT
             routes.MapRoute("Plugin.Payments.PayPalStandard.PDTHandler",
                  "Plugins/PaymentPayPalStandard/PDTHandler",
                  new { controller = "PaymentPayPalStandard", action = "PDTHandler" },
                  new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            );
-            //IPN
+            )
+			.DataTokens["area"] = "Payments.PayPalStandard";
+
             routes.MapRoute("Plugin.Payments.PayPalStandard.IPNHandler",
                  "Plugins/PaymentPayPalStandard/IPNHandler",
                  new { controller = "PaymentPayPalStandard", action = "IPNHandler" },
                  new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            );
-            //Cancel
+            )
+			.DataTokens["area"] = "Payments.PayPalStandard";
+
             routes.MapRoute("Plugin.Payments.PayPalStandard.CancelOrder",
                  "Plugins/PaymentPayPalStandard/CancelOrder",
                  new { controller = "PaymentPayPalStandard", action = "CancelOrder" },
                  new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Payments.PayPalStandard";
         }
+
         public int Priority
         {
             get

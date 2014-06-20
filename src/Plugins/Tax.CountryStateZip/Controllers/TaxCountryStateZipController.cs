@@ -75,7 +75,7 @@ namespace SmartStore.Plugin.Tax.CountryStateZip.Controllers
                 })
                 .ToList();
 
-            return View("SmartStore.Plugin.Tax.CountryStateZip.Views.TaxCountryStateZip.Configure", model);
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

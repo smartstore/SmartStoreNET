@@ -33,7 +33,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
 			model.AdditionalFee = _cashOnDeliveryPaymentSettings.AdditionalFee;
 			model.AdditionalFeePercentage = _cashOnDeliveryPaymentSettings.AdditionalFeePercentage;
             
-            return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -51,7 +51,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
 			_cashOnDeliveryPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 			_settingService.SaveSetting(_cashOnDeliveryPaymentSettings);
             
-            return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]
@@ -69,7 +69,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery.Controllers
                 model.DescriptionText = _cashOnDeliveryPaymentSettings.DescriptionText;
             }
 
-            return View("SmartStore.Plugin.Payments.CashOnDelivery.Views.PaymentCashOnDelivery.PaymentInfo", model);
+            return View(model);
         }
 
         [NonAction]

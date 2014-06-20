@@ -1,6 +1,6 @@
 ﻿using SmartStore.Web.Framework;
 
-namespace SmartStore.Plugin.Shipping.FixedRateShipping.Models
+namespace SmartStore.Plugin.Shipping.FixedRate.Models
 {
     public class FixedShippingRateModel
     {

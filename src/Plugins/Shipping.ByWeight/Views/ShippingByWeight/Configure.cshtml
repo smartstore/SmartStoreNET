@@ -38,10 +38,10 @@
                     })
                     .DataBinding(dataBinding =>
                     {
-                        dataBinding.Ajax()
-                            .Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
-                            .Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
-                            .Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } });
+						dataBinding.Ajax()
+							.Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
+							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
+							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } });
                     })
                     .EnableCustomBinding(true))
         </td>

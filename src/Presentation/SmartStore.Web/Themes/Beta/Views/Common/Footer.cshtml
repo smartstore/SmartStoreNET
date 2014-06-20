@@ -1,0 +1,187 @@
+﻿@model FooterModel
+@using SmartStore.Web.Models.Common;
+
+<div class="footer-disclaimer container clearfix">
+    @if (Model.ShowLegalInfo) 
+    {
+        <div class="footer-legal pull-left">
+            @Html.Raw(Model.LegalInfo)
+        </div>
+    }
+    
+    <div class="pull-right">
+        @T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
+    </div>
+
+    <div class="ac">
+        @Html.Raw(Model.SmartStoreHint)
+    </div>
+
+</div>
+
+<section id="footer" class="container">
+
+    <div class="row">
+
+        <div class="span8">
+            @if (Model.ShowSocialLinks)
+            {
+            <div class="first-col footer-social">
+                <h4>@T("Footer.Social")</h4>
+                <div class="content">
+                    @if (!String.IsNullOrEmpty(Model.FacebookLink))
+                    {
+                        <a href="@Model.FacebookLink" target="_blank"><i class="icon-facebook-sign"></i></a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.GooglePlusLink))
+                    {
+                        <a href="@Model.GooglePlusLink" target="_blank"><i class="icon-google-plus-sign"></i></a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.TwitterLink))
+                    {
+                        <a href="@Model.TwitterLink" target="_blank"><i class="icon-twitter-sign"></i></a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.PinterestLink))
+                    {
+                        <a href="@Model.PinterestLink" target="_blank"><i class="icon-pinterest"></i></a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.YoutubeLink))
+                    {
+                        <a href="@Model.YoutubeLink" target="_blank"><i class="icon-youtube-sign"></i></a>
+                    }
+                </div>
+            </div>
+            }
+
+            @if (Model.ShowThemeSelector)
+            {
+                <div class="first-col theme-selector">
+                    <h4>@T("Footer.Themes")</h4>
+                    <div class="content">
+                        @Html.Action("StoreThemeSelector", "Common")
+                    </div>
+                </div>
+            }
+            
+        </div>
+
+        <div class="span8">
+            <div class="x-first-col">
+                <div class="row-fluid">
+                    <nav class="footer-quicklinks service span12 first-col">
+                        <h4>@T("Footer.Service")</h4>
+                        <ul class="unstyled">
+                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })">@T("ShippingReturns")</a></li>
+                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })">@T("PrivacyNotice")</a></li>
+                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofUse" })">@T("ConditionsOfUse")</a></li>
+                            @if (Model.Topics.ContainsKey("paymentinfo"))
+                            {
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })">@Model.Topics["paymentinfo"]</a></li>
+                            }
+                        </ul>
+                    </nav>
+
+                    <nav class="footer-quicklinks company span12 first-col">
+                        <h4>@T("Footer.Company")</h4>
+                        <ul class="unstyled">
+                            <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a> </li>
+                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "aboutus" })">@T("AboutUs")</a></li>
+                            @if (Model.Topics.ContainsKey("imprint")) {
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@Model.Topics["imprint"]</a></li>
+                            }
+                            @if (Model.Topics.ContainsKey("disclaimer"))
+                            {
+                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@Model.Topics["disclaimer"]</a></li>
+                            }
+                            @if (Model.BlogEnabled)
+                            {
+                                <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+                            }
+                            @if (Model.ForumEnabled)
+                            {
+                                <li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="span8">
+            @if (!Model.HideNewsletterBlock)
+            {
+                <div class="footer-newsletter last-col">
+                    <h4>@T("Newsletter.Title")</h4>
+
+                    <div id="newsletter-subscribe-block">
+
+                        @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = T("Newsletter.Email") })
+                        @Html.ValidationMessageFor(x => x.NewsletterEmail)
+
+                        <button id="newsletter-subscribe-button" class="btn btn-success pull-right">@T("Newsletter.Button")</button>
+
+                        <label class="radio">
+                          <input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
+                            @T("Newsletter.Subscribe")
+                        </label>
+                        <label class="radio">
+                          <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
+                            @T("Newsletter.Unsubscribe")
+                        </label>
+                    
+                    </div>
+                    <div id="newsletter-result-block" class="alert alert-success hide"></div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="span24">
+            @Html.Widget("footer")
+        </div>
+    </div>
+</section>
+
+<div id="switch-to-mobile">
+    @Html.Action("ChangeDeviceBlock", "Common")
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#newsletter-subscribe-button').click(function () {
+                
+            var subscribe = 'true';
+            if($('#newsletter-unsubscribe').is(':checked')) { 
+                subscribe = 'false';
+            }
+            var email = $("#newsletter-email").val();
+            
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "@(Url.RouteUrl("SubscribeNewsletter"))",
+                data: { "subscribe": subscribe, "email": email },
+                success: function (data) {
+                    $("#newsletter-result-block").html(data.Result);
+                    if (data.Success) {
+                        $('#newsletter-subscribe-block').hide();
+                        $('#newsletter-result-block').removeClass("alert-error").addClass("alert-success").show();
+                    }
+                    else {
+                        $('#newsletter-result-block').removeClass("alert-success").addClass("alert-error").fadeIn("slow").delay(2000).fadeOut("slow");
+                    }
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    $("#newsletter-result-block").empty().text("Failed to subscribe").removeClass("alert-success").addClass("alert-error");
+                }  
+            });                
+            return false;
+        });
+
+        if (Modernizr.touch) {
+            $('#switch-to-mobile').css('display', 'block');
+        }
+    });
+</script>

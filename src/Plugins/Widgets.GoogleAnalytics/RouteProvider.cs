@@ -12,14 +12,10 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
                  "Plugins/WidgetsGoogleAnalytics/Configure",
                  new { controller = "WidgetsGoogleAnalytics", action = "Configure" },
                  new[] { "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }
-            );
-
-            //routes.MapRoute("Plugin.Widgets.GoogleAnalytics.PublicInfo",
-            //     "Plugins/WidgetsGoogleAnalytics/PublicInfo",
-            //     new { controller = "WidgetsGoogleAnalytics", action = "PublicInfo" },
-            //     new[] { "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }
-            //);
+            )
+			.DataTokens["area"] = "Widgets.GoogleAnalytics";
         }
+
         public int Priority
         {
             get

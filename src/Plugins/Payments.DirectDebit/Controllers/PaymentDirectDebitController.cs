@@ -33,7 +33,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
 			model.AdditionalFee = _directDebitPaymentSettings.AdditionalFee;
 			model.AdditionalFeePercentage = _directDebitPaymentSettings.AdditionalFeePercentage;
             
-            return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -51,7 +51,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
 			_directDebitPaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 			_settingService.SaveSetting(_directDebitPaymentSettings);
             
-            return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.Configure", model);
+            return View(model);
         }
 
         [ChildActionOnly]
@@ -68,7 +68,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit.Controllers
                 model.DescriptionText = _directDebitPaymentSettings.DescriptionText;
             }
 
-            return View("SmartStore.Plugin.Payments.DirectDebit.Views.PaymentDirectDebit.PaymentInfo", model);
+            return View(model);
         }
 
         [NonAction]

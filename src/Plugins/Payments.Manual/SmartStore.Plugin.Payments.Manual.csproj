@@ -152,10 +152,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\PaymentManual\Configure.cshtml" />
+    <Content Include="Views\PaymentManual\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\PaymentManual\PaymentInfo.cshtml" />
+    <Content Include="Views\PaymentManual\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt">
@@ -172,7 +176,9 @@
     <Content Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\PaymentManual\PaymentInfo.Mobile.cshtml" />
+    <Content Include="Views\PaymentManual\PaymentInfo.Mobile.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="web.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

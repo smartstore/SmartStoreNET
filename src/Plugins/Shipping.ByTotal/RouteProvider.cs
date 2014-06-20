@@ -12,18 +12,22 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                  "Plugins/ShippingByTotal/Configure",
                  new { controller = "ShippingByTotal", action = "Configure" },
                  new[] { "SmartStore.Plugin.Shipping.ByTotal.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Shipping.ByTotal";
 
             routes.MapRoute("Plugin.Shipping.ByTotal.AddShippingRate",
                  "Plugins/ShippingByTotal/AddShippingRate",
                  new { controller = "ShippingByTotal", action = "AddShippingRate" },
                  new[] { "SmartStore.Plugin.Shipping.ByTotal.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Shipping.ByTotal";
+
             routes.MapRoute("Plugin.Shipping.ByTotal.SaveGeneralSettings",
                  "Plugins/ShippingByTotal/SaveGeneralSettings",
                  new { controller = "ShippingByTotal", action = "SaveGeneralSettings" },
                  new[] { "SmartStore.Plugin.Shipping.ByTotal.Controllers" }
-            );
+            )
+			.DataTokens["area"] = "Shipping.ByTotal";
         }
 
         public int Priority

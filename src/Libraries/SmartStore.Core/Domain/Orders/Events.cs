@@ -1,3 +1,5 @@
+using SmartStore.Core.Domain.Customers;
+
 namespace SmartStore.Core.Domain.Orders
 {
     public class OrderPaidEvent
@@ -42,6 +44,28 @@ namespace SmartStore.Core.Domain.Orders
 		public Order Order
 		{
 			get { return _order; }
+		}
+	}
+
+	public class MigrateShoppingCartEvent
+	{
+		private readonly Customer _fromCustomer;
+		private readonly Customer _toCustomer;
+
+		public MigrateShoppingCartEvent(Customer fromCustomer, Customer toCustomer)
+		{
+			_fromCustomer = fromCustomer;
+			_toCustomer = toCustomer;
+		}
+
+		public Customer FromCustomer
+		{
+			get { return _fromCustomer; }
+		}
+
+		public Customer ToCustomer
+		{
+			get { return _toCustomer; }
 		}
 	}
 }

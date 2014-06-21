@@ -1173,7 +1173,7 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("toCustomer");
 
             if (fromCustomer.Id == toCustomer.Id)
-                return; //the same customer
+                return;
 
 			var cartItems = fromCustomer.ShoppingCartItems.ToList().Organize().ToList();
 
@@ -1186,8 +1186,19 @@ namespace SmartStore.Services.Orders
 			{
 				DeleteShoppingCartItem(cartItem.Item);
 			}
+
+			_eventPublisher.PublishMigrateShoppingCart(fromCustomer, toCustomer);
         }
 
+		/// <summary>
+		/// Copies a shopping cart item.
+		/// </summary>
+		/// <param name="sci">Shopping cart item</param>
+		/// <param name="customer">The customer</param>
+		/// <param name="cartType">Shopping cart type</param>
+		/// <param name="storeId">Store Id</param>
+		/// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
+		/// <returns>List with add-to-cart warnings.</returns>
 		public virtual IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled)
 		{
 			if (customer == null)

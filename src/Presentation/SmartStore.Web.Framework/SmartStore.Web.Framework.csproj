@@ -229,6 +229,7 @@
     <Compile Include="Events\TabStripCreated.cs" />
     <Compile Include="Events\ThemeTouched.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="HandleInstallFilter.cs" />
     <Compile Include="HtmlAttribute.cs" />

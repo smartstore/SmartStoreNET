@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartStore.Web.Framework
+namespace SmartStore.Web.Framework.Localization
 {
     public class TelerikLocalizationService : Telerik.Web.Mvc.Infrastructure.ILocalizationService
     {

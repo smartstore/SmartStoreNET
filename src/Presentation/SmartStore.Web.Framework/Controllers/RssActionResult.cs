@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using System.Xml;
 
-namespace SmartStore.Web.Framework
+namespace SmartStore.Web.Framework.Controllers
 {
     public class RssActionResult : ActionResult
     {

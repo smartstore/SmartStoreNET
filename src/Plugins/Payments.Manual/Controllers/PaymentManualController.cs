@@ -122,7 +122,7 @@ namespace SmartStore.Plugin.Payments.Manual.Controllers
             if (selectedYear != null)
                 selectedYear.Selected = true;
 
-            return View("SmartStore.Plugin.Payments.Manual.Views.PaymentManual.PaymentInfo", model);
+            return View(model);
         }
 
         [NonAction]

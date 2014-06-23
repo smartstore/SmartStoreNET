@@ -64,7 +64,7 @@ namespace SmartStore.Core.Infrastructure
         }
 
 
-        public override IList<Assembly> GetAssemblies()
+		public override IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             if (this.EnsureBinFolderAssembliesLoaded && !_binFolderAssembliesLoaded)
             {
@@ -74,7 +74,7 @@ namespace SmartStore.Core.Infrastructure
                 LoadMatchingAssemblies(binPath);
             }
 
-            return base.GetAssemblies();
+			return base.GetAssemblies(ignoreInactivePlugins);
         }
         #endregion
     }

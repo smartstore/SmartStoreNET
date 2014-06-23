@@ -197,7 +197,8 @@ namespace SmartStore.Services.Tests.Orders
                 _customerService, _discountService,
                 _encryptionService, _workContext, _storeContext, _workflowMessageService,
                 _customerActivityService, _currencyService, _affiliateService,
-                _eventPublisher, _paymentSettings, _rewardPointsSettings,
+                _eventPublisher, _genericAttributeService,
+				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
                 _currencySettings);
         }

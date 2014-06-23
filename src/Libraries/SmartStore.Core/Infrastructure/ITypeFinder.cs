@@ -11,24 +11,26 @@ namespace SmartStore.Core.Infrastructure
     /// </summary>
     public interface ITypeFinder
     {
-        IList<Assembly> GetAssemblies();
-
-        IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, bool onlyConcreteClasses = true);
-
-        IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true);
-
-        IEnumerable<Type> FindClassesOfType<T>(bool onlyConcreteClasses = true);
-
-        IEnumerable<Type> FindClassesOfType<T>(IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true);
-
-        IEnumerable<Type> FindClassesOfType<T, TAssemblyAttribute>(bool onlyConcreteClasses = true) where TAssemblyAttribute : Attribute;
-
-        IEnumerable<Assembly> FindAssembliesWithAttribute<T>();
-
-        IEnumerable<Assembly> FindAssembliesWithAttribute<T>(IEnumerable<Assembly> assemblies);
-
-        IEnumerable<Assembly> FindAssembliesWithAttribute<T>(DirectoryInfo assemblyPath);
-
-
+        IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false);
+		IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true);
     }
+
+	public static class ITypeFinderExtensions
+	{
+		public static IEnumerable<Type> FindClassesOfType<T>(this ITypeFinder finder, bool onlyConcreteClasses = true, bool ignoreInactivePlugins = false)
+		{
+			return finder.FindClassesOfType(typeof(T), finder.GetAssemblies(ignoreInactivePlugins), onlyConcreteClasses);
+		}
+
+		public static IEnumerable<Type> FindClassesOfType(this ITypeFinder finder, Type assignTypeFrom, bool onlyConcreteClasses = true, bool ignoreInactivePlugins = false)
+		{
+			return finder.FindClassesOfType(assignTypeFrom, finder.GetAssemblies(ignoreInactivePlugins), onlyConcreteClasses);
+		}
+
+		public static IEnumerable<Type> FindClassesOfType<T>(this ITypeFinder finder, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
+		{
+			return finder.FindClassesOfType(typeof(T), assemblies, onlyConcreteClasses);
+		}
+
+	}
 }

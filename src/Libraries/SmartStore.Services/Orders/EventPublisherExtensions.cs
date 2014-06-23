@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Orders;
+﻿using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Orders
@@ -34,6 +35,18 @@ namespace SmartStore.Services.Orders
 		{
 			if (order != null)
 				eventPublisher.Publish(new OrderUpdatedEvent(order));
+		}
+
+		/// <summary>
+		/// Publishes the migrate shopping cart event.
+		/// </summary>
+		/// <param name="eventPublisher">The event publisher.</param>
+		/// <param name="fromCustomer">The source customer entity.</param>
+		/// <param name="toCustomer">The destination customer entity.</param>
+		public static void PublishMigrateShoppingCart(this IEventPublisher eventPublisher, Customer fromCustomer, Customer toCustomer)
+		{
+			if (fromCustomer != null && toCustomer != null)
+				eventPublisher.Publish(new MigrateShoppingCartEvent(fromCustomer, toCustomer));
 		}
     }
 }

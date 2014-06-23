@@ -3,7 +3,7 @@ using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework
+namespace SmartStore.Web.Framework.Validators
 {
     public class SmartValidatorFactory : AttributedValidatorFactory
     {

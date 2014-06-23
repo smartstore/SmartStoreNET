@@ -6,7 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework
+namespace SmartStore.Web.Framework.Controllers
 {
     
     public class HandleInstallFilter : IActionFilter

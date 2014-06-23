@@ -14,7 +14,7 @@ namespace SmartStore.Web.Infrastructure
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			//we cache presentation models between requests
 			builder.RegisterType<BlogController>().WithStaticCache();

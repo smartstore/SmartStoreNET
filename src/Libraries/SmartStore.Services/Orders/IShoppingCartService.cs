@@ -198,6 +198,15 @@ namespace SmartStore.Services.Orders
         /// <param name="toCustomer">To customer</param>
         void MigrateShoppingCart(Customer fromCustomer, Customer toCustomer);
 
+		/// <summary>
+		/// Copies a shopping cart item.
+		/// </summary>
+		/// <param name="sci">Shopping cart item</param>
+		/// <param name="customer">The customer</param>
+		/// <param name="cartType">Shopping cart type</param>
+		/// <param name="storeId">Store Id</param>
+		/// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
+		/// <returns>List with add-to-cart warnings.</returns>
 		IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
     }
 }

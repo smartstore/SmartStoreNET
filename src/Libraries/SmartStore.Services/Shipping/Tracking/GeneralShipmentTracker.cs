@@ -40,7 +40,7 @@ namespace SmartStore.Services.Shipping.Tracking
         /// <returns>All available shipment trackers</returns>
         protected virtual IList<IShipmentTracker> GetAllTrackers()
         {
-            return _typeFinder.FindClassesOfType<IShipmentTracker>()
+			return _typeFinder.FindClassesOfType<IShipmentTracker>(ignoreInactivePlugins: true)
                 //exclude this one
                 .Where(x => x != typeof(GeneralShipmentTracker))
                 .Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IShipmentTracker)

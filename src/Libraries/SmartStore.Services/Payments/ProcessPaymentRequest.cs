@@ -12,7 +12,7 @@ namespace SmartStore.Services.Payments
     {
 		public ProcessPaymentRequest()
 		{
-			this.CustomProperties = new Dictionary<string, object>();
+			this.CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Use that dictionary for any payment method or checkout flow specific data
 		/// </summary>
-		public Dictionary<string, object> CustomProperties { get; set; }
+		public Dictionary<string, CustomPaymentRequestValue> CustomProperties { get; set; }
 
         #region Payment method specific properties 
 
@@ -142,4 +142,18 @@ namespace SmartStore.Services.Payments
 
         #endregion
     }
+
+
+	public partial class CustomPaymentRequestValue
+	{
+		/// <summary>
+		/// The value of the custom property
+		/// </summary>
+		public object Value { get; set; }
+
+		/// <summary>
+		/// Indicates whether to automatically create a generic attribute if an order has been placed
+		/// </summary>
+		public bool AutoCreateGenericAttribute { get; set; }
+	}
 }

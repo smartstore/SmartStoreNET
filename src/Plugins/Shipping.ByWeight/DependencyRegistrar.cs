@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().WithRequestCache().InstancePerRequest();
 

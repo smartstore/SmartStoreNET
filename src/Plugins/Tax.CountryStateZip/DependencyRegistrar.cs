@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			builder.RegisterType<TaxRateService>().As<ITaxRateService>().WithRequestCache().InstancePerRequest();
 

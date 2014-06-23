@@ -69,6 +69,7 @@ namespace SmartStore.Services.Orders
         private readonly ICurrencyService _currencyService;
 		private readonly IAffiliateService _affiliateService;
         private readonly IEventPublisher _eventPublisher;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly PaymentSettings _paymentSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -146,6 +147,7 @@ namespace SmartStore.Services.Orders
             ICurrencyService currencyService,
 			IAffiliateService affiliateService,
             IEventPublisher eventPublisher,
+			IGenericAttributeService genericAttributeService,
             PaymentSettings paymentSettings,
             RewardPointsSettings rewardPointsSettings,
             OrderSettings orderSettings,
@@ -181,6 +183,7 @@ namespace SmartStore.Services.Orders
             this._currencyService = currencyService;
 			this._affiliateService = affiliateService;
             this._eventPublisher = eventPublisher;
+			this._genericAttributeService = genericAttributeService;
             this._paymentSettings = paymentSettings;
             this._rewardPointsSettings = rewardPointsSettings;
             this._orderSettings = orderSettings;
@@ -1301,7 +1304,7 @@ namespace SmartStore.Services.Orders
 
                         #endregion
 
-                        #region Notifications & notes
+                        #region Notifications, notes and attributes
                         
                         //notes, messages
                         order.OrderNotes.Add(new OrderNote()
@@ -1343,6 +1346,12 @@ namespace SmartStore.Services.Orders
                         //reset checkout data
                         if (!processPaymentRequest.IsRecurringPayment)
 							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
+
+						// check for generic attributes to be inserted automatically
+						foreach (var customProperty in processPaymentRequest.CustomProperties.Where(x => x.Key.HasValue() && x.Value.AutoCreateGenericAttribute))
+						{
+							_genericAttributeService.SaveAttribute<object>(order, customProperty.Key, customProperty.Value.Value, order.StoreId);
+						}
 
                         //uncomment this line to support transactions
                         //scope.Complete();

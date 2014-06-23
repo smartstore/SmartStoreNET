@@ -1,11 +1,13 @@
 using System;
+using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Plugin.DiscountRules.Store
 {
-    public partial class StoreDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
+	[SystemName("DiscountRequirement.Store")]
+	public partial class StoreDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
 		private readonly ILocalizationService _localizationService;
 

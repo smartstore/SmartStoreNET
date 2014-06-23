@@ -6,10 +6,12 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Customers;
+using SmartStore.Core.ComponentModel;
 
 namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 {
-    public partial class HasOneProductDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
+	[SystemName("DiscountRequirement.HasOneProduct")]
+	public partial class HasOneProductDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
         private readonly ILocalizationService _localizationService;
 

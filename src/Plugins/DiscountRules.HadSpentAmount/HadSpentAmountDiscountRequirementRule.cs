@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Newtonsoft.Json;
+using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -12,7 +13,8 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Plugin.DiscountRules.HadSpentAmount
 {
-    public partial class HadSpentAmountDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
+	[SystemName("DiscountRequirement.HadSpentAmount")]
+	public partial class HadSpentAmountDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
 		private readonly ILocalizationService _localizationService;
 		private readonly IOrderService _orderService;

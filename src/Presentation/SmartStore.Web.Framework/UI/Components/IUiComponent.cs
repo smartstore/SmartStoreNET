@@ -3,7 +3,7 @@
 namespace SmartStore.Web.Framework.UI
 {
 
-    public interface IComponent : IHtmlAttributesContainer
+    public interface IUiComponent : IHtmlAttributesContainer
     {
 
         string Id

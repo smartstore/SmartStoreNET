@@ -70,6 +70,8 @@ using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Core.ComponentModel;
+using System.ComponentModel;
 
 namespace SmartStore.Web.Framework
 {
@@ -89,6 +91,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new UiModule(typeFinder));
 			builder.RegisterModule(new IOModule());
 			builder.RegisterModule(new PackagingModule());
+			builder.RegisterModule(new ProvidersModule(typeFinder));
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
@@ -695,28 +698,56 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	//public class PluginsModule : Module
-	//{
-	//	private readonly ITypeFinder _typeFinder;
+	public class ProvidersModule : Module
+	{
+		private readonly ITypeFinder _typeFinder;
 
-	//	public PluginsModule(ITypeFinder typeFinder)
-	//	{
-	//		_typeFinder = typeFinder;
-	//	}
+		public ProvidersModule(ITypeFinder typeFinder)
+		{
+			_typeFinder = typeFinder;
+		}
 
-	//	protected override void Load(ContainerBuilder builder)
-	//	{
-	//		// Register payment methods
-	//		var types = _typeFinder.FindClassesOfType(typeof(IPaymentMethod));
-	//		foreach (var type in types)
-	//		{
-	//			if (PluginManager.IsActivePluginAssembly(type.Assembly))
-	//			{
-	//				builder.RegisterType(type).As<IPaymentMethod>().Named<IPaymentMethod>(type.FullName).InstancePerRequest();
-	//			}
-	//		}
-	//	}
-	//}
+		protected override void Load(ContainerBuilder builder)
+		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			var providerTypes = _typeFinder.FindClassesOfType(typeof(IProvider)).Where(t => PluginManager.IsActivePluginAssembly(t.Assembly)).ToList();
+
+			foreach (var type in providerTypes)
+			{
+				var systemNameAttr = type.GetAttribute<SystemNameAttribute>(false);
+				if (systemNameAttr == null)
+				{
+					// TODO (pr): Proper error message
+					throw new SmartException("'SystemNameAttribute' is missing");
+				}
+				string systemName = systemNameAttr.Name;
+
+				var registration = builder.RegisterType(type).As<IProvider>().Named<IProvider>(systemName).InstancePerRequest();
+				registration.WithMetadata<ProviderMetadata>(m =>
+				{
+					m.For(em => em.SystemName, systemName);
+					m.For(em => em.ResourceKey, ""); // TODO (pr)
+				});
+
+				if (typeof(IDiscountRequirementRule).IsAssignableFrom(type))
+				{
+					registration.As(typeof(IDiscountRequirementRule)).Named(systemName, typeof(IDiscountRequirementRule));
+				}
+			}
+
+			//// Register payment methods
+			//var types = _typeFinder.FindClassesOfType(typeof(IPaymentMethod));
+			//foreach (var type in types)
+			//{
+			//	if (PluginManager.IsActivePluginAssembly(type.Assembly))
+			//	{
+			//		builder.RegisterType(type).As<IPaymentMethod>().Named<IPaymentMethod>(type.FullName).InstancePerRequest();
+			//	}
+			//}
+		}
+	}
 
 	#endregion
 

@@ -1,4 +1,5 @@
 ﻿
+using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Discounts
@@ -6,7 +7,7 @@ namespace SmartStore.Services.Discounts
     /// <summary>
     /// Represents a discount requirement rule
     /// </summary>
-    public partial interface IDiscountRequirementRule : IPlugin
+    public partial interface IDiscountRequirementRule : IPlugin, IProvider
     {
         /// <summary>
         /// Check discount requirement

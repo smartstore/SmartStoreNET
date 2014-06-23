@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core;
+using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 
@@ -54,13 +56,13 @@ namespace SmartStore.Services.Discounts
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found discount requirement rule</returns>
-        IDiscountRequirementRule LoadDiscountRequirementRuleBySystemName(string systemName);
+		Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName);
 
         /// <summary>
         /// Load all discount requirement rules
         /// </summary>
         /// <returns>Discount requirement rules</returns>
-        IList<IDiscountRequirementRule> LoadAllDiscountRequirementRules();
+		IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules();
 
 
         /// <summary>

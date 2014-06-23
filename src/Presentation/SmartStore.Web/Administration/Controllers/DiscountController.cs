@@ -14,6 +14,8 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
+using SmartStore.Core.ComponentModel;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -32,6 +34,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IProductService _productService;
         private readonly CurrencySettings _currencySettings;
         private readonly IPermissionService _permissionService;
+		//private readonly Func<string, ProviderMetadata> _providerMetadata;
+		private readonly IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> _discountRules;
 
         #endregion
 
@@ -42,7 +46,8 @@ namespace SmartStore.Admin.Controllers
             ICategoryService categoryService, IProductService productService,
             IWebHelper webHelper, IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService, CurrencySettings currencySettings,
-            IPermissionService permissionService)
+            IPermissionService permissionService,
+			IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> discountRules)
         {
             this._discountService = discountService;
             this._localizationService = localizationService;
@@ -54,6 +59,7 @@ namespace SmartStore.Admin.Controllers
             this._customerActivityService = customerActivityService;
             this._currencySettings = currencySettings;
             this._permissionService = permissionService;
+			this._discountRules = discountRules;
         }
 
         #endregion
@@ -84,10 +90,10 @@ namespace SmartStore.Admin.Controllers
             var discountRules = _discountService.LoadAllDiscountRequirementRules();
             foreach (var discountRule in discountRules)
             {
-                model.AvailableDiscountRequirementRules.Add(new SelectListItem()
+				model.AvailableDiscountRequirementRules.Add(new SelectListItem()
                 {
-					Text = discountRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
-                    Value = discountRule.PluginDescriptor.SystemName
+					Text = discountRule.Metadata.GetLocalizedValue(_localizationService, "FriendlyName"),
+                    Value = discountRule.Metadata.SystemName
                 });
             }
             
@@ -129,8 +135,8 @@ namespace SmartStore.Admin.Controllers
                         model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo()
                         {
                             DiscountRequirementId = dr.Id,
-							RuleName = drr.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
-                            ConfigurationUrl = GetRequirementUrlInternal(drr, discount, dr.Id)
+							RuleName = drr.Metadata.GetLocalizedValue(_localizationService, "FriendlyName"),
+                            ConfigurationUrl = GetRequirementUrlInternal(drr.Value, discount, dr.Id)
                         });
                     }
                 }
@@ -337,7 +343,7 @@ namespace SmartStore.Admin.Controllers
             if (discount == null)
                 throw new ArgumentException("Discount could not be loaded");
 
-            string url = GetRequirementUrlInternal(discountRequirementRule, discount, discountRequirementId);
+            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
             return Json(new { url = url }, JsonRequestBehavior.AllowGet);
         }
 
@@ -358,8 +364,8 @@ namespace SmartStore.Admin.Controllers
             if (discountRequirementRule == null)
                 throw new ArgumentException("Discount requirement rule could not be loaded");
 
-            string url = GetRequirementUrlInternal(discountRequirementRule, discount, discountRequirementId);
-			string ruleName = discountRequirementRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName");
+            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
+			string ruleName = discountRequirementRule.Metadata.GetLocalizedValue(_localizationService, "FriendlyName");
 
             return Json(new { url = url, ruleName = ruleName }, JsonRequestBehavior.AllowGet);
         }

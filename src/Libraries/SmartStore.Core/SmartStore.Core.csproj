@@ -152,6 +152,9 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="ComponentModel\IProvider.cs" />
+    <Compile Include="ComponentModel\ProviderMetadata.cs" />
+    <Compile Include="ComponentModel\SystemNameAttribute.cs" />
     <Compile Include="Configuration\ISettingService.cs" />
     <Compile Include="Configuration\JsonPersistAttribute.cs" />
     <Compile Include="Data\DbContextScope.cs" />

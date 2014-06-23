@@ -5,11 +5,12 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Configuration;
-
+using SmartStore.Core.ComponentModel;
 
 namespace SmartStore.Plugin.DiscountRules.CustomerRoles
 {
-    public partial class CustomerRoleDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
+	[SystemName("DiscountRequirement.MustBeAssignedToCustomerRole")]
+	public partial class CustomerRoleDiscountRequirementRule : BasePlugin, IDiscountRequirementRule
     {
         /// <summary>
         /// Check discount requirement

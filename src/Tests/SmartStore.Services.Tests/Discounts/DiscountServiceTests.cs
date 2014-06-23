@@ -72,9 +72,9 @@ namespace SmartStore.Services.Tests.Discounts
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
             var pluginFinder = new PluginFinder();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
-            _discountService = new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
+			_discountService = null; /* TODO (pr) > new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
 				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, pluginFinder, _eventPublisher,
-				_settingService);
+				_settingService);*/
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace SmartStore.Services.Tests.Discounts
         {
             var rules = _discountService.LoadAllDiscountRequirementRules();
             rules.ShouldNotBeNull();
-            (rules.Count > 0).ShouldBeTrue();
+            (rules.Any()).ShouldBeTrue();
         }
 
         [Test]

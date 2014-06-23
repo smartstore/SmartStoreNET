@@ -10,6 +10,7 @@ using System.Xml;
 using SmartStore.Core.Data;
 using SmartStore.Utilities;
 using System.Collections.Concurrent;
+using SmartStore.Core.ComponentModel;
 
 namespace SmartStore.Services.Localization
 {
@@ -325,6 +326,29 @@ namespace SmartStore.Services.Localization
 
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
 				result = descriptor.TryGetPropertyValue(propertyName) as string;
+
+			return result;
+		}
+
+		public static string GetLocalizedValue(this ProviderMetadata metadata, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+		{
+			// TODO (pr) > refactor
+			if (localizationService == null)
+				throw new ArgumentNullException("localizationService");
+
+			if (metadata == null)
+				throw new ArgumentNullException("metadata");
+
+			if (propertyName == null)
+				throw new ArgumentNullException("name");
+
+			string systemName = metadata.SystemName;
+			string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
+			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
+
+			// TODO (pr) > handle friendly names
+			if (String.IsNullOrEmpty(result) && returnDefaultValue)
+				result = metadata.TryGetPropertyValue(propertyName) as string;
 
 			return result;
 		}

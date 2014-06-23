@@ -227,7 +227,6 @@ namespace SmartStore.Core.Plugins
                 return FriendlyName.CompareTo(other.FriendlyName);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public string GetSettingKey(string name)
 		{
 			return "PluginSetting.{0}.{1}".FormatWith(SystemName, name);

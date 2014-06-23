@@ -11,6 +11,8 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.ComponentModel;
+using Autofac;
 
 namespace SmartStore.Services.Discounts
 {
@@ -34,24 +36,14 @@ namespace SmartStore.Services.Discounts
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
+		private readonly IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> _discountRules;
+		private readonly IComponentContext _ctx;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="discountRepository">Discount repository</param>
-        /// <param name="discountRequirementRepository">Discount requirement repository</param>
-        /// <param name="discountUsageHistoryRepository">Discount usage history repository</param>
-		/// <param name="storeContext">Store context</param>
-		/// <param name="genericAttributeService">Generic attribute service</param>
-        /// <param name="pluginFinder">Plugin finder</param>
-        /// <param name="eventPublisher">Event published</param>
-		/// <param name="settingService">Setting service</param>
         public DiscountService(ICacheManager cacheManager,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
@@ -60,7 +52,9 @@ namespace SmartStore.Services.Discounts
 			IGenericAttributeService genericAttributeService,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-			ISettingService settingService)
+			ISettingService settingService,
+			IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> discountRules,
+			IComponentContext ctx)
         {
             this._cacheManager = cacheManager;
             this._discountRepository = discountRepository;
@@ -70,7 +64,9 @@ namespace SmartStore.Services.Discounts
 			this._genericAttributeService = genericAttributeService;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
+			this._discountRules = discountRules;
+			this._ctx = ctx;
         }
 
         #endregion
@@ -256,23 +252,29 @@ namespace SmartStore.Services.Discounts
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found discount requirement rule</returns>
-        public virtual IDiscountRequirementRule LoadDiscountRequirementRuleBySystemName(string systemName)
+		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName)
         {
-            var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IDiscountRequirementRule>(systemName);
-            if (descriptor != null)
-                return descriptor.Instance<IDiscountRequirementRule>();
-
-            return null;
+			//var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IDiscountRequirementRule>(systemName);
+			//if (descriptor != null)
+			//	return descriptor.Instance<IDiscountRequirementRule>();
+			//return null;
+			var provider = _ctx.ResolveOptionalNamed<Lazy<IDiscountRequirementRule, ProviderMetadata>>(systemName);
+			if (provider != null)
+			{
+				return new Provider<IDiscountRequirementRule>(provider);
+			}
+			return null;
         }
 
         /// <summary>
         /// Load all discount requirement rules
         /// </summary>
         /// <returns>Discount requirement rules</returns>
-        public virtual IList<IDiscountRequirementRule> LoadAllDiscountRequirementRules()
+		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules()
         {
-            var rules = _pluginFinder.GetPlugins<IDiscountRequirementRule>();
-            return rules.ToList();
+			//var rules = _pluginFinder.GetPlugins<IDiscountRequirementRule>();
+			//return rules.ToList();
+			return _discountRules.Select(x => new Provider<IDiscountRequirementRule>(x));
         }
 
         /// <summary>
@@ -355,7 +357,7 @@ namespace SmartStore.Services.Discounts
                 if (requirementRule == null)
                     continue;
 				if (!(_storeContext.CurrentStore.Id == 0 || 
-					_settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+					_settingService.GetSettingByKey<string>(requirementRule.Metadata.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
 					continue;
 
                 var request = new CheckDiscountRequirementRequest()
@@ -364,7 +366,7 @@ namespace SmartStore.Services.Discounts
                     Customer = customer,
 					Store = _storeContext.CurrentStore
                 };
-                if (!requirementRule.CheckRequirement(request))
+                if (!requirementRule.Value.CheckRequirement(request))
                     return false;
             }
             return true;

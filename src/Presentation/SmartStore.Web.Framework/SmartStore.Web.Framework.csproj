@@ -305,7 +305,6 @@
     <Compile Include="RssActionResult.cs" />
     <Compile Include="Security\SslRequirement.cs" />
     <Compile Include="Security\RequireHttpsByConfigAttribute.cs" />
-    <Compile Include="StatefulStorage.cs" />
     <Compile Include="TelerikLocalizationService.cs" />
     <Compile Include="TelerikLocalizationServiceFactory.cs" />
     <Compile Include="Themes\IThemeContext.cs" />

@@ -21,15 +21,10 @@ namespace SmartStore.Web.Framework.Mvc.Bundles
 
         public void RegisterBundles(BundleCollection bundles)
         {
-            var bundleProviderTypes = _typeFinder.FindClassesOfType<IBundleProvider>();
+			var bundleProviderTypes = _typeFinder.FindClassesOfType<IBundleProvider>(ignoreInactivePlugins: true);
             var bundleProviders = new List<IBundleProvider>();
             foreach (var providerType in bundleProviderTypes)
             {
-                if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
-                {
-                    continue;
-                }
-                
                 var provider = Activator.CreateInstance(providerType) as IBundleProvider;
                 bundleProviders.Add(provider);
             }

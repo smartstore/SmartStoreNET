@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
@@ -15,43 +16,19 @@ namespace SmartStore.Core.Infrastructure
 {
     public class SmartStoreEngine : IEngine
     {
-        #region Fields
-
         private ContainerManager _containerManager;
-
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-		/// Creates an instance of the content engine using default settings and configuration.
-		/// </summary>
-		public SmartStoreEngine() 
-            : this(EventBroker.Instance, new ContainerConfigurer())
-		{
-		}
-
-		public SmartStoreEngine(EventBroker broker, ContainerConfigurer configurer)
-		{
-            InitializeContainer(configurer, broker);
-		}
-        
-        #endregion
 
         #region Utilities
 
-        private void RunStartupTasks()
+        protected virtual void RunStartupTasks()
         {
-            var typeFinder = _containerManager.Resolve<ITypeFinder>();
-            var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>();
+			var typeFinder = _containerManager.Resolve<ITypeFinder>();
+            var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>(ignoreInactivePlugins: true);
             var startUpTasks = new List<IStartupTask>();
 
             foreach (var startUpTaskType in startUpTaskTypes)
             {
-                if (PluginManager.IsActivePluginAssembly(startUpTaskType.Assembly))
-                {
-                    startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
-                }
+				startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
             }
 
 			// execute tasks async grouped by order
@@ -60,15 +37,43 @@ namespace SmartStore.Core.Infrastructure
 			{
 				Parallel.ForEach(tasks, task => { task.Execute(); });
 			}
-			
         }
-        
-        private void InitializeContainer(ContainerConfigurer configurer, EventBroker broker)
-        {
-            var builder = new ContainerBuilder();
-			_containerManager = new ContainerManager(builder.Build());
-            configurer.Configure(this, _containerManager, broker);
-        }
+
+		protected virtual void RegisterDependencies()
+		{
+			var builder = new ContainerBuilder();
+			var container = builder.Build();
+
+			// core dependencies
+			builder = new ContainerBuilder();
+			builder.RegisterInstance(this).As<IEngine>().SingleInstance();
+			builder.RegisterType<WebAppTypeFinder>().As<ITypeFinder>().SingleInstance();
+			builder.Update(container);
+
+			// register dependencies provided by other assemblies
+			var typeFinder = container.Resolve<ITypeFinder>();
+			builder = new ContainerBuilder();
+			var registrarTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
+			var registrarInstances = new List<IDependencyRegistrar>();
+			foreach (var type in registrarTypes)
+			{
+				registrarInstances.Add((IDependencyRegistrar)Activator.CreateInstance(type));
+			}
+			// sort
+			registrarInstances = registrarInstances.AsQueryable().OrderBy(t => t.Order).ToList();
+			foreach (var registrar in registrarInstances)
+			{
+				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(registrar.GetType().Assembly));
+			}
+			builder.Update(container);
+
+			// AutofacDependencyResolver
+			var scopeProvider = new AutofacLifetimeScopeProvider(container);
+			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
+			DependencyResolver.SetResolver(dependencyResolver);
+
+			_containerManager = new ContainerManager(container);
+		}
 
         #endregion
 
@@ -77,13 +82,11 @@ namespace SmartStore.Core.Infrastructure
         /// <summary>
         /// Initialize components and plugins in the sm environment.
         /// </summary>
-        /// <param name="config">Config</param>
         public void Initialize()
         {
-            bool databaseInstalled = DataSettings.DatabaseIsInstalled();
-			if (databaseInstalled)
+			RegisterDependencies();
+			if (DataSettings.DatabaseIsInstalled())
 			{
-				//startup tasks
 				RunStartupTasks();
 			}
         }

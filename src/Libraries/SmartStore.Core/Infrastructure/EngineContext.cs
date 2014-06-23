@@ -20,9 +20,7 @@ namespace SmartStore.Core.Infrastructure
         {
             if (Singleton<IEngine>.Instance == null || forceRecreate)
             {
-                Debug.WriteLine("Constructing engine " + DateTime.Now);
                 Singleton<IEngine>.Instance = CreateEngineInstance();
-                Debug.WriteLine("Initializing engine " + DateTime.Now);
                 Singleton<IEngine>.Instance.Initialize();
             }
             return Singleton<IEngine>.Instance;

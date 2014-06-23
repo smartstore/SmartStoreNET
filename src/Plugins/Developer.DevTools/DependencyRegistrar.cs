@@ -18,11 +18,11 @@ namespace SmartStore.Plugin.Developer.DevTools
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			builder.RegisterType<ProfilerService>().As<IProfilerService>().InstancePerRequest();
-			
-			if (PluginManager.IsActivePluginAssembly(this.GetType().Assembly))
+
+			if (isActiveModule)
 			{
 				// intercept ALL public store controller actions
 				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<PublicControllerBase>();

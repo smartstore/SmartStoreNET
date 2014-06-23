@@ -276,7 +276,6 @@
     <Compile Include="Security\FilePermissionHelper.cs" />
     <Compile Include="Controllers\StoreClosedAttribute.cs" />
     <Compile Include="Controllers\StoreLastVisitedPageAttribute.cs" />
-    <Compile Include="RemotePost.cs" />
     <Compile Include="Controllers\PaymentControllerBase.cs" />
     <Compile Include="Controllers\FormValueRequiredAttribute.cs" />
     <Compile Include="Localization\LocalizedRoute.cs" />

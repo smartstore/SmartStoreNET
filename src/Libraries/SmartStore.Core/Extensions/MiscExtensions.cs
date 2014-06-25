@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Web.Routing;
 using SmartStore.Core;
 
 namespace SmartStore
@@ -109,6 +110,14 @@ namespace SmartStore
 			catch (Exception) { }
 
 			return defaultValue;
+		}
+
+		public static bool IsRouteEqual(this RouteData routeData, string controller, string action)
+		{
+			if (routeData == null)
+				return false;
+
+			return routeData.GetRequiredString("controller").IsCaseInsensitiveEqual(controller) && routeData.GetRequiredString("action").IsCaseInsensitiveEqual(action);
 		}
     }
 }

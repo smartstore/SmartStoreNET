@@ -17,16 +17,11 @@ namespace SmartStore.Web.Framework.WebApi.Configuration
 
 		public void Configure(WebApiConfigurationBroadcaster configData)
 		{
-			var providerTypes = _typeFinder.FindClassesOfType<IWebApiConfigurationProvider>();
+			var providerTypes = _typeFinder.FindClassesOfType<IWebApiConfigurationProvider>(ignoreInactivePlugins: true);
 			var providers = new List<IWebApiConfigurationProvider>();
 
 			foreach (var providerType in providerTypes)
 			{
-				if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
-				{
-					continue;
-				}
-
 				var provider = Activator.CreateInstance(providerType) as IWebApiConfigurationProvider;
 				providers.Add(provider);
 			}

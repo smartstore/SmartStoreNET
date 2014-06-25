@@ -8,7 +8,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 {
 	public class DependencyRegistrar : IDependencyRegistrar
 	{
-		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
 		{
 			builder.RegisterType<PayPalStandardService>().As<IPayPalStandardService>().InstancePerRequest();
 		}

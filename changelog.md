@@ -24,6 +24,7 @@
 * Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
 * Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
 * Perf: significantly increased excel import performance... again ;-)
+* Perf: significantly increased excel export performance
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.

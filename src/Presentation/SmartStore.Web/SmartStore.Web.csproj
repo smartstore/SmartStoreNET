@@ -1931,6 +1931,9 @@
     <Content Include="Views\Catalog\_ProductBundleItems.cshtml" />
     <Content Include="Views\Catalog\_ProductBundleItemsAddToCart.cshtml" />
     <Content Include="Themes\Alpha\Content\user.less" />
+    <Content Include="Views\Checkout\BillingAddress.cshtml">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />
@@ -2028,7 +2031,6 @@
     <Content Include="Views\ShoppingCart\OrderTotals.cshtml" />
     <Content Include="Views\ShoppingCart\Wishlist.cshtml" />
     <Content Include="Views\Checkout\ShippingAddress.cshtml" />
-    <Content Include="Views\Checkout\BillingAddress.cshtml" />
     <Content Include="Views\Checkout\ShippingMethod.cshtml" />
     <Content Include="Views\Checkout\PaymentMethod.cshtml" />
     <Content Include="Views\Checkout\PaymentInfo.cshtml" />

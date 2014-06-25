@@ -61,9 +61,7 @@ using Module = Autofac.Module;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Core.Email;
-using Autofac.Features.Metadata;
 using SmartStore.Services.Events;
-using System.Diagnostics;
 using SmartStore.Services.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.IO.Media;
@@ -75,7 +73,7 @@ namespace SmartStore.Web.Framework
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			// modules
 			builder.RegisterModule(new DbModule(typeFinder));
@@ -253,7 +251,7 @@ namespace SmartStore.Web.Framework
 					return typeof(object);
 				};
 
-				var hooks = _typeFinder.FindClassesOfType(typeof(IHook));
+				var hooks = _typeFinder.FindClassesOfType<IHook>(ignoreInactivePlugins: true);
 				foreach (var hook in hooks)
 				{
 					var hookedType = findHookedType(hook);
@@ -528,7 +526,7 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			var foundAssemblies = _typeFinder.GetAssemblies().ToArray();
+			var foundAssemblies = _typeFinder.GetAssemblies(ignoreInactivePlugins: true).ToArray();
 
 			builder.RegisterModule(new AutofacWebTypesModule());
 			builder.Register(HttpContextBaseFactory).As<HttpContextBase>().InstancePerRequest();
@@ -586,7 +584,7 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			var foundAssemblies = _typeFinder.GetAssemblies().ToArray();
+			var foundAssemblies = _typeFinder.GetAssemblies(ignoreInactivePlugins: true).ToArray();
 
 			// register all api controllers
 			builder.RegisterApiControllers(foundAssemblies);
@@ -663,13 +661,10 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
 
 			// Register simple (code) widgets
-			var widgetTypes = _typeFinder.FindClassesOfType(typeof(IWidget)).Where(x => !typeof(IWidgetPlugin).IsAssignableFrom(x));
+			var widgetTypes = _typeFinder.FindClassesOfType<IWidget>(ignoreInactivePlugins: true).Where(x => !typeof(IWidgetPlugin).IsAssignableFrom(x));
 			foreach (var widgetType in widgetTypes)
 			{
-				if (PluginManager.IsActivePluginAssembly(widgetType.Assembly))
-				{
-					builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerRequest();
-				}
+				builder.RegisterType(widgetType).As<IWidget>().Named<IWidget>(widgetType.FullName).InstancePerRequest();
 			}
 		}
 	}

@@ -153,15 +153,10 @@ namespace SmartStore.Admin.Controllers
             if (!_securitySettings.HideAdminMenuItemsBasedOnPermissions || _permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
             {
                 var providers = new List<IMenuProvider>();
-                var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>();
+				var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);
 
                 foreach (var type in providerTypes)
                 {
-                    if (!PluginManager.IsActivePluginAssembly(type.Assembly))
-                    {
-                        continue;
-                    }
-
                     try
                     {
                         var provider = Activator.CreateInstance(type) as IMenuProvider;

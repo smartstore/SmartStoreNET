@@ -1,7 +1,7 @@
 ﻿using SmartStore.Core;
 using Telerik.Web.Mvc.Infrastructure;
 
-namespace SmartStore.Web.Framework
+namespace SmartStore.Web.Framework.Localization
 {
     public class TelerikLocalizationServiceFactory : ILocalizationServiceFactory
     {

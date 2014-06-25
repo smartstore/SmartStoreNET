@@ -8,7 +8,7 @@ namespace SmartStore.Plugin.Api.WebApi
 {
 	public class DependencyRegistrar : IDependencyRegistrar
 	{
-		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
 		{
 			builder.RegisterType<WebApiPluginService>().As<IWebApiPluginService>().InstancePerRequest();
 		}

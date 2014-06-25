@@ -8,6 +8,7 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Themes
 {
@@ -19,6 +20,7 @@ namespace SmartStore.Web.Framework.Themes
 
 		private readonly string[] _emptyLocations = null;
 		private readonly string _mobileViewModifier = "Mobile";
+		private readonly bool _enableLocalizedViews = false;
 		// format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}:{lang}"
 		private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}:{6}";
 
@@ -29,6 +31,7 @@ namespace SmartStore.Web.Framework.Themes
 		protected ThemeableVirtualPathProviderViewEngine()
 		{
 			GetExtensionThunk = new Func<string, string>(VirtualPathUtility.GetExtension);
+			this._enableLocalizedViews = CommonHelper.GetAppSetting<bool>("sm:EnableLocalizedViews", false);
 		}
 
 		#endregion
@@ -63,14 +66,13 @@ namespace SmartStore.Web.Framework.Themes
 				areaLocations = newLocations.ToArray();
 			}
 
-
 			List<ViewLocation> viewLocations = GetViewLocations(locations, isArea ? areaLocations : null);
 			if (viewLocations.Count == 0)
 			{
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Properties cannot be null or empty.", new object[] { locationsPropertyName }));
 			}
 
-			string lang = this.GetCurrentLanguageSeoCode();
+			string lang = _enableLocalizedViews ? this.GetCurrentLanguageSeoCode() : null;
 			bool isSpecificPath = IsSpecificPath(name);
 			string key = this.CreateCacheKey(cacheKeyPrefix, name, isSpecificPath ? string.Empty : controllerName, areaName, theme, lang);
 			if (useCache)
@@ -120,7 +122,7 @@ namespace SmartStore.Web.Framework.Themes
 				var location = locations[i];
 				string virtualPath = location.Format(name, controllerName, areaName, theme, lang);
 
-				if (!this.FileExists(controllerContext, virtualPath))
+				if (lang != null && !this.FileExists(controllerContext, virtualPath))
 				{
 					// lang specific view does not exist, try again without lang suffix
 					tempSearchedLocations.Add(virtualPath);
@@ -151,7 +153,7 @@ namespace SmartStore.Web.Framework.Themes
 				controllerName,
 				areaName,
 				theme,
-				lang);
+				lang.EmptyNull());
 		}
 
 		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)

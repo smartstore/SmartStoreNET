@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder)
+		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
             builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerRequest();
 

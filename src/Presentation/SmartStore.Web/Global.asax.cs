@@ -27,7 +27,9 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using System.IO;
 using System.Diagnostics;
-using SmartStore.Web.Framework.Plugins; 
+using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Validators; 
 
 
 namespace SmartStore.Web

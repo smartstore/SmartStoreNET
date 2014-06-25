@@ -125,8 +125,6 @@ namespace SmartStore.Admin.Controllers
             pluginDescriptor.FriendlyName = model.FriendlyName;
             pluginDescriptor.DisplayOrder = model.DisplayOrder;
             PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
-            //reset plugin cache
-            _pluginFinder.ReloadPlugins();
             
             return Methods(command);
         }

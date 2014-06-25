@@ -152,9 +152,12 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
-    <Compile Include="ComponentModel\IProvider.cs" />
-    <Compile Include="ComponentModel\ProviderMetadata.cs" />
-    <Compile Include="ComponentModel\SystemNameAttribute.cs" />
+    <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
+    <Compile Include="Plugins\Providers\IProvider.cs" />
+    <Compile Include="Plugins\Providers\IProviderManager.cs" />
+    <Compile Include="Plugins\Providers\ProviderMetadata.cs" />
+    <Compile Include="Plugins\Providers\FriendlyNameAttribute.cs" />
+    <Compile Include="Plugins\Providers\SystemNameAttribute.cs" />
     <Compile Include="Configuration\ISettingService.cs" />
     <Compile Include="Configuration\JsonPersistAttribute.cs" />
     <Compile Include="Data\DbContextScope.cs" />

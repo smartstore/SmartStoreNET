@@ -50,10 +50,5 @@ namespace SmartStore.Core.Plugins
 		/// <param name="installedOnly">A value indicating whether to load only installed plugins</param>
 		/// <returns>>Plugin descriptor</returns>
         PluginDescriptor GetPluginDescriptorBySystemName<T>(string systemName, bool installedOnly = true) where T : class, IPlugin;
-
-        /// <summary>
-        /// Reload plugins
-        /// </summary>
-        void ReloadPlugins();
     }
 }

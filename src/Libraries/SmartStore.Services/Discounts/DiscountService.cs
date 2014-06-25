@@ -11,8 +11,6 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.ComponentModel;
-using Autofac;
 
 namespace SmartStore.Services.Discounts
 {
@@ -37,8 +35,7 @@ namespace SmartStore.Services.Discounts
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
 		private readonly ISettingService _settingService;
-		private readonly IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> _discountRules;
-		private readonly IComponentContext _ctx;
+		private readonly IProviderManager _providerManager;
 
         #endregion
 
@@ -53,8 +50,7 @@ namespace SmartStore.Services.Discounts
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
 			ISettingService settingService,
-			IEnumerable<Lazy<IDiscountRequirementRule, ProviderMetadata>> discountRules,
-			IComponentContext ctx)
+			IProviderManager providerManager)
         {
             this._cacheManager = cacheManager;
             this._discountRepository = discountRepository;
@@ -65,8 +61,7 @@ namespace SmartStore.Services.Discounts
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
 			this._settingService = settingService;
-			this._discountRules = discountRules;
-			this._ctx = ctx;
+			this._providerManager = providerManager;
         }
 
         #endregion
@@ -252,29 +247,24 @@ namespace SmartStore.Services.Discounts
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found discount requirement rule</returns>
-		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName)
+		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName, int storeId = 0)
         {
 			//var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IDiscountRequirementRule>(systemName);
 			//if (descriptor != null)
 			//	return descriptor.Instance<IDiscountRequirementRule>();
 			//return null;
-			var provider = _ctx.ResolveOptionalNamed<Lazy<IDiscountRequirementRule, ProviderMetadata>>(systemName);
-			if (provider != null)
-			{
-				return new Provider<IDiscountRequirementRule>(provider);
-			}
-			return null;
+			return _providerManager.GetProvider<IDiscountRequirementRule>(systemName, storeId);
         }
 
         /// <summary>
         /// Load all discount requirement rules
         /// </summary>
         /// <returns>Discount requirement rules</returns>
-		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules()
+		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules(int storeId = 0)
         {
 			//var rules = _pluginFinder.GetPlugins<IDiscountRequirementRule>();
 			//return rules.ToList();
-			return _discountRules.Select(x => new Provider<IDiscountRequirementRule>(x));
+			return _providerManager.GetAllProviders<IDiscountRequirementRule>(storeId);
         }
 
         /// <summary>
@@ -349,16 +339,14 @@ namespace SmartStore.Services.Discounts
             if (!CheckDiscountLimitations(discount, customer))
                 return false;
 
-            //discount requirements
+            // discount requirements
             var requirements = discount.DiscountRequirements;
+			int storeId = _storeContext.CurrentStore.Id;
             foreach (var req in requirements)
             {
-                var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName);
+				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, storeId);
                 if (requirementRule == null)
                     continue;
-				if (!(_storeContext.CurrentStore.Id == 0 || 
-					_settingService.GetSettingByKey<string>(requirementRule.Metadata.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
-					continue;
 
                 var request = new CheckDiscountRequirementRequest()
                 {

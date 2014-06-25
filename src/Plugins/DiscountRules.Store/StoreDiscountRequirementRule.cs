@@ -1,5 +1,4 @@
 using System;
-using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;

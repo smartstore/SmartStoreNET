@@ -68,8 +68,7 @@ using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Web.Framework.WebApi;
-using SmartStore.Core.ComponentModel;
-using System.ComponentModel;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Framework
 {
@@ -77,6 +76,10 @@ namespace SmartStore.Web.Framework
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
+			// plugins
+			var pluginFinder = new PluginFinder();
+			builder.RegisterInstance(pluginFinder).As<IPluginFinder>().SingleInstance();
+			
 			// modules
 			builder.RegisterModule(new DbModule(typeFinder));
 			builder.RegisterModule(new CachingModule());
@@ -89,16 +92,13 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new UiModule(typeFinder));
 			builder.RegisterModule(new IOModule());
 			builder.RegisterModule(new PackagingModule());
-			builder.RegisterModule(new ProvidersModule(typeFinder));
+			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
 
             // web helper
-            builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerRequest();
-            
-            // plugins
-            builder.RegisterType<PluginFinder>().As<IPluginFinder>().SingleInstance(); // xxx (http)
+            builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerRequest(); 
 
             // work context
             builder.RegisterType<WebWorkContext>().As<IWorkContext>().WithStaticCache().InstancePerRequest();
@@ -696,52 +696,112 @@ namespace SmartStore.Web.Framework
 	public class ProvidersModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
+		private readonly IPluginFinder _pluginFinder;
 
-		public ProvidersModule(ITypeFinder typeFinder)
+		public ProvidersModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
 		{
 			_typeFinder = typeFinder;
+			_pluginFinder = pluginFinder;
 		}
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<ProviderManager>().As<IProviderManager>().InstancePerRequest();
+			
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
-			var providerTypes = _typeFinder.FindClassesOfType(typeof(IProvider)).Where(t => PluginManager.IsActivePluginAssembly(t.Assembly)).ToList();
+			var providerTypes = _typeFinder.FindClassesOfType<IProvider>(ignoreInactivePlugins: true).ToList();
 
 			foreach (var type in providerTypes)
 			{
-				var systemNameAttr = type.GetAttribute<SystemNameAttribute>(false);
-				if (systemNameAttr == null)
-				{
-					// TODO (pr): Proper error message
-					throw new SmartException("'SystemNameAttribute' is missing");
-				}
-				string systemName = systemNameAttr.Name;
+				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly);
+				var systemName = GetSystemName(type, pluginDescriptor);
+				var friendlyName = GetFriendlyName(type, pluginDescriptor);
+				var resRootKey = "{0}.{1}".FormatInvariant(pluginDescriptor != null ? "Plugins" : "Provider", systemName);
 
 				var registration = builder.RegisterType(type).As<IProvider>().Named<IProvider>(systemName).InstancePerRequest();
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
+					m.For(em => em.PluginDescriptor, pluginDescriptor);
 					m.For(em => em.SystemName, systemName);
-					m.For(em => em.ResourceKey, ""); // TODO (pr)
+					m.For(em => em.ResourceRootKey, resRootKey);
+					m.For(em => em.FriendlyName, friendlyName.Item1);
+					m.For(em => em.Description, friendlyName.Item2);
+					m.For(em => em.DisplayOrder, GetDisplayOrder(type, pluginDescriptor));
 				});
-
+				
 				if (typeof(IDiscountRequirementRule).IsAssignableFrom(type))
 				{
 					registration.As(typeof(IDiscountRequirementRule)).Named(systemName, typeof(IDiscountRequirementRule));
+					registration.WithMetadata<ProviderMetadata>(m =>
+					{
+						m.For(em => em.ProviderType, typeof(IDiscountRequirementRule));
+					});
 				}
 			}
-
-			//// Register payment methods
-			//var types = _typeFinder.FindClassesOfType(typeof(IPaymentMethod));
-			//foreach (var type in types)
-			//{
-			//	if (PluginManager.IsActivePluginAssembly(type.Assembly))
-			//	{
-			//		builder.RegisterType(type).As<IPaymentMethod>().Named<IPaymentMethod>(type.FullName).InstancePerRequest();
-			//	}
-			//}
 		}
+
+		#region Helpers
+
+		private string GetSystemName(Type type, PluginDescriptor descriptor)
+		{
+			var attr = type.GetAttribute<SystemNameAttribute>(false);
+			if (attr != null)
+			{
+				return attr.Name;
+			}
+
+			if (typeof(IPlugin).IsAssignableFrom(type) && descriptor != null)
+			{
+				return descriptor.SystemName;
+			}
+
+			throw Error.Application("The 'SystemNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
+		}
+
+		private int GetDisplayOrder(Type type, PluginDescriptor descriptor)
+		{
+			var attr = type.GetAttribute<DisplayOrderAttribute>(false);
+			if (attr != null)
+			{
+				return attr.DisplayOrder;
+			}
+
+			if (typeof(IPlugin).IsAssignableFrom(type) && descriptor != null)
+			{
+				return descriptor.DisplayOrder;
+			}
+
+			return 0;
+		}
+
+		private Tuple<string/*Name*/, string/*Description*/> GetFriendlyName(Type type, PluginDescriptor descriptor)
+		{
+			string name = null;
+			string description = name;
+
+			var attr = type.GetAttribute<FriendlyNameAttribute>(false);
+			if (attr != null)
+			{
+				name = attr.Name;
+				description = attr.Description;
+			}
+			else if (typeof(IPlugin).IsAssignableFrom(type) && descriptor != null)
+			{
+				name = descriptor.FriendlyName;
+				description = descriptor.Description;
+			}
+			else
+			{
+				throw Error.Application("The 'FriendlyNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
+			}
+
+			return new Tuple<string, string>(name, description);
+		}
+
+		#endregion
+
 	}
 
 	#endregion

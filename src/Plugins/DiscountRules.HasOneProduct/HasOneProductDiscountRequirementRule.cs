@@ -6,7 +6,6 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Customers;
-using SmartStore.Core.ComponentModel;
 
 namespace SmartStore.Plugin.DiscountRules.HasOneProduct
 {

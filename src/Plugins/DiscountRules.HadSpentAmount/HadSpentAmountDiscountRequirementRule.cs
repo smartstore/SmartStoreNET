@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Newtonsoft.Json;
-using SmartStore.Core.ComponentModel;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;

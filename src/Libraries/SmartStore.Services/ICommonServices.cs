@@ -8,6 +8,7 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services
 {
@@ -60,6 +61,11 @@ namespace SmartStore.Services
 		}
 
 		IPermissionService Permissions
+		{
+			get;
+		}
+
+		ISettingService Settings
 		{
 			get;
 		}

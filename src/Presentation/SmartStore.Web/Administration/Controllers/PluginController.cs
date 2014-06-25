@@ -357,8 +357,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_settingService.DeleteSetting(settingKey);
 
-                // reset plugin and string resources cache
-                _pluginFinder.ReloadPlugins();
+                // reset string resources cache
 				_localizationService.ClearCache();
 
 				var pluginInstance = pluginDescriptor.Instance();

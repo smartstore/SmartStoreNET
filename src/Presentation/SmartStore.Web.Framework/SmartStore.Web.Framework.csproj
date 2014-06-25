@@ -232,6 +232,7 @@
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
+    <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
     <Compile Include="UI\HtmlAttributeExtensions.cs" />
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />

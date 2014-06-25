@@ -330,27 +330,85 @@ namespace SmartStore.Services.Localization
 			return result;
 		}
 
-		public static string GetLocalizedValue(this ProviderMetadata metadata, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+		public static string GetLocalizedFriendlyName(this ProviderMetadata metadata, 
+			ILocalizationService localizationService, 
+			int languageId = 0, 
+			bool returnDefaultValue = true)
 		{
-			// TODO (pr) > refactor
-			if (localizationService == null)
-				throw new ArgumentNullException("localizationService");
-
-			if (metadata == null)
-				throw new ArgumentNullException("metadata");
-
-			if (propertyName == null)
-				throw new ArgumentNullException("name");
+			Guard.ArgumentNotNull(() => metadata);
+			Guard.ArgumentNotNull(() => localizationService);
 
 			string systemName = metadata.SystemName;
-			string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
+			string resourceName = string.Format("{0}.{1}", metadata.ResourceRootKey, "FriendlyName");
 			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
-			// TODO (pr) > handle friendly names
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
-				result = metadata.TryGetPropertyValue(propertyName) as string;
+				result = metadata.FriendlyName;
 
 			return result;
+		}
+
+		public static string GetLocalizedDescription(this ProviderMetadata metadata, 
+			ILocalizationService localizationService, 
+			int languageId = 0, 
+			bool returnDefaultValue = true)
+		{
+			Guard.ArgumentNotNull(() => metadata);
+			Guard.ArgumentNotNull(() => localizationService);
+
+			string systemName = metadata.SystemName;
+			string resourceName = string.Format("{0}.{1}", metadata.ResourceRootKey, "Description");
+			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
+
+			if (String.IsNullOrEmpty(result) && returnDefaultValue)
+				result = metadata.Description;
+
+			return result;
+		}
+
+		public static void SaveLocalizedValue(this ProviderMetadata metadata, 
+			ILocalizationService localizationService, 
+			int languageId, 
+			string propertyName, 
+			string value)
+		{
+			Guard.ArgumentNotNull(() => metadata);
+			Guard.ArgumentNotNull(() => localizationService);
+			Guard.ArgumentIsPositive(languageId, "languageId");
+			Guard.ArgumentNotEmpty(() => propertyName);
+			Guard.ArgumentNotEmpty(() => value);
+
+			string resourceKey = string.Format("{0}.{1}", metadata.ResourceRootKey, propertyName);
+			var resource = localizationService.GetLocaleStringResourceByName(resourceKey, languageId, false);
+
+			if (resource != null)
+			{
+				if (value.IsEmpty())
+				{
+					// delete
+					localizationService.DeleteLocaleStringResource(resource);
+				}
+				else
+				{
+					// update
+					resource.ResourceValue = value;
+					localizationService.UpdateLocaleStringResource(resource);
+				}
+			}
+			else
+			{
+				if (value.HasValue())
+				{
+					// insert
+					resource = new LocaleStringResource()
+					{
+						LanguageId = languageId,
+						ResourceName = resourceKey,
+						ResourceValue = value,
+					};
+					localizationService.InsertLocaleStringResource(resource);
+				}
+			}
 		}
 
         /// <summary>

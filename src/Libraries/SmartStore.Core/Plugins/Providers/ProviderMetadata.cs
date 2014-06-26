@@ -19,9 +19,20 @@ namespace SmartStore.Core.Plugins
 		public string SystemName { get; set; }
 
 		/// <summary>
-		/// Gets or sets the resource root key for user data (e.g. DisplayOrder)
+		/// Gets or sets the resource key pattern for user data (e.g. FriendlyName)
 		/// </summary>
-		public string ResourceRootKey { get; set; }
+		/// <example>
+		/// Plugins.{1}.{0} > 0 = provider system name, 1 = propertyname
+		/// </example>
+		public string ResourceKeyPattern { get; set; }
+
+		/// <summary>
+		/// Gets or sets the setting key pattern for user data (e.g. DisplayOrder)
+		/// </summary>
+		/// <example>
+		/// Plugins.{0}.{1} > 0 = provider system name, 1 = propertyname
+		/// </example>
+		public string SettingKeyPattern { get; set; }
 
 		/// <summary>
 		/// Gets or sets the provider friendly name

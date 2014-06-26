@@ -249,10 +249,6 @@ namespace SmartStore.Services.Discounts
         /// <returns>Found discount requirement rule</returns>
 		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName, int storeId = 0)
         {
-			//var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IDiscountRequirementRule>(systemName);
-			//if (descriptor != null)
-			//	return descriptor.Instance<IDiscountRequirementRule>();
-			//return null;
 			return _providerManager.GetProvider<IDiscountRequirementRule>(systemName, storeId);
         }
 
@@ -262,8 +258,6 @@ namespace SmartStore.Services.Discounts
         /// <returns>Discount requirement rules</returns>
 		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules(int storeId = 0)
         {
-			//var rules = _pluginFinder.GetPlugins<IDiscountRequirementRule>();
-			//return rules.ToList();
 			return _providerManager.GetAllProviders<IDiscountRequirementRule>(storeId);
         }
 

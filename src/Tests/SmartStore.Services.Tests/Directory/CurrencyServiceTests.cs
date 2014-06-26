@@ -90,7 +90,7 @@ namespace SmartStore.Services.Tests.Directory
             var pluginFinder = new PluginFinder();
             _currencyService = new CurrencyService(cacheManager,
 				_currencyRepository, _storeMappingService, 
-                _currencySettings, pluginFinder, _eventPublisher);
+                _currencySettings, pluginFinder, _eventPublisher, null);
         }
         
         [Test]
@@ -98,7 +98,7 @@ namespace SmartStore.Services.Tests.Directory
         {
             var providers = _currencyService.LoadAllExchangeRateProviders();
             providers.ShouldNotBeNull();
-            (providers.Count > 0).ShouldBeTrue();
+            (providers.Any()).ShouldBeTrue();
         }
 
         [Test]

@@ -74,7 +74,7 @@ namespace SmartStore.Services.Tests.Catalog
 
             var pluginFinder = new PluginFinder();
 			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingService,
-                _currencySettings, pluginFinder, null);
+                _currencySettings, pluginFinder, null, null);
             
             _taxSettings = new TaxSettings();
 

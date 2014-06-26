@@ -335,17 +335,7 @@ namespace SmartStore.Services.Localization
 			int languageId = 0, 
 			bool returnDefaultValue = true)
 		{
-			Guard.ArgumentNotNull(() => metadata);
-			Guard.ArgumentNotNull(() => localizationService);
-
-			string systemName = metadata.SystemName;
-			string resourceName = string.Format("{0}.{1}", metadata.ResourceRootKey, "FriendlyName");
-			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
-
-			if (String.IsNullOrEmpty(result) && returnDefaultValue)
-				result = metadata.FriendlyName;
-
-			return result;
+			return metadata.GetLocalizedValue(localizationService, "FriendlyName", x => x.FriendlyName, languageId, returnDefaultValue);
 		}
 
 		public static string GetLocalizedDescription(this ProviderMetadata metadata, 
@@ -353,15 +343,25 @@ namespace SmartStore.Services.Localization
 			int languageId = 0, 
 			bool returnDefaultValue = true)
 		{
+			return metadata.GetLocalizedValue(localizationService, "Description", x => x.Description, languageId, returnDefaultValue);
+		}
+
+		private static string GetLocalizedValue(this ProviderMetadata metadata,
+			ILocalizationService localizationService,
+			string propertyName,
+			Expression<Func<ProviderMetadata, string>> fallback,
+			int languageId = 0,
+			bool returnDefaultValue = true)
+		{
 			Guard.ArgumentNotNull(() => metadata);
 			Guard.ArgumentNotNull(() => localizationService);
 
 			string systemName = metadata.SystemName;
-			string resourceName = string.Format("{0}.{1}", metadata.ResourceRootKey, "Description");
+			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
-			if (String.IsNullOrEmpty(result) && returnDefaultValue)
-				result = metadata.Description;
+			if (result.IsEmpty() && returnDefaultValue)
+				result = fallback.Compile()(metadata);
 
 			return result;
 		}
@@ -378,8 +378,8 @@ namespace SmartStore.Services.Localization
 			Guard.ArgumentNotEmpty(() => propertyName);
 			Guard.ArgumentNotEmpty(() => value);
 
-			string resourceKey = string.Format("{0}.{1}", metadata.ResourceRootKey, propertyName);
-			var resource = localizationService.GetLocaleStringResourceByName(resourceKey, languageId, false);
+			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
+			var resource = localizationService.GetLocaleStringResourceByName(resourceName, languageId, false);
 
 			if (resource != null)
 			{
@@ -403,7 +403,7 @@ namespace SmartStore.Services.Localization
 					resource = new LocaleStringResource()
 					{
 						LanguageId = languageId,
-						ResourceName = resourceKey,
+						ResourceName = resourceName,
 						ResourceValue = value,
 					};
 					localizationService.InsertLocaleStringResource(resource);

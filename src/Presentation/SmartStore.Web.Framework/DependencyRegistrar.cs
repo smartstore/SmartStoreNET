@@ -718,25 +718,38 @@ namespace SmartStore.Web.Framework
 				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly);
 				var systemName = GetSystemName(type, pluginDescriptor);
 				var friendlyName = GetFriendlyName(type, pluginDescriptor);
-				var resRootKey = "{0}.{1}".FormatInvariant(pluginDescriptor != null ? "Plugins" : "Provider", systemName);
+				var resPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{1}.{0}"; // e.g. Plugins.FriendlyName.MySystemName
+				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 
 				var registration = builder.RegisterType(type).As<IProvider>().Named<IProvider>(systemName).InstancePerRequest();
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
 					m.For(em => em.SystemName, systemName);
-					m.For(em => em.ResourceRootKey, resRootKey);
+					m.For(em => em.ResourceKeyPattern, resPattern);
+					m.For(em => em.SettingKeyPattern, settingPattern);
 					m.For(em => em.FriendlyName, friendlyName.Item1);
 					m.For(em => em.Description, friendlyName.Item2);
 					m.For(em => em.DisplayOrder, GetDisplayOrder(type, pluginDescriptor));
 				});
 				
+				// register discount requirement rule providers
 				if (typeof(IDiscountRequirementRule).IsAssignableFrom(type))
 				{
 					registration.As(typeof(IDiscountRequirementRule)).Named(systemName, typeof(IDiscountRequirementRule));
 					registration.WithMetadata<ProviderMetadata>(m =>
 					{
 						m.For(em => em.ProviderType, typeof(IDiscountRequirementRule));
+					});
+				}
+
+				// register exchange rate providers
+				if (typeof(IExchangeRateProvider).IsAssignableFrom(type))
+				{
+					registration.As(typeof(IExchangeRateProvider)).Named(systemName, typeof(IExchangeRateProvider));
+					registration.WithMetadata<ProviderMetadata>(m =>
+					{
+						m.For(em => em.ProviderType, typeof(IExchangeRateProvider));
 					});
 				}
 			}

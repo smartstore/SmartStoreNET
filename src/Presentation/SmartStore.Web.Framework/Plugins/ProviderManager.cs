@@ -92,8 +92,7 @@ namespace SmartStore.Web.Framework.Plugins
 			Guard.ArgumentNotNull(() => metadata);
 
 			metadata.DisplayOrder = displayOrder;
-
-			var settingKey = metadata.ResourceRootKey + ".DisplayOrder";
+			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, "DisplayOrder");
 			_services.Settings.SetSetting<int>(settingKey, displayOrder, storeId, false);
 		}
 
@@ -104,7 +103,7 @@ namespace SmartStore.Web.Framework.Plugins
 				// cache serves just as a sort of static initializer
 				foreach (var m in providers.Select(x => x.Metadata))
 				{
-					var settingKey = m.ResourceRootKey + ".DisplayOrder";
+					var settingKey = m.SettingKeyPattern.FormatInvariant(m.SystemName, "DisplayOrder");
 					var userDisplayOrder = _services.Settings.GetSettingByKey<int?>(settingKey);
 					if (userDisplayOrder.HasValue)
 					{

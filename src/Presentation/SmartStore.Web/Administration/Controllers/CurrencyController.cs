@@ -158,9 +158,9 @@ namespace SmartStore.Admin.Controllers
             {
                 ViewBag.ExchangeRateProviders.Add(new SelectListItem()
                 {
-                    Text = erp.PluginDescriptor.FriendlyName,
-                    Value = erp.PluginDescriptor.SystemName,
-                    Selected = erp.PluginDescriptor.SystemName.Equals(_currencySettings.ActiveExchangeRateProviderSystemName, StringComparison.InvariantCultureIgnoreCase)
+                    Text = erp.Metadata.GetLocalizedFriendlyName(_localizationService),
+					Value = erp.Metadata.SystemName,
+					Selected = erp.Metadata.SystemName.Equals(_currencySettings.ActiveExchangeRateProviderSystemName, StringComparison.InvariantCultureIgnoreCase)
                 });
             }
             ViewBag.AutoUpdateEnabled = _currencySettings.AutoUpdateEnabled;

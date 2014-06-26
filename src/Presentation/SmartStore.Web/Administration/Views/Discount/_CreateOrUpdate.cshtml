@@ -4,7 +4,8 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 @{
-    Html.AddScriptParts("~/Administration/Scripts/jquery.tmpl.min.js");
+    Html.AddScriptParts(true, "~/Administration/Scripts/jquery.tmpl.min.js");
+	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.discountrules.js");
 }
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -382,8 +383,9 @@
                 <div>@T("Admin.Promotions.Discounts.Requirements.DiscountRequirementType"): <b>{{= ruleName }}</b></div>
                 <div id="editrequirementplaceholder{{= discountRequirementId }}" style="float:left;"></div>
                 <div style="float:right;">
-                    <button type="button" name="deleterequirement{{= discountRequirementId }}" id="deleterequirement{{= discountRequirementId }}" onclick="deleteRequirement({{= discountRequirementId }})" class="btn">
-						<i class="icon-remove"></i>&nbsp;@T("Admin.Promotions.Discounts.Requirements.Remove")
+                    <button type="button" name="deleterequirement{{= discountRequirementId }}" id="deleterequirement{{= discountRequirementId }}" onclick="deleteRequirement({{= discountRequirementId }})" class="btn btn-danger">
+						<i class="icon-trash"></i>
+						@T("Common.Remove")
 					</button>
                 </div>
                 <table class="adminContent">

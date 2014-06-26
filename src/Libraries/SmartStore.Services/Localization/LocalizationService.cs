@@ -537,6 +537,7 @@ namespace SmartStore.Services.Localization
 					}
 
 					doc.Load(filePath);
+					doc = FlattenResourceFile(doc);
 
 					if (forceToList == null)
 					{
@@ -601,7 +602,7 @@ namespace SmartStore.Services.Localization
 
                 foreach (var resource in resources)
                 {
-                    RecursivelyWriteResource(resource, writer);
+                    RecursivelyWriteResource(resource, writer, null);
                 }
 
                 writer.WriteEndElement();
@@ -615,7 +616,7 @@ namespace SmartStore.Services.Localization
             return result;
         }
 
-        private void RecursivelyWriteResource(LocaleStringResourceParent resource, XmlWriter writer)
+        private void RecursivelyWriteResource(LocaleStringResourceParent resource, XmlWriter writer, bool? parentAppendRootKey)
         {
             //The value isn't actually used, but the name is used to create a namespace.
             if (resource.IsPersistable)
@@ -626,6 +627,20 @@ namespace SmartStore.Services.Localization
                 writer.WriteString(resource.NameWithNamespace);
                 writer.WriteEndAttribute();
 
+				if (resource.AppendRootKey.HasValue)
+				{
+					writer.WriteStartAttribute("AppendRootKey", "");
+					writer.WriteString(resource.AppendRootKey.Value ? "true" : "false");
+					writer.WriteEndAttribute();
+					parentAppendRootKey = resource.AppendRootKey;
+				}
+				else if (parentAppendRootKey.HasValue)
+				{
+					writer.WriteStartAttribute("AppendRootKey", "");
+					writer.WriteString(parentAppendRootKey.Value ? "true" : "false");
+					writer.WriteEndAttribute();
+				}
+
                 writer.WriteStartElement("Value", "");
                 writer.WriteString(resource.ResourceValue);
                 writer.WriteEndElement();
@@ -635,7 +650,7 @@ namespace SmartStore.Services.Localization
 
             foreach (var child in resource.ChildLocaleStringResources)
             {
-                RecursivelyWriteResource(child, writer);
+				RecursivelyWriteResource(child, writer, resource.AppendRootKey ?? parentAppendRootKey);
             }
 
         }
@@ -674,6 +689,12 @@ namespace SmartStore.Services.Localization
                 }
                 ResourceName = resName;
 
+				var appendRootKeyAttribute = localStringResource.Attributes["AppendRootKey"];
+				if (appendRootKeyAttribute != null)
+				{
+					AppendRootKey = appendRootKeyAttribute.Value.ToBool(true);
+				}
+
                 if (resValueNode == null || string.IsNullOrEmpty(resValueNode.InnerText.Trim()))
                 {
                     IsPersistable = false;
@@ -689,10 +710,14 @@ namespace SmartStore.Services.Localization
                     ChildLocaleStringResources.Add(new LocaleStringResourceParent(childResource, NameWithNamespace));
                 }
             }
+
             public string Namespace { get; set; }
+
             public IList<LocaleStringResourceParent> ChildLocaleStringResources = new List<LocaleStringResourceParent>();
 
             public bool IsPersistable { get; set; }
+
+			public bool? AppendRootKey { get; set; }
 
             public string NameWithNamespace
             {

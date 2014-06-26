@@ -410,6 +410,9 @@
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.discountrules.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>

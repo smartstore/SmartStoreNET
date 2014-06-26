@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Directory
 {
@@ -112,19 +113,19 @@ namespace SmartStore.Services.Directory
         /// Load active exchange rate provider
         /// </summary>
         /// <returns>Active exchange rate provider</returns>
-        IExchangeRateProvider LoadActiveExchangeRateProvider();
+		Provider<IExchangeRateProvider> LoadActiveExchangeRateProvider();
 
         /// <summary>
         /// Load exchange rate provider by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found exchange rate provider</returns>
-        IExchangeRateProvider LoadExchangeRateProviderBySystemName(string systemName);
+		Provider<IExchangeRateProvider> LoadExchangeRateProviderBySystemName(string systemName);
 
         /// <summary>
         /// Load all exchange rate providers
         /// </summary>
         /// <returns>Exchange rate providers</returns>
-        IList<IExchangeRateProvider> LoadAllExchangeRateProviders();
+        IEnumerable<Provider<IExchangeRateProvider>> LoadAllExchangeRateProviders();
     }
 }

@@ -42,6 +42,13 @@ namespace SmartStore.Services.Directory
         /// <returns>Country</returns>
         Country GetCountryById(int countryId);
 
+		/// <summary>
+		/// Gets a country by two or three letter ISO code
+		/// </summary>
+		/// <param name="letterIsoCode">Country two or three letter ISO code</param>
+		/// <returns>Country</returns>
+		Country GetCountryByTwoOrThreeLetterIsoCode(string letterIsoCode);
+
         /// <summary>
         /// Gets a country by two letter ISO code
         /// </summary>

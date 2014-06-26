@@ -91,6 +91,27 @@ namespace SmartStore.Services.Payments
         }
 
 
+		/// <summary>
+		/// Pre process a payment
+		/// </summary>
+		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
+		/// <returns>Pre process payment result</returns>
+		public virtual PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest)
+		{
+			if (processPaymentRequest.OrderTotal == decimal.Zero)
+			{
+				var result = new PreProcessPaymentResult();
+				return result;
+			}
+			else
+			{
+				var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
+				if (paymentMethod == null)
+					throw new SmartException("Payment method couldn't be loaded");
+
+				return paymentMethod.PreProcessPayment(processPaymentRequest);
+			}
+		}
 
         /// <summary>
         /// Process a payment

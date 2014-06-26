@@ -318,10 +318,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			if (propertyName.IsCaseInsensitiveEqual("Country"))
 			{
-				if (queryValue.Length == 2)
-					return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoLetterIsoCode(queryValue);
-				else if (queryValue.Length == 3)
-					return EngineContext.Current.Resolve<ICountryService>().GetCountryByThreeLetterIsoCode(queryValue);
+				return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
 			{

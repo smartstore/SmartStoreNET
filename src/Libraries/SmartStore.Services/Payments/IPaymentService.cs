@@ -32,6 +32,13 @@ namespace SmartStore.Services.Payments
 
 
 
+		/// <summary>
+		/// Pre process a payment
+		/// </summary>
+		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
+		/// <returns>Pre process payment result</returns>
+		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest);
+
         /// <summary>
         /// Process a payment
         /// </summary>

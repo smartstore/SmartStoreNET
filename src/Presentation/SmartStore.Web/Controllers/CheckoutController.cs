@@ -900,8 +900,11 @@ namespace SmartStore.Web.Controllers
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //model
             var model = PrepareConfirmOrderModel(cart);
+
+			//if (TempData["ConfirmOrderWarnings"] != null)
+			//	model.Warnings.AddRange(TempData["ConfirmOrderWarnings"] as IList<string>);
+
             return View(model);
         }
         [HttpPost, ActionName("Confirm")]
@@ -943,9 +946,10 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					 SystemCustomerAttributeNames.SelectedPaymentMethod,
-					 _genericAttributeService, _storeContext.CurrentStore.Id);
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+
                 if (placeOrderResult.Success)
                 {
                     _httpContext.Session["OrderPaymentInfo"] = null;
@@ -980,6 +984,11 @@ namespace SmartStore.Web.Controllers
             }
 
             //If we got this far, something failed, redisplay form
+
+			//if (model.Warnings.Count > 0)
+			//	TempData["ConfirmOrderWarnings"] = model.Warnings;
+
+			//return RedirectToRoute("CheckoutConfirm");
             return View(model);
         }
 

@@ -1563,6 +1563,7 @@ namespace SmartStore.Admin.Controllers
 			var searchContext = new ProductSearchContext()
 			{
 				ParentGroupedProductId = productId,
+				PageSize = int.MaxValue,
 				ShowHidden = true
 			};
 

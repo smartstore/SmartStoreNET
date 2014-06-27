@@ -47,6 +47,7 @@
 * CustomerRole > TaxDisplayType _Including VAT_ could not be saved
 * Product.DisableBuyButton was never updated when the stock quantity has been increased (e.g. as a result of order canceling)
 * Shipping.ByTotal: Fixed matching of rates by choosing the more specific over the common rate
+* A grouped product only shows up to 12 associated products
 
 ##SmartStore.NET 2.0.2#
 

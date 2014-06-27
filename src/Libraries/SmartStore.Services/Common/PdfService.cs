@@ -1008,6 +1008,7 @@ namespace SmartStore.Services.Common
 					var searchContext = new ProductSearchContext()
 					{
 						ParentGroupedProductId = product.Id,
+						PageSize = int.MaxValue,
 						ShowHidden = true
 					};
 

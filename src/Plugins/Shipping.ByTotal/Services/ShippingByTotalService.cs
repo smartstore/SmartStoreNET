@@ -111,19 +111,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
 			var matchedByStore = new List<ShippingByTotalRecord>();
 			foreach (var sbw in existingRates)
 			{
-				if (storeId == sbw.StoreId)
+                if (sbw.StoreId == 0 || storeId == sbw.StoreId)
 				{
 					matchedByStore.Add(sbw);
-				}
-			}
-			if (matchedByStore.Count == 0)
-			{
-				foreach (var sbw in existingRates)
-				{
-					if (sbw.StoreId == 0)
-					{
-						matchedByStore.Add(sbw);
-					}
 				}
 			}
 
@@ -131,19 +121,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             var matchedByCountry = new List<ShippingByTotalRecord>();
 			foreach (var sbt in matchedByStore)
             {
-                if (countryId == sbt.CountryId.GetValueOrDefault())
+                if (sbt.CountryId.GetValueOrDefault() == 0 || countryId == sbt.CountryId.GetValueOrDefault())
                 {
                     matchedByCountry.Add(sbt);
-                }
-            }
-            if (matchedByCountry.Count == 0)
-            {
-				foreach (var sbt in matchedByStore)
-                {
-                    if (sbt.CountryId.GetValueOrDefault() == 0)
-                    {
-                        matchedByCountry.Add(sbt);
-                    }
                 }
             }
 
@@ -151,19 +131,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             var matchedByStateProvince = new List<ShippingByTotalRecord>();
             foreach (var sbt in matchedByCountry)
             {
-                if (stateProvinceId == sbt.StateProvinceId.GetValueOrDefault())
+                if (sbt.StateProvinceId.GetValueOrDefault() == 0 || stateProvinceId == sbt.StateProvinceId.GetValueOrDefault())
                 {
                     matchedByStateProvince.Add(sbt);
-                }
-            }
-            if (matchedByStateProvince.Count == 0)
-            {
-                foreach (var sbw in matchedByCountry)
-                {
-                    if (sbw.StateProvinceId.GetValueOrDefault() == 0)
-                    {
-                        matchedByStateProvince.Add(sbw);
-                    }
                 }
             }
 
@@ -177,19 +147,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
                 }
             }
 
-            //// Obsolete
-            //if (matchedByZip.Count == 0)
-            //{
-            //    foreach (var sbt in matchedByStateProvince)
-            //    {
-            //        if (sbt.Zip.IsEmpty())
-            //        {
-            //            matchedByZip.Add(sbt);
-            //        }
-            //    }
-            //}
-
-            return matchedByZip.FirstOrDefault();
+            return matchedByZip.LastOrDefault();
         }
 
         private bool ZipMatches(string zip, string pattern)

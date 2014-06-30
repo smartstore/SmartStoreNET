@@ -469,7 +469,7 @@ namespace SmartStore.Services.Orders
             var result = new PlaceOrderResult();
             try
             {
-                #region Order details (customer, addresses, totals)
+                #region Order details (customer, totals)
 
                 //Recurring orders. Load initial order
                 Order initialOrder = _orderService.GetOrderById(processPaymentRequest.InitialOrderId);
@@ -631,9 +631,10 @@ namespace SmartStore.Services.Orders
                     Discount orderSubTotalAppliedDiscount1 = null;
                     decimal subTotalWithoutDiscountBase1 = decimal.Zero;
                     decimal subTotalWithDiscountBase1 = decimal.Zero;
+
                     _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                        true, out orderSubTotalDiscountAmount1, out orderSubTotalAppliedDiscount1,
-                        out subTotalWithoutDiscountBase1, out subTotalWithDiscountBase1);
+                        true, out orderSubTotalDiscountAmount1, out orderSubTotalAppliedDiscount1, out subTotalWithoutDiscountBase1, out subTotalWithDiscountBase1);
+
                     orderSubTotalInclTax = subTotalWithoutDiscountBase1;
                     orderSubTotalDiscountInclTax = orderSubTotalDiscountAmount1;
 
@@ -646,9 +647,10 @@ namespace SmartStore.Services.Orders
                     Discount orderSubTotalAppliedDiscount2 = null;
                     decimal subTotalWithoutDiscountBase2 = decimal.Zero;
                     decimal subTotalWithDiscountBase2 = decimal.Zero;
+
                     _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                        false, out orderSubTotalDiscountAmount2, out orderSubTotalAppliedDiscount2,
-                        out subTotalWithoutDiscountBase2, out subTotalWithDiscountBase2);
+                        false, out orderSubTotalDiscountAmount2, out orderSubTotalAppliedDiscount2, out subTotalWithoutDiscountBase2, out subTotalWithDiscountBase2);
+
                     orderSubTotalExclTax = subTotalWithoutDiscountBase2;
                     orderSubTotalDiscountExclTax = orderSubTotalDiscountAmount2;
                 }
@@ -670,23 +672,11 @@ namespace SmartStore.Services.Orders
                     shoppingCartRequiresShipping = initialOrder.ShippingStatus != ShippingStatus.ShippingNotRequired;
                 }
 
-                Address shippingAddress = null;
                 string shippingMethodName = "", shippingRateComputationMethodSystemName = "";
                 if (shoppingCartRequiresShipping)
                 {
                     if (!processPaymentRequest.IsRecurringPayment)
                     {
-                        if (customer.ShippingAddress == null)
-                            throw new SmartException("Shipping address is not provided");
-
-						if (!customer.ShippingAddress.Email.IsEmail())
-                            throw new SmartException("Email is not valid");
-
-                        //clone shipping address
-                        shippingAddress = (Address)customer.ShippingAddress.Clone();
-                        if (shippingAddress.Country != null && !shippingAddress.Country.AllowsShipping)
-                            throw new SmartException(string.Format("Country '{0}' is not allowed for shipping", shippingAddress.Country.Name));
-
 						var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, processPaymentRequest.StoreId);
                         if (shippingOption != null)
                         {
@@ -696,14 +686,6 @@ namespace SmartStore.Services.Orders
                     }
                     else
                     {
-                        if (initialOrder.ShippingAddress == null)
-                            throw new SmartException("Shipping address is not available");
-
-                        //clone shipping address
-                        shippingAddress = (Address)initialOrder.ShippingAddress.Clone();
-                        if (shippingAddress.Country != null && !shippingAddress.Country.AllowsShipping)
-                            throw new SmartException(string.Format("Country '{0}' is not allowed for shipping", shippingAddress.Country.Name));
-
                         shippingMethodName = initialOrder.ShippingMethod;
                         shippingRateComputationMethodSystemName = initialOrder.ShippingRateComputationMethodSystemName;
                     }
@@ -800,7 +782,7 @@ namespace SmartStore.Services.Orders
 
                 #endregion
 
-				#region Billing address & pre payment workflow
+				#region Addresses & pre payment workflow
 
 				// give payment processor the opportunity to fullfill billing address
 				var preProcessPaymentResult = _paymentService.PreProcessPayment(processPaymentRequest);
@@ -824,20 +806,42 @@ namespace SmartStore.Services.Orders
 					if (!customer.BillingAddress.Email.IsEmail())
 						throw new SmartException("Email is not valid");
 
-					//clone billing address
 					billingAddress = (Address)customer.BillingAddress.Clone();
-					if (billingAddress.Country != null && !billingAddress.Country.AllowsBilling)
-						throw new SmartException(string.Format("Country '{0}' is not allowed for billing", billingAddress.Country.Name));
 				}
 				else
 				{
 					if (initialOrder.BillingAddress == null)
 						throw new SmartException("Billing address is not available");
 
-					//clone billing address
 					billingAddress = (Address)initialOrder.BillingAddress.Clone();
-					if (billingAddress.Country != null && !billingAddress.Country.AllowsBilling)
-						throw new SmartException(string.Format("Country '{0}' is not allowed for billing", billingAddress.Country.Name));
+				}
+
+				if (billingAddress.Country != null && !billingAddress.Country.AllowsBilling)
+					throw new SmartException(string.Format("Country '{0}' is not allowed for billing", billingAddress.Country.Name));
+
+				Address shippingAddress = null;
+				if (shoppingCartRequiresShipping)
+				{
+					if (!processPaymentRequest.IsRecurringPayment)
+					{
+						if (customer.ShippingAddress == null)
+							throw new SmartException("Shipping address is not provided");
+
+						if (!customer.ShippingAddress.Email.IsEmail())
+							throw new SmartException("Email is not valid");
+
+						shippingAddress = (Address)customer.ShippingAddress.Clone();
+					}
+					else
+					{
+						if (initialOrder.ShippingAddress == null)
+							throw new SmartException("Shipping address is not available");
+
+						shippingAddress = (Address)initialOrder.ShippingAddress.Clone();
+					}
+
+					if (shippingAddress.Country != null && !shippingAddress.Country.AllowsShipping)
+						throw new SmartException(string.Format("Country '{0}' is not allowed for shipping", shippingAddress.Country.Name));
 				}
 
 				#endregion

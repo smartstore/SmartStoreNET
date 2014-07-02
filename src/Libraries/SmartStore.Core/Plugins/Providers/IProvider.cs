@@ -11,11 +11,6 @@ namespace SmartStore.Core.Plugins
 	{
 	}
 
-	public interface IConfigurableProvider : IProvider
-	{
-		void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
-	}
-
 	public sealed class Provider<TProvider> where TProvider : IProvider
 	{
 		private readonly Lazy<TProvider, ProviderMetadata> _lazy;

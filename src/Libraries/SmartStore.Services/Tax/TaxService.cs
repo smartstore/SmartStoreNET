@@ -27,9 +27,9 @@ namespace SmartStore.Services.Tax
         private readonly TaxSettings _taxSettings;
 		private readonly ShoppingCartSettings _cartSettings;
         private readonly IPluginFinder _pluginFinder;
-        private readonly IDictionary<string, ITaxProvider> _taxProviders;
         private readonly IDictionary<TaxRateCacheKey, decimal> _cachedTaxRates;
 		private readonly ISettingService _settingService;
+		private readonly IProviderManager _providerManager;
 
         #endregion
 
@@ -42,21 +42,23 @@ namespace SmartStore.Services.Tax
         /// <param name="workContext">Work context</param>
         /// <param name="taxSettings">Tax settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
-        public TaxService(IAddressService addressService,
+        public TaxService(
+			IAddressService addressService,
             IWorkContext workContext,
             TaxSettings taxSettings,
 			ShoppingCartSettings cartSettings,
             IPluginFinder pluginFinder,
-			ISettingService settingService)
+			ISettingService settingService,
+			IProviderManager providerManager)
         {
-            _addressService = addressService;
-            _workContext = workContext;
-            _taxSettings = taxSettings;
-			_cartSettings = cartSettings;
-            _pluginFinder = pluginFinder;
-            _taxProviders = new Dictionary<string, ITaxProvider>();
-            _cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
-			_settingService = settingService;
+            this._addressService = addressService;
+			this._workContext = workContext;
+			this._taxSettings = taxSettings;
+			this._cartSettings = cartSettings;
+			this._pluginFinder = pluginFinder;
+			this._cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
+			this._settingService = settingService;
+			this._providerManager = providerManager;
         }
 
         #endregion
@@ -193,13 +195,13 @@ namespace SmartStore.Services.Tax
         /// Load active tax provider
         /// </summary>
         /// <returns>Active tax provider</returns>
-        public virtual ITaxProvider LoadActiveTaxProvider()
+        public virtual Provider<ITaxProvider> LoadActiveTaxProvider()
         {
             var taxProvider = LoadTaxProviderBySystemName(_taxSettings.ActiveTaxProviderSystemName);
             if (taxProvider == null)
             {
                 taxProvider = LoadAllTaxProviders().FirstOrDefault();
-                _taxSettings.ActiveTaxProviderSystemName = taxProvider.PluginDescriptor.SystemName;
+                _taxSettings.ActiveTaxProviderSystemName = taxProvider.Metadata.SystemName;
                 _settingService.SaveSetting(_taxSettings);
             }
             return taxProvider;
@@ -210,35 +212,18 @@ namespace SmartStore.Services.Tax
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found tax provider</returns>
-        public virtual ITaxProvider LoadTaxProviderBySystemName(string systemName)
+        public virtual Provider<ITaxProvider> LoadTaxProviderBySystemName(string systemName)
         {
-			if (systemName.IsNullOrEmpty())
-				return null;
-
-            ITaxProvider provider;
-            if (!_taxProviders.TryGetValue(systemName, out provider))
-            {
-                var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<ITaxProvider>(systemName);
-                if (descriptor != null)
-                {
-                    provider = descriptor.Instance<ITaxProvider>();
-                    if (provider != null)
-                    {
-                        _taxProviders[systemName] = provider;
-                    }
-                }
-            }
-
-            return provider;
+			return _providerManager.GetProvider<ITaxProvider>(systemName);
         }
 
         /// <summary>
         /// Load all tax providers
         /// </summary>
         /// <returns>Tax providers</returns>
-        public virtual IList<ITaxProvider> LoadAllTaxProviders()
+        public virtual IEnumerable<Provider<ITaxProvider>> LoadAllTaxProviders()
         {
-            return _pluginFinder.GetPlugins<ITaxProvider>().ToList();
+			return _providerManager.GetAllProviders<ITaxProvider>();
         }
 
 
@@ -309,7 +294,7 @@ namespace SmartStore.Services.Tax
             }
 
             //get tax rate
-            var calculateTaxResult = activeTaxProvider.GetTaxRate(calculateTaxRequest);
+            var calculateTaxResult = activeTaxProvider.Value.GetTaxRate(calculateTaxRequest);
             if (calculateTaxResult.Success)
             {
                 // ensure that tax is equal or greater than zero

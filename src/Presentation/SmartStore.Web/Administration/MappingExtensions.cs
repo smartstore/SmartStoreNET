@@ -461,9 +461,9 @@ namespace SmartStore.Admin
 
         #region Tax providers
 
-        public static TaxProviderModel ToModel(this ITaxProvider entity)
+        public static TaxProviderModel ToModel(this Provider<ITaxProvider> entity)
         {
-            return Mapper.Map<ITaxProvider, TaxProviderModel>(entity);
+			return Mapper.Map<Provider<ITaxProvider>, TaxProviderModel>(entity);
         }
 
         #endregion

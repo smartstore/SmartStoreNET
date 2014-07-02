@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public string GenerateFeedProgressUrl { get; set; }
 		public string DeleteFilesUrl { get; set; }
 
-		[SmartResourceDisplayName("Plugins.KnownGroup.PromotionFeed")]
+		[SmartResourceDisplayName("Admin.PromotionFeeds")]
 		public List<FeedFileData> GeneratedFiles { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
 	}

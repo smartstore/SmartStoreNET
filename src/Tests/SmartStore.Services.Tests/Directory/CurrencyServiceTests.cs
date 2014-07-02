@@ -90,7 +90,7 @@ namespace SmartStore.Services.Tests.Directory
             var pluginFinder = new PluginFinder();
             _currencyService = new CurrencyService(cacheManager,
 				_currencyRepository, _storeMappingService, 
-                _currencySettings, pluginFinder, _eventPublisher, null);
+                _currencySettings, pluginFinder, _eventPublisher, this.ProviderManager);
         }
         
         [Test]

@@ -1,7 +1,0 @@
-﻿FriendlyName: Free tax rate provider
-SystemName: Tax.Free
-Version: 1.3
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Tax.Free.dll
-ResourceRootKey: Plugins.Tax.Free

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -49,7 +51,7 @@ namespace SmartStore.Services.Tests.Tax
 
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService, this.ProviderManager);
         }
 
         [Test]
@@ -57,7 +59,7 @@ namespace SmartStore.Services.Tests.Tax
         {
             var providers = _taxService.LoadAllTaxProviders();
             providers.ShouldNotBeNull();
-            (providers.Count > 0).ShouldBeTrue();
+            (providers.Any()).ShouldBeTrue();
         }
 
         [Test]

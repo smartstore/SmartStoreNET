@@ -9,9 +9,9 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Plugin.Tax.CountryStateZip
 {
-    /// <summary>
-    /// Fixed rate tax provider
-    /// </summary>
+	[SystemName("Tax.CountryStateZip")]
+	[FriendlyName("Tax by country, state & zip")]
+	[DisplayOrder(10)]
     public class CountryStateZipTaxProvider : BasePlugin, ITaxProvider
     {
         private readonly ITaxRateService _taxRateService;

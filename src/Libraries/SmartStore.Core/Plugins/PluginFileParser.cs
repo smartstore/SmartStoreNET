@@ -20,29 +20,26 @@ namespace SmartStore.Core.Plugins
             }
         }
         
-        // codehint: sm-add
         internal readonly static string[] KnownGroups = new string[] 
         { 
-            "Admin", // NEW
-            "Marketing", // NEW
+            "Admin",
+            "Marketing",
             "Payment",
             "Shipping",
             "Tax",
-            "Analytics", // NEW
-            "CMS", // NEW
-            "SEO", // NEW
-            "PromotionFeed",
-            "DiscountRequirement",
-            "Import",
-            "CurrencyExchange",
-            "ExternalAuth",
-            "Api", // NEW
-            "Mobile",
-            "Social", // NEW
-            "Security", // NEW
-            "Widget",
-            "Developer", // NEW
+            "Analytics",
+            "CMS",
+			"Media",
+            "SEO",
+            "Data",
+            "Globalization",
+            "Api",
+            "Mobile", 
+            "Social",
+            "Security", 
+            "Developer",
 			"Sales",
+			"Design",
             "Misc"
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
@@ -124,12 +121,12 @@ namespace SmartStore.Core.Plugins
                 string key = setting.Substring(0, separatorIndex).Trim();
                 string value = setting.Substring(separatorIndex + 1).Trim();
 
-                group = null;
+                //group = null;
 
                 switch (key)
                 {
                     case "Group":
-                        group = value; // descriptor.Group = value;
+                        group = value;
                         break;
                     case "FriendlyName":
                         descriptor.FriendlyName = value;
@@ -167,42 +164,29 @@ namespace SmartStore.Core.Plugins
                         descriptor.PluginFileName = value;
                         break;
 					case "ResourceRootKey":
-						descriptor.ResourceRootKey = value;		// codehint: sm-add
+						descriptor.ResourceRootKey = value;
 						break;
                 }
             }
 
-            // codehint: sm-add
-            descriptor.Group = GetKnownGroupName(descriptor.SystemName);
-            if (descriptor.Group == "Misc" && group.HasValue())
-            {
-                descriptor.Group = group;
-            }
+			if (IsKnownGroup(group))
+			{
+				descriptor.Group = group;
+			}
+			else
+			{
+				descriptor.Group = "Misc";
+			}
 
             return descriptor;
         }
-        
-        // codehint: sm-add
-        private static string GetKnownGroupName(string systemName)
-        {
-            if (systemName.IsEmpty())
-            {
-                return "Misc";
-            }
 
-            string token = systemName.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)[0];
-
-            int idx = Array.FindIndex(
-                KnownGroups,
-                x => x.Equals(token, StringComparison.OrdinalIgnoreCase) || x.Equals(Inflector.Singularize(token), StringComparison.OrdinalIgnoreCase));
-
-            if (idx >= 0)
-            {
-                return KnownGroups[idx];
-            }
-
-            return "Misc";
-        }
+		private static bool IsKnownGroup(string group)
+		{
+			if (group.IsEmpty())
+				return false;
+			return KnownGroups.Contains(group, StringComparer.OrdinalIgnoreCase);
+		}
         
         public static void SavePluginDescriptionFile(PluginDescriptor plugin)
         {

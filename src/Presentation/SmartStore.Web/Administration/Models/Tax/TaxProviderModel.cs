@@ -18,10 +18,6 @@ namespace SmartStore.Admin.Models.Tax
         [SmartResourceDisplayName("Admin.Configuration.Tax.Providers.Fields.IsPrimaryTaxProvider")]
         public bool IsPrimaryTaxProvider { get; set; }
 
-
-
-
-
         public string ConfigurationActionName { get; set; }
         public string ConfigurationControllerName { get; set; }
         public RouteValueDictionary ConfigurationRouteValues { get; set; }

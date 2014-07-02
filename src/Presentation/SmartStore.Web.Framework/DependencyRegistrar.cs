@@ -720,6 +720,7 @@ namespace SmartStore.Web.Framework
 				var friendlyName = GetFriendlyName(type, pluginDescriptor);
 				var resPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{1}.{0}"; // e.g. Plugins.FriendlyName.MySystemName
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
+				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 
 				var registration = builder.RegisterType(type).As<IProvider>().Named<IProvider>(systemName).InstancePerRequest();
 				registration.WithMetadata<ProviderMetadata>(m =>
@@ -731,31 +732,30 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.FriendlyName, friendlyName.Item1);
 					m.For(em => em.Description, friendlyName.Item2);
 					m.For(em => em.DisplayOrder, GetDisplayOrder(type, pluginDescriptor));
+					m.For(em => em.IsConfigurable, isConfigurable);
 				});
-				
-				// register discount requirement rule providers
-				if (typeof(IDiscountRequirementRule).IsAssignableFrom(type))
-				{
-					registration.As(typeof(IDiscountRequirementRule)).Named(systemName, typeof(IDiscountRequirementRule));
-					registration.WithMetadata<ProviderMetadata>(m =>
-					{
-						m.For(em => em.ProviderType, typeof(IDiscountRequirementRule));
-					});
-				}
 
-				// register exchange rate providers
-				if (typeof(IExchangeRateProvider).IsAssignableFrom(type))
-				{
-					registration.As(typeof(IExchangeRateProvider)).Named(systemName, typeof(IExchangeRateProvider));
-					registration.WithMetadata<ProviderMetadata>(m =>
-					{
-						m.For(em => em.ProviderType, typeof(IExchangeRateProvider));
-					});
-				}
+				// register specific provider type
+				RegisterAsSpecificProvider<ITaxProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IDiscountRequirementRule>(type, systemName, registration);
+				RegisterAsSpecificProvider<IExchangeRateProvider>(type, systemName, registration);
 			}
+
 		}
 
 		#region Helpers
+
+		private void RegisterAsSpecificProvider<T>(Type implType, string systemName, IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registration) where T : IProvider
+		{
+			if (typeof(T).IsAssignableFrom(implType))
+			{
+				registration.As(typeof(T)).Named(systemName, typeof(T));
+				registration.WithMetadata<ProviderMetadata>(m =>
+				{
+					m.For(em => em.ProviderType, typeof(T));
+				});
+			}
+		}
 
 		private string GetSystemName(Type type, PluginDescriptor descriptor)
 		{

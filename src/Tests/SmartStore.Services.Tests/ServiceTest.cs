@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Tests.Directory;
 using SmartStore.Services.Tests.Discounts;
@@ -6,18 +8,30 @@ using SmartStore.Services.Tests.Payments;
 using SmartStore.Services.Tests.Shipping;
 using SmartStore.Services.Tests.Tax;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace SmartStore.Services.Tests
 {
     [TestFixture]
     public abstract class ServiceTest
     {
-        [SetUp]
+		private MockProviderManager _providerManager = new MockProviderManager();
+		
+		[SetUp]
         public void SetUp()
         {
             //init plugins
             InitPlugins();
+
+			InitProviders();
         }
+
+		private void InitProviders()
+		{
+			_providerManager.RegisterProvider("FixedTaxRateTest", new FixedRateTestTaxProvider());
+			_providerManager.RegisterProvider("TestDiscountRequirementRule", new TestDiscountRequirementRule());
+			_providerManager.RegisterProvider("CurrencyExchange.TestProvider", new TestExchangeRateProvider());
+		}
 
         private void InitPlugins()
         {
@@ -59,5 +73,13 @@ namespace SmartStore.Services.Tests
                 });
             PluginManager.ReferencedPlugins = plugins;
         }
+
+		protected MockProviderManager ProviderManager
+		{
+			get
+			{
+				return _providerManager;
+			}
+		}
     }
 }

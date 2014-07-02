@@ -106,6 +106,7 @@
     <Compile Include="Logging\CustomerActivityServiceTests.cs" />
     <Compile Include="Messages\TokenizerTests.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionServiceTests.cs" />
+    <Compile Include="MockProviderManager.cs" />
     <Compile Include="Orders\CheckoutAttributeExtensionsTests.cs" />
     <Compile Include="Orders\CheckoutAttributeParserAndFormatterTests.cs" />
     <Compile Include="Orders\OrderProcessingServiceTests.cs" />

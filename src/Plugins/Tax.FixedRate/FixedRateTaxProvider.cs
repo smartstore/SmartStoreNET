@@ -6,9 +6,9 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Plugin.Tax.FixedRate
 {
-    /// <summary>
-    /// Fixed rate tax provider
-    /// </summary>
+	[SystemName("Tax.FixedRate")]
+	[FriendlyName("Fixed tax rate provider")]
+	[DisplayOrder(5)]
     public class FixedRateTaxProvider : BasePlugin, ITaxProvider
     {
         private readonly ISettingService _settingService;

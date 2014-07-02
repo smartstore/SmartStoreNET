@@ -1,5 +1,6 @@
 ﻿FriendlyName: Facebook
 SystemName: ExternalAuth.Facebook
+Group: Security
 Version: 1.5
 MinAppVersion: 2.0.0
 DisplayOrder: 5

@@ -1,5 +1,6 @@
 ﻿FriendlyName: Google Merchant Center (GMC)
 SystemName: PromotionFeed.Froogle
+Group: Marketing
 Version: 2.2
 MinAppVersion: 2.0.0
 Author: SmartStore AG

@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Tax
 {
@@ -17,20 +18,20 @@ namespace SmartStore.Services.Tax
         /// Load active tax provider
         /// </summary>
         /// <returns>Active tax provider</returns>
-        ITaxProvider LoadActiveTaxProvider();
+        Provider<ITaxProvider> LoadActiveTaxProvider();
 
         /// <summary>
         /// Load tax provider by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found tax provider</returns>
-        ITaxProvider LoadTaxProviderBySystemName(string systemName);
+        Provider<ITaxProvider> LoadTaxProviderBySystemName(string systemName);
 
         /// <summary>
         /// Load all tax providers
         /// </summary>
         /// <returns>Tax providers</returns>
-        IList<ITaxProvider> LoadAllTaxProviders();
+        IEnumerable<Provider<ITaxProvider>> LoadAllTaxProviders();
         
 
 

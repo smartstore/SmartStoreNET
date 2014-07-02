@@ -1,5 +1,6 @@
 ﻿FriendlyName: Google Analytics
 SystemName: Widgets.GoogleAnalytics
+Group: Analytics
 Version: 1.6
 MinAppVersion: 2.0.0
 DisplayOrder: 1

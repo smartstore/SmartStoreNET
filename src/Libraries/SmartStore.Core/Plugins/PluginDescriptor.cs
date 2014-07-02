@@ -166,22 +166,27 @@ namespace SmartStore.Core.Plugins
 		/// </summary>
 		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.
 		/// Otherwise you get the wrong root key.</remarks>
-		public string ResourceRootKey {
+		public string ResourceRootKey 
+		{
 			get {
-				if (_resourceRootKey == null) {
+				if (_resourceRootKey == null) 
+				{
 					_resourceRootKey = "";
-
-					try {
+					try 
+					{
 						// try to get root-key from first entry of XML file
 						string localizationDir = Path.Combine(OriginalAssemblyFile.Directory.FullName, "Localization");
 
-						if (System.IO.Directory.Exists(localizationDir)) {
+						if (System.IO.Directory.Exists(localizationDir)) 
+						{
 							string filePath = System.IO.Directory.EnumerateFiles(localizationDir, "*.xml").FirstOrDefault();
-							if (filePath.HasValue()) {
+							if (filePath.HasValue()) 
+							{
 								XmlDocument doc = new XmlDocument();
 								doc.Load(filePath);
 								var node = doc.SelectSingleNode(@"//Language/LocaleResource");
-								if (node != null) {
+								if (node != null) 
+								{
 									string key = node.Attributes["Name"].InnerText;
 									if (key.HasValue() && key.Contains('.'))
 										_resourceRootKey = key.Substring(0, key.LastIndexOf('.'));
@@ -189,7 +194,8 @@ namespace SmartStore.Core.Plugins
 							}
 						}
 					}
-					catch (Exception exc) {
+					catch (Exception exc) 
+					{
 						exc.Dump();
 					}
 				}

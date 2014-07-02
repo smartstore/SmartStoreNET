@@ -411,6 +411,7 @@
     <Compile Include="Tasks\TaskThread.cs" />
     <Compile Include="Tax\CalculateTaxRequest.cs" />
     <Compile Include="Tax\CalculateTaxResult.cs" />
+    <Compile Include="Tax\FreeTaxProvider.cs" />
     <Compile Include="Tax\ITaxCategoryService.cs" />
     <Compile Include="Tax\ITaxProvider.cs" />
     <Compile Include="Tax\ITaxService.cs" />

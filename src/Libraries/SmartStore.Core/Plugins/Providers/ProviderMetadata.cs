@@ -50,6 +50,11 @@ namespace SmartStore.Core.Plugins
 		public int DisplayOrder { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the provider is configurable (by implementing <see cref="IConfigurable"/>)
+		/// </summary>
+		public bool IsConfigurable { get; set; }
+
+		/// <summary>
 		/// Gets or sets the <see cref="PluginDescriptor"/> instance in which the provider is implemented
 		/// </summary>
 		/// <remarks>The value is <c>null</c>, if the provider is part of the application core</remarks>

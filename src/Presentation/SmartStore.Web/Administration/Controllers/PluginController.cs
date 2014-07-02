@@ -84,7 +84,7 @@ namespace SmartStore.Admin.Controllers
         {
             var pluginModel = pluginDescriptor.ToModel();
 
-            pluginModel.Group = _localizationService.GetResource("Plugins.KnownGroup." + pluginDescriptor.Group);
+            pluginModel.Group = _localizationService.GetResource("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
 
 			if (forList)
 			{
@@ -106,7 +106,6 @@ namespace SmartStore.Admin.Controllers
 			pluginModel.SelectedStoreIds = _settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
 			pluginModel.LimitedToStores = pluginModel.SelectedStoreIds.Count() > 0;
 
-            // codehint: sm-add
             if (System.IO.File.Exists(Path.Combine(pluginDescriptor.PhysicalPath, "icon.png")))
             {
                 pluginModel.IconUrl = "~/Plugins/{0}/icon.png".FormatInvariant(pluginDescriptor.SystemName);
@@ -178,7 +177,7 @@ namespace SmartStore.Admin.Controllers
 
         private string GetDefaultPluginUrl(PluginDescriptor plugin)
         {
-            string path = "~/Administration/Content/images/icon-plugin-{0}.png".FormatInvariant(plugin.Group);
+            string path = "~/Administration/Content/images/icon-plugin-{0}.png".FormatInvariant(plugin.Group.ToLower());
 
             if (System.IO.File.Exists(Server.MapPath(path)))
             {

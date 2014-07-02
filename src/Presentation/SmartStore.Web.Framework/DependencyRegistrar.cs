@@ -107,17 +107,18 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerRequest();
 
             // services
+			builder.RegisterType<CategoryService>().As<ICategoryService>().WithRequestCache().InstancePerRequest();
+			builder.RegisterType<ManufacturerService>().As<IManufacturerService>().WithRequestCache().InstancePerRequest();
+			builder.RegisterType<ProductService>().As<IProductService>().WithRequestCache().InstancePerRequest();
+
             builder.RegisterType<BackInStockSubscriptionService>().As<IBackInStockSubscriptionService>().InstancePerRequest();
-            builder.RegisterType<CategoryService>().As<ICategoryService>().WithRequestCache().InstancePerRequest();
             builder.RegisterType<CompareProductsService>().As<ICompareProductsService>().InstancePerRequest();
             builder.RegisterType<RecentlyViewedProductsService>().As<IRecentlyViewedProductsService>().InstancePerRequest();
-			builder.RegisterType<ManufacturerService>().As<IManufacturerService>().WithRequestCache().InstancePerRequest();
             builder.RegisterType<PriceCalculationService>().As<IPriceCalculationService>().InstancePerRequest();
             builder.RegisterType<PriceFormatter>().As<IPriceFormatter>().InstancePerRequest();
             builder.RegisterType<ProductAttributeFormatter>().As<IProductAttributeFormatter>().InstancePerLifetimeScope();
             builder.RegisterType<ProductAttributeParser>().As<IProductAttributeParser>().InstancePerRequest();
 			builder.RegisterType<ProductAttributeService>().As<IProductAttributeService>().WithRequestCache().InstancePerRequest();
-			builder.RegisterType<ProductService>().As<IProductService>().WithRequestCache().InstancePerRequest();
             builder.RegisterType<CopyProductService>().As<ICopyProductService>().InstancePerRequest();
 			builder.RegisterType<SpecificationAttributeService>().As<ISpecificationAttributeService>().WithRequestCache().InstancePerRequest();
             builder.RegisterType<ProductTemplateService>().As<IProductTemplateService>().InstancePerRequest();
@@ -198,7 +199,8 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
 
-            builder.RegisterType<ExportManager>().As<IExportManager>().InstancePerRequest();
+			builder.RegisterType<ExportManager>().As<IExportManager>().InstancePerRequest();
+
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
             builder.RegisterType<PdfService>().As<IPdfService>().InstancePerRequest();
@@ -437,6 +439,10 @@ namespace SmartStore.Web.Framework
 				.As<ICacheManager>()
 				.Named<ICacheManager>("request")
 				.InstancePerRequest();
+			builder.RegisterType<NullCache>()
+				.As<ICacheManager>()
+				.Named<ICacheManager>("null")
+				.SingleInstance();
 
 			// Register resolving delegate
 			builder.Register<Func<Type, ICache>>(c =>

@@ -85,12 +85,14 @@ namespace SmartStore.Admin.Controllers
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IPriceFormatter _priceFormatter;
+		private readonly IDbContext _dbContext;
 
         #endregion
 
 		#region Constructors
 
-        public ProductController(IProductService productService, 
+        public ProductController(
+			IProductService productService, 
             IProductTemplateService productTemplateService,
             ICategoryService categoryService,
 			IManufacturerService manufacturerService,
@@ -129,7 +131,8 @@ namespace SmartStore.Admin.Controllers
 			CurrencySettings currencySettings,
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
-			IPriceFormatter priceFormatter)
+			IPriceFormatter priceFormatter,
+			IDbContext dbContext)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -170,6 +173,7 @@ namespace SmartStore.Admin.Controllers
 			this._measureService = measureService;
 			this._measureSettings = measureSettings;
 			this._priceFormatter = priceFormatter;
+			this._dbContext = dbContext;
         }
 
         #endregion
@@ -2412,18 +2416,20 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
+				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+				{
+					var ctx = new ProductSearchContext();
+					ctx.LanguageId = _workContext.WorkingLanguage.Id;
+					ctx.OrderBy = ProductSortingEnum.Position;
+					ctx.PageSize = int.MaxValue;
+					ctx.ShowHidden = true;
 
-                var ctx = new ProductSearchContext();
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
-                ctx.ShowHidden = true;
+					var products = _productService.SearchProducts(ctx);
 
-                var products = _productService.SearchProducts(ctx);
-
-                var fileName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-                var xml = _exportManager.ExportProductsToXml(products);
-                return new XmlDownloadResult(xml, fileName);
+					var fileName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+					var xml = _exportManager.ExportProductsToXml(products);
+					return new XmlDownloadResult(xml, fileName);
+				}
             }
             catch (Exception exc)
             {
@@ -2437,18 +2443,21 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var products = new List<Product>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                products.AddRange(_productService.GetProductsByIds(ids));
-            }
+			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+			{
+				var products = new List<Product>();
+				if (selectedIds != null)
+				{
+					var ids = selectedIds
+						.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(x => Convert.ToInt32(x))
+						.ToArray();
+					products.AddRange(_productService.GetProductsByIds(ids));
+				}
 
-            var xml = _exportManager.ExportProductsToXml(products);
-            return new XmlDownloadResult(xml, "products.xml");
+				var xml = _exportManager.ExportProductsToXml(products);
+				return new XmlDownloadResult(xml, "products.xml");
+			}
         }
 
         public ActionResult ExportExcelAll()
@@ -2458,22 +2467,24 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
+				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+				{
+					var ctx = new ProductSearchContext();
+					ctx.LanguageId = _workContext.WorkingLanguage.Id;
+					ctx.OrderBy = ProductSortingEnum.Position;
+					ctx.PageSize = int.MaxValue;
+					ctx.ShowHidden = true;
 
-                var ctx = new ProductSearchContext();
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
-                ctx.ShowHidden = true;
+					var products = _productService.SearchProducts(ctx);
 
-                var products = _productService.SearchProducts(ctx);
-
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportProductsToXlsx(stream, products);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "products.xlsx");
+					byte[] bytes = null;
+					using (var stream = new MemoryStream())
+					{
+						_exportManager.ExportProductsToXlsx(stream, products);
+						bytes = stream.ToArray();
+					}
+					return File(bytes, "text/xls", "products.xlsx");
+				}
             }
             catch (Exception exc)
             {
@@ -2487,23 +2498,26 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var products = new List<Product>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                products.AddRange(_productService.GetProductsByIds(ids));
-            }
+			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+			{
+				var products = new List<Product>();
+				if (selectedIds != null)
+				{
+					var ids = selectedIds
+						.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(x => Convert.ToInt32(x))
+						.ToArray();
+					products.AddRange(_productService.GetProductsByIds(ids));
+				}
 
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportProductsToXlsx(stream, products);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "products.xlsx");
+				byte[] bytes = null;
+				using (var stream = new MemoryStream())
+				{
+					_exportManager.ExportProductsToXlsx(stream, products);
+					bytes = stream.ToArray();
+				}
+				return File(bytes, "text/xls", "products.xlsx");
+			}
         }
 
 		[HttpPost]

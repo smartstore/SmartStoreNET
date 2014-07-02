@@ -29,6 +29,7 @@ namespace SmartStore.Data
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
 		private static bool? s_isSqlServer2012OrHigher = null;
+		private bool _autoAttach = true;
 
 
         #region Ctor
@@ -194,11 +195,14 @@ namespace SmartStore.Data
 			}
 
 			var result = this.Database.SqlQuery<TEntity>(commandText, parameters).ToList();
-			using (var scope = new DbContextScope(this, autoDetectChanges: false))
+			if (_autoAttach)
 			{
-				for (int i = 0; i < result.Count; i++)
+				using (var scope = new DbContextScope(this, autoDetectChanges: false))
 				{
-					result[i] = AttachEntityToContext(result[i]);
+					for (int i = 0; i < result.Count; i++)
+					{
+						result[i] = AttachEntityToContext(result[i]);
+					}
 				}
 			}
 			return result;
@@ -226,9 +230,12 @@ namespace SmartStore.Data
 				// database call
 				var reader = cmd.ExecuteReader();
 				var result = ((IObjectContextAdapter)(this)).ObjectContext.Translate<TEntity>(reader).ToList();
-				for (int i = 0; i < result.Count; i++)
+				if (_autoAttach)
 				{
-					result[i] = AttachEntityToContext(result[i]);
+					for (int i = 0; i < result.Count; i++)
+					{
+						result[i] = AttachEntityToContext(result[i]);
+					}
 				}
 				// close up the reader, we're done saving results
 				reader.Close();
@@ -386,7 +393,7 @@ namespace SmartStore.Data
         // codehint: sm-add (required for UoW implementation)
         public string Alias { get; internal set; }
 
-        // codehint: sm-add (performance on bulk inserts)
+        // performance on bulk inserts
         public bool AutoDetectChangesEnabled
         {
             get
@@ -399,7 +406,7 @@ namespace SmartStore.Data
             }
         }
 
-        // codehint: sm-add (performance on bulk inserts)
+        // performance on bulk inserts
         public bool ValidateOnSaveEnabled
         {
             get
@@ -412,7 +419,6 @@ namespace SmartStore.Data
             }
         }
 
-        // codehint: sm-add
         public bool ProxyCreationEnabled
         {
             get
@@ -424,6 +430,22 @@ namespace SmartStore.Data
                 this.Configuration.ProxyCreationEnabled = value;
             }
         }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether entities created from stored procedures
+		/// should automatically be attached to the <c>DbContext</c>
+		/// </summary>
+		public bool AutoAttachEnabled
+		{
+			get
+			{
+				return _autoAttach;
+			}
+			set
+			{
+				_autoAttach = value;
+			}
+		}
 
         #endregion
 

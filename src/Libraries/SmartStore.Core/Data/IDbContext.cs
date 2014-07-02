@@ -40,10 +40,11 @@ namespace SmartStore.Core.Data
         // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 
-        // codehint: sm-add (increasing performance on bulk inserts)
+        // increasing performance on bulk operations
         bool ProxyCreationEnabled { get; set; }
         bool AutoDetectChangesEnabled { get; set; }
         bool ValidateOnSaveEnabled { get; set; }
+		bool AutoAttachEnabled { get; set; }
 		bool HooksEnabled { get; set; }
         bool HasChanges { get; }
 

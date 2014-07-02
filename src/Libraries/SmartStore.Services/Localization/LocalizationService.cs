@@ -250,7 +250,11 @@ namespace SmartStore.Services.Localization
         {
             Action<ConcurrentDictionary<string, Tuple<int, string>>> loadAllAction = (d) =>
             {
-                var locales = this.GetAllResources(languageId);
+				var query = from l in _lsrRepository.TableUntracked
+							orderby l.ResourceName
+							where l.LanguageId == languageId
+							select l;
+				var locales = query.ToList();
 
                 foreach (var locale in locales)
                 {

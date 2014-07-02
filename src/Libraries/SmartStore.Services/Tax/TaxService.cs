@@ -365,11 +365,23 @@ namespace SmartStore.Services.Tax
         /// <param name="priceIncludesTax">A value indicating whether price already includes tax</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(Product product, int taxCategoryId,
-            decimal price, bool includingTax, Customer customer,
-            bool priceIncludesTax, out decimal taxRate)
+        public virtual decimal GetProductPrice(
+			Product product, 
+			int taxCategoryId,
+            decimal price, 
+			bool includingTax, 
+			Customer customer,
+            bool priceIncludesTax, 
+			out decimal taxRate)
         {
-            taxRate = GetTaxRate(product, taxCategoryId, customer);
+			// don't calculate if price is 0
+			if (price == decimal.Zero)
+			{
+				taxRate = decimal.Zero;
+				return taxRate;
+			}
+			
+			taxRate = GetTaxRate(product, taxCategoryId, customer);
 
             // Admin: GROSS prices
             if (priceIncludesTax)

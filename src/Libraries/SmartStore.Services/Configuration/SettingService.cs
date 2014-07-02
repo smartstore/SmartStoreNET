@@ -77,7 +77,7 @@ namespace SmartStore.Services.Configuration
 			string key = string.Format(SETTINGS_ALL_KEY);
 			return _cacheManager.Get(key, () =>
 			{
-				var query = from s in _settingRepository.Table
+				var query = from s in _settingRepository.TableUntracked
 							orderby s.Name, s.StoreId
 							select s;
 				var settings = query.ToList();

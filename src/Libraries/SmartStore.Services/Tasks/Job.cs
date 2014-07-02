@@ -124,6 +124,8 @@ namespace SmartStore.Services.Tasks
 					scheduleTaskService.UpdateTask(scheduleTask);
 				}
 
+				scope.Dispose();
+
 				this.IsRunning = false;
 			}
         }

@@ -159,11 +159,6 @@
                 })
 
                 @Html.Action("RelatedProducts", "Catalog", new { productId = Model.Id })
-
-                <!-- product recommendations -->
-                <div class="product-recommendations">
-                    @Html.Action("ProductsAlsoPurchased", "Catalog", new { productId = Model.Id })
-                </div>
             
                 <!-- product tags -->
                 <div class="product-tags">

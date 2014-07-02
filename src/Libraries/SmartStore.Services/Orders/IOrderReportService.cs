@@ -58,15 +58,14 @@ namespace SmartStore.Services.Orders
 			int orderBy = 1, bool showHidden = false);
         
         /// <summary>
-        /// Gets a list of products purchased by other customers who purchased the above
+        /// Gets a list of product identifiers purchased by other customers who purchased the above
         /// </summary>
 		/// <param name="storeId">Store identifier</param>
         /// <param name="productId">Product identifier</param>
         /// <param name="recordsToReturn">Records to return</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product collection</returns>
-		IList<Product> GetProductsAlsoPurchasedById(int storeId, int productId,
-            int recordsToReturn = 5, bool showHidden = false);
+		int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false);
 
         /// <summary>
         /// Gets a list of products that were never sold

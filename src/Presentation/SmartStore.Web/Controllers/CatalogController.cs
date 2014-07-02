@@ -1978,6 +1978,9 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
+			if (listModel.Count == 0)
+				return Content("");
+
             return PartialView(listModel);
         }
 
@@ -2187,6 +2190,9 @@ namespace SmartStore.Web.Controllers
                 }
                 return model;
             });
+
+			if (cacheModel.Manufacturers.Count == 0)
+				return Content("");
 
             return PartialView(cacheModel);
         }
@@ -2426,6 +2432,9 @@ namespace SmartStore.Web.Controllers
                 return model;
             });
 
+			if (cacheModel.Count == 0)
+				return Content("");
+
             return PartialView(cacheModel);
         }
 
@@ -2455,6 +2464,10 @@ namespace SmartStore.Web.Controllers
                 throw new ArgumentException("No product found with the specified id");
 
             var model = PrepareProductSpecificationModel(product);
+
+			if (model.Count == 0)
+				return Content("");
+
             return PartialView(model);
         }
 
@@ -2511,14 +2524,17 @@ namespace SmartStore.Web.Controllers
         public ActionResult RelatedProducts(int productId, int? productThumbPictureSize)
         {
             var products = new List<Product>();
-            var relatedProducts = _productService
-                .GetRelatedProductsByProductId1(productId);
+            var relatedProducts = _productService.GetRelatedProductsByProductId1(productId);
             foreach (var product in _productService.GetProductsByIds(relatedProducts.Select(x => x.ProductId2).ToArray()))
             {
 				//ensure has ACL permission and appropriate store mapping
 				if (_aclService.Authorize(product) && _storeMappingService.Authorize(product))
                     products.Add(product);
             }
+
+			if (products.Count == 0)
+				return Content("");
+
             var model = PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
 
             return PartialView(model);
@@ -2533,15 +2549,17 @@ namespace SmartStore.Web.Controllers
             //load and cache report
 			var productIds = _cacheManager.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _storeContext.CurrentStore.Id), () =>
                 _orderReportService
-				.GetProductsAlsoPurchasedById(_storeContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
-                .Select(x => x.Id)
-                .ToArray()
+				.GetAlsoPurchasedProductsIds(_storeContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
                 );
 
             //load products
             var products = _productService.GetProductsByIds(productIds);
 			//ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
+
+			if (products.Count == 0)
+				return Content("");
+
             //prepare model
             var model = PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
 

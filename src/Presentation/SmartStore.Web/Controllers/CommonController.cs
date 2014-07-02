@@ -338,6 +338,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult LanguageSelector()
         {
             var model = PrepareLanguageSelectorModel();
+
+			if (model.AvailableLanguages.Count < 2)
+				return Content("");
+
             return PartialView(model);
         }
 
@@ -412,6 +416,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult CurrencySelector()
         {
             var model = PrepareCurrencySelectorModel();
+
+			if (model.AvailableCurrencies.Count < 2)
+				return Content("");
+
             return PartialView(model);
         }
         public ActionResult CurrencySelected(int customerCurrency, string returnUrl = "")
@@ -785,57 +793,65 @@ namespace SmartStore.Web.Controllers
             if (!_commonSettings.SitemapEnabled)
                 return RedirectToRoute("HomePage");
 
-            var model = new SitemapModel();
-            if (_commonSettings.SitemapIncludeCategories)
-            {
-                var categories = _categoryService.GetAllCategories();
-                model.Categories = categories.Select(x => x.ToModel()).ToList();
-            }
-            if (_commonSettings.SitemapIncludeManufacturers)
-            {
-                var manufacturers = _manufacturerService.GetAllManufacturers();
-                model.Manufacturers = manufacturers.Select(x => x.ToModel()).ToList();
-            }
-            if (_commonSettings.SitemapIncludeProducts)
-            {
-                //limit product to 200 until paging is supported on this page
-                IList<int> filterableSpecificationAttributeOptionIds = null;
+			var roleIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(_workContext.WorkingLanguage.Id, string.Join(",", roleIds), _storeContext.CurrentStore.Id);
 
-                var productSearchContext = new ProductSearchContext();
+			var result = _cacheManager.Get(cacheKey, () =>
+			{
+				var model = new SitemapModel();
+				if (_commonSettings.SitemapIncludeCategories)
+				{
+					var categories = _categoryService.GetAllCategories();
+					model.Categories = categories.Select(x => x.ToModel()).ToList();
+				}
+				if (_commonSettings.SitemapIncludeManufacturers)
+				{
+					var manufacturers = _manufacturerService.GetAllManufacturers();
+					model.Manufacturers = manufacturers.Select(x => x.ToModel()).ToList();
+				}
+				if (_commonSettings.SitemapIncludeProducts)
+				{
+					//limit product to 200 until paging is supported on this page
+					IList<int> filterableSpecificationAttributeOptionIds = null;
 
-                productSearchContext.OrderBy = ProductSortingEnum.Position;
-                productSearchContext.PageSize = 200;
-                productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				productSearchContext.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
-				productSearchContext.VisibleIndividuallyOnly = true;
+					var productSearchContext = new ProductSearchContext();
 
-                var products = _productService.SearchProducts(productSearchContext);
+					productSearchContext.OrderBy = ProductSortingEnum.Position;
+					productSearchContext.PageSize = 200;
+					productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
+					productSearchContext.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
+					productSearchContext.VisibleIndividuallyOnly = true;
 
-                model.Products = products.Select(product => new ProductOverviewModel()
-                {
-                    Id = product.Id,
-                    Name = product.GetLocalized(x => x.Name).EmptyNull(),
-                    ShortDescription = product.GetLocalized(x => x.ShortDescription),
-                    FullDescription = product.GetLocalized(x => x.FullDescription),
-                    SeName = product.GetSeName(),
-                }).ToList();
-            }
-            if (_commonSettings.SitemapIncludeTopics)
-            {
-				var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id)
-					 .ToList()
-					 .FindAll(t => t.IncludeInSitemap);
-                model.Topics = topics.Select(topic => new TopicModel()
-                {
-                    Id = topic.Id,
-                    SystemName = topic.SystemName,
-                    IncludeInSitemap = topic.IncludeInSitemap,
-                    IsPasswordProtected = topic.IsPasswordProtected,
-                    Title = topic.GetLocalized(x => x.Title),
-                })
-                .ToList();
-            }
-            return View(model);
+					var products = _productService.SearchProducts(productSearchContext);
+
+					model.Products = products.Select(product => new ProductOverviewModel()
+					{
+						Id = product.Id,
+						Name = product.GetLocalized(x => x.Name).EmptyNull(),
+						ShortDescription = product.GetLocalized(x => x.ShortDescription),
+						FullDescription = product.GetLocalized(x => x.FullDescription),
+						SeName = product.GetSeName(),
+					}).ToList();
+				}
+				if (_commonSettings.SitemapIncludeTopics)
+				{
+					var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id)
+						 .ToList()
+						 .FindAll(t => t.IncludeInSitemap);
+					model.Topics = topics.Select(topic => new TopicModel()
+					{
+						Id = topic.Id,
+						SystemName = topic.SystemName,
+						IncludeInSitemap = topic.IncludeInSitemap,
+						IsPasswordProtected = topic.IsPasswordProtected,
+						Title = topic.GetLocalized(x => x.Title),
+					})
+					.ToList();
+				}
+				return model;
+			});
+
+            return View(result);
         }
 
         //SEO sitemap page
@@ -845,8 +861,14 @@ namespace SmartStore.Web.Controllers
             if (!_commonSettings.SitemapEnabled)
                 return RedirectToRoute("HomePage");
 
-            string siteMap = _sitemapGenerator.Generate();
-            return Content(siteMap, "text/xml");
+			var roleIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			string cacheKey = ModelCacheEventConsumer.SITEMAP_XML_MODEL_KEY.FormatInvariant(_workContext.WorkingLanguage.Id, string.Join(",", roleIds), _storeContext.CurrentStore.Id);
+			var sitemap = _cacheManager.Get(cacheKey, () =>
+			{
+				return _sitemapGenerator.Generate(this.Url);
+			});
+
+			return Content(sitemap, "text/xml");
         }
 
         //store theme

@@ -155,7 +155,7 @@ namespace SmartStore.Web.Controllers
                 builder.Password = password;
             }
             builder.PersistSecurityInfo = false;
-            builder.MultipleActiveResultSets = true;
+            //builder.MultipleActiveResultSets = true;
 
             // codehint: sm-add
             builder.UserInstance = false;

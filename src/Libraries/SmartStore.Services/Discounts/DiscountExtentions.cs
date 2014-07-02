@@ -31,8 +31,7 @@ namespace SmartStore.Services.Discounts
         }
 
         
-        public static Discount GetPreferredDiscount(this IList<Discount> discounts,
-            decimal amount)
+        public static Discount GetPreferredDiscount(this IList<Discount> discounts, decimal amount)
         {
             Discount preferredDiscount = null;
             decimal maximumDiscountValue = decimal.Zero;
@@ -49,8 +48,7 @@ namespace SmartStore.Services.Discounts
             return preferredDiscount;
         }
 
-        public static bool ContainsDiscount(this IList<Discount> discounts,
-            Discount discount)
+        public static bool ContainsDiscount(this IList<Discount> discounts, Discount discount)
         {
             if (discounts == null)
                 throw new ArgumentNullException("discounts");

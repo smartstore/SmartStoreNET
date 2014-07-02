@@ -15,12 +15,52 @@ namespace SmartStore.Web.Infrastructure
                             new { controller = "Home", action = "Index"},
                             new[] { "SmartStore.Web.Controllers" });
 
+			//widgets
+			routes.MapRoute("WidgetsByZone",
+							"widgetsbyzone/",
+							new { controller = "Widget", action = "WidgetsByZone" },
+							new[] { "SmartStore.Web.Controllers" });
 
-            //install
-            routes.MapRoute("Installation",
-                            "install",
-                            new { controller = "Install", action = "Index" },
-                            new[] { "SmartStore.Web.Controllers" });
+			//login
+			routes.MapLocalizedRoute("Login",
+						"login/",
+						new { controller = "Customer", action = "Login" },
+						new[] { "SmartStore.Web.Controllers" });
+
+			//register
+			routes.MapLocalizedRoute("Register",
+					"register/",
+					new { controller = "Customer", action = "Register" },
+					new[] { "SmartStore.Web.Controllers" });
+
+			//logout
+			routes.MapLocalizedRoute("Logout",
+							"logout/",
+							new { controller = "Customer", action = "Logout" },
+							new[] { "SmartStore.Web.Controllers" });
+
+			//shopping cart
+			routes.MapLocalizedRoute("ShoppingCart",
+							"cart/",
+							new { controller = "ShoppingCart", action = "Cart" },
+							new[] { "SmartStore.Web.Controllers" });
+			//wishlist
+			routes.MapLocalizedRoute("Wishlist",
+							"wishlist/{customerGuid}",
+							new { controller = "ShoppingCart", action = "Wishlist", customerGuid = UrlParameter.Optional },
+							new[] { "SmartStore.Web.Controllers" });
+
+			//manufacturer list
+			routes.MapLocalizedRoute("ManufacturerList",
+							"manufacturer/all/",
+							new { controller = "Catalog", action = "ManufacturerAll" },
+							new[] { "SmartStore.Web.Controllers" });
+
+			//product reviews
+			routes.MapLocalizedRoute("ProductReviews",
+						"productreviews/{productId}",
+						new { controller = "Catalog", action = "ProductReviews" },
+						new[] { "SmartStore.Web.Controllers" });
 
             //products
             routes.MapLocalizedRoute("RecentlyViewedProducts",
@@ -69,11 +109,6 @@ namespace SmartStore.Web.Infrastructure
                             new { productId = @"\d+" },
                             new[] { "SmartStore.Web.Controllers" });
 
-            //catalog
-            routes.MapLocalizedRoute("ManufacturerList",
-                            "manufacturer/all/",
-                            new { controller = "Catalog", action = "ManufacturerAll" },
-                            new[] { "SmartStore.Web.Controllers" });
             //downloads
             routes.MapRoute("GetSampleDownload",
 							"download/sample/{productid}",
@@ -97,10 +132,6 @@ namespace SmartStore.Web.Infrastructure
                             new[] { "SmartStore.Web.Controllers" });
 
             //reviews
-            routes.MapLocalizedRoute("ProductReviews",
-                            "productreviews/{productId}",
-                            new { controller = "Catalog", action = "ProductReviews" },
-                            new[] { "SmartStore.Web.Controllers" });
             routes.MapRoute("SetProductReviewHelpfulness",
                             "setproductreviewhelpfulness",
                             new { controller = "Catalog", action = "SetProductReviewHelpfulness" },
@@ -119,21 +150,9 @@ namespace SmartStore.Web.Infrastructure
                             new[] { "SmartStore.Web.Controllers" });
 
             //login, register
-            routes.MapLocalizedRoute("Login",
-                            "login/",
-                            new { controller = "Customer", action = "Login" },
-                            new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("LoginCheckoutAsGuest",
                             "login/checkoutasguest",
                             new { controller = "Customer", action = "Login", checkoutAsGuest = true },
-                            new[] { "SmartStore.Web.Controllers" });
-            routes.MapLocalizedRoute("Register",
-                            "register/",
-                            new { controller = "Customer", action = "Register" },
-                            new[] { "SmartStore.Web.Controllers" });
-            routes.MapLocalizedRoute("Logout",
-                            "logout/",
-                            new { controller = "Customer", action = "Logout" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("RegisterResult",
                             "registerresult/{resultId}",
@@ -145,16 +164,6 @@ namespace SmartStore.Web.Infrastructure
                             new { controller = "Customer", action = "CheckUsernameAvailability" },
                             new[] { "SmartStore.Web.Controllers" });
 
-            //shopping cart
-            routes.MapLocalizedRoute("ShoppingCart",
-                            "cart/",
-                            new { controller = "ShoppingCart", action = "Cart" },
-                            new[] { "SmartStore.Web.Controllers" });
-            //wishlist
-            routes.MapLocalizedRoute("Wishlist",
-                            "wishlist/{customerGuid}",
-                            new { controller = "ShoppingCart", action = "Wishlist", customerGuid = UrlParameter.Optional },
-                            new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("EmailWishlist",
                             "emailwishlist",
                             new { controller = "ShoppingCart", action = "EmailWishlist" },
@@ -568,13 +577,14 @@ namespace SmartStore.Web.Infrastructure
                             "t-popup/{SystemName}",
                             new { controller = "Topic", action = "TopicDetailsPopup" },
                             new[] { "SmartStore.Web.Controllers" });
+
             //sitemaps
             routes.MapLocalizedRoute("Sitemap",
                             "sitemap",
                             new { controller = "Common", action = "Sitemap" },
                             new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("SitemapSEO",
-                            "sitemapseo",
+                            "sitemap.xml",
                             new { controller = "Common", action = "SitemapSeo" },
                             new[] { "SmartStore.Web.Controllers" });
 
@@ -604,6 +614,12 @@ namespace SmartStore.Web.Infrastructure
                             "config",
                             new { controller = "Common", action = "Config" },
                             new[] { "SmartStore.Web.Controllers" });
+
+			//install
+			routes.MapRoute("Installation",
+							"install",
+							new { controller = "Install", action = "Index" },
+							new[] { "SmartStore.Web.Controllers" });
 
             //some AJAX links
             routes.MapRoute("GetStatesByCountryId",

@@ -32,7 +32,11 @@ namespace SmartStore.Data
         {
             get
             {
-                return this.Entities;
+				if (_context.ForceNoTracking)
+				{
+					return this.Entities.AsNoTracking();
+				}
+				return this.Entities;
             }
         }
 

@@ -29,8 +29,6 @@ namespace SmartStore.Data
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
 		private static bool? s_isSqlServer2012OrHigher = null;
-		private bool _autoAttach = true;
-
 
         #region Ctor
 
@@ -195,7 +193,7 @@ namespace SmartStore.Data
 			}
 
 			var result = this.Database.SqlQuery<TEntity>(commandText, parameters).ToList();
-			if (_autoAttach)
+			if (!ForceNoTracking)
 			{
 				using (var scope = new DbContextScope(this, autoDetectChanges: false))
 				{
@@ -230,7 +228,7 @@ namespace SmartStore.Data
 				// database call
 				var reader = cmd.ExecuteReader();
 				var result = ((IObjectContextAdapter)(this)).ObjectContext.Translate<TEntity>(reader).ToList();
-				if (_autoAttach)
+				if (!ForceNoTracking)
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
@@ -431,21 +429,7 @@ namespace SmartStore.Data
             }
         }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether entities created from stored procedures
-		/// should automatically be attached to the <c>DbContext</c>
-		/// </summary>
-		public bool AutoAttachEnabled
-		{
-			get
-			{
-				return _autoAttach;
-			}
-			set
-			{
-				_autoAttach = value;
-			}
-		}
+		public bool ForceNoTracking { get; set; }
 
         #endregion
 

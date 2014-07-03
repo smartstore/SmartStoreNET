@@ -578,9 +578,8 @@ namespace SmartStore.Services.Media
             if (productId == 0)
                 return new List<Picture>();
 
-
             var query = from p in _pictureRepository.Table
-                        join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
+						join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
                         orderby pp.DisplayOrder
                         where pp.ProductId == productId
                         select p;

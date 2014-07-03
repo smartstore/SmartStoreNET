@@ -8,16 +8,16 @@ namespace SmartStore.Core.Data
         private readonly bool _autoDetectChangesEnabled;
         private readonly bool _proxyCreationEnabled;
         private readonly bool _validateOnSaveEnabled;
-		private readonly bool _autoAttachEnabled;
+		private readonly bool _forceNoTracking;
 		private readonly IDbContext _ctx;
 
-		public DbContextScope(IDbContext ctx = null, bool? autoDetectChanges = null, bool? proxyCreation = null, bool? validateOnSave = null, bool? autoAttach = null)
+		public DbContextScope(IDbContext ctx = null, bool? autoDetectChanges = null, bool? proxyCreation = null, bool? validateOnSave = null, bool? forceNoTracking = null)
         {
 			_ctx = ctx ?? EngineContext.Current.Resolve<IDbContext>();
 			_autoDetectChangesEnabled = _ctx.AutoDetectChangesEnabled;
 			_proxyCreationEnabled = _ctx.ProxyCreationEnabled;
 			_validateOnSaveEnabled = _ctx.ValidateOnSaveEnabled;
-			_autoAttachEnabled = _ctx.AutoAttachEnabled;
+			_forceNoTracking = _ctx.ForceNoTracking;
             
             if (autoDetectChanges.HasValue)
 				_ctx.AutoDetectChangesEnabled = autoDetectChanges.Value;
@@ -28,8 +28,8 @@ namespace SmartStore.Core.Data
             if (validateOnSave.HasValue)
 				_ctx.ValidateOnSaveEnabled = validateOnSave.Value;
 
-			if (autoAttach.HasValue)
-				_ctx.AutoAttachEnabled = autoAttach.Value;
+			if (forceNoTracking.HasValue)
+				_ctx.ForceNoTracking = forceNoTracking.Value;
         }
 
 		public int Commit()
@@ -42,7 +42,7 @@ namespace SmartStore.Core.Data
 			_ctx.AutoDetectChangesEnabled = _autoDetectChangesEnabled;
 			_ctx.ProxyCreationEnabled = _proxyCreationEnabled;
 			_ctx.ValidateOnSaveEnabled = _validateOnSaveEnabled;
-			_ctx.AutoAttachEnabled = _autoAttachEnabled;
+			_ctx.ForceNoTracking = _forceNoTracking;
         }
 
     }

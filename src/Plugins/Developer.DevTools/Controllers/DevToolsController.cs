@@ -34,7 +34,14 @@ namespace SmartStore.Plugin.Developer.DevTools.Controllers
 		[ChildActionOnly]
 		public ActionResult Configure()
 		{
-			return View();
+			// load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var settings = _settingService.LoadSetting<ProfilerSettings>(storeScope);
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, settings, storeScope, _settingService);
+
+			return View(settings);
 		}
 
 		[HttpPost]

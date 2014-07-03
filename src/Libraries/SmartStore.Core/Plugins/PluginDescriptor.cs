@@ -62,7 +62,7 @@ namespace SmartStore.Core.Plugins
                     var dir = this.PhysicalPath;
                     foreach (var file in filesToCheck)
                     {
-                        if (File.Exists(Path.Combine(dir, file)))
+                        if (File.Exists(Path.Combine(dir, "Content", file)))
                         {
                             _brandImageFileName = file;
                             break;

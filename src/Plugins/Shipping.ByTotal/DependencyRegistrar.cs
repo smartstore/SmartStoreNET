@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
-			builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().WithRequestCache().InstancePerRequest();
+			builder.RegisterType<ShippingByTotalService>().As<IShippingByTotalService>().InstancePerRequest();
 
             //data layer
             //register named context

@@ -106,9 +106,9 @@ namespace SmartStore.Admin.Controllers
 			pluginModel.SelectedStoreIds = _settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
 			pluginModel.LimitedToStores = pluginModel.SelectedStoreIds.Count() > 0;
 
-            if (System.IO.File.Exists(Path.Combine(pluginDescriptor.PhysicalPath, "icon.png")))
+            if (System.IO.File.Exists(Path.Combine(pluginDescriptor.PhysicalPath, "Content", "icon.png")))
             {
-                pluginModel.IconUrl = "~/Plugins/{0}/icon.png".FormatInvariant(pluginDescriptor.SystemName);
+                pluginModel.IconUrl = "~/Plugins/{0}/Content/icon.png".FormatInvariant(pluginDescriptor.SystemName);
             }
             else
             {

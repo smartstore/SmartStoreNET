@@ -106,11 +106,6 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 
 		private bool ShouldProfile(HttpContextBase ctx)
 		{
-			if (_services.WorkContext.IsAdmin)
-			{
-				return false;
-			}
-
 			if (!_services.WorkContext.CurrentCustomer.IsAdmin())
 			{
 				return ctx.Request.IsLocal;

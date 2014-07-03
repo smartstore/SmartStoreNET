@@ -245,7 +245,7 @@ namespace SmartStore.Web.Controllers
 
 		private IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
         {
-			var requestCache = _cacheFactory("request").Value;
+			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>(); // _cacheFactory("request").Value;
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () => {

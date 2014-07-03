@@ -219,7 +219,7 @@ namespace SmartStore.Web.Controllers
                     var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
                     if (plugin != null && plugin.BrandImageFileName.HasValue())
                     {
-                        soModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
+                        soModel.BrandUrl = "~/Plugins/{0}/Content/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
                     }
 
                     //adjust rate
@@ -300,7 +300,7 @@ namespace SmartStore.Web.Controllers
                 // codehint: sm-add
                 if (pm.PluginDescriptor.BrandImageFileName.HasValue())
                 {
-                    pmModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(pm.PluginDescriptor.SystemName, pm.PluginDescriptor.BrandImageFileName);
+					pmModel.BrandUrl = "~/Plugins/{0}/Content/{1}".FormatInvariant(pm.PluginDescriptor.SystemName, pm.PluginDescriptor.BrandImageFileName);
                 }
 
                 //payment method additional fee

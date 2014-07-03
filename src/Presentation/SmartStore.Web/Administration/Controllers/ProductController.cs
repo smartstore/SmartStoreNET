@@ -2416,7 +2416,7 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 				{
 					var ctx = new ProductSearchContext();
 					ctx.LanguageId = _workContext.WorkingLanguage.Id;
@@ -2443,7 +2443,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
 				var products = new List<Product>();
 				if (selectedIds != null)
@@ -2467,7 +2467,7 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 				{
 					var ctx = new ProductSearchContext();
 					ctx.LanguageId = _workContext.WorkingLanguage.Id;
@@ -2498,7 +2498,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, autoAttach: false))
+			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
 				var products = new List<Product>();
 				if (selectedIds != null)

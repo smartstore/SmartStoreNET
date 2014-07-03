@@ -24,7 +24,7 @@
 * Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
 * Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
 * Perf: significantly increased excel import performance... again ;-)
-* Perf: significantly increased excel export performance
+* Perf: significantly increased excel export performance and optimized memory usage
 * Perf: SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.

@@ -281,9 +281,7 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard ||
-                    pm.PaymentMethodType == PaymentMethodType.StandardAndButton ||
-                    pm.PaymentMethodType == PaymentMethodType.Redirection)
+                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
             {
@@ -385,7 +383,7 @@ namespace SmartStore.Web.Controllers
 
 			var checkoutState = _httpContext.GetCheckoutState();
 
-			if (checkoutState != null && checkoutState.OnePageCkeckoutEnabled)
+			if (checkoutState != null && !checkoutState.OnePageCkeckoutEnabled)
 				return false;
 
             return true;

@@ -323,6 +323,7 @@ namespace SmartStore.Web.Controllers
 								{
 									StoreId = _storeContext.CurrentStore.Id,
 									ParentGroupedProductId = product.Id,
+									PageSize = int.MaxValue,
 									VisibleIndividuallyOnly = false
 								};
 
@@ -1019,6 +1020,7 @@ namespace SmartStore.Web.Controllers
 				{
 					StoreId = _storeContext.CurrentStore.Id,
 					ParentGroupedProductId = product.Id,
+					PageSize = int.MaxValue,
 					VisibleIndividuallyOnly = false
 				};
 

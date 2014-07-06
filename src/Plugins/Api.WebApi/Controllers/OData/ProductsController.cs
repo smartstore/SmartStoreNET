@@ -183,6 +183,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 						{
 							Query = this.GetExpandedEntitySet(requiredProperties),
 							ParentGroupedProductId = entity.Id,
+							PageSize = int.MaxValue,
 							VisibleIndividuallyOnly = false
 						};
 

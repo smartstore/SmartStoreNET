@@ -54,6 +54,20 @@ namespace SmartStore
             return routeData != null;
         }
 
+		public static CheckoutState EnsureCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
+
+			var state = httpContext.GetCheckoutState();
+
+			if (state != null)
+				return state;
+
+			httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
+
+			return httpContext.GetCheckoutState();
+		}
+
 		public static CheckoutState GetCheckoutState(this HttpContextBase httpContext)
 		{
 			Guard.ArgumentNotNull(() => httpContext);

@@ -165,6 +165,22 @@ namespace SmartStore.Services.Common
             });
         }
 
+		/// <summary>
+		/// Get queryable attributes
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <param name="keyGroup">The key group</param>
+		/// <returns>Queryable attributes</returns>
+		public virtual IQueryable<GenericAttribute> GetAttributes(string key, string keyGroup)
+		{
+			var query =
+				from ga in _genericAttributeRepository.Table
+				where ga.Key == key && ga.KeyGroup == keyGroup
+				select ga;
+
+			return query;
+		}
+
         /// <summary>
         /// Save attribute value
         /// </summary>

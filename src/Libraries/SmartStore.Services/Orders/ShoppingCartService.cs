@@ -1175,19 +1175,26 @@ namespace SmartStore.Services.Orders
             if (fromCustomer.Id == toCustomer.Id)
                 return;
 
+			int storeId = 0;
 			var cartItems = fromCustomer.ShoppingCartItems.ToList().Organize().ToList();
+
+			if (cartItems.Count <= 0)
+				return;
 
 			foreach (var cartItem in cartItems)
 			{
+				if (storeId == 0)
+					storeId = cartItem.Item.StoreId;
+
 				Copy(cartItem, toCustomer, cartItem.Item.ShoppingCartType, cartItem.Item.StoreId, false);
 			}
+
+			_eventPublisher.PublishMigrateShoppingCart(fromCustomer, toCustomer, storeId);
 
 			foreach (var cartItem in cartItems)
 			{
 				DeleteShoppingCartItem(cartItem.Item);
 			}
-
-			_eventPublisher.PublishMigrateShoppingCart(fromCustomer, toCustomer);
         }
 
 		/// <summary>

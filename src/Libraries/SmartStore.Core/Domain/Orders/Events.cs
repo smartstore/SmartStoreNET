@@ -51,11 +51,13 @@ namespace SmartStore.Core.Domain.Orders
 	{
 		private readonly Customer _fromCustomer;
 		private readonly Customer _toCustomer;
+		private readonly int _storeId;
 
-		public MigrateShoppingCartEvent(Customer fromCustomer, Customer toCustomer)
+		public MigrateShoppingCartEvent(Customer fromCustomer, Customer toCustomer, int storeId)
 		{
 			_fromCustomer = fromCustomer;
 			_toCustomer = toCustomer;
+			_storeId = storeId;
 		}
 
 		public Customer FromCustomer
@@ -66,6 +68,11 @@ namespace SmartStore.Core.Domain.Orders
 		public Customer ToCustomer
 		{
 			get { return _toCustomer; }
+		}
+
+		public int StoreId
+		{
+			get { return _storeId; }
 		}
 	}
 }

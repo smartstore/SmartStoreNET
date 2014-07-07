@@ -73,7 +73,20 @@ namespace SmartStore.Services.Catalog
 		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml);
 		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
+		/// <summary>
+		/// Deserializes attribute data from an URL query string
+		/// </summary>
+		/// <param name="jsonData">Json data query string</param>
+		/// <returns>List items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</returns>
 		List<List<int>> DeserializeQueryData(string jsonData);
+
+		/// <summary>
+		/// Serializes attribute data
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="attributesXml">Attribute XML string</param>
+		/// <param name="urlEncode">Whether to URL encode</param>
+		/// <returns>Json string with attribute data</returns>
 		string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true);
 
         #endregion

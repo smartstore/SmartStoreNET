@@ -23,10 +23,15 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Deletes all string resources with its key beginning with rootKey.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="key">e.g. Plugins.Import.Biz</param>
 		/// <returns>Number of deleted string resources</returns>
 		int DeleteLocaleStringResources(string key, bool keyIsRootKey = true);
+
+		/// <summary>
+		/// Deletes all string resources of a plugin
+		/// </summary>
+		/// <param name="pluginDescriptor">Plugin descriptor</param>
+		void DeletePluginStringResources(PluginDescriptor pluginDescriptor);
 
         /// <summary>
         /// Gets a locale string resource

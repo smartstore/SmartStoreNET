@@ -303,6 +303,11 @@ namespace SmartStore.Services.Catalog
 			return null;
 		}
 
+		/// <summary>
+		/// Deserializes attribute data from an URL query string
+		/// </summary>
+		/// <param name="jsonData">Json data query string</param>
+		/// <returns>List items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</returns>
 		public virtual List<List<int>> DeserializeQueryData(string jsonData)
 		{
 			if (jsonData.HasValue())
@@ -314,6 +319,14 @@ namespace SmartStore.Services.Catalog
 			}
 			return new List<List<int>>();
 		}
+		
+		/// <summary>
+		/// Serializes attribute data
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="attributesXml">Attribute XML string</param>
+		/// <param name="urlEncode">Whether to URL encode</param>
+		/// <returns>Json string with attribute data</returns>
 		public virtual string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true)
 		{
 			if (attributesXml.HasValue() && productId != 0)

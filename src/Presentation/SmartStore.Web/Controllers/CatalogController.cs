@@ -2234,7 +2234,7 @@ namespace SmartStore.Web.Controllers
             
             //prepare the model
 			var selectedAttributes = new FormCollection();
-			selectedAttributes.ConvertQueryData(_productAttributeParser.DeserializeQueryData(attributes), product.Id);
+			selectedAttributes.ConvertAttributeQueryData(_productAttributeParser.DeserializeQueryData(attributes), product.Id);
 
 			var model = PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 

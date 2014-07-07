@@ -31,7 +31,13 @@ namespace SmartStore
 			}
 		}
 
-		public static void ConvertQueryData(this NameValueCollection collection, List<List<int>> queryData, int productId = 0)
+		/// <summary>
+		/// Converts attribute query data
+		/// </summary>
+		/// <param name="collection">Name value collection</param>
+		/// <param name="queryData">Attribute query data items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</param>
+		/// <param name="productId">Product identifier to filter</param>
+		public static void ConvertAttributeQueryData(this NameValueCollection collection, List<List<int>> queryData, int productId = 0)
 		{
 			if (collection == null || queryData == null || queryData.Count <= 0)
 				return;

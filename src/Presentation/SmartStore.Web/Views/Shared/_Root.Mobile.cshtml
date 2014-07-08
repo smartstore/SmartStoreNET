@@ -5,7 +5,7 @@
 <div data-role="page" data-theme="b" id="mainpage">
 
     <div data-role="header" data-position="inline" style="text-align:center">
-        @Html.Action("Header", "Common")
+        @Html.Action("Header", "Common", new { area = "" })
     </div>
 
     <div data-role="header" data-position="inline">
@@ -29,7 +29,7 @@
         else
         {
             @*<a href="#" data-rel="back" data-icon="back">Back</a>*@
-            @Html.Action("ConfigButton", "Common")
+            @Html.Action("ConfigButton", "Common", new { area = "" })
         }
     </div>
     @if (IsSectionDefined("headerlinks"))
@@ -39,7 +39,7 @@
     else
     {
         <div data-role="header" data-position="inline">
-            @Html.Action("HeaderLinks", "Common")
+            @Html.Action("HeaderLinks", "Common", new { area = "" })
         </div>
     }
     @Html.Widget("mobile_content_before")
@@ -55,7 +55,7 @@
     else
     {
         <div data-role="footer">
-            @Html.Action("Footer", "Common")
+            @Html.Action("Footer", "Common", new { area = "" })
         </div>
     }
 </div>

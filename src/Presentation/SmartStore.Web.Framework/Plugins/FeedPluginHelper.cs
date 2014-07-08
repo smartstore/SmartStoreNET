@@ -577,7 +577,8 @@ namespace SmartStore.Web.Framework.Plugins
 			//
 			//var cts = new CancellationTokenSource(TimeSpan.FromHours(4.0));
 			//var token = cts.Token;
-			//token.ThrowIfCancellationRequested();
+			//hard: token.ThrowIfCancellationRequested();
+			//soft (better): do not break export format... break internal loop on token.IsCancellationRequested
 
 			string scheduleTaskType = ScheduleTaskType;
 
@@ -600,7 +601,7 @@ namespace SmartStore.Web.Framework.Plugins
 				{
 					exc.Dump();
 				}
-			});
+			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
 			task.Wait(100);
 

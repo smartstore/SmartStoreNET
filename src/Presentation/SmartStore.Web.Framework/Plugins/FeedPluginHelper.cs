@@ -259,7 +259,7 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
 			{
-				decimal price = Convert.ToDecimal(product.Price / (product.BasePriceAmount * product.BasePriceBaseAmount));
+				decimal price = Convert.ToDecimal((product.Price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
 				string priceFormatted = _ctx.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
 

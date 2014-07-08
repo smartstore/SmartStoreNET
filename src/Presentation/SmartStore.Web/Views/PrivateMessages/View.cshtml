@@ -45,18 +45,18 @@
             </tr>
             <tr>
                 <td colspan="2" class="options">
-                    <button class="btn btn-primary" onclick="setLocation('@Url.RouteUrl("SendPMReply", new { toCustomerId = @Model.FromCustomerId, replyToMessageId = @Model.Id })')">
+                    <a class="btn btn-primary" href='@Url.Action("Send", new { id = Model.FromCustomerId, replyToMessageId = Model.Id })'>
                         <i class="icon icon-share-alt"></i>
                         @T("PrivateMessages.View.ReplyButton")
-                    </button>
-                    <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("DeletePM", new { privateMessageId = @Model.Id })')">
-                        <i class="icon icon-trash"></i>&nbsp;&nbsp;
+                    </a>
+                    <a class="btn btn-danger" href='@Url.Action("Delete", new { id = Model.Id })'>
+                        <i class="icon icon-trash"></i>
                         @T("PrivateMessages.View.DeleteButton")
-                    </button>
-                    <button class="btn" onclick="setLocation('@Url.RouteUrl("PrivateMessages")')">
+                    </a>
+                    <a class="btn" href='@Url.RouteUrl("PrivateMessages")'>
                         <i class="icon icon-user"></i>
                         @T("PrivateMessages.View.BackButton")
-                    </button>
+                    </a>
                 </td>
             </tr>
         </table>

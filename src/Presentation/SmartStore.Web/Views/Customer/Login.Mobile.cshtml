@@ -65,7 +65,7 @@
                         <input type="submit" value="@T("Account.Login.LoginButton")" />
                     </div>
                     <div class="forgot-password">
-                        @Html.RouteLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery")
+                        @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
                     </div>
                 }
             </div>

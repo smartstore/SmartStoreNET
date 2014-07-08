@@ -19,7 +19,7 @@
     <div class="page-body">
 
         <div class="add-button">
-            <a class="btn btn-primary add-address-button" href="@Url.RouteUrl("CustomerAddressAdd")">
+            <a class="btn btn-primary add-address-button" href="@Url.Action("AddressAdd")">
                 <i class="icon-plus"></i>&nbsp;
                 @T("Common.AddNew")
             </a>
@@ -99,11 +99,11 @@
                     </div>
                     <div class="buttons pull-right">
                         @*codehint: sm-edit begin*@
-                        <button class="btn edit-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressEdit", new { addressId = address.Id })'">
+                        <button class="btn edit-address-button" onclick="location.href='@Url.Action("AddressEdit", new { id = address.Id })'">
 							<i class="icon icon-edit"></i>
 							@T("Common.Edit")
 						</button>
-                        <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.RouteUrl("CustomerAddressDelete", new { addressId = address.Id })'">
+                        <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.Action("AddressDelete", new { id = address.Id })'">
 							<i class="icon icon-trash"></i>
 							@T("Common.Delete")
 						</button>

@@ -21,7 +21,7 @@
             Label =  T("Checkout.Progress.Address").Text,
             Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Address,
             Active = Model.CheckoutProgressStep == CheckoutProgressStep.Address,
-            Href = Url.RouteUrl("CheckoutBillingAddress")
+            Href = Url.Action("BillingAddress")
         },
         // Shipping
         new { 
@@ -30,7 +30,7 @@
             Label =  T("Checkout.Progress.Shipping").Text,
             Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Shipping,
             Active = Model.CheckoutProgressStep == CheckoutProgressStep.Shipping,
-            Href = Url.RouteUrl("CheckoutShippingMethod")
+            Href = Url.Action("ShippingMethod")
         },
         // Payment
         new { 
@@ -39,7 +39,7 @@
             Label =  T("Checkout.Progress.Payment").Text,
             Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Payment,
             Active = Model.CheckoutProgressStep == CheckoutProgressStep.Payment,
-            Href = Url.RouteUrl("CheckoutPaymentMethod")
+            Href = Url.Action("PaymentMethod")
         },
         // Confirm
         new { 
@@ -48,7 +48,7 @@
             Label =  T("Checkout.Progress.Confirm").Text,
             Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Confirm,
             Active = Model.CheckoutProgressStep == CheckoutProgressStep.Confirm,
-            Href = Url.RouteUrl("CheckoutConfirm")
+            Href = Url.Action("Confirm")
         },
         // Complete
         new { 
@@ -98,22 +98,22 @@
             </a>
         </li>
         <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Address ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("CheckoutBillingAddress"))) : null)>
+            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Address ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("BillingAddress"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Address")</span>
             </a>
         </li>
         <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Shipping ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("CheckoutShippingMethod"))) : null)>
+            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Shipping ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("ShippingMethod"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Shipping")</span>
             </a>
         </li>
         <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Payment ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("CheckoutPaymentMethod"))) : null)>
+            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Payment ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("PaymentMethod"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Payment")</span>
             </a>
         </li>
         <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Confirm ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Payment && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("CheckoutConfirm"))) : null)>
+            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Confirm ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Payment && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("Confirm"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Confirm")</span>
             </a>
         </li>

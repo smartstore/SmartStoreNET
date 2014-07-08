@@ -19,16 +19,16 @@
             }
         </div>
         <div class="posttime">
-            @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span> @*@Html.RouteLink(@T("Forum.QuotePost").Text, "PostCreateQuote", new { id = @Model.ForumTopicId, quote = @Model.Id })*@
+            @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span> @*@Html.ActionLink(@T("Forum.QuotePost").Text, "PostCreate", new { id = @Model.ForumTopicId, quote = @Model.Id })*@
         </div>
         <div class="manage">
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {          
-                <a href="@Url.RouteUrl("PostEdit", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.EditPost")</a>         
+                <a href="@Url.Action("PostEdit", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.EditPost")</a>         
             }
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
-                <a href="@Url.RouteUrl("PostDelete", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.DeletePost")</a>
+                <a href="@Url.Action("PostDelete", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.DeletePost")</a>
             }
         </div>
     </div>

@@ -11,7 +11,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
 
-namespace SmartStore.Web.Extensions
+namespace SmartStore.Web
 {
     public static class MappingExtensions
     {

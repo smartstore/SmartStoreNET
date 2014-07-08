@@ -22,7 +22,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
@@ -463,7 +462,7 @@ namespace SmartStore.Web.Controllers
             if (UseOnePageCheckout())
                 return RedirectToRoute("CheckoutOnePage");
             else
-                return RedirectToRoute("CheckoutBillingAddress");
+                return RedirectToAction("BillingAddress");
         }
 
 
@@ -489,12 +488,12 @@ namespace SmartStore.Web.Controllers
         {
             var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
             if (address == null)
-                return RedirectToRoute("CheckoutBillingAddress");
+				return RedirectToAction("BillingAddress");
 
             _workContext.CurrentCustomer.BillingAddress = address;
             _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-            return RedirectToRoute("CheckoutShippingAddress");
+			return RedirectToAction("ShippingAddress");
         }
         [HttpPost, ActionName("BillingAddress")]
         [FormValueRequired("nextstep")]
@@ -525,7 +524,7 @@ namespace SmartStore.Web.Controllers
                 _workContext.CurrentCustomer.BillingAddress = address;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-                return RedirectToRoute("CheckoutShippingAddress");
+				return RedirectToAction("ShippingAddress");
             }
 
 
@@ -552,7 +551,7 @@ namespace SmartStore.Web.Controllers
             {
                 _workContext.CurrentCustomer.ShippingAddress = null;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutShippingMethod");
+                return RedirectToAction("ShippingMethod");
             }
 
             //model
@@ -563,12 +562,12 @@ namespace SmartStore.Web.Controllers
         {
             var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
             if (address == null)
-                return RedirectToRoute("CheckoutShippingAddress");
+				return RedirectToAction("ShippingAddress");
 
             _workContext.CurrentCustomer.ShippingAddress = address;
             _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-            return RedirectToRoute("CheckoutShippingMethod");
+			return RedirectToAction("ShippingMethod");
         }
         [HttpPost, ActionName("ShippingAddress")]
         [FormValueRequired("nextstep")]
@@ -590,7 +589,7 @@ namespace SmartStore.Web.Controllers
             {
                 _workContext.CurrentCustomer.ShippingAddress = null;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                return RedirectToRoute("CheckoutShippingMethod");
+				return RedirectToAction("ShippingMethod");
             }
 
             if (ModelState.IsValid)
@@ -606,7 +605,7 @@ namespace SmartStore.Web.Controllers
                 _workContext.CurrentCustomer.ShippingAddress = address;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-                return RedirectToRoute("CheckoutShippingMethod");
+				return RedirectToAction("ShippingMethod");
             }
 
 
@@ -633,7 +632,7 @@ namespace SmartStore.Web.Controllers
             if (!cart.RequiresShipping())
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
-                return RedirectToRoute("CheckoutPaymentMethod");
+                return RedirectToAction("PaymentMethod");
             }
             
             
@@ -662,7 +661,7 @@ namespace SmartStore.Web.Controllers
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
 					 SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
-                return RedirectToRoute("CheckoutPaymentMethod");
+				return RedirectToAction("PaymentMethod");
             }
 
             //parse selected method 
@@ -699,8 +698,8 @@ namespace SmartStore.Web.Controllers
 
             //save
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
-            
-            return RedirectToRoute("CheckoutPaymentMethod");
+
+			return RedirectToAction("PaymentMethod");
         }
         
         
@@ -725,7 +724,7 @@ namespace SmartStore.Web.Controllers
             {
                 //TODO: get all paymenthods, when there's only one set it to be the selected
 				//_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-                return RedirectToRoute("CheckoutPaymentInfo");
+                return RedirectToAction("PaymentInfo");
             }
 
             //model
@@ -741,7 +740,7 @@ namespace SmartStore.Web.Controllers
 					SystemCustomerAttributeNames.SelectedPaymentMethod,
 					paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
-				return RedirectToRoute("CheckoutPaymentInfo");
+				return RedirectToAction("PaymentInfo");
             }
 
             return View(paymentMethodModel);
@@ -777,7 +776,7 @@ namespace SmartStore.Web.Controllers
             {
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
 					  SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-				return RedirectToRoute("CheckoutPaymentInfo");
+				return RedirectToAction("PaymentInfo");
             }
             //payment method 
             if (String.IsNullOrEmpty(paymentmethod))
@@ -793,8 +792,8 @@ namespace SmartStore.Web.Controllers
             //save
 			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
 				 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
-            
-            return RedirectToRoute("CheckoutPaymentInfo");
+
+			return RedirectToAction("PaymentInfo");
         }
 
 
@@ -816,7 +815,7 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
             if (!isPaymentWorkflowRequired)
             {
-                return RedirectToRoute("CheckoutConfirm");
+                return RedirectToAction("Confirm");
             }
 
 			//load payment method
@@ -825,7 +824,7 @@ namespace SmartStore.Web.Controllers
 				_genericAttributeService, _storeContext.CurrentStore.Id);
 			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
-                return RedirectToRoute("CheckoutPaymentMethod");
+				return RedirectToAction("PaymentMethod");
 
             RouteInfo routeinfo = paymentMethod.GetPaymentInfoHandlerRoute();
             if (routeinfo != null)
@@ -835,7 +834,7 @@ namespace SmartStore.Web.Controllers
 
 			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod, new FormCollection()))
 			{
-				return RedirectToRoute("CheckoutConfirm");
+				return RedirectToAction("Confirm");
 			}
 
 			var model = PreparePaymentInfoModel(paymentMethod);
@@ -863,7 +862,7 @@ namespace SmartStore.Web.Controllers
             bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
             if (!isPaymentWorkflowRequired)
             {
-                return RedirectToRoute("CheckoutConfirm");
+				return RedirectToAction("Confirm");
             }
 
 			//load payment method
@@ -872,11 +871,11 @@ namespace SmartStore.Web.Controllers
 				_genericAttributeService, _storeContext.CurrentStore.Id);
 			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
-                return RedirectToRoute("CheckoutPaymentMethod");
+				return RedirectToAction("PaymentMethod");
 
 			if (IsValidPaymentForm(paymentMethod, form))
 			{
-				return RedirectToRoute("CheckoutConfirm");
+				return RedirectToAction("Confirm");
 			}
 
             //If we got this far, something failed, redisplay form
@@ -930,7 +929,7 @@ namespace SmartStore.Web.Controllers
                 {
                     //Check whether payment workflow is required
                     if (IsPaymentWorkflowRequired(cart))
-                        return RedirectToRoute("CheckoutPaymentInfo");
+						return RedirectToAction("PaymentInfo");
                     else
                         processPaymentRequest = new ProcessPaymentRequest();
                 }
@@ -964,7 +963,7 @@ namespace SmartStore.Web.Controllers
                     {
                         //if no redirection has been done (to a third-party payment page)
                         //theoretically it's not possible
-                        return RedirectToRoute("CheckoutCompleted");
+                        return RedirectToAction("Completed");
                     }
                 }
                 else
@@ -998,13 +997,13 @@ namespace SmartStore.Web.Controllers
 
 			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
 			{
-				return RedirectToRoute("HomePage");
+				return HttpNotFound();
 			}
 
 			//disable "order completed" page?
 			if (_orderSettings.DisableOrderCompletedPage)
 			{
-				return RedirectToRoute("OrderDetails", new { orderId = order.Id });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
 			}
 
 			model.OrderId = order.Id;
@@ -1032,7 +1031,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("ShoppingCart");
 
             if (!UseOnePageCheckout())
-                return RedirectToRoute("Checkout");
+                return RedirectToAction("Index");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -1708,7 +1707,7 @@ namespace SmartStore.Web.Controllers
             {
                 //validation
                 if (!UseOnePageCheckout())
-                    return RedirectToRoute("HomePage");
+					return HttpNotFound();
 
                 if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                     return new HttpUnauthorizedResult();
@@ -1718,18 +1717,18 @@ namespace SmartStore.Web.Controllers
 					null, null, null, null, null, null, null, null, 0, 1)
 					.FirstOrDefault();
 				if (order == null)
-                    return RedirectToRoute("HomePage");
+					return HttpNotFound();
 
 
                 var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
                 if (paymentMethod == null)
-                    return RedirectToRoute("HomePage");
+					return HttpNotFound();
                 if (paymentMethod.PaymentMethodType != PaymentMethodType.Redirection)
-                    return RedirectToRoute("HomePage");
+					return HttpNotFound();
 
                 //ensure that order has been just placed
                 if ((DateTime.UtcNow - order.CreatedOnUtc).TotalMinutes > 3)
-                    return RedirectToRoute("HomePage");
+					return HttpNotFound();
 
 
                 //Redirection will not work on one page checkout page because it's AJAX request.
@@ -1750,7 +1749,7 @@ namespace SmartStore.Web.Controllers
                 {
                     //if no redirection has been done (to a third-party payment page)
                     //theoretically it's not possible
-                    return RedirectToRoute("CheckoutCompleted");
+					return RedirectToAction("Completed");
                 }
             }
             catch (Exception exc)

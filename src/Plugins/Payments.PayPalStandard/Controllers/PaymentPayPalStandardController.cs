@@ -204,7 +204,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 					}
 				}
 
-				return RedirectToRoute("CheckoutCompleted");
+				return RedirectToAction("Completed", "Checkout", new { area = "" });
 			}
 			else
 			{
@@ -442,10 +442,10 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 
 			if (order != null)
 			{
-				return RedirectToRoute("OrderDetails", new { orderId = order.Id });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
 			}
 
-			return RedirectToAction("Index", "Home", new { area = "Payments.PayPalStandard" });
+			return RedirectToAction("Index", "Home", new { area = "" });
 		}
 	}
 }

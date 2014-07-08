@@ -20,8 +20,7 @@
         }
         else
         {
-            @*codehint: sm-edit*@
-            using (Html.BeginForm("ContactUs", "Common", FormMethod.Post, new { @class = "form-horizontal" }))
+            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "form-horizontal" }))
             {
             <fieldset>
 

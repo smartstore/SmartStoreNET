@@ -20,7 +20,7 @@
     </script>
     @if (Model.Messages.Count > 0)
     {
-        using (Html.BeginRouteForm("PrivateMessagesSent", FormMethod.Post))
+        using (Html.BeginForm("SentUpdate", (string)null))
         {
             
             
@@ -64,7 +64,7 @@
                             }
                         </td>
                         <td class="a-left">
-                            @Html.RouteLink(item.Subject, "ViewPM", new { privateMessageId = item.Id }, new { @class = "pm-read" })
+                            @Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = "pm-read" })
                         </td>
                         <td class="a-left">
                             @item.CreatedOn
@@ -75,7 +75,7 @@
         </table>
         if (Model.TotalPages > 1)
         {
-            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessagesPaged", ViewData["PagerRouteValues"])
+            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])
         }
         <div class="buttons">
             <button class="btn btn-danger" name="delete-sent" type="submit" value="delete-sent">

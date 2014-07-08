@@ -10,7 +10,7 @@
                 $.ajax({
                     cache: false,
                     type: 'POST',
-                    url: '@Url.RouteUrl("TopicAuthenticate")',
+                    url: '@Url.Action("Authenticate")',
                     data: { "id": topicId, "password": password },
                     dataType: 'json',
                     success: function (data) {
@@ -39,7 +39,7 @@
         });
     </script>
     <div id="ph-password-@Model.Id">
-        @using (Html.BeginRouteForm("TopicAuthenticate"))
+        @using (Html.BeginForm("Authenticate"))
         {
                 @Html.HiddenFor(model => model.Id)
             <div class="enter-password-title">

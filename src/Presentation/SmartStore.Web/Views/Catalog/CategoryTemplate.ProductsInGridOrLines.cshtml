@@ -182,7 +182,7 @@
     @*filtering... codehint: sm-add*@
 	@if (Model.Products.Count > 0) {
 		<div id="product-filter" class="block block-bordered product-filter-block">
-			<form class="filter-product-form" method="GET" action="@Url.RouteUrl("ProductFilters")" data-multiselecturl="@Url.RouteUrl("ProductsMultiSelect")">
+			<form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
 				<input type="hidden" name="categoryID" value="@Model.Id" />
 				<input type="hidden" name="path" value="@Request.Url.AbsolutePath" />
 				<input type="hidden" name="pagesize" value="@Model.PagingFilteringContext.PageSize" />

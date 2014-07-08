@@ -40,7 +40,7 @@
             
             @if (Model.ForumFeedsEnabled)
             {
-                <a href="@Url.RouteUrl("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
+                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
                     <i class="icon icon-rss muted"></i>
                     @T("Forum.RSS")
                 </a>
@@ -58,13 +58,13 @@
     <div>
     
         <div class="actions pull-left">
-            <a href='@Url.RouteUrl("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
+            <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
                 <i class="icon-plus"></i>
                 @T("Forum.NewTopic")
             </a>
             @if (Model.IsCustomerAllowedToSubscribe)
             {
-                @Ajax.RouteLink(Model.WatchForumText,
+                @Ajax.ActionLink(Model.WatchForumText,
                             "ForumWatch",
                             new { id = @Model.Id },
                             new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleForumWatch" },
@@ -73,7 +73,7 @@
 
             @*@if (Model.ForumFeedsEnabled)
             {
-                <button class="btn btn-warning" onclick="setLocation('@Url.RouteUrl("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
+                <button class="btn btn-warning" onclick="setLocation('@Url.Action("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
                     <i class="icon-rss"></i>
                     @T("Forum.RSS")
                 </button>
@@ -85,7 +85,7 @@
             var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
                                         .Name("paginator")
                                         .ShowSummary(false)
-                                        .Route("ForumSlugPaged", new RouteValues { id = Model.Id, slug = Model.SeName })
+                                        .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
                                         .Alignment(PagerAlignment.Right);
         }
         @pager
@@ -178,7 +178,7 @@
                                         .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
                                         .Alignment(PagerAlignment.Left)
                                         .Size(PagerSize.Mini)
-                                        .Route("TopicSlugPaged", new { id = topic.Id, slug = topic.SeName }))
+                                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
 

@@ -82,14 +82,13 @@ namespace SmartStore.Core.Plugins
 
         public virtual PluginDescriptor GetPluginDescriptorByAssembly(Assembly assembly, bool installedOnly = true)
         {
-            Guard.ArgumentNotNull(() => assembly);
-
 			PluginDescriptor descriptor;
-			if (_assemblyMap.TryGetValue(assembly, out descriptor)) 
+			if (assembly != null && _assemblyMap.TryGetValue(assembly, out descriptor)) 
 			{
 				if (!installedOnly || descriptor.Installed)
 					return descriptor;
 			}
+
 			return null;
         }
 
@@ -101,14 +100,13 @@ namespace SmartStore.Core.Plugins
 		/// <returns>>Plugin descriptor</returns>
         public virtual PluginDescriptor GetPluginDescriptorBySystemName(string systemName, bool installedOnly = true)
         {
-			Guard.ArgumentNotEmpty(() => systemName);
-
 			PluginDescriptor descriptor;
-			if (_nameMap.TryGetValue(systemName, out descriptor))
+			if (systemName.HasValue() && _nameMap.TryGetValue(systemName, out descriptor))
 			{
 				if (!installedOnly || descriptor.Installed)
 					return descriptor;
 			}
+
 			return null;
         }
 
@@ -121,10 +119,8 @@ namespace SmartStore.Core.Plugins
 		/// <returns>>Plugin descriptor</returns>
         public virtual PluginDescriptor GetPluginDescriptorBySystemName<T>(string systemName, bool installedOnly = true) where T : class, IPlugin
         {
-			Guard.ArgumentNotEmpty(() => systemName);
-
 			PluginDescriptor descriptor;
-			if (_nameMap.TryGetValue(systemName, out descriptor))
+			if (systemName.HasValue() && _nameMap.TryGetValue(systemName, out descriptor))
 			{
 				if (!installedOnly || descriptor.Installed)
 				{
@@ -132,6 +128,7 @@ namespace SmartStore.Core.Plugins
 						return descriptor;
 				}
 			}
+
 			return null;
         }
         

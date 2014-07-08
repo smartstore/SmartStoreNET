@@ -35,24 +35,24 @@
         <div class="manage btn-group pull-left">
             @if (Model.IsCustomerAllowedToEditTopic)
             {
-                <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicEdit", new { id = @Model.Id })')">
-                    <i class="icon icon-edit"></i>
-                    @T("Forum.EditTopic").Text
-                </button>
+				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn">
+					<i class="icon icon-edit"></i>
+					@T("Forum.EditTopic")
+				</a>    
             }
             @if (Model.IsCustomerAllowedToDeleteTopic)
             {                
-                <button class="btn" onclick="return confirm('@T("Common.AreYouSure").Text');">
-                    <i class="icon icon-trash"></i>
-                    @T("Forum.DeleteTopic").Text
-                </button>
-            }
+				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
+					<i class="icon icon-trash"></i>
+					@T("Forum.DeleteTopic").Text
+				</a>     
+			}
             @if (Model.IsCustomerAllowedToMoveTopic)
             {
-                <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicMove", new { id = @Model.Id })')">
-                    <i class="icon icon-move"></i>
-                    @T("Forum.MoveTopic").Text
-                </button>
+				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn">
+					<i class="icon icon-move"></i>
+					@T("Forum.MoveTopic")
+				</a>   
             }
         </div>
     </div>
@@ -65,7 +65,7 @@
             <div class="pull-left">
                 <i class="icon icon-bookmark"></i>        
                 
-                @Ajax.RouteLink(Model.WatchTopicText,
+                @Ajax.ActionLink(Model.WatchTopicText,
                                 "TopicWatch",
                                 new { id = @Model.Id },
                                 new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
@@ -74,7 +74,7 @@
         }
         
         <div class="pull-right" style="min-width:250px">
-            <button class="btn btn-primary pull-right" onclick="setLocation('@Url.RouteUrl("PostCreate", new { id = @Model.Id })')">
+            <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
                 <i class="icon icon-share-alt"></i>
                 @T("Forum.Reply")
             </button>
@@ -85,7 +85,7 @@
                         .Name("paginator")
                         .Size(PagerSize.Small)
                         .Alignment(PagerAlignment.Centered)
-                        .Route("TopicSlugPaged", new RouteValues { id = Model.Id, slug = Model.SeName });
+                        .Route("TopicSlug", new RouteValues { id = Model.Id, slug = Model.SeName });
         }
 
         @pager
@@ -108,7 +108,7 @@
 
     <div class="topic-options bottom">
 
-        <button class="btn btn-primary pull-right" onclick="setLocation('@Url.RouteUrl("PostCreate", new { id = @Model.Id })')">
+        <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
             <i class="icon icon-share-alt"></i>
             @T("Forum.Reply").Text
         </button>
@@ -117,7 +117,7 @@
             @if (Model.IsCustomerAllowedToSubscribe)
             {
                 <i class="icon icon-bookmark"></i>
-                @Ajax.RouteLink(Model.WatchTopicText,
+                @Ajax.ActionLink(Model.WatchTopicText,
                                 "TopicWatch",
                                 new { id = @Model.Id },
                                 new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },

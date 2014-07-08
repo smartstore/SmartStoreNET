@@ -163,7 +163,7 @@
 				@if (Model.HasSampleDownload)
 				{
 					<div>
-						<a href="@Url.RouteUrl("GetSampleDownload", new { productId = Model.Id })">
+						<a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
 							@T("Products.DownloadSample")
 							<i class="icon-download-alt"></i>
 						</a>

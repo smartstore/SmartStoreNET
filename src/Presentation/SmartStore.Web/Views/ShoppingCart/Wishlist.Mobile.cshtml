@@ -89,9 +89,8 @@
                     </ul>
                 </div>
                 }
-@*set "data-ajax" attribute to "false"*@
-                using (Html.BeginRouteForm("Wishlist", FormMethod.Post,
-                    new Dictionary<string, Object> { { "data-ajax", "false" } }))
+				@*set "data-ajax" attribute to "false"*@
+                using (Html.BeginRouteForm("Wishlist", FormMethod.Post, new Dictionary<string, Object> { { "data-ajax", "false" } }))
                 {
                 <div class="cart">
                     <ul data-role="listview" data-inset="true" data-filter="false">

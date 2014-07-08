@@ -14,8 +14,7 @@
     </div>
     <div class="page-body checkout-data">
         @*set "data-ajax" attribute to "false"*@
-        @using (Html.BeginRouteForm("CheckoutShippingMethod", FormMethod.Post,
-                new Dictionary<string, Object> { { "data-ajax", "false" } }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new RouteValueDictionary { { "data-ajax", "false" } }))
         {
             @Html.Widget("mobile_checkout_shipping_method_top")
             <div class="shipping-options">

@@ -18,7 +18,7 @@
 {
     <ul class="dropdown-menu shopbar-flyout-container">
         <li>
-            <a href="@Url.RouteUrl("CustomerInfo")">
+            <a href="@Url.Action("Info", "Customer")">
                 <i class="icon-user"></i> 
                 @T("Account.MyAccount")
             </a>
@@ -81,71 +81,7 @@
         </li>
     </ul>
 } 
-else {
+else 
+{
     
-    @*<div class="shopbar-flyout" id="shopbar-flyout-account">
-        <div class="shopbar-flyout-inner">
-           
-            @using (Html.BeginForm("Login", "Customer", FormMethod.Post))
-            {
-                <div class="message-error">
-                    @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text)
-                </div>
-                    
-                if (Model.UsernamesEnabled)
-                {
-                    <div class="control-group">
-                        @Html.LabelFor(model => model.Username, new { @class = "control-label", @for = "Username" })
-                        <div class="controls">
-                            @Html.TextBoxFor(m => m.Username, new { @class = "username" })
-                            @Html.ValidationMessageFor(m => m.Username)
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="control-group">
-                        @Html.LabelFor(model => model.Email, new { @class = "control-label", @for = "Email" })
-                        <div class="controls">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "email" })
-                            @Html.ValidationMessageFor(m => m.Email)
-                        </div>
-                    </div>
-                }
-                                        
-                <div class="control-group">
-                    @Html.LabelFor(model => model.Password, new { @class = "control-label", @for = "Password" })
-                    <div class="controls">
-                        @Html.PasswordFor(m => m.Password, new { @class = "password" })
-                        @Html.ValidationMessageFor(m => m.Password)
-                    </div>
-                </div>
-                    
-                <div class="control-group">
-                    <label class="control-label">
-                        @Html.CheckBoxFor(m => m.RememberMe, new { @class="inline" }) @T("Account.Login.Fields.RememberMe").Text
-                    </label>
-                </div>
-                    
-                <div class="buttons">
-                    <button class="btn btn-primary pull-right" type="submit">@T("Account.Login.LoginButton")</button>
-                </div>
-    
-                <div class="clear">
-                </div>
-    
-                <div class="forgot-password pull-right">
-                    @Html.RouteLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery")
-                </div>
-    
-                <div class="clear">
-                </div>
-            }
-        
-            <div class="register">
-                <button class="btn" onclick="location.href='@registerUrl'">@T("Account.Register")</button>
-            </div>
-    
-        </div>    
-    </div>*@
 }

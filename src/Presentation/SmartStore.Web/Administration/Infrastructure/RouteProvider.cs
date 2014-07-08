@@ -23,7 +23,7 @@ namespace SmartStore.Admin.Infrastructure
 
 		public int Priority
 		{
-			get { return 100; }
+			get { return 1000; }
 		}
 	}
 }

@@ -109,8 +109,21 @@
 				}
 			})
 			.ajaxError(function (ev, xhr) {
-				displayNotification(xhr.responseText, "error");
-		});
+				var msg = xhr.getResponseHeader('X-Message');
+				if (msg) {
+					displayNotification(msg, xhr.getResponseHeader('X-Message-Type'));
+				}
+				else {
+					var data = JSON.parse(xhr.responseText);
+					if (data.error && data.message) {
+						displayNotification(data.message, "error");
+					}
+					else {
+						displayNotification(xhr.responseText, "error");
+					}
+				}
+			}
+		);
 
     });
 

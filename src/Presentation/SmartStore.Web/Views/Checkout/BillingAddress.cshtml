@@ -30,7 +30,7 @@
                         <div class="address-item">
                             
                             <div class="select-button">
-                                <button class="btn btn-mini select-billing-address-button"  onclick="setLocation('@Url.RouteUrl("CheckoutSelectBillingAddress", new { addressId = item.Id })    ')">
+                                <button class="btn btn-mini select-billing-address-button"  onclick="setLocation('@Url.Action("SelectBillingAddress", new { addressId = item.Id })    ')">
                                     @T("Checkout.BillToThisAddress")
                                 </button>
                             </div>
@@ -123,7 +123,7 @@
             </div>
             <div class="block-body">
                 <div class="enter-address">
-                    @using (Html.BeginRouteForm("CheckoutBillingAddress", FormMethod.Post))
+                    @using (Html.BeginForm())
                     {
                         <div class="enter-address-body">
                             @{

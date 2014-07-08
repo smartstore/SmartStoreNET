@@ -249,7 +249,9 @@
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FilterController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\KeepAliveController.cs" />
     <Compile Include="Controllers\ExternalAuthenticationController.cs" />
@@ -271,14 +273,15 @@
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Extensions\ProductDetailsExtensions.cs" />
-    <Compile Include="Extensions\PagerHtmlExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Cache\ModelCacheEventConsumer.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
-    <Compile Include="Infrastructure\GenericUrlRouteProvider.cs" />
+    <Compile Include="Infrastructure\Routes\0_StoreRoutes_obsolete.cs" />
+    <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
+    <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
     <Compile Include="Infrastructure\Installation\EnUSSeedData.cs" />
     <Compile Include="Infrastructure\Installation\InstallationAppLanguageMetadata.cs" />
@@ -286,7 +289,7 @@
     <Compile Include="Infrastructure\Installation\InstallationLanguage.cs" />
     <Compile Include="Infrastructure\Installation\InstallationLocalizationService.cs" />
     <Compile Include="Infrastructure\Installation\InstallDataSeeder.cs" />
-    <Compile Include="Infrastructure\RouteProvider.cs" />
+    <Compile Include="Infrastructure\Routes\1_StoreRoutes.cs" />
     <Compile Include="Models\Blogs\BlogPostListModel.cs" />
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagModel.cs" />
@@ -1640,7 +1643,6 @@
     <Content Include="Content\samples\product_wow.jpeg" />
     <Content Include="Content\bootstrap\custom\select2.less" />
     <Content Include="Content\bootstrap\custom\images\select2.png" />
-    <Content Include="ErrorPage.htm" />
     <Content Include="FileNotFound.htm" />
     <Content Include="Global.asax" />
     <Content Include="license.txt" />
@@ -1704,7 +1706,7 @@
     <Content Include="Themes\Alpha\Content\images\ico-edit.gif" />
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
-    <Content Include="Themes\Alpha\Content\preview.png" />
+    <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
     <Content Include="Themes\Mobile\Content\images\ico-forum-post-high.gif" />
@@ -1723,7 +1725,7 @@
     <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.css" />
     <Content Include="Themes\Mobile\Content\jquery.mobile.theme-1.3.2.min.css" />
     <Content Include="Themes\Mobile\Content\styles.css" />
-    <Content Include="Themes\Mobile\Content\preview.png" />
+    <Content Include="Themes\Mobile\preview.png" />
     <Content Include="Themes\print.css" />
     <Content Include="Views\Catalog\BackInStockSubscribePopup.Mobile.cshtml" />
     <Content Include="Views\Catalog\CategoryNavigation.Mobile.cshtml" />
@@ -1815,7 +1817,7 @@
     <Content Include="Views\ShoppingCart\Wishlist.Mobile.cshtml" />
     <Content Include="Views\Common\HeaderLinks.Mobile.cshtml" />
     <Content Include="Views\Common\InfoBlock.Mobile.cshtml" />
-    <Content Include="Views\Common\ContactUs.Mobile.cshtml" />
+    <Content Include="Views\Home\ContactUs.Mobile.cshtml" />
     <Content Include="Views\Blog\List.Mobile.cshtml" />
     <Content Include="Views\Blog\BlogPost.Mobile.cshtml" />
     <Content Include="Views\News\List.Mobile.cshtml" />
@@ -1857,7 +1859,7 @@
     <Content Include="Views\Checkout\PaymentInfo.Mobile.cshtml" />
     <Content Include="Views\Checkout\Confirm.Mobile.cshtml" />
     <Content Include="Views\Checkout\Completed.Mobile.cshtml" />
-    <Content Include="Views\Common\Sitemap.Mobile.cshtml" />
+    <Content Include="Views\Home\Sitemap.Mobile.cshtml" />
     <Content Include="Views\Boards\ActiveDiscussions.Mobile.cshtml" />
     <Content Include="Views\Boards\Forum.Mobile.cshtml" />
     <Content Include="Views\Boards\ForumGroup.Mobile.cshtml" />
@@ -1870,8 +1872,8 @@
     <Content Include="Views\Boards\TopicEdit.Mobile.cshtml" />
     <Content Include="Views\Boards\TopicMove.Mobile.cshtml" />
     <Content Include="Views\PrivateMessages\Index.Mobile.cshtml" />
-    <Content Include="Views\PrivateMessages\SendPM.Mobile.cshtml" />
-    <Content Include="Views\PrivateMessages\ViewPM.Mobile.cshtml" />
+    <Content Include="Views\PrivateMessages\Send.Mobile.cshtml" />
+    <Content Include="Views\PrivateMessages\View.Mobile.cshtml" />
     <Content Include="Views\PrivateMessages\Inbox.Mobile.cshtml" />
     <Content Include="Views\PrivateMessages\SentItems.Mobile.cshtml" />
     <Content Include="Views\Customer\MyAccount.Mobile.cshtml" />
@@ -1912,8 +1914,8 @@
     <Content Include="Views\ShoppingCart\FlyoutWishlist.cshtml" />
     <Content Include="Views\Common\AccountDropdown.cshtml" />
     <Content Include="Views\Catalog\FlyoutCompare.cshtml" />
-    <Content Include="Views\Common\StoreClosed.cshtml" />
-    <Content Include="Views\Common\StoreClosed.Mobile.cshtml" />
+    <Content Include="Views\Home\StoreClosed.cshtml" />
+    <Content Include="Views\Home\StoreClosed.Mobile.cshtml" />
     <Content Include="Views\Catalog\ProductDetailReviews.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\BlockInput.cshtml" />
     <Content Include="Views\Catalog\_ProductListOptions.cshtml" />
@@ -1928,10 +1930,10 @@
     <Content Include="Views\Home\ContentSlider.cshtml" />
     <Content Include="Views\Checkout\OpcTerms.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
-    <Content Include="Views\Common\PageNotFound.cshtml">
+    <Content Include="Views\Shared\NotFound.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\Common\PageNotFound.Mobile.cshtml" />
+    <Content Include="Views\Shared\NotFound.Mobile.cshtml" />
     <Content Include="Views\Shared\ConditionalComments.cshtml" />
     <Content Include="Views\Catalog\ProductAskQuestion.cshtml" />
     <Content Include="Views\Catalog\ProductAskQuestionButton.cshtml" />
@@ -1947,6 +1949,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Themes\Mobile\Content\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
@@ -2070,7 +2075,7 @@
     <Content Include="Views\Newsletter\NewsletterBox.cshtml" />
     <Content Include="Views\Newsletter\SubscriptionActivation.cshtml" />
     <Content Include="Views\Customer\AccountActivation.cshtml" />
-    <Content Include="Views\Common\ContactUs.cshtml" />
+    <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Common\CurrencySelector.cshtml" />
     <Content Include="Views\Common\HeaderLinks.cshtml" />
     <Content Include="Views\Common\InfoBlock.cshtml" />
@@ -2086,7 +2091,7 @@
     <Content Include="Views\News\NewsItem.cshtml" />
     <Content Include="Views\Topic\TopicBlock.cshtml" />
     <Content Include="Views\Topic\TopicDetails.cshtml" />
-    <Content Include="Views\Common\Sitemap.cshtml" />
+    <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Catalog\ProductTags.cshtml" />
     <Content Include="Views\Catalog\PopularProductTags.cshtml" />
     <Content Include="Views\Catalog\ProductsByTag.cshtml" />
@@ -2122,8 +2127,8 @@
     <Content Include="Views\Boards\_SearchBox.cshtml" />
     <Content Include="Views\Install\Index.cshtml" />
     <Content Include="Views\PrivateMessages\Index.cshtml" />
-    <Content Include="Views\PrivateMessages\SendPM.cshtml" />
-    <Content Include="Views\PrivateMessages\ViewPM.cshtml" />
+    <Content Include="Views\PrivateMessages\Send.cshtml" />
+    <Content Include="Views\PrivateMessages\View.cshtml" />
     <Content Include="Views\PrivateMessages\Inbox.cshtml" />
     <Content Include="Views\PrivateMessages\SentItems.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />

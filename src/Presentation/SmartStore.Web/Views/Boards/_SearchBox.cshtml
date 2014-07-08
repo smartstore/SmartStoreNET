@@ -1,5 +1,5 @@
 ﻿<div class="forum-search-box">
-    @using (Html.BeginRouteForm("Search", FormMethod.Get))
+    @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
     {
         var searchText = T("Forum.SearchForumsTooltip");
         <div class="input-append">
@@ -7,7 +7,7 @@
             <input type="submit" value="@T("Forum.SearchButton")" class="btn btn-warning" />
         </div>
         <div class="advanced">
-            @Html.RouteLink(@T("Forum.AdvancedSearch").Text, "Search", new { adv = true }, new { title = @T("Forum.AdvancedSearch").Text })
+            @Html.RouteLink(@T("Forum.AdvancedSearch").Text, "BoardSearch", new { adv = true }, new { title = @T("Forum.AdvancedSearch").Text })
         </div>
     }
 </div>

@@ -7,7 +7,7 @@
 {
     <div class="block news-list-homepage">
         <div class="block-title clearfix">
-            <a href="@Url.RouteUrl("NewsRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss pull-right" title="@T("News.RSS.Hint")" rel="tooltip">
+            <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss pull-right" title="@T("News.RSS.Hint")" rel="tooltip">
                 <i class="icon-rss muted"></i>
                 @T("News.RSS")
             </a>

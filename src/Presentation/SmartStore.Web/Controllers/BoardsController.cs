@@ -190,7 +190,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumGroups = _forumService.GetAllForumGroups();
@@ -213,7 +213,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             int topicLimit = _forumSettings.HomePageActiveDiscussionsTopicCount;
@@ -238,7 +238,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             int topicLimit = _forumSettings.ActiveDiscussionsPageTopicCount;
@@ -260,17 +260,17 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             if (!_forumSettings.ActiveDiscussionsFeedEnabled)
             {
-                return RedirectToRoute("Boards");
+				return HttpNotFound();
             }
 
             int topicLimit = _forumSettings.ActiveDiscussionsFeedCount;
             var topics = _forumService.GetActiveTopics(forumId, topicLimit);
-            string url = Url.RouteUrl("ActiveDiscussionsRSS", null, "http");
+            string url = Url.Action("ActiveDiscussionsRSS", null, (object)null, "http");
 
             var feedTitle = _localizationService.GetResource("Forum.ActiveDiscussionsFeedTitle");
             var feedDescription = _localizationService.GetResource("Forum.ActiveDiscussionsFeedDescription");
@@ -304,7 +304,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumGroup = _forumService.GetForumGroupById(id);
@@ -319,7 +319,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forum = _forumService.GetForumById(id);
@@ -374,12 +374,12 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             if (!_forumSettings.ForumFeedsEnabled)
             {
-                return RedirectToRoute("Boards");
+				return HttpNotFound();
             }
 
             int topicLimit = _forumSettings.ForumFeedCount;
@@ -391,7 +391,7 @@ namespace SmartStore.Web.Controllers
                 var topics = _forumService.GetAllTopics(forum.Id, 0, string.Empty,
                      ForumSearchType.All, 0, 0, topicLimit);
 
-                string url = Url.RouteUrl("ForumRSS", new { id = forum.Id }, "http");
+                string url = Url.Action("ForumRSS", null, new { id = forum.Id }, "http");
 
                 var feedTitle = _localizationService.GetResource("Forum.ForumFeedTitle");
                 var feedDescription = _localizationService.GetResource("Forum.ForumFeedDescription");
@@ -473,7 +473,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(id);
@@ -623,14 +623,14 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(id);
 
             if (forumTopic == null)
             {
-                return RedirectToRoute("Boards");
+				return HttpNotFound();
             }
 
             var model = new TopicMoveModel();
@@ -671,7 +671,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(id);
@@ -698,14 +698,14 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forum = _forumService.GetForumById(id);
 
             if (forum == null)
             {
-                return RedirectToRoute("Boards");
+				return HttpNotFound();
             }
 
             if (_forumService.IsCustomerAllowedToCreateTopic(_workContext.CurrentCustomer, forum) == false)
@@ -733,7 +733,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forum = _forumService.GetForumById(model.ForumId);
@@ -852,7 +852,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(id);
@@ -906,7 +906,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(model.Id);
@@ -1041,7 +1041,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumPost = _forumService.GetPostById(id);
@@ -1079,7 +1079,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(id);
@@ -1116,8 +1116,7 @@ namespace SmartStore.Web.Controllers
             //subscription            
             if (model.IsCustomerAllowedToSubscribe)
             {
-                var forumSubscription = _forumService.GetAllSubscriptions(_workContext.CurrentCustomer.Id,
-                    0, forumTopic.Id, 0, 1).FirstOrDefault();
+                var forumSubscription = _forumService.GetAllSubscriptions(_workContext.CurrentCustomer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
                 model.Subscribed = forumSubscription != null;
             }
 
@@ -1152,7 +1151,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumTopic = _forumService.GetTopicById(model.ForumTopicId);
@@ -1225,7 +1224,7 @@ namespace SmartStore.Web.Controllers
                     var url = string.Empty;
                     if (pageIndex > 1)
                     {
-                        url = Url.RouteUrl("TopicSlugPaged", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
+                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
                     }
                     else
                     {
@@ -1260,7 +1259,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumPost = _forumService.GetPostById(id);
@@ -1316,7 +1315,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             var forumPost = _forumService.GetPostById(model.Id);
@@ -1396,7 +1395,7 @@ namespace SmartStore.Web.Controllers
                     var url = string.Empty;
                     if (pageIndex > 1)
                     {
-                        url = Url.RouteUrl("TopicSlugPaged", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
+                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
                     }
                     else
                     {
@@ -1428,7 +1427,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             int pageSize = 10;

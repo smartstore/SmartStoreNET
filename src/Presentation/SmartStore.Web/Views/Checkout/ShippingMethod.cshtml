@@ -29,7 +29,7 @@
         <h1>@T("Checkout.SelectShippingMethod")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginRouteForm("CheckoutShippingMethod", FormMethod.Post))
+        @using (Html.BeginForm())
         {
             @Html.Widget("checkout_shipping_method_top")
             <div class="shipping-options">
@@ -86,7 +86,7 @@
                             </div>
                         }
                         <div class="select-button clearfix">
-                            <a class="btn pull-left" href="@Url.RouteUrl("CheckoutShippingAddress")">
+                            <a class="btn pull-left" href="@Url.Action("ShippingAddress")">
                                 <i class="icon-caret-left"></i>&nbsp;
                                 @T("Common.Back")
                             </a>    

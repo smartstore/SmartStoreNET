@@ -32,7 +32,6 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -1674,7 +1673,7 @@ namespace SmartStore.Web.Controllers
             {
                 if (_orderSettings.AnonymousCheckoutAllowed)
                 {
-                    return RedirectToRoute("LoginCheckoutAsGuest", new {returnUrl = Url.RouteUrl("ShoppingCart")});
+					return RedirectToAction("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
                 }
                 else
                 {
@@ -1683,7 +1682,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-                return RedirectToRoute("Checkout");
+				return RedirectToRoute("Checkout");
             }
         }
 

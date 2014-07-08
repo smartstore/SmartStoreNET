@@ -111,7 +111,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             //"~/customer/activation?token=cc74c80f-1edd-43f7-85df-a3cccc1b47b9&email=test@test.com".ShouldMapTo<CustomerController>(c => c.AccountActivation("cc74c80f-1edd-43f7-85df-a3cccc1b47b9", "test@test.com"));
             "~/customer/forumsubscriptions".ShouldMapTo<CustomerController>(c => c.ForumSubscriptions(null));
             "~/customer/forumsubscriptions/4".ShouldMapTo<CustomerController>(c => c.ForumSubscriptions(4));
-            "~/customer/forumsubscriptions/delete/5".ShouldMapTo<CustomerController>(c => c.DeleteForumSubscription(5));
+            "~/customer/deleteforumsubscriptions/5".ShouldMapTo<CustomerController>(c => c.DeleteForumSubscription(5));
             "~/customer/addressdelete/6".ShouldMapTo<CustomerController>(c => c.AddressDelete(6));
             "~/customer/addressedit/7".ShouldMapTo<CustomerController>(c => c.AddressEdit(7));
             "~/customer/addressadd".ShouldMapTo<CustomerController>(c => c.AddressAdd());
@@ -150,10 +150,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         [Test]
         public void Order_routes()
         {
-            "~/orderdetails/1".ShouldMapTo<OrderController>(c => c.Details(1));
-            "~/reorder/3".ShouldMapTo<OrderController>(c => c.ReOrder(3));
-            "~/orderdetails/pdf/4".ShouldMapTo<OrderController>(c => c.GetPdfInvoice(4));
-            "~/orderdetails/print/5".ShouldMapTo<OrderController>(c => c.PrintOrderDetails(5));
+            "~/order/details/1".ShouldMapTo<OrderController>(c => c.Details(1));
+            "~/order/reorder/3".ShouldMapTo<OrderController>(c => c.ReOrder(3));
+            "~/order/pdf/4".ShouldMapTo<OrderController>(c => c.GetPdfInvoice(4));
+            "~/order/print/5".ShouldMapTo<OrderController>(c => c.PrintOrderDetails(5));
         }
 
         [Test]
@@ -165,9 +165,9 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         [Test]
         public void Common_routes()
         {
-            "~/contactus".ShouldMapTo<CommonController>(c => c.ContactUs());
-            "~/sitemap".ShouldMapTo<CommonController>(c => c.Sitemap());
-            "~/sitemapseo".ShouldMapTo<CommonController>(c => c.SitemapSeo());
+            "~/contactus".ShouldMapTo<HomeController>(c => c.ContactUs());
+			"~/sitemap".ShouldMapTo<HomeController>(c => c.Sitemap());
+			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo());
             "~/config".ShouldMapTo<CommonController>(c => c.Config());
         }
 
@@ -184,10 +184,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             "~/privatemessages/".ShouldMapTo<PrivateMessagesController>(c => c.Index(null, null));
             "~/privatemessages/sent".ShouldMapTo<PrivateMessagesController>(c => c.Index(null, "sent"));
             "~/privatemessages/sent/page/2/".ShouldMapTo<PrivateMessagesController>(c => c.Index(2, "sent"));
-            "~/sendpm/3".ShouldMapTo<PrivateMessagesController>(c => c.SendPM(3, null));
-            "~/sendpm/4/5".ShouldMapTo<PrivateMessagesController>(c => c.SendPM(4, 5));
-            "~/viewpm/6".ShouldMapTo<PrivateMessagesController>(c => c.ViewPM(6));
-            "~/deletepm/7".ShouldMapTo<PrivateMessagesController>(c => c.DeletePM(7));
+			"~/privatemessages/send/3".ShouldMapTo<PrivateMessagesController>(c => c.Send(3, null));
+			"~/privatemessages/send/4/5".ShouldMapTo<PrivateMessagesController>(c => c.Send(4, 5));
+			"~/privatemessages/view/6".ShouldMapTo<PrivateMessagesController>(c => c.View(6));
+			"~/privatemessages/delete/7".ShouldMapTo<PrivateMessagesController>(c => c.Delete(7));
         }
 
         [Test]

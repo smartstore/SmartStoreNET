@@ -73,7 +73,7 @@ namespace SmartStore.Web.Controllers
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             return View("TopicDetails", cacheModel);
         }
 
@@ -83,7 +83,7 @@ namespace SmartStore.Web.Controllers
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             ViewBag.IsPopup = true;
             return View("TopicDetails", cacheModel);

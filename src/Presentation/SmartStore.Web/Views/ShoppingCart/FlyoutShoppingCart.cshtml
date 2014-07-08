@@ -119,7 +119,7 @@
                 var checkoutUrl = "";
                 if (Model.AnonymousCheckoutAllowed && Model.CurrentCustomerIsGuest)
                 {
-                    checkoutUrl = Url.RouteUrl("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
+					checkoutUrl = Url.Action("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
                 }
                 else
                 {

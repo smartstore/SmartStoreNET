@@ -24,7 +24,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -1717,23 +1716,23 @@ namespace SmartStore.Web.Controllers
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Category(int categoryId, CatalogPagingFilteringModel command, string filter)
-        {	
+        {
 			var category = _categoryService.GetCategoryById(categoryId);
             if (category == null || category.Deleted)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //Check whether the current user has a "Manage catalog" permission
             //It allows him to preview a category before publishing
             if (!category.Published && !_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //ACL (access control list)
             if (!_aclService.Authorize(category))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//Store mapping
 			if (!_storeMappingService.Authorize(category))
-				return RedirectToRoute("HomePage");            
+				return HttpNotFound();            
 
             //'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
@@ -1993,16 +1992,16 @@ namespace SmartStore.Web.Controllers
         {
             var manufacturer = _manufacturerService.GetManufacturerById(manufacturerId);
             if (manufacturer == null || manufacturer.Deleted)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //Check whether the current user has a "Manage catalog" permission
             //It allows him to preview a manufacturer before publishing
             if (!manufacturer.Published && !_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//Store mapping
 			if (!_storeMappingService.Authorize(manufacturer))
-				return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
@@ -2207,21 +2206,21 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted)
-                return RedirectToRoute("HomePage");
+                return HttpNotFound();
 
             //Is published?
             //Check whether the current user has a "Manage catalog" permission
             //It allows him to preview a product before publishing
             if (!product.Published && !_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //ACL (access control list)
             if (!_aclService.Authorize(product))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//Store mapping
 			if (!_storeMappingService.Authorize(product))
-				return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//visible individually?
 			if (!product.VisibleIndividually)
@@ -2234,7 +2233,7 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					return RedirectToRoute("HomePage");
+					return HttpNotFound();
 				}
 			}
             
@@ -2263,7 +2262,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null || product.Deleted || !product.Published)
-				return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//manually process form
 			ShoppingCartType cartType = ShoppingCartType.ShoppingCart;
@@ -3036,7 +3035,7 @@ namespace SmartStore.Web.Controllers
         {
             var productTag = _productTagService.GetProductTagById(productTagId);
             if (productTag == null)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
@@ -3112,7 +3111,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted || !product.Published || !product.AllowCustomerReviews)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = new ProductReviewsModel();
             PrepareProductReviewsModel(model, product);
@@ -3131,7 +3130,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted || !product.Published || !product.AllowCustomerReviews)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
@@ -3290,7 +3289,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var customer = _workContext.CurrentCustomer;
 
@@ -3313,7 +3312,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(model.ProductId);
             if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
@@ -3376,7 +3375,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = new ProductEmailAFriendModel();
             model.ProductId = product.Id;
@@ -3394,7 +3393,7 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(model.ProductId);
             if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             //validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
@@ -3443,10 +3442,10 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted || !product.Published)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             if (!_catalogSettings.CompareProductsEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             _compareProductsService.AddProductToCompareList(productId);
 
@@ -3488,10 +3487,10 @@ namespace SmartStore.Web.Controllers
         {
             var product = _productService.GetProductById(productId);
             if (product == null)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             if (!_catalogSettings.CompareProductsEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             _compareProductsService.RemoveProductFromCompareList(productId);
 
@@ -3527,7 +3526,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult CompareProducts()
         {
             if (!_catalogSettings.CompareProductsEnabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = new CompareProductsModel()
             {

@@ -13,7 +13,7 @@
                 $.ajax({
                     cache: false,
                     type: "GET",
-                    url: "@(Url.RouteUrl("GetStatesByCountryId"))",
+                    url: "@(Url.Action("GetStatesByCountryId", "Country"))",
                     data: { "countryId": selectedItem, "addEmptyStateIfRequired": "true" },
                     success: function (data) {
                         ddlStates.html('');

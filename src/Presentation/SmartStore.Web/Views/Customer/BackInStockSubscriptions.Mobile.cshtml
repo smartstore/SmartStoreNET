@@ -36,7 +36,7 @@
                 </ul>
                 @if (Model.TotalPages > 1)
                 {
-                    @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerBackInStockSubscriptionsPaged")
+                    @Html.SmartStore().Pager(Model).Name("paginator").Action("BackInStockSubscriptions", "Customer")
                 }
             </div>
         }

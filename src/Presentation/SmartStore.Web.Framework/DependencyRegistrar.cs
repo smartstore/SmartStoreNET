@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Web.Mvc;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
@@ -50,6 +51,9 @@ using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Filter;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Themes;
@@ -67,8 +71,6 @@ using SmartStore.Core.Packaging;
 using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
-using SmartStore.Web.Framework.WebApi;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Framework
 {
@@ -307,7 +309,10 @@ namespace SmartStore.Web.Framework
 			{
 				var storeService = c.Resolve<IStoreService>();
 				var aclService = c.Resolve<IAclService>();
-				return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
+				//return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
+				var x = !aclService.HasActiveAcl;
+				var y = storeService.IsSingleStoreMode();
+				return new DbQuerySettings(true, true);
 			})
 			.InstancePerRequest();
 		}
@@ -560,6 +565,9 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerRequest();
 
 			builder.RegisterFilterProvider();
+
+			// global exception handling
+			builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>();
 		}
 
 		static HttpContextBase HttpContextBaseFactory(IComponentContext ctx)

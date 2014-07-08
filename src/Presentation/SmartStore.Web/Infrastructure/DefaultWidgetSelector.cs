@@ -59,7 +59,7 @@ namespace SmartStore.Web.Infrastructure
         }
 
         public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model)
-        {		
+        {
 			string actionName;
             string controllerName;
             RouteValueDictionary routeValues;
@@ -88,27 +88,30 @@ namespace SmartStore.Web.Infrastructure
 			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id);
             var topicWidgets = _cacheManager.Get(allTopicsCacheKey, () =>
             {
-				var allTopicWidgets = _topicService.GetAllTopics(storeId).Where(x => x.RenderAsWidget).ToList();
-				var stubs = allTopicWidgets
-					.Select(t => new TopicWidgetStub 
-					{
- 						Id = t.Id,
-						Bordered = t.WidgetBordered,
-						ShowTitle = t.WidgetShowTitle,
-						SystemName = t.SystemName.SanitizeHtmlId(),
-						Title = t.GetLocalized(x => t.Title),
-						Body = t.GetLocalized(x => t.Body),
-						WidgetZones = t.GetWidgetZones().ToArray(),
-						Priority = t.Priority
-					})
-					.ToList();
-                return stubs;
+				using (var scope = new DbContextScope(forceNoTracking: true))
+				{
+					var allTopicWidgets = _topicService.GetAllTopics(storeId).Where(x => x.RenderAsWidget).ToList();
+					var stubs = allTopicWidgets
+						.Select(t => new TopicWidgetStub
+						{
+							Id = t.Id,
+							Bordered = t.WidgetBordered,
+							ShowTitle = t.WidgetShowTitle,
+							SystemName = t.SystemName.SanitizeHtmlId(),
+							Title = t.GetLocalized(x => t.Title),
+							Body = t.GetLocalized(x => t.Body),
+							WidgetZones = t.GetWidgetZones().ToArray(),
+							Priority = t.Priority
+						})
+						.ToList();
+					return stubs;
+				}
             });
 
             var byZoneTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_BYZONE_MODEL_KEY, widgetZone, _storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
             var topicsByZone = _cacheManager.Get(byZoneTopicsCacheKey, () =>
             {
-                var result = from t in topicWidgets
+                var result = from t in topicWidgets 
                              where t.WidgetZones.Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
                              orderby t.Priority
                              select new WidgetRouteInfo

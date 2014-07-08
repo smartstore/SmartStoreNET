@@ -37,7 +37,7 @@
                                     }
                                 </div>
                                 <div class="buttons">
-                                    <a href="@Url.RouteUrl("DeleteForumSubscription", new { subscriptionId = @fs.Id })" data-role="button">@T("Common.Delete")</a>
+                                    <a href="@Url.Action("DeleteForumSubscription", new { id = @fs.Id })" data-role="button">@T("Common.Delete")</a>
                                 </div>
                             </div>
                         </li>
@@ -45,7 +45,7 @@
                 </ul>
                 @if (Model.TotalPages > 1)
                 {
-                    @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerForumSubscriptionsPaged")
+                    @Html.SmartStore().Pager(Model).Name("paginator")
                 }
             </div>
         }

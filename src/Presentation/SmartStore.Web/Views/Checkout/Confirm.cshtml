@@ -20,7 +20,7 @@
         <h1>@T("Checkout.ConfirmYourOrder")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginRouteForm("CheckoutConfirm", FormMethod.Post, new { id = "confirm-order-form" }))
+        @using (Html.BeginForm(new { id = "confirm-order-form" }))
         {
             @Html.Widget("checkout_confirm_top")
             <div class="page-intro">
@@ -129,7 +129,7 @@
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.RouteUrl(Model.BypassPaymentMethodInfo ? "CheckoutPaymentMethod" : "CheckoutPaymentInfo")">
+                    <a class="btn pull-left" href="@Url.Action(Model.BypassPaymentMethodInfo ? "PaymentMethod" : "PaymentInfo")">
                         <i class="icon-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>

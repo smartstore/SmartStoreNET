@@ -31,8 +31,8 @@
             </div>
             <div>
                 <div class="options">
-                    <a href="@Url.RouteUrl("SendPMReply", new { toCustomerId = @Model.FromCustomerId, replyToMessageId = @Model.Id })" data-role="button" data-inline="true">@T("PrivateMessages.View.ReplyButton")</a>
-                    <a href="@Url.RouteUrl("DeletePM", new { privateMessageId = @Model.Id })" data-role="button" data-inline="true">@T("PrivateMessages.View.DeleteButton")</a>
+                    <a href="@Url.Action("Send", new { id = Model.FromCustomerId, replyToMessageId = Model.Id })" data-role="button" data-inline="true">@T("PrivateMessages.View.ReplyButton")</a>
+                    <a href="@Url.Action("Delete", new { id = Model.Id })" data-role="button" data-inline="true">@T("PrivateMessages.View.DeleteButton")</a>
                     <a href="@Url.RouteUrl("PrivateMessages")" data-role="button" data-inline="true">@T("PrivateMessages.View.BackButton")</a>
                 </div>
             </div>

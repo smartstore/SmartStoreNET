@@ -19,7 +19,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
@@ -455,9 +454,12 @@ namespace SmartStore.Web.Controllers
         #region Order details
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Details(int orderId)
+        public ActionResult Details(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+			if (id < 1)
+				return HttpNotFound();
+			
+			var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -466,10 +468,11 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+		[ActionName("print")]
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult PrintOrderDetails(int orderId)
+        public ActionResult PrintOrderDetails(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -479,9 +482,10 @@ namespace SmartStore.Web.Controllers
             return View("Details", model);
         }
 
-        public ActionResult GetPdfInvoice(int orderId)
+		[ActionName("pdf")]
+        public ActionResult GetPdfInvoice(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -496,9 +500,12 @@ namespace SmartStore.Web.Controllers
             return File(bytes, "application/pdf", string.Format("order_{0}.pdf", order.Id));
         }
 
-        public ActionResult ReOrder(int orderId)
+        public ActionResult ReOrder(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+			if (id < 1)
+				return HttpNotFound();
+			
+			var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -515,7 +522,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             if (!_paymentService.CanRePostProcessPayment(order))
-                return RedirectToRoute("OrderDetails", new { orderId = orderId });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
 
             var postProcessPaymentRequest = new PostProcessPaymentRequest()
             {
@@ -532,7 +539,7 @@ namespace SmartStore.Web.Controllers
             {
                 //if no redirection has been done (to a third-party payment page)
                 //theoretically it's not possible
-                return RedirectToRoute("OrderDetails", new { orderId = orderId });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
             }
         }
 

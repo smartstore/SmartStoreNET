@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 
-namespace SmartStore.Web.Extensions
+namespace SmartStore.Web
 {
 	public static class ProductDetailsExtensions
 	{

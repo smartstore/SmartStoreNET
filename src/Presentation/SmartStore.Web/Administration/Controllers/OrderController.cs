@@ -2095,7 +2095,7 @@ namespace SmartStore.Admin.Controllers
             else
             {
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
-                return RedirectToAction("AddShipment", new { orderId = orderId });
+				return RedirectToAction("AddShipment", new { orderId = orderId });
             }
         }
 

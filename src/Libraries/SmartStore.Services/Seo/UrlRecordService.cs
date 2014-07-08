@@ -28,13 +28,7 @@ namespace SmartStore.Services.Seo
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="urlRecordRepository">URL record repository</param>
-        public UrlRecordService(ICacheManager cacheManager,
-            IRepository<UrlRecord> urlRecordRepository)
+        public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository)
         {
             this._cacheManager = cacheManager;
             this._urlRecordRepository = urlRecordRepository;
@@ -158,10 +152,7 @@ namespace SmartStore.Services.Seo
                             orderby ur.Id descending 
                             select ur.Slug;
                 var slug = query.FirstOrDefault();
-                //little hack here. nulls aren't cacheable so set it to ""
-                if (slug == null)
-                    slug = "";
-                return slug;
+                return slug ?? "";
             });
         }
 

@@ -27,7 +27,6 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -1064,7 +1063,7 @@ namespace SmartStore.Web.Controllers
                     if (_forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Signature, model.Signature);
 
-                    return RedirectToRoute("CustomerInfo");
+					return RedirectToAction("Info");
                 }
             }
             catch (Exception exc)
@@ -1104,15 +1103,18 @@ namespace SmartStore.Web.Controllers
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult AddressDelete(int addressId)
+        public ActionResult AddressDelete(int id)
         {
-            if (!IsCurrentUserRegistered())
+			if (id < 1)
+				return HttpNotFound();
+			
+			if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
             var customer = _workContext.CurrentCustomer;
 
             //find address (ensure that it belongs to the current customer)
-            var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
+            var address = customer.Addresses.Where(a => a.Id == id).FirstOrDefault();
             if (address != null)
             {
                 customer.RemoveAddress(address);
@@ -1121,7 +1123,7 @@ namespace SmartStore.Web.Controllers
                 _addressService.DeleteAddress(address);
             }
 
-            return RedirectToRoute("CustomerAddresses");
+			return RedirectToAction("Addresses");
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
@@ -1162,7 +1164,7 @@ namespace SmartStore.Web.Controllers
                 customer.Addresses.Add(address);
                 _customerService.UpdateCustomer(customer);
 
-                return RedirectToRoute("CustomerAddresses");
+				return RedirectToAction("Addresses");
             }
 
 
@@ -1176,17 +1178,20 @@ namespace SmartStore.Web.Controllers
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult AddressEdit(int addressId)
+        public ActionResult AddressEdit(int id)
         {
-            if (!IsCurrentUserRegistered())
+			if (id < 1)
+				return HttpNotFound();
+			
+			if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
             var customer = _workContext.CurrentCustomer;
             //find address (ensure that it belongs to the current customer)
-            var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
+            var address = customer.Addresses.Where(a => a.Id == id).FirstOrDefault();
             if (address == null)
                 //address is not found
-                return RedirectToRoute("CustomerAddresses");
+				return RedirectToAction("Addresses");
 
             var model = new CustomerAddressEditModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
@@ -1208,14 +1213,13 @@ namespace SmartStore.Web.Controllers
             var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
             if (address == null)
                 //address is not found
-                return RedirectToRoute("CustomerAddresses");
+				return RedirectToAction("Addresses");
 
             if (ModelState.IsValid)
             {
                 address = model.Address.ToEntity(address);
                 _addressService.UpdateAddress(address);
-
-                return RedirectToRoute("CustomerAddresses");
+				return RedirectToAction("Addresses");
             }
 
             //If we got this far, something failed, redisplay form
@@ -1257,7 +1261,7 @@ namespace SmartStore.Web.Controllers
             var recurringPayment = _orderService.GetRecurringPaymentById(recurringPaymentId);
             if (recurringPayment == null)
             {
-                return RedirectToRoute("CustomerOrders");
+                return RedirectToAction("Orders");
             }
 
             var customer = _workContext.CurrentCustomer;
@@ -1272,7 +1276,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-                return RedirectToRoute("CustomerOrders");
+				return RedirectToAction("Orders");
             }
         }
 
@@ -1360,9 +1364,12 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        public ActionResult UserAgreement(Guid orderItemId)
+        public ActionResult UserAgreement(Guid id /* orderItemId */)
         {
-            var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
+			if (id == Guid.Empty)
+				return HttpNotFound();
+
+			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
                 return RedirectToRoute("HomePage");
 
@@ -1372,7 +1379,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new UserAgreementModel();
             model.UserAgreementText = product.UserAgreementText;
-            model.OrderItemGuid = orderItemId;
+			model.OrderItemGuid = id;
             
             return View(model);
         }
@@ -1388,7 +1395,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             if (!_rewardPointsSettings.Enabled)
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
 
             var customer = _workContext.CurrentCustomer;
 
@@ -1476,7 +1483,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             if (!_customerSettings.AllowCustomersToUploadAvatars)
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
 
             var customer = _workContext.CurrentCustomer;
 
@@ -1498,7 +1505,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             if (!_customerSettings.AllowCustomersToUploadAvatars)
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
 
             var customer = _workContext.CurrentCustomer;
 
@@ -1559,7 +1566,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             if (!_customerSettings.AllowCustomersToUploadAvatars)
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
 
             var customer = _workContext.CurrentCustomer;
 
@@ -1571,7 +1578,7 @@ namespace SmartStore.Web.Controllers
                 _pictureService.DeletePicture(customerAvatar);
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
 
-            return RedirectToRoute("CustomerAvatar");
+            return RedirectToAction("Avatar");
         }
 
         #endregion
@@ -1677,7 +1684,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.AllowCustomersToManageSubscriptions)
             {
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
             }
 
             int pageIndex = 0;
@@ -1761,18 +1768,21 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            return RedirectToRoute("CustomerForumSubscriptions");
+            return RedirectToAction("ForumSubscriptions");
         }
 
-        public ActionResult DeleteForumSubscription(int subscriptionId)
+        public ActionResult DeleteForumSubscription(int id)
         {
-            var forumSubscription = _forumService.GetSubscriptionById(subscriptionId);
+			if (id < 1)
+				return HttpNotFound();
+
+			var forumSubscription = _forumService.GetSubscriptionById(id);
             if (forumSubscription != null && forumSubscription.CustomerId == _workContext.CurrentCustomer.Id)
             {
                 _forumService.DeleteSubscription(forumSubscription);
             }
 
-            return RedirectToRoute("CustomerForumSubscriptions");
+			return RedirectToAction("ForumSubscriptions");
         }
 
         #endregion
@@ -1783,7 +1793,7 @@ namespace SmartStore.Web.Controllers
         {
             if (_customerSettings.HideBackInStockSubscriptionsTab)
             {
-                return RedirectToRoute("CustomerInfo");
+				return RedirectToAction("Info");
             }
 
             int pageIndex = 0;
@@ -1845,7 +1855,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            return RedirectToRoute("CustomerBackInStockSubscriptions");
+            return RedirectToAction("BackInStockSubscriptions");
         }
 
         public ActionResult DeleteBackInStockSubscription(int subscriptionId)
@@ -1856,7 +1866,7 @@ namespace SmartStore.Web.Controllers
                 _backInStockSubscriptionService.DeleteSubscription(subscription);
             }
 
-            return RedirectToRoute("CustomerBackInStockSubscriptions");
+			return RedirectToAction("BackInStockSubscriptions");
         }
 
         #endregion

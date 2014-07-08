@@ -12,7 +12,8 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Plugin.Developer.DevTools.Controllers
 {
-	public class DevToolsController : PluginControllerBase
+
+	public class DevToolsController : SmartController
     {
 		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -31,6 +32,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Controllers
 			_settingService = settingService;
 		}
 
+		[AdminAuthorize]
 		[ChildActionOnly]
 		public ActionResult Configure()
 		{
@@ -44,6 +46,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Controllers
 			return View(settings);
 		}
 
+		[AdminAuthorize]
 		[HttpPost]
 		[ChildActionOnly]
 		public ActionResult Configure(ProfilerSettings model, FormCollection form)
@@ -61,7 +64,6 @@ namespace SmartStore.Plugin.Developer.DevTools.Controllers
 			return Configure();
 		}
 
-		[AllowAnonymous]
 		public ActionResult MiniProfiler()
 		{
 			return View();

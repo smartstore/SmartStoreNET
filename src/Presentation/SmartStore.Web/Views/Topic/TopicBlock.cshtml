@@ -28,7 +28,7 @@
         }
     </script>
     <div id="ph-password-@Model.Id">
-        @using (Ajax.BeginRouteForm("TopicAuthenticate", new AjaxOptions
+        @using (Ajax.BeginForm("Authenticate", new AjaxOptions
         {
             HttpMethod = "Post",
             OnSuccess = "OnAuthenticateSuccess" + @Model.Id,

@@ -14,8 +14,7 @@
     </div>
     <div class="page-body checkout-data">
         @*set "data-ajax" attribute to "false"*@
-        @using (Html.BeginRouteForm("CheckoutPaymentMethod", FormMethod.Post,
-                new Dictionary<string, Object> { { "data-ajax", "false" } }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new RouteValueDictionary { { "data-ajax", "false" } }))
         {
             @Html.Widget("mobile_checkout_payment_method_top")
             if (Model.DisplayRewardPoints && Model.PaymentMethods.Count > 0)

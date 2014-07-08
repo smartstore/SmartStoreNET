@@ -29,7 +29,7 @@
         <h1>@T("Checkout.SelectPaymentMethod")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginRouteForm("CheckoutPaymentMethod", FormMethod.Post))
+        @using (Html.BeginForm())
         {
             @Html.Widget("checkout_payment_method_top")
             if (Model.DisplayRewardPoints && Model.PaymentMethods.Count > 0)
@@ -97,10 +97,10 @@
                             </div>
                         }
                         <div class="select-button clearfix">
-                            <a class="btn pull-left" href="@Url.RouteUrl("CheckoutShippingMethod")">
-                                <i class="icon-caret-left"></i>&nbsp;
-                                @T("Common.Back")
-                            </a>    
+							<a class="btn pull-left" href="@Url.Action("ShippingMethod")">
+								<i class="icon-caret-left"></i>&nbsp;
+								@T("Common.Back")
+							</a>    
 
                             <input type="submit" name="nextstep" id="nextstep" style="display:none"/>
 

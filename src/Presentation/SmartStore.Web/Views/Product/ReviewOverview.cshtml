@@ -19,7 +19,7 @@
             </div>
             @if (Model.TotalReviews > 0) 
             {
-                <span>(<a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })">@Model.TotalReviews</a>)</span>
+                <span>(<a href="@Url.Action("Reviews", new { id = Model.ProductId })">@Model.TotalReviews</a>)</span>
             }
         </div>
 
@@ -27,7 +27,7 @@
         <div class="product-review-links pull-right">
             @if (Model.TotalReviews > 0) 
             {
-                <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })">@T("Reviews.Overview.AddNew")</a>
+                <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.AddNew")</a>
                 @*hidden microdata info*@
                 decimal ratingValue = ratingPercent / (decimal)20;
                 <span itemprop="ratingValue" style="display:none;">@ratingValue.ToString("0.0", new CultureInfo("en-US"))</span>
@@ -35,7 +35,7 @@
             }
             else 
             {
-                <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })">@T("Reviews.Overview.First")</a>
+                <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.First")</a>
             }
         </div>
     </div>

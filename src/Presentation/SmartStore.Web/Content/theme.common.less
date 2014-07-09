@@ -884,69 +884,74 @@ fieldset > legend {
     font-size: .85em;
 }
 
+.glimpse-nowrap {
+	z-index: 100;
+}
 
 
-/* PRODUCT BUNDLE ITEMS */
+/* Product Bundle Items
+================================================ */
+
 .product-bundle {
 	.bundle-item-border {
 		border-top: 1px solid #ddd;
 	}
 }
 
-    .product-bundle .bundle-item {
-        margin-top: 10px;
-        padding-top: 10px;
+.product-bundle .bundle-item {
+    margin-top: 10px;
+    padding-top: 10px;
 
-        .bundle-item-attributes {
-            margin-top: 3px;
+    .bundle-item-attributes {
+        margin-top: 3px;
+    }
+
+    .bundle-item-image {
+        float: left;
+        margin-right: 16px;
+    }
+
+    .bundle-item-body {
+        display: table-cell;
+    }
+
+    .bundle-item-name {
+        font-weight: bold;
+    }
+
+    .bundle-item-price {
+        padding: 5px 0 5px 0;
+
+        .product-price-without-discount,
+        .product-price-with-discount {
+            font-size: 1.1em;
         }
 
-        .bundle-item-image {
-            float: left;
-            margin-right: 16px;
+        .older-price {
+            text-decoration: line-through;
+            color: #aaa;
         }
 
-        .bundle-item-body {
-            display: table-cell;
-        }
-
-        .bundle-item-name {
-            font-weight: bold;
-        }
-
-        .bundle-item-price {
-            padding: 5px 0 5px 0;
-
-            .product-price-without-discount,
-            .product-price-with-discount {
-                font-size: 1.1em;
-            }
-
-            .older-price {
-                text-decoration: line-through;
-                color: #aaa;
-            }
-
-            .base-price {
-                font-size: 0.85em;
-            }
-        }
-
-        .bundle-item-description {
-            font-size: 12px;
-            line-height: 18px;
-        }
-
-        .bundle-item-attribute-info {
+        .base-price {
             font-size: 0.85em;
-            line-height: 1.45em;
-        }
-
-        .bundle-item-footer {
-            clear: both;
-            padding-top: 13px;
         }
     }
+
+    .bundle-item-description {
+        font-size: 12px;
+        line-height: 18px;
+    }
+
+    .bundle-item-attribute-info {
+        font-size: 0.85em;
+        line-height: 1.45em;
+    }
+
+    .bundle-item-footer {
+        clear: both;
+        padding-top: 13px;
+    }
+}
 
 #AddToCart.bundled-product {
     border-top: none !important;
@@ -956,9 +961,11 @@ fieldset > legend {
 	margin-right: 5px;
 	vertical-align: middle;
 }
+
 .attributes .attribute-value-image-checkbox {
     float: left;
 }
+
 .attributes .image-has-value {
     margin-left: 28px;
 }
@@ -971,10 +978,12 @@ fieldset > legend {
 .mb-bundle-pictures i {
     float: left;
 }
+
 .mb-bundle-pictures img {
     max-width: 24px;
     max-height: 24px;
 }
+
 .bundle-item-overview-headline {
 	margin-bottom: 14px;
 
@@ -1006,9 +1015,11 @@ fieldset > legend {
         float: right;
     }
 }
+
 .bundle-item-overview-headline .form-inline {
     text-align:right;
 }
+
 .bundle-item-overview .icon-plus {
     padding: 0 5px;
 }

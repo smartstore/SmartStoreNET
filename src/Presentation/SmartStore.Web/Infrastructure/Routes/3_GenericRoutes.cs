@@ -18,28 +18,23 @@ namespace SmartStore.Web.Infrastructure
 
             routes.MapLocalizedRoute("Product",
                 "{SeName}",
-                new { controller = "Catalog", action = "Product" },
-				new { /*SeName = @"\w+", productId = @"\d+"*/ },
+                new { controller = "Product", action = "Product" },
                 new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("Category",
                 "{SeName}",
                 new { controller = "Catalog", action = "Category" },
-				new { /*SeName = @"\w+", categoryId = @"\d+"*/ },
                 new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("Manufacturer",
                 "{SeName}",
                 new { controller = "Catalog", action = "Manufacturer" },
-				new { /*SeName = @"\w+", manufacturerId = @"\d+"*/ },
                 new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("NewsItem",
 	            "{SeName}",
 	            new { controller = "News", action = "NewsItem" },
-				new { /*SeName = @"\w+", newsItemId = @"\d+"*/ },
 	            new[] { "SmartStore.Web.Controllers" });
             routes.MapLocalizedRoute("BlogPost",
                 "{SeName}",
                 new { controller = "Blog", action = "BlogPost" },
-				new { /*SeName = @"\w+", blogPostId = @"\d+"*/ },
                 new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("PageNotFound",

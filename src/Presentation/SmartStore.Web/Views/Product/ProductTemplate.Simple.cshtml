@@ -9,7 +9,7 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.Events;
-@using SmartStore.Web.Extensions;
+@using SmartStore.Web;
 
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
@@ -54,7 +54,7 @@
                         <!--product pictures-->
                         <div id="pd-gallery-container-outer">
 						    <div id="pd-gallery-container">
-							    @Html.Partial("_ProductDetailsPictures", Model.DetailsPictureModel)
+							    @Html.Partial("_PictureGallery", Model.DetailsPictureModel)
 						    </div>
                         </div>
                         @Html.Widget("productdetails_after_pictures")
@@ -171,10 +171,10 @@
                     @if (Model.DisplayAdminLink) { 
                         //IMPORTANT: first element must have a margin of 10px otherwise columns aren't eqalized
                         <div class="clearfix" style="margin-top:10px">
-                            <a class="btn btn-primary pull-right" href="@Url.Content("~/admin/product/edit/" + Model.Id)" target="admin-product" rel="nofollow">
+							<a class="btn btn-primary btn-mini pull-right" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 								<i class="icon icon-edit"></i>
-                                @T("Common.Catalog.EditProduct")
-                            </a>
+								@T("Common.Catalog.EditProduct")
+							</a>
                         </div>
                     }
 
@@ -195,12 +195,12 @@
                         @if (Model.ProductType == ProductType.BundledProduct)
                         {
 							<div id="ProductBundleOverview">
-								@Html.Partial("_ProductBundleItemsAddToCart", Model)
+								@Html.Partial("_BundleItemsAddToCart", Model)
 							</div>
                         }
 
                         <!--product reviews-->
-                        @Html.Action("ProductReviewOverview", "Catalog", new { productId = Model.Id })
+                        @Html.Action("ReviewOverview", new { id = Model.Id })
 
                         <!-- product attributes or bundle items -->
                         @{
@@ -214,7 +214,7 @@
 										</div>
 									}
 									<div class="bundle-items">										
-										@Html.Partial("_ProductBundleItems")
+										@Html.Partial("_BundleItems")
 									</div>
 									@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
 									{
@@ -228,7 +228,7 @@
 								dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
 								<div class="product-attributes line">
-									@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)                  
+									@Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)                  
 								</div>
 							}
                         }
@@ -266,13 +266,13 @@
                             </a>
                         </div>
                         }
-                        @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
-                        @Html.Action("ProductAskQuestionButton", "Catalog", new { productId = Model.Id })
+                        @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                        @Html.Action("AskQuestionButton", new { id = Model.Id })
                         @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                         @if (!Model.AddToCart.DisableWishlistButton)
                         {
                         <div>
-                            <a data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            <a data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                                 href="#"
                                 class="ajax-cart-link" 
 							    rel="nofollow"
@@ -287,10 +287,10 @@
                     </div>
 
                     <!-- social share -->
-                    @Html.Action("ShareButton", "Catalog")
+                    @Html.Action("ShareButton")
 
                     <!-- tier prices -->
-                    @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductTierPrices", new { productId = Model.Id })
                 
                     </div>
                         
@@ -306,8 +306,8 @@
                 <!-- tabs -->
                 @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
                 {
-                    var specificationAttributes = Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id }).ToString();
-                    var reviews = Html.Action("ProductDetailReviews", "Catalog", new { productId = Model.Id }).ToString();
+                    var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                    var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
 
                     if (!String.IsNullOrWhiteSpace(Model.FullDescription))
                     {
@@ -336,16 +336,16 @@
                 })
             
 
-                @Html.Action("RelatedProducts", "Catalog", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
 
                 <!-- product recommendations -->
                 <div class="product-recommendations">
-                    @Html.Action("ProductsAlsoPurchased", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
                 </div>
             
                 <!-- product tags -->
                 <div class="product-tags">
-                    @Html.Action("ProductTags", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductTags", new { productId = Model.Id })
                 </div>
             
             </div>

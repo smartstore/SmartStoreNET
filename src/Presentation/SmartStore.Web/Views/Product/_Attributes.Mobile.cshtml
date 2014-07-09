@@ -7,7 +7,7 @@
 @using System.Globalization;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Security;
-@using SmartStore.Web.Extensions;
+@using SmartStore.Web;
 @{
     var hidePrices = !EngineContext.Current.Resolve<IPermissionService>().Authorize(StandardPermissionProvider.DisplayPrices);
 }

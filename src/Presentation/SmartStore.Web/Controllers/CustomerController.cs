@@ -1858,9 +1858,9 @@ namespace SmartStore.Web.Controllers
             return RedirectToAction("BackInStockSubscriptions");
         }
 
-        public ActionResult DeleteBackInStockSubscription(int subscriptionId)
+        public ActionResult DeleteBackInStockSubscription(int id /* subscriptionId */)
         {
-            var subscription = _backInStockSubscriptionService.GetSubscriptionById(subscriptionId);
+            var subscription = _backInStockSubscriptionService.GetSubscriptionById(id);
             if (subscription != null && subscription.CustomerId == _workContext.CurrentCustomer.Id)
             {
                 _backInStockSubscriptionService.DeleteSubscription(subscription);

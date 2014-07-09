@@ -20,15 +20,15 @@
             </div>
         </div>
         <div class="product-review-links">
-            <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })">@Model.TotalReviews
-                @T("Reviews.Overview.Reviews")</a> <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })" data-role="button">@T("Reviews.Overview.AddNew")</a>
+            <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@Model.TotalReviews
+                @T("Reviews.Overview.Reviews")</a> <a href="@Url.Action("Reviews", new { id = Model.ProductId })" data-role="button">@T("Reviews.Overview.AddNew")</a>
         </div>
     </div>
     }
     else
     {
     <div class="product-no-reviews">
-        <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })" data-role="button">@T("Reviews.Overview.First")</a>
+        <a href="@Url.Action("Reviews", new { id = Model.ProductId })" data-role="button">@T("Reviews.Overview.First")</a>
     </div>
     }
 }

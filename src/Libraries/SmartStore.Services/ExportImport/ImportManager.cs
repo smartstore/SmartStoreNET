@@ -132,8 +132,9 @@ namespace SmartStore.Services.ExportImport
 
 				var result = new ImportResult();
 				int saved = 0;
-
-				progress.Report(new ImportProgressInfo { ElapsedTime = TimeSpan.Zero });
+				
+				if (progress != null)
+					progress.Report(new ImportProgressInfo { ElapsedTime = TimeSpan.Zero });
 
 				using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 				{

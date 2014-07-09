@@ -15,7 +15,7 @@ namespace SmartStore.Web
 		{
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
 
-			string url = urlHelper.Action("UpdateProductDetails", "Catalog", new
+			string url = urlHelper.Action("UpdateProductDetails", "Product", new
 			{
 				productId = model.Id,
 				bundleItemId = model.BundleItem.Id,

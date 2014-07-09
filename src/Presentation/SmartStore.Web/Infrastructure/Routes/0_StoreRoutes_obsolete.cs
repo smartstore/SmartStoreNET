@@ -76,11 +76,11 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Catalog", action = "ManufacturerAll" },
 				new[] { "SmartStore.Web.Controllers" });
 
-			// product reviews (TODO: Controller)
-			routes.MapLocalizedRoute("ProductReviews",
-				"productreviews/{productId}",
-				new { controller = "Catalog", action = "ProductReviews" },
-				new[] { "SmartStore.Web.Controllers" });
+			//// product reviews (TODO: Controller)
+			//routes.MapLocalizedRoute("ProductReviews",
+			//	"productreviews/{productId}",
+			//	new { controller = "Catalog", action = "ProductReviews" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
 			// products (TODO: Controller)
             routes.MapLocalizedRoute("RecentlyViewedProducts",
@@ -100,12 +100,12 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Catalog", action = "RecentlyAddedProductsRss" },
                 new[] { "SmartStore.Web.Controllers" });
 
-			// comparing products (TODO: Controller)
-            routes.MapLocalizedRoute("AddProductToCompare",
-                "compareproducts/add/{productId}",
-                new { controller = "Catalog", action = "AddProductToCompareList" },
-                new { productId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			//// comparing products (TODO: Controller)
+			//routes.MapLocalizedRoute("AddProductToCompare",
+			//	"compareproducts/add/{productId}",
+			//	new { controller = "Catalog", action = "AddProductToCompareList" },
+			//	new { productId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
 			// (TODO: Controller)
             routes.MapLocalizedRoute("CompareProducts",
@@ -113,31 +113,31 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Catalog", action = "CompareProducts" },
                 new[] { "SmartStore.Web.Controllers" });
 
-			// (TODO: Controller)
-            routes.MapLocalizedRoute("RemoveProductFromCompareList",
-                "compareproducts/remove/{productId}",
-                new { controller = "Catalog", action = "RemoveProductFromCompareList"},
-                new[] { "SmartStore.Web.Controllers" });
+			//// (TODO: Controller)
+			//routes.MapLocalizedRoute("RemoveProductFromCompareList",
+			//	"compareproducts/remove/{productId}",
+			//	new { controller = "Catalog", action = "RemoveProductFromCompareList"},
+			//	new[] { "SmartStore.Web.Controllers" });
 
-			// (TODO: Controller)
-            routes.MapLocalizedRoute("ClearCompareList",
-                "clearcomparelist/",
-                new { controller = "Catalog", action = "ClearCompareList" },
-                new[] { "SmartStore.Web.Controllers" });
+			//// (TODO: Controller)
+			//routes.MapLocalizedRoute("ClearCompareList",
+			//	"clearcomparelist/",
+			//	new { controller = "Catalog", action = "ClearCompareList" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
-			// product email a friend (TODO: Controller)
-            routes.MapLocalizedRoute("ProductEmailAFriend",
-                "productemailafriend/{productId}",
-                new { controller = "Catalog", action = "ProductEmailAFriend" },
-                new { productId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			//// product email a friend (TODO: Controller)
+			//routes.MapLocalizedRoute("ProductEmailAFriend",
+			//	"productemailafriend/{productId}",
+			//	new { controller = "Catalog", action = "ProductEmailAFriend" },
+			//	new { productId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
-			// ask product question form (TODO: Controller)
-            routes.MapLocalizedRoute("ProductAskQuestion",
-                "productaskquestion/{productId}",
-                new { controller = "Catalog", action = "ProductAskQuestion" },
-                new { productId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			//// ask product question form (TODO: Controller)
+			//routes.MapLocalizedRoute("ProductAskQuestion",
+			//	"productaskquestion/{productId}",
+			//	new { controller = "Catalog", action = "ProductAskQuestion" },
+			//	new { productId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
             //downloads
 			//routes.MapRoute("GetSampleDownload",
@@ -161,24 +161,24 @@ namespace SmartStore.Web.Infrastructure
 			//	new { orderItemId = new GuidConstraint(false) },
 			//	new[] { "SmartStore.Web.Controllers" });
 
-            //reviews
-            routes.MapRoute("SetProductReviewHelpfulness",
-                "setproductreviewhelpfulness",
-                new { controller = "Catalog", action = "SetProductReviewHelpfulness" },
-                new[] { "SmartStore.Web.Controllers" });
+			////reviews
+			//routes.MapRoute("SetProductReviewHelpfulness",
+			//	"setproductreviewhelpfulness",
+			//	new { controller = "Catalog", action = "SetProductReviewHelpfulness" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
-            //back in stock notifications
-            routes.MapLocalizedRoute("BackInStockSubscribePopup",
-				"backinstocksubscribe/{productId}",
-                new { controller = "Catalog", action = "BackInStockSubscribePopup" },
-				new { productId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			////back in stock notifications
+			//routes.MapLocalizedRoute("BackInStockSubscribePopup",
+			//	"backinstocksubscribe/{productId}",
+			//	new { controller = "Catalog", action = "BackInStockSubscribePopup" },
+			//	new { productId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
-            routes.MapLocalizedRoute("DeleteBackInStockSubscription",
-                "backinstocksubscribe/delete/{subscriptionId}",
-                new { controller = "Customer", action = "DeleteBackInStockSubscription" },
-                new { subscriptionId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			//routes.MapLocalizedRoute("DeleteBackInStockSubscription",
+			//	"backinstocksubscribe/delete/{subscriptionId}",
+			//	new { controller = "Customer", action = "DeleteBackInStockSubscription" },
+			//	new { subscriptionId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
 
 			////login, register
 			//routes.MapLocalizedRoute("LoginCheckoutAsGuest",
@@ -196,10 +196,10 @@ namespace SmartStore.Web.Infrastructure
 			//				new { controller = "Customer", action = "CheckUsernameAvailability" },
 			//				new[] { "SmartStore.Web.Controllers" });
 
-            routes.MapLocalizedRoute("EmailWishlist",
-                "emailwishlist",
-                new { controller = "ShoppingCart", action = "EmailWishlist" },
-                new[] { "SmartStore.Web.Controllers" });
+			//routes.MapLocalizedRoute("EmailWishlist",
+			//	"emailwishlist",
+			//	new { controller = "ShoppingCart", action = "EmailWishlist" },
+			//	new[] { "SmartStore.Web.Controllers" });
 			//add product to cart (without any attributes and options). used on catalog pages.
 			routes.MapLocalizedRoute("AddProductToCart-Catalog",
 				"addproducttocart/catalog/{productId}",
@@ -212,12 +212,12 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "ShoppingCart", action = "AddProductToCart_Details" },
 				new { productId = @"\d+", shoppingCartTypeId = @"\d+" },
                 new[] { "SmartStore.Web.Controllers" });
-            //product attributes with "upload file" type
-            routes.MapLocalizedRoute("UploadFileProductAttribute",
-				"uploadfileproductattribute/{productId}/{productAttributeId}",
-                new { controller = "ShoppingCart", action = "UploadFileProductAttribute" },
-				new { productId = @"\d+", productAttributeId = @"\d+" },
-                new[] { "SmartStore.Web.Controllers" });
+			////product attributes with "upload file" type
+			//routes.MapLocalizedRoute("UploadFileProductAttribute",
+			//	"uploadfileproductattribute/{productId}/{productAttributeId}",
+			//	new { controller = "ShoppingCart", action = "UploadFileProductAttribute" },
+			//	new { productId = @"\d+", productAttributeId = @"\d+" },
+			//	new[] { "SmartStore.Web.Controllers" });
             
             //checkout
             routes.MapLocalizedRoute("Checkout",

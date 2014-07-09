@@ -37,8 +37,9 @@ namespace SmartStore.Services.ExportImport
 
 		public static ImportResult ImportProductsFromExcel(this IImportManager importManager, Stream stream)
 		{
-			Func<Task<ImportResult>> fn = () => importManager.ImportProductsFromExcelAsync(stream);
-			return fn.RunSync();
+			//Func<Task<ImportResult>> fn = () => importManager.ImportProductsFromExcelAsync(stream);
+			//return fn.RunSync();
+			return AsyncRunner.RunSync(() => importManager.ImportProductsFromExcelAsync(stream));
 		}
 	}
 }

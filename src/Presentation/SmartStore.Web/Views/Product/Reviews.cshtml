@@ -125,7 +125,7 @@
                                     @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
                                 </div>
 
-                                @Html.Partial("_ProductReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
+                                @Html.Partial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
                                 @Html.Widget("productreviews_page_inside_review")
                             </div>
                         }

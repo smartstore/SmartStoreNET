@@ -47,7 +47,7 @@
                     @Html.Widget("productdetails_before_pictures")
                     <!--product pictures-->
 					<div id="pd-gallery-container">
-						@Html.Partial("_ProductDetailsPictures", Model.DetailsPictureModel)
+						@Html.Partial("_PictureGallery", Model.DetailsPictureModel)
 					</div>
                     @Html.Widget("productdetails_after_pictures")
                     
@@ -57,10 +57,10 @@
                     @if (Model.DisplayAdminLink) {
                         //IMPORTANT: first element must have a margin of 10px otherwise columns aren't eqalized
                         <div class="clearfix" style="margin-top:10px">
-                            <a class="btn btn-primary pull-right" href="@Url.Content("~/admin/product/edit/" + Model.Id)" target="admin-product" rel="nofollow">
+							<a class="btn btn-primary btn-mini pull-right" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 								<i class="icon icon-edit"></i>
-                                @T("Common.Catalog.EditProduct")
-                            </a>
+								@T("Common.Catalog.EditProduct")
+							</a>
                         </div>
                     }
 
@@ -78,7 +78,7 @@
                             @Html.Raw(Model.ShortDescription)
                         </div>
 
-                        @Html.Action("ProductReviewOverview", "Catalog", new { productId = Model.Id })
+                        @Html.Action("ReviewOverview", new { id = Model.Id })
 
                         @if (Model.Manufacturers != null && Model.Manufacturers.Count > 0)
                         {
@@ -99,12 +99,12 @@
                         }
 
                         <div class="quick-links line">
-                            @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
-                            @Html.Action("ProductAskQuestionButton", "Catalog", new { productId = Model.Id })
+                            @Html.Action("EmailAFriendButton", new { productId = Model.Id })
+                            @Html.Action("ProductAskQuestionButton", new { productId = Model.Id })
                             @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                         </div>
 
-                        @Html.Action("ShareButton", "Catalog")
+                        @Html.Action("ShareButton")
 
                         @Html.Widget("productdetails_overview_bottom")
                     </div>
@@ -135,8 +135,8 @@
                 <!-- tabs -->
                 @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
                 {
-                    var specificationAttributes = Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id }).ToString();
-                    var reviews = Html.Action("ProductDetailReviews", "Catalog", new { productId = Model.Id }).ToString();
+                    var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                    var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
 
                     if (!String.IsNullOrWhiteSpace(Model.FullDescription))
                     {
@@ -158,11 +158,11 @@
                             .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
                 })
 
-                @Html.Action("RelatedProducts", "Catalog", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
             
                 <!-- product tags -->
                 <div class="product-tags">
-                    @Html.Action("ProductTags", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductTags", new { productId = Model.Id })
                 </div>
             
             </div>

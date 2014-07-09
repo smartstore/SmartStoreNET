@@ -117,8 +117,8 @@ namespace SmartStore.Web.Framework.Seo
                 {
                     case "product":
                         {
-                            data.Values["controller"] = "Catalog";
-                            data.Values["action"] = "Product";
+                            data.Values["controller"] = "Product";
+                            data.Values["action"] = "ProductDetails";
                             data.Values["productid"] = urlRecord.EntityId;
                         }
                         break;

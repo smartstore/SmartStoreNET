@@ -33,7 +33,7 @@
                 <div class="review-text">
                     @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
                 </div>
-                @Html.Partial("_ProductReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
+                @Html.Partial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
                 @Html.Widget("productreviews_page_inside_review")
             </div>
         }
@@ -41,5 +41,5 @@
 } 
 else 
 {
-    <a href="@Url.RouteUrl("ProductReviews", new { productId = Model.ProductId })">@T("Reviews.Overview.First")</a>
+    <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.First")</a>
 }

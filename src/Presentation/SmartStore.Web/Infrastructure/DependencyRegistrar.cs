@@ -26,6 +26,8 @@ namespace SmartStore.Web.Infrastructure
 			builder.RegisterType<ShoppingCartController>().WithStaticCache();
 			builder.RegisterType<TopicController>().WithStaticCache();
 
+			builder.RegisterType<CatalogHelper>().InstancePerRequest();
+
 			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().WithStaticCache().InstancePerRequest();
             
             // installation localization service

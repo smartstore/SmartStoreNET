@@ -24,7 +24,7 @@
                 $.ajax({
                     cache: false,
                     type: "POST",
-                    url: "@(Url.RouteUrl("SetProductReviewHelpfulness"))",
+                    url: "@(Url.Action("SetReviewHelpfulness"))",
                     data: { "productReviewId": @(Model.ProductReviewId), "washelpful": wasHelpful },
                     success: function (data) {
                         //hide progress

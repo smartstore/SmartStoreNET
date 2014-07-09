@@ -5,7 +5,7 @@
     Html.AddScriptParts("~/Scripts/public.reviews.js");
 }
 
-<div class="product-review-vote muted" data-review-id="@(Model.ProductReviewId)" data-href='@(Url.RouteUrl("SetProductReviewHelpfulness"))'>
+<div class="product-review-vote muted" data-review-id="@(Model.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
     <span>@T("Reviews.Helpfulness.WasHelpful?")</span>
     <a class="vote vote-yes" href="#" title="@T("Common.Yes")" rel="tooltip nofollow">
         <i class="icon-thumbs-up"></i>

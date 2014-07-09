@@ -7,7 +7,7 @@
 @using System.Globalization;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Security;
-@using SmartStore.Web.Extensions;
+@using SmartStore.Web;
 @using SmartStore.Utilities;
 
 @{
@@ -174,7 +174,7 @@
                                 elFile = el.find('.uploaded-file');
 
                             $('#@clientId').fileupload({
-                                url: '@(Url.RouteUrl("UploadFileProductAttribute", new { productId = @attribute.ProductId, productAttributeId = @attribute.ProductAttributeId }))',
+                                url: '@(Url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = @attribute.ProductId, productAttributeId = @attribute.ProductAttributeId }))',
                                 dataType: 'json',
                                 acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
                                 done: function (e, data) {

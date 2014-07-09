@@ -4,7 +4,7 @@
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Extensions;
+@using SmartStore.Web;
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
@@ -27,12 +27,12 @@
                     </div>
                     @Html.Widget("mobile_productdetails_before_pictures")
 					<div id="pd-gallery-container">
-						@Html.Partial("_ProductDetailsPictures", Model.DetailsPictureModel)
+						@Html.Partial("_PictureGallery", Model.DetailsPictureModel)
 					</div>
                     @Html.Widget("mobile_productdetails_after_pictures")
-                    @Html.Action("ProductManufacturers", "Catalog", new { productId = Model.Id })
-                    @Html.Action("ProductReviewOverview", "Catalog", new { productId = Model.Id })
-                    @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductManufacturers", new { productId = Model.Id })
+                    @Html.Action("ReviewOverview", new { id = Model.Id })
+                    @Html.Action("EmailAFriendButton", new { productId = Model.Id })
                     @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                 </div>
                 <div class="full-description">
@@ -71,11 +71,11 @@
                                 </div>
                             }
                             @Html.Partial("_DownloadSample", product)
-                            @Html.Action("ProductTierPrices", "Catalog", new { productId = product.Id })
+                            @Html.Action("ProductTierPrices", new { productId = product.Id })
                             @{
                                 var dataDictAttributes = new ViewDataDictionary();
                                 dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", product.Id);
-                                @Html.Partial("_ProductAttributes", product.ProductVariantAttributes, dataDictAttributes)                  
+                                @Html.Partial("_Attributes", product.ProductVariantAttributes, dataDictAttributes)                  
                             }
                             <!--product SKU, manufacturer part number, stock info-->
                             @Html.Partial("_SKU_Man_Stock", product)
@@ -89,7 +89,7 @@
                             @{
                                 var dataDictPrice = new ViewDataDictionary();
                                 dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", product.Id);
-                                @Html.Partial("_ProductPrice", product.ProductPrice, dataDictPrice)
+                                @Html.Partial("_Price", product.ProductPrice, dataDictPrice)
                             }
                             @{
                                 var dataDictAddToCart = new ViewDataDictionary();
@@ -105,9 +105,9 @@
                         </div>
                     }
                 </div>
-                @Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id })
-                @Html.Action("ProductTags", "Catalog", new { productId = Model.Id })
-                @Html.Action("RelatedProducts", "Catalog", new { productId = Model.Id })
+                @Html.Action("ProductSpecifications", new { productId = Model.Id })
+                @Html.Action("ProductTags", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
             </div>
         }
         @Html.Widget("mobile_productdetails_bottom")

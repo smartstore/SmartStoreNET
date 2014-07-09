@@ -1093,7 +1093,7 @@ namespace SmartStore.Web.Controllers
         //add product to cart using AJAX
         //currently we use this method on catalog pages (category/manufacturer/etc)
         [HttpPost]
-        public ActionResult AddProductToCart_Catalog(int productId, bool forceredirection = false)
+        public ActionResult AddProductSimple(int productId, bool forceredirection = false)
         {
             //current we support only ShoppingCartType.ShoppingCart
             const ShoppingCartType shoppingCartType = ShoppingCartType.ShoppingCart;
@@ -1201,7 +1201,7 @@ namespace SmartStore.Web.Controllers
 		//currently we use this method on the product details pages
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult AddProductToCart_Details(int productId, int shoppingCartTypeId, FormCollection form)
+        public ActionResult AddProduct(int productId, int shoppingCartTypeId, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
             if (product == null)

@@ -306,7 +306,7 @@
                         }
                         @if (Model.IsEditable && Model.EmailWishlistEnabled)
                         {
-                            <a class="btn email-a-friend-wishlist-button" href="@Url.RouteUrl("EmailWishlist")" rel="nofollow">
+                            <a class="btn email-a-friend-wishlist-button" href="@Url.Action("EmailWishlist")" rel="nofollow">
                                 <i class="icon-envelope"></i>
                                 @T("Wishlist.EmailAFriend")
                             </a>

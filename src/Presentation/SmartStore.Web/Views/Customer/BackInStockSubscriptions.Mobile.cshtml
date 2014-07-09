@@ -1,6 +1,5 @@
 ﻿@model CustomerBackInStockSubscriptionsModel
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
 @{
@@ -28,7 +27,7 @@
                                     @Html.RouteLink(biss.ProductName, "Product", new { SeName = biss.SeName })
                                 </div>
                                 <div class="buttons">
-                                    <a href="@Url.RouteUrl("DeleteBackInStockSubscription", new { subscriptionId = @biss.Id })" data-role="button">@T("Common.Delete")</a>
+                                    <a href="@Url.Action("DeleteBackInStockSubscription", new { id = @biss.Id })" data-role="button">@T("Common.Delete")</a>
                                 </div>
                             </div>
                         </li>

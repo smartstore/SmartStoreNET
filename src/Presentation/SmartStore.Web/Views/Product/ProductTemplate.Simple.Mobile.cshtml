@@ -1,7 +1,7 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Extensions;
+@using SmartStore.Web;
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
@@ -51,7 +51,7 @@
 			@if (item.ProductVariantAttributes.ShouldBeRendered())
 			{
 				<div class="bundle-item-footer">
-					@Html.Partial("_ProductAttributes", item.ProductVariantAttributes, new ViewDataDictionary())
+					@Html.Partial("_Attributes", item.ProductVariantAttributes, new ViewDataDictionary())
 				</div>
 			}
 		</div>
@@ -74,12 +74,12 @@
                     </div>
                     @Html.Widget("mobile_productdetails_before_pictures")
                     <div id="pd-gallery-container">
-                        @Html.Partial("_ProductDetailsPictures", Model.DetailsPictureModel)
+                        @Html.Partial("_PictureGallery", Model.DetailsPictureModel)
                     </div>
                     @Html.Widget("mobile_productdetails_after_pictures")
-                    @Html.Action("ProductManufacturers", "Catalog", new { productId = Model.Id })
-                    @Html.Action("ProductReviewOverview", "Catalog", new { productId = Model.Id })
-                    @Html.Action("ProductEmailAFriendButton", "Catalog", new { productId = Model.Id })
+                    @Html.Action("ProductManufacturers", new { productId = Model.Id })
+                    @Html.Action("ReviewOverview", new { id = Model.Id })
+                    @Html.Action("EmailAFriendButton", new { productId = Model.Id })
                     @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                 </div>
 				@if (Model.ProductType == ProductType.BundledProduct)
@@ -108,12 +108,12 @@
                 <div class="product-variant-list">
                     <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
                         @Html.Partial("_DownloadSample", Model)
-                        @Html.Action("ProductTierPrices", "Catalog", new { productId = Model.Id })
+                        @Html.Action("ProductTierPrices", new { productId = Model.Id })
                         @if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
 						{
 							var dataDictAttributes = new ViewDataDictionary();
 							dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-							@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes, dataDictAttributes)
+							@Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)
 						}
                         <!--product SKU, manufacturer part number, stock info-->
                         @Html.Partial("_SKU_Man_Stock", Model)
@@ -127,7 +127,7 @@
                         @{
 							var dataDictPrice = new ViewDataDictionary();
 							dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", Model.Id);
-							@Html.Partial("_ProductPrice", Model.ProductPrice, dataDictPrice)
+							@Html.Partial("_Price", Model.ProductPrice, dataDictPrice)
                         }
                         @{
 							var dataDictAddToCart = new ViewDataDictionary();
@@ -136,14 +136,14 @@
                         }
                     </div>
                 </div>
-                @Html.Action("ProductSpecifications", "Catalog", new { productId = Model.Id })
+                @Html.Action("ProductSpecifications", new { productId = Model.Id })
                 <div class="clear">
                 </div>
-                @Html.Action("ProductTags", "Catalog", new { productId = Model.Id })
+                @Html.Action("ProductTags", new { productId = Model.Id })
                 <div class="clear">
                 </div>
-                @Html.Action("ProductsAlsoPurchased", "Catalog", new { productId = Model.Id })
-                @Html.Action("RelatedProducts", "Catalog", new { productId = Model.Id })
+                @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
             </div>
         }
         @Html.Widget("mobile_productdetails_bottom")

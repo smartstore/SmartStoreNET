@@ -1,42 +1,67 @@
 /// <reference path="admin.common.js" />
 /// <reference path="admin.catalog.js" />
 
-(function ($) {
+(function ($, window, document, undefined) {
     
+	var _commonPluginFactories = [
+		// select2
+		function (ctx) {
+			ctx.find(".adminData select:not(.noskin), .adminData input:hidden[data-select]").selectWrapper();
+		},
+		// tooltips
+		function (ctx) {
+			ctx.find(".cph").tooltip({
+				selector: "a.hint",
+				placement: "left",
+				delay: { show: 400, hide: 0 }
+			});
+		},
+		// Telerik
+		function (ctx) {
+			Hacks.Telerik.handleTextBox(ctx.find(".text-box.single-line, textarea"));
+			Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
+				// reject .t-button, that has a .t-group-indicator as parent
+				return !$(this).parent().hasClass("t-group-indicator");
+			}));
+
+			// skin telerik grids with bootstrap table
+			ctx.find(".t-grid > table").addClass("table table-hover");
+		},
+		// btn-trigger
+		function (ctx) {
+			// Temp only: delegates anchor clicks to corresponding form-button.
+			ctx.find("a[rel='btn-trigger']").click(function () {
+				var el = $(this);
+				var target = el.data("target");
+				var action = el.data("action");
+				var button = el.closest("form").find("button[type=submit][name=" + target + "][value=" + action + "]");
+				button.click();
+				return false;
+			});
+		},
+	];
+
+
+	/* 
+	Helpful in AJAX scenarios, where jQuery plugins has to be applied 
+	to newly created html.
+	*/
+	window.applyCommonPlugins = function (/* jQuery */ context) {
+		$.each(_commonPluginFactories, function (i, val) {
+			val.call(this, $(context));
+		});
+	}
+
     $(document).ready(function () {
 
         var html = $("html");
 
         html.removeClass("not-ready").addClass("ready");
 
-        $(".adminData select:not(.noskin), .adminData input:hidden[data-select]").selectWrapper();
-        Hacks.Telerik.handleTextBox($(".text-box.single-line, textarea"));
-        Hacks.Telerik.handleButton($(".t-button").filter(function (index) {
-            // reject .t-button, that has a .t-group-indicator as parent
-            return !$(this).parent().hasClass("t-group-indicator");
-        }));
+		applyCommonPlugins($("body"));
 
-        // skin telerik grids with bootstrap table
-        $(".t-grid > table").addClass("table table-hover");
-
-        // activate tooltips
-        $(".cph").tooltip({
-            selector: "a.hint",
-            placement: "left",
-            delay: { show: 400, hide: 0 }
-        });
         $("#page").tooltip({
             selector: "a[rel=tooltip], .tooltip-toggle"
-        });
-
-        // Temp only: delegates anchor clicks to corresponding form-button.
-        $("a[rel='btn-trigger']").click(function () {
-            var el = $(this);
-            var target = el.data("target");
-            var action = el.data("action");
-            var button = el.closest("form").find("button[type=submit][name=" + target + "][value=" + action + "]");
-            button.click();
-            return false;
         });
 
         // Temp only
@@ -128,4 +153,4 @@
     });
 
 
-})(jQuery);
+})( jQuery, this, document );

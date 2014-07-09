@@ -4,7 +4,15 @@
 
 @if (Model.Id > 0)
 {
-    <div>
+    <script>
+		function onRowDataBound_bundleItems(e) {
+			if (!e.dataItem.Published) {
+				$(e.row).find('td').wrapInner('<span class="muted" />');
+			}
+		}
+	</script>
+	
+	<div>
         @(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-bundle-localized",
             @<table class="adminContent">
                 <tr>
@@ -134,7 +142,7 @@
         </table>
     </div>
     
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
             $('#btnRefreshBundleItems').click(function () {
                 $("#bundleitems-grid").data('tGrid').ajaxRequest();
@@ -147,12 +155,6 @@
 				);
         	}).trigger('change');
         });
-
-        function onRowDataBound_bundleItems(e) {
-            if (!e.dataItem.Published) {
-                $(e.row).find('td').wrapInner('<span class="muted" />');
-            }
-        }
     </script>
 }
 else

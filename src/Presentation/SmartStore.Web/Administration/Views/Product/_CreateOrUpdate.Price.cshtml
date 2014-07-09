@@ -160,7 +160,14 @@
 
         @if (Model.Id > 0)
         {
-            @(Html.Telerik().Grid<ProductModel.TierPriceModel>()
+            <script>
+				function onTierPriceEdit(e) {
+                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
+                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                }
+            </script>
+			
+			@(Html.Telerik().Grid<ProductModel.TierPriceModel>()
             .Name("tierprices-grid")
             .DataKeys(keys =>
             {
@@ -194,14 +201,6 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onTierPriceEdit"))
             .EnableCustomBinding(true))
-
-            <script type="text/javascript">
-                function onTierPriceEdit(e) {
-                    // codehint: sm-edit
-                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
-                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
-                }
-            </script>
         }
         else
         {

@@ -21,19 +21,21 @@
 
 	$(function () {
 
-    	tinyMCE.init(
-            $.extend(
-                true,
-                {},
-                tiny_mce_global_config,
-                {
-    				selector: '#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)',
-                	language: '@lang',
-                	content_css: '@Url.Content("~/Content/editors/tinymce4/skins/smartstore/content.smartstore.css")',
-					forced_root_block: @Html.Raw(forceRootBlock)
-                }
-            )
-        );
+		_.defer(function() {
+			tinyMCE.init(
+				$.extend(
+					true,
+					{},
+					tiny_mce_global_config,
+					{
+						selector: '#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)',
+						language: '@lang',
+						content_css: '@Url.Content("~/Content/editors/tinymce4/skins/smartstore/content.smartstore.css")',
+						forced_root_block: @Html.Raw(forceRootBlock)
+					}
+				)
+			);		
+		});
 
     });
 

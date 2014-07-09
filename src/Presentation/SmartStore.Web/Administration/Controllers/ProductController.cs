@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Mvc.Ajax;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -926,6 +927,44 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
+		public ActionResult LoadEditPartial(int id, string partialName)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return Content("Error while loading template: Access denied.");
+			
+			try
+			{
+				var product = _productService.GetProductById(id);
+				
+				var model = product.ToModel();
+				
+				PrepareProductModel(model, product, false, false);
+
+				AddLocales(_languageService, model.Locales, (locale, languageId) =>
+				{
+					locale.Name = product.GetLocalized(x => x.Name, languageId, false, false);
+					locale.ShortDescription = product.GetLocalized(x => x.ShortDescription, languageId, false, false);
+					locale.FullDescription = product.GetLocalized(x => x.FullDescription, languageId, false, false);
+					locale.MetaKeywords = product.GetLocalized(x => x.MetaKeywords, languageId, false, false);
+					locale.MetaDescription = product.GetLocalized(x => x.MetaDescription, languageId, false, false);
+					locale.MetaTitle = product.GetLocalized(x => x.MetaTitle, languageId, false, false);
+					locale.SeName = product.GetSeName(languageId, false, false);
+					locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
+				});
+
+				PrepareProductPictureThumbnailModel(model, product);
+				PrepareAclModel(model, product, false);
+				PrepareStoresMappingModel(model, product, false);
+
+				var html = this.RenderPartialViewToString("_CreateOrUpdate." + partialName, model);
+				return Content(html);
+			}
+			catch (Exception ex)
+			{
+				return Content("Error while loading template: " + ex.Message);
+			}
+		}
 
         //delete product
         [HttpPost]

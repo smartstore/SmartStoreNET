@@ -163,6 +163,7 @@
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                             .Title(T("Admin.Common.Edit").Text);
                     })
+					.Sortable(x => x.AllowUnsort(true).SortMode(GridSortMode.SingleColumn))
                     .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
                     .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))

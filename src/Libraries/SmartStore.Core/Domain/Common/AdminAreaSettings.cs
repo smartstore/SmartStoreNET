@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Common
     {
 		public AdminAreaSettings()
 		{
-			GridPageSize = 15;
+			GridPageSize = 25;
 			DisplayProductPictures = true;
 			RichEditorFlavor = "RichEditor";
 		}

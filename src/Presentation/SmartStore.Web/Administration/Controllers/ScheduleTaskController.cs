@@ -149,6 +149,11 @@ namespace SmartStore.Admin.Controllers
             scheduleTask.Seconds = model.Seconds;
             scheduleTask.Enabled = model.Enabled;
             scheduleTask.StopOnError = model.StopOnError;
+
+			int max = Int32.MaxValue / 1000;
+
+			scheduleTask.Seconds = (model.Seconds > max ? max : model.Seconds);
+
             _scheduleTaskService.UpdateTask(scheduleTask);
 
             return List(command);

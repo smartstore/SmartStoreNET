@@ -322,20 +322,21 @@ namespace SmartStore.Services.Catalog
 		}
 
         /// <summary>
-        /// gets the base price
+        /// Gets the base price
         /// </summary>
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="priceFormatter">Price formatter</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
+		/// <param name="languageIndependent">Whether the result string should be language independent</param>
         /// <returns>The base price</returns>
         public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
-			decimal priceAdjustment = decimal.Zero)
+			decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            if (localizationService == null)
+			if (localizationService == null && !languageIndependent)
                 throw new ArgumentNullException("localizationService");
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
@@ -345,6 +346,11 @@ namespace SmartStore.Services.Catalog
 
 				string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
 				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
+
+				if (languageIndependent)
+				{
+					return "{0} / {1}".FormatWith(basePrice, unit);
+				}
 
 				return localizationService.GetResource("Products.BasePriceInfo").FormatWith(basePrice, unit);
             }

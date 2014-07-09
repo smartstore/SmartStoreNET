@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -288,6 +289,23 @@ namespace SmartStore.Services.Seo
 
 			return result;
         }
+
+		/// <summary>
+		/// Save slug
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="nameProperty">Name of a property</param>
+		/// <returns>Url record</returns>
+		public virtual UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported
+		{
+			string name = nameProperty.Compile().Invoke(entity);
+
+			string existingSeName = entity.GetSeName<T>(0, true, false);
+			existingSeName = entity.ValidateSeName(existingSeName, name, true);
+
+			return SaveSlug(entity, existingSeName, 0);
+		}
 
         #endregion
     }

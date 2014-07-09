@@ -360,6 +360,21 @@ namespace SmartStore
             return false;
         }
 
+		/// <summary>
+		/// Ensure that a string starts with a string.
+		/// </summary>
+		/// <param name="value">The target string</param>
+		/// <param name="startsWith">The string the target string should start with</param>
+		/// <returns>The resulting string</returns>
+		[DebuggerStepThrough]
+		public static string EnsureStartsWith(this string value, string startsWith)
+		{
+			Guard.ArgumentNotNull(value, "value");
+			Guard.ArgumentNotNull(startsWith, "startsWith");
+
+			return value.StartsWith(startsWith) ? value : (startsWith + value);
+		}
+
         /// <summary>
         /// Ensures the target string ends with the specified string.
         /// </summary>

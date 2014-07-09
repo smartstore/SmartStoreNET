@@ -12,7 +12,6 @@ using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
-using SmartStore.Plugin.Api.WebApi.Extensions;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {
@@ -48,7 +47,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 			
 			this.ProcessEntity(() =>
 			{
-				_urlRecordService.Value.EnsureUrlRecord<Product>(entity, x => x.Name);
+				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
 				return null;
 			});
 		}
@@ -58,7 +57,7 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 
 			this.ProcessEntity(() =>
 			{
-				_urlRecordService.Value.EnsureUrlRecord<Product>(entity, x => x.Name);
+				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
 				return null;
 			});
 		}

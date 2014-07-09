@@ -255,19 +255,6 @@ namespace SmartStore.Web.Framework.Plugins
 			return DecimalUsFormat(cost);
 		}
 
-		public string GetBasePrice(Product product)
-		{
-			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
-			{
-				decimal price = Convert.ToDecimal((product.Price / product.BasePriceAmount) * product.BasePriceBaseAmount);
-
-				string priceFormatted = _ctx.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
-
-				return "{0} / {1} {2}".FormatWith(priceFormatted, product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
-			}
-			return "";
-		}
-
 		public string GetProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));

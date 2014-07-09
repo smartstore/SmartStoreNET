@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
 
@@ -69,5 +71,14 @@ namespace SmartStore.Services.Seo
 		/// A <see cref="UrlRecord"/> instance when a new record had to be inserted, <c>null</c> otherwise.
 		/// </returns>
         UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported;
+
+		/// <summary>
+		/// Save slug
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="nameProperty">Name of a property</param>
+		/// <returns>Url record</returns>
+		UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported;
     }
 }

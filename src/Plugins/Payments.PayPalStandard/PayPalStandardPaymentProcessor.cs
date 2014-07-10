@@ -412,11 +412,10 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			if (order == null)
 				throw new ArgumentNullException("order");
 
-			//let's ensure that at least 5 seconds passed after order is placed
-			//P.S. there's no any particular reason for that. we just do it
-			if ((DateTime.UtcNow - order.CreatedOnUtc).TotalMinutes < 5)
-				return false;
-
+			if (order.PaymentStatus == PaymentStatus.Pending && (DateTime.UtcNow - order.CreatedOnUtc).TotalSeconds > 5)
+			{
+				return true;
+			}
 			return true;
 		}
 

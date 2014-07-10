@@ -113,6 +113,34 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Update(task);
         }
 
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="type">Task type</param>
+		public virtual void EnsureTaskIsNotRunning(string type)
+		{
+			var task = GetTaskByType(type);
+			if (task != null && task.IsRunning)
+			{
+				task.LastEndUtc = task.LastStartUtc;
+				UpdateTask(task);
+			}
+		}
+
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="taskId">Task identifier</param>
+		public virtual void EnsureTaskIsNotRunning(int taskId)
+		{
+			var task = GetTaskById(taskId);
+			if (task != null && task.IsRunning)
+			{
+				task.LastEndUtc = task.LastStartUtc;
+				UpdateTask(task);
+			}
+		}
+
         #endregion
     }
 }

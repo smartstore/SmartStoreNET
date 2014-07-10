@@ -4,6 +4,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using Autofac;
 using SmartStore.Core.Data;
+using System.Threading;
 
 namespace SmartStore.Services.Tasks
 {
@@ -35,7 +36,7 @@ namespace SmartStore.Services.Tasks
             this.StopOnError = task.StopOnError;
             this.Name = task.Name;
 			this.LastError = task.LastError;
-			this.IsRunning = task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault();
+			this.IsRunning = task.IsRunning;		//task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault();
         }
 
         private ITask CreateTask(ILifetimeScope scope)
@@ -66,8 +67,6 @@ namespace SmartStore.Services.Tasks
             this.IsRunning = true;
 
 			scope = scope ?? EngineContext.Current.ContainerManager.Scope();
-			var scheduleTaskService = scope.Resolve<IScheduleTaskService>();
-			var scheduleTask = scheduleTaskService.GetTaskByType(this.Type);
 			var faulted = false;
 
 			try
@@ -76,6 +75,10 @@ namespace SmartStore.Services.Tasks
 				if (task != null)
 				{
 					this.LastStartUtc = DateTime.UtcNow;
+
+					var scheduleTaskService = scope.Resolve<IScheduleTaskService>();
+					var scheduleTask = scheduleTaskService.GetTaskByType(this.Type);
+
 					if (scheduleTask != null)
 					{
 						//update appropriate datetime properties
@@ -84,7 +87,12 @@ namespace SmartStore.Services.Tasks
 					}
 
 					//execute task
-					var ctx = new TaskExecutionContext { LifetimeScope = scope };
+					var ctx = new TaskExecutionContext()
+					{
+						LifetimeScope = scope,
+						CancellationToken = new CancellationTokenSource(TimeSpan.FromHours(6.0))	// TODO: make that somewhat configurable (AdminAreaSettings?)
+					};
+
 					task.Execute(ctx);
 					this.LastEndUtc = this.LastSuccessUtc = DateTime.UtcNow;
 					this.LastError = null;
@@ -112,6 +120,9 @@ namespace SmartStore.Services.Tasks
 			}
 			finally
 			{
+				var scheduleTaskService = scope.Resolve<IScheduleTaskService>();
+				var scheduleTask = scheduleTaskService.GetTaskByType(this.Type);
+
 				if (scheduleTask != null)
 				{
 					// update appropriate properties
@@ -121,6 +132,7 @@ namespace SmartStore.Services.Tasks
 					{
 						scheduleTask.LastSuccessUtc = this.LastSuccessUtc;
 					}
+
 					scheduleTaskService.UpdateTask(scheduleTask);
 				}
 

@@ -159,14 +159,14 @@
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Domain\GoogleProductRecord.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
-    <Compile Include="FroogleService.cs" />
+    <Compile Include="FroogleFeedPlugin.cs" />
     <Compile Include="FroogleSettings.cs" />
     <Compile Include="StaticFileGenerationTask.cs" />
     <Compile Include="Models\FeedFroogleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
-    <Compile Include="Services\IGoogleService.cs" />
-    <Compile Include="Services\GoogleService.cs" />
+    <Compile Include="Services\IGoogleFeedService.cs" />
+    <Compile Include="Services\GoogleFeedService.cs" />
     <Compile Include="Validators\ConfigurationValidator.cs" />
   </ItemGroup>
   <ItemGroup>

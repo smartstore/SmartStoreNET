@@ -25,10 +25,11 @@ using Autofac;
 using System.Threading;
 using SmartStore.Core.Async;
 using System.Web;
+using SmartStore.Services.Tasks;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
-    public partial class GoogleService : IGoogleService
+    public partial class GoogleFeedService : IGoogleFeedService
     {
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
 
@@ -43,7 +44,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IWorkContext _workContext;
 
-		public GoogleService(
+		public GoogleFeedService(
 			IRepository<GoogleProductRecord> gpRepository,
 			IProductService productService,
 			IManufacturerService manufacturerService,
@@ -83,8 +84,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
             var query = from gp in _gpRepository.Table
                         where gp.ProductId == productId
-                        orderby gp.Id
                         select gp;
+
             var record = query.FirstOrDefault();
             return record;
         }
@@ -295,7 +296,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 					return defaultValue;
 			}
 		}
-		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
+		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency, string measureWeightSystemKey)
 		{
 			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
 			var mainImageUrl = Helper.GetMainProductImageUrl(store, product);
@@ -403,13 +404,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (Settings.ExportShipping)
 			{
 				string weightInfo, weight = Helper.DecimalUsFormat(product.Weight);
-				string systemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
 
-				if (systemKey.IsCaseInsensitiveEqual("gram"))
+				if (measureWeightSystemKey.IsCaseInsensitiveEqual("gram"))
 					weightInfo = weight + " g";
-				else if (systemKey.IsCaseInsensitiveEqual("lb"))
+				else if (measureWeightSystemKey.IsCaseInsensitiveEqual("lb"))
 					weightInfo = weight + " lb";
-				else if (systemKey.IsCaseInsensitiveEqual("ounce"))
+				else if (measureWeightSystemKey.IsCaseInsensitiveEqual("ounce"))
 					weightInfo = weight + " oz";
 				else
 					weightInfo = weight + " kg";
@@ -548,7 +548,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return model;
 		}
-		public void CreateFeed(FeedFileCreationContext context)
+		private void CreateFeed(FeedFileCreationContext fileCreation, TaskExecutionContext taskContext)
 		{
 			var xmlSettings = new XmlWriterSettings
 			{
@@ -556,41 +556,43 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				CheckCharacters = false
 			};
 
-			using (var writer = XmlWriter.Create(context.Stream, xmlSettings))
+			using (var writer = XmlWriter.Create(fileCreation.Stream, xmlSettings))
 			{
 				try
 				{
-					context.Logger.Information("Log file - Google Merchant Center feed.");
+					fileCreation.Logger.Information("Log file - Google Merchant Center feed.");
 
 					var searchContext = new ProductSearchContext()
 					{
 						OrderBy = ProductSortingEnum.CreatedOn,
 						PageSize = int.MaxValue,
-						StoreId = context.Store.Id,
+						StoreId = fileCreation.Store.Id,
 						VisibleIndividuallyOnly = true
 					};
 
 					string breakingError = null;
+					var qualifiedProducts = new List<Product>();
 					var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
 					var products = _productService.SearchProducts(searchContext);
+					var measureWeightSystemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
 
-					if (context.TotalRecords == 0)
-						context.TotalRecords = products.Count * context.StoreCount;
+					if (fileCreation.TotalRecords == 0)
+						fileCreation.TotalRecords = products.Count * fileCreation.StoreCount;
 
 					writer.WriteStartDocument();
 					writer.WriteStartElement("rss");
 					writer.WriteAttributeString("version", "2.0");
 					writer.WriteAttributeString("xmlns", "g", null, _googleNamespace);
 					writer.WriteStartElement("channel");
-					writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(context.Store.Name));
+					writer.WriteElementString("title", "{0} - Feed for Google Merchant Center".FormatWith(fileCreation.Store.Name));
 					writer.WriteElementString("link", "http://base.google.com/base/");
 					writer.WriteElementString("description", "Information about products");
 
 					foreach (var product in products)
 					{
-						context.Report();
+						fileCreation.Report();
 
-						var qualifiedProducts = Helper.GetQualifiedProductsByProduct(product, context.Store);
+						Helper.GetQualifiedProductsByProduct(product, fileCreation.Store, qualifiedProducts);
 
 						foreach (var qualifiedProduct in qualifiedProducts)
 						{
@@ -598,18 +600,26 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 							try
 							{
-								breakingError = WriteItem(writer, context.Store, qualifiedProduct, currency);
+								breakingError = WriteItem(writer, fileCreation.Store, qualifiedProduct, currency, measureWeightSystemKey);
 							}
 							catch (Exception exc)
 							{
-								context.Logger.Error(exc.Message, exc);
+								fileCreation.Logger.Error(exc.Message, exc);
 							}
 
 							writer.WriteEndElement(); // item
 						}
 
 						if (breakingError.HasValue())
+						{
+							fileCreation.Logger.Error(breakingError);
 							break;
+						}
+						if (taskContext.CancellationToken.IsCancellationRequested)
+						{
+							fileCreation.Logger.Warning("A cancellation has been requested");
+							break;
+						}
 					}
 
 					writer.WriteEndElement(); // channel
@@ -621,15 +631,15 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				}
 				catch (Exception exc)
 				{
-					context.Logger.Error(exc.Message, exc);
+					fileCreation.Logger.Error(exc.Message, exc);
 				}
 			}
 		}
-		public void CreateFeed()
+		public void CreateFeed(TaskExecutionContext context)
 		{
-			Helper.StartCreatingFeeds(context =>
+			Helper.StartCreatingFeeds(fileCreation =>
 			{
-				CreateFeed(context);
+				CreateFeed(fileCreation, context);
 				return true;
 			});
 		}

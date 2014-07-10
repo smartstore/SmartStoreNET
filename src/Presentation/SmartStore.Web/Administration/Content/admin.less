@@ -38,7 +38,7 @@
 
 /* Navbar overrides
 -------------------------------------------------------------- */
-.navbar .nav-smart {
+.navbar .nav {
 	font-family: Tahoma, @baseFontFamily;
 }
 
@@ -140,7 +140,43 @@
 /* Menu
 -------------------------------------------------------------- */
 
-#navbar .nav-smart > li {
+#navbar .dropdown-menu {
+	margin-top: 0;
+	.border-radius(0);
+	font-family: @baseFontFamily;
+}
+
+#navbar .dropdown-menu li > a {
+	padding: 8px 30px 8px 20px;
+	text-shadow: none;
+}
+
+#navbar .dropdown-menu .icon {
+	color: inherit;
+}
+
+#navbar .nav-header {
+	text-shadow: none;
+	padding-left: 20px;
+}
+
+#navbar .dropdown-menu li > a:hover, 
+#navbar .dropdown-menu li > a:focus, 
+#navbar .dropdown-submenu:hover > a {
+	background-image: none;
+	filter: initial;
+	background-color: @dropdownLinkBackgroundHover;
+}
+
+#navbar .dropdown-submenu > a:after {
+	margin-right: -20px;
+}
+
+#navbar .dropdown-submenu:hover > a:after {
+	border-left-color: #ccc;
+}
+
+#navbar .nav > li {
 	.opacity(87);
 	.transition(opacity 0.1s linear);
 	
@@ -148,7 +184,7 @@
 	&:hover > a { background: rgba(255,255,255, .15) !important; }
 }
 
-#navbar .nav-smart > li > a {
+#navbar .nav > li > a {
 	max-height: @navbarHeight - 12;
 	min-width: 40px;
 	max-width: 80px;
@@ -157,13 +193,6 @@
 	text-align: center;
 	text-shadow: 0 -1px 0 #000;
 	background: rgba(255,255,255, 0);
-	//.transition(background-color 0.1s linear);
-	//color: #e5e5e5;
-	
-	/*&:hover {
-		color: #fff;
-		.transition(color .1s linear);
-	}*/
 
 	.sm-icon {
 		position: relative;
@@ -182,8 +211,6 @@
 		line-height: 24px;
 		font-style: normal;
 		font-weight: normal;
-		//text-shadow: none;
-		//color: #aaa;
 	}
 
 	.navbar-label { 
@@ -276,6 +303,10 @@ td.adminData > input[type="checkbox"] {
 	&:hover { border-color: rgba(0,0,0, 0.2) }
 }
 
+.t-grid .t-status-text {
+	color: #aaa;
+}
+
 .t-grid .table {
 	margin-bottom: 0;
 }
@@ -305,6 +336,12 @@ td.adminData > input[type="checkbox"] {
 	margin-top: 0;
 }
 
+.t-grid-toolbar .btn {
+	text-shadow: none;
+	text-decoration: none;
+	font-size: 13px;
+}
+
 .t-grid-filter {
 	margin-top: -1.6em;
 }
@@ -316,10 +353,21 @@ td.adminData > input[type="checkbox"] {
 .t-grid-header .t-header {
 	font-size: 12px;
 	text-transform: uppercase;
+	font-weight: bold !important;
+	padding-top: 0.6em !important;
+	padding-bottom: 0.6em !important;
 }
 
 .t-grid-header .t-header .t-link {
     width: 100%;
+}
+
+.t-grid-pager,
+.t-grid-toolbar {
+	background: #f7f7f7;
+	text-shadow: none !important;
+	padding-top: .4em !important;
+	padding-bottom: .4em !important;
 }
 
 .t-grid tbody {

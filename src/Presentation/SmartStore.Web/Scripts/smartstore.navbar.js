@@ -28,17 +28,8 @@
 				a = el.find("> a").removeAttr("data-toggle"), /* remove default bootstrap toggle attribute */
 				ulSub = null;
 			
-            // init mouse aiming towards submenu
-			drop.menuAim({
-			    rowSelector: "li.drop-list-item",
-			    submenuSelector: ".dropdown-submenu",
-			    activate: function(item) {
-			        $(item).addClass("aimed");
-			    },
-			    deactivate: function (item) {
-			        $(item).removeClass("aimed");
-			    }
-			});
+        	// init mouse aiming towards submenu
+			drop.menuAim(opts.menuAim);
 
             inner.data("initial-height", inner.height());
             inner.css("height", inner.data("initial-height"));
@@ -111,7 +102,16 @@
 
     // the global, default plugin options
     var defaults = {
-        // [...]
+    	menuAim: {
+    		rowSelector: "li.drop-list-item",
+    		submenuSelector: ".dropdown-submenu",
+    		activate: function (item) {
+    			$(item).addClass("aimed");
+    		},
+    		deactivate: function (item) {
+    			$(item).removeClass("aimed");
+    		}
+    	}
     }
     $[pluginName] = { defaults: defaults };
 
@@ -120,7 +120,7 @@
 
         return this.each(function () {
             if (!$.data(this, pluginName)) {
-                options = $.extend( {}, $[pluginName].defaults, options );
+                options = $.extend( true, {}, $[pluginName].defaults, options );
                 $.data(this, pluginName, new Navbar(this, options));
             }
         });

@@ -28,9 +28,9 @@ namespace SmartStore.Web.Framework.Controllers
             if (request == null)
                 return;
 
-            // don't apply filter to child methods
-            if (filterContext.IsChildAction)
-                return;
+			// don't apply filter to child methods
+			if (filterContext.IsChildAction)
+				return;
 
 			if (!DataSettings.DatabaseIsInstalled())
                 return;

@@ -138,12 +138,14 @@ namespace SmartStore.Admin.Controllers
 
         private TreeNode<MenuItem> PrepareAdminMenu()
         {
-            SiteMapBase siteMap;
-            if (!SiteMapManager.SiteMaps.TryGetValue("admin", out siteMap))
-            {
-                SiteMapManager.SiteMaps.Register<XmlSiteMap>("admin", x => x.LoadFrom("~/Administration/sitemap.config"));
-                siteMap = SiteMapManager.SiteMaps["admin"];
-            }
+            XmlSiteMap siteMap = new XmlSiteMap();
+			siteMap.LoadFrom("~/Administration/sitemap.config");
+			
+			//if (!SiteMapManager.SiteMaps.TryGetValue("admin", out siteMap))
+			//{
+			//	SiteMapManager.SiteMaps.Register<XmlSiteMap>("admin", x => x.LoadFrom("~/Administration/sitemap.config"));
+			//	siteMap = SiteMapManager.SiteMaps["admin"];
+			//}
             
             var rootNode = ConvertSitemapNodeToMenuItemNode(siteMap.RootNode);
 
@@ -233,6 +235,9 @@ namespace SmartStore.Admin.Controllers
 
             if (node.Attributes.ContainsKey("resKey"))
                 item.ResKey = node.Attributes["resKey"] as string;
+
+			if (node.Attributes.ContainsKey("iconClass"))
+				item.Icon = node.Attributes["iconClass"] as string;
 
             if (node.Attributes.ContainsKey("imageUrl"))
                 item.ImageUrl = node.Attributes["imageUrl"] as string;

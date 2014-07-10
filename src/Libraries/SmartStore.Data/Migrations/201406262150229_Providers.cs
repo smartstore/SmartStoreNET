@@ -67,6 +67,17 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.KnownGroup.Misc", "Miscellaneous", "Sonstige");
 
 			builder.AddOrUpdate("Admin.PromotionFeeds", "Promotion feeds", "Promotion Feeds");
+
+			// some admin menu renaming / new entries
+			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLog").Value("de", "Aktivitätslog");
+			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLogTy pe").Value("de", "Aktivitätstypen");
+			builder.AddOrUpdate("Admin.Configuration.RegionalSettings",
+				"Regional Settings",
+				"Regionale Einstellungen");
+			builder.AddOrUpdate("Admin.Configuration.Lists",
+				"Lists",
+				"Listen");
+
 		}
     }
 }

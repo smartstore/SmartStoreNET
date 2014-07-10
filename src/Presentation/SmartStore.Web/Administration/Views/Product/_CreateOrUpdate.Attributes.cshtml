@@ -9,7 +9,14 @@
     {
         if (Model.NumberOfAvailableProductAttributes > 0)
         {
-            @(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
+            <script>
+                function onProductVariantAttributeEdit(e) {
+                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+                }
+            </script>
+			
+			@(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
             .Name("productvariantattributes-grid")
             .DataKeys(keys =>
             {
@@ -57,14 +64,6 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
             .EnableCustomBinding(true))
-
-            <script type="text/javascript">
-                function onProductVariantAttributeEdit(e) {
-                    // codehint: sm-edit
-                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
-                }
-            </script>
         }
         else
         {
@@ -88,11 +87,11 @@
     {
         if (Model.NumberOfAvailableProductAttributes > 0)
         {
-            <div style="margin: 10px 0px 10px 0px;" class="alert alert-success">
+            <div class="alert alert-info">
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div style="margin: 10px 0 5px 0;">
+            <div style="margin: 10px 0">
                 <button class="btn btn-warning add-new-combination">
                     <i class="icon-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
@@ -143,7 +142,15 @@
                 </script>
             </div>
             <div>
-                @(Html.Telerik().Grid<ProductVariantAttributeCombinationModel>()
+				<script>
+					function onRowDataBound_Combinations(e) {
+						if (!e.dataItem.IsActive) {
+							$(e.row).find('td').wrapInner('<span class="muted" />');
+						}
+					}
+				</script>
+				
+				@(Html.Telerik().Grid<ProductVariantAttributeCombinationModel>()
                     .Name("attributecombinations-grid")
                     .DataKeys(keys =>
                     {
@@ -195,17 +202,9 @@
                     })
                     .ClientEvents(events => events.OnRowDataBound("onRowDataBound_Combinations"))
                     .EnableCustomBinding(true))
-
-                <script type="text/javascript">
-                    function onRowDataBound_Combinations(e) {
-                        if (!e.dataItem.IsActive) {
-                            $(e.row).find('td').wrapInner('<span class="muted" />');
-                        }
-                    }
-                </script>
             </div>
 
-            <div style="margin-top:5px;">
+            <div style="margin-top:12px;">
                 <button class="btn btn-warning add-new-combination">
                     <i class="icon-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")

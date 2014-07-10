@@ -13,7 +13,7 @@ var Hacks = {
             el.each(function () {
                 var btn = $(this);
                 if (btn.hasClass("t-grid-add")) {
-                    btn.addClass("btn-warning").prepend('<i class="icon-plus"></i>&nbsp;');
+                    btn.addClass("btn-link").prepend('<i class="icon-plus"></i>&nbsp;');
                 }
             });
 

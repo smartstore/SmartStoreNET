@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Web.Mvc;
+using AutoMapper;
 
 namespace SmartStore.Web.Framework.Mvc
 {
@@ -18,6 +19,7 @@ namespace SmartStore.Web.Framework.Mvc
         /// <summary>
         /// Use this property to store any custom value for your models. 
         /// </summary>
+		[IgnoreMap]
         public Dictionary<string, object> CustomProperties { get; set; }
     }
 

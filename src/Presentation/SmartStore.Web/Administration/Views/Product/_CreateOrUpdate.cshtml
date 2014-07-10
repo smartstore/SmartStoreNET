@@ -14,7 +14,11 @@
 		var initialTab = $('#product-edit li.active > a');
 		var initialPane = $("#product-edit").find(initialTab.attr("href"));
 		if (!initialPane.data("loaded")) {
-			loadEditPartial(initialPane);
+			_.delay(function () {
+				// without a delay, the current culture formats do not get applied
+				loadEditPartial(initialPane);
+			}, 100);
+			
 		}
 
 		function loadEditPartial(pane, onComplete) {
@@ -90,12 +94,12 @@
 	{
 		x.Add().Text(T("Admin.Catalog.Products.Price").Text)
 			.Icon("icon-barcode icon-fixed-width")
-			.ContentHtmlAttributes(new { data_part = "Price" })
+			.ContentHtmlAttributes(new { data_part = "Price", data_xloaded = "true" })
 			.Content(TabPrice());
 	}
 
 	x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
-		.Icon("icon-signal icon-fixed-width")
+		.Icon("icon-signal icon-flip-horizontal icon-fixed-width")
 		.ContentHtmlAttributes(new { data_part = "Discounts" })
 		.Content(TabDiscounts());
 

@@ -775,7 +775,7 @@ namespace SmartStore.Web.Framework
 		{
 			if (typeof(T).IsAssignableFrom(implType))
 			{
-				registration.Named(systemName, typeof(T));
+				registration.As<T>().Named<T>(systemName);
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.ProviderType, typeof(T));

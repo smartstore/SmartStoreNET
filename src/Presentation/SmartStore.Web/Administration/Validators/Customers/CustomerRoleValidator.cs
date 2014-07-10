@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Customers
 {
-    public class CustomerRoleValidator : AbstractValidator<CustomerRoleModel>
+	public partial class CustomerRoleValidator : AbstractValidator<CustomerRoleModel>
     {
         public CustomerRoleValidator(ILocalizationService localizationService)
         {

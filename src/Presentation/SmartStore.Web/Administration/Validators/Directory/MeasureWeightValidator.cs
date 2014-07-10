@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Directory
 {
-    public class MeasureWeightValidator : AbstractValidator<MeasureWeightModel>
+	public partial class MeasureWeightValidator : AbstractValidator<MeasureWeightModel>
     {
         public MeasureWeightValidator(ILocalizationService localizationService)
         {

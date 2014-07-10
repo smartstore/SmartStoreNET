@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Forums
 {
-    public class ForumValidator : AbstractValidator<ForumModel>
+	public partial class ForumValidator : AbstractValidator<ForumModel>
     {
         public ForumValidator(ILocalizationService localizationService)
         {

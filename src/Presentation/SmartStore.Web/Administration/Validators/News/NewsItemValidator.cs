@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.News
 {
-    public class NewsItemValidator : AbstractValidator<NewsItemModel>
+	public partial class NewsItemValidator : AbstractValidator<NewsItemModel>
     {
         public NewsItemValidator(ILocalizationService localizationService)
         {

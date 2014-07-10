@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.ContentSlider
 {
-    public class ContentSliderSlideValidator : AbstractValidator<ContentSliderSlideModel>
+	public partial class ContentSliderSlideValidator : AbstractValidator<ContentSliderSlideModel>
     {
         public ContentSliderSlideValidator(ILocalizationService localizationService)
         {
@@ -14,7 +14,7 @@ namespace SmartStore.Admin.Validators.ContentSlider
         }
     }
 
-    public class ContentSliderButtonValidator : AbstractValidator<ContentSliderButtonModel>
+	public partial class ContentSliderButtonValidator : AbstractValidator<ContentSliderButtonModel>
     {
         public ContentSliderButtonValidator(ILocalizationService localizationService)
         {

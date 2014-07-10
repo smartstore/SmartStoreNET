@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Messages
 {
-    public class CampaignValidator : AbstractValidator<CampaignModel>
+	public partial class CampaignValidator : AbstractValidator<CampaignModel>
     {
         public CampaignValidator(ILocalizationService localizationService)
         {

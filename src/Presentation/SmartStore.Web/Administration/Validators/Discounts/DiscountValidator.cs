@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Discounts
 {
-    public class DiscountValidator : AbstractValidator<DiscountModel>
+	public partial class DiscountValidator : AbstractValidator<DiscountModel>
     {
         public DiscountValidator(ILocalizationService localizationService)
         {

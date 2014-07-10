@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Topics
 {
-    public class TopicValidator : AbstractValidator<TopicModel>
+	public partial class TopicValidator : AbstractValidator<TopicModel>
     {
         public TopicValidator(ILocalizationService localizationService)
         {

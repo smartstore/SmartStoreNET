@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
 		{
-			if (Request.Method == HttpMethod.Get)
+			if (Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post)
 			{
 				if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
 					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property") ||

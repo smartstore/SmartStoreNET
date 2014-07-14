@@ -220,6 +220,7 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Security\WebApiPermissionProvider.cs" />
     <Compile Include="Services\IWebApiPluginService.cs" />
+    <Compile Include="Services\WebApiCore.cs" />
     <Compile Include="Services\WebApiPluginService.cs" />
     <Compile Include="WebApiConfigurationProvider.cs" />
     <Compile Include="WebApiPlugin.cs" />

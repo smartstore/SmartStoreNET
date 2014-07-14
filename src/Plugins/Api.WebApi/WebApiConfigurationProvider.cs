@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using System.Web.Http.OData.Builder;
+using SmartStore.Plugin.Api.WebApi.Services;
 
 namespace SmartStore.Plugin.Api.WebApi
 {
@@ -40,6 +41,15 @@ namespace SmartStore.Plugin.Api.WebApi
 
 			config.Action("LowestPrice")
 				.Returns<decimal>();
+
+			config.Action("CreateAttributeCombinations")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>(WebApiOdataEntitySet.ProductVariantAttributeCombinations);
+
+			var manageAttributes = config.Action("ManageAttributes")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttribute>(WebApiOdataEntitySet.ProductVariantAttributes);
+
+			manageAttributes.Parameter<bool>("Synchronize");
+			manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
 		}
 
 		public void Configure(WebApiConfigurationBroadcaster configData)

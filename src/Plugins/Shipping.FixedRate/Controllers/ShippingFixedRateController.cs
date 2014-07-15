@@ -78,7 +78,10 @@ namespace SmartStore.Plugin.Shipping.FixedRate.Controllers
             int shippingMethodId = model.ShippingMethodId;
             decimal rate = model.Rate;
 
-            _settingService.SetSetting(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId), rate);
+			if (shippingMethodId != 0)
+			{
+				_settingService.SetSetting(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId), rate);
+			}
 
             var tmp = new List<FixedShippingRateModel>();
             foreach (var shippingMethod in _shippingService.GetAllShippingMethods())

@@ -13,12 +13,12 @@
 				.DataKeys(keys => keys.Add(x => x.ShippingMethodId).RouteKey("ShippingMethodId"))
 				.Columns(columns =>
 				{
-					columns.Bound(x => x.ShippingMethodName).Width(300).ReadOnly();
-					columns.Bound(x => x.Rate).Width(100);
+					columns.Bound(x => x.ShippingMethodName).Width(500).ReadOnly();
+					columns.Bound(x => x.Rate).Width(180);
 					columns.Command(commands =>
 					{
 						commands.Edit();
-					}).Width(100);
+					});
 
 				})
 				.Editable(x =>

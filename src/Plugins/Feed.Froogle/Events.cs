@@ -16,9 +16,9 @@ namespace SmartStore.Plugin.Feed.Froogle
 		IConsumer<TabStripCreated>,
 		IConsumer<ModelBoundEvent>
 	{
-		private readonly IGoogleService _googleService;
+		private readonly IGoogleFeedService _googleService;
 
-		public Events(IGoogleService googleService)
+		public Events(IGoogleFeedService googleService)
 		{
 			this._googleService = googleService;
 		}

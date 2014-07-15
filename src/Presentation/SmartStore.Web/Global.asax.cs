@@ -1,36 +1,26 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
-using System.Web.Optimization;
 using FluentValidation.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
+using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework;
+using SmartStore.Web.Controllers;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
-using SmartStore.Web.Framework.Themes;
-using SmartStore.Core.Events;
-using System.Web; 
-using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Infrastructure.DependencyManagement;
-using Autofac;
-using Autofac.Integration.Mvc;
-using System.IO;
-using System.Diagnostics;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Validators;
-using SmartStore.Web.Controllers; 
+using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Validators; 
 
 
 namespace SmartStore.Web
@@ -184,6 +174,7 @@ namespace SmartStore.Web
 				return;
 
 			var httpContext = ((MvcApplication)sender).Context;
+
 			var currentController = " ";
 			var currentAction = " ";
 			var currentRouteData = RouteTable.Routes.GetRouteData(new HttpContextWrapper(httpContext));
@@ -211,9 +202,15 @@ namespace SmartStore.Web
 				}
 			}			
 
+			var statusCode = httpException != null ? httpException.GetHttpCode() : 500;
+
+			// don't return error view if custom errors are disabled (in debug mode)
+			if (statusCode == 500 && !httpContext.IsCustomErrorEnabled)
+				return;
+
 			httpContext.ClearError();
 			httpContext.Response.Clear();
-			httpContext.Response.StatusCode = httpException != null ? httpException.GetHttpCode() : 500;
+			httpContext.Response.StatusCode = statusCode;
 			httpContext.Response.TrySkipIisCustomErrors = true;
 
 			routeData.Values["controller"] = "Error";

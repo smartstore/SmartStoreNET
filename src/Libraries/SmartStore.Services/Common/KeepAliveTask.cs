@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using SmartStore.Core;
 using SmartStore.Services.Tasks;
 
@@ -26,7 +27,11 @@ namespace SmartStore.Services.Common
                 using (var wc = new WebClient())
                 {
                     //wc.Headers.Add("SmartStore.NET"); // makes problems
-                    wc.DownloadString(url);
+                    if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) 
+					{
+						url = "http://" + url;
+					}
+					wc.DownloadString(url);
                 }
             }
             catch (WebException ex)

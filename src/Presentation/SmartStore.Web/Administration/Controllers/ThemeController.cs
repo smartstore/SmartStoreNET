@@ -200,7 +200,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public async Task<ActionResult> Configure(string theme, int storeId, Dictionary<string, object> values, bool continueEditing)
+		public async Task<ActionResult> Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -214,7 +214,8 @@ namespace SmartStore.Admin.Controllers
 			var currentVars = _themeVarService.GetThemeVariables(theme, storeId);
 			
             // save now
-            _themeVarService.SaveThemeVariables(theme, storeId, values);
+			values = FixThemeVarValues(values);
+			_themeVarService.SaveThemeVariables(theme, storeId, values);
 
 			// check for parsing error
 			var manifest = _themeRegistry.GetThemeManifest(theme);
@@ -247,6 +248,32 @@ namespace SmartStore.Admin.Controllers
 				RedirectToAction("Configure", new { theme = theme, storeId = storeId }) :
 				RedirectToAction("List", new { storeId = storeId });
         }
+
+		private IDictionary<string, object> FixThemeVarValues(IDictionary<string, object> values)
+		{
+			var fixedDict = new Dictionary<string, object>();
+			
+			foreach (var kvp in values)
+			{
+				var value = kvp.Value;
+
+				var strValue = string.Empty;
+
+				var arrValue = value as string[];
+				if (arrValue != null)
+				{
+					strValue = strValue = arrValue.Length > 0 ? arrValue[0] : value.ToString();
+				}
+				else
+				{
+					strValue = value.ToString();
+				}
+
+				fixedDict[kvp.Key] = strValue;
+			}
+
+			return fixedDict;
+		}
 
 		/// <summary>
 		/// Validates the result LESS file by calling it's url.

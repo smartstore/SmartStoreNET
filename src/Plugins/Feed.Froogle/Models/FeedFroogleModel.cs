@@ -187,17 +187,23 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
 		public string GoogleCategory { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Gender")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Gender")]
 		public string Gender { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.AgeGroup")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.AgeGroup")]
 		public string AgeGroup { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Color")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Color")]
 		public string Color { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Size")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Size")]
 		public string GoogleSize { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Material")]
+		public string Material { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Pattern")]
+		public string Pattern { get; set; }
 
 		public string GenderLocalize { get; set; }
 		public string AgeGroupLocalize { get; set; }

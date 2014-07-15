@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using AutoMapper;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Catalog;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -17,7 +16,7 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(ProductValidator))]
-    public class ProductModel : EntityModelBase, ILocalizedModel<ProductLocalizedModel>
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
     {
         public ProductModel()
         {

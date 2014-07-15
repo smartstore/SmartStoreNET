@@ -13,6 +13,7 @@
 			ctx.find(".cph").tooltip({
 				selector: "a.hint",
 				placement: "left",
+				trigger: 'hover',
 				delay: { show: 400, hide: 0 }
 			});
 		},

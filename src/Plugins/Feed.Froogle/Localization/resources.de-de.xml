@@ -187,7 +187,7 @@
 		<Value>Altersgruppe</Value>
 	</LocaleResource>
 	<LocaleResource Name="AgeGroup.Hint">
-		<Value>Angabe ist für bestimmte Artikel z.B. Bekleidung erforderlich.</Value>
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AgeGroupAdult">
 		<Value>Erwachsene</Value>
@@ -199,25 +199,25 @@
 		<Value>Farbe</Value>
 	</LocaleResource>
 	<LocaleResource Name="Color.Hint">
-		<Value>Angabe ist für bestimmte Artikel z.B. Bekleidung erforderlich.</Value>
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Size">
 		<Value>Größe</Value>
 	</LocaleResource>
 	<LocaleResource Name="Size.Hint">
-		<Value>Angabe ist für bestimmte Artikel z.B. Bekleidung erforderlich.</Value>
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Material">
 		<Value>Material</Value>
 	</LocaleResource>
 	<LocaleResource Name="Material.Hint">
-		<Value>Material aus dem das Produkt besteht. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
+		<Value>Material, aus dem das Produkt besteht. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Pattern">
 		<Value>Muster</Value>
 	</LocaleResource>
 	<LocaleResource Name="Pattern.Hint">
-		<Value>Muster oder grafische Druckdesign eines Produkts. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
+		<Value>Muster oder grafisches Druckdesign eines Produktes. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OnlineOnly">
 		<Value>Nur online zu kaufen</Value>

@@ -48,20 +48,32 @@ namespace SmartStore.Web.Framework.Themes
 
             string expression = html.NameForThemeVar(info);
 
+			var strValue = string.Empty;
+
+			var arrValue = value as string[];
+			if (arrValue != null)
+			{
+				strValue = arrValue.Length > 0 ? arrValue[0] : value.ToString();
+			}
+			else
+			{
+				strValue = value.ToString();
+			}
+
             if (info.Type == ThemeVariableType.Color)
             {
-                return html.ColorBox(expression, value.ToString());
+				return html.ColorBox(expression, strValue);
             }
             else if (info.Type == ThemeVariableType.Boolean)
             {
-                return html.CheckBox(expression, value.ToString().ToBool());
+				return html.CheckBox(expression, strValue.ToBool());
             }
             else if (info.Type == ThemeVariableType.Select)
             {
-                return ThemeVarSelectEditor(html, info, expression, value.ToString());
+				return ThemeVarSelectEditor(html, info, expression, strValue);
             }
 
-            return html.TextBox(expression, value);
+			return html.TextBox(expression, strValue);
         }
 
         private static MvcHtmlString ThemeVarSelectEditor(HtmlHelper html, ThemeVariableInfo info, string expression, string value)

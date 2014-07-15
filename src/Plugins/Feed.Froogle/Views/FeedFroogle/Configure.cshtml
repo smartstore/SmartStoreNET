@@ -13,9 +13,7 @@
         "~/Content/x-editable/bootstrap-editable.css",
         "~/Plugins/PromotionFeed.Froogle/Content/smartstore.feed.froogle.css");
 
-    Html.AppendScriptParts(true,
-        "~/Content/bootstrap/js/bootstrap-typeahead.js", 
-        "~/Content/x-editable/bootstrap-editable.js");
+    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 <a href="http://www.google.com/merchants/" rel="nofollow" target="_blank" class="pull-right">
@@ -113,7 +111,7 @@
             @Html.SmartLabelFor(m => m.DefaultGoogleCategory)
         </td>
         <td class="adminData">
-			<input type="text" id="DefaultGoogleCategory" name="DefaultGoogleCategory" class="text-box single-line valid" style="width:98%;" data-provide="typeahead" data-items="18" 
+			<input type="text" id="DefaultGoogleCategory" name="DefaultGoogleCategory" class="text-box single-line valid" style="width:98%;" data-provide="typeahead" data-items="18" autocomplete="off" 
 				value="@Model.DefaultGoogleCategory" data-source="@Model.AvailableGoogleCategoriesAsJson" />
         </td>
     </tr>
@@ -482,7 +480,7 @@
 				})
 				.DataBinding(dataBinding => {
 					dataBinding.Ajax()
-						.Select("GoogleProductList", "FeedFroogle", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Feed.Froogle.Controllers" }, { "area", "" } });
+						.Select("GoogleProductList", "FeedFroogle");
 				})
 				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 				.EnableCustomBinding(true)

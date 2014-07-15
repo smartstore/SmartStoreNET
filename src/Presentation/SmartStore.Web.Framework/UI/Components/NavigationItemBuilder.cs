@@ -36,6 +36,21 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
+		public TBuilder Action(string actionName)
+		{
+			return this.Action(actionName, null, null);
+		}
+
+		public TBuilder Action(string actionName, object routeValues)
+		{
+			return this.Action(actionName, null, routeValues);
+		}
+
+		public TBuilder Action(string actionName, RouteValueDictionary routeValues)
+		{
+			return this.Action(actionName, null, routeValues);
+		}
+
         public TBuilder Action(string actionName, string controllerName)
         {
             return this.Action(actionName, controllerName, null);
@@ -175,9 +190,29 @@ namespace SmartStore.Web.Framework.UI
         {
         }
 
+		/// <summary>
+		/// Specifies whether the content should be loaded per AJAX into the content pane.
+		/// </summary>
+		/// <param name="value">value</param>
+		/// <returns>builder</returns>
+		/// <remarks>
+		///		This setting has no effect when no route is specified OR
+		///		static content was set.
+		/// </remarks>
+		public TBuilder Ajax(bool value = true)
+		{
+			this.Item.Ajax = value;
+			return (this as TBuilder);
+		}
+
         public TBuilder Content(string value)
         {
-            return this.Content(x => new HelperResult(writer => writer.Write(value)));
+			if (value.IsEmpty())
+			{
+				// do nothing
+				return (this as TBuilder);
+			}
+			return this.Content(x => new HelperResult(writer => writer.Write(value)));
         }
 
         public TBuilder Content(Func<dynamic, HelperResult> value)

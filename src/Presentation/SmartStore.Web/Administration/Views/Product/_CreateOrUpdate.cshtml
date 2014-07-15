@@ -8,211 +8,116 @@
 @Html.HiddenFor(model => model.Id)
 
 <script>
-	$(function () {
-		var productId = $("#product-edit").data("product-id");
-
-		var initialTab = $('#product-edit li.active > a');
-		var initialPane = $("#product-edit").find(initialTab.attr("href"));
-		if (!initialPane.data("loaded")) {
-			_.delay(function () {
-				// without a delay, the current culture formats do not get applied
-				loadEditPartial(initialPane);
-			}, 100);
-			
-		}
-
-		function loadEditPartial(pane, onComplete) {
-			$.ajax({
-				cache: false,
-				type: "GET",
-				async: false,
-				global: false,
-				url: '@(Url.Action("LoadEditPartial", new { id = Model.Id }))',
-				data: { partialName: pane.data("part") },
-				success: function (data) {
-					pane.html(data);
-					applyCommonPlugins(pane);
-				},
-				error: function (xhr, ajaxOptions, thrownError) {
-					pane.html("Error while loading template: " + thrownError);
-				},
-				complete: function (xhr, textStatus) {
-					pane.data("loaded", true);
-					if (_.isFunction(onComplete)) {
-						onComplete.apply(this);
-					}
-				}
-			});
-		}
-
-		$('#product-edit a[data-toggle="tab"]').on('show', function (e) {
-			var newTab = $(e.target),
-				prevTab = $(e.relatedTarget),
-				icon = newTab.find(">i"),
-				iconPrevClass = icon.attr('class');
-
-			var pane = $("#product-edit").find(newTab.attr("href"));
-			if (pane.data("loaded") || !_.isString(pane.data("part")))
-				return;
-
-			icon.removeClass(iconPrevClass).addClass("icon-fixed-width icon-spinner icon-spin");
-
-			loadEditPartial(pane, function () {
-				icon.removeClass("icon-fixed-width icon-spinner icon-spin").addClass(iconPrevClass);
-			});
-		})
-	});
+	function productEditTab_onAjaxSuccess(tab, pane) {
+		applyCommonPlugins(pane);
+	}
 </script>
 
-@Html.SmartStore().TabStrip().Name("product-edit").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
 {
 	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
-		.Icon("icon-pencil icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Info", data_loaded = "true" })
-		.Content(TabInfo())
+		.Icon("icon-pencil icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Info" })
+		.Content(Html.Partial("_CreateOrUpdate.Info", Model).ToHtmlString())
 		.Selected(true);
+	
+	x.Add().Text(T("Admin.Catalog.Products.Inventory").Text)
+		.Name("tab-inventory")
+		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct)
+		.Icon("icon-archive icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Inventory" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Inventory" })
+		.Ajax();
 	
 	if (Model.Id > 0)
 	{
 		if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
 		{
 			x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
-				.Icon("icon-link icon-fixed-width")
-				.ContentHtmlAttributes(new { data_part = "AssociatedProducts" })
-				.Content(TabAssociatedProducts());
+				.Icon("icon-link icon-large icon-fixed-width")
+				.LinkHtmlAttributes(new { data_tab_name = "AssociatedProducts" })
+				.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "AssociatedProducts" })
+				.Ajax();
 		}
 		else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
 		{
 			x.Add().Text(T("Admin.Catalog.Products.BundleItems").Text)
-				.Icon("icon-link icon-fixed-width")
-				.ContentHtmlAttributes(new { data_part = "BundleItems" })
-				.Content(TabBundleItems());
+				.Icon("icon-link icon-large icon-fixed-width")
+				.LinkHtmlAttributes(new { data_tab_name = "BundleItems" })
+				.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "BundleItems" })
+				.Ajax();
 		}
 	}
 
 	if (Model.ProductTypeId != (int)ProductType.GroupedProduct)
 	{
 		x.Add().Text(T("Admin.Catalog.Products.Price").Text)
-			.Icon("icon-barcode icon-fixed-width")
-			.ContentHtmlAttributes(new { data_part = "Price", data_xloaded = "true" })
-			.Content(TabPrice());
+			.Icon("icon-euro icon-large icon-fixed-width")
+			.LinkHtmlAttributes(new { data_tab_name = "Price" })
+			.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Price" })
+			.Ajax();
 	}
 
 	x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
-		.Icon("icon-signal icon-flip-horizontal icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Discounts" })
-		.Content(TabDiscounts());
+		.Icon("icon-signal icon-large icon-flip-horizontal icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Discounts" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
+		.Ajax();
 
 	x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
-		.Icon("icon-picture icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Pictures" })
-		.Content(TabPictures());
+		.Icon("icon-picture icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Pictures" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Pictures" })
+		.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Categories").Text)
-		.Icon("icon-sitemap icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Categories" })
-		.Content(TabCategories());
+		.Icon("icon-sitemap icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Categories" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Categories" })
+		.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Manufacturers").Text)
-		.Icon("icon-truck icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Manufacturers" })
-		.Content(TabManufacturers());
+		.Icon("icon-building icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Manufacturers" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Manufacturers" })
+		.Ajax();
 
 	x.Add().Text(T("Admin.Catalog.Products.Promotion").Text)
-		.Icon("icon-bullhorn icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Promotion" })
-		.Content(TabPromotion());
+		.Icon("icon-bullhorn icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Promotion" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Promotion" })
+		.Ajax();
 
 	if (Model.ProductTypeId != (int)ProductType.BundledProduct)
 	{
 		x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
-			.Icon("icon-list-alt icon-fixed-width")
-			.ContentHtmlAttributes(new { data_part = "Attributes" })
-			.Content(TabAttributes());
+			.Icon("icon-list-alt icon-large icon-fixed-width")
+			.LinkHtmlAttributes(new { data_tab_name = "Attributes" })
+			.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Attributes" })
+			.Ajax();
 	}
 
 	x.Add().Text(T("Admin.Catalog.Products.SpecificationAttributes").Text)
-		.Icon("icon-reorder icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "SpecificationAttributes" })
-		.Content(TabSpecificationAttributes());
+		.Icon("icon-reorder icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "SpecificationAttributes" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SpecificationAttributes" })
+		.Ajax();
 
 	x.Add().Text(T("Admin.Common.SEO").Text)
-		.Icon("icon-globe icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "SEO" })
-		.Content(TabSeo());
+		.Icon("icon-search icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "SEO" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
+		.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
-		.Icon("icon-group icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Acl" })
-		.Content(TabAcl());
+		.Icon("icon-group icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Acl" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Acl" })
+		.Ajax();
 	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("icon-globe icon-fixed-width")
-		.ContentHtmlAttributes(new { data_part = "Stores" })
-		.Content(TabStores());
+		.Icon("icon-globe icon-large icon-fixed-width")
+		.LinkHtmlAttributes(new { data_tab_name = "Stores" })
+		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Stores" })
+		.Ajax();
 
 	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));
 })
 
-@helper TabInfo()
-{
-    @Html.Partial("_CreateOrUpdate.Info", Model)
-}
-
-@helper TabAssociatedProducts()
-{
-	@*@Html.Partial("_CreateOrUpdate.AssociatedProducts", Model)*@
-}
-
-@helper TabBundleItems()
-{
-	@*@Html.Partial("_CreateOrUpdate.BundleItems", Model)*@
-}
-
-@helper TabPrice()
-{
-	@*@Html.Partial("_CreateOrUpdate.Price", Model)*@
-}
-
-@helper TabDiscounts()
-{
-    @*@Html.Partial("_CreateOrUpdate.Discounts", Model)*@
-}
-
-@helper TabPictures()
-{
-    @*@Html.Partial("_CreateOrUpdate.Pictures", Model)*@
-}
-@helper TabCategories()
-{
-    @*@Html.Partial("_CreateOrUpdate.Categories", Model)*@
-}
-@helper TabManufacturers()
-{
-    @*@Html.Partial("_CreateOrUpdate.Manufacturers", Model)*@
-}
-
-@helper TabPromotion()
-{
-    @*@Html.Partial("_CreateOrUpdate.Promotion", Model)*@
-}
-
-@helper TabAttributes()
-{
-	@*@Html.Partial("_CreateOrUpdate.Attributes", Model)*@
-}
-	
-@helper TabSpecificationAttributes()
-{
-    @*@Html.Partial("_CreateOrUpdate.SpecificationAttributes", Model)*@
-}
-
-@helper TabSeo()
-{
-    @*@Html.Partial("_CreateOrUpdate.SEO", Model)*@
-}
-@helper TabAcl()
-{
-    @*@Html.Partial("_CreateOrUpdate.Acl", Model)*@
-}
-@helper TabStores()
-{
-    @*@Html.Partial("_CreateOrUpdate.Stores", Model)*@
-}

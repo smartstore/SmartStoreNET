@@ -78,6 +78,13 @@ namespace SmartStore.Data.Migrations
 				"Lists",
 				"Listen");
 
+			// new product-edit tab
+			builder.AddOrUpdate("Admin.Catalog.Products.Inventory",
+				"Inventory",
+				"Inventar");
+			builder.AddOrUpdate("Admin.SaveBeforeEdit",
+				"In order to proceed, the record must be saved first.",
+				"Um fortfahren zu können, muss der Datensatz zunächst gespeichert werden.");
 		}
     }
 }

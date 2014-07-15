@@ -160,6 +160,8 @@ namespace SmartStore.Web.Framework.UI
             this.ContentHtmlAttributes = new RouteValueDictionary();
         }
 
+		public bool Ajax { get; set; }
+
         public IDictionary<string, object> ContentHtmlAttributes { get; private set; }
 
         public HelperResult Content { get; set; }

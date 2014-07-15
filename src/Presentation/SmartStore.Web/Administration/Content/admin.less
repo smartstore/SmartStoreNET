@@ -679,6 +679,7 @@ td.adminTitle > .ctl-label {
 	}
 
 	a.hint {
+		@hintColor: #999; //#21759b
 		position: absolute;
 		width: 16px;
 		height: 16px;
@@ -687,12 +688,20 @@ td.adminTitle > .ctl-label {
 		margin-top: -8px;
 		text-decoration: none;
 		outline: 0;
-		color: #21759b;
-		.transition(color .1s linear);
-
-		&:hover { color: darken(#21759b, 15%) }
-		i { font-size: 15px }
+		color: @hintColor;
+		.transition(all .1s linear);
+		.opacity(0);
+		&:hover { 
+			color: darken(@hintColor, 25%) 
+		}
+		i { 
+			x-font-size: 15px;
+		}
 	}
+}
+
+td.adminTitle:hover a.hint {
+	.opacity(100);
 }
 
 .well td.adminTitle {

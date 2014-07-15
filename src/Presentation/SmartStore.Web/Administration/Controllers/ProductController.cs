@@ -3,42 +3,41 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.Mvc.Ajax;
+using Autofac;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
+using SmartStore.Core.Async;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
-using SmartStore.Services.Seo;
-using SmartStore.Services.Customers;
-using SmartStore.Services.Helpers;
-using SmartStore.Services.Discounts;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Directory;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Data;
-using System.Threading;
-using Autofac;
-using SmartStore.Core.Async;
-using SmartStore.Core.Events;
-using SmartStore.Utilities;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -87,6 +86,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly MeasureSettings _measureSettings;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly IDbContext _dbContext;
+		private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
@@ -133,7 +133,8 @@ namespace SmartStore.Admin.Controllers
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
 			IPriceFormatter priceFormatter,
-			IDbContext dbContext)
+			IDbContext dbContext,
+			IEventPublisher eventPublisher)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -175,50 +176,348 @@ namespace SmartStore.Admin.Controllers
 			this._measureSettings = measureSettings;
 			this._priceFormatter = priceFormatter;
 			this._dbContext = dbContext;
+			this._eventPublisher = eventPublisher;
+
+			T = NullLocalizer.Instance;
         }
 
         #endregion
 
-        #region Utitilies
+		public Localizer T { get; set; }
 
-        [NonAction]
-        private void UpdateLocales(Product product, ProductModel model)
-        {
-            foreach (var localized in model.Locales)
-            {
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.ShortDescription,
-                                                               localized.ShortDescription,
-                                                               localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.FullDescription,
-                                                               localized.FullDescription,
-                                                               localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.MetaKeywords,
-                                                               localized.MetaKeywords,
-                                                               localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.MetaDescription,
-                                                               localized.MetaDescription,
-                                                               localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(product,
-                                                               x => x.MetaTitle,
-                                                               localized.MetaTitle,
-                                                               localized.LanguageId);
+		#region Update[...]
 
-				_localizedEntityService.SaveLocalizedValue(product, x => x.BundleTitleText, localized.BundleTitleText, localized.LanguageId);
+		[NonAction]
+		protected void UpdateProductGeneralInfo(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
 
-                //search engine name
-				// codehint: sm-edit
-                var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
-                _urlRecordService.SaveSlug(product, seName, localized.LanguageId);
-            }
-        }
+			UpdateProductTags(p, ParseProductTags(m.ProductTags));
+
+			p.ProductTypeId = m.ProductTypeId;
+			p.VisibleIndividually = m.VisibleIndividually;
+			p.ProductTemplateId = m.ProductTemplateId;
+			p.ManageInventoryMethodId = m.ManageInventoryMethodId;
+			p.StockQuantity = m.StockQuantity;
+			p.DisplayStockAvailability = m.DisplayStockAvailability;
+			p.DisplayStockQuantity = m.DisplayStockQuantity;
+			p.MinStockQuantity = m.MinStockQuantity;
+			p.LowStockActivityId = m.LowStockActivityId;
+			p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
+			p.BackorderModeId = m.BackorderModeId;
+			p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
+			p.OrderMinimumQuantity = m.OrderMinimumQuantity;
+			p.OrderMaximumQuantity = m.OrderMaximumQuantity;
+
+			p.Name = m.Name;
+			p.ShortDescription = m.ShortDescription;
+			p.FullDescription = m.FullDescription;
+			p.Sku = m.Sku;
+			p.ManufacturerPartNumber = m.ManufacturerPartNumber;
+			p.Gtin = m.Gtin;
+			p.AdminComment = m.AdminComment;
+			p.AvailableStartDateTimeUtc = m.AvailableStartDateTimeUtc;
+			p.AvailableEndDateTimeUtc = m.AvailableEndDateTimeUtc;
+
+			p.AllowCustomerReviews = m.AllowCustomerReviews;
+			p.ShowOnHomePage = m.ShowOnHomePage;
+			p.Published = m.Published;
+			p.RequireOtherProducts = m.RequireOtherProducts;
+			p.RequiredProductIds = m.RequiredProductIds;
+			p.AutomaticallyAddRequiredProducts = m.AutomaticallyAddRequiredProducts;
+
+			p.IsGiftCard = m.IsGiftCard;
+			p.GiftCardTypeId = m.GiftCardTypeId;
+
+			p.IsDownload = m.IsDownload;
+			p.DownloadId = m.DownloadId;
+			p.UnlimitedDownloads = m.UnlimitedDownloads;
+			p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
+			p.DownloadExpirationDays = m.DownloadExpirationDays;
+			p.DownloadActivationTypeId = m.DownloadActivationTypeId;
+			p.HasUserAgreement = m.HasUserAgreement;
+			p.UserAgreementText = m.UserAgreementText;
+			p.HasSampleDownload = m.HasSampleDownload;
+			p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
+
+			p.IsRecurring = m.IsRecurring;
+			p.RecurringCycleLength = m.RecurringCycleLength;
+			p.RecurringCyclePeriodId = m.RecurringCyclePeriodId;
+			p.RecurringTotalCycles = m.RecurringTotalCycles;
+
+			p.IsShipEnabled = m.IsShipEnabled;
+			p.DeliveryTimeId = m.DeliveryTimeId == 0 ? (int?)null : m.DeliveryTimeId;
+			p.IsFreeShipping = m.IsFreeShipping;
+			p.AdditionalShippingCharge = m.AdditionalShippingCharge;
+			p.Weight = m.Weight;
+			p.Length = m.Length;
+			p.Width = m.Width;
+			p.Height = m.Height;
+
+			p.IsTaxExempt = m.IsTaxExempt;
+			p.TaxCategoryId = m.TaxCategoryId;
+
+			// SEO
+			var service = _localizedEntityService;
+			foreach (var localized in model.Locales)
+			{
+				service.SaveLocalizedValue(product, x => x.Name, localized.Name, localized.LanguageId);
+				service.SaveLocalizedValue(product, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+				service.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
+				// search engine name
+				var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				_urlRecordService.SaveSlug(product, seName, localized.LanguageId);
+			}
+
+			p.UpdatedOnUtc = DateTime.UtcNow;
+			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+
+			_productService.UpdateProduct(product);
+
+			// picture seo names
+			UpdatePictureSeoNames(product);
+		}
+
+		[NonAction]
+		protected void UpdateProductTags(Product product, string[] productTags)
+		{
+			if (product == null)
+				throw new ArgumentNullException("product");
+
+			//product tags
+			var existingProductTags = product.ProductTags.ToList();
+			var productTagsToRemove = new List<ProductTag>();
+			foreach (var existingProductTag in existingProductTags)
+			{
+				bool found = false;
+				foreach (string newProductTag in productTags)
+				{
+					if (existingProductTag.Name.Equals(newProductTag, StringComparison.InvariantCultureIgnoreCase))
+					{
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					productTagsToRemove.Add(existingProductTag);
+				}
+			}
+			foreach (var productTag in productTagsToRemove)
+			{
+				product.ProductTags.Remove(productTag);
+				_productService.UpdateProduct(product);
+			}
+			foreach (string productTagName in productTags)
+			{
+				ProductTag productTag = null;
+				var productTag2 = _productTagService.GetProductTagByName(productTagName);
+				if (productTag2 == null)
+				{
+					//add new product tag
+					productTag = new ProductTag()
+					{
+						Name = productTagName
+					};
+					_productTagService.InsertProductTag(productTag);
+				}
+				else
+				{
+					productTag = productTag2;
+				}
+				if (!product.ProductTagExists(productTag.Id))
+				{
+					product.ProductTags.Add(productTag);
+					_productService.UpdateProduct(product);
+				}
+			}
+		}
+
+		[NonAction]
+		protected void UpdateProductInventory(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			var prevStockQuantity = product.StockQuantity;
+
+			p.ManageInventoryMethodId = m.ManageInventoryMethodId;
+			p.StockQuantity = m.StockQuantity;
+			p.DisplayStockAvailability = m.DisplayStockAvailability;
+			p.DisplayStockQuantity = m.DisplayStockQuantity;
+			p.MinStockQuantity = m.MinStockQuantity;
+			p.LowStockActivityId = m.LowStockActivityId;
+			p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
+			p.BackorderModeId = m.BackorderModeId;
+			p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
+			p.OrderMinimumQuantity = m.OrderMinimumQuantity;
+			p.OrderMaximumQuantity = m.OrderMaximumQuantity;
+
+			// back in stock notifications
+			if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
+				p.BackorderMode == BackorderMode.NoBackorders &&
+				p.AllowBackInStockSubscriptions &&
+				p.StockQuantity > 0 &&
+				prevStockQuantity <= 0 &&
+				p.Published &&
+				!p.Deleted)
+			{
+				_backInStockSubscriptionService.SendNotificationsToSubscribers(p);
+			}
+
+			if (p.StockQuantity != prevStockQuantity && p.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+			{
+				_productService.AdjustInventory(p, true, 0, string.Empty);
+			}
+		}
+
+		[NonAction]
+		protected void UpdateProductBundleItems(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			p.BundleTitleText = m.BundleTitleText;
+			p.BundlePerItemPricing = m.BundlePerItemPricing;
+			p.BundlePerItemShipping = m.BundlePerItemShipping;
+			p.BundlePerItemShoppingCart = m.BundlePerItemShoppingCart;
+
+			// SEO
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(p, x => x.BundleTitleText, localized.BundleTitleText, localized.LanguageId);
+			}
+		}
+
+		[NonAction]
+		protected void UpdateProductPrice(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			p.Price = m.Price;
+			p.OldPrice = m.OldPrice;
+			p.ProductCost = m.ProductCost;
+			p.SpecialPrice = m.SpecialPrice;
+			p.SpecialPriceStartDateTimeUtc = m.SpecialPriceStartDateTimeUtc;
+			p.SpecialPriceEndDateTimeUtc = m.SpecialPriceEndDateTimeUtc;
+			p.DisableBuyButton = m.DisableBuyButton;
+			p.DisableWishlistButton = m.DisableWishlistButton;
+			p.AvailableForPreOrder = m.AvailableForPreOrder;
+			p.CallForPrice = m.CallForPrice;
+			p.CustomerEntersPrice = m.CustomerEntersPrice;
+			p.MinimumCustomerEnteredPrice = m.MinimumCustomerEnteredPrice;
+			p.MaximumCustomerEnteredPrice = m.MaximumCustomerEnteredPrice;
+
+			p.BasePriceEnabled = m.BasePriceEnabled;
+			p.BasePriceBaseAmount = m.BasePriceBaseAmount;
+			p.BasePriceAmount = m.BasePriceAmount;
+		}
+
+		[NonAction]
+		protected void UpdateProductSeo(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			p.MetaKeywords = m.MetaKeywords;
+			p.MetaDescription = m.MetaDescription;
+			p.MetaTitle = m.MetaTitle;
+
+			// URL alias
+			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
+			_urlRecordService.SaveSlug(p, m.SeName, 0);
+
+			// SEO
+			var service = _localizedEntityService;
+			foreach (var localized in model.Locales)
+			{
+				service.SaveLocalizedValue(p, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+				service.SaveLocalizedValue(p, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+				service.SaveLocalizedValue(p, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+			}
+		}
+
+		[NonAction]
+		protected void UpdateProductDiscounts(Product product, ProductModel model)
+		{
+			var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
+			foreach (var discount in allDiscounts)
+			{
+				if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+				{
+					//new role
+					if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
+						product.AppliedDiscounts.Add(discount);
+				}
+				else
+				{
+					//removed role
+					if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
+						product.AppliedDiscounts.Remove(discount);
+				}
+			}
+			_productService.UpdateProduct(product);
+			_productService.UpdateHasDiscountsApplied(product);
+		}
+
+		[NonAction]
+		protected void UpdateProductAcl(Product product, ProductModel model)
+		{
+			var existingAclRecords = _aclService.GetAclRecords(product);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			foreach (var customerRole in allCustomerRoles)
+			{
+				if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+				{
+					//new role
+					if (existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).Count() == 0)
+						_aclService.InsertAclRecord(product, customerRole.Id);
+				}
+				else
+				{
+					//removed role
+					var aclRecordToDelete = existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).FirstOrDefault();
+					if (aclRecordToDelete != null)
+						_aclService.DeleteAclRecord(aclRecordToDelete);
+				}
+			}
+		}
+
+		[NonAction]
+		protected void UpdateStoreMappings(Product product, ProductModel model)
+		{
+			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
+			var allStores = _storeService.GetAllStores();
+			foreach (var store in allStores)
+			{
+				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
+				{
+					// new role
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+					{
+						_storeMappingService.InsertStoreMapping(product, store.Id);
+					}
+				}
+				else
+				{
+					// removed role
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+					{
+						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
+					}
+				}
+			}
+		}
+
+		[NonAction]
+		private void UpdateLocales(Product product, ProductModel model, bool general, bool seo, bool bundles)
+		{
+			// TODO: Obsolete
+		}
 
 		[NonAction]
 		private void UpdateLocales(ProductTag productTag, ProductTagModel model)
@@ -238,12 +537,18 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        [NonAction]
-        private void UpdatePictureSeoNames(Product product)
-        {
-            foreach (var pp in product.ProductPictures)
-                _pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
-        }
+		[NonAction]
+		private void UpdatePictureSeoNames(Product product)
+		{
+			foreach (var pp in product.ProductPictures)
+			{
+				_pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
+			}
+		}
+
+		#endregion
+
+		#region Utitilies
 
         [NonAction]
         private void PrepareAclModel(ProductModel model, Product product, bool excludeProperties)
@@ -268,29 +573,6 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        [NonAction]
-        protected void SaveProductAcl(Product product, ProductModel model)
-        {
-            var existingAclRecords = _aclService.GetAclRecords(product);
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            foreach (var customerRole in allCustomerRoles)
-            {
-                if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                {
-                    //new role
-                    if (existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).Count() == 0)
-                        _aclService.InsertAclRecord(product, customerRole.Id);
-                }
-                else
-                {
-                    //removed role
-                    var aclRecordToDelete = existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).FirstOrDefault();
-                    if (aclRecordToDelete != null)
-                        _aclService.DeleteAclRecord(aclRecordToDelete);
-                }
-            }
-        }
-
 		[NonAction]
 		private void PrepareStoresMappingModel(ProductModel model, Product product, bool excludeProperties)
 		{
@@ -310,29 +592,6 @@ namespace SmartStore.Admin.Controllers
 				else
 				{
 					model.SelectedStoreIds = new int[0];
-				}
-			}
-		}
-
-		[NonAction]
-		protected void SaveStoreMappings(Product product, ProductModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(product, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
 				}
 			}
 		}
@@ -535,60 +794,6 @@ namespace SmartStore.Admin.Controllers
             return result.ToArray();
         }
 
-        [NonAction]
-        private void SaveProductTags(Product product, string[] productTags)
-        {
-            if (product == null)
-                throw new ArgumentNullException("product");
-
-            //product tags
-			var existingProductTags = product.ProductTags.ToList();
-            var productTagsToRemove = new List<ProductTag>();
-            foreach (var existingProductTag in existingProductTags)
-            {
-                bool found = false;
-                foreach (string newProductTag in productTags)
-                {
-                    if (existingProductTag.Name.Equals(newProductTag, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    productTagsToRemove.Add(existingProductTag);
-                }
-            }
-            foreach (var productTag in productTagsToRemove)
-            {
-                product.ProductTags.Remove(productTag);
-                _productService.UpdateProduct(product);
-            }
-            foreach (string productTagName in productTags)
-            {
-                ProductTag productTag = null;
-                var productTag2 = _productTagService.GetProductTagByName(productTagName);
-                if (productTag2 == null)
-                {
-                    //add new product tag
-                    productTag = new ProductTag()
-                    {
-                        Name = productTagName
-                    };
-                    _productTagService.InsertProductTag(productTag);
-                }
-                else
-                {
-                    productTag = productTag2;
-                }
-                if (!product.ProductTagExists(productTag.Id))
-                {
-                    product.ProductTags.Add(productTag);
-                   _productService.UpdateProduct(product);
-                }	
-            }
-        }
         #endregion
 
         #region Methods
@@ -757,47 +962,41 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Create(ProductModel model, bool continueEditing)
+        public ActionResult Create(ProductModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
             {
-                //product
-                var product = model.ToEntity();
+                var product = new Product();
                 product.CreatedOnUtc = DateTime.UtcNow;
                 product.UpdatedOnUtc = DateTime.UtcNow;
 
-                if (product.ProductType == ProductType.BundledProduct)
-                    product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
+				if (product.ProductType == ProductType.BundledProduct)
+				{
+					product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
+				}
+
+				MapModelToProduct(model, product, form);
 
                 _productService.InsertProduct(product);
-                //search engine name
-                model.SeName = product.ValidateSeName(model.SeName, product.Name, true);
-                _urlRecordService.SaveSlug(product, model.SeName, 0);
-                //locales
-                UpdateLocales(product, model);
-                //ACL (customer roles)
-                SaveProductAcl(product, model);
-				//Stores
-				SaveStoreMappings(product, model);
-                //tags
-                SaveProductTags(product, ParseProductTags(model.ProductTags));
-				//discounts
-				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-				foreach (var discount in allDiscounts)
-				{
-					if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
-						product.AppliedDiscounts.Add(discount);
-				}
-				_productService.UpdateProduct(product);
-				_productService.UpdateHasDiscountsApplied(product);
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Added"));
+
+				if (continueEditing)
+				{
+					// ensure that the same tab gets selected in edit view
+					var selectedTab = TempData["SelectedTab.product-edit"] as SmartStore.Web.Framework.UI.SelectedTabInfo;
+					if (selectedTab != null)
+					{
+						selectedTab.Path = Url.Action("Edit", new System.Web.Routing.RouteValueDictionary { {"id", product.Id} });
+					}
+				}
+
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
@@ -842,75 +1041,22 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Edit(ProductModel model, bool continueEditing)
+        public ActionResult Edit(ProductModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				return AccessDeniedView();
+			}
 
             var product = _productService.GetProductById(model.Id);
-            if (product == null || product.Deleted)
-                return RedirectToAction("List");
+			if (product == null || product.Deleted)
+			{
+				return RedirectToAction("List");
+			}
 
             if (ModelState.IsValid)
             {
-				var prevStockQuantity = product.StockQuantity;
-
-                //product
-                product = model.ToEntity(product);
-                product.UpdatedOnUtc = DateTime.UtcNow;
-				product.AvailableEndDateTimeUtc = product.AvailableEndDateTimeUtc.ToEndOfTheDay();
-				product.SpecialPriceEndDateTimeUtc = product.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
-
-                _productService.UpdateProduct(product);
-
-                //search engine name
-                model.SeName = product.ValidateSeName(model.SeName, product.Name, true);
-                _urlRecordService.SaveSlug(product, model.SeName, 0);
-                //locales
-                UpdateLocales(product, model);
-                //tags
-                SaveProductTags(product, ParseProductTags(model.ProductTags));
-                //ACL (customer roles)
-                SaveProductAcl(product, model);
-				//Stores
-				SaveStoreMappings(product, model);
-                //picture seo names
-                UpdatePictureSeoNames(product);
-				//discounts
-				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-				foreach (var discount in allDiscounts)
-				{
-					if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
-					{
-						//new role
-						if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
-							product.AppliedDiscounts.Add(discount);
-					}
-					else
-					{
-						//removed role
-						if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
-							product.AppliedDiscounts.Remove(discount);
-					}
-				}
-				_productService.UpdateProduct(product);
-				_productService.UpdateHasDiscountsApplied(product);
-				//back in stock notifications
-				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
-					product.BackorderMode == BackorderMode.NoBackorders &&
-					product.AllowBackInStockSubscriptions &&
-					product.StockQuantity > 0 &&
-					prevStockQuantity <= 0 &&
-					product.Published &&
-					!product.Deleted)
-				{
-					_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
-				}
-
-                if (product.StockQuantity != prevStockQuantity && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-                {
-                    _productService.AdjustInventory(product, true, 0, string.Empty);
-                }
+				MapModelToProduct(model, product, form);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
@@ -928,13 +1074,66 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		public ActionResult LoadEditPartial(int id, string partialName)
+		[NonAction]
+		protected void MapModelToProduct(ProductModel model, Product product, FormCollection form)
+		{
+			if (model.LoadedTabs == null || model.LoadedTabs.Length == 0)
+			{
+				model.LoadedTabs = new string[] { "Info" };
+			}
+
+			foreach (var tab in model.LoadedTabs)
+			{
+				switch (tab.ToLower())
+				{
+					case "info":
+						UpdateProductGeneralInfo(product, model);
+						break;
+					case "inventory":
+						UpdateProductInventory(product, model);
+						break;
+					case "bundleitems":
+						UpdateProductBundleItems(product, model);
+						break;
+					case "price":
+						UpdateProductPrice(product, model);
+						break;
+					case "discounts":
+						UpdateProductDiscounts(product, model);
+						break;
+					case "seo":
+						UpdateProductSeo(product, model);
+						break;
+					case "acl":
+						UpdateProductAcl(product, model);
+						break;
+					case "stores":
+						UpdateStoreMappings(product, model);
+						break;
+				}
+			}
+
+			_eventPublisher.Publish(new ModelBoundEvent(model, product, form));
+		}
+
+		public ActionResult LoadEditTab(int id, string tabName, string viewPath = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return Content("Error while loading template: Access denied.");
 			
 			try
 			{
+				if (id == 0)
+				{
+					// is Create mode
+					return PartialView("_Create.SaveFirst");
+				}
+
+				if (tabName.IsEmpty())
+				{
+					return Content("A unique tab name has to specified (route parameter: tabName)");
+				}
+				
 				var product = _productService.GetProductById(id);
 				
 				var model = product.ToModel();
@@ -957,8 +1156,7 @@ namespace SmartStore.Admin.Controllers
 				PrepareAclModel(model, product, false);
 				PrepareStoresMappingModel(model, product, false);
 
-				var html = this.RenderPartialViewToString("_CreateOrUpdate." + partialName, model);
-				return Content(html);
+				return PartialView(viewPath.NullEmpty() ?? "_CreateOrUpdate." + tabName, model);
 			}
 			catch (Exception ex)
 			{

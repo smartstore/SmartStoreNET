@@ -239,6 +239,7 @@
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
+    <Compile Include="Mvc\ModelBoundEvent.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
     <Compile Include="UI\HtmlAttributeExtensions.cs" />
@@ -385,12 +386,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll">
-      <Link>AutoMapper.Net4.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

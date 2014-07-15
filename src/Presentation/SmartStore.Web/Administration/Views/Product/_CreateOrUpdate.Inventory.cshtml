@@ -1,0 +1,182 @@
+﻿@model ProductModel
+
+@using SmartStore.Core.Domain.Catalog;
+
+<script>
+	$(function () {
+
+		$("#@Html.FieldIdFor(model => model.ManageInventoryMethodId)").change(toggleManageStock);
+		$("#@Html.FieldIdFor(model => model.BackorderModeId)").change(toggleManageStock);
+		$("#@Html.FieldIdFor(model => model.DisplayStockAvailability)").click(toggleManageStock);
+
+		toggleManageStock();
+
+		function toggleManageStock() {
+			var selectedManageInventoryMethodId = $("#@Html.FieldIdFor(model => model.ManageInventoryMethodId)").val();
+
+			if (selectedManageInventoryMethodId == '@((int)ManageInventoryMethod.DontManageStock)') {
+				$('#pnlStockQuantity').hide();
+				$('#pnlDisplayStockAvailability').hide();
+				$('#pnlDisplayStockQuantity').hide();
+				$('#pnlMinStockQuantity').hide();
+				$('#pnlLowStockActivity').hide();
+				$('#pnlNotifyForQuantityBelow').hide();
+				$('#pnlAllowBackInStockSubscriptions').hide();
+				$('#pnlBackorders').hide();
+			}
+			else if (selectedManageInventoryMethodId == '@((int)ManageInventoryMethod.ManageStock)') {
+				$('#pnlStockQuantity').show();
+				$('#pnlDisplayStockAvailability').show();
+
+				if ($('#@Html.FieldIdFor(model => model.DisplayStockAvailability)').is(':checked')) {
+					$('#pnlDisplayStockQuantity').show();
+				}
+				else {
+					$('#pnlDisplayStockQuantity').hide();
+				}
+
+				$('#pnlMinStockQuantity').show();
+				$('#pnlLowStockActivity').show();
+				$('#pnlNotifyForQuantityBelow').show();
+				$('#pnlBackorders').show();
+				var selectedBackorderModeId = $("#@Html.FieldIdFor(model => model.BackorderModeId)").val();
+				if (selectedBackorderModeId == '@((int)BackorderMode.NoBackorders)') {
+					//no backorders
+					$('#pnlAllowBackInStockSubscriptions').show();
+				}
+				else {
+					//backorders are enabled
+					$('#pnlAllowBackInStockSubscriptions').hide();
+				}
+			}
+			else if (selectedManageInventoryMethodId == '@((int)ManageInventoryMethod.ManageStockByAttributes)') {
+				$('#pnlStockQuantity').hide();
+				$('#pnlDisplayStockAvailability').show();
+				if ($('#@Html.FieldIdFor(model => model.DisplayStockAvailability)').is(':checked')) {
+					$('#pnlDisplayStockQuantity').show();
+				}
+				else {
+					$('#pnlDisplayStockQuantity').hide();
+				}
+				$('#pnlMinStockQuantity').hide();
+				$('#pnlLowStockActivity').hide();
+				$('#pnlNotifyForQuantityBelow').hide();
+				$('#pnlAllowBackInStockSubscriptions').hide();
+				$('#pnlBackorders').hide();
+			}
+			else {
+				$('#pnlStockQuantity').hide();
+				$('#pnlDisplayStockAvailability').hide();
+				$('#pnlDisplayStockQuantity').hide();
+				$('#pnlMinStockQuantity').hide();
+				$('#pnlLowStockActivity').hide();
+				$('#pnlNotifyForQuantityBelow').hide();
+				$('#pnlAllowBackInStockSubscriptions').hide();
+				$('#pnlBackorders').hide();
+			}
+		}
+
+	});
+</script>
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ManageInventoryMethodId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.ManageInventoryMethodId, Model.AvailableManageInventoryMethods)
+			@Html.ValidationMessageFor(model => model.ManageInventoryMethodId)
+		</td>
+	</tr>
+	<tr id="pnlStockQuantity">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.StockQuantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.StockQuantity)
+			@Html.ValidationMessageFor(model => model.StockQuantity)
+		</td>
+	</tr>
+	<tr id="pnlDisplayStockAvailability">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.DisplayStockAvailability)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.DisplayStockAvailability)
+			@Html.ValidationMessageFor(model => model.DisplayStockAvailability)
+		</td>
+	</tr>
+	<tr id="pnlDisplayStockQuantity">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.DisplayStockQuantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.DisplayStockQuantity)
+			@Html.ValidationMessageFor(model => model.DisplayStockQuantity)
+		</td>
+	</tr>
+	<tr id="pnlMinStockQuantity">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.MinStockQuantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.MinStockQuantity)
+			@Html.ValidationMessageFor(model => model.MinStockQuantity)
+		</td>
+	</tr>
+	<tr id="pnlLowStockActivity">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.LowStockActivityId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.LowStockActivityId, ((LowStockActivity)Model.LowStockActivityId).ToSelectList())
+			@Html.ValidationMessageFor(model => model.LowStockActivityId)
+		</td>
+	</tr>
+	<tr id="pnlNotifyForQuantityBelow">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.NotifyAdminForQuantityBelow)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.NotifyAdminForQuantityBelow)
+			@Html.ValidationMessageFor(model => model.NotifyAdminForQuantityBelow)
+		</td>
+	</tr>
+	<tr id="pnlBackorders">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.BackorderModeId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.BackorderModeId, ((BackorderMode)Model.BackorderModeId).ToSelectList())
+			@Html.ValidationMessageFor(model => model.BackorderModeId)
+		</td>
+	</tr>
+	<tr id="pnlAllowBackInStockSubscriptions">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AllowBackInStockSubscriptions)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.AllowBackInStockSubscriptions)
+			@Html.ValidationMessageFor(model => model.AllowBackInStockSubscriptions)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderMinimumQuantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.OrderMinimumQuantity)
+			@Html.ValidationMessageFor(model => model.OrderMinimumQuantity)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderMaximumQuantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.OrderMaximumQuantity)
+			@Html.ValidationMessageFor(model => model.OrderMaximumQuantity)
+		</td>
+	</tr>
+</table>

@@ -55,6 +55,18 @@
     // on document ready
 	$(function () {
 
+		function getFunction(code, argNames) {
+			var fn = window, parts = (code || "").split(".");
+			while (fn && parts.length) {
+				fn = fn[parts.shift()];
+			}
+			if (typeof (fn) === "function") {
+				return fn;
+			}
+			argNames.push(code);
+			return Function.constructor.apply(null, argNames);
+		}
+
 		if (!Modernizr.csstransitions) {
 			$.fn.transition = $.fn.animate;
 		}
@@ -98,6 +110,43 @@
 					global: false
 				});
 			}		
+		});
+
+		// AJAX tabs
+		$('.nav a[data-ajax-url]').on('show', function (e) {
+			var newTab = $(e.target),
+				tabbable = newTab.closest('.tabbable'),
+				pane = tabbable.find(newTab.attr("href")),
+				url = newTab.data('ajax-url');
+
+			if (newTab.data("loaded") || !url)
+				return;
+
+			$.ajax({
+				cache: false,
+				type: "GET",
+				async: false,
+				global: false,
+				url: url,
+				beforeSend: function (xhr) {
+					getFunction(tabbable.data("ajax-onbegin"), ["tab", "pane", "xhr"]).apply(this, [newTab, pane, xhr]);
+				},
+				success: function (data, status, xhr) {
+					pane.html(data);
+					getFunction(tabbable.data("ajax-onsuccess"), ["tab", "pane", "data", "status", "xhr"]).apply(this, [newTab, pane, data, status, xhr]);
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					pane.html('<div class="text-error">Error while loading resource: ' + thrownError + '</div>');
+					getFunction(tabbable.data("ajax-onfailure"), ["tab", "pane", "xhr", "ajaxOptions", "thrownError"]).apply(this, [newTab, pane, xhr, ajaxOptions, thrownError]);
+				},
+				complete: function (xhr, status) {
+					newTab.data("loaded", true);
+					var tabName = newTab.data('tab-name') || newTab.attr("href").replace(/#/, "");
+					tabbable.append('<input type="hidden" class="loaded-tab-name" name="LoadedTabs" value="' + tabName + '" />');
+
+					getFunction(tabbable.data("ajax-oncomplete"), ["tab", "pane", "xhr", "status"]).apply(this, [newTab, pane, xhr, status]);
+				}
+			});
 		});
 
 		// Handle ajax notifications

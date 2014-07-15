@@ -2569,10 +2569,11 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
+
         [ChildActionOnly]
         public ActionResult OrderAverageReport()
         {
-            var model = GetOrderAverageReportModel();
+			var model = GetOrderAverageReportModel();
             return PartialView(model);
         }
 

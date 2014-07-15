@@ -1,30 +1,25 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
+using System.Web.Mvc;
 using System.Xml;
-using System.Globalization;
+using Autofac;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Catalog;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Logging;
 using SmartStore.Plugin.Feed.Froogle.Domain;
 using SmartStore.Plugin.Feed.Froogle.Models;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Tasks;
-using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Stores;
-using System.Web.Mvc;
-using System.Collections.Generic;
-using SmartStore.Web.Framework;
-using SmartStore.Services.Directory;
-using SmartStore.Core;
-using SmartStore.Core.Logging;
-using Autofac;
-using System.Threading;
-using SmartStore.Core.Async;
-using System.Web;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -76,7 +71,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		public FroogleSettings Settings { get; set; }
 		public FeedPluginHelper Helper { get { return _helper; } }
 
-        private GoogleProductRecord GetByProductId(int productId)
+        public GoogleProductRecord GetGoogleProductRecord(int productId)
         {
             if (productId == 0)
                 return null;
@@ -88,20 +83,31 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
             var record = query.FirstOrDefault();
             return record;
         }
-        private void InsertGoogleProductRecord(GoogleProductRecord googleProductRecord)
+
+        public void InsertGoogleProductRecord(GoogleProductRecord record)
         {
-            if (googleProductRecord == null)
+            if (record == null)
                 throw new ArgumentNullException("googleProductRecord");
 
-            _gpRepository.Insert(googleProductRecord);
+            _gpRepository.Insert(record);
         }
-        private void UpdateGoogleProductRecord(GoogleProductRecord googleProductRecord)
-        {
-            if (googleProductRecord == null)
-                throw new ArgumentNullException("googleProductRecord");
 
-            _gpRepository.Update(googleProductRecord);
+		public void UpdateGoogleProductRecord(GoogleProductRecord record)
+        {
+			if (record == null)
+				throw new ArgumentNullException("record");
+
+			_gpRepository.Update(record);
         }
+
+		public void DeleteGoogleProductRecord(GoogleProductRecord record)
+		{
+			if (record == null)
+				throw new ArgumentNullException("record");
+
+			_gpRepository.Delete(record);
+		}
+
 		private bool SpecialPrice(Product product, out string specialPriceDate)
 		{
 			specialPriceDate = "";
@@ -218,6 +224,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return Settings.Pattern;
 		}
+
 		private string ItemGroupId(GoogleProductRecord googleProduct)
 		{
 			if (googleProduct != null && googleProduct.ItemGroupId.HasValue())
@@ -225,6 +232,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return "";
 		}
+
 		private bool BasePriceSupported(int baseAmount, string unit)
 		{
 			if (baseAmount == 1 || baseAmount == 10 || baseAmount == 100)
@@ -238,6 +246,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			return false;
 		}
+
 		private string BasePriceUnits(string value)
 		{
 			const string defaultValue = "kg";
@@ -295,11 +304,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 					return defaultValue;
 			}
 		}
+
 		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency)
 		{
 			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
 			var mainImageUrl = Helper.GetMainProductImageUrl(store, product);
-			var googleProduct = GetByProductId(product.Id);
+			var googleProduct = GetGoogleProductRecord(product.Id);
 			var category = ProductCategory(googleProduct);
 
 			if (category.IsNullOrEmpty())
@@ -455,12 +465,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			}
 			return new string[] { };
 		}
+
 		public void UpdateInsert(int pk, string name, string value)
 		{
 			if (pk == 0 || name.IsNullOrEmpty())
 				return;
 
-			var product = GetByProductId(pk);
+			var product = GetGoogleProductRecord(pk);
 			bool insert = (product == null);
 
 			if (insert)
@@ -499,6 +510,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				UpdateGoogleProductRecord(product);
 			}
 		}
+
 		public GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null)
 		{
 			var searchContext = new ProductSearchContext()
@@ -519,7 +531,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 					ProductName = x.Name
 				};
 
-				var googleProduct = GetByProductId(x.Id);
+				var googleProduct = GetGoogleProductRecord(x.Id);
 
 				if (googleProduct != null)
 				{

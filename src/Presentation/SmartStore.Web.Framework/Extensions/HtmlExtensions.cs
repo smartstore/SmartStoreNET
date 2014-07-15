@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Mvc.Html;
 using System.Web.WebPages;
 using SmartStore.Core;
@@ -32,23 +33,20 @@ namespace SmartStore.Web.Framework
     
     public static class HtmlExtensions
     {
-        // codehint: sm-edit
         public static MvcHtmlString Hint(this HtmlHelper helper, string value)
         {
             // create a
             var a = new TagBuilder("a");
             a.MergeAttribute("href", "#");
             a.MergeAttribute("onclick", "return false;");
-            a.MergeAttribute("rel", "tooltip");
+            //a.MergeAttribute("rel", "tooltip");
             a.MergeAttribute("title", value);
             a.MergeAttribute("tabindex", "-1");
             a.AddCssClass("hint");
 
-            // Create img
-            var img = new TagBuilder("i");
-
-            // Add attributes
-            img.MergeAttribute("class", "icon-question-sign");
+			// Create img
+			var img = new TagBuilder("i");
+			img.AddCssClass("icon-question-sign");
 
             a.InnerHtml = img.ToString();
 
@@ -150,7 +148,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(script + window);
         }
 
-        // codehint: sm-edit
         public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true, object htmlAttributes = null)
         {
             var result = new StringBuilder();
@@ -178,8 +175,7 @@ namespace SmartStore.Web.Framework
                     if (displayHint)
                     {
                         var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
-                        hint = EngineContext.Current.Resolve<ILocalizationService>()
-                            .GetResource(resourceDisplayName.ResourceKey + ".Hint", langId, false, "", true);
+                        hint = EngineContext.Current.Resolve<ILocalizationService>().GetResource(resourceDisplayName.ResourceKey + ".Hint", langId, false, "", true);
                     }
                 }
             }
@@ -189,24 +185,24 @@ namespace SmartStore.Web.Framework
                 labelText = metadata.PropertyName.SplitPascalCase();
             }
 
-            var label = helper.LabelFor(expression, labelText, htmlAttributes);
+			var label = helper.LabelFor(expression, labelText, htmlAttributes);
 
-            if (displayHint)
-            {
-                result.Append("<div class='ctl-label'>");
-                {
-                    result.Append(label);
-                    if (hint.HasValue())
-                    {
-                        result.Append(helper.Hint(hint).ToHtmlString());
-                    }
-                }
-                result.Append("</div>");
-            }
-            else
-            {
-                result.Append(label);
-            }
+			if (displayHint)
+			{
+				result.Append("<div class='ctl-label'>");
+				{
+					result.Append(label);
+					if (hint.HasValue())
+					{
+						result.Append(helper.Hint(hint).ToHtmlString());
+					}
+				}
+				result.Append("</div>");
+			}
+			else
+			{
+				result.Append(label);
+			}
 
             return MvcHtmlString.Create(result.ToString());
         }

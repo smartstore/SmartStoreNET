@@ -37,6 +37,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -77,6 +78,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly AddressSettings _addressSettings;
 		private readonly IStoreService _storeService;
+		private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
@@ -102,7 +104,8 @@ namespace SmartStore.Admin.Controllers
             IQueuedEmailService queuedEmailService, EmailAccountSettings emailAccountSettings,
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
             IForumService forumService, IOpenAuthenticationService openAuthenticationService,
-			AddressSettings addressSettings, IStoreService storeService)
+			AddressSettings addressSettings, IStoreService storeService,
+			IEventPublisher eventPublisher)
         {
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -136,6 +139,7 @@ namespace SmartStore.Admin.Controllers
             this._openAuthenticationService = openAuthenticationService;
             this._addressSettings = addressSettings;
 			this._storeService = storeService;
+			this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -412,7 +416,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
-        public ActionResult Create(CustomerModel model, bool continueEditing)
+        public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
@@ -504,6 +508,8 @@ namespace SmartStore.Admin.Controllers
                         customer.CustomerRoles.Add(customerRole);
                     _customerService.UpdateCustomer(customer);
                 }
+
+				_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCustomer", _localizationService.GetResource("ActivityLog.AddNewCustomer"), customer.Id);
@@ -672,7 +678,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
-        public ActionResult Edit(CustomerModel model, bool continueEditing)
+        public ActionResult Edit(CustomerModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
@@ -798,6 +804,8 @@ namespace SmartStore.Admin.Controllers
                         }
                         _customerService.UpdateCustomer(customer);
                     }
+
+					_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
                     //activity log
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);

@@ -1,6 +1,63 @@
 ﻿@model ProductModel
 @using Telerik.Web.Mvc.UI;
 
+<script>
+
+	var fieldBasePriceMeasureUnit;
+	var fieldBasePriceAmount;
+	var fieldBasePriceBaseAmount;
+
+	$(function () {
+		$("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
+
+		fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
+		fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePriceAmount)");
+		fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
+
+		fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
+
+		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
+		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
+
+		getCurrentBasePrice();
+		toggleBasePrice();
+
+		function getCurrentBasePrice() {
+			if (parseFloat(fieldBasePriceAmount.val()) > 0 && parseInt(fieldBasePriceBaseAmount.val()) > 0) {
+				$.ajax({
+					cache:false,
+					type: "POST",
+					url: "@(Url.Action("GetBasePrice", "Product"))",
+					data: {
+						"productId" : @Model.Id,
+						"basePriceMeasureUnit": fieldBasePriceMeasureUnit.val(),
+						"basePriceAmount": fieldBasePriceAmount.val(),
+						"basePriceBaseAmount": fieldBasePriceBaseAmount.val()
+					},
+				success: function (data) {
+					$("#BasePriceAmountInfo").html(data.BasePrice);
+				},
+				error: function (xhr, ajaxOptions, thrownError){
+					alert(thrownError);
+				}
+			});
+		}
+		return false;
+	}
+
+	function toggleBasePrice() {
+		if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
+			$('#pnlBasePriceBaseAmount').show();
+			$('#pnlBasePriceAmount').show();
+		}
+		else {
+			$('#pnlBasePriceBaseAmount').hide();
+			$('#pnlBasePriceAmount').hide();
+		}
+	}
+	})
+</script>
+
 <div id="group-prices">
     <table class="adminContent">
         <tr>

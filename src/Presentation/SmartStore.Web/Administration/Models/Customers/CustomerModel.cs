@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Customers
 {
     [Validator(typeof(CustomerValidator))]
-    public class CustomerModel : EntityModelBase
+    public class CustomerModel : TabbableModel
     {
         public CustomerModel()
         {

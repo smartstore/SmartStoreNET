@@ -9,6 +9,9 @@
 	- No cumbersome return View("Very.Long.View.Identifier") anymore
 	- Views in plugin source folders can be edited during debug. The changes are reflected without plugin recompilation.
 * Added _CDN_ setting to store configuration. Allows static files to be served through a content delivery network, e.g. cloudfront. (contributed by 'normalc')
+* (Developer) Model binding for plugin tab views: models from plugin tabs get automatically materialized and bound to TabbableModel.CustomProperties[MyKey]. Extended the SmartModelBinder for this.
+* (Developer) New event _ModelBoundEvent_. Consume this in plugins to persist plugin specific models.
+* (Admin) Added _GMC_ tab to product edit view. This is more a coding example for the above stuff rather than a new feature.
 * (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
@@ -27,6 +30,9 @@
 * Perf: significantly increased excel import performance... again ;-)
 * Perf: significantly increased excel export performance and optimized memory usage
 * Perf: SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs
+* (UI) AJAXified product edit tab: all tabs other than the first one load on demand per AJAX
+* (Developer)  Plugins can provide custom tabs more easily (now with on demand AJAX loading)
+* (UI) optimized and reorganized product edit view a bit
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
 * (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.

@@ -1,8 +1,7 @@
 ﻿FriendlyName: SmartStore.NET Web Api
 SystemName: Api.WebApi
-Group: Api
-Version: 1.21
-MinAppVersion: 2.0.0
+Version: 1.22
+Group: ApiMinAppVersion: 2.0.0
 Author: SmartStore AG
 DisplayOrder: 1
 FileName: SmartStore.Plugin.Api.WebApi.dll

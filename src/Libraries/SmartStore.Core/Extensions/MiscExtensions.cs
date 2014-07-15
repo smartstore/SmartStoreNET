@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Web.Routing;
 using SmartStore.Core;
 
 namespace SmartStore
@@ -109,6 +110,33 @@ namespace SmartStore
 			catch (Exception) { }
 
 			return defaultValue;
+		}
+
+		public static bool IsRouteEqual(this RouteData routeData, string controller, string action)
+		{
+			if (routeData == null)
+				return false;
+
+			return routeData.GetRequiredString("controller").IsCaseInsensitiveEqual(controller) && routeData.GetRequiredString("action").IsCaseInsensitiveEqual(action);
+		}
+
+		/// <summary>
+		/// Append grow if string builder is empty. Append delimiter and grow otherwise.
+		/// </summary>
+		/// <param name="sb">Target string builder</param>
+		/// <param name="grow">Value to append</param>
+		/// <param name="delimiter">Delimiter to use</param>
+		public static void Grow(this StringBuilder sb, string grow, string delimiter)
+		{
+			Guard.ArgumentNotNull(delimiter, "delimiter");
+
+			if (!string.IsNullOrWhiteSpace(grow))
+			{
+				if (sb.Length <= 0)
+					sb.Append(grow);
+				else
+					sb.AppendFormat("{0}{1}", delimiter, grow);
+			}
 		}
     }
 }

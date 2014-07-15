@@ -136,16 +136,20 @@ namespace SmartStore.Admin.Controllers
 
             var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
             if (pm == null)
-                //No payment method found with the specified id
                 return RedirectToAction("Methods");
 
             var model = pm.ToModel();
             string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            pm.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
+			RouteValueDictionary routeValues;
+
+			pm.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
+
             model.ConfigurationActionName = actionName;
             model.ConfigurationControllerName = controllerName;
             model.ConfigurationRouteValues = routeValues;
+
+			model.FriendlyName = pm.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName");
+
             return View(model);
         }
 

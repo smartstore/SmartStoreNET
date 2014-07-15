@@ -17,14 +17,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 {
 	public class FeedFroogleController : PluginControllerBase
 	{
-		private readonly FroogleSettings _settings;
-		private readonly IGoogleService _googleService;
+		private readonly IGoogleFeedService _googleService;
 		private readonly ISettingService _settingService;
 		private readonly IPermissionService _permissionService;
 
 		public FeedFroogleController(
 			FroogleSettings settings,
-			IGoogleService googleService,
+			IGoogleFeedService googleService,
 			ISettingService settingService,
 			IPermissionService permissionService)
 		{

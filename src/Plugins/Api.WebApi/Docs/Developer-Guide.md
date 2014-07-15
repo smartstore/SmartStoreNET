@@ -377,7 +377,46 @@ Dynamic JSON parsing might look like this:
 		Debug.WriteLine(str);
 	}
 
-    
+
+# Working with the product entity
+
+#### Getting a product with name *SmartStore eBay SmartSeller*
+
+    GET http://localhost:1260/odata/v1/Products?$top=1&$filter=Name eq 'SmartStore eBay SmartSeller'
+
+#### Get child products of group product with ID 210
+
+    GET http://localhost:1260/odata/v1/Products?$top=120&$filter=ParentGroupedProductId eq 210
+
+#### Get final price of product with ID 211
+
+    POST http://localhost:1260/odata/v1/Products(211)/FinalPrice
+
+Note the post method. There is a second action `LowestPrice` which serves the lowest possible price for a product.
+
+#### Managing product attributes
+
+You can use the following endpoints: `ProductAttributes` (types of attributes), `ProductVariantAttributes` (attribute types mapped to a product), `ProductVariantAttributeValues` (attribute values assigned to product) and optionally `ProductVariantAttributeCombinations` (additional information for particular attribute combinations). Because managing attributes that way can lead to some extra work, there is an action method `ManageAttributes` that wraps up the most important steps.
+
+    POST http://localhost:1260/odata/v1/Products(211)/ManageAttributes
+	{"Synchronize":true,"Attributes":[
+		{"Name":"Color","IsRequired":false,"Values":[
+			{"Name":"Red"},{"Name":"Green","IsPreSelected":true},{"Name":"Blue"}
+		]},
+		{"Name":"Size","Values":[
+			{"Name":"Large"},{"Name":"X-Large","IsPreSelected":true}
+		]}
+	]}
+
+That request configurates a product with the ID 211 with two attributes `Color` and `Size` and its values `Red, Green, Blue` and `Large, X-Large`. The action parameter `Attributes` is of type `ManageAttributeType`. See the OData metadata document for a complete list of available properties. If `Synchronize` is set to `false` only missing attributes and attribute values are inserted. If set to `true` existing records are also updated and values that are not included in the request body are removed from the database. If you pass an empty value array the attribute and all its values are removed from the product.
+
+The following method creates all possible attribute combinations for a product with the ID 211
+
+	POST http://localhost:1260/odata/v1/Products(211)/CreateAttributeCombinations
+
+As a first step this action always deletes all existing attribute combinations (for a product).
+
+
 # More examples
 
 #### Get installed payment methods
@@ -416,20 +455,6 @@ This request is called OData navigation. Use `BillingAddress` if you want the bi
 The example uses SmNetFulfillCountry and SmNetFulfillStateProvince options to update the country (USA) and province (New York). That avoids extra querying of country and province records and passing its IDs in the request body.
 Note that you cannot use a path `/Orders(145)/ShippingAddress` to update an address because `ShippingAddress` is a navigation property and updates are not supported here.
 
-#### Get product with name *SmartStore eBay SmartSeller*
-
-    GET http://localhost:1260/odata/v1/Products?$top=1&$filter=Name eq 'SmartStore eBay SmartSeller'
-
-#### Get child products of group product with ID 210
-
-    GET http://localhost:1260/odata/v1/Products?$top=120&$filter=ParentGroupedProductId eq 210
-
-#### Get final price of product with ID 211
-
-    POST http://localhost:1260/odata/v1/Products(211)/FinalPrice
-
-Note the post method. `FinalPrice` is an OData action because further data processing (price calculation) is required. There is a second action `LowestPrice` which serves the lowest possible price for a product.
-
 #### Get email address of customer with ID 1
 
     GET http://localhost:1260/odata/v1/Customers(1)/Email
@@ -439,6 +464,7 @@ Note the post method. `FinalPrice` is an OData action because further data proce
     GET http://localhost:1260/odata/v1/Stores?$top=1&$filter=Name eq 'my nice store'&$select=Id
 
 Note the select option which tells OData just to return the Id property.
+
 
 
 

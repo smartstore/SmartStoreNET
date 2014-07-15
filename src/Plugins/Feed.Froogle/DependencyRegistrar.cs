@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Feed.Froogle
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
-            builder.RegisterType<GoogleService>().As<IGoogleService>().InstancePerRequest();
+            builder.RegisterType<GoogleFeedService>().As<IGoogleFeedService>().InstancePerRequest();
 
             //register named context
 			builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))

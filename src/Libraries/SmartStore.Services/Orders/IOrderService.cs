@@ -46,6 +46,22 @@ namespace SmartStore.Services.Orders
         /// <returns>Order</returns>
         Order GetOrderByGuid(Guid orderGuid);
 
+		/// <summary>
+		/// Get order by payment authorization data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="authorizationTransactionId">Authorization transaction Id</param>
+		/// <returns>Order entity</returns>
+		Order GetOrderByPaymentAuthorization(string paymentMethodSystemName, string authorizationTransactionId);
+
+		/// <summary>
+		/// Get order by payment capture data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="captureTransactionId">Capture transaction Id</param>
+		/// <returns>Order entity</returns>
+		Order GetOrderByPaymentCapture(string paymentMethodSystemName, string captureTransactionId);
+
         /// <summary>
         /// Deletes an order
         /// </summary>

@@ -4,28 +4,11 @@ using SmartStore.Core.Domain.Payments;
 namespace SmartStore.Services.Payments
 {
     /// <summary>
-    /// Represents a ProcessPaymentResult
+	/// Represents a process payment result
     /// </summary>
-    public partial class ProcessPaymentResult
+	public partial class ProcessPaymentResult : ProcessPaymentResultBase
     {
         private PaymentStatus _newPaymentStatus = PaymentStatus.Pending;
-        public IList<string> Errors { get; set; }
-
-        public ProcessPaymentResult() 
-        {
-            this.Errors = new List<string>();
-        }
-
-        public bool Success
-        {
-            get { return (this.Errors.Count == 0); }
-        }
-
-        public void AddError(string error)
-        {
-            this.Errors.Add(error);
-        }
-
 
         /// <summary>
         /// Gets or sets an AVS result

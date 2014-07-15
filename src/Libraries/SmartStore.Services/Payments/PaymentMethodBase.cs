@@ -17,6 +17,17 @@ namespace SmartStore.Services.Payments
 		#region Methods
 
 		/// <summary>
+		/// Pre process payment
+		/// </summary>
+		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
+		/// <returns>Pre process payment result</returns>
+		public virtual PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest)
+		{
+			var result = new PreProcessPaymentResult();
+			return result;
+		}
+
+		/// <summary>
 		/// Process payment
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>

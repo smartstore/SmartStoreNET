@@ -8,9 +8,9 @@ namespace SmartStore.Plugin.Shipping.FixedRate
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.Shipping.FixedRate.Configure",
-                 "Plugins/ShippingFixedRate/Configure",
-                 new { controller = "ShippingFixedRate", action = "Configure" },
+            routes.MapRoute("Plugin.Shipping.FixedRate.Action",
+                 "Plugins/ShippingFixedRate/{action}",
+                 new { controller = "ShippingFixedRate" },
                  new[] { "SmartStore.Plugin.Shipping.FixedRate.Controllers" }
             )
 			.DataTokens["area"] = "Shipping.FixedRate";

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Services.Seo;
 
 namespace SmartStore.Plugin.Api.WebApi.Extensions
 {
@@ -31,18 +26,6 @@ namespace SmartStore.Plugin.Api.WebApi.Extensions
 			sb.Append("</div>");
 
 			return sb.ToString();
-		}
-
-		// TODO: move that to UrlRecordService
-		public static void EnsureUrlRecord<T>(this IUrlRecordService urlRecordService, T entity, Expression<Func<T, string>> nameProperty)
-			where T : BaseEntity, ISlugSupported
-		{
-			string name = nameProperty.Compile().Invoke(entity);
-
-			string existingSeName = entity.GetSeName<T>(0, true, false);
-			existingSeName = entity.ValidateSeName(existingSeName, name, true);
-
-			urlRecordService.SaveSlug(entity, existingSeName, 0);
 		}
 	}
 }

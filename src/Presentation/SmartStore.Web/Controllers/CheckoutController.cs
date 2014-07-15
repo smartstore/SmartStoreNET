@@ -280,9 +280,7 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard ||
-                    pm.PaymentMethodType == PaymentMethodType.StandardAndButton ||
-                    pm.PaymentMethodType == PaymentMethodType.Redirection)
+                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
             {
@@ -379,8 +377,15 @@ namespace SmartStore.Web.Controllers
             if (useMobileDevice)
                 return false;
 
-            //check the appropriate setting
-            return _orderSettings.OnePageCheckoutEnabled;
+			if (!_orderSettings.OnePageCheckoutEnabled)
+				return false;
+
+			var checkoutState = _httpContext.GetCheckoutState();
+
+			if (checkoutState != null && !checkoutState.OnePageCkeckoutEnabled)
+				return false;
+
+            return true;
         }
 
         [NonAction]
@@ -899,8 +904,11 @@ namespace SmartStore.Web.Controllers
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //model
             var model = PrepareConfirmOrderModel(cart);
+
+			//if (TempData["ConfirmOrderWarnings"] != null)
+			//	model.Warnings.AddRange(TempData["ConfirmOrderWarnings"] as IList<string>);
+
             return View(model);
         }
         [HttpPost, ActionName("Confirm")]
@@ -942,9 +950,10 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					 SystemCustomerAttributeNames.SelectedPaymentMethod,
-					 _genericAttributeService, _storeContext.CurrentStore.Id);
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+
                 if (placeOrderResult.Success)
                 {
                     _httpContext.Session["OrderPaymentInfo"] = null;
@@ -953,6 +962,8 @@ namespace SmartStore.Web.Controllers
                         Order = placeOrderResult.PlacedOrder
                     };
                     _paymentService.PostProcessPayment(postProcessPaymentRequest);
+
+					_httpContext.RemoveCheckoutState();
 
                     if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
                     {
@@ -970,6 +981,8 @@ namespace SmartStore.Web.Controllers
                 {
                     foreach (var error in placeOrderResult.Errors)
                         model.Warnings.Add(error);
+
+					_httpContext.RemoveCheckoutState();
                 }
             }
             catch (Exception exc)
@@ -979,6 +992,11 @@ namespace SmartStore.Web.Controllers
             }
 
             //If we got this far, something failed, redisplay form
+
+			//if (model.Warnings.Count > 0)
+			//	TempData["ConfirmOrderWarnings"] = model.Warnings;
+
+			//return RedirectToRoute("CheckoutConfirm");
             return View(model);
         }
 
@@ -1627,19 +1645,18 @@ namespace SmartStore.Web.Controllers
                 if (processPaymentRequest == null)
                 {
                     //Check whether payment workflow is required
-                    if (IsPaymentWorkflowRequired(cart))
-                    {
-                        throw new Exception("Payment information is not entered");
-                    }
-                    else
-                        processPaymentRequest = new ProcessPaymentRequest();
+					if (IsPaymentWorkflowRequired(cart))
+						throw new Exception("Payment information is not entered");
+					else
+						processPaymentRequest = new ProcessPaymentRequest();
                 }
 
 				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
+
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					 SystemCustomerAttributeNames.SelectedPaymentMethod,
-					 _genericAttributeService, _storeContext.CurrentStore.Id);
+					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {

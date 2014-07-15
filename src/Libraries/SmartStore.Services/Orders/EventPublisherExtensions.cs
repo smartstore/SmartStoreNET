@@ -43,10 +43,11 @@ namespace SmartStore.Services.Orders
 		/// <param name="eventPublisher">The event publisher.</param>
 		/// <param name="fromCustomer">The source customer entity.</param>
 		/// <param name="toCustomer">The destination customer entity.</param>
-		public static void PublishMigrateShoppingCart(this IEventPublisher eventPublisher, Customer fromCustomer, Customer toCustomer)
+		/// <param name="storeId">Store identifier.</param>
+		public static void PublishMigrateShoppingCart(this IEventPublisher eventPublisher, Customer fromCustomer, Customer toCustomer, int storeId)
 		{
 			if (fromCustomer != null && toCustomer != null)
-				eventPublisher.Publish(new MigrateShoppingCartEvent(fromCustomer, toCustomer));
+				eventPublisher.Publish(new MigrateShoppingCartEvent(fromCustomer, toCustomer, storeId));
 		}
     }
 }

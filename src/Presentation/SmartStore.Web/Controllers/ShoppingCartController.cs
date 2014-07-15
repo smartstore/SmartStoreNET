@@ -79,6 +79,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IDeliveryTimeService _deliveryTimeService;
+		private readonly HttpContextBase _httpContext;
 
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
@@ -116,7 +117,8 @@ namespace SmartStore.Web.Controllers
             MediaSettings mediaSettings, ShoppingCartSettings shoppingCartSettings,
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
-            CaptchaSettings captchaSettings, AddressSettings addressSettings)
+            CaptchaSettings captchaSettings, AddressSettings addressSettings,
+			HttpContextBase httpContext)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -151,6 +153,7 @@ namespace SmartStore.Web.Controllers
             this._customerActivityService = customerActivityService;
 			this._genericAttributeService = genericAttributeService;
             this._deliveryTimeService = deliveryTimeService;
+			this._httpContext = httpContext;
             
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -758,6 +761,7 @@ namespace SmartStore.Web.Controllers
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
                 .Where(pm => pm.PaymentMethodType == PaymentMethodType.Button || pm.PaymentMethodType == PaymentMethodType.StandardAndButton)
                 .ToList();
+
             foreach (var pm in boundPaymentMethods)
             {
                 if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
@@ -1418,6 +1422,8 @@ namespace SmartStore.Web.Controllers
 
 			var model = new ShoppingCartModel();
 			PrepareShoppingCartModel(model, cart);
+
+			_httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
 
 			return View(model);
         }

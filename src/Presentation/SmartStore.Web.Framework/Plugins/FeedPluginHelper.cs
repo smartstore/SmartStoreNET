@@ -255,19 +255,6 @@ namespace SmartStore.Web.Framework.Plugins
 			return DecimalUsFormat(cost);
 		}
 
-		public string GetBasePrice(Product product)
-		{
-			if (product.BasePriceBaseAmount.HasValue && product.BasePriceMeasureUnit.HasValue())
-			{
-				decimal price = Convert.ToDecimal(product.Price / (product.BasePriceAmount * product.BasePriceBaseAmount));
-
-				string priceFormatted = _ctx.Resolve<IPriceFormatter>().FormatPrice(price, false, false);
-
-				return "{0} / {1} {2}".FormatWith(priceFormatted, product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
-			}
-			return "";
-		}
-
 		public string GetProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));
@@ -461,14 +448,13 @@ namespace SmartStore.Web.Framework.Plugins
 			return urls;
 		}
 
-		public List<Product> GetQualifiedProductsByProduct(Product product, Store store)
+		public void GetQualifiedProductsByProduct(Product product, Store store, List<Product> result)
 		{
-			var productService = ProductService;
-			var lst = new List<Product>();
+			result.Clear();
 
 			if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 			{
-				lst.Add(product);
+				result.Add(product);
 			}
 			else if (product.ProductType == ProductType.GroupedProduct)
 			{
@@ -481,9 +467,10 @@ namespace SmartStore.Web.Framework.Plugins
 					ParentGroupedProductId = product.Id
 				};
 
-				lst.AddRange(productService.SearchProducts(associatedSearchContext));
+				var productService = ProductService;
+
+				result.AddRange(productService.SearchProducts(associatedSearchContext));
 			}
-			return lst;
 		}
 
 		internal string LookupCategoryPath(int id)
@@ -572,13 +559,6 @@ namespace SmartStore.Web.Framework.Plugins
 				return true;
 			}
 
-			// TODO: redundant code (ScheduleTaskController.RunJob). running scheduled task that way is not bullet-proof.
-			// define a timeout (setting) and run task with cancellation token. ScheduleTask.IsRunning should test against timeout too.
-			//
-			//var cts = new CancellationTokenSource(TimeSpan.FromHours(4.0));
-			//var token = cts.Token;
-			//token.ThrowIfCancellationRequested();
-
 			string scheduleTaskType = ScheduleTaskType;
 
 			var task = AsyncRunner.Run(container =>
@@ -599,8 +579,14 @@ namespace SmartStore.Web.Framework.Plugins
 				catch (Exception exc)
 				{
 					exc.Dump();
+
+					try
+					{
+						_scheduleTaskService.EnsureTaskIsNotRunning(scheduleTaskType);
+					}
+					catch (Exception) { }
 				}
-			});
+			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
 			task.Wait(100);
 

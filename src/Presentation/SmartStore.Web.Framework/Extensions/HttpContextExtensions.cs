@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
+﻿using System.Web;
 using System.Web.Routing;
 using System.IO;
-using System.Diagnostics;
 using System.Web.Mvc;
+using SmartStore.Services.Orders;
 
 namespace SmartStore
 {
-	/// <remarks>codehint: sm-add</remarks>
     public static class HttpContextExtensions
 	{
-
         public static Stream ToFileStream(this HttpRequestBase request, out string fileName, out string contentType, string paramName = "qqfile") {
 			fileName = contentType = "";
 			Stream stream = null;
@@ -60,7 +54,32 @@ namespace SmartStore
             return routeData != null;
         }
 
+		public static CheckoutState EnsureCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
 
+			var state = httpContext.GetCheckoutState();
 
+			if (state != null)
+				return state;
+
+			httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
+
+			return httpContext.GetCheckoutState();
+		}
+
+		public static CheckoutState GetCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
+			
+			return httpContext.Session.SafeGetValue<CheckoutState>(CheckoutState.CheckoutStateSessionKey);
+		}
+
+		public static void RemoveCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
+
+			httpContext.Session.SafeRemove(CheckoutState.CheckoutStateSessionKey);
+		}
 	}
 }

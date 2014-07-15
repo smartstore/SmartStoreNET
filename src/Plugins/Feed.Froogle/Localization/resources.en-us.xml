@@ -4,7 +4,6 @@
 			<![CDATA[<ul>
 <li>Either the GTIN (such as UPC, EAN, etc.) or manufacturer and manufacturer part number (MPN) are required for product identification. Google recommends that all three pieces of information be specified.</li>
 <li>Specify default tax and shipping values in your Google Merchant Center account settings.</li>
-<li>Choose <b>Not specify</b> if the information should not be send to Google.</li>
 <li>In order to get more info about required fields look at the following article <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=188494" target="_blank">Product feed specification</a>.</li>
 </ul>]]>
 		</Value>

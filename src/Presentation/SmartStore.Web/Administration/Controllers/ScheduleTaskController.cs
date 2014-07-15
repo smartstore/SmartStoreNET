@@ -75,7 +75,7 @@ namespace SmartStore.Admin.Controllers
                 LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
                 LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
 				LastError = task.LastError.EmptyNull(),
-				IsRunning = task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault(),
+				IsRunning =	task.IsRunning,		//task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault(),
 				Duration = ""
             };
 
@@ -149,6 +149,11 @@ namespace SmartStore.Admin.Controllers
             scheduleTask.Seconds = model.Seconds;
             scheduleTask.Enabled = model.Enabled;
             scheduleTask.StopOnError = model.StopOnError;
+
+			int max = Int32.MaxValue / 1000;
+
+			scheduleTask.Seconds = (model.Seconds > max ? max : model.Seconds);
+
             _scheduleTaskService.UpdateTask(scheduleTask);
 
             return List(command);
@@ -177,8 +182,12 @@ namespace SmartStore.Admin.Controllers
 				}
 				catch
 				{
+					try
+					{
+						_scheduleTaskService.EnsureTaskIsNotRunning(id);
+					}
+					catch (Exception) { }
 				}
-
 			});
 
 			// wait only 100 ms.

@@ -46,5 +46,17 @@ namespace SmartStore.Services.Tasks
         /// </summary>
         /// <param name="task">Task</param>
         void UpdateTask(ScheduleTask task);
+
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="type">Task type</param>
+		void EnsureTaskIsNotRunning(string type);
+
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="taskId">Task identifier</param>
+		void EnsureTaskIsNotRunning(int taskId);
     }
 }

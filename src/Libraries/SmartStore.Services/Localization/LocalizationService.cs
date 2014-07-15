@@ -107,7 +107,6 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Deletes all string resources with its key beginning with rootKey.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="key">e.g. Plugins.Import.Biz</param>
 		/// <returns>Number of deleted string resources</returns>
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
@@ -127,6 +126,21 @@ namespace SmartStore.Services.Localization
 				}
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Deletes all string resources of a plugin
+		/// </summary>
+		/// <param name="pluginDescriptor">Plugin descriptor</param>
+		public virtual void DeletePluginStringResources(PluginDescriptor pluginDescriptor)
+		{
+			if (pluginDescriptor != null && pluginDescriptor.ResourceRootKey.HasValue() && pluginDescriptor.SystemName.HasValue())
+			{
+				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
+
+				DeleteLocaleStringResources("Plugins.FriendlyName." + pluginDescriptor.SystemName, false);
+				DeleteLocaleStringResources("Plugins.Description." + pluginDescriptor.SystemName, false);
+			}
 		}
 
         /// <summary>

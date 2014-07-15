@@ -152,6 +152,9 @@ namespace SmartStore.Services.Tasks
         {
             get
             {
+				if (_seconds > (Int32.MaxValue / 1000))
+					return Int32.MaxValue;
+
                 return this._seconds * 1000;
             }
         }

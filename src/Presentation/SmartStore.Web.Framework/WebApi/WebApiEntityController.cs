@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
 		{
-			if (Request.Method == HttpMethod.Get)
+			if (Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post)
 			{
 				if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
 					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property") ||
@@ -318,10 +318,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			if (propertyName.IsCaseInsensitiveEqual("Country"))
 			{
-				if (queryValue.Length == 2)
-					return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoLetterIsoCode(queryValue);
-				else if (queryValue.Length == 3)
-					return EngineContext.Current.Resolve<ICountryService>().GetCountryByThreeLetterIsoCode(queryValue);
+				return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
 			{

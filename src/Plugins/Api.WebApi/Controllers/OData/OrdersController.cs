@@ -102,8 +102,12 @@ namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 		{
 			var entity = GetEntityByKeyNotNull(key);
 
-			entity.PaymentStatus = PaymentStatus.Pending;
-			Service.UpdateOrder(entity);
+			this.ProcessEntity(() =>
+			{
+				entity.PaymentStatus = PaymentStatus.Pending;
+				Service.UpdateOrder(entity);
+				return null;
+			});
 
 			return entity;
 		}

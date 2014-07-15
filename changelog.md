@@ -12,6 +12,7 @@
 * (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
+* #393 Web API: Implement OData actions for simpler working with product attributes
 
 ###Improvements###
 * Task Scheduler:
@@ -49,6 +50,7 @@
 * Product.DisableBuyButton was never updated when the stock quantity has been increased (e.g. as a result of order canceling)
 * Shipping.ByTotal: Fixed matching of rates by choosing the more specific over the common rate
 * A grouped product only shows up to 12 associated products
+* #405 Billiger feed: Wrong base price exported
 
 ##SmartStore.NET 2.0.2#
 

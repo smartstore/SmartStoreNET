@@ -144,6 +144,44 @@ namespace SmartStore.Services.Orders
             return order;
         }
 
+		/// <summary>
+		/// Get order by payment authorization data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="authorizationTransactionId">Authorization transaction Id</param>
+		/// <returns>Order entity</returns>
+		public virtual Order GetOrderByPaymentAuthorization(string paymentMethodSystemName, string authorizationTransactionId)
+		{
+			if (paymentMethodSystemName.IsNullOrEmpty() || authorizationTransactionId.IsNullOrEmpty())
+				return null;
+
+			var query =
+				from o in _orderRepository.Table
+				where o.PaymentMethodSystemName == paymentMethodSystemName && o.AuthorizationTransactionId == authorizationTransactionId
+				select o;
+
+			return query.FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Get order by payment capture data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="captureTransactionId">Capture transaction Id</param>
+		/// <returns>Order entity</returns>
+		public virtual Order GetOrderByPaymentCapture(string paymentMethodSystemName, string captureTransactionId)
+		{
+			if (paymentMethodSystemName.IsNullOrEmpty() || captureTransactionId.IsNullOrEmpty())
+				return null;
+
+			var query =
+				from o in _orderRepository.Table
+				where o.PaymentMethodSystemName == paymentMethodSystemName && o.CaptureTransactionId == captureTransactionId
+				select o;
+
+			return query.FirstOrDefault();
+		}
+
         /// <summary>
         /// Deletes an order
         /// </summary>

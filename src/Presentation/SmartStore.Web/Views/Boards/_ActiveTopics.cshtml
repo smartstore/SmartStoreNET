@@ -20,7 +20,7 @@
             @if (Model.ActiveDiscussionsFeedEnabled == true)
             {
                 <a href="@Url.Action("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" rel="tooltip">
-                    <i class="icon-rss muted"></i>
+                    <i class="fa fa-rss muted"></i>
                     @T("Forum.RSS")
                 </a>
             }
@@ -32,7 +32,7 @@
             @if (Model.ViewAllLinkEnabled)
             {        
                 <button class="btn btn-link" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
-                    <i class="icon icon-th-list"></i>&nbsp;
+                    <i class="fa fa-th-list"></i>&nbsp;
                     @T("Forum.ActiveDiscussions.ViewAll")
                 </button>
             }
@@ -64,7 +64,7 @@
             {
                 <tr class="topic">
                     <td class="image">
-                        <i class="icon icon-comments-alt"></i>
+                        <i class="fa fa-comments-o"></i>
                     </td>
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })

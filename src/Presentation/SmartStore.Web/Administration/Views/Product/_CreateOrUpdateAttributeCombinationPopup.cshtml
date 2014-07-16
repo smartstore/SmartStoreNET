@@ -30,7 +30,7 @@
 	@if (Model.Warnings.Count > 0) {
 	<div class="alert alert-error fade in" style="margin:0;">
 		@foreach (var warning in Model.Warnings) {
-		<p><i class="icon-warning-sign"></i>&nbsp;@warning</p>
+		<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
 		}
 	</div>
 	}
@@ -200,7 +200,7 @@
 					var cls = (resp.HasWarning ? 'error' : 'success'),
 						ico = (resp.HasWarning ? 'warning-sign' : 'ok-sign');
 
-					note.html('<div class="alert alert-' + cls + '" style="margin:0;"><i class="icon-' + ico + '"></i>&nbsp;' + resp.Message + '</div>');
+					note.html('<div class="alert alert-' + cls + '" style="margin:0;"><i class="fa fa-' + ico + '"></i>&nbsp;' + resp.Message + '</div>');
 				}
 			});
 		});

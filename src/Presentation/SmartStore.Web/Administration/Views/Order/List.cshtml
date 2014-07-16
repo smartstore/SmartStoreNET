@@ -13,14 +13,14 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-bar-chart"></i>
+            <i class="fa fa-bar-chart-o"></i>
             @T("Admin.Orders")
         </div>
         <div class="options">
 			<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					Export
-					<span class="icon-caret-down"></span>
+					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
 					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
@@ -119,7 +119,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToNumber)
                 <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -129,7 +129,7 @@
             </td>
             <td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
-                    <i class="icon-search"></i>
+                    <i class="fa fa-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
@@ -231,7 +231,7 @@
             });
 
             //wire up checkboxes. 
-            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

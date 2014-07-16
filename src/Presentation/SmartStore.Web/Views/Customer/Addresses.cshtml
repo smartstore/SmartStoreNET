@@ -20,7 +20,7 @@
 
         <div class="add-button">
             <a class="btn btn-primary add-address-button" href="@Url.Action("AddressAdd")">
-                <i class="icon-plus"></i>&nbsp;
+                <i class="fa fa-plus"></i>&nbsp;
                 @T("Common.AddNew")
             </a>
         </div>
@@ -100,11 +100,11 @@
                     <div class="buttons pull-right">
                         @*codehint: sm-edit begin*@
                         <button class="btn edit-address-button" onclick="location.href='@Url.Action("AddressEdit", new { id = address.Id })'">
-							<i class="icon icon-edit"></i>
+							<i class="fa fa-pencil-square-o"></i>
 							@T("Common.Edit")
 						</button>
                         <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.Action("AddressDelete", new { id = address.Id })'">
-							<i class="icon icon-trash"></i>
+							<i class="fa fa-trash-o"></i>
 							@T("Common.Delete")
 						</button>
                         @*codehint: sm-edit end*@

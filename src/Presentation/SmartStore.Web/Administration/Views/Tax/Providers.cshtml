@@ -28,7 +28,7 @@
 								@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider) title='@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider").Text'>
 									@if (item.IsPrimaryTaxProvider)
 									{
-										<i class="icon icon-ok"></i>
+										<i class="fa fa-check"></i>
 									}
 									@T("Admin.Telerik.GridLocalization.Select")
 								</a>

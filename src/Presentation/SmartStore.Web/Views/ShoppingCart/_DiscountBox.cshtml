@@ -20,7 +20,7 @@
                     title="@T("ShoppingCart.DiscountCouponCode.Button")" 
                     name="applydiscountcouponcode"
                     value="applydiscountcouponcode">
-                <i class="icon-ok"></i>
+                <i class="fa fa-check"></i>
             </button>
         </div>
         @if (!String.IsNullOrEmpty(Model.CurrentCode))
@@ -31,7 +31,7 @@
                         title="@T("Common.Remove")" 
                         name="removediscountcouponcode"
                         value="removediscountcouponcode">
-                    <i class="icon-remove" style="font-size: 10px"></i>
+                    <i class="fa fa-times" style="font-size: 10px"></i>
                 </button>
                 <span style="vertical-align: middle">@string.Format(T("ShoppingCart.DiscountCouponCode.CurrentCode").Text, Model.CurrentCode)</span>
             </div>

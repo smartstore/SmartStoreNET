@@ -35,21 +35,21 @@
             @if (Model.IsCustomerAllowedToEditTopic)
             {
 				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn">
-					<i class="icon icon-edit"></i>
+					<i class="fa fa-pencil-square-o"></i>
 					@T("Forum.EditTopic")
 				</a>    
             }
             @if (Model.IsCustomerAllowedToDeleteTopic)
             {                
 				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
-					<i class="icon icon-trash"></i>
+					<i class="fa fa-trash-o"></i>
 					@T("Forum.DeleteTopic").Text
 				</a>     
 			}
             @if (Model.IsCustomerAllowedToMoveTopic)
             {
 				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn">
-					<i class="icon icon-move"></i>
+					<i class="fa fa-arrows"></i>
 					@T("Forum.MoveTopic")
 				</a>   
             }
@@ -62,7 +62,7 @@
         @if (Model.IsCustomerAllowedToSubscribe)
         {
             <div class="pull-left">
-                <i class="icon icon-bookmark"></i>        
+                <i class="fa fa-bookmark"></i>        
                 
                 @Ajax.ActionLink(Model.WatchTopicText,
                                 "TopicWatch",
@@ -74,7 +74,7 @@
         
         <div class="pull-right" style="min-width:250px">
             <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
-                <i class="icon icon-share-alt"></i>
+                <i class="fa fa-share"></i>
                 @T("Forum.Reply")
             </button>
         </div>
@@ -108,14 +108,14 @@
     <div class="topic-options bottom">
 
         <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
-            <i class="icon icon-share-alt"></i>
+            <i class="fa fa-share"></i>
             @T("Forum.Reply").Text
         </button>
 
         <div class="pull-left">
             @if (Model.IsCustomerAllowedToSubscribe)
             {
-                <i class="icon icon-bookmark"></i>
+                <i class="fa fa-bookmark"></i>
                 @Ajax.ActionLink(Model.WatchTopicText,
                                 "TopicWatch",
                                 new { id = @Model.Id },

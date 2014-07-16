@@ -1,5 +1,5 @@
-﻿/// <reference path="~/Scripts/modernizr-2.7.1.js" />
-/// <reference path="~/Scripts/jquery-1.8.3.js" />
+﻿/// <reference path="~/Scripts/modernizr-2.7.2.js" />
+/// <reference path="~/Scripts/jquery-2.1.1.js" />
 /// <reference path="~/Scripts/jquery.validate.js" />
 /// <reference path="~/Scripts/jquery.validate.unobtrusive.js" />
 /// <reference path="~/Scripts/underscore.js" />

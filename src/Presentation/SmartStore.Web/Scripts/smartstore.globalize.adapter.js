@@ -1,7 +1,7 @@
 
 (function ($) {
     
-    $(document).ready(function () {
+    $(function () {
 
         // init Globalize
         if (Globalize) {

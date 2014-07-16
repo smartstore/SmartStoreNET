@@ -7,8 +7,8 @@
                 $('#check-availability-button')
                     .removeClass("btn-success btn-warning")
                     .find(">i")
-                    .removeClass("icon-ok icon-exclamation-sign")
-                    .addClass("icon-question-sign");
+                    .removeClass("fa-check fa-exclamation-circle")
+                    .addClass("fa-question-circle");
             }
         });
         $('#check-availability-button').click(function () {
@@ -29,8 +29,8 @@
                             .removeClass("btn-success btn-warning")
                             .addClass(data.Available ? "btn-success" : "btn-warning")
                             .find(">i")
-                            .removeClass("icon-ok icon-question-sign icon-exclamation-sign")
-                            .addClass(data.Available ? "icon-ok" : "icon-exclamation-sign");
+                            .removeClass("fa-check fa-question-circle fa-exclamation-circle")
+                            .addClass(data.Available ? "fa-check" : "fa-exclamation-circle");
 
                         displayNotification(data.Text, data.Available ? "success" : "error");
                     },
@@ -48,5 +48,5 @@
     });
 </script>
 <button type="button" id="check-availability-button" class="btn check-username-availability-button tooltip-toggle" title="@T("Account.CheckUsernameAvailability.Button")">
-    <i class="icon-question-sign"></i>
+    <i class="fa fa-question-circle"></i>
 </button>

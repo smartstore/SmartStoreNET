@@ -9,7 +9,7 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-time"></i>
+		<i class="fa fa-clock-o"></i>
         @T("Admin.System.ScheduleTasks")
     </div>
 </div>
@@ -50,7 +50,7 @@
 											"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
 											"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='muted'><#= LastSuccessUtc #></span></div><# } #>" +
 											"<# if (!IsRunning) {#><a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success' style='margin-top: 12px'><i class='icon-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a><# } #>" +
-											"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='icon-refresh icon-spin'></i> " + @T("Admin.System.ScheduleTasks.RunNow.IsRunning") + "</div><# } #>")
+											"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='icon-refresh fa-spin'></i> " + @T("Admin.System.ScheduleTasks.RunNow.IsRunning") + "</div><# } #>")
 							.Title("Ausführung")
 							.ReadOnly();
                         columns.Command(commands =>

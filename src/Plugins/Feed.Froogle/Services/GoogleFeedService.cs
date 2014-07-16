@@ -21,6 +21,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 using SmartStore.Services.Tasks;
+using System.Collections.Generic;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {

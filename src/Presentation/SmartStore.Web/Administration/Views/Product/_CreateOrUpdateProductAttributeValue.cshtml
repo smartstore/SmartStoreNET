@@ -72,10 +72,10 @@
 
 			<button id="add-product-linkage" type="button" class="btn btn-below"
 				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueLinkagePopup", "Product", new { openerProductId = Html.FieldIdFor(model => model.LinkedProductId), openerProductName = Html.FieldIdFor(model => model.Name) }))', 1000, 800, true); return false;">
-				<i class="icon-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
+				<i class="fa fa-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
 			</button>
 			<button id="remove-product-linkage" type="button" class="btn btn-below">
-				<i class="icon-remove"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
+				<i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
 			</button>
 
             @Html.ValidationMessageFor(model => model.LinkedProductId)

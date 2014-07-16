@@ -72,7 +72,7 @@
 		<tr>
 			<td class="adminTitle">&nbsp;</td>
 			<td class="adminData">
-				<i class="icon-refresh icon-spin"></i>
+				<i class="fa fa-refresh fa-spin"></i>
 				<span id="ProgressInfo">@Model.ProcessInfo</span>
 			</td>
 		</tr>
@@ -83,19 +83,19 @@
 			@if (Model.IsRunning)
 			{
 				<a id="ProgressInfoButton" href="javascript:void(0)" data-url="@Model.GenerateFeedProgressUrl" class="btn btn-info">
-					<i class="icon-info"></i>&nbsp;@T("Admin.Common.Update")
+					<i class="fa fa-info"></i>&nbsp;@T("Admin.Common.Update")
 				</a>
 			}
 			else
 			{
 				<a href="@Model.GenerateFeedUrl" class="btn btn-warning">
-					<i class="icon-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
+					<i class="fa fa-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
 				</a>
 				
 				if (Model.GeneratedFiles.Count > 0)
 				{
 					<a href="@Model.DeleteFilesUrl" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-						<i class="icon-trash"></i>&nbsp;@T("Admin.Common.Delete")
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
 					</a>
 				}
 			}
@@ -419,7 +419,7 @@
         <td class="adminTitle">&nbsp;</td>
         <td class="adminData">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok"></i>&nbsp;@T("Admin.Common.Save")
+                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
             </button>
         </td>
     </tr>
@@ -447,7 +447,7 @@
 					@Html.EditorFor(m => m.SearchProductName)
 
 					<button type="submit" id="search-products" value="search-product" class="btn">
-						<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
+						<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
 					</button>
 				</td>
 			</tr>

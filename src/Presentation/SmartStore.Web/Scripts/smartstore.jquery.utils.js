@@ -165,7 +165,7 @@
                 var self = $(this);
                 var styleBackups = [];
 
-                var hiddenElements = self.parents().andSelf().filter(':hidden');
+                var hiddenElements = self.parents().addBack().filter(':hidden');
 
                 if (!hiddenElements.length) {
                     callback(self);
@@ -207,7 +207,7 @@
                 
                 var elems = el.find(opts.childrenOnly ? '>[data-bind-to]' : '[data-bind-to]');
                 if (opts.includeSelf)
-                    elems = elems.andSelf();
+                	elems = elems.addBack();
 
                 elems.each(function () {
                     var elem = $(this);
@@ -243,8 +243,8 @@
             return this.each(function () {
                 var el = $(this);
 
-                var moreText = '<button class="btn btn-mini"><i class="icon icon-plus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.More'] + '</button>';
-                var lessText = '<button class="btn btn-mini"><i class="icon icon-minus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.Less'] + '</button>';
+                var moreText = '<button class="btn btn-mini"><i class="fa fa-plus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.More'] + '</button>';
+                var lessText = '<button class="btn btn-mini"><i class="fa fa-minus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.Less'] + '</button>';
 
                 $(".more-less .more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
                 $(".more-less").append('<p class="continued">[&hellip;]</p><a href="#" class="adjust"></a>');

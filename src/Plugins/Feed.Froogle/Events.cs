@@ -30,7 +30,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 				var productId = ((TabbableModel)eventMessage.Model).Id;
 				eventMessage.ItemFactory.Add().Text("GMC")
 					.Name("tab-gmc")
-					.Icon("icon-google-plus icon-large icon-fixed-width")
+					.Icon("fa fa-google fa-lg fa-fw")
 					.LinkHtmlAttributes(new { data_tab_name = "GMC" })
 					.Route("Feed.Froogle", new { action = "ProductEditTab", productId = productId })
 					.Ajax();

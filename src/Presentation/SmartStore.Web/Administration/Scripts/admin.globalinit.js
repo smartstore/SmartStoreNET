@@ -132,7 +132,7 @@
                 if (initial === true) {
                     top = content.offset().top;
                     offset = content.outerHeight(false) - content.height();
-                    if ($.browser.chrome) offset += 2; // dont know why!
+                    if ($('html').hasClass('wkit')) offset += 2; // dont know why!
                     content.data("initial-height", initialHeight)
                                        .data("initial-top", top)
                                        .data("initial-offset", offset);

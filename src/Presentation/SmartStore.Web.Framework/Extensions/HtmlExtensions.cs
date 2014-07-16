@@ -46,7 +46,7 @@ namespace SmartStore.Web.Framework
 
 			// Create img
 			var img = new TagBuilder("i");
-			img.AddCssClass("icon-question-sign");
+			img.AddCssClass("fa fa-question-circle");
 
             a.InnerHtml = img.ToString();
 

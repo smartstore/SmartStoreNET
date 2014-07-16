@@ -9,12 +9,12 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-envelope-alt"></i>
+            <i class="fa fa-envelope-o"></i>
             @T("Admin.System.QueuedEmails")
         </div>
         <div class="options">
             <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected"
-                class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.QueuedEmails.DeleteSelected")</button>
+                class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.QueuedEmails.DeleteSelected")</button>
         </div>
     </div>
     <table width="100%">
@@ -73,7 +73,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToNumber)
                 <button type="submit" name="go-to-email-by-number" value="go-to-email-by-number" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -82,7 +82,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -177,7 +177,7 @@
             });
 
             //wire up checkboxes. 
-            $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

@@ -11,17 +11,17 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-user"></i>
+            <i class="fa fa-user"></i>
             @T("Admin.Customers.Customers")
         </div>
         <div class="options">
 			<a href="@Url.Action("Create")" class="btn btn-primary">
-				<i class="icon-plus"></i> @T("Admin.Common.AddNew")
+				<i class="fa fa-plus"></i> @T("Admin.Common.AddNew")
 			</a>
 			<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					Export
-					<span class="icon-caret-down"></span>
+					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu pull-right">
 					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
@@ -151,7 +151,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-				<button type="submit" id="search-customers" name="search-customers" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+				<button type="submit" id="search-customers" name="search-customers" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -300,7 +300,7 @@
             });
 
             //wire up checkboxes. 
-            $('#customers-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#customers-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

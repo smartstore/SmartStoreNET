@@ -28,7 +28,7 @@
                    data-type="cart"
                    data-action="add">
                     @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                    <i class="icon-plus-sign"></i>
+					<i class="fa fa-plus-circle"></i>
                 </a>
             }
         </div>
@@ -79,7 +79,7 @@
 
         if (bundleItemAmount != (i + 1))
         {
-            <i class="icon-plus"></i>
+            <i class="fa fa-plus"></i>
         }
 
         i++;

@@ -123,12 +123,12 @@
             <a href="@GetNodeLink(node)">
 				@if (hasIcons)
 				{
-					var iconClass = "icon-fixed-width";
+					var iconClass = "fa fa-fixed-width";
 					if (node.Value.Icon.HasValue())
 					{
 						iconClass += " " + node.Value.Icon;
 					}
-					<i class='icon @iconClass'></i>
+					<i class='@iconClass'></i>
 				}
                 @itemText
             </a>

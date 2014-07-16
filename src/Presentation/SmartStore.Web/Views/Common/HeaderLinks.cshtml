@@ -21,16 +21,9 @@
             
             if (Model.AllowPrivateMessages)
             {
-            <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">@T("PrivateMessages.Inbox")</a>
-                @Model.UnreadPrivateMessages</li>
-                if (!string.IsNullOrEmpty(Model.AlertMessage))
-                {
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    displayNotification('@(Model.AlertMessage)', 'success');
-                });
-            </script>
-                }
+				<li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">@T("PrivateMessages.Inbox")</a>
+					@Model.UnreadPrivateMessages
+				</li>
             }
         }
         else
@@ -51,19 +44,29 @@
         }
         @Html.Widget("header_links_after")
     </ul>
+
+	@if (Model.AllowPrivateMessages && !string.IsNullOrEmpty(Model.AlertMessage))
+	{
+		<script>
+			$(document).ready(function () {
+				displayNotification('@(Model.AlertMessage)', 'success');
+			});
+		</script>
+	}
+
     @if (Model.ShoppingCartEnabled)
     {
-        <script type="text/javascript">
-            $('#topcartlink').live('mouseenter', function () {
+        <script>
+			$(document).on('mouseenter', '#topcartlink', function () {
                 $('#flyout-cart').addClass('active');
             });
-            $('#topcartlink').live('mouseleave', function () {
+			$(document).on('mouseleave', '#topcartlink', function () {
                 $('#flyout-cart').removeClass('active');
             });
-            $('#flyout-cart').live('mouseenter', function () {
+			$(document).on('mouseenter', '#flyout-cart', function () {
                 $('#flyout-cart').addClass('active');
             });
-            $('#flyout-cart').live('mouseleave', function () {
+			$(document).on('mouseleave', '#flyout-cart', function () {
                 $('#flyout-cart').removeClass('active');
             });
         </script>

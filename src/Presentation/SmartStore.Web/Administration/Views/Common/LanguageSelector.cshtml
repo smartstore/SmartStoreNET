@@ -10,7 +10,7 @@
     <div class="btn-group">
         <button class="btn btn-inverse dropdown-toggle navbar-tool" rel='tooltip' title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
             <img src='@Url.Content("~/Content/Images/flags/" + @Model.CurrentLanguage.FlagImageFileName)' alt="@Model.CurrentLanguage.Name" width="16" />
-            @*<i class="icon-caret-down"></i>*@
+            @*<i class="fa fa-caret-down"></i>*@
         </button>
         <ul id="language-selector" class="dropdown-menu">
             @foreach (var language in Model.AvailableLanguages)

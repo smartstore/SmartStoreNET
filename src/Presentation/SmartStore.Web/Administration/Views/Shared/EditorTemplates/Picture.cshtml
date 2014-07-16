@@ -13,6 +13,7 @@
 
     Html.AddCssFileParts("~/Content/fileupload/jquery.fileupload-single-ui.css");
     Html.AddScriptParts(
+		"~/Scripts/jquery-ui/widget.js",
         "~/Content/fileupload/jquery.iframe-transport.js",
         "~/Content/fileupload/jquery.fileupload.js",
         "~/Content/fileupload/jquery.fileupload-single-ui.js");
@@ -25,18 +26,18 @@
     <img src="@(pictureService.GetPictureUrl(pictureId, 100, true))" class="img-polaroid" alt="" />
 
     <button class="btn remove" @Html.Attr("style", "display:none", picture == null)>
-        <i class="icon-trash"></i>
+        <i class="fa fa-trash-o"></i>
         @T("Admin.Picture.RemovePicture")
     </button>
 
     <span class="btn btn-primary fileinput-button">
-        <i class="icon-upload-alt"></i>
+        <i class="fa fa-upload"></i>
         <span>@T("Common.Fileuploader.Upload")</span>
         <input id="fileupload-@random" type="file" name="file" />
     </span>
 
     <button class="btn btn-warning cancel">
-        <i class="icon-remove"></i>
+        <i class="fa fa-times"></i>
         <span>@T("Common.Fileuploader.Cancel")</span>
     </button>
 

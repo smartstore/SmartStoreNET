@@ -219,7 +219,7 @@
                             data-form-selector="#product-details-form"
                             data-type="wishlist"
                             data-action="add">
-                            <i class="icon-gift"></i>
+                            <i class="fa fa-gift"></i>
                             @T("Categories.Wishlist")
                         </a>
                     }
@@ -231,7 +231,7 @@
 						    rel="nofollow"
                             data-type="compare"
                             data-action="add">
-                            <i class="icon-retweet"></i>
+                            <i class="fa fa-retweet"></i>
                             @T("Categories.Compare")
                         </a>
                     }
@@ -240,7 +240,7 @@
 
            <div class="buttons pull-right">     
                 <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn" title="@T("Products.Details")" rel="tooltip">
-                    <i class="icon-info-sign"></i>
+                    <i class="fa fa-info-circle"></i>
                 </a>
                  
                 @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
@@ -252,7 +252,7 @@
                         data-type="cart"
                         data-action="add">
                         @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                        <i class="icon-shopping-cart"></i>      
+                        <i class="fa fa-shopping-cart"></i>      
                     </a>
                 }
             </div>

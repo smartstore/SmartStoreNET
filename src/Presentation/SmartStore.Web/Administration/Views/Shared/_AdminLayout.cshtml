@@ -27,15 +27,10 @@
     //Html.AddCssFileParts(false, "~/Administration/Content/theme.less");
     
     // add css assets
-    var jqueryCssRootPath = "~/Content/jquery-ui/base/";
     var telerikCssRootPath = "~/Content/2012.2.607/";
     Html.AppendCssFileParts(
         "~/Administration/Content/theme.less",
-        jqueryCssRootPath + "jquery.ui.core.css",
-        jqueryCssRootPath + "jquery.ui.resizable.css",
-        jqueryCssRootPath + "jquery.ui.selectable.css",
-        jqueryCssRootPath + "jquery.ui.autocomplete.css",
-        jqueryCssRootPath + "jquery.ui.theme.css",
+		"~/Content/font-awesome.css",
         telerikCssRootPath + "telerik.common.css",
         telerikCssRootPath + "telerik.rtl.css",
         "~/Content/jquery.pnotify.default.css",
@@ -43,26 +38,22 @@
 
     // add js assets (Head)
     Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/modernizr-{version}.js",
-        "~/Scripts/jquery-{version}.js",
+        "~/Scripts/modernizr-2.7.2.js",
+        "~/Scripts/jquery-2.1.1.js",
+		"~/Scripts/jquery-migrate-1.2.1.js",
         "~/Scripts/globalize/globalize.js");
         
     Html.AddScriptParts(ResourceLocation.Head, true,
-        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
-        "~/Scripts/smartstore.globalize.adapter.js");
+        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
 
     // add js assets (Foot)
     var bootstrapJsRoot = "~/Content/bootstrap/js/";
     Html.AppendScriptParts(ResourceLocation.Foot,
         // jQuery UI Core
-        "~/Scripts/jquery-ui/jquery.ui.core.js",
-        "~/Scripts/jquery-ui/jquery.ui.widget.js",
-        "~/Scripts/jquery-ui/jquery.effects.core.js",
-        "~/Scripts/jquery-ui/jquery.effects.transfer.js",
-        "~/Scripts/jquery-ui/jquery.effects.shake.js",
-        "~/Scripts/jquery-ui/jquery.ui.position.js",
-        // jQuery UI
-        "~/Scripts/jquery-ui/jquery.ui.autocomplete.js",
+        "~/Scripts/jquery-ui/effect.js",
+        "~/Scripts/jquery-ui/effect-transfer.js",
+        "~/Scripts/jquery-ui/effect-shake.js",
+        "~/Scripts/jquery-ui/position.js",
         // jQuery Validation
         "~/Scripts/jquery.unobtrusive-ajax.js",
         "~/Scripts/jquery.validate.js",
@@ -109,6 +100,7 @@
         "~/Scripts/jquery.pnotify.js",
         "~/Scripts/jquery.scrollTo.js",
         "~/Scripts/jquery.serialScroll.js",
+		"~/Scripts/smartstore.globalize.adapter.js",
         // Admin
         "~/Administration/Scripts/admin.common.js",
         "~/Administration/Scripts/admin.globalinit.js");

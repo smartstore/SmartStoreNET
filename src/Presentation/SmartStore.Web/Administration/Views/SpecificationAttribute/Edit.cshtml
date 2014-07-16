@@ -11,13 +11,13 @@
             @T("Admin.Catalog.Attributes.SpecificationAttributes.EditAttributeDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Catalog.Attributes.SpecificationAttributes.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
 
 			<div class="btn-group" style="vertical-align: middle">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                 @T("Admin.Common.Bundled")
-                <span class="icon-caret-down"></span>
+                <span class="fa fa-caret-down"></span>
               </a>
               <ul id="BundledMenu" class="dropdown-menu">
                 <li>
@@ -43,7 +43,7 @@
               </ul>
 			</div>
 
-            <button type="submit" name="specificationattribute-delete" value="specificationattribute-delete" id="specificationattribute-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" name="specificationattribute-delete" value="specificationattribute-delete" id="specificationattribute-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

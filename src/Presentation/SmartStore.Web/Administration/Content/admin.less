@@ -1,4 +1,14 @@
 ﻿
+/* General
+-------------------------------------------------------------- */
+
+.dropdown-menu,
+.btn {
+	.fa {
+		font-size: 14px;
+	}
+}
+
 /* Page
 -------------------------------------------------------------- */
 
@@ -109,10 +119,6 @@
 		padding: 4px 8px;
 		margin-left: -1px;
 		
-		[class*=icon] {
-			font-size: 14px;
-		}
-		
 		&:hover {
 			background-color: rgba(255,255,255, .15);
 			color: #fff;
@@ -199,18 +205,6 @@
 		text-align: center;
 		width: 22px;
 		height: 22px;
-	}
-
-	[class^="sm-icon-"], 
-	[class*=" sm-icon-"] {
-		display: block;
-		position: relative;
-		text-align: center;
-		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
-		font-style: normal;
-		font-weight: normal;
 	}
 
 	.navbar-label { 
@@ -328,11 +322,10 @@ td.adminData > input[type="checkbox"] {
 	padding: @paddingSmall;
 }
 .t-grid .btn,
-.t-grid .btn [class^="icon-"] {
+.t-grid .btn .fa {
 	font-size: @fontSizeSmall;	
 }
-.t-grid .t-button [class^="icon-"],
-.t-grid .t-button [class*=" icon-"] {
+.t-grid .t-button .fa {
 	margin-top: 0;
 }
 
@@ -539,7 +532,7 @@ a:hover {
 	    .text-overflow();
 	    text-shadow: none;
 	    
-		i {
+		.fa {
 			font-size: 28px;
 			//font-size: 32px;
 			vertical-align: text-top;
@@ -694,8 +687,8 @@ td.adminTitle > .ctl-label {
 		&:hover { 
 			color: darken(@hintColor, 25%) 
 		}
-		i { 
-			x-font-size: 15px;
+		.fa { 
+			font-size: 16px;
 		}
 	}
 }
@@ -818,8 +811,7 @@ legend {
 	.background-clip(padding-box);
 	#gradient > .vertical(#fafafa, #e9e9e9);
 
-	[class^="icon-"],
-	[class*=" icon-"] {
+	.fa {
 		display: inline-block;
 		margin-left: 13px;
 		margin-right: -2px;
@@ -1081,16 +1073,16 @@ table.order-edit td {
     font-size: 120%;
     vertical-align: middle;
 }
-.system-warnings i {
+.system-warnings .fa {
 	font-size: 22px;
 }
-.system-warnings .pass i {
+.system-warnings .pass .fa {
 	color: @green;
 }
-.system-warnings .warning i {
+.system-warnings .warning .fa {
 	color: @yellow;
 }
-.system-warnings .fail i {
+.system-warnings .fail .fa {
 	color: @red;
 }
 
@@ -1180,7 +1172,7 @@ table.order-edit td {
         td.cell-data .plugin-actions {
             margin-top: 6px;
 
-            [class^="icon-"] {
+            .fa {
                 color: #bbb;
             }
 

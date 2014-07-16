@@ -9,12 +9,12 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-fire"></i>
+            <i class="fa fa-fire"></i>
             @T("Admin.Configuration.ActivityLog.ActivityLogType")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok icon-white"></i>
+                <i class="fa fa-check"></i>
                 @T("Admin.Common.Save")
             </button>
         </div>
@@ -54,7 +54,7 @@
             });
 
             //wire up checkboxes. 
-            $('#activityLogType-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#activityLogType-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 updateMasterCheckbox();
             });
         });

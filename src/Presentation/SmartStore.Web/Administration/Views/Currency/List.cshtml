@@ -8,20 +8,20 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-money"></i>
+        <i class="fa fa-money"></i>
         @T("Admin.Configuration.Currencies")
     </div>
     <div class="options">
         <a href="@Url.Action("Create")" class="btn btn-primary">
-            <i class="icon-plus"></i>
+            <i class="fa fa-plus"></i>
             @T("Admin.Common.AddNew")
         </a>
         <a href="javascript:document.CurrencySettings.submit()" class="btn">
-            <i class="icon-ok"></i>
+            <i class="fa fa-check"></i>
             @T("Admin.Common.Save")
         </a>
         <a href="@Url.Action("List", "Currency", new { liveRates = true })" class="btn">
-            <i class="icon-refresh"></i>
+            <i class="fa fa-refresh"></i>
             @T("Admin.Configuration.Currencies.GetLiveRates")
         </a>
     </div>
@@ -70,7 +70,7 @@
 								@<a href='@Url.Action("MarkAsPrimaryExchangeRateCurrency", new { id = item.Id })' class="btn" @Html.Attr("disabled", "disabled", item.IsPrimaryExchangeRateCurrency) title='@T("Admin.Configuration.Currencies.Fields.MarkAsPrimaryExchangeRateCurrency").Text'>
 									@if (item.IsPrimaryExchangeRateCurrency)
 									{
-										<i class="icon icon-ok"></i>
+										<i class="fa fa-check"></i>
 									}
 									@T("Admin.Telerik.GridLocalization.Select")
 								</a>
@@ -82,7 +82,7 @@
 								@<a href='@Url.Action("MarkAsPrimaryStoreCurrency", new { id = item.Id })' class="btn" @Html.Attr("disabled", "disabled", item.IsPrimaryStoreCurrency) title='@T("Admin.Configuration.Currencies.Fields.MarkAsPrimaryStoreCurrency").Text'>
 									@if (item.IsPrimaryStoreCurrency)
 									{
-										<i class="icon icon-ok"></i>
+										<i class="fa fa-check"></i>
 									}
 									@T("Admin.Telerik.GridLocalization.Select")
 								</a>

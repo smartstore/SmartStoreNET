@@ -146,26 +146,26 @@
                                     @{
                                         var topicType = "post";
                                         var topicText = String.Empty;
-                                        var topicIcon = "icon-comment-alt";
+                                        var topicIcon = "fa fa-comment-o";
                                         switch (topic.ForumTopicType)
                                         {
                                             case ForumTopicType.Normal:
                                                 topicType = "post";
-                                                topicIcon = "icon-comment-alt";
+                                                topicIcon = "fa fa-comment-o";
                                                 break;
                                             case ForumTopicType.Sticky:
                                                 topicType = "poststicky";
-                                                topicIcon = "icon-pushpin";
+												topicIcon = "fa fa-thumb-tack";
                                                 topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
                                                 break;
                                             case ForumTopicType.Announcement:
                                                 topicType = "post-annoucement";
-                                                topicIcon = "icon-bullhorn";
+                                                topicIcon = "fa fa-bullhorn";
                                                 topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
                                                 break;
                                             default:
                                                 topicType = "post";
-                                                topicIcon = "icon-comment-alt";
+                                                topicIcon = "fa fa-comment-o";
                                                 break;
                                         }
                                         <div class="@topicType">

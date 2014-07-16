@@ -17,24 +17,24 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-sitemap"></i>
+            <i class="fa fa-cube"></i>
             @T("Admin.Catalog.Products.Manage")
         </div>
         <div class="options btn-toolbar">
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="icon-plus"></i>
+                <i class="fa fa-plus"></i>
                 @T("Admin.Common.AddNew")
             </a>
             @if (Model.DisplayPdfDownloadCatalog)
             {
                 <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">
-					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Catalog.Products.List.DownloadPDF")
+					<i class="fa fa-arrow-circle-o-down-alt"></i>&nbsp;@T("Admin.Catalog.Products.List.DownloadPDF")
 				</a>
             }
             <div class="btn-group" style="vertical-align: middle">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                 Export
-                <span class="icon-caret-down"></span>
+                <span class="fa fa-caret-down"></span>
               </a>
               <ul class="dropdown-menu">
                 <li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
@@ -44,10 +44,10 @@
               </ul>
             </div>
             <a id="importexcel" href="#importexcel-window" class="btn" role="button">
-				<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
+				<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
 			</a>
             <button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="icon-trash"></i>
+				<i class="fa fa-trash-o"></i>
 				@T("Admin.Common.Delete.Selected")
 			</button>
         </div>
@@ -101,7 +101,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToSku)
                 <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -110,7 +110,7 @@
 				&nbsp;
 			</td>
             <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -233,7 +233,7 @@
             });
 
             //wire up checkboxes. 
-            $('#products-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+        	$(document).on('change', '#products-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

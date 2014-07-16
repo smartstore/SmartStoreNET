@@ -15,7 +15,7 @@
 <div class="page blog-page">
     <div class="page-title">
         <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" rel="tooltip">
-            <i class="icon-rss muted"></i>
+            <i class="fa fa-rss muted"></i>
             @T("Blog.RSS")
         </a>
         <h1>
@@ -52,7 +52,7 @@
                                 href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" 
                                 title="@string.Format(@T("Blog.CommentsLink").Text, item.NumberOfComments)" 
                                 rel="tooltip">
-                                <span class="blogpost-comments-icon icon-comments"></span>
+								<span class="blogpost-comments-icon fa fa-comments"></span>
                                 <span class="blogpost-comments-count">@item.NumberOfComments</span>
                             </a>
                         }
@@ -64,7 +64,7 @@
                         @if (item.Tags.Count > 0)
                         {
                             <div class="blogpost-tags well well-small">
-                                <i class="icon-tags" title='@T("Blog.Tags")'></i>
+                                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                                 @for (int i = 0, length = item.Tags.Count; i < length; i++)
                                 {
                                     var tag = item.Tags[i];

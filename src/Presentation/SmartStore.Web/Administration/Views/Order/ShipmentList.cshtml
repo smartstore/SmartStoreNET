@@ -13,17 +13,17 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-truck"></i>
+            <i class="fa fa-truck"></i>
             @T("Admin.Orders.Shipments.List")
         </div>
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
                 <a href="@Url.Action("PdfPackagingSlipAll")" class="btn">
-					<i class="icon-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
+					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
 				</a>
                 <button type="submit" id="exportpackagingslips-selected" class="btn">
-					<i class="icon-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")
+					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")
 				</button>
             }
         </div>
@@ -58,7 +58,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -133,7 +133,7 @@
             });
 
             //wire up checkboxes. 
-            $('#shipments-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#shipments-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

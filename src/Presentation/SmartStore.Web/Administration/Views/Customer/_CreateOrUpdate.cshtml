@@ -111,7 +111,7 @@
                 @if (Model.Id > 0)
                 {
                     <button type="submit" name="changepassword" value="changepassword" class="btn">
-                        <i class="icon-pencil"></i>&nbsp;Change password
+                        <i class="fa fa-pencil"></i>&nbsp;Change password
 					</button>
                 }
             </td>
@@ -511,7 +511,7 @@
             </td>
             <td class="adminData">
                 <button type="button" name="addRewardPoints" id="addRewardPoints" class="btn">
-                    <i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.RewardPoints.AddButton")
+                    <i class="fa fa-plus"></i>&nbsp;@T("Admin.Customers.Customers.RewardPoints.AddButton")
 				</button>
             </td>
         </tr>
@@ -577,7 +577,7 @@
     </div>
 
 	<button type="button" class="btn btn-primary btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
-		<i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
+		<i class="fa fa-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
 	</button>
 }
 @helper TabCurrentShoppingCart()
@@ -649,7 +649,7 @@
 				<br /><br />
 
 				<button type="submit" name="impersonate" value="impersonate" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
 				</button>
             </td>
         </tr>

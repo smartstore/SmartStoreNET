@@ -11,7 +11,7 @@
                 $('#pm-inbox-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
             });
 
-            $('#pm-inbox-table .rowcheckbox').live('change', function (e) {
+            $(document).on('change', '#pm-inbox-table .rowcheckbox', function (e) {
                 var numChkBoxes = $('#pm-inbox-table .rowcheckbox').length;
                 var numChkBoxesChecked = $('#pm-inbox-table .rowcheckbox:checked').length;
                 $('#select-all-inbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
@@ -78,7 +78,7 @@
         }
         <div class="buttons">
             <button class="btn btn-danger" name="delete-inbox" value="delete-inbox" type="submit" >
-                <i class="icon icon-trash"></i>&nbsp;&nbsp;
+                <i class="fa fa-trash-o"></i>&nbsp;&nbsp;
                 @T("PrivateMessages.Inbox.DeleteSelected")
             </button>
 

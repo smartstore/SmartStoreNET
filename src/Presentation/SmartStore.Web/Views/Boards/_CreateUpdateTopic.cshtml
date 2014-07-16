@@ -92,11 +92,11 @@
                         onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName })')" />*@
 
                         <button type="submit" class="btn btn-primary">
-                            <i class="icon icon-reply"></i>
+                            <i class="fa fa-reply"></i>
                             @T("Forum.Submit")
                         </button>
                         <button class="btn" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) '); return false;">
-							<i class="icon icon-remove"></i>
+							<i class="fa fa-times"></i>
                             @T("Forum.Cancel")
                         </button>
 

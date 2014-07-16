@@ -22,12 +22,12 @@
 
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {                
-                    <i class="icon icon-edit"></i>
+                    <i class="fa fa-pencil-square-o"></i>
                     @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
             }
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
-                    <i class="icon icon-remove"></i>
+                    <i class="fa fa-times"></i>
                     @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
             }
 
@@ -47,14 +47,14 @@
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {                
                 <div>
-                    <i class="icon icon-edit"></i>
+                    <i class="fa fa-pencil-square-o"></i>
                     @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
                 </div>
             }
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
                 <div>
-                    <i class="icon icon-remove"></i>
+                    <i class="fa fa-times"></i>
                     @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
                 </div>
             }
@@ -95,7 +95,7 @@
                 @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
                 {
                     <a class="btn button-pm" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
-                        <i class="icon icon-user"></i>
+                        <i class="fa fa-user"></i>
                         @T("Forum.PrivateMessages.PM")
                     </a>
                 }
@@ -125,7 +125,7 @@
                 @T("Forum.Top")
             </a>
             <button class="btn btn-mini" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
-                <i class="icon icon-quote-left"></i>
+                <i class="fa fa-quote-left"></i>
                 @T("Forum.QuotePost")
             </button>
         </div>

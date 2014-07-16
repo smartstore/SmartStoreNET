@@ -131,13 +131,13 @@
 
             <div class="print-buttons pull-right" style="margin-top: 12px">
                 <a href="@Url.Action("print", new { id = Model.Id })" target="_blank" class="btn print-order-button" rel="nofollow">
-                    <i class="icon icon-print"></i>
+                    <i class="fa fa-print"></i>
                     @T("Order.Print")
                 </a>
                 @if (Model.DisplayPdfInvoice)
                 {
                     <a href="@Url.Action("pdf", new { id = Model.Id })" class="btn pdf-order-button" rel="nofollow">
-						<i class="icon icon-download-alt"></i>
+						<i class="fa fa-arrow-circle-o-down-alt"></i>
                         @T("Order.GetPDFInvoice")
                     </a>
                 }
@@ -434,14 +434,14 @@
                         @if (Model.IsReOrderAllowed)
                         {
                             <a class="btn btn-primary re-order-button pull-right" href="@Url.Action("ReOrder", new { id = Model.Id })">
-								<i class="icon icon-shopping-cart"></i>
+								<i class="fa fa-shopping-cart"></i>
                                 @T("Order.Reorder")
                             </a>
                         }
                         @if (Model.IsReturnRequestAllowed)
                         {
                             <a class="btn return-items-button pull-right" href="@Url.RouteUrl("ReturnRequest", new { id = Model.Id })">
-								<i class="icon icon-reply"></i>
+								<i class="fa fa-reply"></i>
                                 @T("Order.ReturnItems")
                             </a>
                         }

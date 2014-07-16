@@ -11,11 +11,11 @@
             @T("Admin.Configuration.Languages.EditLanguageDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn">@T("Admin.Configuration.Languages.Export")</a>
             <a href="#importxml-window" data-toggle="modal" class="btn">@T("Admin.Configuration.Languages.Import")</a>
-            <button type="submit" id="language-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" id="language-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

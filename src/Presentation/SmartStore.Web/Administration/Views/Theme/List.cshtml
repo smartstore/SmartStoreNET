@@ -11,16 +11,16 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-picture"></i>
+            <i class="fa fa-picture-o"></i>
             @T("Admin.Configuration.Themes")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok"></i>
+                <i class="fa fa-check"></i>
                 @T("Admin.Common.Save")
             </button>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
-				<i class="icon-upload-alt"></i>
+				<i class="fa fa-upload"></i>
 				@T("Admin.Packaging.UploadTheme")
 			</a>
         </div>
@@ -110,7 +110,7 @@
                             @if (theme.IsConfigurable)
 							{
                                 <a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn">
-                                    <i class="icon-cog"></i>
+                                    <i class="fa fa-cog"></i>
                                     @T("Admin.Common.Configure")
                                 </a>
 							}

@@ -33,22 +33,22 @@
             <text>
                 <div class="btn-group pull-right">
                     <a id="current-user" class="btn btn-inverse navbar-tool" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
-                        <i class="icon-user"></i>
+                        <i class="fa fa-user"></i>
                         <span>@userName</span>
                      </a>
                     <a class="btn btn-inverse dropdown-toggle navbar-tool" data-toggle="dropdown" href="javascript:void(0)">
-                        <i class="icon-caret-down"></i>
+                        <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu">
                         <li>
 							<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
-								<i class="icon-user"></i>
+								<i class="fa fa-user"></i>
 								Account
 							</a>
 						</li>
                         <li>
 							<a href="@Url.Action("Logout", "Customer", new { area = "" })" class="disabled">
-								<i class="icon-signout"></i>
+								<i class="fa fa-sign-out"></i>
 								@T("Admin.Header.Logout")
 							</a>
 						</li>
@@ -61,14 +61,14 @@
             
             <div class="btn-group pull-right">
                 <button class="btn btn-inverse dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
-                    <i class="icon-cogs"></i>
+                    <i class="fa fa-cogs"></i>
                 </button>
                 <ul class="dropdown-menu">
 					@foreach (var store in stores)
 					{
 						<li>
 							<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
-								<i class="icon-globe"></i>
+								<i class="fa fa-globe"></i>
 								@store.Name.Truncate(32, "...")
 							</a>
 						</li>
@@ -79,13 +79,13 @@
 					}
                     <li>
                         <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-                            <i class="icon-trash"></i>
+                            <i class="fa fa-trash-o"></i>
                             @T("Admin.Header.ClearCache")
                         </a>
                     </li>
                     <li>
                         <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-                            <i class="icon-power-off"></i>
+                            <i class="fa fa-power-off"></i>
                             @T("Admin.Header.RestartApplication")
                         </a>
                     </li>
@@ -96,24 +96,24 @@
 
             <div class="btn-group pull-right">
                 <button class="btn btn-inverse dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
-                    <i class="icon-question-sign"></i>
+                    <i class="fa fa-question-circle"></i>
                 </button>
                 <ul class="dropdown-menu">
                     @*<li>
 						<a href="https://smartstore.zendesk.com/forums/22347533-Tipps-und-Tricks" data-lang="@currentLanguageCode">
-							<i class="icon-file"></i>
+							<i class="fa fa-file"></i>
 							@T("Admin.Help.Topics")
 						</a>
 					</li>*@
                     <li>
 						<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
-							<i class="icon-comment"></i>
+							<i class="fa fa-comment"></i>
 							@T("Admin.Help.Forums")
 						</a>
 					</li>
 					<li>
 						<a href="@Url.Action("About", "Home", new { area = "Admin" })">
-							<i class="icon-info-sign"></i>
+							<i class="fa fa-info-circle"></i>
 							@T("Admin.Common.About") SmartStore.NET
 						</a>
 					</li>

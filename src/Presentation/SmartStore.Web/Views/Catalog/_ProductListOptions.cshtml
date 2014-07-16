@@ -12,7 +12,7 @@
     <div class="btn-group @floatClass">
         <a class="btn" href="@selectedOption.Url" title="@selectedOption.Text">@selectedOption.Text</a>
         <a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:void()" rel="nofollow">
-            <span class="icon-caret-down"></span>
+            <span class="fa fa-caret-down"></span>
         </a>
         <ul class="dropdown-menu">
             @foreach(var opt in options) {
@@ -34,10 +34,10 @@
                 {
                     <a href="@mode.Url" class='btn@(mode.Selected ? " active" : "")' rel="tooltip nofollow" title='@T("Categories.ViewMode"): @mode.Text'>
                         @if ((string)mode.ExtraData == "grid") {
-                            <i class="icon-th"></i>
+                            <i class="fa fa-th"></i>
                         }
                         else {
-                            <i class="icon-reorder"></i>
+                            <i class="fa fa-bars"></i>
                         }
                     </a>
                 }

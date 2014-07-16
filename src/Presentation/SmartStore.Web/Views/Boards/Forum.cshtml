@@ -24,7 +24,7 @@
     function setButtonWatchState(btn, subscribed) {
         subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
         btn.find("i").remove(); // remove icon
-        btn.prepend('<i class="icon-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
+        btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
     }
     // codehint: sm-add
     $(function () {
@@ -40,7 +40,7 @@
             @if (Model.ForumFeedsEnabled)
             {
                 <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
-                    <i class="icon icon-rss muted"></i>
+                    <i class="fa fa-rss muted"></i>
                     @T("Forum.RSS")
                 </a>
             }
@@ -58,7 +58,7 @@
     
         <div class="actions pull-left">
             <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
-                <i class="icon-plus"></i>
+                <i class="fa fa-plus"></i>
                 @T("Forum.NewTopic")
             </a>
             @if (Model.IsCustomerAllowedToSubscribe)
@@ -73,7 +73,7 @@
             @*@if (Model.ForumFeedsEnabled)
             {
                 <button class="btn btn-warning" onclick="setLocation('@Url.Action("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
-                    <i class="icon-rss"></i>
+                    <i class="fa fa-rss"></i>
                     @T("Forum.RSS")
                 </button>
             }*@
@@ -119,26 +119,26 @@
                         @{
                             var topicType = "post";
                             var topicText = String.Empty;
-                            var topicIcon = "icon-comment-alt";
+                            var topicIcon = "fa fa-comment-o";
                             switch (topic.ForumTopicType)
                             {
                                 case ForumTopicType.Normal:
                                     topicType = "post";
-                                    topicIcon = "icon-comment-alt";
+                                    topicIcon = "fa fa-comment-o";
                                     break;
                                 case ForumTopicType.Sticky:
                                     topicType = "poststicky";
-                                    topicIcon = "icon-pushpin";
+									topicIcon = "fa fa-thumb-tack";
                                     topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
                                     break;
                                 case ForumTopicType.Announcement:
                                     topicType = "post-annoucement";
-                                    topicIcon = "icon-bullhorn";
+                                    topicIcon = "fa fa-bullhorn";
                                     topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
                                     break;
                                 default:
                                     topicType = "post";
-                                    topicIcon = "icon-comment-alt";
+                                    topicIcon = "fa fa-comment-o";
                                     break;
                             }
                             <div class="@topicType">

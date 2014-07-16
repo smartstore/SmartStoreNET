@@ -8,12 +8,18 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-building"></i>
+        <i class="fa fa-building-o"></i>
         @T("Admin.Catalog.Manufacturers")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
-        <a href="@Url.Action("ExportXml")" class="btn"><i class="icon-download-alt"></i>&nbsp;@T("Admin.Common.ExportToXml")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			@T("Admin.Common.AddNew")
+		</a>
+        <a href="@Url.Action("ExportXml")" class="btn">
+			<i class="fa fa-arrow-circle-o-down-alt"></i>
+			@T("Admin.Common.ExportToXml")
+		</a>
     </div>
 </div>
 <table width="100%">
@@ -30,7 +36,7 @@
 			&nbsp;
 		</td>
         <td class="adminData">
-            <button type="submit" id="btnSearch" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+            <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
         </td>
     </tr>
 </table>

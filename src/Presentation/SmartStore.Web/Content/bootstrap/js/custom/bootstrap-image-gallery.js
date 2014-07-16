@@ -104,7 +104,8 @@
                 this.options.slideshow = node.data('slideshow') || 5000;
                 this.startSlideShow();
             }
-            node.find('i').toggleClass('icon-play icon-pause');
+			// codehint: sm-edit
+            node.find('i').toggleClass('fa-play fa-pause');
         },
         preloadImages: function () {
             var options = this.options,

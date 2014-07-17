@@ -18,6 +18,15 @@
 * #393 Web API: Implement OData actions for simpler working with product attributes
 
 ###Improvements###
+* (Perf) (Developer) Client Dependency updates
+	- jQuery 1.8.3 > 2.1.1 (although the backend is still using v1.8.3 because of the Telerik components)
+	- FontAwesome 3 > 4.1
+	- Modernizr 2.5 > 2.7.2
+	- jQuery UI to 1.11
+	- SearchBox uses Typeahead now instead of jQuery UI AutoComplete
+	- Got rid of obsolete jQuery UI files (will remove this later completely)
+* (UI) AJAXified product edit tab: all tabs other than the first one load on demand per AJAX
+* (Developer)  Plugins can provide custom tabs more easily (now with on demand AJAX loading)
 * Task Scheduler:
 	- Can run tasks manually now (async)
 	- Better UI
@@ -27,11 +36,9 @@
 * TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
 * Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
 * Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
-* Perf: significantly increased excel import performance... again ;-)
-* Perf: significantly increased excel export performance and optimized memory usage
-* Perf: SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs
-* (UI) AJAXified product edit tab: all tabs other than the first one load on demand per AJAX
-* (Developer)  Plugins can provide custom tabs more easily (now with on demand AJAX loading)
+* (Perf) significantly increased excel import performance... again ;-)
+* (Perf) significantly increased excel export performance and optimized memory usage
+* (Perf) SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs
 * (UI) optimized and reorganized product edit view a bit
 * (Developer) MVC filter attributes are now Autofac injectable
 * (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
@@ -39,6 +46,9 @@
 * (Developer) Added _user.less_ to Alpha theme for user defined css overrides and tweaks
 * (Developer) Moved _PublicControllerBase_ to SmartStore.Web.Framework
 * (Developer) Moved 'AdminControllerBase' to SmartStore.Web.Framework
+* (Developer) Optimized Bundle handling
+	- Html.Add[Script|CssFile]Parts() now can handle already bundled resources correctly (no attempt is made to bundle them, the bundle's virtual url is returned instead)
+	- Made extra bundles for frequently used resources (like sequence js, fileupload, image gallery etc.). This way they always come compressed.
 * #384 Web API: Inserting sluged recources like products require an URL record
 * Promotion feed plugins: Asynchronous feed creation
 

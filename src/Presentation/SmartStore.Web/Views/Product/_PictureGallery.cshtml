@@ -1,20 +1,9 @@
-﻿@*codehint: sm-edit (new model)*@
-@model ProductDetailsPictureModel
+﻿@model ProductDetailsPictureModel
 @using SmartStore.Web.Models.Catalog;
 @{
-	Html.AddCssFileParts(true, 
-		"~/Content/smartstore.smartgallery.css", 
-		"~/Content/image-gallery/css/blueimp-gallery.css",
-		"~/Content/image-gallery/css/blueimp-gallery-indicator.css",
-		"~/Content/image-gallery/css/blueimp-gallery-custom.css");
-
-	Html.AddScriptParts(true, 
-		"~/Content/image-gallery/js/blueimp-gallery.js",
-		"~/Content/image-gallery/js/blueimp-gallery-fullscreen.js",
-		"~/Content/image-gallery/js/blueimp-gallery-indicator.js",
-		"~/Scripts/jquery.elevatezoom.js",
-		"~/Scripts/smartstore.smartgallery.js");
-
+	Html.AddCssFileParts("~/css/image-gallery");
+	Html.AddScriptParts("~/bundles/image-gallery");
+	
     var zoomEnabled = Model.DefaultPictureZoomEnabled;
 }
 

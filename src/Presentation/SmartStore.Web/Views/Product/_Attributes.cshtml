@@ -116,13 +116,9 @@
                         }
                         break;
                     case AttributeControlType.FileUpload:
-                        {
-                            Html.AddScriptParts(true,
-								"~/Scripts/jquery-ui/widget.js",
-                                "~/Content/fileupload/jquery.iframe-transport.js",
-                                "~/Content/fileupload/jquery.fileupload.js",
-                                "~/Content/fileupload/jquery.fileupload-single-ui.js");
-                            Html.AddCssFileParts(true, "~/Content/fileupload/jquery.fileupload-single-ui.css");
+						{
+							Html.AddScriptParts("~/bundles/fileupload");
+							Html.AddCssFileParts("~/css/fileupload");
 
                             var random = CommonHelper.GenerateRandomInteger();
                             var clientId = "upload" + CommonHelper.GenerateRandomInteger();

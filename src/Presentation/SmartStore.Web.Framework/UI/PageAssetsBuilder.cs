@@ -192,7 +192,7 @@ namespace SmartStore.Web.Framework.UI
                 _scriptParts.Add(location, new List<WebAssetDescriptor>());
 
             var descriptors = parts.Select(x => new WebAssetDescriptor { 
-                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~"), 
+                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null, 
                 Part = x });
 
             AddPartsCore(_scriptParts[location], descriptors, append);
@@ -229,7 +229,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var path in nonBundledParts)
                 {
-					sb.AppendFormat("<script src=\"{0}\" type=\"text/javascript\"></script>", urlHelper.Content(TryFindMinFile(path)));
+					sb.AppendFormat("<script src=\"{0}\" type=\"text/javascript\"></script>", Scripts.Url(TryFindMinFile(path)).ToString());
                     sb.Append(Environment.NewLine);
                 }
             }
@@ -256,7 +256,13 @@ namespace SmartStore.Web.Framework.UI
 						// no need to look for external files
 						return key;
 					}
-					
+
+					if (BundleTable.Bundles.GetBundleFor(key) != null)
+					{
+						// no need to seek min files for real bundles.
+						return key;
+					}
+
 					var extension = Path.GetExtension(key);
 					if (key.EndsWith(".min" + extension, StringComparison.InvariantCultureIgnoreCase))
 					{
@@ -286,7 +292,7 @@ namespace SmartStore.Web.Framework.UI
 
             var descriptors = parts.Select(x => new WebAssetDescriptor
             {
-                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~"),
+				ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null,
                 Part = x
             });
 
@@ -325,7 +331,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var path in nonBundledParts)
                 {
-					sb.AppendFormat("<link href=\"{0}\" rel=\"stylesheet\" type=\"text/css\" />", urlHelper.Content(TryFindMinFile(path)));
+					sb.AppendFormat("<link href=\"{0}\" rel=\"stylesheet\" type=\"text/css\" />", Styles.Url(TryFindMinFile(path)).ToString());
                     sb.Append(Environment.NewLine);
                 }
             }

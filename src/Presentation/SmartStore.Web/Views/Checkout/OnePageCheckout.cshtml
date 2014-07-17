@@ -3,11 +3,9 @@
 @using SmartStore.Core.Infrastructure.DependencyManagement;
 @using SmartStore.Core.Infrastructure;
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+	Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    Html.AddScriptParts(true,
-        "~/Scripts/public.accordion.js",
-        "~/Scripts/public.onepagecheckout.js");
+	Html.AddScriptParts("~/bundles/opc");
 
     var storeLocation = EngineContext.Current.Resolve<SmartStore.Core.IWebHelper>().GetStoreLocation();
 

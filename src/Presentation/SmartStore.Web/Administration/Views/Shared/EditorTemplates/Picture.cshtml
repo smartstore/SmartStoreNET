@@ -9,14 +9,10 @@
     var clientId = "picture" + random;
     var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
     int pictureId = Model.HasValue ? Model.Value : 0; // codehint: sm-add
-    var picture = pictureService.GetPictureById(pictureId); // codehint: sm-edit
+	var picture = pictureService.GetPictureById(pictureId); // codehint: sm-edit
 
-    Html.AddCssFileParts("~/Content/fileupload/jquery.fileupload-single-ui.css");
-    Html.AddScriptParts(
-		"~/Scripts/jquery-ui/widget.js",
-        "~/Content/fileupload/jquery.iframe-transport.js",
-        "~/Content/fileupload/jquery.fileupload.js",
-        "~/Content/fileupload/jquery.fileupload-single-ui.js");
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
 }
 
 <div id="@clientId" class="fileupload" style="display: inline-block;">

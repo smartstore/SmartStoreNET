@@ -1,0 +1,11 @@
+﻿
+@media (min-width: 768px) {
+
+	.blueimp-gallery > .indicator > li
+	{
+		width: 30px;
+		height: 30px;
+		border-radius: 0;
+	}
+
+}

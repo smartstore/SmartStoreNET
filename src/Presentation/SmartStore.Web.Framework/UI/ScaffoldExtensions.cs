@@ -14,11 +14,11 @@ namespace SmartStore.Web.Framework.UI
     {
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)
         {
-            return "<i class='icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
+            return "<i class='fa icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
         }
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
-            return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
+            return new HelperResult(writer => writer.Write("<i class='fa icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
         }
 
 		public static string LabeledProductName<T>(this HtmlHelper<T> helper, string id, string name, string typeName = "ProductTypeName", string typeLabelHint = "ProductTypeLabelHint")

@@ -19,8 +19,7 @@ namespace SmartStore.Web
 			{
 				productId = model.Id,
 				bundleItemId = model.BundleItem.Id,
-				itemType = itemType,
-				area = "admin"
+				itemType = itemType
 			});
 
 			return url;

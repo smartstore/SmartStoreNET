@@ -14,12 +14,7 @@
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    Html.AddCssFileParts("~/Content/smartstore.smartgallery.css");
-
-    Html.AddScriptParts(
-        "~/Scripts/jquery.elevatezoom.js",
-        "~/Scripts/smartstore.smartgallery.js",
-        "~/Scripts/public.product-detail.js");
+    Html.AddScriptParts("~/Scripts/public.product-detail.js");
     
     var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
     if (canonicalUrlsEnabled)
@@ -28,8 +23,6 @@
         Html.AddCanonicalUrlParts(productUrl);
     }
 }
-
-@Html.Partial("BsImageDialog")
 
 <div class="page product-details-page">
 

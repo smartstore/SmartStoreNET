@@ -163,11 +163,13 @@
 					displayNotification(msg, xhr.getResponseHeader('X-Message-Type'));
 				}
 				else {
-					var data = JSON.parse(xhr.responseText);
-					if (data.error && data.message) {
-						displayNotification(data.message, "error");
+					try {
+						var data = JSON.parse(xhr.responseText);
+						if (data.error && data.message) {
+							displayNotification(data.message, "error");
+						}
 					}
-					else {
+					catch (ex) {
 						displayNotification(xhr.responseText, "error");
 					}
 				}

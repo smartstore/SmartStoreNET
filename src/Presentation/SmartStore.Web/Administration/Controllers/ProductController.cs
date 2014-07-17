@@ -962,6 +962,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[ValidateInput(false)]
         public ActionResult Create(ProductModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -1041,6 +1042,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[ValidateInput(false)]
         public ActionResult Edit(ProductModel model, bool continueEditing, FormCollection form)
         {
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))

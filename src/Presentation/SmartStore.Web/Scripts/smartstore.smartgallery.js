@@ -215,7 +215,6 @@
 		    }
 		    var oldZoomImage = self.imageWrapper.find('.sg-image img').data("elevateZoom");
 		    if (oldZoomImage) {
-		        console.log(oldZoomImage);
 		        oldZoomImage.reset();
 		    }
 		},
@@ -424,65 +423,80 @@
 		
 		initBox: function() {
 			var self = this;
-			
-			//this.box = $('<div class="sg-box"></div>').hide(0).appendTo(this.el);
-			
-			/*$.each(this.images, function(i, img) {
-				self.box.append(
-					'<a class="sg-box-item" href="{0}" title="{1}" rel="sg-box"></a>'.format( 
-						img.link || img.image, 
-						img.desc || img.title 
-					)
-				);
-			});*/
+
+			var getWidget = function (id) {
+				var widget = $(id);
+				if (widget.length > 0) {
+					return widget;
+				}
+
+				widget = $('<div id="' + id + '" class="blueimp-gallery blueimp-gallery-controls"></div>')
+					.append('<div class="slides"></div>')
+					.append('<h3 class="title"></h3>')
+					.append('<a class="prev">' + String.fromCharCode(8249) + '</a>')
+					.append('<a class="next">' + String.fromCharCode(8250) + '</a>')
+					.append('<a class="close">' + String.fromCharCode(215) + '</a>')
+					.append('<a class="play-pause"></a>')
+					.append('<ol class="indicator"></ol>');
+				widget.appendTo('body');
+
+				return widget;
+			};
 
 			if (this.options.displayImage) {
-			    this.imageWrapper.on("click", ".sg-image > a", function (event) {
+				// Global click handler to open links with data-gallery attribute
+				// in the Gallery lightbox:
+				$(document).on('click', '.sg-image > a', function (e) {
+					e.preventDefault();
 
-			        event.preventDefault();
-			        $('#modal-gallery').modal({
-			            "target": "#modal-gallery",
-			            "selector": ".sg-thumb-list li a",
-			            "index": self.currentIndex
-			        }).on('beforeOpen', function () {
-			            var modalData = $(this).data('modal');
-			            modalData.options.index = self.currentIndex;
-			        });
+					var id = $(this).data('gallery') || 'default',
+						widget = getWidget(id == 'default' ? '#image-gallery-default' : id),
+						container = (widget.length && widget) || $(Gallery.prototype.options.container),
+						callbacks = {
+						    onopen: function () {
+						        container.data('gallery', this).trigger('open');
+						    },
+						    onopened: function () {
+						        container.trigger('opened');
+						    },
+						    onslide: function () {
+						        container.trigger('slide', arguments);
+						    },
+						    onslideend: function () {
+						        container.trigger('slideend', arguments);
+						    },
+						    onslidecomplete: function () {
+						        container.trigger('slidecomplete', arguments);
+						    },
+						    onclose: function () {
+						        container.trigger('close');
+						    },
+						    onclosed: function () {
+						        container.trigger('closed').removeData('gallery');
+						    }
+						},
+						options = $.extend(
+							// Retrieve custom options from data-attributes
+							// on the Gallery widget:
+							container.data(),
+							{
+                				container: container[0],
+                				index: self.currentIndex,
+                				event: event
+							},
+							callbacks,
+							self.options
+						),
+						// Select all links with the same data-gallery attribute:
+						links = $('[data-gallery="' + id + '"]').not($(this));
 
+					if (options.filter) {
+						links = links.filter(options.filter);
+					}
+
+					return new blueimp.Gallery(links, options);
 				});
 			}
-		},
-		
-		refreshDetailImage: function(src) {
-		    
-			var self = this,
-			 	imgWrapper = this.imageWrapper,
-				image = imgWrapper.find('.sg-image img'),
-				newImgWidth = "",
-				newImgHeight = "";
-			
-			image
-				.attr("src", src)
-				.removeAttr("width")
-           		.removeAttr("height");
-			
-			image.load(function(){
-					var newImage = imgWrapper.find('.sg-image img');
-					newImgWidth = newImage.width();
-					newImgHeight = newImage.height();
-					newImage.attr("width", newImgWidth).attr("height", newImgHeight);
-				
-					imgWrapper.find('.sg-image').css({
-						'width': newImgWidth + 'px',
-						'height': newImgHeight + 'px'
-					});
-					
-					self._centerImage(imgWrapper.find('.sg-image'), newImgWidth, newImgHeight);
-					
-					if (imgWrapper.parent().attr('id') == 'pd-gallery-big') {
-						imgWrapper.find('.sg-image a').attr('href', src);
-					}
-			});
 		},
 		
 		_showBox: function (idx) {
@@ -587,12 +601,13 @@
 			var self = this;
 			var image = this.images[index];
 			var opts = self.options;
+			var thumb = this.nav.find('.sg-thumb' + index);
 
 			var imgContainer = $(document.createElement('div')).addClass('sg-image');
 			var img = $(new Image()).attr('src', image.image);
 			if (image.link) {
 				var link = $('<a href="'+ image.link +'" target="_blank"></a>');
-				link.append(img);
+				link.append(img).data('gallery', thumb.data('gallery'));
 				imgContainer.append(link);
 			} 
 			else {
@@ -616,7 +631,7 @@
 				};
 			}
 			
-			this.highlightThumb(this.nav.find('.sg-thumb'+ index));
+			this.highlightThumb(thumb);
 			
 			var direction = 'right';
 			if (this.currentIndex < index) {
@@ -750,7 +765,7 @@
 						        image.size = { width: $(this).width(), height: $(this).height() };
 								self.fireCallback(callback);
 						 	})
-						 	.error(function() {
+						 	.on("error", function(e) {
 						    	image.error = true;
 						    	image.preloaded = false;
 						    	image.size = false;
@@ -836,8 +851,8 @@
 		},	
 		// full size image box options
 		box: {
-			enabled: true
-			/* {...} bootstrap image gallery options are passed through */
+			enabled: true,
+			/* {...} blueimp image gallery options are passed through */
 		},
 		callbacks: {
 			imageClick: null,

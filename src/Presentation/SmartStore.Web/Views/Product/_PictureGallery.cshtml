@@ -2,12 +2,22 @@
 @model ProductDetailsPictureModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    Html.AddScriptParts(true,
-        "~/Scripts/load-image.js", 
-        "~/Content/bootstrap/js/custom/bootstrap-image-gallery.js");
+	Html.AddCssFileParts(true, 
+		"~/Content/smartstore.smartgallery.css", 
+		"~/Content/image-gallery/css/blueimp-gallery.css",
+		"~/Content/image-gallery/css/blueimp-gallery-indicator.css",
+		"~/Content/image-gallery/css/blueimp-gallery-custom.css");
+
+	Html.AddScriptParts(true, 
+		"~/Content/image-gallery/js/blueimp-gallery.js",
+		"~/Content/image-gallery/js/blueimp-gallery-fullscreen.js",
+		"~/Content/image-gallery/js/blueimp-gallery-indicator.js",
+		"~/Scripts/jquery.elevatezoom.js",
+		"~/Scripts/smartstore.smartgallery.js");
 
     var zoomEnabled = Model.DefaultPictureZoomEnabled;
 }
+
 <div id="pd-gallery" class="picture pd-gallery">
     <div class="sg-image-wrapper">
         <img alt="@Model.DefaultPictureModel.AlternateText"
@@ -27,9 +37,9 @@
                         var picture = Model.PictureModels[i];
                         
                         <li data-picture-id="@picture.PictureId">
-                            <a href="@picture.ImageUrl" @Html.Attr("data-zoom-image", picture.FullSizeImageUrl, zoomEnabled) title="@Model.Name">
-                                <img src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
-                            </a>
+							<a href="@picture.ImageUrl" @Html.Attr("data-zoom-image", picture.FullSizeImageUrl, zoomEnabled) title="@Model.Name" data-gallery="default">
+								<img src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+							</a>
                         </li>
                     }
 
@@ -37,9 +47,9 @@
                 else 
                 {     
                     <li data-picture-id="@Model.DefaultPictureModel.PictureId">
-                        <a href="@Model.DefaultPictureModel.ImageUrl" @Html.Attr("data-zoom-image", Model.DefaultPictureModel.FullSizeImageUrl, zoomEnabled) title="@Model.Name">
-                            <img src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
-                        </a>
+						<a href="@Model.DefaultPictureModel.ImageUrl" @Html.Attr("data-zoom-image", Model.DefaultPictureModel.FullSizeImageUrl, zoomEnabled) title="@Model.Name" data-gallery="default">
+							<img src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
+						</a>
                     </li>
                 }
             </ul>

@@ -7,6 +7,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Plugin.Shipping.ByWeight.Data;
 using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
 using SmartStore.Plugin.Shipping.ByWeight.Services;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
@@ -25,7 +26,9 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
         private readonly ShippingByWeightObjectContext _objectContext;
         private readonly ILocalizationService _localizationService;
-
+        private readonly IPriceFormatter _priceFormatter;
+        private readonly ICommonServices _commonServices;
+        
         #endregion
 
         #region Ctor
@@ -35,7 +38,9 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             IPriceCalculationService priceCalculationService, 
             ShippingByWeightSettings shippingByWeightSettings,
             ShippingByWeightObjectContext objectContext,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IPriceFormatter priceFormatter,
+            ICommonServices commonServices)
         {
             this._shippingService = shippingService;
 			this._storeContext = storeContext;
@@ -43,7 +48,9 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             this._priceCalculationService = priceCalculationService;
             this._shippingByWeightSettings = shippingByWeightSettings;
             this._objectContext = objectContext;
-            _localizationService = localizationService;
+            this._localizationService = localizationService;
+            this._priceFormatter = priceFormatter;
+            this._commonServices = commonServices;
         }
         #endregion
 
@@ -137,13 +144,27 @@ namespace SmartStore.Plugin.Shipping.ByWeight
             var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
             foreach (var shippingMethod in shippingMethods)
             {
+                var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight);
+                
                 decimal? rate = GetRate(subTotal, weight, shippingMethod.Id, storeId, countryId);
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();
                     shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
-                    shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
-                    shippingOption.Rate = rate.Value;
+
+                    if (record != null && record.SmallQuantityThreshold > subTotal)
+                    {
+                        shippingOption.Description = shippingMethod.GetLocalized(x => x.Description)
+                            + _localizationService.GetResource("Plugin.Shipping.ByWeight.SmallQuantitySurchargeNotReached").FormatWith(
+                                _priceFormatter.FormatPrice(record.SmallQuantitySurcharge),
+                                _priceFormatter.FormatPrice(record.SmallQuantityThreshold));
+
+                        shippingOption.Rate = rate.Value + record.SmallQuantitySurcharge;
+                    }
+                    else {
+                        shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
+                        shippingOption.Rate = rate.Value;
+                    }
                     response.ShippingOptions.Add(shippingOption);
                 }
             }

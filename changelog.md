@@ -13,6 +13,7 @@
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
 * #393 Web API: Implement OData actions for simpler working with product attributes
+* ShippingByWeight: new settings to configure a small quantity surcharge
 
 ###Improvements###
 * Task Scheduler:

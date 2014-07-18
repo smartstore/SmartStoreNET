@@ -62,7 +62,22 @@
   <LocaleResource Name="Fields.Store.Hint">
     <Value>Wird das Sternchen ausgewählt, so wird die Rate auf alle Shops angewandt.</Value>
   </LocaleResource>
-
+  <LocaleResource Name="Fields.SmallQuantitySurcharge">
+    <Value>Mindermengenzuschlag</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantitySurcharge.Hint">
+    <Value>Bestimmt den Wert des Mindermengenzuschlags.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold">
+    <Value>Mindermenge bis Bestellwert</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold.Hint">
+    <Value>Warenwert, bis zu dem ein Mindermengenzuschlag erhoben werden soll. Der Zuschlag wird ignoriert, wenn keine Versandkosten anfallen. Verwenden Sie "0", wenn kein Zuschlag erhoben werden soll.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SmallQuantityThresholdNotReached">
+    <Value><![CDATA[<br>Es wird ein Mindermengenzuschlag von <b class=\"text-success\">{0}</b> erhoben, da Ihr Bestellwert unter <b class=\"text-warning\">{1}</b> liegt.]]></Value>
+  </LocaleResource>
+  
   <LocaleResource Name="AddNewRecordTitle">
     <Value>Neue Versandbedingung hinzufügen</Value>
   </LocaleResource>

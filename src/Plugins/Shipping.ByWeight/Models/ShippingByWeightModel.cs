@@ -34,5 +34,11 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Models
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.ShippingChargeAmount")]
         public decimal ShippingChargeAmount { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.SmallQuantitySurcharge")]
+        public decimal SmallQuantitySurcharge { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.SmallQuantityThreshold")]
+        public decimal SmallQuantityThreshold { get; set; }
     }
 }

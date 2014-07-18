@@ -25,6 +25,8 @@
                             .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
                         columns.Bound(x => x.ShippingChargePercentage).Width(100);
                         columns.Bound(x => x.ShippingChargeAmount).Width(100);
+                        columns.Bound(x => x.SmallQuantitySurcharge).Width(100);
+                        columns.Bound(x => x.SmallQuantityThreshold).Width(100);
                         columns.Command(commands =>
                         {
                             commands.Edit();
@@ -147,6 +149,26 @@
                 @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
             </td>
         </tr>
+
+        <tr id="pnlSmallQuantitySurcharge">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+            </td>
+        </tr>
+        <tr id="pnlSmallQuantityThreshold">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SmallQuantityThreshold)
+                @Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+            </td>
+        </tr>
+
         <tr>
 			<td class="adminTitle">
 				&nbsp;

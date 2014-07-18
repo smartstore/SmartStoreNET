@@ -87,6 +87,8 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                         UsePercentage = x.UsePercentage,
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
+                        SmallQuantitySurcharge = x.SmallQuantitySurcharge,
+                        SmallQuantityThreshold = x.SmallQuantityThreshold,
                     };
 					//shipping method
                     var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
@@ -128,6 +130,8 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                         UsePercentage = x.UsePercentage,
                         ShippingChargePercentage = x.ShippingChargePercentage,
                         ShippingChargeAmount = x.ShippingChargeAmount,
+                        SmallQuantitySurcharge = x.SmallQuantitySurcharge,
+                        SmallQuantityThreshold = x.SmallQuantityThreshold,
                     };
 					//shipping method
                     var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
@@ -168,6 +172,8 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
             sbw.UsePercentage = model.UsePercentage;
             sbw.ShippingChargeAmount = model.ShippingChargeAmount;
             sbw.ShippingChargePercentage = model.ShippingChargePercentage;
+            sbw.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
+            sbw.SmallQuantityThreshold = model.SmallQuantityThreshold;
             _shippingByWeightService.UpdateShippingByWeightRecord(sbw);
 
             return RatesList(command);
@@ -201,7 +207,9 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
                 To = model.AddTo,
                 UsePercentage = model.AddUsePercentage,
                 ShippingChargeAmount = model.AddShippingChargeAmount,
-                ShippingChargePercentage = model.AddShippingChargePercentage
+                ShippingChargePercentage = model.AddShippingChargePercentage,
+                SmallQuantitySurcharge = model.SmallQuantitySurcharge,
+                SmallQuantityThreshold = model.SmallQuantityThreshold,
             };
             _shippingByWeightService.InsertShippingByWeightRecord(sbw);
 

@@ -519,6 +519,25 @@ namespace SmartStore.Data
 			return attachedEntities.Count;
 		}
 
+		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState)
+		{
+			((IObjectContextAdapter)this).ObjectContext.ObjectStateManager.ChangeObjectState(entity, newState);
+		}
+
+		public bool SetToUnchanged<TEntity>(TEntity entity)
+		{
+			try
+			{
+				ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
+				return true;
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+				return false;
+			}
+		}
+
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();

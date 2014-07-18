@@ -106,6 +106,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportBasePrice")]
 		public bool ExportBasePrice { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ConvertNetToGrossPrices")]
+		public bool ConvertNetToGrossPrices { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.LanguageId")]
+		public int LanguageId { get; set; }
+
 		public void Copy(FroogleSettings settings, bool fromSettings)
 		{
 			if (fromSettings)
@@ -137,6 +143,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				ExpirationDays = settings.ExpirationDays;
 				ExportShipping = settings.ExportShipping;
 				ExportBasePrice = settings.ExportBasePrice;
+				ConvertNetToGrossPrices = settings.ConvertNetToGrossPrices;
+				LanguageId = settings.LanguageId;
 			}
 			else
 			{
@@ -167,6 +175,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.ExpirationDays = ExpirationDays;
 				settings.ExportShipping = ExportShipping;
 				settings.ExportBasePrice = ExportBasePrice;
+				settings.ConvertNetToGrossPrices = ConvertNetToGrossPrices;
+				settings.LanguageId = LanguageId;
 			}
 		}
 	}

@@ -4,7 +4,12 @@ using System.Linq;
 using System.Globalization;
 using System.IO;
 using System.Web;
+using System.Web.Mvc;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Stores;
@@ -16,10 +21,8 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Seo;
-using System.Web.Mvc;
-using System.Threading;
-using System.Threading.Tasks;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -88,6 +91,24 @@ namespace SmartStore.Web.Framework.Plugins
 			get { return _languageService ?? (_languageService = _ctx.Resolve<ILanguageService>()); }
 		}
 
+		private IPriceCalculationService _priceCalculationService;
+		private IPriceCalculationService PriceCalculationService
+		{
+			get { return _priceCalculationService ?? (_priceCalculationService = _ctx.Resolve<IPriceCalculationService>()); }
+		}
+
+		private ITaxService _taxService;
+		private ITaxService TaxService
+		{
+			get { return _taxService ?? (_taxService = _ctx.Resolve<ITaxService>()); }
+		}
+
+		private IWorkContext _workContext;
+		private IWorkContext WorkContext
+		{
+			get { return _workContext ?? (_workContext = _ctx.Resolve<IWorkContext>()); }
+		}
+
 		#endregion
 
 		private PromotionFeedSettings BaseSettings 
@@ -139,66 +160,47 @@ namespace SmartStore.Web.Framework.Plugins
 			return input;
 		}
 
-		public string ReplaceCsvChars(string value)
-		{
-			if (value.HasValue())
-			{
-				value = value.Replace(';', ',');
-				value = value.Replace('\r', ' ');
-				value = value.Replace('\n', ' ');
-				return value.Replace("'", "");
-			}
-			return "";
-		}
-
-		public string DecimalUsFormat(decimal value)
-		{
-			return Math.Round(value, 2).ToString(new CultureInfo("en-US", false).NumberFormat);
-		}
-
-		public string BuildProductDescription(Product product, ProductManufacturer manu, Func<string, string> updateResult = null)
+		public string BuildProductDescription(string productName, string shortDescription, string fullDescription, string manufacturer, Func<string, string> updateResult = null)
 		{
 			if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual(NotSpecified))
 				return "";
 
 			string description = "";
-			string productName = product.Name;
-			string manuName = (manu == null ? "" : manu.Manufacturer.Name);
 
 			if (BaseSettings.BuildDescription.IsNullOrEmpty())
 			{
-				description = product.FullDescription;
+				description = fullDescription;
 
 				if (description.IsNullOrEmpty())
-					description = product.ShortDescription;
+					description = shortDescription;
 				if (description.IsNullOrEmpty())
 					description = productName;
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("short"))
 			{
-				description = product.ShortDescription;
+				description = shortDescription;
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("long"))
 			{
-				description = product.FullDescription;
+				description = fullDescription;
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("titleAndShort"))
 			{
-				description = productName.Grow(product.ShortDescription, " ");
+				description = productName.Grow(shortDescription, " ");
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("titleAndLong"))
 			{
-				description = productName.Grow(product.FullDescription, " ");
+				description = productName.Grow(fullDescription, " ");
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("manuAndTitleAndShort"))
 			{
-				description = manuName.Grow(productName, " ");
-				description = description.Grow(product.ShortDescription, " ");
+				description = manufacturer.Grow(productName, " ");
+				description = description.Grow(shortDescription, " ");
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("manuAndTitleAndLong"))
 			{
-				description = manuName.Grow(productName, " ");
-				description = description.Grow(product.FullDescription, " ");
+				description = manufacturer.Grow(productName, " ");
+				description = description.Grow(fullDescription, " ");
 			}
 
 			if (updateResult != null)
@@ -252,12 +254,44 @@ namespace SmartStore.Web.Framework.Plugins
 			if (decimal.Compare(cost, decimal.Zero) == 0)
 				return "";
 
-			return DecimalUsFormat(cost);
+			return cost.FormatInvariant();
 		}
 
 		public string GetProductDetailUrl(Store store, Product product)
 		{
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));
+		}
+
+		public decimal GetProductPrice(Product product, Currency currency)
+		{
+			decimal priceBase = PriceCalculationService.GetFinalPrice(product, null, WorkContext.CurrentCustomer, decimal.Zero, true, 1);
+
+			if (BaseSettings.ConvertNetToGrossPrices)
+			{
+				decimal taxRate;
+				priceBase = TaxService.GetProductPrice(product, priceBase, true, WorkContext.CurrentCustomer, out taxRate);
+			}
+			
+			decimal price = ConvertFromStoreCurrency(priceBase, currency);
+			return price;
+		}
+
+		public decimal? GetOldPrice(Product product, Currency currency)
+		{
+			if (!decimal.Equals(product.OldPrice, decimal.Zero) && !decimal.Equals(product.OldPrice, product.Price) &&
+				!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+			{
+				decimal price = product.OldPrice;
+
+				if (BaseSettings.ConvertNetToGrossPrices)
+				{
+					decimal taxRate;
+					price = TaxService.GetProductPrice(product, price, true, WorkContext.CurrentCustomer, out taxRate);
+				}
+
+				return ConvertFromStoreCurrency(price, currency);
+			}
+			return null;
 		}
 		
 		public FeedFileData GetFeedFileByStore(Store store, string secondFileName = null, string extension = null)
@@ -269,7 +303,7 @@ namespace SmartStore.Web.Framework.Plugins
 			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
 			string fileName = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
 			string logName = Path.GetFileNameWithoutExtension(fileName) + ".txt";
-
+			
 			if (ext.HasValue())
 				fileName = Path.GetFileNameWithoutExtension(fileName) + (ext.StartsWith(".") ? "" : ".") + ext;
 
@@ -287,8 +321,18 @@ namespace SmartStore.Web.Framework.Plugins
 				StoreName = store.Name,
 				FilePath = Path.Combine(dir, fileName),
 				FileUrl = url + fileName,
-				LogPath = Path.Combine(dir, logName)
+				LogPath = Path.Combine(dir, logName),
+				LogUrl = url + logName
 			};
+
+			try
+			{
+				feedFile.LastWriteTime = File.GetLastWriteTimeUtc(feedFile.FilePath).RelativeFormat(true, null);
+			}
+			catch (Exception)
+			{
+				feedFile.LastWriteTime = feedFile.LastWriteTime.NaIfEmpty();
+			}
 
 			if (secondFileName.HasValue())
 			{
@@ -655,6 +699,18 @@ namespace SmartStore.Web.Framework.Plugins
 			model.AvailableStores = new List<SelectListItem>();
 			model.AvailableStores.Add(new SelectListItem() { Text = GetResource("Admin.Common.All"), Value = "0" });
 			model.AvailableStores.AddRange(stores.ToSelectListItems());
+
+			model.AvailableLanguages = new List<SelectListItem>();
+			model.AvailableLanguages.Add(new SelectListItem() { Text = GetResource("Admin.Common.Standard"), Value = "0" });
+
+			foreach (var language in LanguageService.GetAllLanguages())
+			{
+				model.AvailableLanguages.Add(new SelectListItem()
+				{
+					Text = language.Name,
+					Value = language.Id.ToString()
+				});
+			}
 
 			if (!model.IsRunning)
 				model.IsRunning = (ScheduleTask != null && ScheduleTask.IsRunning);

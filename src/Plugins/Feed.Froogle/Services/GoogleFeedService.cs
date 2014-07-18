@@ -1,31 +1,26 @@
+using Autofac;
+using Telerik.Web.Mvc;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Web;
+using System.Web.Mvc;
+using System.Collections.Generic;
 using System.Globalization;
+using SmartStore.Web.Framework.Plugins;
+using SmartStore.Plugin.Feed.Froogle.Domain;
+using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Catalog;
-using SmartStore.Plugin.Feed.Froogle.Domain;
-using SmartStore.Plugin.Feed.Froogle.Models;
-using SmartStore.Web.Framework.Plugins;
-using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Tasks;
-using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
-using System.Web.Mvc;
-using System.Collections.Generic;
-using SmartStore.Web.Framework;
-using SmartStore.Services.Directory;
-using SmartStore.Core;
 using SmartStore.Core.Logging;
-using Autofac;
-using System.Threading;
-using SmartStore.Core.Async;
-using System.Web;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Tasks;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -37,36 +32,27 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
         private readonly IRepository<GoogleProductRecord> _gpRepository;
 		private readonly IProductService _productService;
 		private readonly IManufacturerService _manufacturerService;
-		private readonly IStoreService _storeService;
-		private readonly ICategoryService _categoryService;
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
-		private readonly IPriceCalculationService _priceCalculationService;
-		private readonly IWorkContext _workContext;
+		private readonly IDbContext _dbContext;
 
 		public GoogleFeedService(
 			IRepository<GoogleProductRecord> gpRepository,
 			IProductService productService,
 			IManufacturerService manufacturerService,
-			IStoreService storeService,
-			ICategoryService categoryService,
 			FroogleSettings settings,
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
-			IPriceCalculationService priceCalculationService,
-			IWorkContext workContext,
+			IDbContext dbContext,
 			IComponentContext ctx)
         {
             _gpRepository = gpRepository;
 			_productService = productService;
 			_manufacturerService = manufacturerService;
-			_storeService = storeService;
-			_categoryService = categoryService;
 			Settings = settings;
 			_measureService = measureService;
 			_measureSettings = measureSettings;
-			_priceCalculationService = priceCalculationService;
-			_workContext = workContext;
+			_dbContext = dbContext;
 
 			_helper = new FeedPluginHelper(ctx, "PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
 			{
@@ -306,7 +292,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			if (category.IsNullOrEmpty())
 				return Helper.GetResource("MissingDefaultCategory");
 
-			var brand = (manu != null && manu.Manufacturer.Name.HasValue() ? manu.Manufacturer.Name : Settings.Brand);
+			string manuName = (manu != null ? manu.Manufacturer.GetLocalized(x => x.Name, Settings.LanguageId, true, false) : null);
+			string productName = product.GetLocalized(x => x.Name, Settings.LanguageId, true, false);
+			string shortDescription = product.GetLocalized(x => x.ShortDescription, Settings.LanguageId, true, false);
+			string fullDescription = product.GetLocalized(x => x.FullDescription, Settings.LanguageId, true, false);
+
+			var brand = (manuName ?? Settings.Brand);
 			var mpn = Helper.GetManufacturerPartNumber(product);
 
 			bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
@@ -314,12 +305,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
 
 			writer.WriteStartElement("title");
-			writer.WriteCData(product.Name.Truncate(70));
+			writer.WriteCData(productName.Truncate(70));
 			writer.WriteEndElement();
 
-			var description = Helper.BuildProductDescription(product, manu, d =>
+			var description = Helper.BuildProductDescription(productName, shortDescription, fullDescription, manuName, d =>
 			{
-				if (product.FullDescription.IsNullOrEmpty() && product.ShortDescription.IsNullOrEmpty())
+				if (fullDescription.IsNullOrEmpty() && shortDescription.IsNullOrEmpty())
 				{
 					var rnd = new Random();
 
@@ -362,24 +353,24 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			writer.WriteElementString("g", "condition", _googleNamespace, Condition());
 			writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
 
-			decimal priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
-			decimal price = Helper.ConvertFromStoreCurrency(priceBase, currency);
+			decimal price = Helper.GetProductPrice(product, currency);
 			string specialPriceDate;
 
 			if (SpecialPrice(product, out specialPriceDate))
 			{
-				writer.WriteElementString("g", "sale_price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
+				writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
 				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
 
-				// get regular price
+				// get regular price ignoring any special price
 				decimal specialPrice = product.SpecialPrice.Value;
 				product.SpecialPrice = null;
-				priceBase = _priceCalculationService.GetFinalPrice(product, null, _workContext.CurrentCustomer, decimal.Zero, true, 1);
+				price = Helper.GetProductPrice(product, currency);
 				product.SpecialPrice = specialPrice;
-				price = Helper.ConvertFromStoreCurrency(priceBase, currency);
+
+				_dbContext.SetToUnchanged<Product>(product);
 			}
 
-			writer.WriteElementString("g", "price", _googleNamespace, Helper.DecimalUsFormat(price) + " " + currency.CurrencyCode);
+			writer.WriteElementString("g", "price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
 
 			writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
 			writer.WriteCData("brand", brand, "g", _googleNamespace);
@@ -403,7 +394,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			if (Settings.ExportShipping)
 			{
-				string weightInfo, weight = Helper.DecimalUsFormat(product.Weight);
+				string weightInfo, weight = product.Weight.FormatInvariant();
 
 				if (measureWeightSystemKey.IsCaseInsensitiveEqual("gram"))
 					weightInfo = weight + " g";
@@ -423,7 +414,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 				if (BasePriceSupported(product.BasePriceBaseAmount ?? 0, measureUnit))
 				{
-					string basePriceMeasure = "{0} {1}".FormatWith(Helper.DecimalUsFormat(product.BasePriceAmount ?? decimal.Zero), measureUnit);
+					string basePriceMeasure = "{0} {1}".FormatWith((product.BasePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
 					string basePriceBaseMeasure = "{0} {1}".FormatWith(product.BasePriceBaseAmount, measureUnit);
 
 					writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);

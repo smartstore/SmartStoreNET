@@ -58,12 +58,15 @@
 			<td class="adminData">
 				@foreach (var group in Model.GeneratedFiles.GroupBy(x => x.StoreId))
 				{
+					var firstFile = group.First();
 					<p>
-						@(group.First().StoreName):
+						<strong>@(firstFile.StoreName)</strong>:
 						@foreach (var file in group)
 						{
 							<br /><a href="@file.FileUrl" target="_blank">@file.FileUrl</a>
 						}
+						<br /><a href="@firstFile.LogUrl" target="_blank">@T("Admin.Configuration.ActivityLog")</a>,
+						@T("Common.UpdatedOn"): @(firstFile.LastWriteTime)
 					</p>
 				}
 			</td>
@@ -147,6 +150,15 @@
 		<td class="adminData">
 			@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores)
 			@Html.ValidationMessageFor(model => model.StoreId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.LanguageId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.LanguageId, Model.AvailableLanguages)
+			@Html.ValidationMessageFor(model => model.LanguageId)
 		</td>
 	</tr>
 	<tr>
@@ -397,6 +409,15 @@
         <td class="adminData">
             @Html.EditorFor(m => m.OnlineOnly)
             @Html.ValidationMessageFor(m => m.OnlineOnly)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ConvertNetToGrossPrices)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ConvertNetToGrossPrices)
+            @Html.ValidationMessageFor(m => m.ConvertNetToGrossPrices)
         </td>
     </tr>
     <tr>

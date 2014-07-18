@@ -266,4 +266,16 @@
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Activate this option if you want to export the base price of the product.</Value>
 	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices">
+		<Value>Convert net into gross prices</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices.Hint">
+		<Value>Determines to convert net into gross prices.</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId">
+		<Value>Language</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId.Hint">
+		<Value>Determines which language to use to export language dependent values (for instance the product name).</Value>
+	</LocaleResource>
 </Language>

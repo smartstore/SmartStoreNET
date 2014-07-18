@@ -33,7 +33,7 @@
 * (Developer) Moved _PublicControllerBase_ to SmartStore.Web.Framework
 * (Developer) Moved 'AdminControllerBase' to SmartStore.Web.Framework
 * #384 Web API: Inserting sluged recources like products require an URL record
-* Promotion feed plugins: Asynchronous feed creation
+* #382 Promotion feed plugins: Asynchronous feed creation, more options and improvements
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

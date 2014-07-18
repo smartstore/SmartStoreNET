@@ -23,10 +23,10 @@ namespace SmartStore.Plugin.Feed.Froogle
             GoogleProductObjectContext objectContext,
 			ILocalizationService localizationService)
         {
-            this._googleService = googleService;
-            this._settingService = settingService;
-            this._objectContext = objectContext;
-			this._localizationService = localizationService;
+            _googleService = googleService;
+            _settingService = settingService;
+            _objectContext = objectContext;
+			_localizationService = localizationService;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
             _settingService.DeleteSetting<FroogleSettings>();
 
-			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
+			_localizationService.DeletePluginStringResources(this.PluginDescriptor);
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

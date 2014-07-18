@@ -266,4 +266,16 @@
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Aktivieren Sie diese Option, wenn Sie denGrundpreis des Produkt exportieren möchten.</Value>
 	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices">
+		<Value>Netto- in Bruttopreise umrechnen</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices.Hint">
+		<Value>Legt fest, dass Netto- in Bruttopreise umgerechnet werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId">
+		<Value>Sprache</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId.Hint">
+		<Value>Legt die Sprache fest, in der sprachabhängige Werte (z.B. der Produktname) exportiert werden sollen.</Value>
+	</LocaleResource>
 </Language>

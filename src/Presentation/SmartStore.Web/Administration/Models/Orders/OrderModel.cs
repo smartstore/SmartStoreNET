@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -261,8 +262,8 @@ namespace SmartStore.Admin.Models.Orders
         {
             public OrderItemModel()
             {
-                ReturnRequestIds = new List<int>();
                 PurchasedGiftCardIds = new List<int>();
+				ReturnRequests = new List<ReturnRequestModel>();
 				BundleItems = new List<BundleItemModel>();
             }
 			public int ProductId { get; set; }
@@ -291,7 +292,6 @@ namespace SmartStore.Admin.Models.Orders
 
             public string AttributeInfo { get; set; }
             public string RecurringInfo { get; set; }
-            public IList<int> ReturnRequestIds { get; set; }
             public IList<int> PurchasedGiftCardIds { get; set; }
 
             public bool IsDownload { get; set; }
@@ -303,8 +303,31 @@ namespace SmartStore.Admin.Models.Orders
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 
+			public IList<ReturnRequestModel> ReturnRequests { get; set; }
 			public IList<BundleItemModel> BundleItems { get; set; }
         }
+
+		public class ReturnRequestModel : EntityModelBase
+		{
+			public ReturnRequestStatus Status { get; set; }
+			public string StatusString { get; set; }
+			public string StatusLabel
+			{
+				get
+				{
+					if (Status >= ReturnRequestStatus.RequestRejected)
+						return "warning";
+
+					if (Status >= ReturnRequestStatus.ReturnAuthorized)
+						return "success";
+
+					if (Status == ReturnRequestStatus.Received)
+						return "info";
+
+					return "";
+				}
+			}
+		}
 
 		public class BundleItemModel : ModelBase
 		{

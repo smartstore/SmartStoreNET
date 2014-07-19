@@ -497,8 +497,17 @@ namespace SmartStore.Admin.Controllers
 				}
 
                 //return requests
-                orderItemModel.ReturnRequestIds = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null)
-                    .Select(rr=> rr.Id).ToList();
+				orderItemModel.ReturnRequests = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null).Select(x =>
+					{
+						return new OrderModel.ReturnRequestModel()
+						{
+							Id = x.Id,
+							Status = x.ReturnRequestStatus,
+							StatusString = x.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext)
+						};
+					})
+					.ToList();
+
                 //gift cards
                 orderItemModel.PurchasedGiftCardIds = _giftCardService.GetGiftCardsByPurchasedWithOrderItemId(orderItem.Id)
                     .Select(gc => gc.Id).ToList();

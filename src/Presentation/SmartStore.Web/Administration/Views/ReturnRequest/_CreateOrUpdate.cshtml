@@ -97,4 +97,15 @@
             @Html.DisplayFor(model => model.CreatedOn)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">&nbsp;</td>
+        <td class="adminData">
+			@if(Model.CanAccept)
+			{
+				<button type="submit" name="accept" value="accept" class="btn btn-warning" onclick="return confirm('@T("Admin.ReturnRequests.Accept.Confirm")');">
+					<i class="icon-ok"></i>&nbsp;@T("Admin.ReturnRequests.Accept")
+				</button>
+			}
+        </td>
+    </tr>
 </table>

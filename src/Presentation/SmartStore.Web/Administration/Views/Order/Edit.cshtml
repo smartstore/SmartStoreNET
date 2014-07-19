@@ -1442,24 +1442,27 @@
 											<br />
 											@BundleItemsInfo(item)
 										}
-                                        @if (item.ReturnRequestIds.Count > 0)
+                                        @if (item.ReturnRequests.Count > 0)
                                         {
                                             <br />
-                                            <br />
                                             <hr />
-                                            @T("Admin.Orders.Products.ReturnRequests")<text>:</text>
-                                            for (int i = 0; i < item.ReturnRequestIds.Count; i++)
+                                            for (int i = 0; i < item.ReturnRequests.Count; ++i)
                                             {
-                                                <a href="@Url.Action("Edit", "ReturnRequest", new { id = item.ReturnRequestIds[i] })">@item.ReturnRequestIds[i]</a>
-                                                if (i != item.ReturnRequestIds.Count - 1)
+												var returnRequest = item.ReturnRequests[i];
+												
+												<span class="label label-@(returnRequest.StatusLabel)" style="margin-right: 4px">@returnRequest.StatusString</span>
+											
+                                                <a href="@Url.Action("Edit", "ReturnRequest", new { id = returnRequest.Id })">
+													@T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id
+												</a>
+                                                if (i != item.ReturnRequests.Count - 1)
                                                 {
-                                                    <text>,</text>
+                                                    <br />
                                                 }
                                             }
                                         }
                                         @if (item.PurchasedGiftCardIds.Count > 0)
                                         {
-                                            <br />
                                             <br />
                                             <hr />
                                             @T("Admin.Orders.Products.GiftCards")<text>:</text>

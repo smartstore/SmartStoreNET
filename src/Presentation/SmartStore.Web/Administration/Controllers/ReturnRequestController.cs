@@ -231,6 +231,22 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+		[HttpPost, ActionName("Edit")]
+		[FormValueRequired("accept")]
+		public ActionResult Accept(ReturnRequestModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+				return AccessDeniedView();
+
+			var returnRequest = _orderService.GetReturnRequestById(model.Id);
+			if (returnRequest == null)
+				return RedirectToAction("List");
+
+			bool result = _orderService.AcceptReturnRequest(returnRequest);
+
+			return RedirectToAction("Edit", returnRequest.Id);
+		}
+
         #endregion
     }
 }

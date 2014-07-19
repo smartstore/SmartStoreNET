@@ -648,6 +648,23 @@ namespace SmartStore.Services.Orders
             return returnRequests;
         }
 
+		/// <summary>
+		/// Processes a return request and updates the order item
+		/// </summary>
+		/// <param name="returnRequest">Return request</param>
+		/// <returns>true: success, false: failure</returns>
+		public virtual bool AcceptReturnRequest(ReturnRequest returnRequest)
+		{
+			returnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
+			_returnRequestRepository.Update(returnRequest);
+
+			var orderItem = GetOrderItemById(returnRequest.OrderItemId);
+
+
+
+			return false;
+		}
+
         #endregion
         
         #endregion

@@ -171,6 +171,10 @@
     <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.Designer.cs">
       <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.cs" />
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.Designer.cs">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -353,6 +357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406122329031_ContentDeliveryNetwork.resx">
       <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407191010096_BetterReturnRequest.resx">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

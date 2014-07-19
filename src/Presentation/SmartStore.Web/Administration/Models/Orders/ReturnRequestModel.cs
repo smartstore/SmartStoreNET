@@ -54,5 +54,16 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
+
+		public bool CanAccept
+		{
+			get
+			{
+				if (Id != 0 && (ReturnRequestStatus)ReturnRequestStatusId < ReturnRequestStatus.ReturnAuthorized)
+					return true;
+
+				return false;
+			}
+		}
     }
 }

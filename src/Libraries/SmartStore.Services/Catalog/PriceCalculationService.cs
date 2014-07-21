@@ -628,6 +628,7 @@ namespace SmartStore.Services.Catalog
 			return totalDiscountAmount;
         }
 
+
 		/// <summary>
 		/// Gets the price adjustment of a variant attribute value
 		/// </summary>

@@ -310,6 +310,7 @@ namespace SmartStore.Admin.Models.Orders
 		public class ReturnRequestModel : EntityModelBase
 		{
 			public ReturnRequestStatus Status { get; set; }
+			public int Quantity { get; set; }
 			public string StatusString { get; set; }
 			public string StatusLabel
 			{

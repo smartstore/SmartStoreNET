@@ -200,7 +200,7 @@ namespace SmartStore.Services.Tests.Orders
                 _eventPublisher, _genericAttributeService,
 				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
-                _currencySettings);
+                _currencySettings, _shoppingCartSettings);
         }
         
         [Test]

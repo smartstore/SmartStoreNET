@@ -502,6 +502,7 @@ namespace SmartStore.Admin.Controllers
 						return new OrderModel.ReturnRequestModel()
 						{
 							Id = x.Id,
+							Quantity = x.Quantity,
 							Status = x.ReturnRequestStatus,
 							StatusString = x.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext)
 						};

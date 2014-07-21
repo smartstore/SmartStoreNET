@@ -246,13 +246,6 @@ namespace SmartStore.Services.Orders
         /// <returns>Return requests</returns>
 		IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
             int orderItemId, ReturnRequestStatus? rs);
-
-		/// <summary>
-		/// Processes a return request and updates the order item
-		/// </summary>
-		/// <param name="returnRequest">Return request</param>
-		/// <returns>true: success, false: failure</returns>
-		bool AcceptReturnRequest(ReturnRequest returnRequest);
         
         #endregion
     }

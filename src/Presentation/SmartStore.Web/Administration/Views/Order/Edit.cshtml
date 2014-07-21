@@ -1453,9 +1453,10 @@
 												<span class="label label-@(returnRequest.StatusLabel)" style="margin-right: 4px">@returnRequest.StatusString</span>
 											
                                                 <a href="@Url.Action("Edit", "ReturnRequest", new { id = returnRequest.Id })">
-													@T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id
-												</a>
-                                                if (i != item.ReturnRequests.Count - 1)
+													@T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id</a><text>,</text>
+												
+												@T("Admin.ReturnRequests.Fields.Quantity")<text>&nbsp;</text>@returnRequest.Quantity                               
+												if (i != item.ReturnRequests.Count - 1)
                                                 {
                                                     <br />
                                                 }

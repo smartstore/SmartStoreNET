@@ -33,6 +33,7 @@ namespace SmartStore.Admin.Controllers
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly IOrderProcessingService _orderProcessingService;
 
         #endregion Fields
 
@@ -42,7 +43,8 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService, IDateTimeHelper dateTimeHelper,
             ILocalizationService localizationService, IWorkContext workContext,
             IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
-            ICustomerActivityService customerActivityService, IPermissionService permissionService)
+            ICustomerActivityService customerActivityService, IPermissionService permissionService,
+			IOrderProcessingService orderProcessingService)
         {
             this._orderService = orderService;
             this._customerService = customerService;
@@ -53,6 +55,7 @@ namespace SmartStore.Admin.Controllers
             this._localizationSettings = localizationSettings;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
+			this._orderProcessingService = orderProcessingService;
         }
 
         #endregion
@@ -242,7 +245,7 @@ namespace SmartStore.Admin.Controllers
 			if (returnRequest == null)
 				return RedirectToAction("List");
 
-			bool result = _orderService.AcceptReturnRequest(returnRequest);
+			bool result = _orderProcessingService.AcceptReturnRequest(returnRequest);
 
 			return RedirectToAction("Edit", returnRequest.Id);
 		}

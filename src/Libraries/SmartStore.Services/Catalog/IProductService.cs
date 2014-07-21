@@ -108,7 +108,8 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		void AdjustInventory(OrderItem orderItem, bool decrease);
+		/// <param name="quantity">Quantity</param>
+		void AdjustInventory(OrderItem orderItem, bool decrease, int quantity);
 
         /// <summary>
         /// Adjusts inventory

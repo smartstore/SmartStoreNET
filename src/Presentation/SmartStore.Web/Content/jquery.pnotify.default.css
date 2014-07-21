@@ -93,17 +93,17 @@ top: auto;
 
 /* codehint: sm-add */
 .ui-pnotify-container {
-    padding: 8px 8px 8px 28px;
+    padding: 8px 8px 8px 26px !important;
 }
 
 .ui-pnotify-icon {
     position: absolute;
     left: 8px;
-    top: 8px;
+    top: 12px;
 }
 
 .ui-pnotify-icon span {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .ui-pnotify-title {

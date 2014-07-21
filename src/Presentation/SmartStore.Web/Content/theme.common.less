@@ -796,6 +796,58 @@ fieldset > legend {
 }
 
 
+/* Reviews
+================================================ */
+
+.product-reviews-page {}
+.product-reviews-page .page-title a {}
+.product-reviews-page .result {}
+.product-reviews-page .write-review { }
+.product-reviews-page .write-review .inputs { margin-bottom:12px; }
+.product-reviews-page .write-review .captcha-box{ margin-bottom:12px; }
+.product-reviews-page .write-review .review-title { width:350px; }
+.product-reviews-page .write-review .review-text{width:350px;height:150px;}
+.product-reviews-page .write-review .review-rating{display:inline-block;}
+.product-reviews-page .write-review .review-rating input{vertical-align:bottom;}
+.product-reviews-page .write-review .buttons{text-align:left;}
+
+.product-review-item {
+	padding: 12px 0;
+	.hr();
+}
+
+.product-review-item .review-title .rating {
+	margin-right: 8px;
+}
+
+.product-review-item .review-text {
+	margin-top: 12px;
+}
+
+.product-review-vote {
+	margin-top: 12px;
+}
+.product-review-vote .vote {
+	text-decoration: none;
+	margin-right: 2px;
+	padding: 0 2px;
+	&.vote-yes { color: @green }
+	&.vote-yes:hover { background: @green; color: #fff }
+	&.vote-no { color: @red }
+	&.vote-no:hover { background: @red; color: #fff }
+}
+
+.product-review-vote .vote-count {
+	font-weight: bold;
+	.smaller();
+}
+
+.product-review-vote .fa-thumbs-up,
+.product-review-vote .fa-thumbs-down {
+	font-size: 16px;
+}
+
+
 /* Code
 ================================================ */
 
@@ -814,25 +866,13 @@ fieldset > legend {
 .csharpcode .lnum       { color: #606060; }
 
 
-/* File types
+/* Pages
 ================================================ */
 
-.file-type {
-	display: inline-block;
-	width: 16px;
-	min-width: 16px;
-	height: 16px;
-	min-height: 16px;
-	background: transparent url('images/file-type-icons.png') no-repeat 0 0;
+.not-found-page .page-title h1 {
+	color: mix(@textColor, @bodyBackground, 30%);
+	font-family: @baseFontFamily;
 }
-.file-type-pdf { background-position: 0 0; }
-.file-type-doc { background-position: -16px 0; }
-.file-type-xls { background-position: -32px 0; }
-.file-type-jpg { background-position: -48px 0; }
-.file-type-swf { background-position: -64px 0; }
-.file-type-mp3 { background-position: -80px 0; }
-.file-type-mpg { background-position: -96px 0; }
-.file-type-txt { background-position: -112px 0; }
 
 
 /* Misc
@@ -869,10 +909,9 @@ fieldset > legend {
     list-style-type: none;
     margin: 0 0 10px 1px;
 }
-.simple-link-list li > * {
-    line-height: 16px;
+.simple-link-list li {
+    line-height: 26px;
     vertical-align: middle;
-    margin-right: 4px;
 }
 
 #terms-of-service-modal {

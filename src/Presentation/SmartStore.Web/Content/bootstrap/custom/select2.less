@@ -3,6 +3,9 @@ Version: 3.2 Timestamp: Mon Sep 10 10:38:04 PDT 2012
 Source: https://github.com/ivaynberg/select2
 */
 
+@dropFocusBorderColor: rgba(82,168,236, .8);
+@dropFocusShadowColor: rgba(82,168,236, .4);
+
 .select2-container {
     position: relative;
     display: inline-block;
@@ -30,14 +33,11 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-container .select2-choice {
-    #gradient > .glossy(darken(@btnBackground, 1%), darken(@btnBackground, 3.5%), darken(@btnBackground, 5%), darken(@btnBackground, 10%));
-    *background-color: @btnBackgroundHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-    border: 1px solid @btnBorder;
-    border-bottom-color: darken(@btnBorder, 6%);
-    @color: contrast(@btnBackgroundHighlight);
-    color: @color;
-    .btn-text-shadow(contrast(@color));
-    
+    background-color: @inputBackground;
+    border: 1px solid @inputBorder;
+    color: @gray;
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+	.transition(~"border linear .2s, box-shadow linear .2s");
     .border-radius(@inputBorderRadius);
     .background-clip(padding-box);
 
@@ -49,18 +49,17 @@ Source: https://github.com/ivaynberg/select2
     line-height: 26px;
     padding: 0 0 0 8px;
     text-decoration: none;
-    .transition(border-color .1s linear);
     
-    &:hover {
-        border-color: #aaa;
-    }
+	// Hover state
+	&:hover {
+		@inputHoverBorderColor: darken(@inputBorder, 8%);
+		border: 1px solid @inputHoverBorderColor;
+	}
 }
 
 .select2-container.select2-drop-above .select2-choice
 {
-	border-bottom-color: #aaa;
 	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);
-	#gradient > .vertical(#fff, #eee);
 }
 
 .select2-container .select2-choice span {
@@ -72,12 +71,13 @@ Source: https://github.com/ivaynberg/select2
 .select2-container .select2-choice abbr {
   display: block;
   position: absolute;
-  right: 26px;
-  top: 8px;
+  right: 22px;
+  top: 7px;
   width: 12px;
   height: 12px;
   font-size: 1px;
   background: url('images/select2.png') right top no-repeat;
+  background-color: @inputBackground;
   cursor: pointer;
   text-decoration: none;
   border:0;
@@ -90,35 +90,38 @@ Source: https://github.com/ivaynberg/select2
 
 .select2-drop {
     background: #fff;
-    border: 1px solid #aaa;
+    border: 1px solid @dropFocusBorderColor;
     border-top: 0;
     position: absolute;
     top: 100%;
     z-index: 9999;
     width:100%;
     margin-top:-1px;
-    .box-shadow(0 4px 5px rgba(0, 0, 0, .15));
+    .box-shadow(0 4px 5px @dropFocusShadowColor);
     .border-radius(0 0 @inputBorderRadius @inputBorderRadius);
 	.smaller();
 }
 
 .select2-drop.select2-drop-above {
 	margin-top:1px;
-	border-top: 1px solid #aaa;
+	border-top: 1px solid @dropFocusBorderColor;
 	border-bottom: 0;
-	.box-shadow(0 -4px 5px rgba(0, 0, 0, .15));
+	.box-shadow(0 -4px 5px @dropFocusShadowColor);
 	.border-radius(@inputBorderRadius @inputBorderRadius 0px 0px);
 }
 
-.select2-container .select2-choice div {
+.select2-container .select2-choice > div {
     .border-radius(0 @inputBorderRadius @inputBorderRadius 0);
     .background-clip(padding-box);
 
     // gradientBar will set the background to a pleasing blend of these, to support IE<=9
-    @ddChevron: darken(@btnBackground, 3%);
-    @ddChevronHighlight: darken(@btnBackgroundHighlight, 3%);
+    //@ddChevron: darken(@btnBackground, 3%);
+    //@ddChevronHighlight: darken(@btnBackgroundHighlight, 3%);
     //.gradientBar(@ddChevron, @ddChevronHighlight);
     //*background-color: @ddChevronHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+	.buttonBackground(@btnBackground, @btnBackgroundHighlight, @grayDark, 0 1px 1px rgba(255,255,255,.75));
+	.box-shadow(~"inset 1px 1px 0 rgba(255,255,255, .5), 0 1px 2px rgba(0,0,0, .05)");
+	border-left: 1px solid lighten(@inputBorder, 8%);
 
     //border-left: 1px solid @btnBorder;
     //border-left: 1px solid rgba(0,0,0, .2);
@@ -130,7 +133,17 @@ Source: https://github.com/ivaynberg/select2
     width: 18px;
 }
 
-.select2-container .select2-choice div b {
+.select2-container:hover .select2-choice > div {
+	background: mix(@btnBackgroundHighlight, @btnBackground);
+}
+
+.select2-container.select2-dropdown-open .select2-choice > div {
+	background: transparent;
+	.box-shadow(none);
+	border-left-color: transparent;
+}
+
+.select2-container .select2-choice > div b {
     background: url('images/select2.png') no-repeat 0 1px;
     display: block;
     width: 100%;
@@ -155,7 +168,7 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-search input {
-    @bg1: url('images/select2.png') no-repeat 100% -22px;
+    /*@bg1: url('images/select2.png') no-repeat 100% -22px;
     @bg2: linear-gradient(center bottom, white 85%, #eeeeee 99%);
     background: #fff @bg1;
     background: @bg1, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
@@ -163,10 +176,10 @@ Source: https://github.com/ivaynberg/select2
     background: @bg1,    -moz-@bg2;
     background: @bg1,     -ms-@bg2;
     background: @bg1,      -o-@bg2;
-    background: @bg1,         @bg2;
-    padding: 4px 20px 4px 5px;
-    outline: 0;
-    border: 1px solid #aaa;
+    background: @bg1,         @bg2;*/
+    //padding: 4px 20px 4px 5px;
+    //outline: 0;
+    border: 1px solid @dropFocusBorderColor;
     width:100%;
     margin:0;
     height:auto !important;
@@ -175,13 +188,21 @@ Source: https://github.com/ivaynberg/select2
     .border-radius(0);
 }
 
+.select2-search input:focus {
+	.box-shadow(none);
+}
+
+.select2-search input:hover {
+	border-color: @dropFocusBorderColor !important;
+}
+
 .select2-drop.select2-drop-above .select2-search input
 {
     margin-top:4px;
 }
 
 .select2-search input.select2-active {
-    @bg1: url('images/spinner.gif') 100% 0 no-repeat;
+    /*@bg1: url('images/spinner.gif') 100% 0 no-repeat;
     @bg2: linear-gradient(center bottom, white 85%, #eeeeee 99%);
     background: #fff @bg1;
     background: @bg1, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
@@ -189,25 +210,21 @@ Source: https://github.com/ivaynberg/select2
     background: @bg1,    -moz-@bg2;
     background: @bg1,     -ms-@bg2;
     background: @bg1,      -o-@bg2;
-    background: @bg1,         @bg2;
+    background: @bg1,         @bg2;*/
 }
 
 
 .select2-container-active .select2-choice,
 .select2-container-active .select2-choices {
-    .box-shadow(0 0 5px rgba(0,0,0,.3));
-    border: 1px solid #5897fb;
+    .box-shadow(0 0 5px @dropFocusShadowColor);
+    border: 1px solid @dropFocusBorderColor;
     outline: none;
 }
 
 .select2-dropdown-open .select2-choice {
-    border: 1px solid #aaa;
-    border-bottom-color: transparent;
-    .border-radius(@inputBorderRadius @inputBorderRadius 0 0);
-    .box-shadow(0 1px 0 #fff inset);
-    #gradient > .vertical(#eee, #fff);
-    color: @grayDark !important;
+    color: @grayLight !important;
     text-shadow: none !important;
+	.border-radius(@inputBorderRadius @inputBorderRadius 0 0);
 }
 
 .select2-dropdown-open .select2-choice div {
@@ -220,8 +237,8 @@ Source: https://github.com/ivaynberg/select2
 
 /* results */
 .select2-results {
-  margin: 4px 4px 4px 0;
-  padding: 0 0 0 4px;
+  margin: 4px 0 4px 0;
+  padding: 0;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
@@ -243,6 +260,7 @@ Source: https://github.com/ivaynberg/select2
 .select2-results li {
   list-style: none;
   display: list-item;
+  padding: 1px 0 1px 4px;
 }
 
 .select2-results li.select2-result-with-children > .select2-result-label {
@@ -322,12 +340,13 @@ disabled look for already selected choices in the results dropdown
     background-color: @inputBackground;
     border: 1px solid @inputBorder;
     margin: 0;
-    padding: 3px 0;
+    padding: 2px 0;
     cursor: text;
     overflow: hidden;
     height: auto !important;
     height: 1%;
     position: relative;
+	.smaller();
 }
 
 .select2-container-multi .select2-choices {
@@ -335,9 +354,9 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-container-multi.select2-container-active .select2-choices {
-    border: 1px solid #aaa;
+    border: 1px solid @dropFocusBorderColor;
     outline: none;
-    .box-shadow(0 0 5px rgba(0,0,0, .3));
+    .box-shadow(0 0 5px @dropFocusShadowColor);
 }
 .select2-container-multi .select2-choices li {
   float: left;
@@ -365,7 +384,7 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-default {
-  color: #999 !important;
+  color: mix(@inputBackground, @textColor, 70%) !important;
 }
 
 .select2-container-multi .select2-choices .select2-search-choice {
@@ -376,7 +395,7 @@ disabled look for already selected choices in the results dropdown
     .box-shadow(~'0 0 2px #ffffff inset, 0 1px 0 rgba(0,0,0, 0.05)');
     color: #333;
     line-height: 13px;
-    padding: 3px 5px 3px 18px;
+    padding: 2px 5px 2px 18px;
     margin: 3px 0 3px 5px;
     position: relative;
     cursor: default;
@@ -392,7 +411,7 @@ disabled look for already selected choices in the results dropdown
   display: block;
   position: absolute;
   right: 3px;
-  top: 4px;
+  top: 2px;
   width: 12px;
   height: 13px;
   font-size: 1px;

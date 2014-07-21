@@ -246,6 +246,8 @@
 				var link = $(this);
 				var imageSrc = link.attr('href');
 				var thumb = link.find('img');
+				var linkSize = self.options.thumbSize + 2;
+
 				// Check if the thumb has already been loaded
 				if (!self.isImageLoaded(thumb[0])) {
 					thumb.load(function() {
@@ -254,11 +256,11 @@
 					});
 				} 
 				else{
-					thumbWrapperWidth += thumb[0].parentNode.parentNode.offsetWidth;
+					thumbWrapperWidth += (linkSize || 50) + 2;
 					thumbsLoaded++;
 				}
 				
-				var linkSize = self.options.thumbSize + 2;
+				
 				link.addClass('sg-thumb' + i)
 			        .css({ width: linkSize + "px", height: linkSize + "px", lineHeight: (linkSize-2) + "px" });
 				
@@ -307,6 +309,8 @@
 				                   link: href
 				};
 			});
+
+			console.log(thumbWrapperWidth);
 			
 			// Wait until all thumbs are loaded, and then set the width of the ul
 			var list = self.nav.find('.sg-thumb-list');
@@ -606,7 +610,7 @@
 			var imgContainer = $(document.createElement('div')).addClass('sg-image');
 			var img = $(new Image()).attr('src', image.image);
 			if (image.link) {
-				var link = $('<a href="'+ image.link +'" target="_blank"></a>');
+				var link = $('<a href="' + image.link + '" target="_blank"></a>').css('width', (self.options.thumbSize || 50) + 2);
 				link.append(img).data('gallery', thumb.data('gallery'));
 				imgContainer.append(link);
 			} 

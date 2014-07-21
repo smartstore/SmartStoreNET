@@ -666,7 +666,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalShippingCharge)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.AdditionalShippingCharge) [@Model.PrimaryStoreCurrencyCode]
+				@Html.EditorFor(model => model.AdditionalShippingCharge) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
 				@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
 			</td>
 		</tr>
@@ -675,7 +675,7 @@
 				@Html.SmartLabelFor(model => model.Weight)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Weight) [@Model.BaseWeightIn]
+				@Html.EditorFor(model => model.Weight) <span class="muted">@Model.BaseWeightIn</span>
 				@Html.ValidationMessageFor(model => model.Weight)
 			</td>
 		</tr>
@@ -684,7 +684,7 @@
 				@Html.SmartLabelFor(model => model.Length)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Length) [@Model.BaseDimensionIn]
+				@Html.EditorFor(model => model.Length) <span class="muted">@Model.BaseDimensionIn</span>
 				@Html.ValidationMessageFor(model => model.Length)
 			</td>
 		</tr>
@@ -693,7 +693,7 @@
 				@Html.SmartLabelFor(model => model.Width)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Width) [@Model.BaseDimensionIn]
+				@Html.EditorFor(model => model.Width) <span class="muted">@Model.BaseDimensionIn</span>
 				@Html.ValidationMessageFor(model => model.Width)
 			</td>
 		</tr>
@@ -702,7 +702,7 @@
 				@Html.SmartLabelFor(model => model.Height)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Height) [@Model.BaseDimensionIn]
+				@Html.EditorFor(model => model.Height) <span class="muted">@Model.BaseDimensionIn</span>
 				@Html.ValidationMessageFor(model => model.Height)
 			</td>
 		</tr>

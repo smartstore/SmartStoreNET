@@ -19,14 +19,13 @@
 		},
 		// Telerik
 		function (ctx) {
-			Hacks.Telerik.handleTextBox(ctx.find(".text-box.single-line, textarea"));
 			Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
 				// reject .t-button, that has a .t-group-indicator as parent
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
 
 			// skin telerik grids with bootstrap table
-			ctx.find(".t-grid > table").addClass("table table-hover");
+			ctx.find(".t-grid > table").addClass("table");
 		},
 		// btn-trigger
 		function (ctx) {

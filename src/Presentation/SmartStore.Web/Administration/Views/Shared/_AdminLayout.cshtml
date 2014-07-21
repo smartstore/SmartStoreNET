@@ -22,16 +22,15 @@
         adminPageTitle = ViewBag.Title + " / ";
     }
     adminPageTitle += T("Admin.PageTitle").Text;
-    
-    // add css assets
-    var telerikCssRootPath = "~/Content/2012.2.607/";
-    Html.AppendCssFileParts(
-        "~/Administration/Content/theme.less",
+
+	// add css assets
+	var telerikCssRootPath = "~/Content/2012.2.607/";
+	Html.AppendCssFileParts(
 		"~/Content/font-awesome.css",
-        telerikCssRootPath + "telerik.common.css",
-        telerikCssRootPath + "telerik.rtl.css",
-        "~/Content/jquery.pnotify.default.css",
-        "~/Content/jquery.pnotify.default.icons.css");
+		telerikCssRootPath + "telerik.common.css",
+		"~/Content/jquery.pnotify.default.css",
+		"~/Content/jquery.pnotify.default.icons.css",
+		"~/Administration/Content/theme.less");
 
     // add js assets (Head)
     Html.AppendScriptParts(ResourceLocation.Head,

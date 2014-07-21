@@ -182,14 +182,6 @@
 	border-left-color: #ccc;
 }
 
-#navbar .nav > li {
-	.opacity(87);
-	.transition(opacity 0.1s linear);
-	
-	&:hover 	{ .opacity(100); }
-	&:hover > a { background: rgba(255,255,255, .15) !important; }
-}
-
 #navbar .nav > li > a {
 	max-height: @navbarHeight - 12;
 	min-width: 40px;
@@ -199,6 +191,10 @@
 	text-align: center;
 	text-shadow: 0 -1px 0 #000;
 	background: rgba(255,255,255, 0);
+
+	.opacity(87);
+	.transition(opacity 0.1s linear);
+	&:hover 	{ .opacity(100); background: rgba(255,255,255, .15) }
 
 	.sm-icon {
 		position: relative;
@@ -365,26 +361,26 @@ td.adminData > input[type="checkbox"] {
 
 .t-grid tbody {
 
-	td {
+	/*td {
 		padding: 6px 8px;
-	}
+	}*/
 
 	.t-last {
 		.text-overflow();
 	}
 
-	.t-grid-new-row > td,
+	/*.t-grid-new-row > td,
 	.t-grid-edit-row > td {
 		padding: 6px;
-	}
+	}*/
 
-	.t-grid-edit-row .text-box,
+	/*.t-grid-edit-row .text-box,
 	.t-grid-edit-row .t-numerictextbox,
 	.t-grid-edit-row .t-datepicker {
 		margin: 0;
-	}
+	}*/
 
-	.t-button {
+	/*.t-button {
 		// 64px is too wide
 		min-width: initial;
 	}
@@ -393,65 +389,22 @@ td.adminData > input[type="checkbox"] {
 		width: auto;
 		padding-top: 2px;
 		padding-bottom: 2px;
-	}
+	}*/
 
-	.t-numerictextbox {
-		margin: 0 4px; /* let it 'breathe' */
+	/*.t-numerictextbox {
+		margin: 0 4px;
 		.t-input {
 			max-width: 85%;
 		}
-	}
+	}*/
 }
 
 .t-grid form.t-grid-actions {
 	margin: 0;
 }
 
-
-
-.t-dropdown-wrap .t-input {
-    /* dropdown will 'jump' on hover otherwise */
-    border: initial !important;
-}
-
-.t-numerictextbox {
-	overflow: hidden;
-	position: relative;
-}
-
-.t-numerictextbox .t-input {
-    width: 252px;
-	padding: 4px 8px 4px 2px !important;
-}
-.t-numerictextbox.small .t-input {
-	width: 80px;
-}
-.t-numerictextbox .t-formatted-value {
-	position: absolute;
-    padding: 4px 0;
-	left: 6px;
-	right: 16px;
-	overflow: hidden;
-}
-.t-numerictextbox .t-arrow-up {
-    margin-top: 3px !important;
-    margin-left: -19px;
-}
-.t-numerictextbox .t-arrow-down {
-    margin-bottom: 3px !important;
-}
-.t-numerictextbox .t-icon {
-    .opacity(50);
-    &:hover {
-        .opacity(100);
-    }
-}
-
 body .t-content.t-state-active {
     padding: 10px !important;
-}
-body .t-tabstrip {
-    margin-bottom: 10px !important;
 }
 
 .form-actions {

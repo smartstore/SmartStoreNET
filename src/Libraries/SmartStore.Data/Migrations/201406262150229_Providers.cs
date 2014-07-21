@@ -85,6 +85,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.SaveBeforeEdit",
 				"In order to proceed, the record must be saved first.",
 				"Um fortfahren zu können, muss der Datensatz zunächst gespeichert werden.");
+
+			// Twisted german resources for tax number and vat id
+			builder.AddOrUpdate("PDFInvoice.TaxNumber").Value("de", "Steuer-Nr.:");
+			builder.AddOrUpdate("PDFInvoice.VatId").Value("de", "Ust-Id:");
 		}
     }
 }

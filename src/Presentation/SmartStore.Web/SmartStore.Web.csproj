@@ -1122,7 +1122,6 @@
     <Content Include="Scripts\underscore.min.js" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
-    <Content Include="Content\Images\file-type-icons.png" />
     <Content Include="Themes\Alpha\Content\images\gradient.png" />
     <Content Include="Content\Images\star-off-12.png" />
     <Content Include="Content\Images\star-off.png" />
@@ -1172,7 +1171,6 @@
     <Content Include="Content\bootstrap\js\bootstrap-tooltip.js" />
     <Content Include="Content\bootstrap\js\bootstrap-transition.js" />
     <Content Include="Content\bootstrap\js\bootstrap-typeahead.js" />
-    <Content Include="Content\bootstrap\custom\image-gallery.less" />
     <Content Include="Content\bootstrap\custom\images\loading.gif" />
     <Content Include="Content\fileupload\fileupload.css" />
     <Content Include="Content\fileupload\images\loading.gif" />

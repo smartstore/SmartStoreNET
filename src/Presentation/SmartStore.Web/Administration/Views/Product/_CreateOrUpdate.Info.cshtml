@@ -359,7 +359,7 @@
 				@Html.SmartLabelFor(model => model.AvailableStartDateTimeUtc)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.AvailableStartDateTimeUtc)
+				@Html.EditorFor(model => model.AvailableStartDateTimeUtc, new { pickTime = true })
 				@Html.ValidationMessageFor(model => model.AvailableStartDateTimeUtc)
 			</td>
 		</tr>

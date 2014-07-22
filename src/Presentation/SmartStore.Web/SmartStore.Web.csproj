@@ -466,6 +466,7 @@
     <Content Include="Content\bootstrap\custom\images\saturation.png" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker.js" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker-globalinit.js" />
+    <Content Include="Content\bootstrap\js\custom\bootstrap-datetimepicker.js" />
     <Content Include="Content\editors\summernote\globalinit.js" />
     <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
     <Content Include="Content\editors\summernote\summernote.css" />
@@ -602,6 +603,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="Content\fonts\FontAwesome.otf" />
+    <Content Include="Content\bootstrap\custom\datetimepicker.less" />
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />
@@ -1153,7 +1155,6 @@
     <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
     <Content Include="Content\bootstrap\custom\images\select2x2.png" />
     <Content Include="Content\bootstrap\custom\images\spinner.gif" />
-    <Content Include="Content\bootstrap\js\custom\bootstrap-datepicker.js" />
     <Content Include="Content\bootstrap\custom\navbar.less" />
     <Content Include="Content\bootstrap\images\btn-mask.png" />
     <Content Include="Content\bootstrap\images\checkmark.png" />
@@ -2046,7 +2047,6 @@
     <Content Include="Content\bootstrap\code.less" />
     <Content Include="Content\bootstrap\component-animations.less" />
     <Content Include="Content\bootstrap\custom\custom.less" />
-    <Content Include="Content\bootstrap\custom\datepicker.less" />
     <Content Include="Content\bootstrap\custom\checkbox.less" />
     <Content Include="Content\bootstrap\custom\mixins.less" />
     <Content Include="Content\bootstrap\dropdowns.less" />

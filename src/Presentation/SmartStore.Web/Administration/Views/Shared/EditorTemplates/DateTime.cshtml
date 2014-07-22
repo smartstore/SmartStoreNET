@@ -11,15 +11,27 @@
             return value;
         }
     }
+	
+	private bool PickTime
+	{
+		get
+		{
+			if (ViewData.ContainsKey("pickTime"))
+			{
+				return ViewData["pickTime"].Convert<bool>();
+			}
+			return false;
+		}
+	}
 }
 
 @{
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
     var value = String.Empty;
-    if (Value.HasValue && Value.Value > DateTime.MinValue) 
-    {
-        value = Value.Value.ToShortDateString();
+    if (Value.HasValue && Value.Value > DateTime.MinValue)
+	{
+		value = PickTime ? Value.Value.ToString() : Value.Value.ToShortDateString();
     }
 }
 
@@ -28,8 +40,22 @@
 </div>
 
 <script>
-    $(function () {
-        $("#@id-parent").datepicker( {language: 'glob'} );
+	$(function () {
+		var c = Globalize.culture().calendars.standard;
+		var fmt = c.patterns["d"];
+		@if (PickTime)
+		{
+			<text>fmt += " " + c.patterns["T"].toLowerCase();</text>
+		}
+		$("#@id-parent").datetimepicker({ 
+			language: 'glob', 
+			format: fmt,
+			pickDate: true, 
+			pickTime: @PickTime.ToString().ToLower(), 
+			pickSeconds: @PickTime.ToString().ToLower(), 
+			pick12HourFormat: false,
+			maskInput: true, 
+			collapse: true });
     });
 </script>
 

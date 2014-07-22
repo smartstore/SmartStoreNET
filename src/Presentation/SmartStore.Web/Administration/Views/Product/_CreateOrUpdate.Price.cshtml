@@ -65,7 +65,7 @@
                 @Html.SmartLabelFor(model => model.Price)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Price) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.Price) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
@@ -74,7 +74,7 @@
                 @Html.SmartLabelFor(model => model.OldPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.OldPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.OldPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.OldPrice)
             </td>
         </tr>
@@ -83,7 +83,7 @@
                 @Html.SmartLabelFor(model => model.ProductCost)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ProductCost) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.ProductCost) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.ProductCost)
             </td>
         </tr>
@@ -92,7 +92,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.SpecialPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.SpecialPrice)
             </td>
         </tr>
@@ -101,7 +101,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPriceStartDateTimeUtc)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc)
+                @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceStartDateTimeUtc)
             </td>
         </tr>
@@ -110,7 +110,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPriceEndDateTimeUtc)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc)
+                @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceEndDateTimeUtc)
             </td>
         </tr>
@@ -164,7 +164,7 @@
                 @Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
             </td>
         </tr>
@@ -173,7 +173,7 @@
                 @Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
             </td>
         </tr>

@@ -64,6 +64,15 @@
 	margin-bottom: 0;
 }
 
+.fa {
+	// prevent Chrome ugliness on fonts
+	-webkit-text-stroke: 0.25px;
+}
+
+.btn-small .fa {
+	vertical-align: text-bottom;
+}
+
 // THUMB ZOOMER
 // ------------
 
@@ -102,25 +111,48 @@ nav li {
 // Base alert styles
 
 .alert {
-	border-color: darken(@warningBorder, 4%) darken(@warningBorder, 4%) darken(@warningBorder, 8%);
-	#gradient > .vertical(lighten(@warningBackground, 5%), @warningBackground); // default is warning status
-	.box-shadow(inset 0 1px 0 rgba(255,255,255, .3)); // a smooth inset shadow, always looks good
+	text-shadow: none;
+	.box-shadow(none);
+	.border-radius(0);
+	border-width: 0;
+	border-style: solid;
+	border-left-width: 5px;
+	border-color: transparent;
+	border-left-color: darken(@warningBackground, 18%);
+	border-left-color: #aaa;
+	border-left-color: rgba(0,0,0, .18);
 }
 
-.alert-success {
-	border-color: darken(@successBorder, 4%) darken(@successBorder, 4%) darken(@successBorder, 8%);
-	#gradient > .vertical(lighten(@successBackground, 5%), @successBackground);
+.alert h4 {
+	color: #aaa;
+	color: rgba(0,0,0, .5);
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	font-family: @baseFontFamily;
 }
 
-.alert-info {
-	border-color: darken(@infoBorder, 4%) darken(@infoBorder, 4%) darken(@infoBorder, 8%);
-	#gradient > .vertical(lighten(@infoBackground, 5%), @infoBackground);
+.alert a {
+	text-decoration: none;
+	font-weight: bold;
+	color: darken(@warningText, 10%);
 }
 
-.alert-error,
-.alert-danger {
-	border-color: darken(@errorBorder, 4%) darken(@errorBorder, 4%) darken(@errorBorder, 8%);
-	#gradient > .vertical(lighten(@errorBackground, 5%), @errorBackground);
+.alert a:hover {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.alert-success a {
+	color: darken(@successText, 10%);
+}
+
+.alert-info a {
+	color: darken(@infoText, 10%);
+}
+
+.alert-error a {
+	color: darken(@errorText, 10%);
 }
 
 .alert > *:first-child {
@@ -171,6 +203,10 @@ span.field-validation-error {
 
 // BUTTON STYLES
 // -------------
+
+.btn {
+	text-shadow: none;
+}
 
 // fix for tooltip <> btn-group bug in V2.2.1
 // see: https://github.com/twitter/bootstrap/issues/5783

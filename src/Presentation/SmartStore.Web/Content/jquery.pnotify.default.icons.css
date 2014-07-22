@@ -9,14 +9,13 @@ Description:
 */
 
 .ui-pnotify .picon {
-background-color: transparent;
-background-repeat: no-repeat;
-background-position: center center;
-width: 17px;
-height: 17px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 17px;
+	height: 17px;
 }
 .ui-pnotify-title {
-    /* codehint: sm-edit */
     font-size: 15px;
     line-height: 20px;
     min-height: 20px;

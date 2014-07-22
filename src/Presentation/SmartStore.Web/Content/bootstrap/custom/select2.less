@@ -113,18 +113,9 @@ Source: https://github.com/ivaynberg/select2
 .select2-container .select2-choice > div {
     .border-radius(0 @inputBorderRadius @inputBorderRadius 0);
     .background-clip(padding-box);
-
-    // gradientBar will set the background to a pleasing blend of these, to support IE<=9
-    //@ddChevron: darken(@btnBackground, 3%);
-    //@ddChevronHighlight: darken(@btnBackgroundHighlight, 3%);
-    //.gradientBar(@ddChevron, @ddChevronHighlight);
-    //*background-color: @ddChevronHighlight; /* Darken IE7 buttons by default so they stand out more given they won't have borders */
 	.buttonBackground(@btnBackground, @btnBackgroundHighlight, @grayDark, 0 1px 1px rgba(255,255,255,.75));
 	.box-shadow(~"inset 1px 1px 0 rgba(255,255,255, .5), 0 1px 2px rgba(0,0,0, .05)");
 	border-left: 1px solid lighten(@inputBorder, 8%);
-
-    //border-left: 1px solid @btnBorder;
-    //border-left: 1px solid rgba(0,0,0, .2);
     position: absolute;
     right: 0;
     top: 0;
@@ -168,17 +159,6 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-search input {
-    /*@bg1: url('images/select2.png') no-repeat 100% -22px;
-    @bg2: linear-gradient(center bottom, white 85%, #eeeeee 99%);
-    background: #fff @bg1;
-    background: @bg1, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
-    background: @bg1, -webkit-@bg2;
-    background: @bg1,    -moz-@bg2;
-    background: @bg1,     -ms-@bg2;
-    background: @bg1,      -o-@bg2;
-    background: @bg1,         @bg2;*/
-    //padding: 4px 20px 4px 5px;
-    //outline: 0;
     border: 1px solid @dropFocusBorderColor;
     width:100%;
     margin:0;
@@ -202,15 +182,6 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-search input.select2-active {
-    /*@bg1: url('images/spinner.gif') 100% 0 no-repeat;
-    @bg2: linear-gradient(center bottom, white 85%, #eeeeee 99%);
-    background: #fff @bg1;
-    background: @bg1, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
-    background: @bg1, -webkit-@bg2;
-    background: @bg1,    -moz-@bg2;
-    background: @bg1,     -ms-@bg2;
-    background: @bg1,      -o-@bg2;
-    background: @bg1,         @bg2;*/
 }
 
 

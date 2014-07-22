@@ -75,7 +75,10 @@
 		if ($.pnotify) {
 			$.extend($.pnotify.defaults, {
 				history: false,
-				animate_speed: "fast"
+				animate_speed: "normal",
+				shadow: true,
+				width: "400px",
+				icon: true
 			});
 		}
 

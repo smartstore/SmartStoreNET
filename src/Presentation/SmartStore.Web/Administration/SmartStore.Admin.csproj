@@ -936,9 +936,6 @@
     <Content Include="Views\Order\BestsellersBriefReportByAmount.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_Notifications.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Setting\GeneralCommon.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1032,9 +1029,6 @@
     <Content Include="Views\Plugin\ConfigureMiscPlugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\RichEditor.Telerik.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Order\AddProductToOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1120,9 +1114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\SeNames.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\ConditionalComments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Store\Create.cshtml" />

@@ -37,7 +37,8 @@
         "~/Scripts/modernizr-2.7.2.js",
 		// Telerik doesn't like jQuery 1.9+, a shame!
         "~/Administration/Scripts/jquery-1.8.3.js",
-        "~/Scripts/globalize/globalize.js");
+        "~/Scripts/globalize/globalize.js",
+		"~/Scripts/smartstore.globalize.adapter.js");
         
     Html.AddScriptParts(ResourceLocation.Head, true,
         "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
@@ -81,7 +82,7 @@
         bootstrapJsRoot + "bootstrap-tab.js",
 		bootstrapJsRoot + "bootstrap-typeahead.js",
         // Bootstrap custom
-        bootstrapJsRoot + "custom/bootstrap-datepicker.js",
+        bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
         // Shared UI
         "~/Scripts/smartstore.placeholder.js",
         "~/Scripts/select2.js",
@@ -96,7 +97,7 @@
         "~/Scripts/jquery.pnotify.js",
         "~/Scripts/jquery.scrollTo.js",
         "~/Scripts/jquery.serialScroll.js",
-		"~/Scripts/smartstore.globalize.adapter.js",
+		//"~/Scripts/smartstore.globalize.adapter.js",
         // Admin
         "~/Administration/Scripts/admin.common.js",
         "~/Administration/Scripts/admin.globalinit.js");

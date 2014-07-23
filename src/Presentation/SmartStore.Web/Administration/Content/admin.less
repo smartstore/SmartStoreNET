@@ -2,11 +2,85 @@
 /* General
 -------------------------------------------------------------- */
 
+a:active,
+a:hover {
+	outline: 0;
+}
+
+.btn {
+	background: @btnBackground;
+	.box-shadow(inset 0 -2px 0 rgba(0,0,0,.05));
+	text-shadow: none;
+	padding: 6px 12px;
+}
+
+.btn:active {
+	position: relative;
+	left: 1px;
+	top: 1px;
+}
+
+.btn-large {
+	padding: 10px 16px;
+}
+
+.btn-small {
+	padding: 4px 10px;
+}
+
+.btn-mini {
+	padding: 2px 8px;
+}
+
+.btn-link {
+	background: transparent;
+	border: none;
+	.box-shadow(none);
+}
+
+.btn-primary {
+	background: @btnPrimaryBackground;
+}
+
+.btn-warning {
+	background: @btnWarningBackground;
+}
+
+.btn-info {
+	background: @btnInfoBackground;
+}
+
+.btn-success {
+	background: @btnSuccessBackground;
+}
+
+.btn-danger {
+	background: @btnDangerBackground;
+}
+
 .dropdown-menu,
 .btn {
 	.fa {
 		font-size: 14px;
 	}
+}
+
+.dropdown-menu {
+	.border-radius(0);
+	text-shadow: none;
+}
+
+.dropdown-menu li > a {
+	padding: 8px 30px 8px 20px;
+	text-shadow: none;
+}
+
+.dropdown-menu li > a:hover, 
+.dropdown-menu li > a:focus, 
+.dropdown-submenu:hover > a {
+	background-image: none;
+	filter: initial;
+	background-color: @dropdownLinkBackgroundHover;
 }
 
 /* Page
@@ -148,30 +222,16 @@
 
 #navbar .dropdown-menu {
 	margin-top: 0;
-	.border-radius(0);
 	font-family: @baseFontFamily;
 }
 
-#navbar .dropdown-menu li > a {
-	padding: 8px 30px 8px 20px;
-	text-shadow: none;
-}
-
-#navbar .dropdown-menu .icon {
+#navbar .dropdown-menu .fa {
 	color: inherit;
 }
 
 #navbar .nav-header {
 	text-shadow: none;
 	padding-left: 20px;
-}
-
-#navbar .dropdown-menu li > a:hover, 
-#navbar .dropdown-menu li > a:focus, 
-#navbar .dropdown-submenu:hover > a {
-	background-image: none;
-	filter: initial;
-	background-color: @dropdownLinkBackgroundHover;
 }
 
 #navbar .dropdown-submenu > a:after {
@@ -189,10 +249,9 @@
 	height: auto;
 	padding: 6px !important;
 	text-align: center;
-	text-shadow: 0 -1px 0 #000;
 	background: rgba(255,255,255, 0);
 
-	.opacity(87);
+	.opacity(75);
 	.transition(opacity 0.1s linear);
 	&:hover 	{ .opacity(100); background: rgba(255,255,255, .15) }
 
@@ -201,6 +260,18 @@
 		text-align: center;
 		width: 22px;
 		height: 22px;
+	}
+
+	.fa {
+		position: relative;
+		text-align: center;
+		vertical-align: middle;
+		width: 22px;
+		height: 22px;
+		font-size: 19px;
+		line-height: 22px;
+		color: #fff;
+		padding: 2px 0;
 	}
 
 	.navbar-label { 
@@ -359,44 +430,8 @@ td.adminData > input[type="checkbox"] {
 	padding-bottom: .4em !important;
 }
 
-.t-grid tbody {
-
-	/*td {
-		padding: 6px 8px;
-	}*/
-
-	.t-last {
-		.text-overflow();
-	}
-
-	/*.t-grid-new-row > td,
-	.t-grid-edit-row > td {
-		padding: 6px;
-	}*/
-
-	/*.t-grid-edit-row .text-box,
-	.t-grid-edit-row .t-numerictextbox,
-	.t-grid-edit-row .t-datepicker {
-		margin: 0;
-	}*/
-
-	/*.t-button {
-		// 64px is too wide
-		min-width: initial;
-	}
-
-	.t-input {
-		width: auto;
-		padding-top: 2px;
-		padding-bottom: 2px;
-	}*/
-
-	/*.t-numerictextbox {
-		margin: 0 4px;
-		.t-input {
-			max-width: 85%;
-		}
-	}*/
+.t-grid tbody .t-last {
+	.text-overflow();
 }
 
 .t-grid form.t-grid-actions {

@@ -63,7 +63,14 @@
         <li class="divider-vertical"></li>
         <li data-id="@item.Id" @Html.Attr("class", "dropdown", node.HasChildren)>
 			<a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
-				<img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
+				@if (item.Icon.HasValue())
+				{
+					<i class="fa fa-fw fa-@item.Icon"></i>
+				}
+				else
+				{
+					<img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
+				}
 				<span class="navbar-label">@itemText</span>
 			</a>
             @if (node.HasChildren)
@@ -126,7 +133,7 @@
 					var iconClass = "fa fa-fixed-width";
 					if (node.Value.Icon.HasValue())
 					{
-						iconClass += " " + node.Value.Icon;
+						iconClass += " fa-" + node.Value.Icon;
 					}
 					<i class='@iconClass'></i>
 				}

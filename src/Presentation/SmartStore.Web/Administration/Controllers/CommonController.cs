@@ -170,8 +170,10 @@ namespace SmartStore.Admin.Controllers
                 if (providers.Any())
                 {
                     var pluginItem = new MenuItem().ToBuilder()
+						.Id("plugins")
                         .Text("Plugins")
                         .ResKey("Admin.Plugins")
+						.Icon("puzzle-piece")
                         .PermissionNames("ManagePlugins")
                         .ToItem();
                     pluginNode = rootNode.Append(pluginItem);

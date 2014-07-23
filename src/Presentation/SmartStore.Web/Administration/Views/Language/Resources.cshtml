@@ -42,7 +42,7 @@
     </tr>
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Data)
+            @(Html.Telerik().Grid<LanguageResourceModel>()
                     .Name("resources-grid")
                     .DataKeys(x =>
                     {
@@ -52,16 +52,16 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.LanguageName)
-                            .Width(100)
+                            .Width("10%")
                             .ReadOnly()
                             .Filterable(false);
-                        columns.Bound(x => x.Name).Width(300);
-                        columns.Bound(x => x.Value);
+                        columns.Bound(x => x.Name).Width("30%");
+                        columns.Bound(x => x.Value).EditorTemplateName("MultilineText").Width("60%");
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
                             commands.Delete().Localize(T);
-                        }).Width(180);
+                        });
 
                     })
                     .ToolBar(x => x.Insert())

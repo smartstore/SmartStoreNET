@@ -982,8 +982,6 @@ namespace SmartStore.Web.Controllers
                 {
                     foreach (var error in placeOrderResult.Errors)
                         model.Warnings.Add(error);
-
-					_httpContext.RemoveCheckoutState();
                 }
             }
             catch (Exception exc)

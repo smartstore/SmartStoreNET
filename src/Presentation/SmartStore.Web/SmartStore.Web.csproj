@@ -343,6 +343,7 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\OnePageCheckoutModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
+    <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
     <Compile Include="Models\Common\AddressModel.cs" />
     <Compile Include="Models\Common\FooterModel.cs" />
@@ -1883,7 +1884,6 @@
     <Content Include="Views\Customer\MyAccount.cshtml" />
     <Content Include="Views\Shared\_Notifications.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
-    <Content Include="Views\ShoppingCart\_ButtonPaymentMethod.cshtml" />
     <Content Include="Views\ShoppingCart\_DiscountBox.cshtml" />
     <Content Include="Views\ShoppingCart\_DiscountBox.Mobile.cshtml" />
     <Content Include="Views\ShoppingCart\_GiftCardBox.cshtml" />

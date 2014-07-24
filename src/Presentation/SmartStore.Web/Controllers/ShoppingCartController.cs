@@ -527,6 +527,34 @@ namespace SmartStore.Web.Controllers
 			return model;
 		}
 
+		private void PrepareButtonPaymentMethodModel(ButtonPaymentMethodModel model, IList<OrganizedShoppingCartItem> cart)
+		{
+			model.Items.Clear();
+
+			var boundPaymentMethods = _paymentService
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
+				.Where(pm => pm.PaymentMethodType == PaymentMethodType.Button || pm.PaymentMethodType == PaymentMethodType.StandardAndButton)
+				.ToList();
+
+			foreach (var pm in boundPaymentMethods)
+			{
+				if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
+					continue;
+
+				string actionName;
+				string controllerName;
+				RouteValueDictionary routeValues;
+				pm.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
+
+				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem()
+				{
+					ActionName = actionName,
+					ControllerName = controllerName,
+					RouteValues = routeValues
+				});
+			}
+		}
+
         /// <summary>
         /// Prepare shopping cart model
         /// </summary>
@@ -756,30 +784,6 @@ namespace SmartStore.Web.Controllers
 
             #endregion
 
-            #region Button payment methods
-
-            var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Button || pm.PaymentMethodType == PaymentMethodType.StandardAndButton)
-                .ToList();
-
-            foreach (var pm in boundPaymentMethods)
-            {
-                if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
-                    continue;
-
-                string actionName;
-                string controllerName;
-                RouteValueDictionary routeValues;
-                pm.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
-
-                model.ButtonPaymentMethodActionNames.Add(actionName);
-                model.ButtonPaymentMethodControllerNames.Add(controllerName);
-                model.ButtonPaymentMethodRouteValues.Add(routeValues);
-            }
-
-            #endregion
-
             #region Order review data
 
             if (prepareAndDisplayOrderReviewData)
@@ -812,6 +816,8 @@ namespace SmartStore.Web.Controllers
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : "";
             }
             #endregion
+
+			PrepareButtonPaymentMethodModel(model.ButtonPaymentMethods, cart);
         }
 
         [NonAction]
@@ -2038,6 +2044,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             var model = PrepareMiniShoppingCartModel();
+
+			_httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
+
             return PartialView(model);
         }
 

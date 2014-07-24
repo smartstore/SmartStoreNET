@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
@@ -21,9 +19,7 @@ namespace SmartStore.Web.Models.ShoppingCart
             CheckoutAttributes = new List<CheckoutAttributeModel>();
             OrderReviewData = new OrderReviewDataModel();
 
-            ButtonPaymentMethodActionNames = new List<string>();
-            ButtonPaymentMethodControllerNames = new List<string>();
-            ButtonPaymentMethodRouteValues = new List<RouteValueDictionary>();
+			ButtonPaymentMethods = new ButtonPaymentMethodModel();
         }
 
         public bool ShowSku { get; set; }
@@ -48,10 +44,8 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool DisplayDeliveryTime { get; set; }
         public bool DisplayShortDesc { get; set; }
         public bool DisplayBasePrice { get; set; }
-        
-        public IList<string> ButtonPaymentMethodActionNames { get; set; }
-        public IList<string> ButtonPaymentMethodControllerNames { get; set; }
-        public IList<RouteValueDictionary> ButtonPaymentMethodRouteValues { get; set; }
+
+		public ButtonPaymentMethodModel ButtonPaymentMethods { get; set; }
 
 		#region Nested Classes
 

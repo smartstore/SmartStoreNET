@@ -187,6 +187,7 @@
     <Compile Include="Controllers\OData\DeliveryTimesController.cs" />
     <Compile Include="Controllers\OData\DiscountsController.cs" />
     <Compile Include="Controllers\OData\GenericAttributesController.cs" />
+    <Compile Include="Controllers\OData\LocalizedPropertysController.cs" />
     <Compile Include="Controllers\OData\LanguagesController.cs" />
     <Compile Include="Controllers\OData\ManufacturersController.cs" />
     <Compile Include="Controllers\OData\OrderNotesController.cs" />

@@ -6,10 +6,10 @@
 */
 
 var providers_large = {
-	google : {
+	/*google : {
 		name : 'Google',
 		url : 'https://www.google.com/accounts/o8/id'
-	},
+	},*/
 	yahoo : {
 		name : 'Yahoo',
 		url : 'http://me.yahoo.com/'
@@ -81,12 +81,12 @@ var providers_small = {
 		name : 'ClickPass',
 		label : 'Enter your ClickPass username',
 		url : 'http://clickpass.com/public/{username}'
-	},
+	}/*,
 	google_profile : {
 		name : 'Google Profile',
 		label : 'Enter your Google Profile username',
 		url : 'http://www.google.com/profiles/{username}'
-	}
+	}*/
 };
 
 openid.locale = 'en';

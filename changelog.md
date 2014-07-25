@@ -36,6 +36,7 @@
 * TinyMCE 4: activated spell checking, added FontSelect and FontSizeSelect tools to the toolbar
 * Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
 * Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
+* Admin: Replaced DatePicker with DateTimePicker control
 * (Perf) significantly increased excel import performance... again ;-)
 * (Perf) significantly increased excel export performance and optimized memory usage
 * (Perf) SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs

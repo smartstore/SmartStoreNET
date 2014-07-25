@@ -66,7 +66,7 @@ a:hover {
 }
 
 .dropdown-menu {
-	.border-radius(0);
+	.border-radius(0) !important;
 	text-shadow: none;
 }
 
@@ -378,13 +378,19 @@ td.adminData > input[type="checkbox"] {
 .t-grid *:not(.btn-group) > .btn {
 	margin: 0.2em;
 }
+
 .t-grid .t-button,
 .t-edit-form .t-button,
 .t-filter-options {
-	padding: @paddingSmall;
+	padding: 2px 4px;
 	font-size: @fontSizeSmall;
-	.border-radius(@borderRadiusSmall);
+	.border-radius(2px);
 }
+
+.t-filter-options {
+	font-size: @fontSizeSmall;
+}
+
 .t-grid .btn {
 	padding: @paddingSmall;
 }

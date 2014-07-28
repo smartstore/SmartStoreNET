@@ -32,6 +32,10 @@ namespace SmartStore.Data.Migrations
 				"Return request",
 				"Rücksendeauftrag");
 
+			builder.AddOrUpdate("Admin.Orders.Products.ReturnRequest.Create",
+				"Create return",
+				"Rücksendung erstellen");
+
 			builder.AddOrUpdate("Admin.ReturnRequests.Accept",
 				"Accept and update order",
 				"Akzeptieren und Auftrag anpassen");

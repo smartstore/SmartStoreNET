@@ -1366,9 +1366,10 @@
                             $('#pnlEditDiscount@(item.Id)').show();
                             $('#pnlEditPrice@(item.Id)').show();
                             $('#btnEditOrderItem@(item.Id)').hide();
-                            $('#btnDeleteOrderItem@(item.Id)').hide();
+                        	$('#btnDeleteOrderItem@(item.Id)').hide();
+                        	$('#btnAddReturnRequest@(item.Id)').hide();
                             $('#btnSaveOrderItem@(item.Id)').show();
-                            $('#btnCancelOrderItem@(item.Id)').show();
+                        	$('#btnCancelOrderItem@(item.Id)').show();
                         }
                         else {
                             $('#pnlEditUnitPrice@(item.Id)').hide();
@@ -1376,9 +1377,10 @@
                             $('#pnlEditDiscount@(item.Id)').hide();
                             $('#pnlEditPrice@(item.Id)').hide();
                             $('#btnEditOrderItem@(item.Id)').show();
-                            $('#btnDeleteOrderItem@(item.Id)').show();
+                        	$('#btnDeleteOrderItem@(item.Id)').show();
+                        	$('#btnAddReturnRequest@(item.Id)').show();
                             $('#btnSaveOrderItem@(item.Id)').hide();
-                            $('#btnCancelOrderItem@(item.Id)').hide();
+                        	$('#btnCancelOrderItem@(item.Id)').hide();
                         }
                     }
                     </script>
@@ -1665,11 +1667,16 @@
                                         </table>
                                     </div>
                                 </td>
-                                <td align="center" style="width: 15%;">
+                                <td align="center" style="width: 20%;">
                                     <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOrderItemEdit@(item.Id)(true);return false;" id="btnEditOrderItem@(item.Id)" class="btn" />
                                     <input type="submit" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
                                     <input type="submit" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
                                     <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOrderItemEdit@(item.Id)(false);return false;" id="btnCancelOrderItem@(item.Id)" class="btn" style="display: none;" />
+
+									@if(item.IsReturnRequestPossible)
+									{
+										<input type="submit" name="btnAddReturnRequest@(item.Id)" id="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" onclick="return confirm('@T("Admin.Common.AreYouSure")');" class="btn" />
+									}
                                 </td>
                             </tr>
                         }

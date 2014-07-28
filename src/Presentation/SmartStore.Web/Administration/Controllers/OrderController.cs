@@ -34,6 +34,7 @@ using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using SmartStore.Services.Tax;
 using SmartStore.Core.Events;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -74,6 +75,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ITaxService _taxService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly ICustomerService _customerService;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -107,6 +109,7 @@ namespace SmartStore.Admin.Controllers
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
 			IEventPublisher eventPublisher,
+			ICustomerService customerService,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings)
 		{
@@ -142,6 +145,7 @@ namespace SmartStore.Admin.Controllers
 			this._taxService = taxService;
 			this._priceCalculationService = priceCalculationService;
 			this._eventPublisher = eventPublisher;
+			this._customerService = customerService;
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -1373,6 +1377,55 @@ namespace SmartStore.Admin.Controllers
             PrepareOrderDetailsModel(model, order);
             return View(model);
         }
+
+		[HttpPost, ActionName("Edit")]
+		[FormValueRequired(FormValueRequirement.StartsWith, "btnAddReturnRequest")]
+		[ValidateInput(false)]
+		public ActionResult AddReturnRequest(int id, FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+				return AccessDeniedView();
+
+			var order = _orderService.GetOrderById(id);
+			if (order == null)
+				return RedirectToAction("List");
+
+			//get order item identifier
+			int orderItemId = 0;
+			foreach (var formValue in form.AllKeys)
+				if (formValue.StartsWith("btnAddReturnRequest", StringComparison.InvariantCultureIgnoreCase))
+					orderItemId = Convert.ToInt32(formValue.Substring("btnAddReturnRequest".Length));
+
+			var orderItem = order.OrderItems.Where(x => x.Id == orderItemId).FirstOrDefault();
+			if (orderItem == null)
+				throw new ArgumentException("No order item found with the specified id");
+
+			if (orderItem.Quantity > 0)
+			{
+				var returnRequest = new ReturnRequest()
+				{
+					StoreId = order.StoreId,
+					OrderItemId = orderItem.Id,
+					Quantity = orderItem.Quantity,
+					CustomerId = order.CustomerId,
+					ReasonForReturn = "",
+					RequestedAction = "",
+					StaffNotes = "",
+					ReturnRequestStatus = ReturnRequestStatus.Pending,
+					CreatedOnUtc = DateTime.UtcNow,
+					UpdatedOnUtc = DateTime.UtcNow
+				};
+
+				order.Customer.ReturnRequests.Add(returnRequest);
+				_customerService.UpdateCustomer(order.Customer);
+
+				return RedirectToAction("Edit", "ReturnRequest", new { id = returnRequest.Id });
+			}
+
+			var model = new OrderModel();
+			PrepareOrderDetailsModel(model, order);
+			return View(model);
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired(FormValueRequirement.StartsWith, "btnResetDownloadCount")]

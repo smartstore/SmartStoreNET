@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
@@ -303,8 +304,20 @@ namespace SmartStore.Admin.Models.Orders
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 
-			public IList<ReturnRequestModel> ReturnRequests { get; set; }
 			public IList<BundleItemModel> BundleItems { get; set; }
+			public IList<ReturnRequestModel> ReturnRequests { get; set; }
+
+			public bool IsReturnRequestPossible
+			{
+				get
+				{
+					if (ReturnRequests != null && ReturnRequests.Count > 0)
+					{
+						return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
+					}
+					return true;
+				}
+			}
         }
 
 		public class ReturnRequestModel : EntityModelBase

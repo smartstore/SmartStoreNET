@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Orders;
@@ -11,17 +12,25 @@ namespace SmartStore.Admin.Models.Orders
     [Validator(typeof(ReturnRequestValidator))]
     public class ReturnRequestModel : EntityModelBase
     {
+		public ReturnRequestModel()
+		{
+			AvailableReasonForReturn = new List<SelectListItem>();
+			AvailableRequestedAction = new List<SelectListItem>();
+		}
+
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.ID")]
         public override int Id { get; set; }
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Order")]
         public int OrderId { get; set; }
+		public string OrderNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Customer")]
         public int CustomerId { get; set; }
 		public string CustomerFullName { get; set; }
 
         public int ProductId { get; set; }
+		public string ProductSku { get; set; }
 
 		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.Product")]
         public string ProductName { get; set; }
@@ -34,10 +43,12 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.ReasonForReturn")]
         public string ReasonForReturn { get; set; }
+		public IList<SelectListItem> AvailableReasonForReturn { get; set; }
 
         [AllowHtml]
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.RequestedAction")]
         public string RequestedAction { get; set; }
+		public IList<SelectListItem> AvailableRequestedAction { get; set; }
 
         [AllowHtml]
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.CustomerComments")]

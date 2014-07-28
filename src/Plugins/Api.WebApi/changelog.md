@@ -1,5 +1,10 @@
 ﻿#Release Notes#
 
+##Web Api 1.23##
+
+###New Features###
+* #431 Add support for localized properties (part 1)
+
 ##Web Api 1.22##
 
 ###New Features###

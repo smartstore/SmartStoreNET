@@ -259,8 +259,11 @@
         if (Model.IsEditable)
         {
         <div class="addon-buttons">
-            @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express)*@
-            @Html.Partial("_ButtonPaymentMethod", Model)
+            @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+			@foreach(var item in Model.ButtonPaymentMethods.Items)
+			{
+				@Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
+			}
         </div>
         }
     }

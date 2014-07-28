@@ -192,70 +192,70 @@ namespace SmartStore.Web.Controllers
         {
             var model = new CheckoutShippingMethodModel();
 
-			var getShippingOptionResponse = _shippingService
-				  .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
+			var getShippingOptionResponse = _shippingService .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
 				  "", _storeContext.CurrentStore.Id);
-            if (getShippingOptionResponse.Success)
-            {
-                //performance optimization. cache returned shipping options.
-                //we'll use them later (after a customer has selected an option).
+
+			if (getShippingOptionResponse.Success)
+			{
+				//performance optimization. cache returned shipping options.
+				//we'll use them later (after a customer has selected an option).
 				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-					SystemCustomerAttributeNames.OfferedShippingOptions,
-					getShippingOptionResponse.ShippingOptions,
-					_storeContext.CurrentStore.Id);
+					SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, _storeContext.CurrentStore.Id);
 
 				var shippingMethods = _shippingService.GetAllShippingMethods();
-            
-                foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
-                {
-                    var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
-                    {
-                        Name = shippingOption.Name,
-                        Description = shippingOption.Description,
-                        ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
-                    };
 
-                    // codehint: sm-add (determine brand image of shipping method)
-                    var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
-                    if (plugin != null && plugin.BrandImageFileName.HasValue())
-                    {
-                        soModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
-                    }
+				foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
+				{
+					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
+					{
+						Name = shippingOption.Name,
+						Description = shippingOption.Description,
+						ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
+					};
 
-                    //adjust rate
-                    Discount appliedDiscount = null;
-                    var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
+					// codehint: sm-add (determine brand image of shipping method)
+					var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
+					if (plugin != null && plugin.BrandImageFileName.HasValue())
+					{
+						soModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
+					}
+
+					//adjust rate
+					Discount appliedDiscount = null;
+					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
 						shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
 
-                    decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
-                    decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                    soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
+					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
+					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
+					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
 
-                    model.ShippingMethods.Add(soModel);
-                }
+					model.ShippingMethods.Add(soModel);
+				}
 
-                //find a selected (previously) shipping method
+				//find a selected (previously) shipping method
 				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
 				if (selectedShippingOption != null)
-                {
-                    var shippingOptionToSelect = model.ShippingMethods.ToList()
+				{
+					var shippingOptionToSelect = model.ShippingMethods.ToList()
 						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && 
+						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
 						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
-                    if (shippingOptionToSelect != null)
-                        shippingOptionToSelect.Selected = true;
-                }
-                //if no option has been selected, let's do it for the first one
-                if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
-                {
-                    var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
-                    if (shippingOptionToSelect != null)
-                        shippingOptionToSelect.Selected = true;
-                }
-            }
-            else
-                foreach (var error in getShippingOptionResponse.Errors)
-                    model.Warnings.Add(error);
+					if (shippingOptionToSelect != null)
+						shippingOptionToSelect.Selected = true;
+				}
+				//if no option has been selected, let's do it for the first one
+				if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
+				{
+					var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
+					if (shippingOptionToSelect != null)
+						shippingOptionToSelect.Selected = true;
+				}
+			}
+			else
+			{
+				foreach (var error in getShippingOptionResponse.Errors)
+					model.Warnings.Add(error);
+			}
 
             return model;
         }
@@ -982,8 +982,6 @@ namespace SmartStore.Web.Controllers
                 {
                     foreach (var error in placeOrderResult.Errors)
                         model.Warnings.Add(error);
-
-					_httpContext.RemoveCheckoutState();
                 }
             }
             catch (Exception exc)

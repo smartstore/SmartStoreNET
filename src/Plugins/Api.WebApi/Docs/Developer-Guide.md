@@ -465,8 +465,23 @@ Note that you cannot use a path `/Orders(145)/ShippingAddress` to update an addr
 
 Note the select option which tells OData just to return the Id property.
 
+#### Getting localized property values
 
+    GET http://localhost:1260/odata/v1/LocalizedPropertys?$top=120&$filter=LocaleKeyGroup eq 'Product' and EntityId eq 224 and Language/LanguageCulture eq 'en-US'
 
+That's where OData filter enter the equation. That request filters all english property values for a product with the ID 224. LocaleKeyGroup is typically the entity name (Product, Category, Manufacturer, ProductBundleItem, DeliveryTime etc.).
+The result looks like
+
+    {
+        "odata.metadata":"http://localhost:1260/odata/v1/$metadata#LocalizedPropertys","value":[
+        {
+            "EntityId":224,"LanguageId":1,"LocaleKeyGroup":"Product","LocaleKey":"Name","LocaleValue":"My name for the product","Id":111
+        },{
+            "EntityId":224,"LanguageId":1,"LocaleKeyGroup":"Product","LocaleKey":"FullDescription","LocaleValue":"<p>Hello world! My product description goes here...</p>","Id":113
+        }]
+    }
+
+LocaleKey is the context property name (here name and full description of the product entity). LocaleValue offers the localized value.
 
 <br />
 [1]: http://www.asp.net/web-api/overview/web-api-clients/calling-a-web-api-from-a-net-client

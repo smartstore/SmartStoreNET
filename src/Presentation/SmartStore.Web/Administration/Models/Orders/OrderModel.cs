@@ -221,6 +221,9 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime UpdatedOn { get; set; }
+
         //checkout attributes
         public string CheckoutAttributeInfo { get; set; }
 

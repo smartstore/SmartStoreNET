@@ -8,10 +8,21 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
+			AddColumn("dbo.Order", "UpdatedOnUtc", c => c.DateTime(nullable: false));
+
+			try
+			{
+				Sql("Update [dbo].[Order] Set UpdatedOnUtc = CreatedOnUtc");
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
         }
         
         public override void Down()
         {
+			DropColumn("dbo.Order", "UpdatedOnUtc");
         }
 
 		public bool RollbackOnFailure

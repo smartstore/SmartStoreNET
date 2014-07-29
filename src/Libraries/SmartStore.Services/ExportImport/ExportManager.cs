@@ -1029,6 +1029,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("VatNumber", null, order.VatNumber);
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
+				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
 
                 //products
                 var orderItems = order.OrderItems;
@@ -1142,6 +1143,7 @@ namespace SmartStore.Services.ExportImport
                         "ShippingRateComputationMethodSystemName",
                         "VatNumber",
                         "CreatedOnUtc",
+						"UpdatedOnUtc",
                         //billing address
                         "BillingFirstName",
                         "BillingLastName",
@@ -1267,6 +1269,9 @@ namespace SmartStore.Services.ExportImport
 
                     worksheet.Cells[row, col].Value = order.CreatedOnUtc.ToOADate();
                     col++;
+
+					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
+					col++;
 
 
                     //billing address

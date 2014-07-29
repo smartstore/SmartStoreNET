@@ -1055,7 +1055,8 @@ namespace SmartStore.Services.Orders
                             ShippingMethod = shippingMethodName,
                             ShippingRateComputationMethodSystemName = shippingRateComputationMethodSystemName,
                             VatNumber = vatNumber,
-                            CreatedOnUtc = DateTime.UtcNow
+                            CreatedOnUtc = DateTime.UtcNow,
+							UpdatedOnUtc = DateTime.UtcNow
                         };
                         _orderService.InsertOrder(order);
 

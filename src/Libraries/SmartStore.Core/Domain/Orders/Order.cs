@@ -421,6 +421,12 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public DateTime CreatedOnUtc { get; set; }
 
+		/// <summary>
+		/// Gets or sets the date and time when order was updated
+		/// </summary>
+		[DataMember]
+		public DateTime UpdatedOnUtc { get; set; }
+
         #endregion
 
         #region Navigation properties

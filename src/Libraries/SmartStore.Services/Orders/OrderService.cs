@@ -329,6 +329,8 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
+			order.UpdatedOnUtc = DateTime.UtcNow;
+
             _orderRepository.Update(order);
 
             //event notifications

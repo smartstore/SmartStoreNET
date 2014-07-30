@@ -52,6 +52,7 @@
 * Shipping.ByTotal: Fixed matching of rates by choosing the more specific over the common rate
 * A grouped product only shows up to 12 associated products
 * #405 Billiger feed: Wrong base price exported
+* #437 Mobile devices: Cannot add a product to the cart when it is grouped
 
 ##SmartStore.NET 2.0.2#
 

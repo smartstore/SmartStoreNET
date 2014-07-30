@@ -2255,20 +2255,28 @@ namespace SmartStore.Web.Controllers
 		[ValidateInput(false)]
 		public ActionResult AddProductToCart(int productId, FormCollection form)
 		{
-			var product = _productService.GetProductById(productId);
-			if (product == null || product.Deleted || !product.Published)
-				return RedirectToRoute("HomePage");
-
-			//manually process form
-			ShoppingCartType cartType = ShoppingCartType.ShoppingCart;
+			var parentProductId = productId;
+			var cartType = ShoppingCartType.ShoppingCart;
 
 			foreach (string formKey in form.AllKeys)
 			{
 				if (formKey.StartsWith("addtocartbutton-"))
+				{
 					cartType = ShoppingCartType.ShoppingCart;
+					int.TryParse(formKey.Replace("addtocartbutton-", ""), out productId);
+				}
 				else if (formKey.StartsWith("addtowishlistbutton-"))
+				{
 					cartType = ShoppingCartType.Wishlist;
+					int.TryParse(formKey.Replace("addtowishlistbutton-", ""), out productId);
+				}
 			}
+
+			var product = _productService.GetProductById(productId);
+			if (product == null || product.Deleted || !product.Published)
+				return RedirectToRoute("HomePage");
+
+			var parentProduct = (parentProductId == productId ? product : _productService.GetProductById(parentProductId));
 
 			decimal customerEnteredPrice = decimal.Zero;
 			decimal customerEnteredPriceConverted = decimal.Zero;
@@ -2290,7 +2298,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (string formKey in form.AllKeys)
 			{
-				if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					int.TryParse(form[formKey], out quantity);
 					break;
@@ -2315,7 +2323,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the wishlist" notification message
-								var model = PrepareProductDetailsPageModel(product);
+								var model = PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist"), false);
 
 								//activity log
@@ -2336,7 +2344,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the cart" notification message
-								var model = PrepareProductDetailsPageModel(product);
+								var model = PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"), false);
 
 								//activity log
@@ -2355,7 +2363,7 @@ namespace SmartStore.Web.Controllers
 					ModelState.AddModelError("", error);
 
 				//If we got this far, something failed, redisplay form
-				var model = PrepareProductDetailsPageModel(product);
+				var model = PrepareProductDetailsPageModel(parentProduct);
 
 				return View(model.ProductTemplateViewPath, model);
 			}

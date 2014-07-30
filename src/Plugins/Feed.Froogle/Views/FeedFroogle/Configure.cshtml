@@ -63,9 +63,9 @@
 						<strong>@(firstFile.StoreName)</strong>:
 						@foreach (var file in group)
 						{
-							<br /><a href="@file.FileUrl" target="_blank">@file.FileUrl</a>
+							<br /><a href="@file.FileUrl" download>@file.FileUrl</a>
 						}
-						<br /><a href="@firstFile.LogUrl" target="_blank">@T("Admin.Configuration.ActivityLog")</a>,
+						<br /><a href="@firstFile.LogUrl" download>@T("Admin.Configuration.ActivityLog")</a>,
 						@T("Common.UpdatedOn"): @(firstFile.LastWriteTime)
 					</p>
 				}

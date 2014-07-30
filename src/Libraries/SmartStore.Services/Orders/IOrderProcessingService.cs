@@ -238,8 +238,7 @@ namespace SmartStore.Services.Orders
 		/// Processes a return request and updates the order item
 		/// </summary>
 		/// <param name="returnRequest">Return request</param>
-		/// <returns>true: success, false: failure</returns>
-		bool AcceptReturnRequest(ReturnRequest returnRequest);
+		void AcceptReturnRequest(ReturnRequest returnRequest);
 
 
         /// <summary>

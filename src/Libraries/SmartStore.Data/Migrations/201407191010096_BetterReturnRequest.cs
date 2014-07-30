@@ -51,9 +51,9 @@ namespace SmartStore.Data.Migrations
 				"Accept and update order",
 				"Akzeptieren und Auftrag anpassen");
 
-			builder.AddOrUpdate("Admin.ReturnRequests.Accept.Confirm",
-				"Accept return request? Quantities and totals of the order are updated, same with the inventory and reward points.",
-				"Warenrücksendung akzeptieren? Die Mengen und Summen des Auftrags, so wie Warenbestände und Bonuspunkte werden entsprechend angepasst.");
+			builder.AddOrUpdate("Admin.ReturnRequests.Accept.Hint",
+				"Sets the status to accepted and updates quantities and totals of the order, same with the inventory and reward points.",
+				"Setzt den Status auf genehmigt und passt die Mengen und Summen des Auftrags, so wie Warenbestände und Bonuspunkte entsprechend an.");
 		}
     }
 }

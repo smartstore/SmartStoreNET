@@ -190,11 +190,11 @@ namespace SmartStore.Admin.Controllers
 
             var returnRequest = _orderService.GetReturnRequestById(model.Id);
             if (returnRequest == null)
-                //No return request found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
+				returnRequest.Quantity = model.Quantity;
                 returnRequest.ReasonForReturn = model.ReasonForReturn;
                 returnRequest.RequestedAction = model.RequestedAction;
                 returnRequest.CustomerComments = model.CustomerComments;
@@ -275,7 +275,7 @@ namespace SmartStore.Admin.Controllers
 			if (returnRequest == null)
 				return RedirectToAction("List");
 
-			bool result = _orderProcessingService.AcceptReturnRequest(returnRequest);
+			_orderProcessingService.AcceptReturnRequest(returnRequest);
 
 			return RedirectToAction("Edit", returnRequest.Id);
 		}

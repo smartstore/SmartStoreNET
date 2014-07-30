@@ -2596,9 +2596,8 @@ namespace SmartStore.Services.Orders
 		/// <summary>
 		/// Processes a return request and updates the order item
 		/// </summary>
-		/// <param name="returnRequest">Return request</param>
-		/// <returns>true: success, false: failure</returns>
-		public virtual bool AcceptReturnRequest(ReturnRequest returnRequest)
+		/// <param name="returnRequest">Return request</param>		
+		public virtual void AcceptReturnRequest(ReturnRequest returnRequest)
 		{
 			if (returnRequest == null)
 				throw new ArgumentNullException("returnRequest");
@@ -2609,112 +2608,100 @@ namespace SmartStore.Services.Orders
 			var oi = _orderService.GetOrderItemById(returnRequest.OrderItemId);
 
 			if (returnRequest.Quantity <= 0 || oi.Quantity <= 0)
-				return true;
+				return;
 
 			var customer = oi.Order.Customer;
-			decimal deltaPriceInclTax = decimal.Zero;
-			decimal deltaPriceExclTax = decimal.Zero;
-			decimal deltaDiscountInclTax = decimal.Zero;
-			decimal deltaDiscountExclTax = decimal.Zero;
-
 			bool includeRewardPoints = (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForPurchases_Amount > decimal.Zero &&
-				!customer.IsGuest() && oi.Order.RewardPointsWereAdded);
+				oi.Order.RewardPointsWereAdded && !customer.IsGuest());
 
 			int returnQuantity = Math.Max(returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity, 0);
 			int newQuantity = Math.Max(oi.Quantity - returnQuantity, 0);
 
 			// update order item
-			if (newQuantity == 0)
-			{
-				deltaPriceInclTax = oi.PriceInclTax;
-				deltaPriceExclTax = oi.PriceExclTax;
+			decimal reduceFactor = (decimal)newQuantity / (decimal)oi.Quantity;
 
-				oi.PriceInclTax = decimal.Zero;
-				oi.PriceExclTax = decimal.Zero;
-				oi.DiscountAmountInclTax = decimal.Zero;
-				oi.DiscountAmountExclTax = decimal.Zero;
-				oi.ProductCost = decimal.Zero;
-			}
-			else
-			{
-				decimal reduceFactor = (decimal)newQuantity / (decimal)oi.Quantity;
-				decimal priceInclTax = newQuantity * oi.UnitPriceInclTax;
-				decimal priceExclTax = newQuantity * oi.UnitPriceExclTax;
+			decimal priceInclTax = newQuantity * oi.UnitPriceInclTax;
+			decimal priceExclTax = newQuantity * oi.UnitPriceExclTax;
 
-				deltaPriceInclTax = Math.Max(oi.PriceInclTax - priceInclTax, 0);
-				deltaPriceExclTax = Math.Max(oi.PriceExclTax - priceExclTax, 0);
+			decimal deltaPriceInclTax = Math.Max(oi.PriceInclTax - priceInclTax, 0);
+			decimal deltaPriceExclTax = Math.Max(oi.PriceExclTax - priceExclTax, 0);
 
-				oi.PriceInclTax = Round(priceInclTax);
-				oi.PriceExclTax = Round(priceExclTax);
+			oi.PriceInclTax = Round(priceInclTax);
+			oi.PriceExclTax = Round(priceExclTax);
 
-				if (oi.DiscountAmountInclTax > decimal.Zero)
-				{
-					decimal discountInclTax = oi.DiscountAmountInclTax * reduceFactor;
-					deltaDiscountInclTax = Math.Max(oi.DiscountAmountInclTax - discountInclTax, 0);
+			decimal discountInclTax = oi.DiscountAmountInclTax * reduceFactor;
+			decimal discountExclTax = oi.DiscountAmountExclTax * reduceFactor;
 
-					oi.DiscountAmountInclTax = Round(discountInclTax);
-				}
+			decimal deltaDiscountInclTax = Math.Max(oi.DiscountAmountInclTax - discountInclTax, 0);
+			decimal deltaDiscountExclTax = Math.Max(oi.DiscountAmountExclTax - discountExclTax, 0);
 
-				if (oi.DiscountAmountExclTax > decimal.Zero)
-				{
-					decimal discountExclTax = oi.DiscountAmountExclTax * reduceFactor;
-					deltaDiscountExclTax = Math.Max(oi.DiscountAmountExclTax - discountExclTax, 0);
-
-					oi.DiscountAmountExclTax = Round(discountExclTax);
-				}
-			}
+			oi.DiscountAmountInclTax = Round(discountInclTax);			
+			oi.DiscountAmountExclTax = Round(discountExclTax);
 
 			oi.Quantity = newQuantity;
 
 			// update order (OrderTotal and OrderDiscout always includes tax)
-			int rewardPoints = 0;
-			decimal rewardPointsAmount = decimal.Zero;
 			decimal subtotalInclTax = Math.Max(oi.Order.OrderSubtotalInclTax - deltaPriceInclTax, 0);
 			decimal subtotalExclTax = Math.Max(oi.Order.OrderSubtotalExclTax - deltaPriceExclTax, 0);
 
-			// update reward points (always in context of tax included values)
-			if (includeRewardPoints && deltaPriceInclTax > decimal.Zero)
-			{
-				rewardPoints = _orderTotalCalculationService.ConvertAmountToRewardPoints(deltaPriceInclTax);
-				rewardPointsAmount = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPoints);
-			}
-
-			decimal total = Math.Max(oi.Order.OrderTotal - deltaPriceInclTax + rewardPointsAmount, 0);
-			decimal tax = Math.Max(deltaPriceInclTax - deltaPriceExclTax, 0);
-
 			oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
 			oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
+
+			decimal total = Math.Max(oi.Order.OrderTotal - deltaPriceInclTax, 0);
+			decimal tax = Math.Max(oi.Order.OrderTax - (deltaPriceInclTax - deltaPriceExclTax), 0);
+
 			oi.Order.OrderTotal = Round(total);
 			oi.Order.OrderTax = Round(tax);
 
-			if (oi.Order.OrderSubTotalDiscountInclTax > decimal.Zero && deltaDiscountInclTax > decimal.Zero)
-			{
-				decimal subtotalDiscount = Math.Max(oi.Order.OrderSubTotalDiscountInclTax - deltaDiscountInclTax, 0);
-				decimal discount = Math.Max(oi.Order.OrderDiscount - deltaDiscountInclTax, 2);
 
-				oi.Order.OrderSubTotalDiscountInclTax = Round(subtotalDiscount);
-				oi.Order.OrderDiscount = Round(discount);
-			}
+			
 
-			if (oi.Order.OrderSubTotalDiscountExclTax > decimal.Zero && deltaDiscountExclTax > decimal.Zero)
-			{
-				decimal subtotalDiscount = Math.Max(oi.Order.OrderSubTotalDiscountExclTax - deltaDiscountExclTax, 0);
+			
+			//int rewardPoints = 0;
+			//decimal rewardPointsAmount = decimal.Zero;
+			//decimal subtotalInclTax = Math.Max(oi.Order.OrderSubtotalInclTax - deltaPriceInclTax, 0);
+			//decimal subtotalExclTax = Math.Max(oi.Order.OrderSubtotalExclTax - deltaPriceExclTax, 0);
 
-				oi.Order.OrderSubTotalDiscountExclTax = Round(subtotalDiscount);
-			}
+			//// update reward points (always in context of tax included values)
+			//if (includeRewardPoints && deltaPriceInclTax > decimal.Zero)
+			//{
+			//	rewardPoints = _orderTotalCalculationService.ConvertAmountToRewardPoints(deltaPriceInclTax);
+			//	rewardPointsAmount = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPoints);
+			//}
 
-			// add back reward points
-			if (includeRewardPoints && rewardPoints != 0)
-			{
-				customer.AddRewardPointsHistoryEntry(rewardPoints, string.Format(_localizationService.GetResource("RewardPoints.Message.EarnedForOrder"), oi.Order.GetOrderNumber()));
-			}
+			//decimal total = Math.Max(oi.Order.OrderTotal - deltaPriceInclTax + rewardPointsAmount, 0);
+			//decimal tax = Math.Max(deltaPriceInclTax - deltaPriceExclTax, 0);
+
+			//oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
+			//oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
+			//oi.Order.OrderTotal = Round(total);
+			//oi.Order.OrderTax = Round(tax);
+
+			//if (oi.Order.OrderSubTotalDiscountInclTax > decimal.Zero && deltaDiscountInclTax > decimal.Zero)
+			//{
+			//	decimal subtotalDiscount = Math.Max(oi.Order.OrderSubTotalDiscountInclTax - deltaDiscountInclTax, 0);
+			//	decimal discount = Math.Max(oi.Order.OrderDiscount - deltaDiscountInclTax, 2);
+
+			//	oi.Order.OrderSubTotalDiscountInclTax = Round(subtotalDiscount);
+			//	oi.Order.OrderDiscount = Round(discount);
+			//}
+
+			//if (oi.Order.OrderSubTotalDiscountExclTax > decimal.Zero && deltaDiscountExclTax > decimal.Zero)
+			//{
+			//	decimal subtotalDiscount = Math.Max(oi.Order.OrderSubTotalDiscountExclTax - deltaDiscountExclTax, 0);
+
+			//	oi.Order.OrderSubTotalDiscountExclTax = Round(subtotalDiscount);
+			//}
+
+			//// add back reward points
+			//if (includeRewardPoints && rewardPoints != 0)
+			//{
+			//	customer.AddRewardPointsHistoryEntry(rewardPoints, string.Format(_localizationService.GetResource("RewardPoints.Message.EarnedForOrder"), oi.Order.GetOrderNumber()));
+			//}
 
 			_orderService.UpdateOrder(oi.Order);
 
-			// adjust inventory
 			_productService.AdjustInventory(oi, false, returnQuantity);
-
-			return false;
 		}
 
 

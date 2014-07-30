@@ -3446,7 +3446,6 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("CompareProducts");
         }
 
-        // codehint: sm-add
         // ajax
         [HttpPost]
         [ActionName("AddProductToCompareList")]
@@ -3488,7 +3487,6 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("CompareProducts");
         }
 
-        // codehint: sm-add
         // ajax
         [HttpPost]
         [ActionName("RemoveProductFromCompareList")]
@@ -3556,20 +3554,14 @@ namespace SmartStore.Web.Controllers
         }
 
         // Ajax
-        // codehint: sm-add
-        [HttpPost]
         public ActionResult CompareSummary()
         {
             return Json(new
             {
                 Count = _compareProductsService.GetComparedProducts().Count
-            });
+			}, JsonRequestBehavior.AllowGet);
         }
 
-        /// <summary>
-        /// <remarks>codehint: sm-add</remarks>
-        /// </summary>
-        /// <returns></returns>
         public ActionResult FlyoutCompare()
         {
             var model = new CompareProductsModel()

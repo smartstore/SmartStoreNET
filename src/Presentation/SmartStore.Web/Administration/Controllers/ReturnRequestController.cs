@@ -33,6 +33,8 @@ namespace SmartStore.Admin.Controllers
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly IOrderProcessingService _orderProcessingService;
+		private readonly OrderSettings _orderSettings;
 
         #endregion Fields
 
@@ -42,7 +44,9 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService, IDateTimeHelper dateTimeHelper,
             ILocalizationService localizationService, IWorkContext workContext,
             IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
-            ICustomerActivityService customerActivityService, IPermissionService permissionService)
+            ICustomerActivityService customerActivityService, IPermissionService permissionService,
+			IOrderProcessingService orderProcessingService,
+			OrderSettings orderSettings)
         {
             this._orderService = orderService;
             this._customerService = customerService;
@@ -53,6 +57,8 @@ namespace SmartStore.Admin.Controllers
             this._localizationSettings = localizationSettings;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
+			this._orderProcessingService = orderProcessingService;
+			this._orderSettings = orderSettings;
         }
 
         #endregion
@@ -60,8 +66,7 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-        private bool PrepareReturnRequestModel(ReturnRequestModel model,
-            ReturnRequest returnRequest, bool excludeProperties)
+        private bool PrepareReturnRequestModel(ReturnRequestModel model, ReturnRequest returnRequest, bool excludeProperties)
         {
             if (model == null)
                 throw new ArgumentNullException("model");
@@ -75,15 +80,18 @@ namespace SmartStore.Admin.Controllers
 
             model.Id = returnRequest.Id;
             model.ProductId = orderItem.ProductId;
+			model.ProductSku = orderItem.Product.Sku;
 			model.ProductName = orderItem.Product.Name;
 			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint;
             model.OrderId = orderItem.OrderId;
+			model.OrderNumber = orderItem.Order.GetOrderNumber();
             model.CustomerId = returnRequest.CustomerId;
 			model.CustomerFullName = returnRequest.Customer.GetFullName();
             model.Quantity = returnRequest.Quantity;
             model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
+
             if (!excludeProperties)
             {
                 model.ReasonForReturn = returnRequest.ReasonForReturn;
@@ -92,7 +100,34 @@ namespace SmartStore.Admin.Controllers
                 model.StaffNotes = returnRequest.StaffNotes;
                 model.ReturnRequestStatusId = returnRequest.ReturnRequestStatusId;
             }
-            //model is successfully prepared
+
+			string unspec = _localizationService.GetResource("Common.Unspecified");
+			model.AvailableReasonForReturn.Add(new SelectListItem() { Text = unspec, Value = "" });
+			model.AvailableRequestedAction.Add(new SelectListItem() { Text = unspec, Value = "" });
+
+			if (_orderSettings.ReturnRequestReasons != null)
+			{
+				foreach (var rrr in _orderSettings.ReturnRequestReasons)
+				{
+					model.AvailableReasonForReturn.Add(new SelectListItem() { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
+				}
+			}
+
+			if (_orderSettings.ReturnRequestActions != null)
+			{
+				foreach (var rra in _orderSettings.ReturnRequestActions)
+					model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
+			}
+
+			var urlHelper = new UrlHelper(Request.RequestContext);
+
+			model.CancelOrderItem.Id = returnRequest.Id;
+			model.CancelOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
+			model.CancelOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
+			model.CancelOrderItem.ReduceRewardPoints = orderItem.Order.RewardPointsWereAdded;
+
+			model.ReturnRequestInfo = TempData[CancelOrderItemContext.InfoKey] as string;
+
             return true;
         }
 
@@ -164,17 +199,24 @@ namespace SmartStore.Admin.Controllers
 
             var returnRequest = _orderService.GetReturnRequestById(model.Id);
             if (returnRequest == null)
-                //No return request found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
+				returnRequest.Quantity = model.Quantity;
                 returnRequest.ReasonForReturn = model.ReasonForReturn;
                 returnRequest.RequestedAction = model.RequestedAction;
                 returnRequest.CustomerComments = model.CustomerComments;
                 returnRequest.StaffNotes = model.StaffNotes;
                 returnRequest.ReturnRequestStatusId = model.ReturnRequestStatusId;
                 returnRequest.UpdatedOnUtc = DateTime.UtcNow;
+
+				if (returnRequest.ReasonForReturn == null)
+					returnRequest.ReasonForReturn = "";
+
+				if (returnRequest.RequestedAction == null)
+					returnRequest.RequestedAction = "";
+
                 _customerService.UpdateCustomer(returnRequest.Customer);
 
                 //activity log
@@ -230,6 +272,32 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Deleted"));
             return RedirectToAction("List");
         }
+
+		[HttpPost]
+		public ActionResult Accept(CancelOrderItemModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+				return AccessDeniedView();
+
+			var context = new CancelOrderItemContext()
+			{
+				ReturnRequest = _orderService.GetReturnRequestById(model.Id),
+				AdjustInventory = model.AdjustInventory,
+				ReduceRewardPoints = model.ReduceRewardPoints
+			};
+
+			if (context.ReturnRequest == null)
+				return RedirectToAction("List");
+
+			context.ReturnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
+			_customerService.UpdateCustomer(context.ReturnRequest.Customer);
+
+			_orderProcessingService.CancelOrderItem(context);
+
+			TempData[CancelOrderItemContext.InfoKey] = context.ToString(_localizationService);
+
+			return RedirectToAction("Edit", new { id = context.ReturnRequest.Id });
+		}
 
         #endregion
     }

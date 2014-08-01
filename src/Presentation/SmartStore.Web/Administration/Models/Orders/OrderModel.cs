@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -19,6 +21,7 @@ namespace SmartStore.Admin.Models.Orders
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
+			CancelOrderItem = new CancelOrderItemModel();
         }
 
         //identifiers
@@ -140,7 +143,6 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string CardExpirationYear { get; set; }
 
-        //codehint: sm-add begin
         public bool AllowStoringDirectDebit { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.DirectDebitAccountHolder")]
         [AllowHtml]
@@ -169,8 +171,6 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.DirectDebitIban")]
         [AllowHtml]
         public string DirectDebitIban { get; set; }
-
-        //codehint: sm-add end
 
         //misc payment info
         public bool DisplayPurchaseOrderNumber { get; set; }
@@ -219,6 +219,9 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime UpdatedOn { get; set; }
+
         //checkout attributes
         public string CheckoutAttributeInfo { get; set; }
 
@@ -255,14 +258,17 @@ namespace SmartStore.Admin.Models.Orders
         public string aggregatortax { get; set; }
         public string aggregatortotal { get; set; }
 
+		public CancelOrderItemModel CancelOrderItem { get; set; }
+		public string CancelOrderItemInfo { get; set; }
+
         #region Nested Classes
 
         public class OrderItemModel : EntityModelBase
         {
             public OrderItemModel()
             {
-                ReturnRequestIds = new List<int>();
                 PurchasedGiftCardIds = new List<int>();
+				ReturnRequests = new List<ReturnRequestModel>();
 				BundleItems = new List<BundleItemModel>();
             }
 			public int ProductId { get; set; }
@@ -291,7 +297,6 @@ namespace SmartStore.Admin.Models.Orders
 
             public string AttributeInfo { get; set; }
             public string RecurringInfo { get; set; }
-            public IList<int> ReturnRequestIds { get; set; }
             public IList<int> PurchasedGiftCardIds { get; set; }
 
             public bool IsDownload { get; set; }
@@ -304,7 +309,54 @@ namespace SmartStore.Admin.Models.Orders
 			public bool BundlePerItemShoppingCart { get; set; }
 
 			public IList<BundleItemModel> BundleItems { get; set; }
+			public IList<ReturnRequestModel> ReturnRequests { get; set; }
+
+			public bool IsReturnRequestPossible
+			{
+				get
+				{
+					if (ReturnRequests != null && ReturnRequests.Count > 0)
+					{
+						return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
+					}
+					return true;
+				}
+			}
+			public bool HasAcceptedReturnRequests
+			{
+				get
+				{
+					if (ReturnRequests != null && ReturnRequests.Count > 0)
+					{
+						return ReturnRequests.Exists(x => x.Status >= ReturnRequestStatus.ReturnAuthorized);
+					}
+					return false;
+				}
+			}
         }
+
+		public class ReturnRequestModel : EntityModelBase
+		{
+			public ReturnRequestStatus Status { get; set; }
+			public int Quantity { get; set; }
+			public string StatusString { get; set; }
+			public string StatusLabel
+			{
+				get
+				{
+					if (Status >= ReturnRequestStatus.RequestRejected)
+						return "warning";
+
+					if (Status >= ReturnRequestStatus.ReturnAuthorized)
+						return "success";
+
+					if (Status == ReturnRequestStatus.Received)
+						return "info";
+
+					return "";
+				}
+			}
+		}
 
 		public class BundleItemModel : ModelBase
 		{

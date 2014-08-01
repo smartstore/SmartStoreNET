@@ -77,6 +77,7 @@ namespace SmartStore.Services.Orders
         private readonly TaxSettings _taxSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CurrencySettings _currencySettings;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
 
         #endregion
 
@@ -153,7 +154,8 @@ namespace SmartStore.Services.Orders
             OrderSettings orderSettings,
             TaxSettings taxSettings,
             LocalizationSettings localizationSettings,
-            CurrencySettings currencySettings)
+            CurrencySettings currencySettings,
+			ShoppingCartSettings shoppingCartSettings)
         {
             this._orderService = orderService;
             this._webHelper = webHelper;
@@ -190,11 +192,17 @@ namespace SmartStore.Services.Orders
             this._taxSettings = taxSettings;
             this._localizationSettings = localizationSettings;
             this._currencySettings = currencySettings;
+			this._shoppingCartSettings = shoppingCartSettings;
         }
 
         #endregion
 
         #region Utilities
+
+		private decimal Round(decimal value)
+		{
+			return (_shoppingCartSettings.RoundPricesDuringCalculation ? Math.Round(value, 2) : value);
+		}
 
         private string T(string resKey)
         {
@@ -205,7 +213,8 @@ namespace SmartStore.Services.Orders
         /// Award reward points
         /// </summary>
         /// <param name="order">Order</param>
-        protected void AwardRewardPoints(Order order)
+		/// <param name="amount">The amount. OrderTotal is used if null.</param>
+		protected void AwardRewardPoints(Order order, decimal? amount = null)
         {
             if (!_rewardPointsSettings.Enabled)
                 return;
@@ -217,12 +226,15 @@ namespace SmartStore.Services.Orders
             if (order.Customer == null || order.Customer.IsGuest())
                 return;
 
-            int points = (int)Math.Truncate(order.OrderTotal / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
-            if (points == 0)
-                return;
+			//Ensure that reward points were not added before. We should not add reward points if they were already earned for this order
+			if (order.RewardPointsWereAdded)
+				return;
 
-            //Ensure that reward points were not added before. We should not add reward points if they were already earned for this order
-            if (order.RewardPointsWereAdded)
+			// Truncate increases the risk of inaccuracy of rounding
+            //int points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
+
+			int points = (int)Math.Round((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
+            if (points == 0)
                 return;
 
             //add reward points
@@ -235,7 +247,8 @@ namespace SmartStore.Services.Orders
         /// Award reward points
         /// </summary>
         /// <param name="order">Order</param>
-        protected void ReduceRewardPoints(Order order)
+		/// <param name="amount">The amount. OrderTotal is used if null.</param>
+        protected void ReduceRewardPoints(Order order, decimal? amount = null)
         {
             if (!_rewardPointsSettings.Enabled)
                 return;
@@ -243,20 +256,33 @@ namespace SmartStore.Services.Orders
             if (_rewardPointsSettings.PointsForPurchases_Amount <= decimal.Zero)
                 return;
 
+			//ensure that reward points were already earned for this order before
+			if (!order.RewardPointsWereAdded)
+				return;
+
             //Ensure that reward points are applied only to registered users
             if (order.Customer == null || order.Customer.IsGuest())
                 return;
 
-            int points = (int)Math.Truncate(order.OrderTotal / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
-            if (points == 0)
-                return;
+			// Truncate increases the risk of inaccuracy of rounding
+			//int points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
 
-            //ensure that reward points were already earned for this order before
-            if (!order.RewardPointsWereAdded)
-                return;
+			int points = (int)Math.Round((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
+
+			if (order.RewardPointsRemaining.HasValue && order.RewardPointsRemaining.Value < points)
+				points = order.RewardPointsRemaining.Value;
+
+			if (points == 0)
+				return;
 
             //reduce reward points
             order.Customer.AddRewardPointsHistoryEntry(-points, string.Format(_localizationService.GetResource("RewardPoints.Message.ReducedForOrder"), order.GetOrderNumber()));
+
+			if (!order.RewardPointsRemaining.HasValue)
+				order.RewardPointsRemaining = (int)Math.Round(order.OrderTotal / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
+
+			order.RewardPointsRemaining = Math.Max(order.RewardPointsRemaining.Value - points, 0);
+
             _orderService.UpdateOrder(order);
         }
 
@@ -1046,7 +1072,8 @@ namespace SmartStore.Services.Orders
                             ShippingMethod = shippingMethodName,
                             ShippingRateComputationMethodSystemName = shippingRateComputationMethodSystemName,
                             VatNumber = vatNumber,
-                            CreatedOnUtc = DateTime.UtcNow
+                            CreatedOnUtc = DateTime.UtcNow,
+							UpdatedOnUtc = DateTime.UtcNow
                         };
                         _orderService.InsertOrder(order);
 
@@ -1220,7 +1247,7 @@ namespace SmartStore.Services.Orders
                                 }
 
                                 //inventory
-								_productService.AdjustInventory(orderItem, true);
+								_productService.AdjustInventory(orderItem, true, orderItem.Quantity);
                             }
                         }
 
@@ -1444,7 +1471,7 @@ namespace SmartStore.Services.Orders
             //Adjust inventory
 			foreach (var orderItem in order.OrderItems)
 			{
-				_productService.AdjustInventory(orderItem, false);
+				_productService.AdjustInventory(orderItem, false, orderItem.Quantity);
 			}
 
             //add a note
@@ -1812,10 +1839,87 @@ namespace SmartStore.Services.Orders
             //Adjust inventory
 			foreach (var orderItem in order.OrderItems)
 			{
-				_productService.AdjustInventory(orderItem, false);
+				_productService.AdjustInventory(orderItem, false, orderItem.Quantity);
 			}
         }
 
+		/// <summary>
+		/// Cancel an order item
+		/// </summary>
+		/// <param name="context">Cancel order item context</param>
+		public virtual void CancelOrderItem(CancelOrderItemContext context)
+		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+
+			OrderItem oi = context.OrderItem;
+			int cancelQuantity = 0;
+
+			if (oi == null && context.ReturnRequest != null)
+				oi = _orderService.GetOrderItemById(context.ReturnRequest.OrderItemId);
+
+			if (context.ReturnRequest == null)
+				cancelQuantity = oi.Quantity;
+			else
+				cancelQuantity = (context.ReturnRequest.Quantity > oi.Quantity ? oi.Quantity : context.ReturnRequest.Quantity);
+
+			context.InventoryOld = context.InventoryNew = oi.Product.StockQuantity;
+			context.RewardPointsOld = context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();
+
+			if (cancelQuantity <= 0)
+				return;
+			
+			int newQuantity = Math.Max(oi.Quantity - cancelQuantity, 0);
+
+			decimal reduceFactor = (decimal)newQuantity / (decimal)oi.Quantity;
+
+			decimal priceInclTax = newQuantity * oi.UnitPriceInclTax;
+			decimal priceExclTax = newQuantity * oi.UnitPriceExclTax;
+
+			decimal deltaPriceInclTax = Math.Max(oi.PriceInclTax - priceInclTax, 0);
+			decimal deltaPriceExclTax = Math.Max(oi.PriceExclTax - priceExclTax, 0);
+
+			//oi.PriceInclTax = Round(priceInclTax);
+			//oi.PriceExclTax = Round(priceExclTax);
+
+			//decimal discountInclTax = oi.DiscountAmountInclTax * reduceFactor;
+			//decimal discountExclTax = oi.DiscountAmountExclTax * reduceFactor;
+
+			//decimal deltaDiscountInclTax = Math.Max(oi.DiscountAmountInclTax - discountInclTax, 0);
+			//decimal deltaDiscountExclTax = Math.Max(oi.DiscountAmountExclTax - discountExclTax, 0);
+
+			//oi.DiscountAmountInclTax = Round(discountInclTax);			
+			//oi.DiscountAmountExclTax = Round(discountExclTax);
+
+			//oi.Quantity = newQuantity;
+
+			//// update order (OrderTotal and OrderDiscout always includes tax)
+			//decimal subtotalInclTax = Math.Max(oi.Order.OrderSubtotalInclTax - deltaPriceInclTax, 0);
+			//decimal subtotalExclTax = Math.Max(oi.Order.OrderSubtotalExclTax - deltaPriceExclTax, 0);
+
+			//oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
+			//oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
+
+			//decimal total = Math.Max(oi.Order.OrderTotal - deltaPriceInclTax, 0);
+			//decimal tax = Math.Max(oi.Order.OrderTax - (deltaPriceInclTax - deltaPriceExclTax), 0);
+
+			//oi.Order.OrderTotal = Round(total);
+			//oi.Order.OrderTax = Round(tax);
+
+			//_orderService.UpdateOrder(oi.Order);
+
+			if (context.AdjustInventory)
+			{
+				_productService.AdjustInventory(oi, false, cancelQuantity);
+				context.InventoryNew = oi.Product.StockQuantity;
+			}
+
+			if (context.ReduceRewardPoints)
+			{
+				ReduceRewardPoints(oi.Order, deltaPriceInclTax);
+				context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();
+			}
+		}
 
 
         /// <summary>
@@ -2582,7 +2686,6 @@ namespace SmartStore.Services.Orders
             }
             return numberOfDaysReturnRequestAvailableValid;
         }
-        
 
 
         /// <summary>

@@ -1,0 +1,42 @@
+﻿@model CancelOrderItemModel
+
+<div id="CancelOrderItemModal" class="modal hide fade" tabindex="-1">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
+		<h4 class="caption">@Model.Caption</h4>
+	</div>
+    <div class="modal-body">
+
+		<form id="CancelOrderItemForm" method="POST" action="@Model.PostUrl">
+			<input type="hidden" name="Id" value="@Model.Id" />
+
+			<div>
+				<table class="adminContent">
+					<tr>
+						<td class="adminTitle" style="width: 50%;">
+							@Html.SmartLabelFor(model => model.AdjustInventory)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.AdjustInventory)
+							@Html.ValidationMessageFor(model => model.AdjustInventory)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.ReduceRewardPoints)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.ReduceRewardPoints)
+							@Html.ValidationMessageFor(model => model.ReduceRewardPoints)
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+
+	</div>
+    <div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal" onclick="$('#CancelOrderItemForm').submit();">@T("Common.OK")</button>
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+    </div>
+</div>

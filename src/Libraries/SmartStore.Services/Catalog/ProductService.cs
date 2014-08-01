@@ -964,7 +964,8 @@ namespace SmartStore.Services.Catalog
 					return;
 
 				foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
-					AdjustInventory(child, decrease);
+					AdjustInventory(child.Item.Product, decrease, sci.Item.Quantity * child.Item.Quantity, child.Item.AttributesXml);
+					//AdjustInventory(child, decrease);
 			}
 			else
 			{
@@ -977,7 +978,8 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(OrderItem orderItem, bool decrease)
+		/// <param name="quantity">Quantity</param>
+		public virtual void AdjustInventory(OrderItem orderItem, bool decrease, int quantity)
 		{
 			if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -995,14 +997,14 @@ namespace SmartStore.Services.Catalog
 						{
 							var product = products.FirstOrDefault(x => x.Id == item.ProductId);
 							if (product != null)
-								AdjustInventory(product, decrease, item.Quantity, item.AttributesXml);
+								AdjustInventory(product, decrease, quantity * item.Quantity, item.AttributesXml);
 						}
 					}
 				}
 			}
 			else
 			{
-				AdjustInventory(orderItem.Product, decrease, orderItem.Quantity, orderItem.AttributesXml);
+				AdjustInventory(orderItem.Product, decrease, quantity, orderItem.AttributesXml);
 			}
 		}
 

@@ -338,6 +338,7 @@ namespace SmartStore.Admin.Controllers
 
             //payment method buttons
             model.CanCancelOrder = _orderProcessingService.CanCancelOrder(order);
+			model.CanCompleteOrder = _orderProcessingService.CanCompleteOrder(order);
             model.CanCapture = _orderProcessingService.CanCapture(order);
             model.CanMarkOrderAsPaid = _orderProcessingService.CanMarkOrderAsPaid(order);
             model.CanRefund = _orderProcessingService.CanRefund(order);
@@ -885,6 +886,31 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+
+		[HttpPost, ActionName("Edit")]
+		[FormValueRequired("completeorder")]
+		public ActionResult CompleteOrder(int id)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+				return AccessDeniedView();
+
+			var order = _orderService.GetOrderById(id);
+			if (order == null)
+				return RedirectToAction("List");
+
+			try
+			{
+				_orderProcessingService.CompleteOrder(order);
+			}
+			catch (Exception exc)
+			{
+				NotifyError(exc, false);
+			}
+
+			var model = new OrderModel();
+			PrepareOrderDetailsModel(model, order);
+			return View(model);
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("captureorder")]

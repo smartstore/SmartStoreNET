@@ -16,6 +16,7 @@
 * #431 Web API: Add support for localized properties
 * ShippingByWeight: new settings to configure a small quantity surcharge
 * #216 Better return request support
+* #90 Directly set order status to completed
 
 ###Improvements###
 * Task Scheduler:

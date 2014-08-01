@@ -333,8 +333,7 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         /// <param name="os">New order status</param>
         /// <param name="notifyCustomer">True to notify customer</param>
-        protected void SetOrderStatus(Order order,
-            OrderStatus os, bool notifyCustomer)
+        protected void SetOrderStatus(Order order, OrderStatus os, bool notifyCustomer)
         {
             if (order == null)
                 throw new ArgumentNullException("order");
@@ -464,13 +463,6 @@ namespace SmartStore.Services.Orders
                         SetOrderStatus(order, OrderStatus.Complete, true);
                     }
                 }
-            }
-
-            if (order.PaymentStatus == PaymentStatus.Paid && !order.PaidDateUtc.HasValue)
-            {
-                //ensure that paid date is set
-                order.PaidDateUtc = DateTime.UtcNow;
-                _orderService.UpdateOrder(order);
             }
         }
 
@@ -1966,6 +1958,43 @@ namespace SmartStore.Services.Orders
             CheckOrderStatus(order);
         }
 
+
+		/// <summary>
+		/// Gets a value indicating whether the order can be marked as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether the order can be marked as completed</returns>
+		public virtual bool CanCompleteOrder(Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			return (order.OrderStatus != OrderStatus.Complete && order.OrderStatus != OrderStatus.Cancelled);
+		}
+
+		/// <summary>
+		/// Marks the order as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		public virtual void CompleteOrder(Order order)
+		{
+            if (!CanCompleteOrder(order))
+                throw new SmartException("You can't mark this order as completed");
+
+			if (CanMarkOrderAsPaid(order))
+			{
+				MarkOrderAsPaid(order);
+			}
+
+			if (order.ShippingStatus != ShippingStatus.ShippingNotRequired)
+			{
+				order.ShippingStatusId = (int)ShippingStatus.Delivered;
+			}
+
+			_orderService.UpdateOrder(order);
+
+			CheckOrderStatus(order);
+		}
 
 
         /// <summary>

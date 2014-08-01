@@ -106,6 +106,19 @@ namespace SmartStore.Services.Orders
         void MarkAsAuthorized(Order order);
 
 
+		/// <summary>
+		/// Gets a value indicating whether the order can be marked as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether the order can be marked as completed</returns>
+		bool CanCompleteOrder(Order order);
+
+		/// <summary>
+		/// Marks the order as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		void CompleteOrder(Order order);
+
 
         /// <summary>
         /// Gets a value indicating whether capture from admin panel is allowed

@@ -244,6 +244,7 @@ namespace SmartStore.Admin.Models.Orders
 
         //workflow info
         public bool CanCancelOrder { get; set; }
+		public bool CanCompleteOrder { get; set; }
         public bool CanCapture { get; set; }
         public bool CanMarkOrderAsPaid { get; set; }
         public bool CanRefund { get; set; }

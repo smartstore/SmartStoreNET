@@ -164,6 +164,13 @@
 						<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.OrderStatus.Cancel")
 					</button>
                 }
+				
+				@if (Model.CanCompleteOrder)
+				{
+                    <button type="submit" name="completeorder" id="completeorder" class="btn btn-primary" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="icon-ok"></i>&nbsp;@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")
+					</button>
+				}
             </td>
         </tr>
         <tr>

@@ -1,8 +1,18 @@
 ﻿@model ReturnRequestModel
 @using SmartStore.Core.Domain.Orders;
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
+@if (Model.ReturnRequestInfo.HasValue())
+{
+	<div class="alert alert-info fade in">
+		<button class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(Model.ReturnRequestInfo)
+	</div>
+}
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -96,17 +106,6 @@
         </td>
         <td class="adminData">
             @Html.DisplayFor(model => model.CreatedOn)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">&nbsp;</td>
-        <td class="adminData">
-			@if(Model.CanAccept)
-			{
-				<button type="submit" name="accept" value="accept" class="btn btn-warning" title="@T("Admin.ReturnRequests.Accept.Hint")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-					<i class="icon-ok"></i>&nbsp;@T("Admin.ReturnRequests.Accept")
-				</button>
-			}
         </td>
     </tr>
 </table>

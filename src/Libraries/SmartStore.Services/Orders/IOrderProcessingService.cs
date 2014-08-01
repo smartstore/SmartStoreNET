@@ -85,6 +85,11 @@ namespace SmartStore.Services.Orders
         /// <param name="notifyCustomer">True to notify customer</param>
         void CancelOrder(Order order, bool notifyCustomer);
 
+		/// <summary>
+		/// Cancel an order item
+		/// </summary>
+		/// <param name="context">Cancel order item context</param>
+		void CancelOrderItem(CancelOrderItemContext context);
 
 
         /// <summary>
@@ -233,12 +238,6 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         /// <returns>Result</returns>
         bool IsReturnRequestAllowed(Order order);
-
-		/// <summary>
-		/// Processes a return request and updates the order item
-		/// </summary>
-		/// <param name="returnRequest">Return request</param>
-		void AcceptReturnRequest(ReturnRequest returnRequest);
 
 
         /// <summary>

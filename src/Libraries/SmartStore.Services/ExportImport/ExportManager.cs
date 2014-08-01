@@ -1030,6 +1030,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
 				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
+				xmlWriter.WriteElementString("RewardPointsRemaining", null, order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
 
                 //products
                 var orderItems = order.OrderItems;
@@ -1144,6 +1145,7 @@ namespace SmartStore.Services.ExportImport
                         "VatNumber",
                         "CreatedOnUtc",
 						"UpdatedOnUtc",
+						"RewardPointsRemaining",
                         //billing address
                         "BillingFirstName",
                         "BillingLastName",
@@ -1271,6 +1273,9 @@ namespace SmartStore.Services.ExportImport
                     col++;
 
 					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
+					col++;
+
+					worksheet.Cells[row, col].Value = (order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
 					col++;
 
 

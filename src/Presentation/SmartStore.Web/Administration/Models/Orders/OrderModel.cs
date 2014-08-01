@@ -21,6 +21,7 @@ namespace SmartStore.Admin.Models.Orders
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
+			CancelOrderItem = new CancelOrderItemModel();
         }
 
         //identifiers
@@ -142,7 +143,6 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string CardExpirationYear { get; set; }
 
-        //codehint: sm-add begin
         public bool AllowStoringDirectDebit { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.DirectDebitAccountHolder")]
         [AllowHtml]
@@ -171,8 +171,6 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.DirectDebitIban")]
         [AllowHtml]
         public string DirectDebitIban { get; set; }
-
-        //codehint: sm-add end
 
         //misc payment info
         public bool DisplayPurchaseOrderNumber { get; set; }
@@ -260,6 +258,9 @@ namespace SmartStore.Admin.Models.Orders
         public string aggregatortax { get; set; }
         public string aggregatortotal { get; set; }
 
+		public CancelOrderItemModel CancelOrderItem { get; set; }
+		public string CancelOrderItemInfo { get; set; }
+
         #region Nested Classes
 
         public class OrderItemModel : EntityModelBase
@@ -319,6 +320,17 @@ namespace SmartStore.Admin.Models.Orders
 						return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
 					}
 					return true;
+				}
+			}
+			public bool HasAcceptedReturnRequests
+			{
+				get
+				{
+					if (ReturnRequests != null && ReturnRequests.Count > 0)
+					{
+						return ReturnRequests.Exists(x => x.Status >= ReturnRequestStatus.ReturnAuthorized);
+					}
+					return false;
 				}
 			}
         }

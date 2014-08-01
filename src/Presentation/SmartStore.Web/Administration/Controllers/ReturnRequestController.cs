@@ -119,6 +119,15 @@ namespace SmartStore.Admin.Controllers
 					model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
 			}
 
+			var urlHelper = new UrlHelper(Request.RequestContext);
+
+			model.CancelOrderItem.Id = returnRequest.Id;
+			model.CancelOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
+			model.CancelOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
+			model.CancelOrderItem.ReduceRewardPoints = orderItem.Order.RewardPointsWereAdded;
+
+			model.ReturnRequestInfo = TempData[CancelOrderItemContext.InfoKey] as string;
+
             return true;
         }
 
@@ -264,20 +273,30 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-		[HttpPost, ActionName("Edit")]
-		[FormValueRequired("accept")]
-		public ActionResult Accept(ReturnRequestModel model)
+		[HttpPost]
+		public ActionResult Accept(CancelOrderItemModel model)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
 				return AccessDeniedView();
 
-			var returnRequest = _orderService.GetReturnRequestById(model.Id);
-			if (returnRequest == null)
+			var context = new CancelOrderItemContext()
+			{
+				ReturnRequest = _orderService.GetReturnRequestById(model.Id),
+				AdjustInventory = model.AdjustInventory,
+				ReduceRewardPoints = model.ReduceRewardPoints
+			};
+
+			if (context.ReturnRequest == null)
 				return RedirectToAction("List");
 
-			_orderProcessingService.AcceptReturnRequest(returnRequest);
+			context.ReturnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
+			_customerService.UpdateCustomer(context.ReturnRequest.Customer);
 
-			return RedirectToAction("Edit", returnRequest.Id);
+			_orderProcessingService.CancelOrderItem(context);
+
+			TempData[CancelOrderItemContext.InfoKey] = context.ToString(_localizationService);
+
+			return RedirectToAction("Edit", new { id = context.ReturnRequest.Id });
 		}
 
         #endregion

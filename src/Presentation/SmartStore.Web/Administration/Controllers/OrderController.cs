@@ -170,11 +170,13 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
+			var urlHelper = new UrlHelper(Request.RequestContext);
+			var store = _storeService.GetStoreById(order.StoreId);
+
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
-			var store = _storeService.GetStoreById(order.StoreId);
 			model.StoreName = store != null ? store.Name : "Unknown";
             model.CustomerId = order.CustomerId;
             model.CustomerIp = order.CustomerIp;
@@ -520,7 +522,15 @@ namespace SmartStore.Admin.Controllers
 
                 model.Items.Add(orderItemModel);
             }
+
             model.HasDownloadableProducts = hasDownloadableItems;
+
+			model.CancelOrderItem.Caption = _localizationService.GetResource("Admin.Orders.OrderItem.Cancel.Caption");
+			model.CancelOrderItem.PostUrl = urlHelper.Action("DeleteOrderItem", "Order");
+			model.CancelOrderItem.ReduceRewardPoints = order.RewardPointsWereAdded;
+
+			model.CancelOrderItemInfo = TempData[CancelOrderItemContext.InfoKey] as string;
+
             #endregion
         }
 
@@ -1349,34 +1359,31 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Edit")]
-		[FormValueRequired(FormValueRequirement.StartsWith, "btnDeleteOrderItem")]
-        [ValidateInput(false)]
-        public ActionResult DeleteOrderItem(int id, FormCollection form)
+		[HttpPost]
+		public ActionResult DeleteOrderItem(CancelOrderItemModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var order = _orderService.GetOrderById(id);
-            if (order == null)
-                //No order found with the specified id
-                return RedirectToAction("List");
+			var context = new CancelOrderItemContext()
+			{
+				OrderItem = _orderService.GetOrderItemById(model.Id),
+				AdjustInventory = model.AdjustInventory,
+				ReduceRewardPoints = model.ReduceRewardPoints
+			};
 
-            //get order item identifier
-            int orderItemId = 0;
-            foreach (var formValue in form.AllKeys)
-				if (formValue.StartsWith("btnDeleteOrderItem", StringComparison.InvariantCultureIgnoreCase))
-					orderItemId = Convert.ToInt32(formValue.Substring("btnDeleteOrderItem".Length));
+			if (context.OrderItem == null)
+				throw new ArgumentException("No order item found with the specified id");
 
-            var orderItem = order.OrderItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-            if (orderItem == null)
-                throw new ArgumentException("No order item found with the specified id");
+			int orderId = context.OrderItem.Order.Id;
 
-            _orderService.DeleteOrderItem(orderItem);
+			_orderProcessingService.CancelOrderItem(context);
 
-            var model = new OrderModel();
-            PrepareOrderDetailsModel(model, order);
-            return View(model);
+			_orderService.DeleteOrderItem(context.OrderItem);
+
+			TempData[CancelOrderItemContext.InfoKey] = context.ToString(_localizationService);
+
+			return RedirectToAction("Edit", new { id = orderId });
         }
 
 		[HttpPost, ActionName("Edit")]

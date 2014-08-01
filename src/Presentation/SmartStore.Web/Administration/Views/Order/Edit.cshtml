@@ -1355,46 +1355,65 @@
 
 @helper TabProducts()
 {
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			@foreach (var item in Model.Items)
+			{
+				<text>toggleOrderItemEdit(</text>@(item.Id)<text>, false);</text>
+			}
+
+			// delete order item
+			$('#OrderItemTable').on('click', '.delete-order-item-button', function() {
+				$('#CancelOrderItemForm').find('input[name=Id]')
+					.val($(this).attr('data-id'));
+
+				$('#CancelOrderItemForm').find('input[name=AdjustInventory]')
+					.prop('checked', $(this).attr('data-hasacceptedreturnrequests') === '0');
+
+				$('#CancelOrderItemModal').modal();
+			});
+		});
+
+		function toggleOrderItemEdit(itemId, editMode) {
+			if (editMode) {
+				$('#pnlEditUnitPrice' + itemId).show();
+				$('#pnlEditQuantity' + itemId).show();
+				$('#pnlEditDiscount' + itemId).show();
+				$('#pnlEditPrice' + itemId).show();
+				$('#btnEditOrderItem' + itemId).hide();
+				$('#btnDeleteOrderItem' + itemId).hide();
+				$('#btnAddReturnRequest' + itemId).hide();
+				$('#btnSaveOrderItem' + itemId).show();
+				$('#btnCancelOrderItem' + itemId).show();
+			}
+			else {
+				$('#pnlEditUnitPrice' + itemId).hide();
+				$('#pnlEditQuantity' + itemId).hide();
+				$('#pnlEditDiscount' + itemId).hide();
+				$('#pnlEditPrice' + itemId).hide();
+				$('#btnEditOrderItem' + itemId).show();
+				$('#btnDeleteOrderItem' + itemId).show();
+				$('#btnAddReturnRequest' + itemId).show();
+				$('#btnSaveOrderItem' + itemId).hide();
+				$('#btnCancelOrderItem' + itemId).hide();
+			}
+		}
+	</script>
+	
+	if (Model.CancelOrderItemInfo.HasValue())
+	{
+		<div class="alert alert-info fade in">
+			<button class="close" data-dismiss="alert">&#215;</button>
+			@Html.Raw(Model.CancelOrderItemInfo)
+		</div>
+	}
+
     <table class="adminContent">
         <tr>
             <td class="adminData" style="padding:0;">
-                @foreach (var item in Model.Items)
-                {
-                    <script type="text/javascript">
-                        $(document).ready(function() {
-                            toggleOrderItemEdit@(item.Id)(false);
-                        });
-                    </script>
-        
-                    <script type="text/javascript">
-                        function toggleOrderItemEdit@(item.Id) (editMode) {
-                        if (editMode) {
-                            $('#pnlEditUnitPrice@(item.Id)').show();
-                            $('#pnlEditQuantity@(item.Id)').show();
-                            $('#pnlEditDiscount@(item.Id)').show();
-                            $('#pnlEditPrice@(item.Id)').show();
-                            $('#btnEditOrderItem@(item.Id)').hide();
-                        	$('#btnDeleteOrderItem@(item.Id)').hide();
-                        	$('#btnAddReturnRequest@(item.Id)').hide();
-                            $('#btnSaveOrderItem@(item.Id)').show();
-                        	$('#btnCancelOrderItem@(item.Id)').show();
-                        }
-                        else {
-                            $('#pnlEditUnitPrice@(item.Id)').hide();
-                            $('#pnlEditQuantity@(item.Id)').hide();
-                            $('#pnlEditDiscount@(item.Id)').hide();
-                            $('#pnlEditPrice@(item.Id)').hide();
-                            $('#btnEditOrderItem@(item.Id)').show();
-                        	$('#btnDeleteOrderItem@(item.Id)').show();
-                        	$('#btnAddReturnRequest@(item.Id)').show();
-                            $('#btnSaveOrderItem@(item.Id)').hide();
-                        	$('#btnCancelOrderItem@(item.Id)').hide();
-                        }
-                    }
-                    </script>
 
-                }
-                <table class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
+                <table id="OrderItemTable" class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
                     <thead>
                         <tr style="background-color: #666; color: #fff">
                             <th>
@@ -1676,10 +1695,13 @@
                                     </div>
                                 </td>
                                 <td align="center" style="width: 20%;">
-                                    <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOrderItemEdit@(item.Id)(true);return false;" id="btnEditOrderItem@(item.Id)" class="btn" />
-                                    <input type="submit" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                                    <input type="submit" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                                    <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOrderItemEdit@(item.Id)(false);return false;" id="btnCancelOrderItem@(item.Id)" class="btn" style="display: none;" />
+                                    <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOrderItemEdit(@(item.Id), true);return false;" id="btnEditOrderItem@(item.Id)" class="btn" />
+                                    
+									<input type="button" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" 
+										class="btn delete-order-item-button" data-id="@(item.Id)" data-hasacceptedreturnrequests="@(item.HasAcceptedReturnRequests ? 1 : 0)" />
+                                    
+									<input type="submit" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
+                                    <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOrderItemEdit(@(item.Id), false);return false;" id="btnCancelOrderItem@(item.Id)" class="btn" style="display: none;" />
 
 									@if(item.IsReturnRequestPossible)
 									{
@@ -1809,3 +1831,5 @@
 {
     @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
 }
+
+@Html.Partial("_CancelOrderItem", Model.CancelOrderItem)

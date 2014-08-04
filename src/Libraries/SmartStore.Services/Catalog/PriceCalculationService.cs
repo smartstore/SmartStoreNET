@@ -342,6 +342,19 @@ namespace SmartStore.Services.Catalog
 				lowestPrice = product.LowestAttributeCombinationPrice.Value;
 				displayFromMessage = true;
 			}
+
+			if (!displayFromMessage)
+			{
+				foreach (var attribute in product.ProductVariantAttributes)
+				{
+					if (attribute.ProductVariantAttributeValues.Any(x => x.PriceAdjustment != decimal.Zero))
+					{
+						displayFromMessage = true;
+						break;
+					}
+				}
+			}
+
 			return lowestPrice;
 		}
 

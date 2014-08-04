@@ -523,11 +523,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			}
 
 			string sql =
-"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU] AS [Sku], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern]" +
+"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern]" +
 " FROM (" +
-"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7]" +
+"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7]" +
 "    FROM (" +
-"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
 "        FROM [Product] AS [t0]" +
 "        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 "        ) AS [t2]" +
@@ -541,6 +541,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			data.ForEach(x =>
 			{
+				if (x.ProductType != ProductType.SimpleProduct)
+				{
+					string key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatWith(x.ProductType.ToString());
+					x.ProductTypeName = Helper.GetResource(key);
+				}
+
 				if (x.Gender.HasValue())
 					x.GenderLocalize = Helper.GetResource("Gender" + textInfo.ToTitleCase(x.Gender));
 

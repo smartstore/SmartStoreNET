@@ -503,7 +503,11 @@
 				})
 				.Columns(c => {
 					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
-					c.Bound(x => x.ProductName).ReadOnly().Visible(true).Width(440);
+					c.Bound(x => x.Name)
+						.ReadOnly().Visible(true).Width(420)
+						.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+						.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+					c.Bound(x => x.SKU).ReadOnly().Visible(true);
 					c.Bound(x => x.Taxonomy).ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
 					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
 					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);

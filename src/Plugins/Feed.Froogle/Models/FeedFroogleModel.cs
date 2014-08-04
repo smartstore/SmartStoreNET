@@ -6,6 +6,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Plugin.Feed.Froogle.Models
 {
@@ -199,18 +200,29 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]
-		public string ProductName
+		public string Name { get; set; }
+
+		public string SKU { get; set; }
+		public int ProductTypeId { get; set; }
+		public ProductType ProductType { get { return (ProductType)ProductTypeId; } }
+		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint
 		{
 			get
 			{
-				if (SKU.HasValue())
-					return "{0} ({1})".FormatWith(Name, SKU);
-				else
-					return Name;
+				switch (ProductType)
+				{
+					case ProductType.SimpleProduct:
+						return "smnet-hide";
+					case ProductType.GroupedProduct:
+						return "success";
+					case ProductType.BundledProduct:
+						return "info";
+					default:
+						return "";
+				}
 			}
 		}
-		public string Name { get; set; }
-		public string SKU { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
 		public string Taxonomy { get; set; }

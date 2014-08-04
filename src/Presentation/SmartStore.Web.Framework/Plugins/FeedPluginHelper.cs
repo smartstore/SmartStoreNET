@@ -298,7 +298,8 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			if (store == null)
 				return null;
-			
+
+			string dirTemp = AppPath.TempDir();
 			string ext = extension ?? BaseSettings.ExportFormat;
 			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
 			string fileName = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
@@ -319,6 +320,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				StoreId = store.Id,
 				StoreName = store.Name,
+				FileTempPath = Path.Combine(dirTemp, fileName),
 				FilePath = Path.Combine(dir, fileName),
 				FileUrl = url + fileName,
 				LogPath = Path.Combine(dir, logName),
@@ -337,6 +339,7 @@ namespace SmartStore.Web.Framework.Plugins
 			if (secondFileName.HasValue())
 			{
 				string fname2 = store.Id + "_" + secondFileName;
+				feedFile.CustomProperties.Add("SecondFileTempPath", Path.Combine(dirTemp, fname2));
 				feedFile.CustomProperties.Add("SecondFilePath", Path.Combine(dir, fname2));
 				feedFile.CustomProperties.Add("SecondFileUrl", url + fname2);
 			}
@@ -393,7 +396,12 @@ namespace SmartStore.Web.Framework.Plugins
 					var feedFile = GetFeedFileByStore(store, secondFileName);
 					if (feedFile != null)
 					{
-						using (var stream = new FileStream(feedFile.FilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+						AppPath.Delete(feedFile.FileTempPath);
+
+						if (secondFileName.HasValue())
+							AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
+
+						using (var stream = new FileStream(feedFile.FileTempPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						using (var logger = new TraceLogger(feedFile.LogPath))
 						{
 							context.Stream = stream;
@@ -402,11 +410,16 @@ namespace SmartStore.Web.Framework.Plugins
 							context.FeedFileUrl = feedFile.FileUrl;
 
 							if (secondFileName.HasValue())
-								context.SecondFilePath = feedFile.CustomProperties["SecondFilePath"] as string;
+								context.SecondFilePath = feedFile.CustomProperties["SecondFileTempPath"] as string;
 
 							if (!createFeed(context))
 								break;
 						}
+
+						AppPath.Copy(feedFile.FileTempPath, feedFile.FilePath);
+
+						if (secondFileName.HasValue())
+							AppPath.Copy(context.SecondFilePath, feedFile.CustomProperties["SecondFilePath"] as string);
 					}
 				}
 			}
@@ -435,11 +448,15 @@ namespace SmartStore.Web.Framework.Plugins
 						var feedFile = GetFeedFileByStore(store, secondFileName, ext);
 						if (feedFile != null)
 						{
+							AppPath.Delete(feedFile.FileTempPath);
 							AppPath.Delete(feedFile.FilePath);
 							AppPath.Delete(feedFile.LogPath);
 
 							if (secondFileName.HasValue())
+							{
 								AppPath.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
+								AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
+							}
 						}
 					}
 				}

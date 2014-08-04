@@ -53,6 +53,7 @@ namespace SmartStore.Web.Framework.Plugins
 	{
 		public int StoreId { get; set; }
 		public string StoreName { get; set; }
+		public string FileTempPath { get; set; }
 		public string FilePath { get; set; }
 		public string FileUrl { get; set; }
 		public string LogPath { get; set; }

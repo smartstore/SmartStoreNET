@@ -10,8 +10,7 @@
 	</LocaleResource>
 	<LocaleResource Name="GridEditNote">
 		<Value>
-			<![CDATA[Eine Liste mit allen gültigen Google-Produkt-Kategorie finden Sie <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=160081" target="_blank">hier</a>.
-<br>Hinweis: Die hier eingegebenen Daten werden beim Deinstallieren des Google-Merchant-Center-Plugins gelöscht!]]>
+			<![CDATA[Eine Liste mit allen gültigen Google-Produkt-Kategorie finden Sie <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=160081" target="_blank">hier</a>.]]>
 		</Value>
 	</LocaleResource>	
 	<LocaleResource Name="MissingDefaultCategory">
@@ -61,6 +60,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Size">
 		<Value>Größe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Material">
+		<Value>Material</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Pattern">
+		<Value>Muster</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Feed automatisch erstellen</Value>
@@ -234,10 +239,22 @@
 		<Value>Leer</Value>
 	</LocaleResource>
 	<LocaleResource Name="SearchProductName">
-		<Value>Produktsuche</Value>
+		<Value>Produktname</Value>
 	</LocaleResource>
 	<LocaleResource Name="SearchProductName.Hint">
-		<Value>Produkte nach Stichwörtern suchen.</Value>
+		<Value>Produktnamen durchsuchen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched">
+		<Value>Bearbeitet</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Hint">
+		<Value>Sucht nach Datensätzen, die bearbeitet oder noch nicht bearbeitet wurden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Touched">
+		<Value>Bearbeitet</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Untouched">
+		<Value>Noch nicht bearbeitet</Value>
 	</LocaleResource>
 	<LocaleResource Name="Store">
 		<Value>Shop</Value>

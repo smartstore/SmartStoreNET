@@ -12,6 +12,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 	public class FeedFroogleModel : PromotionFeedConfigModel
 	{
 		public string GridEditUrl { get; set; }
+		public int GridPageSize { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ProductPictureSize")]
 		public int ProductPictureSize { get; set; }
@@ -93,6 +94,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
 		public string SearchProductName { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchIsTouched")]
+		public string SearchIsTouched { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Store")]
 		public int StoreId { get; set; }
@@ -184,18 +188,32 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 	public class GoogleProductModel : ModelBase
 	{
+		public int TotalCount { get; set; }
+
 		//this attribute is required to disable editing
 		[ScaffoldColumn(false)]
-		public int ProductId { get; set; }
+		public int ProductId { get { return Id; } }
+		public int Id { get; set; }
 
 		//this attribute is required to disable editing
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]
-		public string ProductName { get; set; }
+		public string ProductName
+		{
+			get
+			{
+				if (SKU.HasValue())
+					return "{0} ({1})".FormatWith(Name, SKU);
+				else
+					return Name;
+			}
+		}
+		public string Name { get; set; }
+		public string SKU { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
-		public string GoogleCategory { get; set; }
+		public string Taxonomy { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Gender")]
 		public string Gender { get; set; }
@@ -207,7 +225,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		public string Color { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Size")]
-		public string GoogleSize { get; set; }
+		public string Size { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Material")]
+		public string Material { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Pattern")]
+		public string Pattern { get; set; }
 
 		public string GenderLocalize { get; set; }
 		public string AgeGroupLocalize { get; set; }

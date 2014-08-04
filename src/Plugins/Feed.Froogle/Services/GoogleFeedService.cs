@@ -21,6 +21,9 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Data;
+using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {
@@ -35,6 +38,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDbContext _dbContext;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
 		public GoogleFeedService(
 			IRepository<GoogleProductRecord> gpRepository,
@@ -44,6 +48,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
 			IDbContext dbContext,
+			AdminAreaSettings adminAreaSettings,
 			IComponentContext ctx)
         {
             _gpRepository = gpRepository;
@@ -53,6 +58,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			_measureService = measureService;
 			_measureSettings = measureSettings;
 			_dbContext = dbContext;
+			_adminAreaSettings = adminAreaSettings;
 
 			_helper = new FeedPluginHelper(ctx, "PromotionFeed.Froogle", "SmartStore.Plugin.Feed.Froogle", () =>
 			{
@@ -68,26 +74,13 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
             if (productId == 0)
                 return null;
 
-            var query = from gp in _gpRepository.Table
-                        where gp.ProductId == productId
-                        select gp;
+            var query = 
+				from gp in _gpRepository.Table
+				where gp.ProductId == productId
+				select gp;
 
             var record = query.FirstOrDefault();
             return record;
-        }
-        private void InsertGoogleProductRecord(GoogleProductRecord googleProductRecord)
-        {
-            if (googleProductRecord == null)
-                throw new ArgumentNullException("googleProductRecord");
-
-            _gpRepository.Insert(googleProductRecord);
-        }
-        private void UpdateGoogleProductRecord(GoogleProductRecord googleProductRecord)
-        {
-            if (googleProductRecord == null)
-                throw new ArgumentNullException("googleProductRecord");
-
-            _gpRepository.Update(googleProductRecord);
         }
 		private bool SpecialPrice(Product product, out string specialPriceDate)
 		{
@@ -453,18 +446,25 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			var product = GetByProductId(pk);
 			bool insert = (product == null);
+			var utcNow = DateTime.UtcNow;
 
 			if (insert)
 			{
 				product = new GoogleProductRecord()
 				{
-					ProductId = pk
+					ProductId = pk,
+					CreatedOnUtc = utcNow,
+					UpdatedOnUtc = utcNow
 				};
+			}
+			else
+			{
+				product.UpdatedOnUtc = utcNow;
 			}
 
 			switch(name)
 			{
-				case "GoogleCategory":
+				case "Taxonomy":
 					product.Taxonomy = value;
 					break;
 				case "Gender":
@@ -476,68 +476,136 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 				case "Color":
 					product.Color = value;
 					break;
-				case "GoogleSize":
+				case "Size":
 					product.Size = value;
+					break;
+				case "Material":
+					product.Material = value;
+					break;
+				case "Pattern":
+					product.Pattern = value;
 					break;
 			}
 
+			product.IsTouched = product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
+				product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue();
+
 			if (insert)
 			{
-				InsertGoogleProductRecord(product);
+				_gpRepository.Insert(product);
 			}
 			else
 			{
-				UpdateGoogleProductRecord(product);
+				_gpRepository.Update(product);
 			}
 		}
-		public GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null)
+		public GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null, string touched = null)
 		{
-			var searchContext = new ProductSearchContext()
+			var model = new GridModel<GoogleProductModel>();
+			var textInfo = CultureInfo.InvariantCulture.TextInfo;
+
+			// there's no way to share a context instance across repositories which makes GoogleProductObjectContext pretty useless here.
+			// so let's fallback to good ole sql... by the way, fastest possible paged data query ever.
+
+			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
+
+			if (searchProductName.HasValue())
 			{
-				Keywords = searchProductName,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize,
-				ShowHidden = true
-			};
+				whereClause.AppendFormat(" AND ([t2].[Name] LIKE '%{0}%')", searchProductName.Replace("'", "''"));
+			}
 
-			var products = _productService.SearchProducts(searchContext);
-
-			var data = products.Select(x =>
+			if (touched.HasValue())
 			{
-				var gModel = new GoogleProductModel()
-				{
-					ProductId = x.Id,
-					ProductName = x.Name
-				};
+				if (touched.IsCaseInsensitiveEqual("touched"))
+					whereClause.Append(" AND ([t2].[IsTouched] = 1)");
+				else
+					whereClause.Append(" AND ([t2].[IsTouched] = 0 OR [t2].[IsTouched] IS NULL)");
+			}
 
-				var googleProduct = GetByProductId(x.Id);
+			string sql =
+"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU] AS [Sku], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern]" +
+" FROM (" +
+"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7]" +
+"    FROM (" +
+"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+"        FROM [Product] AS [t0]" +
+"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+"        ) AS [t2]" +
+"    WHERE " + whereClause.ToString() +
+"    ) AS [t3]" +
+" WHERE [t3].[ROW_NUMBER] BETWEEN {0} + 1 AND {0} + {1}" +
+" ORDER BY [t3].[ROW_NUMBER]";
 
-				if (googleProduct != null)
-				{
-					gModel.GoogleCategory = googleProduct.Taxonomy;
-					gModel.Gender = googleProduct.Gender;
-					gModel.AgeGroup = googleProduct.AgeGroup;
-					gModel.Color = googleProduct.Color;
-					gModel.GoogleSize = googleProduct.Size;
 
-					if (gModel.Gender.HasValue())
-						gModel.GenderLocalize = Helper.GetResource("Gender" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.Gender));
+			var data = _gpRepository.Context.SqlQuery<GoogleProductModel>(sql, (command.Page - 1) * command.PageSize, command.PageSize).ToList();
 
-					if (gModel.AgeGroup.HasValue())
-						gModel.AgeGroupLocalize = Helper.GetResource("AgeGroup" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.AgeGroup));
-				}
-
-				return gModel;
-			})
-			.ToList();
-
-			var model = new GridModel<GoogleProductModel>()
+			data.ForEach(x =>
 			{
-				Data = data,
-				Total = products.TotalCount
-			};
+				if (x.Gender.HasValue())
+					x.GenderLocalize = Helper.GetResource("Gender" + textInfo.ToTitleCase(x.Gender));
+
+				if (x.AgeGroup.HasValue())
+					x.AgeGroupLocalize = Helper.GetResource("AgeGroup" + textInfo.ToTitleCase(x.AgeGroup));
+			});
+
+			model.Data = data;
+			model.Total = (data.Count > 0 ? data.First().TotalCount : 0);
 
 			return model;
+
+			#region old code
+
+			//var searchContext = new ProductSearchContext()
+			//{
+			//	Keywords = searchProductName,
+			//	PageIndex = command.Page - 1,
+			//	PageSize = command.PageSize,
+			//	VisibleIndividuallyOnly = true,
+			//	ShowHidden = true
+			//};
+
+			//var products = _productService.SearchProducts(searchContext);
+
+			//var data = products.Select(x =>
+			//{
+			//	var gModel = new GoogleProductModel()
+			//	{
+			//		ProductId = x.Id,
+			//		Name = x.Name
+			//	};
+
+			//	var googleProduct = GetByProductId(x.Id);
+
+			//	if (googleProduct != null)
+			//	{
+			//		gModel.Taxonomy = googleProduct.Taxonomy;
+			//		gModel.Gender = googleProduct.Gender;
+			//		gModel.AgeGroup = googleProduct.AgeGroup;
+			//		gModel.Color = googleProduct.Color;
+			//		gModel.Size = googleProduct.Size;
+			//		gModel.Material = googleProduct.Material;
+			//		gModel.Pattern = googleProduct.Pattern;
+
+			//		if (gModel.Gender.HasValue())
+			//			gModel.GenderLocalize = Helper.GetResource("Gender" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.Gender));
+
+			//		if (gModel.AgeGroup.HasValue())
+			//			gModel.AgeGroupLocalize = Helper.GetResource("AgeGroup" + CultureInfo.InvariantCulture.TextInfo.ToTitleCase(gModel.AgeGroup));
+			//	}
+
+			//	return gModel;
+			//})
+			//.ToList();
+
+			//var model = new GridModel<GoogleProductModel>()
+			//{
+			//	Data = data,
+			//	Total = products.TotalCount
+			//};
+
+			//return model;
+
+			#endregion old code
 		}
 		private void CreateFeed(FeedFileCreationContext fileCreation, TaskExecutionContext taskContext)
 		{
@@ -646,6 +714,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
 			model.GridEditUrl = urlHelper.Action("GoogleProductEdit", "FeedFroogle", new  { Namespaces = "SmartStore.Plugin.Feed.Froogle.Controllers", area = "" });
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 		}
     }
 }

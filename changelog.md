@@ -38,6 +38,7 @@
 * (Developer) Moved 'AdminControllerBase' to SmartStore.Web.Framework
 * #384 Web API: Inserting sluged recources like products require an URL record
 * #382 Promotion feed plugins: Asynchronous feed creation, more options and improvements
+* #433 GMC feed: Option to filter config records that have not been edited
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

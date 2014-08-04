@@ -14,7 +14,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 
 		void UpdateInsert(int pk, string name, string value);
 
-		GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null);
+		GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null, string touched = null);
 
 		void CreateFeed(TaskExecutionContext context);
 

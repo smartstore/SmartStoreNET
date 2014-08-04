@@ -32,7 +32,7 @@ namespace SmartStore.Plugin.Feed.Froogle.Data.Migrations
         
         public override void Down()
         {
-            DropTable("dbo.GoogleProduct");
+            //DropTable("dbo.GoogleProduct");
         }
     }
 }

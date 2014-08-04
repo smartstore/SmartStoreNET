@@ -96,11 +96,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult GoogleProductList(GridCommand command, string searchProductName)
+		public ActionResult GoogleProductList(GridCommand command, string searchProductName, string touched)
 		{
 			return new JsonResult
 			{
-				Data = _googleService.GetGridModel(command, searchProductName)
+				Data = _googleService.GetGridModel(command, searchProductName, touched)
 			};
 		}
 	}

@@ -784,6 +784,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -828,6 +829,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -851,6 +853,49 @@ namespace SmartStore.Admin.Controllers
             }
             return File(bytes, "text/xls", "orders.xlsx");
         }
+
+		public ActionResult ExportPdfAll()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+				return AccessDeniedView();
+
+			try
+			{
+				var orders = _orderService.SearchOrders(0, 0, null, null, null,
+					null, null, null, null, null, 0, int.MaxValue);
+
+				byte[] bytes = null;
+				using (var stream = new MemoryStream())
+				{
+					_pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
+					bytes = stream.ToArray();
+				}
+				return File(bytes, "application/pdf", "orders.pdf");
+			}
+			catch (Exception exc)
+			{
+				NotifyError(exc);
+				return RedirectToAction("List");
+			}
+		}
+
+		[HttpPost]
+		public ActionResult ExportPdfSelected(string selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+				return AccessDeniedView();
+
+			int[] ids = selectedIds.ToIntArray();
+			var orders = _orderService.GetOrdersByIds(ids);
+
+			byte[] bytes = null;
+			using (var stream = new MemoryStream())
+			{
+				_pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
+				bytes = stream.ToArray();
+			}
+			return File(bytes, "application/pdf", "orders.pdf");
+		}
 
         #endregion
 
@@ -1252,8 +1297,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-
-        //codehint: sm-add
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("btnSaveDD")]
         public ActionResult EditDirectDebitInfo(int id, OrderModel model)

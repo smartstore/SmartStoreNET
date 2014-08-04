@@ -17,6 +17,7 @@
 * ShippingByWeight: new settings to configure a small quantity surcharge
 * #216 Better return request support
 * #90 Directly set order status to completed
+* #413 Orders: Add a PDF export\download of selected orders
 
 ###Improvements###
 * Task Scheduler:

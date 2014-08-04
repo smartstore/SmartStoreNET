@@ -76,6 +76,15 @@ namespace SmartStore.Data.Migrations
 				"Bonuspunkte anpassen",
 				"Determines whether granted reward points should be deducted again proportionately.",
 				"Legt fest, ob gewährte Bonuspunkte wieder anteilig abgezogen werden sollen.");
+
+
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.All",
+				"Export to PDF (all)",
+				"Alles nach PDF exportieren");
+
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.Selected",
+				"Export to PDF (selected)",
+				"Nur Ausgewählte nach PDF exportieren");
 		}
     }
 }

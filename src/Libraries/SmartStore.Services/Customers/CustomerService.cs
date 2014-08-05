@@ -6,12 +6,15 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
 {
@@ -35,6 +38,7 @@ namespace SmartStore.Services.Customers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
+		private readonly RewardPointsSettings _rewardPointsSettings;
 
         #endregion
 
@@ -54,7 +58,8 @@ namespace SmartStore.Services.Customers
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
             IGenericAttributeService genericAttributeService,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			RewardPointsSettings rewardPointsSettings)
         {
             this._cacheManager = cacheManager;
             this._customerRepository = customerRepository;
@@ -62,9 +67,18 @@ namespace SmartStore.Services.Customers
             this._gaRepository = gaRepository;
             this._genericAttributeService = genericAttributeService;
             this._eventPublisher = eventPublisher;
+			this._rewardPointsSettings = rewardPointsSettings;
+
+			T = NullLocalizer.Instance;
         }
 
         #endregion
+
+		#region Properties
+
+		public Localizer T { get; set; }
+
+		#endregion
 
         #region Methods
 
@@ -685,6 +699,28 @@ namespace SmartStore.Services.Customers
 
         #endregion
 
-        #endregion
-    }
+		#region Reward points
+
+		/// <summary>
+		/// Add or remove reward points for a product review
+		/// </summary>
+		/// <param name="customer">The customer</param>
+		/// <param name="product">The product</param>
+		/// <param name="add">Whether to add or remove points</param>
+		public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
+		{
+			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)
+			{
+				string message = T(add ? "RewardPoints.Message.EarnedForProductReview" : "RewardPoints.Message.ReducedForProductReview", product.GetLocalized(x => x.Name));
+
+				customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForProductReview * (add ? 1 : -1), message);
+
+				UpdateCustomer(customer);
+			}
+		}
+
+		#endregion Reward points
+
+		#endregion
+	}
 }

@@ -25,7 +25,6 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Extensions;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -87,6 +86,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
 		private readonly ICustomerActivityService _customerActivityService;
+		private readonly ICustomerService _customerService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -139,10 +139,10 @@ namespace SmartStore.Web.Controllers
             LocalizationSettings localizationSettings, CustomerSettings customerSettings,
 			CurrencySettings currencySettings,
             CaptchaSettings captchaSettings,
-            /* codehint: sm-add */
             IMeasureService measureService, MeasureSettings measureSettings, TaxSettings taxSettings, IFilterService filterService,
             IDeliveryTimeService deliveryTimeService, ISettingService settingService,
 			ICustomerActivityService customerActivityService,
+			ICustomerService customerService,
 			Func<string, Lazy<ICacheManager>> cacheFactory
             )
         {
@@ -181,8 +181,8 @@ namespace SmartStore.Web.Controllers
             this._permissionService = permissionService;
             this._downloadService = downloadService;
 			this._customerActivityService = customerActivityService;
+			this._customerService = customerService;
 
-            //codehint: sm-edit begin
             this._measureService = measureService;
             this._measureSettings = measureSettings;
             this._taxSettings = taxSettings;
@@ -191,7 +191,6 @@ namespace SmartStore.Web.Controllers
             this._dbContext = _services.DbContext;
             this._settingService = settingService;
             this._eventPublisher = _services.EventPublisher;
-            //codehint: sm-edit end
 
             this._mediaSettings = mediaSettings;
             this._catalogSettings = catalogSettings;
@@ -3140,12 +3139,14 @@ namespace SmartStore.Web.Controllers
                 int rating = model.AddProductReview.Rating;
                 if (rating < 1 || rating > 5)
                     rating = _catalogSettings.DefaultProductRatingValue;
+
                 bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
+				var customer = _workContext.CurrentCustomer;
 
                 var productReview = new ProductReview()
                 {
                     ProductId = product.Id,
-                    CustomerId = _workContext.CurrentCustomer.Id,
+                    CustomerId = customer.Id,
                     IpAddress = _webHelper.GetCurrentIpAddress(),
                     Title = model.AddProductReview.Title,
                     ReviewText = model.AddProductReview.ReviewText,
@@ -3168,6 +3169,8 @@ namespace SmartStore.Web.Controllers
                 //activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
+				if (isApproved)
+					_customerService.RewardPointsForProductReview(customer, product, true);
 
                 PrepareProductReviewsModel(model, product);
                 model.AddProductReview.Title = null;

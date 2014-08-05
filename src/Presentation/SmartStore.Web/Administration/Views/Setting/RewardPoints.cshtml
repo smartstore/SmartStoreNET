@@ -64,6 +64,16 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PointsForProductReview)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForProductReview)
+                @Html.EditorFor(model => model.PointsForProductReview, new { Small = true })
+                @Html.ValidationMessageFor(model => model.PointsForProductReview)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
             </td>
             <td class="adminData" id="pnlPointsForPurchases">

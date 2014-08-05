@@ -115,7 +115,8 @@ namespace SmartStore.Services.Tests.Customers
             
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
             _customerService = new CustomerService(new NullCache(), _customerRepo, _customerRoleRepo,
-                _genericAttributeRepo, _genericAttributeService, _eventPublisher);
+                _genericAttributeRepo, _genericAttributeService, _eventPublisher, _rewardPointsSettings);
+
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _localizationService,
                 _rewardPointsSettings, _customerSettings);

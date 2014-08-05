@@ -25,6 +25,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
+		private readonly ICustomerService _customerService;
 
         #endregion Fields
 
@@ -32,13 +33,15 @@ namespace SmartStore.Admin.Controllers
 
         public ProductReviewController(ICustomerContentService customerContentService,
             IProductService productService, IDateTimeHelper dateTimeHelper,
-            ILocalizationService localizationService, IPermissionService permissionService)
+            ILocalizationService localizationService, IPermissionService permissionService,
+			ICustomerService customerService)
         {
             this._customerContentService = customerContentService;
             this._productService = productService;
             this._dateTimeHelper = dateTimeHelper;
             this._localizationService = localizationService;
             this._permissionService = permissionService;
+			this._customerService = customerService;
         }
 
         #endregion
@@ -61,6 +64,7 @@ namespace SmartStore.Admin.Controllers
 			model.ProductTypeName = productReview.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = productReview.Product.ProductTypeLabelHint;
             model.CustomerId = productReview.CustomerId;
+			model.CustomerName = "{0} ({1})".FormatWith(productReview.Customer.GetFullName(), productReview.CustomerId);
             model.IpAddress = productReview.IpAddress;
             model.Rating = productReview.Rating;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(productReview.CreatedOnUtc, DateTimeKind.Utc);
@@ -162,6 +166,8 @@ namespace SmartStore.Admin.Controllers
                 //update product totals
                 _productService.UpdateProductReviewTotals(productReview.Product);
 
+				_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, productReview.IsApproved);
+
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.ProductReviews.Updated"));
                 return continueEditing ? RedirectToAction("Edit", productReview.Id) : RedirectToAction("List");
             }
@@ -208,8 +214,11 @@ namespace SmartStore.Admin.Controllers
                     {
                         productReview.IsApproved = true;
                         _customerContentService.UpdateCustomerContent(productReview);
+
                         //update product totals
                         _productService.UpdateProductReviewTotals(productReview.Product);
+
+						_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, true);
                     }
                 }
             }
@@ -232,8 +241,11 @@ namespace SmartStore.Admin.Controllers
                     {
                         productReview.IsApproved = false;
                         _customerContentService.UpdateCustomerContent(productReview);
+
                         //update product totals
                         _productService.UpdateProductReviewTotals(productReview.Product);
+
+						_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, false);
                     }
                 }
             }

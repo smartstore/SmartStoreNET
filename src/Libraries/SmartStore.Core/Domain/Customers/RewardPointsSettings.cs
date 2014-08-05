@@ -29,6 +29,11 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public int PointsForRegistration { get; set; }
 
+		/// <summary>
+		/// Gets or sets a number of points awarded for a product review
+		/// </summary>
+		public int PointsForProductReview { get; set; }
+
         /// <summary>
         /// Gets or sets a number of points awarded for purchases (amount in primary store currency)
         /// </summary>

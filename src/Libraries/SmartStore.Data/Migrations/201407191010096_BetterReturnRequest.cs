@@ -102,6 +102,21 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Categories.Delete.DeleteChilds",
 				"Delete as well.",
 				"Ebenfalls löschen.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.PointsForProductReview",
+				"Points for a product review",
+				"Punkte für eine Produkt Rezension",
+				"Specify number of points awarded for adding an approved product review.",
+				"Bonuspunkte, die für das Verfassen einer genehmigten Produkt Rezension gewährt werden.");
+
+			builder.AddOrUpdate("RewardPoints.Message.EarnedForProductReview",
+				"Earned reward points for a product review at \"{0}\"",
+				"Erhaltene Bonuspunkte für eine Produkt Rezension zu \"{0}\"");
+
+			builder.AddOrUpdate("RewardPoints.Message.ReducedForProductReview",
+				"Reduced reward points for a product review at \"{0}\"",
+				"Abgezogene Bonuspunkte für eine Produkt Rezension zu \"{0}\"");
 		}
     }
 }

@@ -20,6 +20,7 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.IPAddress")]
         public string IpAddress { get; set; }

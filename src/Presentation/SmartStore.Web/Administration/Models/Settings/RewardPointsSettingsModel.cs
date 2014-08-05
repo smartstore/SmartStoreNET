@@ -16,6 +16,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForRegistration")]
         public int PointsForRegistration { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForProductReview")]
+		public int PointsForProductReview { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Amount")]
         public decimal PointsForPurchases_Amount { get; set; }
         public int PointsForPurchases_Points { get; set; }

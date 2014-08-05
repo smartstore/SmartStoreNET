@@ -668,19 +668,17 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(int id)
+		public ActionResult Delete(int id, string deleteType)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
-                //No category found with the specified id
                 return RedirectToAction("List");
 
-            _categoryService.DeleteCategory(category);
+			_categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
 
-            //activity log
             _customerActivityService.InsertActivity("DeleteCategory", _localizationService.GetResource("ActivityLog.DeleteCategory"), category.Name);
 
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Deleted"));

@@ -41,6 +41,7 @@
 * #382 Promotion feed plugins: Asynchronous feed creation, more options and improvements
 * #433 GMC feed: Option to filter config records that have not been edited
 * #362 Display 'from {0}' for products with variant attributes
+* #239 Categories: Ask merchant if he want a cascading or a non cascading deletion
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

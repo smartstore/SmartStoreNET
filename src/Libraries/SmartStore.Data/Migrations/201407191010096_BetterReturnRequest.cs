@@ -85,6 +85,23 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.ExportToPdf.Selected",
 				"Export to PDF (selected)",
 				"Nur Ausgewählte nach PDF exportieren");
+
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Delete.Caption",
+				"Delete category",
+				"Warengruppe löschen");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Delete.Hint",
+				"How to treat child categories?",
+				"Wie soll mit Unterwarengruppen verfahren werden?");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Delete.ResetParentOfChilds",
+				"Remove the mapping to the parent category.",
+				"Die Zuordnung zur übergeordneten Warengruppe entfernen.");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Delete.DeleteChilds",
+				"Delete as well.",
+				"Ebenfalls löschen.");
 		}
     }
 }

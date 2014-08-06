@@ -363,16 +363,22 @@ namespace SmartStore.Admin.Controllers
         public ActionResult TreeLoadChildren(TreeViewItem node)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
+			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
-            var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x => {
+            var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x =>
+			{
+				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
+				string text = (childCount > 0 ? "{0} ({1})".FormatWith(x.Name, childCount) : x.Name);
+
                 var item = new TreeViewItem
                 {
-                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(x.Name, x.Alias) : x.Name,
+                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(text, x.Alias) : text,
                     Encoded = x.Alias.IsEmpty(),
                     Value = x.Id.ToString(),
-                    LoadOnDemand = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count > 0,
+                    LoadOnDemand = (childCount > 0),
                     Enabled = true,
-                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png")
+                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
+					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
                 };
                 return item;
             });

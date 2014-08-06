@@ -19,39 +19,33 @@
         <td>
             @(Html.Telerik().TreeView()
                 .Name("category-treeview")
-                .ClientEvents(events => events.OnSelect("onSelect").OnNodeDropped("onNodeDropped"))
+                .ClientEvents(events => events.OnNodeDropped("onNodeDropped"))
                 .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
                 .ShowLines(true)
                 .DragAndDrop(true))
 
             <script type="text/javascript">
-            function onNodeDropped(e) {
-                var treeview = $('#category-treeview').data("tTreeView");
+				function onNodeDropped(e) {
+					var treeview = $('#category-treeview').data("tTreeView");
                 
-                var item = treeview.getItemValue(e.item);
-                var destination = treeview.getItemValue(e.destinationItem);
+					var item = treeview.getItemValue(e.item);
+					var destination = treeview.getItemValue(e.destinationItem);
                 
-                var data = {};
-                data.item = item;
-                data.destinationitem = destination;
-                data.position = e.dropPosition;
+					var data = {};
+					data.item = item;
+					data.destinationitem = destination;
+					data.position = e.dropPosition;
 
-                $.ajax({
-                    cache:false,
-                    url: "@Url.Action("TreeDrop")",
-                    data: data,
-                    type: "POST",
-                    success: function () {
-                        $(this).addClass("done");
-                    }
-                });
-            }
-
-            function onSelect(e) {
-                var itemId = $('#category-treeview').data('tTreeView').getItemValue(e.item);
-                var url = "@(Url.Action("Edit"))" + "/" + itemId;
-                window.location = url;
-            }
+					$.ajax({
+						cache:false,
+						url: "@Url.Action("TreeDrop")",
+						data: data,
+						type: "POST",
+						success: function () {
+							$(this).addClass("done");
+						}
+					});
+				}
             </script>
         </td>
     </tr>

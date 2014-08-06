@@ -199,10 +199,8 @@ namespace SmartStore.Services.Catalog
 				}
 				else
 				{
-					if (product.BackorderMode == BackorderMode.NoBackorders)
+					if (product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0)
 						stockMessage = localizationService.GetResource("Products.Availability.OutOfStock");
-					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0)
-						stockMessage = localizationService.GetResource("Products.Availability.InStock");
 					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
 						stockMessage = localizationService.GetResource("Products.Availability.Backordering");
 				}

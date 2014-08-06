@@ -222,36 +222,10 @@ namespace SmartStore.Services.Catalog
 
             bool displayDeliveryTime = true;
 
-            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-            {
-                switch (product.BackorderMode)
-                {
-                    case BackorderMode.NoBackorders:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                displayDeliveryTime = true;
-                            }
-                            else
-                            {
-                                displayDeliveryTime = false;
-                            }
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
+			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+			{
+				return (product.StockQuantity > 0);
+			}
 
             return displayDeliveryTime;
         }

@@ -2892,7 +2892,8 @@ namespace SmartStore.Web.Controllers
                 {
                     Id = 0,
                     Name = m.DeliveryTimeName,
-                    Color = m.DeliveryTimeHexValue
+                    Color = m.DeliveryTimeHexValue,
+					DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
                 },
                 Measure = new
                 {

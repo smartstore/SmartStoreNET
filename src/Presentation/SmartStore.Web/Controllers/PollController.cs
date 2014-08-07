@@ -23,6 +23,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPollService _pollService;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
+		private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -30,13 +31,15 @@ namespace SmartStore.Web.Controllers
 
         public PollController(ILocalizationService localizationService,
             IWorkContext workContext, IPollService pollService,
-            IWebHelper webHelper, ICacheManager cacheManager)
+            IWebHelper webHelper, ICacheManager cacheManager,
+			IStoreContext storeContext)
         {
             this._localizationService = localizationService;
             this._workContext = workContext;
             this._pollService = pollService;
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
+			this._storeContext = storeContext;
         }
 
         #endregion
@@ -79,16 +82,13 @@ namespace SmartStore.Web.Controllers
             if (String.IsNullOrWhiteSpace(systemKeyword))
                 return Content("");
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.POLL_BY_SYSTEMNAME__MODEL_KEY, systemKeyword, _workContext.WorkingLanguage.Id);
+            var cacheKey = string.Format(ModelCacheEventConsumer.POLL_BY_SYSTEMNAME_MODEL_KEY, systemKeyword, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-                Poll poll = _pollService.GetPollBySystemKeyword(systemKeyword, _workContext.WorkingLanguage.Id);
-                if (poll == null ||
-                    !poll.Published ||
-                    (poll.StartDateUtc.HasValue && poll.StartDateUtc.Value > DateTime.UtcNow) ||
-                    (poll.EndDateUtc.HasValue && poll.EndDateUtc.Value < DateTime.UtcNow))
-                    //we do not cache nulls. that's why let's return an empty record (ID = 0)
-                    return new PollModel() { Id = 0};
+                var poll = _pollService.GetPollBySystemKeyword(systemKeyword, _workContext.WorkingLanguage.Id);
+
+                if (poll == null)
+					return new PollModel() { Id = 0 };	//we do not cache nulls. that's why let's return an empty record (ID = 0)
 
                 return PreparePollModel(poll, false);
             });
@@ -154,7 +154,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomePagePolls()
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_POLLS_MODEL_KEY, _workContext.WorkingLanguage.Id);
+            var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_POLLS_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 return _pollService.GetPolls(_workContext.WorkingLanguage.Id, true, 0, int.MaxValue)

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Polls;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -43,6 +45,13 @@ namespace SmartStore.Admin.Models.Polls
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.EndDate")]
         public DateTime? EndDate { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		public bool LimitedToStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
 
     }
 }

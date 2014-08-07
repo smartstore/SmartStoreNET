@@ -551,7 +551,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsResources = new EfRepository<LocaleStringResource>(_ctx);
 					rsResources.AutoCommitEnabled = false;
 
-					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null);
+					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
 
 					var locSettings = new LocalizationSettings();
 

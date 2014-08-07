@@ -363,7 +363,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {4} : language ID ("alt" and "title" can depend on localized product name)
         /// {5} : is connection SSL secured?
 		/// {6} : current store ID
-		/// codehint: sm-edit
         /// </remarks>
         public const string CART_PICTURE_MODEL_KEY = "sm.pres.cart.picture-{0}-{1}-{2}-{3}-{4}-{5}-{6}";
         public const string CART_PICTURE_PATTERN_KEY = "sm.pres.cart.picture";
@@ -373,16 +372,18 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </summary>
         /// <remarks>
         /// {0} : language ID
+		/// {1} : current store ID
         /// </remarks>
-        public const string HOMEPAGE_POLLS_MODEL_KEY = "sm.pres.poll.homepage-{0}";
+        public const string HOMEPAGE_POLLS_MODEL_KEY = "sm.pres.poll.homepage-{0}-{1}";
         /// <summary>
         /// Key for polls by system name
         /// </summary>
         /// <remarks>
         /// {0} : poll system name
         /// {1} : language ID
+		/// {2} : current store ID
         /// </remarks>
-        public const string POLL_BY_SYSTEMNAME__MODEL_KEY = "sm.pres.poll.systemname-{0}-{1}";
+        public const string POLL_BY_SYSTEMNAME_MODEL_KEY = "sm.pres.poll.systemname-{0}-{1}-{2}";
         public const string POLLS_PATTERN_KEY = "sm.pres.poll.";
 
         /// <summary>

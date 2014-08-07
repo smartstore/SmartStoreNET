@@ -19,8 +19,9 @@ namespace SmartStore.Services.Polls
         /// Gets a poll
         /// </summary>
         /// <param name="systemKeyword">The poll system keyword</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Poll</returns>
-        Poll GetPollBySystemKeyword(string systemKeyword, int languageId);
+		Poll GetPollBySystemKeyword(string systemKeyword, int languageId, bool showHidden = false);
         
         /// <summary>
         /// Gets poll collection
@@ -31,8 +32,7 @@ namespace SmartStore.Services.Polls
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Poll collection</returns>
-        IPagedList<Poll> GetPolls(int languageId, bool loadShownOnHomePageOnly,
-             int pageIndex, int pageSize, bool showHidden = false);
+        IPagedList<Poll> GetPolls(int languageId, bool loadShownOnHomePageOnly, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
         /// Deletes a poll

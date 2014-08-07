@@ -24,6 +24,7 @@ namespace SmartStore.Data.Migrations
         public override void Down()
         {
 			DropColumn("dbo.Order", "UpdatedOnUtc");
+			DropColumn("dbo.Order", "RewardPointsRemaining");
         }
 
 		public bool RollbackOnFailure

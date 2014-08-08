@@ -239,7 +239,7 @@ namespace SmartStore.Web.Controllers
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
 
                 //newsletter
-                var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
+                var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
                 model.Newsletter = newsletter != null && newsletter.Active;
 
                 model.Signature = customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature);
@@ -612,7 +612,7 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.NewsletterEnabled)
                     {
                         //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email);
+                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
                             if (model.Newsletter)
@@ -635,7 +635,8 @@ namespace SmartStore.Web.Controllers
                                     NewsLetterSubscriptionGuid = Guid.NewGuid(),
                                     Email = model.Email,
                                     Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow
+                                    CreatedOnUtc = DateTime.UtcNow,
+									StoreId = _storeContext.CurrentStore.Id
                                 });
                             }
                         }
@@ -1035,16 +1036,18 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.NewsletterEnabled)
                     {
                         //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
+                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
-                            if (model.Newsletter)
-                            {
-                                newsletter.Active = true;
-                                _newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
-                            }
-                            else
-                                _newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
+							if (model.Newsletter)
+							{
+								newsletter.Active = true;
+								_newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
+							}
+							else
+							{
+								_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
+							}
                         }
                         else
                         {
@@ -1055,7 +1058,8 @@ namespace SmartStore.Web.Controllers
                                     NewsLetterSubscriptionGuid = Guid.NewGuid(),
                                     Email = customer.Email,
                                     Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow
+                                    CreatedOnUtc = DateTime.UtcNow,
+									StoreId = _storeContext.CurrentStore.Id
                                 });
                             }
                         }

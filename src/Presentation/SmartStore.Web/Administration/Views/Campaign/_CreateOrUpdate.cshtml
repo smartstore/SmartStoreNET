@@ -21,15 +21,19 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.TestEmail)
                 @Html.ValidationMessageFor(model => model.TestEmail)
-                &nbsp;&nbsp;
-                <button type="submit" name="send-test-email" value="send-test-email" class="btn">@T("Admin.Promotions.Campaigns.SendTestEmail")</button>
+
+                <button type="submit" name="send-test-email" value="send-test-email" class="btn">
+					<i class="icon-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendTestEmail")
+				</button>
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
             </td>
             <td class="adminData">
-                <button type="submit" name="send-mass-email" value="send-mass-email" class="btn">@T("Admin.Promotions.Campaigns.SendMassEmail")</button>
+                <button type="submit" name="send-mass-email" value="send-mass-email" class="btn btn-warning">
+					<i class="icon-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendMassEmail")
+				</button>
             </td>
         </tr>
     </table>

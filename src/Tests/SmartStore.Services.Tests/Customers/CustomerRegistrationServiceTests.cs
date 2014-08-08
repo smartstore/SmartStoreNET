@@ -14,6 +14,7 @@ using SmartStore.Services.Security;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tests.Customers
 {
@@ -33,6 +34,7 @@ namespace SmartStore.Services.Tests.Customers
         IEventPublisher _eventPublisher;
         RewardPointsSettings _rewardPointsSettings;
         SecuritySettings _securitySettings;
+		IStoreContext _storeContext;
 
         [SetUp]
         public new void SetUp()
@@ -114,12 +116,14 @@ namespace SmartStore.Services.Tests.Customers
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
             
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+
             _customerService = new CustomerService(new NullCache(), _customerRepo, _customerRoleRepo,
                 _genericAttributeRepo, _genericAttributeService, _eventPublisher, _rewardPointsSettings);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _localizationService,
-                _rewardPointsSettings, _customerSettings);
+                _rewardPointsSettings, _customerSettings, _storeContext);
         }
 
         //[Test]

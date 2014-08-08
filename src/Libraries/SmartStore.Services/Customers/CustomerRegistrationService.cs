@@ -21,6 +21,7 @@ namespace SmartStore.Services.Customers
         private readonly ILocalizationService _localizationService;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly CustomerSettings _customerSettings;
+		private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -29,17 +30,12 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="customerService">Customer service</param>
-        /// <param name="encryptionService">Encryption service</param>
-        /// <param name="newsLetterSubscriptionService">Newsletter subscription service</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="rewardPointsSettings">Reward points settings</param>
-        /// <param name="customerSettings">Customer settings</param>
         public CustomerRegistrationService(ICustomerService customerService, 
             IEncryptionService encryptionService, 
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILocalizationService localizationService,
-            RewardPointsSettings rewardPointsSettings, CustomerSettings customerSettings)
+            RewardPointsSettings rewardPointsSettings, CustomerSettings customerSettings,
+			IStoreContext storeContext)
         {
             this._customerService = customerService;
             this._encryptionService = encryptionService;
@@ -47,6 +43,7 @@ namespace SmartStore.Services.Customers
             this._localizationService = localizationService;
             this._rewardPointsSettings = rewardPointsSettings;
             this._customerSettings = customerSettings;
+			this._storeContext = storeContext;
         }
 
         #endregion
@@ -341,7 +338,7 @@ namespace SmartStore.Services.Customers
             //update newsletter subscription (if required)
             if (!String.IsNullOrEmpty(oldEmail) && !oldEmail.Equals(newEmail, StringComparison.InvariantCultureIgnoreCase))
             {
-                var subscriptionOld = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(oldEmail);
+                var subscriptionOld = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(oldEmail, _storeContext.CurrentStore.Id);
                 if (subscriptionOld != null)
                 {
                     subscriptionOld.Email = newEmail;

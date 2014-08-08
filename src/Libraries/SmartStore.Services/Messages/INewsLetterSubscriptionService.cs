@@ -55,18 +55,19 @@ namespace SmartStore.Services.Messages
         /// Gets a newsletter subscription by email
         /// </summary>
         /// <param name="email">The newsletter subscription email</param>
+		/// <param name="storeId">The store identifier</param>
         /// <returns>NewsLetter subscription</returns>
-        NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email);
+		NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email, int storeId = 0);
 
         /// <summary>
         /// Gets the newsletter subscription list
         /// </summary>
         /// <param name="email">Email to search or string. Empty to load all records.</param>
-        /// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
+		/// <param name="storeId">The store identifier</param>
         /// <returns>NewsLetterSubscription entity list</returns>
-        IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email,
-            int pageIndex, int pageSize, bool showHidden = false);
+		IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email, int pageIndex, int pageSize, bool showHidden = false, int storeId = 0);
     }
 }

@@ -960,10 +960,13 @@ namespace SmartStore.Admin.Controllers
             {
                 _customerService.DeleteCustomer(customer);
 
-				//remove newsletter subscription (if exists)
-				var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
-				if (subscription != null)
+				//remove newsletter subscriptions (if exists)
+				var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(customer.Email, 0, int.MaxValue, true);
+
+				foreach (var subscription in subscriptions)
+				{
 					_newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription);
+				}
 
                 //activity log
                 _customerActivityService.InsertActivity("DeleteCustomer", _localizationService.GetResource("ActivityLog.DeleteCustomer"), customer.Id);

@@ -6,7 +6,6 @@ using Telerik.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -197,9 +196,13 @@ namespace SmartStore.Admin.Controllers
                 {
                     var result = _newsLetterSubscriptionService.ImportSubscribers(file.InputStream);
 
-                    NotifySuccess(String.Format(_localizationService.GetResource("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess"), result.AffectedRecords));
+					NotifySuccess(
+						_localizationService.GetResource("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess").FormatWith(result.NewRecords, result.ModifiedRecords)
+					);
+
                     return RedirectToAction("List");
                 }
+
 				NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
                 return RedirectToAction("List");
             }

@@ -348,7 +348,7 @@ namespace SmartStore.Services.Messages
 				query = query.Where(x => x.StoreId == storeId);
 			}
 
-            query = query.OrderBy(nls => nls.Email);
+            query = query.OrderBy(nls => nls.Email).ThenBy(x => x.StoreId);
 
             var newsletterSubscriptions = new PagedList<NewsLetterSubscription>(query, pageIndex, pageSize);
             return newsletterSubscriptions;

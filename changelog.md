@@ -20,6 +20,7 @@
 * #413 Orders: Add a PDF export\download of selected orders
 * #69 Award reward points for product reviews
 * #164 Add multistore support for polls
+* #170 Multistore support for Newsletters
 
 ###Improvements###
 * Task Scheduler:
@@ -61,6 +62,7 @@
 * A grouped product only shows up to 12 associated products
 * #405 Billiger feed: Wrong base price exported
 * #437 Mobile devices: Cannot add a product to the cart when it is grouped
+
 
 ##SmartStore.NET 2.0.2#
 

@@ -9,7 +9,7 @@ using SmartStore.Services.Stores;
 namespace SmartStore.Services.Tests.Messages
 {
     [TestFixture]
-    public class NewsLetterSubscriptionServiceTests
+	public class NewsLetterSubscriptionServiceTests : ServiceTest
     {
 		IEventPublisher _eventPublisher;
 		IRepository<NewsLetterSubscription> _subscriptionRepository;

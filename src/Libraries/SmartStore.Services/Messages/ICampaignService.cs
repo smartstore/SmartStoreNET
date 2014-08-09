@@ -43,8 +43,7 @@ namespace SmartStore.Services.Messages
         /// <param name="emailAccount">Email account</param>
         /// <param name="subscriptions">Subscriptions</param>
         /// <returns>Total emails sent</returns>
-        int SendCampaign(Campaign campaign, EmailAccount emailAccount,
-            IEnumerable<NewsLetterSubscription> subscriptions);
+        int SendCampaign(Campaign campaign, EmailAccount emailAccount, IEnumerable<NewsLetterSubscription> subscriptions);
 
         /// <summary>
         /// Sends a campaign to specified email

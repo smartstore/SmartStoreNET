@@ -12,12 +12,18 @@ namespace SmartStore.Data.Migrations
         {
 			AddColumn("dbo.Poll", "LimitedToStores", c => c.Boolean(nullable: false));
 			AddColumn("dbo.NewsLetterSubscription", "StoreId", c => c.Int(nullable: false));
+			AddColumn("dbo.Campaign", "LimitedToStores", c => c.Boolean(nullable: false));
+
+			CreateIndex("NewsLetterSubscription", "Email", false, "IX_NewsLetterSubscription_Email", false);
         }
         
         public override void Down()
         {
-			DropColumn("dbo.Poll", "LimitedToStores");
+			DropIndex("NewsLetterSubscription", "IX_NewsLetterSubscription_Email");
+
+			DropColumn("dbo.Campaign", "LimitedToStores");
 			DropColumn("dbo.NewsLetterSubscription", "StoreId");
+			DropColumn("dbo.Poll", "LimitedToStores");
         }
 
 		public bool RollbackOnFailure
@@ -35,6 +41,9 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess",
+				"{0} email(s) were imported and {1} updated.",
+				"Es wurden {0} E-Mail(s) importiert und {1} aktualisiert.");
 		}
     }
 }

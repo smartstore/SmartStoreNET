@@ -236,29 +236,29 @@
             });
         },
 
-        moreLess: function (opt) {
-  
-            opt = $.extend({ adjustheight: 260 }, opt);
+        moreLess: function () {
+        	var moreText = '<button class="btn btn-mini"><i class="icon icon-plus mini-button-icon"></i>' + Res['Products.Longdesc.More'] + '</button>';
+        	var lessText = '<button class="btn btn-mini"><i class="icon icon-minus mini-button-icon"></i>' + Res['Products.Longdesc.Less'] + '</button>';
 
             return this.each(function () {
-                var el = $(this);
+            	var el = $(this),
+          			opt = $.extend({ adjustheight: 260 }, el.data('options'));
 
-                var moreText = '<button class="btn btn-mini"><i class="icon icon-plus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.More'] + '</button>';
-                var lessText = '<button class="btn btn-mini"><i class="icon icon-minus" style="font-size:10px"></i>&nbsp;&nbsp;' + Res['Products.Longdesc.Less'] + '</button>';
+            	if (el.height() > opt.adjustheight) {
+            		el.find(".more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
 
-                $(".more-less .more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
-                $(".more-less").append('<p class="continued">[&hellip;]</p><a href="#" class="adjust"></a>');
-                $("a.adjust").html(moreText);
+            		el.append('<p class="continued">[&hellip;]</p><a href="#" class="adjust"></a>');
 
-                $(".adjust").toggle(function () {
-                    $(this).parents("div:first").find(".more-block").css('height', 'auto').css('overflow', 'visible');
-                    $(this).parents("div:first").find("p.continued").css('display', 'none');
-                    $(this).html(lessText);
-                }, function () {
-                    $(this).parents("div:first").find(".more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
-                    $(this).parents("div:first").find("p.continued").css('display', 'block');
-                    $(this).html(moreText);
-                });
+            		el.find(".adjust").html(moreText).toggle(function () {
+            			$(this).parents("div:first").find(".more-block").css('height', 'auto').css('overflow', 'visible');
+            			$(this).parents("div:first").find("p.continued").css('display', 'none');
+            			$(this).html(lessText);
+            		}, function () {
+            			$(this).parents("div:first").find(".more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
+            			$(this).parents("div:first").find("p.continued").css('display', 'block');
+            			$(this).html(moreText);
+            		});
+            	}
             });
         }
 

@@ -140,8 +140,8 @@
 
                     if (!String.IsNullOrWhiteSpace(Model.FullDescription))
                     {
-                        x.Add().Text(@T("Products.Details"))
-                                .Content(Html.Raw("<div class='more-less'><div class='more-block' itemprop='description'>" + Model.FullDescription + "</div></div>").ToString())
+						x.Add().Text(@T("Products.Details"))
+								.Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
                                 .Selected(true);
                     }
 
@@ -178,7 +178,6 @@
 </div>
 
 <script type="text/javascript">
-    
     $(function () {
         var settings = {
             galleryWidth: 318,
@@ -188,14 +187,7 @@
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
             zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
         };
-        $('#product-details-form').productDetail(settings);
 
-        if( toBool('@(Model.EnableHtmlTextCollapser)') )
-        {
-            var moreLess = $('.more-less');
-            if (moreLess.height() > parseInt(@(Model.HtmlTextCollapsedHeight))) {
-                $('.more-less').moreLess({ adjustheight: parseInt(@(Model.HtmlTextCollapsedHeight))});
-            }
-        }
+        $('#product-details-form').productDetail(settings);
     });
 </script>

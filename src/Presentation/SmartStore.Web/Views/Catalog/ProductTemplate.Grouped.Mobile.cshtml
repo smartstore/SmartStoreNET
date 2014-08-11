@@ -36,7 +36,7 @@
                     @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                 </div>
                 <div class="full-description">
-                    @Html.Raw(Model.FullDescription)
+                    @Html.Raw(Html.CollapsedText(Model.FullDescription))
                 </div>
             </div>
             <div class="product-collateral">

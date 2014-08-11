@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web;
+using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,15 +15,13 @@ using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
-using System.Web;
-using System.Threading;
-using SmartStore.Web.Framework.Settings; // codehint: sm-add
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Framework
 {
-    
-    // codehint: sm-add
+
     public enum InputEditorType
     {   TextBox,
         Password,
@@ -32,7 +32,6 @@ namespace SmartStore.Web.Framework
     
     public static class HtmlExtensions
     {
-        // codehint: sm-edit
         public static MvcHtmlString Hint(this HtmlHelper helper, string value)
         {
             // create a
@@ -150,7 +149,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(script + window);
         }
 
-        // codehint: sm-edit
         public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true, object htmlAttributes = null)
         {
             var result = new StringBuilder();
@@ -211,7 +209,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(result.ToString());
         }
 
-        // codehint: sm-add
         public static MvcHtmlString SmartLabel<TModel>(this HtmlHelper<TModel> helper, string resourceKey, bool displayHint = true)
         {
             return null;
@@ -423,14 +420,12 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create("");
 		}
 
-        // codehint: sm-add
         public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)
         {
             var acceptLang = HttpUtility.HtmlAttributeEncode(Thread.CurrentThread.CurrentUICulture.ToString());
             return new HtmlString(string.Format("<meta name=\"accept-language\" content=\"{0}\"/>", acceptLang));
         }
 
-        // codehint: sm-add
         public static MvcHtmlString ControlGroupFor<TModel, TValue>(
             this HtmlHelper<TModel> html, 
             Expression<Func<TModel, TValue>> expression, 
@@ -506,7 +501,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(sb.ToString());
         }
 
-		// codehint: sm-add
 		public static MvcHtmlString TableFormattedVariantAttributes(this HtmlHelper helper, string formattedVariantAttributes, string separatorLines = "<br />", string separatorValues = ": ") {
 			var sb = new StringBuilder();
 			string name, value;
@@ -533,7 +527,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
 		{
@@ -569,7 +562,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
 		{
@@ -579,6 +571,26 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}
 
+		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)
+		{
+			if (text.IsNullOrEmpty())
+				return MvcHtmlString.Empty;
+
+			var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
+
+			if (!catalogSettings.EnableHtmlTextCollapser)
+				return MvcHtmlString.Create(text);
+
+			string options = "{{\"adjustheight\":{0}}}".FormatWith(
+				catalogSettings.HtmlTextCollapsedHeight
+			);
+
+			string result = "<div class='more-less' data-options='{0}'><div class='more-block'>{1}</div></div>".FormatWith(
+				options, text
+			);
+
+			return MvcHtmlString.Create(result);
+		}
     }
 }
 

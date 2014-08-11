@@ -12,6 +12,6 @@
         </div>
     }
     <div class="block-body">
-        @Html.Raw(Model.Html)
+        @Html.Raw(Html.CollapsedText(Model.Html))
     </div>
 </div>

@@ -112,6 +112,8 @@
 				displayNotification(xhr.responseText, "error");
 		});
 
+		// html text collapser
+		$('.more-less').moreLess();
     });
 
 })( jQuery, this, document );

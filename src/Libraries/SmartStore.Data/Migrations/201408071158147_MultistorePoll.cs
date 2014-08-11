@@ -51,6 +51,18 @@ namespace SmartStore.Data.Migrations
 				"URL der Produktseite",
 				"The URL of the product page.",
 				"Die URL der Produktseite.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser",
+				"Truncate long texts",
+				"Langtexte kürzen",
+				"Option to truncate long texts and to only shown on click in full length.",
+				"Option, bei der Langtexte gekürzt und erst auf Klick in voller Länge angezeigt werden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight",
+				"Height of truncated long text",
+				"Höhe des gekürzten Langtextes",
+				"Determines the height of the truncated long text.",
+				"Legt die Höhe (in Pixel) des gekürzten Langtextes fest.");
 		}
     }
 }

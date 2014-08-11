@@ -47,6 +47,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowVariantCombinationPriceAdjustment = true;
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
+			HtmlTextCollapsedHeight = 260;
         }
 
         /// <summary>
@@ -388,5 +389,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the value indicating how many manufacturers to display in manufacturers block
         /// </summary>
         public int ManufacturersBlockItemsToDisplay { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating if html long text should be collapsed
+		/// </summary>
+		public bool EnableHtmlTextCollapser { get; set; }
+
+		/// <summary>
+		/// Gets or sets the height of collapsed text
+		/// </summary>
+		public int HtmlTextCollapsedHeight { get; set; }
     }
 }

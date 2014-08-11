@@ -776,7 +776,6 @@ namespace SmartStore.Web.Controllers
 			return model;
         }
 
-        // codehing: sm-add
         [NonAction]
         protected void PreparePagingFilteringModel(PagingFilteringModel model, PagingFilteringModel command, PageSizeContext pageSizeContext)
         {
@@ -914,7 +913,6 @@ namespace SmartStore.Web.Controllers
                 command.PageSize = pageSizeContext.PageSize;
         }
 
-        /* codehint: sm-add */
         [NonAction]
         protected List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(ICollection<ProductManufacturer> manufacturers)
         {
@@ -970,12 +968,9 @@ namespace SmartStore.Web.Controllers
                 SeName = product.GetSeName(),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually,
-                //Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),  /* codehint: sm-edit */
                 Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
-                ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
+                ReviewCount = product.ApprovedTotalReviews,
                 DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
-                EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
-                HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
 				ShowSku = _catalogSettings.ShowProductSku,
 				Sku = product.Sku,
 				ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,

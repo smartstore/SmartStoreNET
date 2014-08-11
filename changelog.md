@@ -45,6 +45,7 @@
 * #433 GMC feed: Option to filter config records that have not been edited
 * #362 Display 'from {0}' for products with variant attributes
 * #239 Categories: Ask merchant if he want a cascading or a non cascading deletion
+* HTML text collapser: Make it usable for all long texts
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

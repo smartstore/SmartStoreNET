@@ -107,6 +107,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfBestsellersOnHomepage")]
         public int NumberOfBestsellersOnHomepage { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser")]
+		public bool EnableHtmlTextCollapser { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight")]
+		public int HtmlTextCollapsedHeight { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage")]
         public int SearchPageProductsPerPage { get; set; }
 

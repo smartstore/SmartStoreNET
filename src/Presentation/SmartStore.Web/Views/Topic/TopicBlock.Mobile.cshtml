@@ -64,7 +64,7 @@
             </div>
         </div>
         <div class="topic-html-content-body">
-            @Html.Raw(Model.Body)
+            @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>
 }
@@ -79,7 +79,7 @@ else
             </div>
         }
         <div class="topic-html-content-body">
-            @Html.Raw(Model.Body)
+            @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>
 }

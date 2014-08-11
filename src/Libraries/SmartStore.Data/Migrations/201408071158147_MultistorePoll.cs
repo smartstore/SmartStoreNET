@@ -44,6 +44,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess",
 				"{0} email(s) were imported and {1} updated.",
 				"Es wurden {0} E-Mail(s) importiert und {1} aktualisiert.");
+
+
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.ProductUrl",
+				"URL of the product page",
+				"URL der Produktseite",
+				"The URL of the product page.",
+				"Die URL der Produktseite.");
 		}
     }
 }

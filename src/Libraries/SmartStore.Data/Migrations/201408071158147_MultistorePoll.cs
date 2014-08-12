@@ -63,6 +63,19 @@ namespace SmartStore.Data.Migrations
 				"Höhe des gekürzten Langtextes",
 				"Determines the height of the truncated long text.",
 				"Legt die Höhe (in Pixel) des gekürzten Langtextes fest.");
+
+
+			builder.AddOrUpdate("Admin.System.SystemInfo.DataProviderFriendlyName",
+				"Data provider",
+				"Daten-Provider",
+				"The name of the data provider.",
+				"Der Name des Daten-Providers.");
+
+			builder.AddOrUpdate("Admin.System.SystemInfo.AppDate",
+				"Created on",
+				"Erstellt am",
+				"The creation date of this SmartStore.NET version.",
+				"Das Erstellungsdatum dieser SmartStore.NET Version.");
 		}
     }
 }

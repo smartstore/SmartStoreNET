@@ -122,6 +122,18 @@ namespace SmartStore.Core.Data
 			}
 		}
 
+		public string ProviderFriendlyName
+		{
+			get
+			{
+				if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
+					return "SQL Server";
+
+				// SqlCe should always be the default provider
+				return "SQL Server Compact (SQL CE)";
+			}
+		}
+
 		public bool IsSqlServer
 		{
 			get

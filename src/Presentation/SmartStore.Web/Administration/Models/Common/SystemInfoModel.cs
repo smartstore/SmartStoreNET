@@ -21,6 +21,9 @@ namespace SmartStore.Admin.Models.Common
         [SmartResourceDisplayName("Admin.System.SystemInfo.AppVersion")]
         public string AppVersion { get; set; }
 
+		[SmartResourceDisplayName("Admin.System.SystemInfo.AppDate")]
+		public DateTime AppDate { get; set; }
+
         [SmartResourceDisplayName("Admin.System.SystemInfo.OperatingSystem")]
         public string OperatingSystem { get; set; }
 
@@ -41,6 +44,16 @@ namespace SmartStore.Admin.Models.Common
 
 		[SmartResourceDisplayName("Admin.System.SystemInfo.DatabaseSize")]
 		public double DatabaseSize { get; set; }
+		public string DatabaseSizeString
+		{
+			get
+			{
+				return (DatabaseSize == 0.0 ? "" : "{0:0.00} MB".FormatWith(DatabaseSize));
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.System.SystemInfo.DataProviderFriendlyName")]
+		public string DataProviderFriendlyName { get; set; }
 
         public class LoadedAssembly : ModelBase
         {

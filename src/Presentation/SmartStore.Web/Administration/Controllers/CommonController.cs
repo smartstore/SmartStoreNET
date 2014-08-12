@@ -31,6 +31,7 @@ using SmartStore.Core.Data;
 using Telerik.Web.Mvc;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
+using System.Reflection;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -54,14 +55,14 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreContext _storeContext;
         private readonly IPermissionService _permissionService;
         private readonly ILocalizationService _localizationService;
-        private readonly IImageCache _imageCache; // codehint: sm-add
-        private readonly SecuritySettings _securitySettings; // codehint: sm-add
-        private readonly ITypeFinder _typeFinder; // codehint: sm-add
-        private readonly IPluginFinder _pluginFinder; // codehint: sm-add
-        private readonly IGenericAttributeService _genericAttributeService; // codehint: sm-add
-		private readonly IDbContext _dbContext;	 // codehint: sm-add
+        private readonly IImageCache _imageCache;
+        private readonly SecuritySettings _securitySettings;
+        private readonly ITypeFinder _typeFinder;
+        private readonly IPluginFinder _pluginFinder;
+        private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IDbContext _dbContext;
 
-		private readonly static object _lock = new object();	// codehint: sm-add
+		private readonly static object _lock = new object();
 
         #endregion
 
@@ -104,12 +105,12 @@ namespace SmartStore.Admin.Controllers
 			this._storeContext = storeContext;
             this._permissionService = permissionService;
             this._localizationService = localizationService;
-            this._imageCache = imageCache; // codehint: sm-add
-            this._securitySettings = securitySettings; // codehint: sm-add
-            this._typeFinder = typeFinder; // codehint: sm-add
-			this._pluginFinder = pluginFinder;	// codehint: sm-add
-            this._genericAttributeService = genericAttributeService; // codehint: sm-add
-			this._dbContext = dbContext;	// codehint: sm-add
+            this._imageCache = imageCache;
+            this._securitySettings = securitySettings;
+            this._typeFinder = typeFinder;
+			this._pluginFinder = pluginFinder;
+            this._genericAttributeService = genericAttributeService;
+			this._dbContext = dbContext;
         }
 
         #endregion
@@ -283,6 +284,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new SystemInfoModel();
             model.AppVersion = SmartStoreVersion.CurrentFullVersion;
+
             try
             {
                 model.OperatingSystem = Environment.OSVersion.VersionString;
@@ -298,6 +300,7 @@ namespace SmartStore.Admin.Controllers
                 model.IsFullTrust = AppDomain.CurrentDomain.IsFullyTrusted.ToString();
             }
             catch (Exception) { }
+
             model.ServerTimeZone = TimeZone.CurrentTimeZone.StandardName;
             model.ServerLocalTime = DateTime.Now;
             model.UtcTime = DateTime.UtcNow;
@@ -307,10 +310,24 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				var mbSize = _dbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
-
 				model.DatabaseSize = Convert.ToDouble(mbSize);
 			}
 			catch (Exception) {	}
+
+			try
+			{
+				if (DataSettings.Current.IsValid())
+					model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
+			}
+			catch (Exception) { }
+
+			try
+			{
+				var assembly = Assembly.GetExecutingAssembly();
+				var fi = new FileInfo(assembly.Location);
+				model.AppDate = fi.LastWriteTime.ToLocalTime();
+			}
+			catch (Exception) { }
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -534,7 +551,7 @@ namespace SmartStore.Admin.Controllers
             model.DeleteGuests.EndDate = DateTime.UtcNow.AddDays(-7);
             model.DeleteGuests.OnlyWithoutShoppingCart = true;
 
-            // image cache stats (codehint: sm-add)
+            // image cache stats
             long imageCacheFileCount = 0;
             long imageCacheTotalSize = 0;
             _imageCache.CacheStatistics(out imageCacheFileCount, out imageCacheTotalSize);

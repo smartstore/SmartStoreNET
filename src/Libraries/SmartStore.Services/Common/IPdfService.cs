@@ -20,6 +20,13 @@ namespace SmartStore.Services.Common
         /// <param name="lang">Language</param>
         void PrintOrdersToPdf(Stream stream, IList<Order> orders, Language lang);
 
+		/// <summary>
+		/// Print an order to PDF
+		/// </summary>
+		/// <param name="orders">Orders</param>
+		byte[] PrintOrdersToPdf(IList<Order> orders);
+
+
         /// <summary>
         /// Print packaging slips to PDF
         /// </summary>
@@ -27,6 +34,12 @@ namespace SmartStore.Services.Common
         /// <param name="shipments">Shipments</param>
         /// <param name="lang">Language</param>
         void PrintPackagingSlipsToPdf(Stream stream, IList<Shipment> shipments, Language lang);
+
+		/// <summary>
+		/// Print packaging slips to PDF
+		/// </summary>
+		/// <param name="shipments">Shipments</param>
+		byte[] PrintPackagingSlipsToPdf(IList<Shipment> shipments);
 
 
         /// <summary>
@@ -36,5 +49,11 @@ namespace SmartStore.Services.Common
         /// <param name="products">Products</param>
         /// <param name="lang">Language</param>
         void PrintProductsToPdf(Stream stream, IList<Product> products, Language lang);
+
+		/// <summary>
+		/// Print product collection to PDF
+		/// </summary>
+		/// <param name="products">Products</param>
+		byte[] PrintProductsToPdf(IList<Product> products);
     }
 }

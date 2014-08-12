@@ -38,6 +38,8 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Events;
 using SmartStore.Utilities;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.IO;
+using System.Net.Mime;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -2381,30 +2383,21 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
+			var ctx = new ProductSearchContext();
+			ctx.LanguageId = _workContext.WorkingLanguage.Id;
+			ctx.OrderBy = ProductSortingEnum.Position;
+			ctx.PageSize = int.MaxValue;
+			ctx.ShowHidden = true;
 
-                var ctx = new ProductSearchContext();
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
-                ctx.ShowHidden = true;
+			var products = _productService.SearchProducts(ctx);
 
-                var products = _productService.SearchProducts(ctx);
-				
-				byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _pdfService.PrintProductsToPdf(stream, products, _workContext.WorkingLanguage);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "application/pdf", "pdfcatalog.pdf");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			if (products.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "product-catalog.pdf");
         }
 
         public ActionResult ExportXmlAll()

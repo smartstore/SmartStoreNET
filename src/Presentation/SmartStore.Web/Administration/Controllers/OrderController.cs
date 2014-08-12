@@ -35,6 +35,7 @@ using Telerik.Web.Mvc;
 using SmartStore.Services.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Services.Customers;
+using System.Net.Mime;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -859,24 +860,15 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 				return AccessDeniedView();
 
-			try
-			{
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-					null, null, null, null, null, 0, int.MaxValue);
+			var orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
 
-				byte[] bytes = null;
-				using (var stream = new MemoryStream())
-				{
-					_pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
-					bytes = stream.ToArray();
-				}
-				return File(bytes, "application/pdf", "orders.pdf");
-			}
-			catch (Exception exc)
+			if (orders.Count <= 0)
 			{
-				NotifyError(exc);
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
 			}
+
+			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "orders.pdf");			
 		}
 
 		[HttpPost]
@@ -888,13 +880,13 @@ namespace SmartStore.Admin.Controllers
 			int[] ids = selectedIds.ToIntArray();
 			var orders = _orderService.GetOrdersByIds(ids);
 
-			byte[] bytes = null;
-			using (var stream = new MemoryStream())
+			if (orders.Count <= 0)
 			{
-				_pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
-				bytes = stream.ToArray();
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
 			}
-			return File(bytes, "application/pdf", "orders.pdf");
+
+			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "orders.pdf");
 		}
 
         #endregion
@@ -1251,15 +1243,17 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var order = _orderService.GetOrderById(orderId);
+
+			if (order == null)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
             var orders = new List<Order>();
             orders.Add(order);
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", string.Format("order_{0}.pdf", order.Id));
+
+			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
         }
 
         [HttpPost, ActionName("Edit")]
@@ -2355,13 +2349,7 @@ namespace SmartStore.Admin.Controllers
             var shipments = new List<Shipment>();
             shipments.Add(shipment);
             
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintPackagingSlipsToPdf(stream, shipments, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", string.Format("packagingslip_{0}.pdf", shipment.Id));
+			return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslip-{0}.pdf".FormatWith(shipment.Id));
         }
 
         public ActionResult PdfPackagingSlipAll()
@@ -2370,14 +2358,14 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var shipments = _shipmentService.GetAllShipments(null, null, null, 0, int.MaxValue);
+
+			if (shipments.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
             
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintPackagingSlipsToPdf(stream, shipments, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", "packagingslips.pdf");
+			return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslips.pdf");
         }
 
         public ActionResult PdfPackagingSlipSelected(string selectedIds)
@@ -2395,13 +2383,13 @@ namespace SmartStore.Admin.Controllers
                 shipments.AddRange(_shipmentService.GetShipmentsByIds(ids));
             }
 
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintPackagingSlipsToPdf(stream, shipments, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", "packagingslips.pdf");
+			if (shipments.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslips.pdf");
         }
 
         #endregion

@@ -62,7 +62,7 @@ SmartStore.NET V2 has been released on April 04. 2014. The highlights are:
 We have set up a live online demo for you so you are able to test SmartStore.NET without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
 
 * [**Frontend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
-* [**Backend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
+* [**Backend**](http://backend.smartstore.net/en/login) (User: demo, PWD: 1234)
 
 ##How to install
 

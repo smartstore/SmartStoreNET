@@ -76,6 +76,12 @@ namespace SmartStore.Data.Migrations
 				"Erstellt am",
 				"The creation date of this SmartStore.NET version.",
 				"Das Erstellungsdatum dieser SmartStore.NET Version.");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.OrderWeight",
+				"The total weight of this order",
+				"Das Gesamtgewicht des Auftrags",
+				"The total weight of this order.",
+				"Das Gesamtgewicht des Auftrags.");
 		}
     }
 }

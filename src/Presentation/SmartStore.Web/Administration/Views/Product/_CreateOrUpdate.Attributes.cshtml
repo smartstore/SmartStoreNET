@@ -20,7 +20,7 @@
                 dataBinding.Ajax()
                     .Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
                     .Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
-                    .Update("ProductVariantAttributeUpdate", "Product") // codehint: sm-edit
+                    .Update("ProductVariantAttributeUpdate", "Product")
                     .Delete("ProductVariantAttributeDelete", "Product");
             })
             .Columns(columns =>
@@ -60,9 +60,12 @@
 
             <script type="text/javascript">
                 function onProductVariantAttributeEdit(e) {
-                    // codehint: sm-edit
                     $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
                     $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+
+                    if (parseInt(e.dataItem['Id']) === 0) {
+                    	$(e.form).find('#IsRequired').prop('checked', true);
+                    }
                 }
             </script>
         }

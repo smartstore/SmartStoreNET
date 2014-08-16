@@ -213,9 +213,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 
 				int index = 0;
 				decimal cartTotal = decimal.Zero;
-				var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(postProcessPaymentRequest.Order.CheckoutAttributesXml);
+				//var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(postProcessPaymentRequest.Order.CheckoutAttributesXml);
 
-				var lineItems = _payPalStandardService.GetLineItems(postProcessPaymentRequest, caValues, out cartTotal);
+				var lineItems = _payPalStandardService.GetLineItems(postProcessPaymentRequest, out cartTotal);
 
 				_payPalStandardService.AdjustLineItemAmounts(lineItems, postProcessPaymentRequest);
 

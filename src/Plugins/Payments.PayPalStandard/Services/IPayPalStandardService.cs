@@ -19,10 +19,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Services
 		/// Get all PayPal line items
 		/// </summary>
 		/// <param name="postProcessPaymentRequest">Post process paymenmt request object</param>
-		/// <param name="checkoutAttributeValues">List with checkout attribute values</param>
 		/// <param name="cartTotal">Receives the calculated cart total amount</param>
 		/// <returns>All items for PayPal Standard API</returns>
-		List<PayPalLineItem> GetLineItems(PostProcessPaymentRequest postProcessPaymentRequest, IList<CheckoutAttributeValue> checkoutAttributeValues, out decimal cartTotal);
+		List<PayPalLineItem> GetLineItems(PostProcessPaymentRequest postProcessPaymentRequest, out decimal cartTotal);
 
 		/// <summary>
 		/// Adjusts the line amount for cart items to avoid rounding differences

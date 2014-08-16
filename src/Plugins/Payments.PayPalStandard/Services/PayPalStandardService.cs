@@ -109,7 +109,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Services
 		/// <param name="checkoutAttributeValues">List with checkout attribute values</param>
 		/// <param name="cartTotal">Receives the calculated cart total amount</param>
 		/// <returns>All items for PayPal Standard API</returns>
-		public List<PayPalLineItem> GetLineItems(PostProcessPaymentRequest postProcessPaymentRequest, IList<CheckoutAttributeValue> checkoutAttributeValues, out decimal cartTotal)
+		public List<PayPalLineItem> GetLineItems(PostProcessPaymentRequest postProcessPaymentRequest, out decimal cartTotal)
 		{
 			cartTotal = decimal.Zero;
 
@@ -131,25 +131,25 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Services
 				cartTotal += orderItem.PriceExclTax;
 			}
 
-			// checkout attributes
-			foreach (var caValue in checkoutAttributeValues)
-			{
-				var attributePrice = _taxService.GetCheckoutAttributePrice(caValue, false, order.Customer);
+			// checkout attributes.... are included in order total
+			//foreach (var caValue in checkoutAttributeValues)
+			//{
+			//	var attributePrice = _taxService.GetCheckoutAttributePrice(caValue, false, order.Customer);
 
-				if (attributePrice > decimal.Zero && caValue.CheckoutAttribute != null)
-				{
-					var item = new PayPalLineItem()
-					{
-						Type = PayPalItemType.CheckoutAttribute,
-						Name = caValue.CheckoutAttribute.GetLocalized(x => x.Name),
-						Quantity = 1,
-						Amount = attributePrice
-					};
-					lst.Add(item);
+			//	if (attributePrice > decimal.Zero && caValue.CheckoutAttribute != null)
+			//	{
+			//		var item = new PayPalLineItem()
+			//		{
+			//			Type = PayPalItemType.CheckoutAttribute,
+			//			Name = caValue.CheckoutAttribute.GetLocalized(x => x.Name),
+			//			Quantity = 1,
+			//			Amount = attributePrice
+			//		};
+			//		lst.Add(item);
 
-					cartTotal += attributePrice;
-				}
-			}
+			//		cartTotal += attributePrice;
+			//	}
+			//}
 
 			// shipping
 			if (order.OrderShippingExclTax > decimal.Zero)

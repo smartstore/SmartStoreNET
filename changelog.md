@@ -63,6 +63,7 @@
 * A grouped product only shows up to 12 associated products
 * #405 Billiger feed: Wrong base price exported
 * #437 Mobile devices: Cannot add a product to the cart when it is grouped
+* PayPal Standard: Costs for checkout attributes were double charged
 
 
 ##SmartStore.NET 2.0.2#

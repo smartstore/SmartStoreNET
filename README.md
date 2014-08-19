@@ -1,3 +1,5 @@
+# [SmartStore.NET](http://www.smartstore.com/net/en)
+
 SmartStore.NET is a free, open source, full-featured e-commerce solution for companies of any size. It is web standards compliant and incorporates the newest Microsoft web technology stack.
 
 **SmartStore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, datasheets, ESD, discounts, coupons and many more.

@@ -400,7 +400,7 @@
 		<Value>New Customer</Value>
 	</LocaleResource>
 	<LocaleResource Name="account.login.newcustomertext">
-		<Value>By creating an account at SmartStore.NET you will be able to shop faster, be up to date on an orders status, and keep track of the orders you have previously made.</Value>
+		<Value>As a registered customer you will be able to shop faster, be up to date on an orders status, and keep track of the orders you have previously made.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Login.ReturningCustomer">
 		<Value>Returning Customer</Value>

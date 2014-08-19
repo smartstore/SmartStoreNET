@@ -89,6 +89,8 @@ namespace SmartStore.Data.Migrations
 			// Twisted german resources for tax number and vat id
 			builder.AddOrUpdate("PDFInvoice.TaxNumber").Value("de", "Steuer-Nr.:");
 			builder.AddOrUpdate("PDFInvoice.VatId").Value("de", "Ust-Id:");
+
+			builder.AddOrUpdate("Account.Login.NewCustomerText").Value("en", "As a registered customer you will be able to shop faster, be up to date on an orders status, and keep track of the orders you have previously made.");
 		}
     }
 }

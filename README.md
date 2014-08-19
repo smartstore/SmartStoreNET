@@ -80,3 +80,8 @@ We have set up a live online demo for you so you are able to test SmartStore.NET
 * ASP.NET MVC 5
 * MS SQL Server 2008 Express (or higher) OR MS SQL Server Compact 4
 * Full Trust
+
+
+## License
+
+SmartStore.NET is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).

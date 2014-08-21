@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Linq;
 
 namespace SmartStore.Core.Html
 {
@@ -203,10 +204,8 @@ namespace SmartStore.Core.Html
             return text;
         }
 
-        // codehint: sm-add
         /// <summary>
-        /// Converts an attribute string spec to a html table
-        /// putting each new line in a TR and each attr name/value in a TD.
+        /// Converts an attribute string spec to a html table putting each new line in a TR and each attr name/value in a TD.
         /// </summary>
         /// <param name="text">The text to convert</param>
         /// <param name="htmlEncode">A value indicating whether to encode (HTML) values</param>
@@ -230,17 +229,24 @@ namespace SmartStore.Core.Html
 
             builder.AppendFormat("<table{0}>", tableCssClass.HasValue() ? "class='" + tableCssClass + "'" : "");
 
-            foreach (string line in lines)
-            {
-                if (line.HasValue())
-                {
-                    builder.Append("<tr>");
-                    var tokens = line.Split(new char[] { ':' }, 2);
-                    builder.AppendFormat("<td class='attr-caption'>{0}</td>", tokens[0]);
-                    builder.AppendFormat("<td class='attr-value'>{0}</td>", tokens.Length > 1 ? tokens[1] : "&nbsp;");
-                    builder.Append("</tr>");
-                }
-            }
+			lines.Where(x => x.HasValue()).Each(x =>
+			{
+				builder.Append("<tr>");
+				var tokens = x.Split(new char[] { ':' }, 2);
+
+				if (tokens.Length > 1)
+				{
+					builder.AppendFormat("<td class='attr-caption'>{0}</td>", tokens[0]);
+					builder.AppendFormat("<td class='attr-value'>{0}</td>", tokens[1]);
+				}
+				else
+				{
+					builder.Append("<td>&nbsp;</td>");
+					builder.AppendFormat("<td class='attr-value'>{0}</td>",tokens[0]);
+				}
+
+				builder.Append("</tr>");
+			});
 
             builder.Append("</table>");
 

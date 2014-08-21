@@ -65,6 +65,7 @@
 * #437 Mobile devices: Cannot add a product to the cart when it is grouped
 * PayPal Standard: Costs for checkout attributes were double charged
 * Paging of return request grid did not work
+* #428 Multiline checkout attributes aren't rendered correctly
 
 
 ##SmartStore.NET 2.0.2#

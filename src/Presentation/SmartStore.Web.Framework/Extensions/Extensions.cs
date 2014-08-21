@@ -7,6 +7,8 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using Telerik.Web.Mvc;
@@ -318,6 +320,28 @@ namespace SmartStore.Web.Framework
 				if (itm != null)
 					itm.Selected = true;
 			}
+		}
+
+		/// <summary>
+		/// Determines whether a plugin is installed and activated for a particular store.
+		/// </summary>
+		public static bool IsPluginReady(this IPluginFinder pluginFinder, ISettingService settingService, string systemName, int storeId)
+		{
+			try
+			{
+				var pluginDescriptor = pluginFinder.GetPluginDescriptorBySystemName(systemName);
+
+				if (pluginDescriptor != null && pluginDescriptor.Installed)
+				{
+					if (storeId == 0 || settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+						return true;
+				}
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+			return false;
 		}
     }
 }

@@ -63,6 +63,23 @@ namespace SmartStore.Services.Payments
                    .ToList();
         }
 
+		/// <summary>
+		/// Determines whether a payment method is active\enabled for a shop
+		/// </summary>
+		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
+		{
+			var method = LoadActivePaymentMethods()
+				.FirstOrDefault(x => x.PluginDescriptor.SystemName == systemName && x.PluginDescriptor.Installed);
+
+			if (method != null)
+			{
+				if (storeId == 0 || _settingService.GetSettingByKey<string>(method.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+					return true;
+			}
+
+			return false;
+		}
+
         /// <summary>
         /// Load payment provider by system name
         /// </summary>

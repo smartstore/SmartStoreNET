@@ -150,5 +150,10 @@ namespace SmartStore
 		{
 			return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);
 		}
+
+		public static string SafeGet(this string[] arr, int index)
+		{
+			return (arr != null && index < arr.Length ? arr[index] : "");
+		}
     }
 }

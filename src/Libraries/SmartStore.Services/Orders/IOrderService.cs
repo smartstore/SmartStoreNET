@@ -243,9 +243,10 @@ namespace SmartStore.Services.Orders
         /// <param name="customerId">Customer identifier; null to load all entries</param>
         /// <param name="orderItemId">Order item identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
         /// <returns>Return requests</returns>
-		IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
-            int orderItemId, ReturnRequestStatus? rs);
+		IPagedList<ReturnRequest> SearchReturnRequests(int storeId, int customerId, int orderItemId, ReturnRequestStatus? rs, int pageIndex, int pageSize);
         
         #endregion
     }

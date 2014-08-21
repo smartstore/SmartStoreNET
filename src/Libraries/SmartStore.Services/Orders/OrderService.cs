@@ -627,26 +627,31 @@ namespace SmartStore.Services.Orders
         /// <param name="customerId">Customer identifier; null to load all entries</param>
         /// <param name="orderItemId">Order item identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
         /// <returns>Return requests</returns>
-		public virtual IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
-            int orderItemId, ReturnRequestStatus? rs)
+		public virtual IPagedList<ReturnRequest> SearchReturnRequests(int storeId, int customerId, int orderItemId, ReturnRequestStatus? rs, int pageIndex, int pageSize)
         {
             var query = _returnRequestRepository.Table;
+
 			if (storeId > 0)
 				query = query.Where(rr => storeId == rr.StoreId);
-            if (customerId > 0)
+    
+			if (customerId > 0)
                 query = query.Where(rr => customerId == rr.CustomerId);
+
+			if (orderItemId > 0)
+				query = query.Where(rr => rr.OrderItemId == orderItemId);
+
             if (rs.HasValue)
             {
                 int returnStatusId = (int)rs.Value;
                 query = query.Where(rr => rr.ReturnRequestStatusId == returnStatusId);
             }
-            if (orderItemId > 0)
-                query = query.Where(rr => rr.OrderItemId == orderItemId);
 
             query = query.OrderByDescending(rr => rr.CreatedOnUtc).ThenByDescending(rr=>rr.Id);
-            
-            var returnRequests = query.ToList();
+
+			var returnRequests = new PagedList<ReturnRequest>(query, pageIndex, pageSize);
             return returnRequests;
         }
 

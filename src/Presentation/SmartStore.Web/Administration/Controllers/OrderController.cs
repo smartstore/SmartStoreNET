@@ -506,7 +506,7 @@ namespace SmartStore.Admin.Controllers
 				}
 
                 //return requests
-				orderItemModel.ReturnRequests = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null).Select(x =>
+				orderItemModel.ReturnRequests = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null, 0, int.MaxValue).Select(x =>
 					{
 						return new OrderModel.ReturnRequestModel()
 						{

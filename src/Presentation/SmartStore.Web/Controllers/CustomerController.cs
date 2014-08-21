@@ -168,7 +168,7 @@ namespace SmartStore.Web.Controllers
             model.HideRewardPoints = !_rewardPointsSettings.Enabled;
             model.HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions;
             model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled ||
-				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null).Count == 0;
+				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).Count == 0;
             model.HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab;
             model.HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab;
             return model;
@@ -1295,7 +1295,9 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerReturnRequestsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.ReturnRequests;
-			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null);
+			
+			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, int.MaxValue);
+
             foreach (var returnRequest in returnRequests)
             {
                 var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);

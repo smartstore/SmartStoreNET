@@ -1027,8 +1027,8 @@ namespace SmartStore.Services.Catalog
                 case ManageInventoryMethod.DontManageStock:
                     {
                         //do nothing
-                        return;
                     }
+					break;
                 case ManageInventoryMethod.ManageStock:
                     {
                         int newStockQuantity = 0;

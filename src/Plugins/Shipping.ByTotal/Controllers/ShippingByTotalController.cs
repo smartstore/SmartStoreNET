@@ -1,8 +1,5 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Plugin.Shipping.ByTotal.Domain;
 using SmartStore.Plugin.Shipping.ByTotal.Models;
@@ -25,9 +22,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
         private readonly IShippingByTotalService _shippingByTotalService;
         private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly ICountryService _countryService;
-        private readonly IStateProvinceService _stateProvinceService;
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
         public ShippingByTotalController(IShippingService shippingService,
 			IStoreService storeService, 
@@ -35,9 +32,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
             IShippingByTotalService shippingByTotalService,
             ShippingByTotalSettings shippingByTotalSettings, 
             ICountryService countryService,
-            IStateProvinceService stateProvinceService,
             ICurrencyService currencyService, 
-            CurrencySettings currencySettings)
+            CurrencySettings currencySettings,
+			AdminAreaSettings adminAreaSettings)
         {
             this._shippingService = shippingService;
 			this._storeService = storeService;
@@ -45,9 +42,9 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
             this._shippingByTotalService = shippingByTotalService;
             this._shippingByTotalSettings = shippingByTotalSettings;
             this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
             this._currencyService = currencyService;
             this._currencySettings = currencySettings;
+			this._adminAreaSettings = adminAreaSettings;
         }
 
         public ActionResult Configure()
@@ -78,47 +75,11 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
                 model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
             }
 
-            //model.AvailableStates.Add(new SelectListItem() { Text = "*", Value = "0" });
             model.LimitMethodsToCreated = _shippingByTotalSettings.LimitMethodsToCreated;
             model.SmallQuantityThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
             model.SmallQuantitySurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
             model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-
-            model.Records = _shippingByTotalService.GetAllShippingByTotalRecords()
-                .Select(x =>
-                {
-                    var m = new ShippingByTotalModel
-                    {
-                        Id = x.Id,
-						StoreId = x.StoreId,
-                        ShippingMethodId = x.ShippingMethodId,
-                        CountryId = x.CountryId,
-                        StateProvinceId = x.StateProvinceId,
-                        Zip = x.Zip,
-                        From = x.From,
-                        To = x.To,
-                        UsePercentage = x.UsePercentage,
-                        ShippingChargePercentage = x.ShippingChargePercentage,
-                        ShippingChargeAmount = x.ShippingChargeAmount,
-                        BaseCharge = x.BaseCharge,
-                        MaxCharge = x.MaxCharge
-                    };
-                    var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
-                    m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
-
-					//store
-					var store = _storeService.GetStoreById(x.StoreId);
-					m.StoreName = (store != null) ? store.Name : "*";
-                    
-                    var c = _countryService.GetCountryById(x.CountryId ?? 0);
-                    m.CountryName = (c != null) ? c.Name : "*";
-                    var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId ?? 0);
-                    m.StateProvinceName = (s != null) ? s.Name : "*";
-                    m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
-
-                    return m;
-                })
-                .ToList();
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);
         }
@@ -126,43 +87,13 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult RatesList(GridCommand command)
         {
-            var sbwModel = _shippingByTotalService.GetAllShippingByTotalRecords()
-                .Select(x =>
-                {
-                    var m = new ShippingByTotalModel
-                    {
-                        Id = x.Id,
-						StoreId = x.StoreId,
-                        ShippingMethodId = x.ShippingMethodId,
-                        CountryId = x.CountryId,
-                        From = x.From,
-                        To = x.To,
-                        UsePercentage = x.UsePercentage,
-                        ShippingChargePercentage = x.ShippingChargePercentage,
-                        ShippingChargeAmount = x.ShippingChargeAmount,
-                        BaseCharge = x.BaseCharge,
-                        MaxCharge = x.MaxCharge
-                    };
-                    var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
-                    m.ShippingMethodName = (shippingMethod != null) ? shippingMethod.Name : "Unavailable";
+			int totalCount;
+            var data = _shippingByTotalService.GetShippingByTotalModels(command.Page - 1, command.PageSize, out totalCount);
 
-					//store
-					var store = _storeService.GetStoreById(x.StoreId);
-					m.StoreName = (store != null) ? store.Name : "*";
-                    
-                    var c = _countryService.GetCountryById(x.CountryId ?? 0);
-                    m.CountryName = (c != null) ? c.Name : "*";
-                    var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId ?? 0);
-                    m.StateProvinceName = (s != null) ? s.Name : "*";
-                    m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
-                    
-                    return m;
-                })
-                .ToList();
             var model = new GridModel<ShippingByTotalModel>
             {
-                Data = sbwModel,
-                Total = sbwModel.Count
+                Data = data,
+                Total = totalCount
             };
 
             return new JsonResult

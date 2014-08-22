@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Plugin.Shipping.ByWeight.Domain;
 using SmartStore.Plugin.Shipping.ByWeight.Models;
@@ -29,12 +30,14 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
         private readonly CurrencySettings _currencySettings;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
         public ShippingByWeightController(IShippingService shippingService,
 			IStoreService storeService, ICountryService countryService, ShippingByWeightSettings shippingByWeightSettings,
             IShippingByWeightService shippingByWeightService, ISettingService settingService,
             ICurrencyService currencyService, CurrencySettings currencySettings,
-            IMeasureService measureService, MeasureSettings measureSettings)
+            IMeasureService measureService, MeasureSettings measureSettings,
+			AdminAreaSettings adminAreaSettings)
         {
             this._shippingService = shippingService;
 			this._storeService = storeService;
@@ -47,6 +50,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
             this._currencySettings = currencySettings;
             this._measureService = measureService;
             this._measureSettings = measureSettings;
+			this._adminAreaSettings = adminAreaSettings;
         }
 
         public ActionResult Configure()
@@ -72,43 +76,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
             model.CalculatePerWeightUnit = _shippingByWeightSettings.CalculatePerWeightUnit;
             model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
             model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
-
-            model.Records = _shippingByWeightService.GetAll()
-                .Select(x =>
-                {
-                    var m = new ShippingByWeightModel()
-                    {
-                        Id = x.Id,
-						StoreId = x.StoreId,
-                        ShippingMethodId = x.ShippingMethodId,
-                        CountryId = x.CountryId,
-                        From = x.From,
-                        To = x.To,
-                        UsePercentage = x.UsePercentage,
-                        ShippingChargePercentage = x.ShippingChargePercentage,
-                        ShippingChargeAmount = x.ShippingChargeAmount,
-                        SmallQuantitySurcharge = x.SmallQuantitySurcharge,
-                        SmallQuantityThreshold = x.SmallQuantityThreshold,
-                    };
-					//shipping method
-                    var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
-                    m.ShippingMethodName = (shippingMethodId != null) ? shippingMethodId.Name : "Unavailable";
-					//store
-					var store = _storeService.GetStoreById(x.StoreId);
-					m.StoreName = (store != null) ? store.Name : "*";
-                    if (x.CountryId > 0)
-                    {
-                        var c = _countryService.GetCountryById(x.CountryId);
-                        m.CountryName = (c != null) ? c.Name : "Unavailable";
-                    }
-                    else
-                    {
-                        m.CountryName = "*";
-                    }
-
-                    return m;
-                })
-                .ToList();
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);
         }
@@ -116,45 +84,13 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult RatesList(GridCommand command)
         {
-            var sbwModel = _shippingByWeightService.GetAll()
-                .Select(x =>
-                {
-                    var m = new ShippingByWeightModel()
-                    {
-                        Id = x.Id,
-						StoreId = x.StoreId,
-                        ShippingMethodId = x.ShippingMethodId,
-                        CountryId = x.CountryId,
-                        From = x.From,
-                        To = x.To,
-                        UsePercentage = x.UsePercentage,
-                        ShippingChargePercentage = x.ShippingChargePercentage,
-                        ShippingChargeAmount = x.ShippingChargeAmount,
-                        SmallQuantitySurcharge = x.SmallQuantitySurcharge,
-                        SmallQuantityThreshold = x.SmallQuantityThreshold,
-                    };
-					//shipping method
-                    var shippingMethodId = _shippingService.GetShippingMethodById(x.ShippingMethodId);
-                    m.ShippingMethodName = (shippingMethodId != null) ? shippingMethodId.Name : "Unavailable";
-					//store
-					var store = _storeService.GetStoreById(x.StoreId);
-					m.StoreName = (store != null) ? store.Name : "*";
-                    if (x.CountryId > 0)
-                    {
-                        var c = _countryService.GetCountryById(x.CountryId);
-                        m.CountryName = (c != null) ? c.Name : "Unavailable";
-                    }
-                    else
-                    {
-                        m.CountryName = "*";
-                    }
-                    return m;
-                })
-                .ToList();
+			int totalCount;
+            var data = _shippingByWeightService.GetShippingByWeightModels(command.Page - 1, command.PageSize, out totalCount);
+
             var model = new GridModel<ShippingByWeightModel>
             {
-                Data = sbwModel,
-                Total = sbwModel.Count
+                Data = data,
+                Total = totalCount
             };
 
             return new JsonResult

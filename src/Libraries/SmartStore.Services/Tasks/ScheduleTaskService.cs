@@ -60,15 +60,24 @@ namespace SmartStore.Services.Tasks
         /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskByType(string type)
         {
-            if (String.IsNullOrWhiteSpace(type))
-                return null;
+			try
+			{
+				if (type.HasValue())
+				{
+					var query = _taskRepository.Table
+						.Where(t => t.Type == type)
+						.OrderByDescending(t => t.Id);
 
-            var query = _taskRepository.Table;
-            query = query.Where(st => st.Type == type);
-            query = query.OrderByDescending(t => t.Id);
-
-            var task = query.FirstOrDefault();
-            return task;
+					var task = query.FirstOrDefault();
+					return task;
+				}
+			}
+			catch (Exception exc)
+			{
+				// do not throw an exception if the underlying provider failed on Open.
+				exc.Dump();
+			}
+			return null;
         }
 
         /// <summary>

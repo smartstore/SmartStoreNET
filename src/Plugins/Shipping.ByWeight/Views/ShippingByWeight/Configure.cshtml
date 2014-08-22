@@ -6,10 +6,11 @@
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
+
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Records)
+            @(Html.Telerik().Grid<ShippingByWeightModel>()
                     .Name("Grid")
                     .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
                     .Columns(columns =>
@@ -45,12 +46,13 @@
 							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
 							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } });
                     })
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
-<p>
-</p>
+<p></p>
+
 @using (Html.BeginForm())
 {
     

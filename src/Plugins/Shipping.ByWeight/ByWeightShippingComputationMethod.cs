@@ -201,7 +201,6 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         /// </summary>
         public override void Install()
         {
-            //locales
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
             
             base.Install();
@@ -215,9 +214,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);
 
-            //locales
-            _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-            _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Shipping.ByWeight", false);
+			_localizationService.DeletePluginStringResources(this.PluginDescriptor);
             
             base.Uninstall();
         }

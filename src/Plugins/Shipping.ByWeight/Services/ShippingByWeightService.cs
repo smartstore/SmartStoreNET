@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Caching;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Plugin.Shipping.ByWeight.Domain;
+using SmartStore.Plugin.Shipping.ByWeight.Models;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Plugin.Shipping.ByWeight.Services
 {
@@ -12,69 +16,136 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Services
         #region Fields
 
         private readonly IRepository<ShippingByWeightRecord> _sbwRepository;
-        private readonly ICacheManager _cacheManager;
+		private readonly IStoreService _storeService;
+		private readonly IShippingService _shippingService;
+		private readonly ICountryService _countryService;
 
         #endregion
 
         #region Ctor
 
-        public ShippingByWeightService(ICacheManager cacheManager,
-            IRepository<ShippingByWeightRecord> sbwRepository)
+        public ShippingByWeightService(
+            IRepository<ShippingByWeightRecord> sbwRepository,
+			IStoreService storeService,
+			IShippingService shippingService,
+			ICountryService countryService)
         {
-            this._cacheManager = cacheManager;
-            this._sbwRepository = sbwRepository;
+            _sbwRepository = sbwRepository;
+			_storeService = storeService;
+			_shippingService = shippingService;
+			_countryService = countryService;
         }
 
         #endregion
 
         #region Methods
 
-        
-        public virtual void DeleteShippingByWeightRecord(ShippingByWeightRecord shippingByWeightRecord)
-        {
-            if (shippingByWeightRecord == null)
-                throw new ArgumentNullException("shippingByWeightRecord");
+		/// <summary>
+		/// Get queryable shipping by weight records
+		/// </summary>
+		public virtual IQueryable<ShippingByWeightRecord> GetShippingByWeightRecords()
+		{
+			var query = 
+				from x in _sbwRepository.Table
+				orderby x.StoreId, x.CountryId, x.ShippingMethodId, x.From
+				select x;
 
-            _sbwRepository.Delete(shippingByWeightRecord);
-        }
+			return query;
+		}
 
-        public virtual IList<ShippingByWeightRecord> GetAll()
-        {
-            var query = from sbw in _sbwRepository.Table
-						orderby sbw.StoreId, sbw.CountryId, sbw.ShippingMethodId, sbw.From
-                        select sbw;
-            var records = query.ToList();
-            return records;
-        }
+		/// <summary>
+		/// Get paged shipping by weight records
+		/// </summary>
+		public virtual IPagedList<ShippingByWeightRecord> GetShippingByWeightRecords(int pageIndex, int pageSize)
+		{
+			var result = new PagedList<ShippingByWeightRecord>(GetShippingByWeightRecords(), pageIndex, pageSize);
+			return result;
+		}
+
+		/// <summary>
+		/// Get models for shipping by weight records
+		/// </summary>
+		public virtual IList<ShippingByWeightModel> GetShippingByWeightModels(int pageIndex, int pageSize, out int totalCount)
+		{
+			// data join would be much better but not possible here cause ShippingByWeightObjectContext cannot be shared across repositories
+			var records = GetShippingByWeightRecords(pageIndex, pageSize);
+			totalCount = records.TotalCount;
+
+			if (records.Count <= 0)
+				return new List<ShippingByWeightModel>();
+
+			var allStores = _storeService.GetAllStores();
+
+			var result = records.Select(x =>
+			{
+				var store = allStores.FirstOrDefault(y => y.Id == x.StoreId);
+				var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
+				var country = _countryService.GetCountryById(x.CountryId);
+
+				var model = new ShippingByWeightModel()
+				{
+					Id = x.Id,
+					StoreId = x.StoreId,
+					ShippingMethodId = x.ShippingMethodId,
+					CountryId = x.CountryId,
+					From = x.From,
+					To = x.To,
+					UsePercentage = x.UsePercentage,
+					ShippingChargePercentage = x.ShippingChargePercentage,
+					ShippingChargeAmount = x.ShippingChargeAmount,
+					SmallQuantitySurcharge = x.SmallQuantitySurcharge,
+					SmallQuantityThreshold = x.SmallQuantityThreshold,
+					StoreName = (store == null ? "*" : store.Name),
+					ShippingMethodName = (shippingMethod == null ? "".NaIfEmpty() : shippingMethod.Name),
+					CountryName = (country == null ? "*" : country.Name)
+				};
+
+				return model;
+			})
+			.ToList();
+
+			return result;
+		}
 
 		public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight)
         {
-            var query = from sbw in _sbwRepository.Table
-                        where sbw.ShippingMethodId == shippingMethodId && weight >= sbw.From && weight <= sbw.To
-						orderby sbw.StoreId, sbw.CountryId, sbw.ShippingMethodId, sbw.From
-                        select sbw;
-
-            var existingRecords = query.ToList();
+            var existingRecords = GetShippingByWeightRecords()
+				.Where(x => x.ShippingMethodId == shippingMethodId && weight >= x.From && weight <= x.To)
+				.ToList();
 
 			//filter by store
 			var matchedByStore = new List<ShippingByWeightRecord>();
 			foreach (var sbw in existingRecords)
+			{
 				if (storeId == sbw.StoreId)
 					matchedByStore.Add(sbw);
+			}
+
 			if (matchedByStore.Count == 0)
+			{
 				foreach (var sbw in existingRecords)
+				{
 					if (sbw.StoreId == 0)
 						matchedByStore.Add(sbw);
+				}
+			}
 
 			//filter by country
 			var matchedByCountry = new List<ShippingByWeightRecord>();
 			foreach (var sbw in matchedByStore)
+			{
 				if (countryId == sbw.CountryId)
 					matchedByCountry.Add(sbw);
+			}
+
 			if (matchedByCountry.Count == 0)
+			{
 				foreach (var sbw in matchedByStore)
+				{
 					if (sbw.CountryId == 0)
 						matchedByCountry.Add(sbw);
+				}
+			}
 
 			return matchedByCountry.FirstOrDefault();
         }
@@ -87,6 +158,14 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Services
             var record = _sbwRepository.GetById(shippingByWeightRecordId);
             return record;
         }
+
+		public virtual void DeleteShippingByWeightRecord(ShippingByWeightRecord shippingByWeightRecord)
+		{
+			if (shippingByWeightRecord == null)
+				throw new ArgumentNullException("shippingByWeightRecord");
+
+			_sbwRepository.Delete(shippingByWeightRecord);
+		}
 
         public virtual void InsertShippingByWeightRecord(ShippingByWeightRecord shippingByWeightRecord)
         {

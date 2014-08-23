@@ -239,7 +239,12 @@
                 <legend>@T("Account.YourPassword")</legend>
                 
                 @Html.ControlGroupFor(model => model.Password, editorType: InputEditorType.Password, required: true)    
-                @Html.ControlGroupFor(model => model.ConfirmPassword, editorType: InputEditorType.Password, required: true)   
+                @Html.ControlGroupFor(model => model.ConfirmPassword, editorType: InputEditorType.Password, required: true)
+
+                @if (Model.ShowPasswordStrengthMeter)
+                {
+                    @Html.Partial("_PasswordStrength", Html.FieldIdFor(model => model.Password))
+                }
                     
                 @if (Model.DisplayCaptcha)
                 {

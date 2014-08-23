@@ -511,6 +511,7 @@ namespace SmartStore.Web.Controllers
 
                 }
             }
+            model.ShowPasswordStrengthMeter = _customerSettings.ShowPasswordStrengthMeter;
 
             return View(model);
         }
@@ -1434,6 +1435,7 @@ namespace SmartStore.Web.Controllers
             var model = new ChangePasswordModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.ChangePassword;
+            model.ShowPasswordStrengthMeter = _customerSettings.ShowPasswordStrengthMeter;
             return View(model);
         }
 
@@ -1634,6 +1636,8 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("HomePage");
             
             var model = new PasswordRecoveryConfirmModel();
+            model.ShowPasswordStrengthMeter = _customerSettings.ShowPasswordStrengthMeter;
+
             return View(model);
         }
 

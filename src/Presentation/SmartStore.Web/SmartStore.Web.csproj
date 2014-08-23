@@ -244,6 +244,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GridLocalization.en-US.resx</DependentUpon>
     </Compile>
+    <Content Include="Content\smartstore.passwordstrengthmeter.css" />
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
@@ -611,6 +612,9 @@
     <None Include="Content\fonts\raw\lte-ie7.js" />
     <None Include="Content\fonts\raw\style.css" />
     <Content Include="Content\Images\default-image.jpg" />
+    <Content Include="Content\Images\meter_arrow.png" />
+    <Content Include="Content\Images\meter_bg.png" />
+    <Content Include="Content\Images\meter_cap.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />
     <Content Include="Content\Images\smartstore.net-200-white.png" />
     <Content Include="Content\install\images\bg.png" />
@@ -1073,6 +1077,7 @@
     <Content Include="Scripts\jquery.menu-aim.js" />
     <Content Include="Scripts\jquery.sequence.js" />
     <Content Include="Scripts\jquery.sequence.custom.js" />
+    <Content Include="Scripts\smartstore.passwordstrengthmeter.js" />
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
     <Content Include="Scripts\public.reviews.js" />
@@ -1934,6 +1939,7 @@
     <Content Include="Views\Checkout\BillingAddress.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\Customer\_PasswordStrength.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

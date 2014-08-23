@@ -73,6 +73,8 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage")]
             public bool StoreLastVisitedPage { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ShowPasswordStrengthMeter")]
+            public bool ShowPasswordStrengthMeter { get; set; }
 
 
 

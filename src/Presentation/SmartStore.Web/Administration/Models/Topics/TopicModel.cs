@@ -54,6 +54,7 @@ namespace SmartStore.Admin.Models.Topics
         public bool IsPasswordProtected { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Password")]
+		[DataType(DataType.Password)]
         public string Password { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.URL")]

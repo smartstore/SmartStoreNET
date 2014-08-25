@@ -1,4 +1,5 @@
 ﻿using SmartStore.Web.Framework;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.Plugin.Sms.Clickatell.Models
 {
@@ -17,6 +18,7 @@ namespace SmartStore.Plugin.Sms.Clickatell.Models
         public string Username { get; set; }
 
         [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.Password")]
+		[DataType(DataType.Password)]
         public string Password { get; set; }
 
 

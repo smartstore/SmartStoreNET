@@ -3,7 +3,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("PageTitle.ProductEmailAFriend").Text);
 }
@@ -22,7 +21,6 @@
         }
         else
         {
-            @*codehint: sm-edit begin*@
             using (Html.BeginForm("ProductEmailAFriend", "Catalog", FormMethod.Post, new { @class = "form-horizontal" }))
             {
                                
@@ -67,13 +65,14 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" name="send-email" class="btn send-email-a-friend-button">@T("Products.EmailAFriend.Button")</button>
+                        <button type="submit" name="send-email" class="btn btn-primary send-email-a-friend-button">
+							<i class="icon-envelope"></i>&nbsp;@T("Products.EmailAFriend.Button")
+						</button>
                     </div>
                 </div>
 
             </fieldset>
             }
-            @*codehint: sm-edit end*@
         }
     </div>
 </div>

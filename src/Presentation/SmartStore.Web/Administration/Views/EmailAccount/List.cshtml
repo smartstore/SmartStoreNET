@@ -1,7 +1,6 @@
 ﻿@model Telerik.Web.Mvc.GridModel<EmailAccountModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.EmailAccounts").Text;
 }
 <div class="section-header">
@@ -25,24 +24,19 @@
                     .BindTo(Model.Data)
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Email);
-                        columns.Bound(x => x.DisplayName)
-                            .Width(150)
-                            .Centered();
+						columns.Bound(x => x.Email)
+							.Template(x => Html.ActionLink(x.Email, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Email ></a>")
+							.Width(400);
+                        columns.Bound(x => x.DisplayName);
                         columns.Bound(x => x.IsDefaultEmailAccount)
                             .Template(item => @Html.SymbolForBool(item.IsDefaultEmailAccount))
                             .ClientTemplate(@Html.SymbolForBool("IsDefaultEmailAccount"))
                             .Width(100)
-                            .ReadOnly();
+							.Centered();
                         columns.Command(commands => commands.Select().Text(T("Admin.Telerik.GridLocalization.Select").ToString()))                            
-                            .Title(T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text).Width(100);
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(50)
-                            .Centered()
-                            .HeaderTemplate(T("Admin.Common.Edit").Text)
-                            .Filterable(false);
+							.Title(T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text)
+							.Width(100);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "EmailAccount"))
                     .EnableCustomBinding(true))

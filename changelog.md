@@ -68,6 +68,7 @@
 * Paging of return request grid did not work
 * #428 Multiline checkout attributes aren't rendered correctly
 * #434 Shipping.ByTotal: Make grid pageable
+* #419 email account password hidden
 
 
 ##SmartStore.NET 2.0.2#

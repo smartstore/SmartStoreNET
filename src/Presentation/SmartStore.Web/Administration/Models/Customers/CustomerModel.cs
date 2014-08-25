@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Password")]
         [AllowHtml]
+		[DataType(DataType.Password)]
         public string Password { get; set; }
 
         //form fields & properties

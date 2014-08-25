@@ -420,6 +420,12 @@
     <Content Include="Content\images\smnet.png" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\admin.common.js" />
+    <Content Include="Content\fonts\segoeui-semibold.eot" />
+    <Content Include="Content\fonts\segoeui-semibold.ttf" />
+    <Content Include="Content\fonts\segoeui-semibold.woff" />
+    <Content Include="Content\fonts\segoeui-semilight.eot" />
+    <Content Include="Content\fonts\segoeui-semilight.ttf" />
+    <Content Include="Content\fonts\segoeui-semilight.woff" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.3.js" />
     <Content Include="Scripts\jquery-1.8.3.min.js" />

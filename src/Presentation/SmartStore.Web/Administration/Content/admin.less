@@ -1,4 +1,18 @@
 ﻿
+/* Fonts (Chrome DirectWrite & FF fix)
+-------------------------------------------------------------- */
+
+@font-face {
+    font-family: "Segoe UI Light";
+    font-weight: 100;
+    src: local("Segoe UI Light"), url("fonts/segoeui-semilight.eot") format('embedded-opentype'), url("fonts/segoeui-semilight.woff") format('woff'), url("fonts/segoeui-semilight.ttf") format('truetype');
+}
+@font-face {
+    font-family: "Segoe UI Semibold";
+    font-weight: 100;
+    src: local("Segoe UI Semibold"), url("fonts/segoeui-semibold.eot") format('embedded-opentype'), url("fonts/segoeui-semibold.woff") format('woff'), url("fonts/segoeui-semibold.ttf") format('truetype');
+}
+
 /* General
 -------------------------------------------------------------- */
 
@@ -776,8 +790,8 @@ a img {
 }
 
 legend {
-    font-family: 'Segoe UI SemiBold', 'Segoe UI', sans-serif;
-    font-weight: 600;
+    font-family: @headingsFontFamily;
+    font-weight: @headingsFontWeight;
     font-size: 18px;
 }
 
@@ -1116,8 +1130,8 @@ table.order-edit td {
 -------------------------------------------------------------- */
 
 .plugins-group h3 {
-    font-family: 'Segoe UI Semibold', 'Segoe UI', Helvetica, Arial; 
-    font-weight: 600;
+    font-family: @headingsFontFamily;
+    font-weight: @headingsFontWeight;
     color: inherit; 
     font-size: 18px;
 }
@@ -1374,8 +1388,8 @@ table.order-edit td {
 
 #product-edit h3,
 .caption-container h3 {
-    font-family: 'Segoe UI SemiBold', 'Segoe UI', sans-serif;
-    font-weight: 600;
+    font-family: @headingsFontFamily;
+    font-weight: @headingsFontWeight;
     font-size: 18px;
     line-height: 36px;
     color: #333;

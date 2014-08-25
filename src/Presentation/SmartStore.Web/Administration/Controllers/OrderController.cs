@@ -171,7 +171,6 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
-			var urlHelper = new UrlHelper(Request.RequestContext);
 			var store = _storeService.GetStoreById(order.StoreId);
 
             model.Id = order.Id;
@@ -527,11 +526,14 @@ namespace SmartStore.Admin.Controllers
 
             model.HasDownloadableProducts = hasDownloadableItems;
 
-			model.CancelOrderItem.Caption = _localizationService.GetResource("Admin.Orders.OrderItem.Cancel.Caption");
-			model.CancelOrderItem.PostUrl = urlHelper.Action("DeleteOrderItem", "Order");
-			model.CancelOrderItem.ReduceRewardPoints = order.RewardPointsWereAdded;
+			model.AutoUpdateOrderItem.Caption = _localizationService.GetResource("Admin.Orders.EditOrderDetails");
+			model.AutoUpdateOrderItem.ShowUpdateTotals = (order.OrderStatusId <= (int)OrderStatus.Pending);
+			// UpdateRewardPoints only visible for unpending orders (see RewardPointsSettingsValidator).
+			model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (order.OrderStatusId > (int)OrderStatus.Pending && order.RewardPointsWereAdded);
+			model.AutoUpdateOrderItem.UpdateTotals = model.AutoUpdateOrderItem.ShowUpdateTotals;
+			model.AutoUpdateOrderItem.UpdateRewardPoints = order.RewardPointsWereAdded;
 
-			model.CancelOrderItemInfo = TempData[CancelOrderItemContext.InfoKey] as string;
+			model.AutoUpdateOrderItemInfo = TempData[AutoUpdateOrderItemContext.InfoKey] as string;
 
             #endregion
         }
@@ -1360,91 +1362,84 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
         
-        [HttpPost, ActionName("Edit")]
-		[FormValueRequired(FormValueRequirement.StartsWith, "btnSaveOrderItem")]
-        [ValidateInput(false)]
-        public ActionResult EditOrderItem(int id, FormCollection form)
+        [HttpPost]
+        public ActionResult EditOrderItem(AutoUpdateOrderItemModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var order = _orderService.GetOrderById(id);
-            if (order == null)
-                //No order found with the specified id
-                return RedirectToAction("List");
+			var oi = _orderService.GetOrderItemById(model.Id);
 
-            //get order item identifier
-            int orderItemId = 0;
-            foreach (var formValue in form.AllKeys)
-				if (formValue.StartsWith("btnSaveOrderItem", StringComparison.InvariantCultureIgnoreCase))
-					orderItemId = Convert.ToInt32(formValue.Substring("btnSaveOrderItem".Length));
+			if (oi == null)
+				throw new ArgumentException("No order item found with the specified id");
 
-            var orderItem = order.OrderItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-            if (orderItem == null)
-                throw new ArgumentException("No order item found with the specified id");
+			int orderId = oi.Order.Id;
 
+			if (model.NewQuantity.HasValue)
+			{
+				var context = new AutoUpdateOrderItemContext()
+				{
+					OrderItem = oi,
+					QuantityOld = oi.Quantity,
+					QuantityNew = model.NewQuantity.Value,
+					AdjustInventory = model.AdjustInventory,
+					UpdateRewardPoints = model.UpdateRewardPoints,
+					UpdateTotals = model.UpdateTotals
+				};
 
-            decimal unitPriceInclTax, unitPriceExclTax, discountInclTax, discountExclTax,priceInclTax,priceExclTax;
-            int quantity;
-            if (!decimal.TryParse(form["pvUnitPriceInclTax" + orderItemId], out unitPriceInclTax))
-                unitPriceInclTax =orderItem.UnitPriceInclTax;
-            if (!decimal.TryParse(form["pvUnitPriceExclTax" + orderItemId], out unitPriceExclTax))
-                unitPriceExclTax = orderItem.UnitPriceExclTax;
-            if (!int.TryParse(form["pvQuantity" + orderItemId], out quantity))
-                quantity = orderItem.Quantity;
-            if (!decimal.TryParse(form["pvDiscountInclTax" + orderItemId], out discountInclTax))
-                discountInclTax = orderItem.DiscountAmountInclTax;
-            if (!decimal.TryParse(form["pvDiscountExclTax" + orderItemId], out discountExclTax))
-                discountExclTax = orderItem.DiscountAmountExclTax;
-            if (!decimal.TryParse(form["pvPriceInclTax" + orderItemId], out priceInclTax))
-                priceInclTax = orderItem.PriceInclTax;
-            if (!decimal.TryParse(form["pvPriceExclTax" + orderItemId], out priceExclTax))
-                priceExclTax = orderItem.PriceExclTax;
+				oi.Quantity = model.NewQuantity.Value;
+				oi.UnitPriceInclTax = model.NewUnitPriceInclTax ?? oi.UnitPriceInclTax;
+				oi.UnitPriceExclTax = model.NewUnitPriceExclTax ?? oi.UnitPriceExclTax;
+				oi.DiscountAmountInclTax = model.NewDiscountInclTax ?? oi.DiscountAmountInclTax;
+				oi.DiscountAmountExclTax = model.NewDiscountExclTax ?? oi.DiscountAmountExclTax;
+				oi.PriceInclTax = model.NewPriceInclTax ?? oi.PriceInclTax;
+				oi.PriceExclTax = model.NewPriceExclTax ?? oi.PriceExclTax;
 
-            if (quantity > 0)
-            {
-                orderItem.UnitPriceInclTax = unitPriceInclTax;
-                orderItem.UnitPriceExclTax = unitPriceExclTax;
-                orderItem.Quantity = quantity;
-                orderItem.DiscountAmountInclTax = discountInclTax;
-                orderItem.DiscountAmountExclTax = discountExclTax;
-                orderItem.PriceInclTax = priceInclTax;
-                orderItem.PriceExclTax = priceExclTax;
-                _orderService.UpdateOrder(order);
-            }
-            else
-            {
-                _orderService.DeleteOrderItem(orderItem);
-            }
+				_orderService.UpdateOrder(oi.Order);
 
-            var model = new OrderModel();
-            PrepareOrderDetailsModel(model, order);
-            return View(model);
+				_orderProcessingService.AutoUpdateOrderDetails(context);
+
+				if (oi.Quantity <= 0)
+				{
+					_orderService.DeleteOrderItem(oi);
+				}
+
+				TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
+			}
+
+			return RedirectToAction("Edit", new { id = orderId });
         }
 
 		[HttpPost]
-		public ActionResult DeleteOrderItem(CancelOrderItemModel model)
+		public ActionResult DeleteOrderItem(AutoUpdateOrderItemModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			var context = new CancelOrderItemContext()
-			{
-				OrderItem = _orderService.GetOrderItemById(model.Id),
-				AdjustInventory = model.AdjustInventory,
-				ReduceRewardPoints = model.ReduceRewardPoints
-			};
+			var oi = _orderService.GetOrderItemById(model.Id);
 
-			if (context.OrderItem == null)
+			if (oi == null)
 				throw new ArgumentException("No order item found with the specified id");
 
-			int orderId = context.OrderItem.Order.Id;
+			int orderId = oi.Order.Id;
+			var context = new AutoUpdateOrderItemContext()
+			{
+				OrderItem = oi,
+				QuantityOld = oi.Quantity,
+				QuantityNew = 0,
+				AdjustInventory = model.AdjustInventory,
+				UpdateRewardPoints = model.UpdateRewardPoints,
+				UpdateTotals = model.UpdateTotals
+			};
 
-			_orderProcessingService.CancelOrderItem(context);
+			oi.Quantity = 0;
+			_orderService.UpdateOrder(oi.Order);
 
-			_orderService.DeleteOrderItem(context.OrderItem);
+			_orderProcessingService.AutoUpdateOrderDetails(context);
 
-			TempData[CancelOrderItemContext.InfoKey] = context.ToString(_localizationService);
+			_orderService.DeleteOrderItem(oi);
+
+			TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
 
 			return RedirectToAction("Edit", new { id = orderId });
         }

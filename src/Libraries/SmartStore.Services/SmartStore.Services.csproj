@@ -314,7 +314,7 @@
     <Compile Include="Messages\Tokenizer.cs" />
     <Compile Include="Messages\Token.cs" />
     <Compile Include="Messages\WorkflowMessageService.cs" />
-    <Compile Include="Orders\CancelOrderItemContext.cs" />
+    <Compile Include="Orders\AutoUpdateOrderItemContext.cs" />
     <Compile Include="Orders\AppliedGiftCard.cs" />
     <Compile Include="Orders\CheckoutAttributeFormatter.cs" />
     <Compile Include="Orders\CheckoutAttributeParser.cs" />

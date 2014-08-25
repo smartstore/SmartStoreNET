@@ -121,12 +121,15 @@ namespace SmartStore.Admin.Controllers
 
 			var urlHelper = new UrlHelper(Request.RequestContext);
 
-			model.CancelOrderItem.Id = returnRequest.Id;
-			model.CancelOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
-			model.CancelOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
-			model.CancelOrderItem.ReduceRewardPoints = orderItem.Order.RewardPointsWereAdded;
+			model.AutoUpdateOrderItem.Id = returnRequest.Id;
+			model.AutoUpdateOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
+			model.AutoUpdateOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
+			model.AutoUpdateOrderItem.ShowUpdateTotals = (orderItem.Order.OrderStatusId <= (int)OrderStatus.Pending);
+			model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (orderItem.Order.OrderStatusId > (int)OrderStatus.Pending && orderItem.Order.RewardPointsWereAdded);
+			model.AutoUpdateOrderItem.UpdateTotals = model.AutoUpdateOrderItem.ShowUpdateTotals;
+			model.AutoUpdateOrderItem.UpdateRewardPoints = orderItem.Order.RewardPointsWereAdded;
 
-			model.ReturnRequestInfo = TempData[CancelOrderItemContext.InfoKey] as string;
+			model.ReturnRequestInfo = TempData[AutoUpdateOrderItemContext.InfoKey] as string;
 
             return true;
         }
@@ -264,7 +267,6 @@ namespace SmartStore.Admin.Controllers
 
             var returnRequest = _orderService.GetReturnRequestById(id);
             if (returnRequest == null)
-                //No return request found with the specified id
                 return RedirectToAction("List");
 
             _orderService.DeleteReturnRequest(returnRequest);
@@ -277,29 +279,34 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost]
-		public ActionResult Accept(CancelOrderItemModel model)
+		public ActionResult Accept(AutoUpdateOrderItemModel model)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
 				return AccessDeniedView();
 
-			var context = new CancelOrderItemContext()
+			var returnRequest = _orderService.GetReturnRequestById(model.Id);
+			var oi = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+
+			int cancelQuantity = (returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity);
+
+			var context = new AutoUpdateOrderItemContext()
 			{
-				ReturnRequest = _orderService.GetReturnRequestById(model.Id),
+				OrderItem = oi,
+				QuantityOld = oi.Quantity,
+				QuantityNew = Math.Max(oi.Quantity - cancelQuantity, 0),
 				AdjustInventory = model.AdjustInventory,
-				ReduceRewardPoints = model.ReduceRewardPoints
+				UpdateRewardPoints = model.UpdateRewardPoints,
+				UpdateTotals = model.UpdateTotals
 			};
 
-			if (context.ReturnRequest == null)
-				return RedirectToAction("List");
+			returnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
+			_customerService.UpdateCustomer(returnRequest.Customer);
 
-			context.ReturnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
-			_customerService.UpdateCustomer(context.ReturnRequest.Customer);
+			_orderProcessingService.AutoUpdateOrderDetails(context);
 
-			_orderProcessingService.CancelOrderItem(context);
+			TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
 
-			TempData[CancelOrderItemContext.InfoKey] = context.ToString(_localizationService);
-
-			return RedirectToAction("Edit", new { id = context.ReturnRequest.Id });
+			return RedirectToAction("Edit", new { id = returnRequest.Id });
 		}
 
         #endregion

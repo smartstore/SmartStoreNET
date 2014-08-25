@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Models.Orders
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
-			CancelOrderItem = new CancelOrderItemModel();
+			AutoUpdateOrderItem = new AutoUpdateOrderItemModel();
         }
 
         //identifiers
@@ -259,8 +259,8 @@ namespace SmartStore.Admin.Models.Orders
         public string aggregatortax { get; set; }
         public string aggregatortotal { get; set; }
 
-		public CancelOrderItemModel CancelOrderItem { get; set; }
-		public string CancelOrderItemInfo { get; set; }
+		public AutoUpdateOrderItemModel AutoUpdateOrderItem { get; set; }
+		public string AutoUpdateOrderItemInfo { get; set; }
 
         #region Nested Classes
 
@@ -321,17 +321,6 @@ namespace SmartStore.Admin.Models.Orders
 						return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
 					}
 					return true;
-				}
-			}
-			public bool HasAcceptedReturnRequests
-			{
-				get
-				{
-					if (ReturnRequests != null && ReturnRequests.Count > 0)
-					{
-						return ReturnRequests.Exists(x => x.Status >= ReturnRequestStatus.ReturnAuthorized);
-					}
-					return false;
 				}
 			}
         }

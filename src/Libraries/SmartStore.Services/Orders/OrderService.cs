@@ -183,19 +183,6 @@ namespace SmartStore.Services.Orders
 		}
 
         /// <summary>
-        /// Deletes an order
-        /// </summary>
-        /// <param name="order">The order</param>
-        public virtual void DeleteOrder(Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException("order");
-
-            order.Deleted = true;
-            UpdateOrder(order);
-        }
-
-        /// <summary>
         /// Search orders
         /// </summary>
 		/// <param name="storeId">Store identifier; 0 to load all orders</param>
@@ -337,6 +324,19 @@ namespace SmartStore.Services.Orders
             _eventPublisher.EntityUpdated(order);
 			_eventPublisher.PublishOrderUpdated(order);
         }
+
+		/// <summary>
+		/// Deletes an order
+		/// </summary>
+		/// <param name="order">The order</param>
+		public virtual void DeleteOrder(Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			order.Deleted = true;
+			UpdateOrder(order);
+		}
 
         /// <summary>
         /// Deletes an order note

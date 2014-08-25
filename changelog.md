@@ -21,6 +21,7 @@
 * #69 Award reward points for product reviews
 * #164 Add multistore support for polls
 * #170 Multistore support for Newsletters
+* #266 Update Pending Order in Admin Panel
 
 ###Improvements###
 * Task Scheduler:

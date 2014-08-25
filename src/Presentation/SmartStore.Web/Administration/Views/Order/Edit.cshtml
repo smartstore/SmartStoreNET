@@ -3,12 +3,10 @@
 @using SmartStore.Core.Domain.Tax;
 @using SmartStore.Core.Domain.Catalog;
 @{
-    //page title
     ViewBag.Title = T("Admin.Orders.EditOrderDetails").Text;
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "order-form" }))
 {
-
     <div class="section-header">
         <div class="title">
             @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
@@ -50,7 +48,6 @@
             toggleOrderTotals(false);
             toggleCC(false);
             toggleDD(false);
-            //toggleIban(false);
         });
 
         function toggleOrderTotals(editmode) {
@@ -105,7 +102,6 @@
             }
         }
 
-        //codehint: sm-add
         function toggleDD(editmode) {
             if (editmode) {
                 $('#lblDirectDebitAccountHolder').hide();
@@ -273,8 +269,7 @@
                 </td>
             </tr>
         }
-        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax)
-                        && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountInclTax))
+        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax) && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountInclTax))
         {
             <tr>
                 <td class="adminTitle">
@@ -285,8 +280,7 @@
                 </td>
             </tr>
         }
-        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax)
-                        && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountExclTax))
+        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax) && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountExclTax))
         {
             <tr>
                 <td class="adminTitle">
@@ -319,8 +313,7 @@
                 </td>
             </tr>
         }
-        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax)
-                        && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeInclTax))
+        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax) && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeInclTax))
         {
             <tr>
                 <td class="adminTitle">
@@ -331,8 +324,7 @@
                 </td>
             </tr>
         }
-        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax)
-                        && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeExclTax))
+        @if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax) && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeExclTax))
         {
             <tr>
                 <td class="adminTitle">
@@ -425,7 +417,6 @@
         <tr id="trEditOrderTotals">
             <td colspan="2">
 
-				@*codehint: sm-edit*@
 				<div style="border: 1px solid #e5e5e5; padding: 5px; margin: 5px 0 5px 0;">
 					<table class="adminContent">
 					<tr>
@@ -507,85 +498,6 @@
 					</table>
 				</div>
 
-                @*<table style="border: 1px solid #e5e5e5; padding: 5px;">
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.OrderSubtotalInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.InclTax") @Html.EditorFor(model => model.OrderSubtotalInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.ExclTax") @Html.EditorFor(model => model.OrderSubtotalExclTaxValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.OrderSubTotalDiscountInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.InclTax") @Html.EditorFor(model => model.OrderSubTotalDiscountInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.ExclTax") @Html.EditorFor(model => model.OrderSubTotalDiscountExclTaxValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.OrderShippingInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.InclTax") @Html.EditorFor(model => model.OrderShippingInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.ExclTax") @Html.EditorFor(model => model.OrderShippingExclTaxValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.InclTax") @Html.EditorFor(model => model.PaymentMethodAdditionalFeeInclTaxValue)
-                        </td>
-                        <td>
-                            @T("Admin.Orders.Fields.Edit.ExclTax") @Html.EditorFor(model => model.PaymentMethodAdditionalFeeExclTaxValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.TaxRatesValue)
-                        </td>
-                        <td colspan="2">
-                            @Html.EditorFor(model => model.TaxRatesValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.TaxValue)
-                        </td>
-                        <td colspan="2">
-                            @Html.EditorFor(model => model.TaxValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.OrderTotalDiscountValue)
-                        </td>
-                        <td colspan="2">
-                            @Html.EditorFor(model => model.OrderTotalDiscountValue)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.SmartLabelFor(model => model.OrderTotalValue)
-                        </td>
-                        <td colspan="2">
-                            @Html.EditorFor(model => model.OrderTotalValue)
-                        </td>
-                    </tr>
-                </table>*@
-
             </td>
         </tr>
         <tr>
@@ -597,7 +509,7 @@
 					<i class="icon-ok"></i>&nbsp;@T("Admin.Orders.Fields.SaveOrderTotals")
 				</button>
                 <button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn">
-					<i class="icon-remove"></i>&nbsp;@T("Admin.Orders.Fields.CancelOrderTotals")
+					<i class="icon-remove"></i>&nbsp;@T("Admin.Common.Cancel")
 				</button>
             </td>
         </tr>
@@ -700,7 +612,6 @@
 			</tr>
         }
 
-        @*codehint: sm-add begin*@
         @if (Model.AllowStoringDirectDebit)
         {
             <tr>
@@ -831,7 +742,6 @@
                 </td>
             </tr>
         }
-		@*codehint: sm-add*@
         @if (!String.IsNullOrEmpty(Model.AuthorizationTransactionResult))
         {
             <tr>
@@ -854,7 +764,6 @@
                 </td>
             </tr>
         }
-		@*codehint: sm-add*@
         @if (!String.IsNullOrEmpty(Model.CaptureTransactionResult))
         {
             <tr>
@@ -959,7 +868,6 @@
                 @Html.SmartLabelFor(model => model.BillingAddress)
             </td>
             <td class="adminData">
-				@*codehint: sm-edit*@
                 <div style="border: 1px solid #ccc; padding: 8px 0 8px 0; display: inline-block">
                     <table style="border-spacing: 14px 2px; border-collapse: separate;">
                     @if (Model.BillingAddress.FirstNameEnabled || Model.BillingAddress.LastNameEnabled)
@@ -1104,7 +1012,6 @@
                 @Html.SmartLabelFor(model => model.ShippingAddress)
             </td>
             <td class="adminData">
-				@*codehint: sm-edit*@
                 <div style="border: 1px solid #ccc; padding: 8px 0 8px 0; display: inline-block">
                     <table style="border-spacing: 14px 2px; border-collapse: separate;">
                     @if (Model.ShippingAddress.FirstNameEnabled || Model.ShippingAddress.LastNameEnabled)
@@ -1370,15 +1277,26 @@
 				<text>toggleOrderItemEdit(</text>@(item.Id)<text>, false);</text>
 			}
 
-			// delete order item
-			$('#OrderItemTable').on('click', '.delete-order-item-button', function() {
-				$('#CancelOrderItemForm').find('input[name=Id]')
-					.val($(this).attr('data-id'));
+			// edit\delete order item
+			$('#OrderItemTable').on('click', '.delete-order-item-button, .save-order-item-button', function() {
+				var form = $('#AutoUpdateOrderItemForm'),
+					table = $('#OrderItemTable'),
+					orderItemId = $(this).attr('data-id');
+				
+				form.find('input[name=Id]').val(orderItemId);
+				form.prop('action', $(this).attr('data-url'));
 
-				$('#CancelOrderItemForm').find('input[name=AdjustInventory]')
-					.prop('checked', $(this).attr('data-hasacceptedreturnrequests') === '0');
+				if ($(this).hasClass('save-order-item-button')) {
+					form.find('input[name=NewQuantity]').val(table.find('input[name=pvQuantity' + orderItemId + ']').val());
+					form.find('input[name=NewUnitPriceInclTax]').val(table.find('input[name=pvUnitPriceInclTax' + orderItemId + ']').val());
+					form.find('input[name=NewUnitPriceExclTax]').val(table.find('input[name=pvUnitPriceExclTax' + orderItemId + ']').val());
+					form.find('input[name=NewDiscountInclTax]').val(table.find('input[name=pvDiscountInclTax' + orderItemId + ']').val());
+					form.find('input[name=NewDiscountExclTax]').val(table.find('input[name=pvDiscountExclTax' + orderItemId + ']').val());
+					form.find('input[name=NewPriceInclTax]').val(table.find('input[name=pvPriceInclTax' + orderItemId + ']').val());
+					form.find('input[name=NewPriceExclTax]').val(table.find('input[name=pvPriceExclTax' + orderItemId + ']').val());
+				}
 
-				$('#CancelOrderItemModal').modal();
+				$('#AutoUpdateOrderItemModal').modal();
 			});
 		});
 
@@ -1408,11 +1326,11 @@
 		}
 	</script>
 	
-	if (Model.CancelOrderItemInfo.HasValue())
+	if (Model.AutoUpdateOrderItemInfo.HasValue())
 	{
 		<div class="alert alert-info fade in">
 			<button class="close" data-dismiss="alert">&#215;</button>
-			@Html.Raw(Model.CancelOrderItemInfo)
+			@Html.Raw(Model.AutoUpdateOrderItemInfo)
 		</div>
 	}
 
@@ -1702,17 +1620,22 @@
                                     </div>
                                 </td>
                                 <td align="center" style="width: 20%;">
-                                    <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" onclick="toggleOrderItemEdit(@(item.Id), true);return false;" id="btnEditOrderItem@(item.Id)" class="btn" />
+                                    <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" id="btnEditOrderItem@(item.Id)"
+										class="btn" onclick="toggleOrderItemEdit(@(item.Id), true);return false;" />
                                     
 									<input type="button" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" 
-										class="btn delete-order-item-button" data-id="@(item.Id)" data-hasacceptedreturnrequests="@(item.HasAcceptedReturnRequests ? 1 : 0)" />
+										class="btn delete-order-item-button" data-id="@(item.Id)" data-url="@Url.Action("DeleteOrderItem")" />
                                     
-									<input type="submit" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)" class="btn" style="display: none;" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-                                    <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" onclick="toggleOrderItemEdit(@(item.Id), false);return false;" id="btnCancelOrderItem@(item.Id)" class="btn" style="display: none;" />
+									<input type="button" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)"
+										class="btn save-order-item-button" style="display: none;" data-id="@(item.Id)" data-url="@Url.Action("EditOrderItem")" />
+
+                                    <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" id="btnCancelOrderItem@(item.Id)"
+										class="btn" onclick="toggleOrderItemEdit(@(item.Id), false);return false;" style="display: none;" />
 
 									@if(item.IsReturnRequestPossible)
 									{
-										<input type="submit" name="btnAddReturnRequest@(item.Id)" id="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" onclick="return confirm('@T("Admin.Common.AreYouSure")');" class="btn" />
+										<input type="submit" name="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" id="btnAddReturnRequest@(item.Id)"
+											class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
 									}
                                 </td>
                             </tr>
@@ -1839,4 +1762,4 @@
     @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
 }
 
-@Html.Partial("_CancelOrderItem", Model.CancelOrderItem)
+@Html.Partial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem)

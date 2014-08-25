@@ -86,10 +86,10 @@ namespace SmartStore.Services.Orders
         void CancelOrder(Order order, bool notifyCustomer);
 
 		/// <summary>
-		/// Cancel an order item
+		/// Auto update order details
 		/// </summary>
-		/// <param name="context">Cancel order item context</param>
-		void CancelOrderItem(CancelOrderItemContext context);
+		/// <param name="context">Context parameters</param>
+		void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
 
 
         /// <summary>

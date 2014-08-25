@@ -39,7 +39,7 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			builder.Delete("Admin.Orders.Products.ReturnRequests");
+			builder.Delete("Admin.Orders.Products.ReturnRequests", "Admin.Orders.Fields.CancelOrderTotals");
 
 			builder.AddOrUpdate("Admin.Orders.Products.ReturnRequest",
 				"Return request",
@@ -58,25 +58,27 @@ namespace SmartStore.Data.Migrations
 				"Rücksendung akzeptieren");
 
 
-			builder.AddOrUpdate("Admin.Orders.OrderItem.Cancel.Info",
+			builder.AddOrUpdate("Admin.Orders.OrderItem.Update.Info",
 				"Stock quantity old {0}, new {1}.<br />Reward points old {2}, new {3}.",
 				"Lagerbestand alt {0}, neu {1}.<br />Bonuspunkte alt {2}, neu {3}.");
 
-			builder.AddOrUpdate("Admin.Orders.OrderItem.Cancel.Caption",
-				"Remove product",
-				"Produkt entfernen");
-
-			builder.AddOrUpdate("Admin.Orders.OrderItem.Cancel.Fields.AdjustInventory",
+			builder.AddOrUpdate("Admin.Orders.OrderItem.AutoUpdate.AdjustInventory",
 				"Adjust inventory",
 				"Lagerbestand anpassen",
-				"Determines whether to increase the stock quantity.",
-				"Legt fest, ob der Lagerbestand wieder erhöht werden soll.");
+				"Determines whether to adjust the stock quantity proportionately.",
+				"Legt fest, ob der Lagerbestand anteilig angepasst werden soll.");
 
-			builder.AddOrUpdate("Admin.Orders.OrderItem.Cancel.Fields.ReduceRewardPoints",
-				"Adjust reward points",
-				"Bonuspunkte anpassen",
+			builder.AddOrUpdate("Admin.Orders.OrderItem.AutoUpdate.UpdateRewardPoints",
+				"Reduce reward points",
+				"Bonuspunkte abziehen",
 				"Determines whether granted reward points should be deducted again proportionately.",
 				"Legt fest, ob gewährte Bonuspunkte wieder anteilig abgezogen werden sollen.");
+
+			builder.AddOrUpdate("Admin.Orders.OrderItem.AutoUpdate.UpdateTotals",
+				"Update totals",
+				"Summen anpassen",
+				"Determines whether to update the order totals.",
+				"Legt fest, ob die Auftragssummen angepasst werden sollen.");
 
 
 			builder.AddOrUpdate("Admin.Common.ExportToPdf.All",

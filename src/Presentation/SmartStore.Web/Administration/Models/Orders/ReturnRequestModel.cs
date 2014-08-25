@@ -16,7 +16,7 @@ namespace SmartStore.Admin.Models.Orders
 		{
 			AvailableReasonForReturn = new List<SelectListItem>();
 			AvailableRequestedAction = new List<SelectListItem>();
-			CancelOrderItem = new CancelOrderItemModel();
+			AutoUpdateOrderItem = new AutoUpdateOrderItemModel();
 		}
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.ID")]
@@ -80,6 +80,6 @@ namespace SmartStore.Admin.Models.Orders
 
 		public string ReturnRequestInfo { get; set; }
 
-		public CancelOrderItemModel CancelOrderItem { get; set; }
+		public AutoUpdateOrderItemModel AutoUpdateOrderItem { get; set; }
     }
 }

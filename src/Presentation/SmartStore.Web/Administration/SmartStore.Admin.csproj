@@ -210,7 +210,7 @@
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
-    <Compile Include="Models\Orders\CancelOrderItemModel.cs" />
+    <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
@@ -1201,7 +1201,7 @@
     <Content Include="Views\Packaging\UploadPackage.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Order\_CancelOrderItem.cshtml" />
+    <Content Include="Views\Order\_AutoUpdateOrderItem.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

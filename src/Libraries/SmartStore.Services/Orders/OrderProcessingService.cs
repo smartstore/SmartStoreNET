@@ -233,6 +233,8 @@ namespace SmartStore.Services.Orders
 			// Truncate increases the risk of inaccuracy of rounding
             //int points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
 
+			// why are points awarded for OrderTotal? wouldn't be OrderSubtotalInclTax better?
+
 			int points = (int)Math.Round((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
             if (points == 0)
                 return;
@@ -244,7 +246,7 @@ namespace SmartStore.Services.Orders
         }
 
         /// <summary>
-        /// Award reward points
+        /// Reduce reward points
         /// </summary>
         /// <param name="order">Order</param>
 		/// <param name="amount">The amount. OrderTotal is used if null.</param>
@@ -1836,79 +1838,64 @@ namespace SmartStore.Services.Orders
         }
 
 		/// <summary>
-		/// Cancel an order item
+		/// Auto update order details
 		/// </summary>
-		/// <param name="context">Cancel order item context</param>
-		public virtual void CancelOrderItem(CancelOrderItemContext context)
+		/// <param name="context">Context parameters</param>
+		public virtual void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-
-			OrderItem oi = context.OrderItem;
-			int cancelQuantity = 0;
-
-			if (oi == null && context.ReturnRequest != null)
-				oi = _orderService.GetOrderItemById(context.ReturnRequest.OrderItemId);
-
-			if (context.ReturnRequest == null)
-				cancelQuantity = oi.Quantity;
-			else
-				cancelQuantity = (context.ReturnRequest.Quantity > oi.Quantity ? oi.Quantity : context.ReturnRequest.Quantity);
+			var oi = context.OrderItem;
 
 			context.InventoryOld = context.InventoryNew = oi.Product.StockQuantity;
 			context.RewardPointsOld = context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();
 
-			if (cancelQuantity <= 0)
-				return;
-			
-			int newQuantity = Math.Max(oi.Quantity - cancelQuantity, 0);
-
-			decimal reduceFactor = (decimal)newQuantity / (decimal)oi.Quantity;
-
-			decimal priceInclTax = newQuantity * oi.UnitPriceInclTax;
-			decimal priceExclTax = newQuantity * oi.UnitPriceExclTax;
-
-			decimal deltaPriceInclTax = Math.Max(oi.PriceInclTax - priceInclTax, 0);
-			decimal deltaPriceExclTax = Math.Max(oi.PriceExclTax - priceExclTax, 0);
-
-			//oi.PriceInclTax = Round(priceInclTax);
-			//oi.PriceExclTax = Round(priceExclTax);
-
-			//decimal discountInclTax = oi.DiscountAmountInclTax * reduceFactor;
-			//decimal discountExclTax = oi.DiscountAmountExclTax * reduceFactor;
-
-			//decimal deltaDiscountInclTax = Math.Max(oi.DiscountAmountInclTax - discountInclTax, 0);
-			//decimal deltaDiscountExclTax = Math.Max(oi.DiscountAmountExclTax - discountExclTax, 0);
-
-			//oi.DiscountAmountInclTax = Round(discountInclTax);			
-			//oi.DiscountAmountExclTax = Round(discountExclTax);
-
-			//oi.Quantity = newQuantity;
-
-			//// update order (OrderTotal and OrderDiscout always includes tax)
-			//decimal subtotalInclTax = Math.Max(oi.Order.OrderSubtotalInclTax - deltaPriceInclTax, 0);
-			//decimal subtotalExclTax = Math.Max(oi.Order.OrderSubtotalExclTax - deltaPriceExclTax, 0);
-
-			//oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
-			//oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
-
-			//decimal total = Math.Max(oi.Order.OrderTotal - deltaPriceInclTax, 0);
-			//decimal tax = Math.Max(oi.Order.OrderTax - (deltaPriceInclTax - deltaPriceExclTax), 0);
-
-			//oi.Order.OrderTotal = Round(total);
-			//oi.Order.OrderTax = Round(tax);
-
-			//_orderService.UpdateOrder(oi.Order);
-
-			if (context.AdjustInventory)
+			if (context.UpdateTotals && oi.Order.OrderStatusId <= (int)OrderStatus.Pending)
 			{
-				_productService.AdjustInventory(oi, false, cancelQuantity);
+				decimal priceInclTax = Round(oi.Quantity * oi.UnitPriceInclTax);
+				decimal priceExclTax = Round(oi.Quantity * oi.UnitPriceExclTax);
+
+				decimal deltaPriceInclTax = priceInclTax - oi.PriceInclTax;
+				decimal deltaPriceExclTax = priceExclTax - oi.PriceExclTax;
+
+				oi.PriceInclTax = Round(priceInclTax);
+				oi.PriceExclTax = Round(priceExclTax);
+
+				decimal subtotalInclTax = oi.Order.OrderSubtotalInclTax + deltaPriceInclTax;
+				decimal subtotalExclTax = oi.Order.OrderSubtotalExclTax + deltaPriceExclTax;
+
+				oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
+				oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
+
+				decimal discountInclTax = oi.DiscountAmountInclTax * context.QuantityChangeFactor;
+				decimal discountExclTax = oi.DiscountAmountExclTax * context.QuantityChangeFactor;
+
+				decimal deltaDiscountInclTax = discountInclTax - oi.DiscountAmountInclTax;
+				decimal deltaDiscountExclTax = discountExclTax - oi.DiscountAmountExclTax;
+
+				oi.DiscountAmountInclTax = Round(discountInclTax);
+				oi.DiscountAmountExclTax = Round(discountExclTax);
+
+				decimal total = Math.Max(oi.Order.OrderTotal + deltaPriceInclTax, 0);
+				decimal tax = Math.Max(oi.Order.OrderTax + (deltaPriceInclTax - deltaPriceExclTax), 0);
+
+				oi.Order.OrderTotal = Round(total);
+				oi.Order.OrderTax = Round(tax);
+
+				_orderService.UpdateOrder(oi.Order);
+			}
+
+			if (context.AdjustInventory && context.QuantityDelta != 0)
+			{				
+				_productService.AdjustInventory(oi, context.QuantityDelta > 0, Math.Abs(context.QuantityDelta));
 				context.InventoryNew = oi.Product.StockQuantity;
 			}
 
-			if (context.ReduceRewardPoints)
+			if (context.UpdateRewardPoints && context.QuantityDelta < 0)
 			{
-				ReduceRewardPoints(oi.Order, deltaPriceInclTax);
+				// we reduce but we do not award points subsequently. they can be awarded once per order anyway (see Order.RewardPointsWereAdded).
+				// UpdateRewardPoints only visible for unpending orders (see RewardPointsSettingsValidator).
+				// note: reducing can of cource only work if oi.UnitPriceExclTax has not been changed!
+				decimal reduceAmount = Math.Abs(context.QuantityDelta) * oi.UnitPriceInclTax;
+				ReduceRewardPoints(oi.Order, reduceAmount);
 				context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();
 			}
 		}

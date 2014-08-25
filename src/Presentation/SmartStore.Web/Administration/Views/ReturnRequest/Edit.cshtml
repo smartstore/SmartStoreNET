@@ -11,7 +11,7 @@
         <div class="options">
 			@if(Model.CanAccept)
 			{
-				<button type="button" name="accept" class="btn accept-return-request-button" data-toggle="modal" data-target="#CancelOrderItemModal">
+				<button type="button" name="accept" class="btn accept-return-request-button" data-toggle="modal" data-target="#AutoUpdateOrderItemModal">
 					<i class="icon-retweet"></i>&nbsp;@T("Admin.ReturnRequests.Accept")
 				</button>
 			}
@@ -26,4 +26,4 @@
 }
 @Html.DeleteConfirmation("returnrequest-delete")
 
-@Html.Partial("~/Administration/Views/Order/_CancelOrderItem.cshtml", Model.CancelOrderItem)
+@Html.Partial("~/Administration/Views/Order/_AutoUpdateOrderItem.cshtml", Model.AutoUpdateOrderItem)

@@ -1853,8 +1853,8 @@ namespace SmartStore.Services.Orders
 				decimal priceInclTax = Round(oi.Quantity * oi.UnitPriceInclTax);
 				decimal priceExclTax = Round(oi.Quantity * oi.UnitPriceExclTax);
 
-				decimal deltaPriceInclTax = priceInclTax - oi.PriceInclTax;
-				decimal deltaPriceExclTax = priceExclTax - oi.PriceExclTax;
+				decimal deltaPriceInclTax = priceInclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceInclTax);
+				decimal deltaPriceExclTax = priceExclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceExclTax);
 
 				oi.PriceInclTax = Round(priceInclTax);
 				oi.PriceExclTax = Round(priceExclTax);

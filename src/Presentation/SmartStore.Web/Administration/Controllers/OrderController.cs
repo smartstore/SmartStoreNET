@@ -546,6 +546,8 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException("No product found with the specified id");
 
 			var customer = _workContext.CurrentCustomer;	// TODO: we need a customer representing entity instance for backend work
+			var order = _orderService.GetOrderById(orderId);
+
 			decimal taxRate = decimal.Zero;
 			decimal unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
 			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out taxRate);
@@ -561,7 +563,10 @@ namespace SmartStore.Admin.Controllers
 				UnitPriceInclTax = unitPriceInclTax,
 				UnitPriceExclTax = unitPriceExclTax,
 				SubTotalInclTax = unitPriceInclTax,
-				SubTotalExclTax = unitPriceExclTax
+				SubTotalExclTax = unitPriceExclTax,
+				ShowUpdateTotals = (order.OrderStatusId <= (int)OrderStatus.Pending),
+				AdjustInventory = true,
+				UpdateTotals = true
             };
 
             //attributes
@@ -1725,7 +1730,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddProductToOrderDetails(int orderId, int productId, FormCollection form)
+        public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool updateTotals, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
@@ -1874,6 +1879,23 @@ namespace SmartStore.Admin.Controllers
                         _giftCardService.InsertGiftCard(gc);
                     }
                 }
+
+				if (adjustInventory || updateTotals)
+				{
+					var context = new AutoUpdateOrderItemContext()
+					{
+						IsNewOrderItem = true,
+						OrderItem = orderItem,
+						QuantityOld = 0,
+						QuantityNew = orderItem.Quantity,
+						AdjustInventory = adjustInventory,
+						UpdateTotals = updateTotals
+					};
+
+					_orderProcessingService.AutoUpdateOrderDetails(context);
+
+					TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
+				}
 
                 //redirect to order details page
                 return RedirectToAction("Edit", "Order", new { id = order.Id });

@@ -474,6 +474,13 @@ namespace SmartStore.Admin.Models.Orders
 
                 public List<string> Warnings { get; set; }
 
+				public bool ShowUpdateTotals { get; set; }
+
+				[SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.AdjustInventory")]
+				public bool AdjustInventory { get; set; }
+
+				[SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.UpdateTotals")]
+				public bool UpdateTotals { get; set; }
             }
 
             public class ProductVariantAttributeModel : EntityModelBase

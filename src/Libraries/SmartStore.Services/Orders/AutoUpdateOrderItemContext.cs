@@ -6,6 +6,11 @@ namespace SmartStore.Services.Orders
 	public class AutoUpdateOrderItemContext
 	{
 		/// <summary>
+		/// [IN] Whether order item is new
+		/// </summary>
+		public bool IsNewOrderItem { get; set; }
+
+		/// <summary>
 		/// [IN] Order item
 		/// </summary>
 		public OrderItem OrderItem { get; set; }

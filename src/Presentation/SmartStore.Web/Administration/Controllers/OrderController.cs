@@ -545,17 +545,23 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
+			var customer = _workContext.CurrentCustomer;	// TODO: we need a customer representing entity instance for backend work
+			decimal taxRate = decimal.Zero;
+			decimal unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
+			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out taxRate);
+			decimal unitPriceExclTax = _taxService.GetProductPrice(product, unitPrice, false, customer, out taxRate);
+
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
             {
-                ProductId = productId,
-                OrderId = orderId,
-                Name = product.Name,
+				ProductId = productId,
+				OrderId = orderId,
+				Name = product.Name,
 				ProductType = product.ProductType,
-                UnitPriceExclTax = decimal.Zero,
-                UnitPriceInclTax = decimal.Zero,
-                Quantity = 1,
-                SubTotalExclTax = decimal.Zero,
-                SubTotalInclTax = decimal.Zero
+				Quantity = 1,
+				UnitPriceInclTax = unitPriceInclTax,
+				UnitPriceExclTax = unitPriceExclTax,
+				SubTotalInclTax = unitPriceInclTax,
+				SubTotalExclTax = unitPriceExclTax
             };
 
             //attributes

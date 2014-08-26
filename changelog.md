@@ -69,6 +69,7 @@
 * #428 Multiline checkout attributes aren't rendered correctly
 * #434 Shipping.ByTotal: Make grid pageable
 * #419 email account password hidden
+* #424 Localize return reasons & return actions
 
 
 ##SmartStore.NET 2.0.2#

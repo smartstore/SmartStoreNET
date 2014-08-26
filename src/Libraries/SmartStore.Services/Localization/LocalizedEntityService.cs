@@ -134,7 +134,7 @@ namespace SmartStore.Services.Localization
         /// <returns>Localized properties</returns>
         public virtual IList<LocalizedProperty> GetLocalizedProperties(int entityId, string localeKeyGroup)
         {
-            if (entityId == 0 || string.IsNullOrEmpty(localeKeyGroup))
+            if (string.IsNullOrEmpty(localeKeyGroup))
                 return new List<LocalizedProperty>();
 
             var query = from lp in _localizedPropertyRepository.Table

@@ -105,18 +105,18 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableReasonForReturn.Add(new SelectListItem() { Text = unspec, Value = "" });
 			model.AvailableRequestedAction.Add(new SelectListItem() { Text = unspec, Value = "" });
 
-			if (_orderSettings.ReturnRequestReasons != null)
+			// that's what we also offer in frontend
+			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
+			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
+
+			foreach (var rrr in returnRequestReasons.SplitSafe(","))
 			{
-				foreach (var rrr in _orderSettings.ReturnRequestReasons)
-				{
-					model.AvailableReasonForReturn.Add(new SelectListItem() { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
-				}
+				model.AvailableReasonForReturn.Add(new SelectListItem() { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
 			}
 
-			if (_orderSettings.ReturnRequestActions != null)
+			foreach (var rra in returnRequestActions.SplitSafe(","))
 			{
-				foreach (var rra in _orderSettings.ReturnRequestActions)
-					model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
+				model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
 			}
 
 			var urlHelper = new UrlHelper(Request.RequestContext);

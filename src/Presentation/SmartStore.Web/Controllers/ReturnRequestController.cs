@@ -77,27 +77,20 @@ namespace SmartStore.Web.Controllers
 
             model.OrderId = order.Id;
 
+			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
+			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
+
             //return reasons
-            if (_orderSettings.ReturnRequestReasons != null)
-                foreach (var rrr in _orderSettings.ReturnRequestReasons)
-                {
-                    model.AvailableReturnReasons.Add(new SelectListItem()
-                        {
-                            Text = rrr,
-                            Value = rrr
-                        });
-                }
+            foreach (var rrr in returnRequestReasons.SplitSafe(","))
+            {
+                model.AvailableReturnReasons.Add(new SelectListItem() { Text = rrr, Value = rrr });
+            }
 
             //return actions
-            if (_orderSettings.ReturnRequestActions != null)
-                foreach (var rra in _orderSettings.ReturnRequestActions)
-                {
-                    model.AvailableReturnActions.Add(new SelectListItem()
-                    {
-                        Text = rra,
-                        Value = rra
-                    });
-                }
+            foreach (var rra in returnRequestActions.SplitSafe(","))
+            {
+                model.AvailableReturnActions.Add(new SelectListItem() { Text = rra, Value = rra });
+            }
 
             //products
             var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);

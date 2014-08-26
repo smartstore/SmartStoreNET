@@ -69,8 +69,10 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly ILanguageService _languageService;
 
-		private StoreDependingSettingHelper _storeDependingSettings;	// codehint: sm-add
+		private StoreDependingSettingHelper _storeDependingSettings;
 
 		#endregion
 
@@ -86,7 +88,9 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
-			IWorkContext workContext, IGenericAttributeService genericAttributeService)
+			IWorkContext workContext, IGenericAttributeService genericAttributeService,
+			ILocalizedEntityService localizedEntityService,
+			ILanguageService languageService)
         {
             this._settingService = settingService;
             this._countryService = countryService;
@@ -109,6 +113,8 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
+			this._localizedEntityService = localizedEntityService;
+			this._languageService = languageService;
         }
 
 		#endregion 
@@ -666,24 +672,13 @@ namespace SmartStore.Admin.Controllers
 
             //gift card activation/deactivation
             model.GiftCards_Activated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            //model.GiftCards_Activated_OrderStatuses.Insert(0, new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
             model.GiftCards_Deactivated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            //model.GiftCards_Deactivated_OrderStatuses.Insert(0, new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
 
-            //parse return request actions
-			for (int i = 0; i < orderSettings.ReturnRequestActions.Count; i++)
-            {
-				model.ReturnRequestActionsParsed += orderSettings.ReturnRequestActions[i];
-				if (i != orderSettings.ReturnRequestActions.Count - 1)
-                    model.ReturnRequestActionsParsed += ",";
-            }
-            //parse return request reasons
-			for (int i = 0; i < orderSettings.ReturnRequestReasons.Count; i++)
-            {
-				model.ReturnRequestReasonsParsed += orderSettings.ReturnRequestReasons[i];
-				if (i != orderSettings.ReturnRequestReasons.Count - 1)
-                    model.ReturnRequestReasonsParsed += ",";
-            }
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.ReturnRequestActions = orderSettings.GetLocalized(x => x.ReturnRequestActions, languageId, false, false);
+				locale.ReturnRequestReasons = orderSettings.GetLocalized(x => x.ReturnRequestReasons, languageId, false, false);
+			});
 
             //order ident
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
@@ -705,19 +700,15 @@ namespace SmartStore.Admin.Controllers
 
 				StoreDependingSettings.UpdateSettings(orderSettings, form, storeScope, _settingService);
 
-				//parse return request actions
-				orderSettings.ReturnRequestActions.Clear();
-				foreach (var returnAction in model.ReturnRequestActionsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-					orderSettings.ReturnRequestActions.Add(returnAction);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);		// codehint: sm-edit
-				
-				//parse return request reasons
-				orderSettings.ReturnRequestReasons.Clear();
-				foreach (var returnReason in model.ReturnRequestReasonsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-					orderSettings.ReturnRequestReasons.Add(returnReason);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);		// codehint: sm-edit
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);				
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
 
-				// codehint: sm-edit
+				foreach (var localized in model.Locales)
+				{
+					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
+				}
+
 				if (model.GiftCards_Activated_OrderStatusId.HasValue)
 					_settingService.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
 				else
@@ -752,9 +743,11 @@ namespace SmartStore.Admin.Controllers
             else
             {
 				//If we got this far, something failed, redisplay form
-                foreach (var modelState in ModelState.Values)
-                    foreach (var error in modelState.Errors)
+				foreach (var modelState in ModelState.Values)
+				{
+					foreach (var error in modelState.Errors)
 						NotifyError(error.ErrorMessage);
+				}
             }
             return RedirectToAction("Order");
         }

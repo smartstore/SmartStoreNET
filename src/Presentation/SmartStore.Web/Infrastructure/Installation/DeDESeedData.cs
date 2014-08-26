@@ -2127,8 +2127,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 .Alter<OrderSettings>(x =>
                 {
-                    x.ReturnRequestActions = new List<string>() { "Reparatur", "Ersatz", "Gutschein" };
-                    x.ReturnRequestReasons = new List<string>() { "Falschen Artikel erhalten", "Falsch bestellt", "Ware fehlerhaft bzw. defekt" };
+                    x.ReturnRequestActions = "Reparatur,Ersatz,Gutschein";
+                    x.ReturnRequestReasons = "Falschen Artikel erhalten,Falsch bestellt,Ware fehlerhaft bzw. defekt";
                     x.NumberOfDaysReturnRequestAvailable = 14;
                 })
 

@@ -23,6 +23,9 @@
 
 		    $('#pd-manufacturer img').css({ 'max-width': opts.galleryWidth });
 
+		    // html text collapser
+		    $('.more-less').moreLess();
+
 			// update product data and gallery
 		    $(el).find(':input').change(function () {
 		    	var context = $(this).closest('.update-container');

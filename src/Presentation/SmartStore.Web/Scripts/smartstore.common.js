@@ -113,7 +113,9 @@
 		});
 
 		// html text collapser
-		$('.more-less').moreLess();
+		if ($({}).moreLess) {
+			$('.more-less').moreLess();
+		}
     });
 
 })( jQuery, this, document );

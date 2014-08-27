@@ -1313,6 +1313,7 @@ namespace SmartStore.Admin.Controllers
             ctx.ManufacturerId = model.SearchManufacturerId;
 			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
+			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageIndex = command.Page - 1;
@@ -1493,9 +1494,11 @@ namespace SmartStore.Admin.Controllers
 
             if (model.SearchCategoryId > 0)
                 ctx.CategoryIds.Add(model.SearchCategoryId);
+
             ctx.ManufacturerId = model.SearchManufacturerId;
 			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
+			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageIndex = command.Page - 1;
@@ -1681,6 +1684,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
@@ -1992,6 +1996,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
@@ -2407,7 +2412,6 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-
                 var ctx = new ProductSearchContext();
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
@@ -2453,7 +2457,6 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-
                 var ctx = new ProductSearchContext();
                 ctx.LanguageId = _workContext.WorkingLanguage.Id;
                 ctx.OrderBy = ProductSortingEnum.Position;
@@ -3385,6 +3388,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,

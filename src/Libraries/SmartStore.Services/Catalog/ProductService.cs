@@ -736,6 +736,7 @@ namespace SmartStore.Services.Catalog
                         where (p.Name.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
+							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
                               (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
 							//localized values
                               (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||

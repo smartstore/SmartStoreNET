@@ -111,6 +111,11 @@
 			.ajaxError(function (ev, xhr) {
 				displayNotification(xhr.responseText, "error");
 		});
+
+		// html text collapser
+		if ($({}).moreLess) {
+			$('.more-less').moreLess();
+		}
     });
 
 })( jQuery, this, document );

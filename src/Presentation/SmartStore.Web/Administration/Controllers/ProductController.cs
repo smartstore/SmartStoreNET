@@ -639,7 +639,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = new ProductListModel();
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
-            model.DisplayPdfDownloadCatalog = _pdfSettings.Enabled;
+            model.DisplayPdfExport = _pdfSettings.Enabled;
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             model.Products = new GridModel<ProductModel>
             {
@@ -2383,28 +2384,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
-        public ActionResult DownloadCatalogAsPdf()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-			var ctx = new ProductSearchContext();
-			ctx.LanguageId = _workContext.WorkingLanguage.Id;
-			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = int.MaxValue;
-			ctx.ShowHidden = true;
-
-			var products = _productService.SearchProducts(ctx);
-
-			if (products.Count <= 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "product-catalog.pdf");
-        }
-
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2431,6 +2410,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2480,6 +2460,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2503,6 +2484,46 @@ namespace SmartStore.Admin.Controllers
             }
             return File(bytes, "text/xls", "products.xlsx");
         }
+
+		public ActionResult ExportPdfAll()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var ctx = new ProductSearchContext();
+			ctx.LanguageId = _workContext.WorkingLanguage.Id;
+			ctx.OrderBy = ProductSortingEnum.Position;
+			ctx.PageSize = int.MaxValue;
+			ctx.ShowHidden = true;
+
+			var products = _productService.SearchProducts(ctx);
+
+			if (products.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+		}
+
+		[HttpPost]
+		public ActionResult ExportPdfSelected(string selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			int[] ids = selectedIds.ToIntArray();
+			var products = _productService.GetProductsByIds(ids);
+
+			if (products.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+		}
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)

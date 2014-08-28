@@ -48,6 +48,7 @@
 * #239 Categories: Ask merchant if he want a cascading or a non cascading deletion
 * HTML text collapser: Make it usable for all long texts
 * #375 Implement SKU search for 'related products picker'
+* #391 Admin: allow searching/filtering for specification attributes
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

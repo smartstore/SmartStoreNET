@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -74,13 +75,14 @@ namespace SmartStore.Services.Catalog
         /// Gets specification attributes
         /// </summary>
         /// <returns>Specification attributes</returns>
-        public virtual IList<SpecificationAttribute> GetSpecificationAttributes()
+        public virtual IQueryable<SpecificationAttribute> GetSpecificationAttributes()
         {
-            var query = from sa in _specificationAttributeRepository.Table
-                        orderby sa.DisplayOrder, sa.Name
-                        select sa;
-            var specificationAttributes = query.ToList();
-            return specificationAttributes;
+            var query = 
+				from sa in _specificationAttributeRepository.Table
+				orderby sa.DisplayOrder, sa.Name
+				select sa;
+
+            return query;
         }
 
         /// <summary>

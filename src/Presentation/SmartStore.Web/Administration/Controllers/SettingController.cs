@@ -1441,34 +1441,38 @@ namespace SmartStore.Admin.Controllers
             
             return View();
         }
+
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult AllSettings(GridCommand command)
+		public ActionResult AllSettings(GridCommand command)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var stores = _storeService.GetAllStores();
+			string allStoresString = _localizationService.GetResource("Admin.Common.StoresAll");
             
             var settings = _settingService
                 .GetAllSettings()
 				.Select(x =>
 				{
-					string storeName = "";
-					if (x.StoreId == 0)
-					{
-						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
-					}
-					else
-					{
-						var store = _storeService.GetStoreById(x.StoreId);
-						storeName = store != null ? store.Name : "Unknown";
-					}
 					var settingModel = new SettingModel()
 					{
 						Id = x.Id,
 						Name = x.Name,
 						Value = x.Value,
-						Store = storeName,
 						StoreId = x.StoreId
 					};
+
+					if (x.StoreId == 0)
+					{
+						settingModel.Store = allStoresString;
+					}
+					else
+					{
+						var store = stores.FirstOrDefault(s => s.Id == x.StoreId);
+						settingModel.Store = store != null ? store.Name : "Unknown";
+					}
+
 					return settingModel;
 				})
                 .ForCommand(command)
@@ -1479,11 +1483,13 @@ namespace SmartStore.Admin.Controllers
                 Data = settings.PagedForCommand(command),
                 Total = settings.Count
             };
+
             return new JsonResult
             {
                 Data = model
             };
         }
+
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SettingUpdate(SettingModel model, GridCommand command)
         {

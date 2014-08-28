@@ -449,7 +449,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//specification attributes
-			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes();
+			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes().ToList();
 			for (int i = 0; i < specificationAttributes.Count; i++)
 			{
 				var sa = specificationAttributes[i];

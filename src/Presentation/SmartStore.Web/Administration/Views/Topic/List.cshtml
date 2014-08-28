@@ -63,7 +63,8 @@
                             .ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
                             .Centered();
                         columns.Bound(x => x.WidgetZone);
-                        columns.Bound(x => x.Priority);
+                        columns.Bound(x => x.Priority)
+							.Centered();
                         columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()

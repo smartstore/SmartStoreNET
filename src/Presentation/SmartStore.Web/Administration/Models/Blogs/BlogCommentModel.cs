@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Blogs
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.Comments.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.Comments.Fields.IPAddress")]
         public string IpAddress { get; set; }

@@ -154,6 +154,7 @@
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
                         columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Price)
+							.Format("{0:0.00}")
 							.RightAlign();
                         columns.Bound(x => x.StockQuantity)
 							.Centered();

@@ -31,6 +31,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ICustomerService _customerService;
 
         #endregion
 
@@ -40,7 +41,8 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper, ICustomerContentService customerContentService,
             ILocalizationService localizationService, IPermissionService permissionService,
             IUrlRecordService urlRecordService,
-			IStoreService storeService, IStoreMappingService storeMappingService)
+			IStoreService storeService, IStoreMappingService storeMappingService,
+			ICustomerService customerService)
         {
             this._blogService = blogService;
             this._languageService = languageService;
@@ -51,6 +53,7 @@ namespace SmartStore.Admin.Controllers
             this._urlRecordService = urlRecordService;
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
+			this._customerService = customerService;
 		}
 
 		#endregion 
@@ -305,6 +308,8 @@ namespace SmartStore.Admin.Controllers
                 Data = comments.PagedForCommand(command).Select(blogComment =>
                 {
                     var commentModel = new BlogCommentModel();
+					var customer = _customerService.GetCustomerById(blogComment.CustomerId);
+
                     commentModel.Id = blogComment.Id;
                     commentModel.BlogPostId = blogComment.BlogPostId;
                     commentModel.BlogPostTitle = blogComment.BlogPost.Title;
@@ -312,6 +317,12 @@ namespace SmartStore.Admin.Controllers
                     commentModel.IpAddress = blogComment.IpAddress;
                     commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
                     commentModel.Comment = Core.Html.HtmlUtils.FormatText(blogComment.CommentText, false, true, false, false, false, false);
+
+					if (customer == null)
+						commentModel.CustomerName = "".NaIfEmpty();
+					else
+						commentModel.CustomerName = customer.GetFullName();
+
                     return commentModel;
                 }),
                 Total = comments.Count,

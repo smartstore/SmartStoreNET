@@ -1682,16 +1682,17 @@
         })
         .Columns(columns =>
         {
-            columns.Bound(x => x.CreatedOn).Width(100);
-            columns.Bound(x => x.Note).Encoded(false).Width(500);
+            columns.Bound(x => x.CreatedOn).Width(140);
+            columns.Bound(x => x.Note).Encoded(false);
             columns.Bound(x => x.DisplayToCustomer)
                 .Template(item => @Html.SymbolForBool(item.DisplayToCustomer))
                 .ClientTemplate(@Html.SymbolForBool("DisplayToCustomer"))
-                .Width(100);
+				.Centered()
+                .Width(140);
             columns.Command(commands =>
             {
                 commands.Delete().Localize(T);
-            }).Width(180).Title(T("Admin.Common.Delete").Text);
+            }).Width(140).Title(T("Admin.Common.Delete").Text);
         })
         .EnableCustomBinding(true))
             </td>

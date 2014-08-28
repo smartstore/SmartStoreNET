@@ -64,15 +64,15 @@
                 .ClientEvents(events => events.OnDataBinding("bestCustomersOrderTotalOnDataBinding"))
                 .Columns(columns =>
                 {
-                    columns.Bound(x => x.CustomerName);
-                    columns.Bound(x => x.OrderTotal);
-                    columns.Bound(x => x.OrderCount);
-                    columns.Bound(x => x.CustomerId)
-                        .Template(x => Html.ActionLink(@T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-                        .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\">" + T("Admin.Common.View").Text + "</a>")
-                        .Width(50)
-                        .Centered()
-                        .Title(T("Admin.Common.View").Text);
+					columns.Bound(x => x.OrderTotal)
+						.RightAlign()
+						.Width(160);
+					columns.Bound(x => x.OrderCount)
+						.Centered()
+						.Width(160);
+					columns.Bound(x => x.CustomerId)
+						.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+						.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
                 })
                 .DataBinding(dataBinding => dataBinding.Ajax().Select("ReportBestCustomersByOrderTotalList", "Customer"))
                 .EnableCustomBinding(true))

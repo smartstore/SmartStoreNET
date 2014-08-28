@@ -64,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 			model.ProductTypeName = productReview.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = productReview.Product.ProductTypeLabelHint;
             model.CustomerId = productReview.CustomerId;
-			model.CustomerName = "{0} ({1})".FormatWith(productReview.Customer.GetFullName(), productReview.CustomerId);
+			model.CustomerName = productReview.Customer.GetFullName();
             model.IpAddress = productReview.IpAddress;
             model.Rating = productReview.Rating;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(productReview.CreatedOnUtc, DateTimeKind.Utc);

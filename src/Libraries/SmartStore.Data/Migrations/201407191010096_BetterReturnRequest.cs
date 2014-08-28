@@ -39,7 +39,8 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			builder.Delete("Admin.Orders.Products.ReturnRequests", "Admin.Orders.Fields.CancelOrderTotals", "Admin.Orders.Products.AddNew.Note2");
+			builder.Delete("Admin.Orders.Products.ReturnRequests", "Admin.Orders.Fields.CancelOrderTotals", "Admin.Orders.Products.AddNew.Note2",
+				"Admin.Catalog.Products.List.DownloadPDF");
 
 			builder.AddOrUpdate("Admin.Orders.Products.ReturnRequest",
 				"Return request",

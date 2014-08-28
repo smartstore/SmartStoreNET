@@ -23,14 +23,14 @@
             .Columns(columns =>
             {
                 columns.Bound(x => x.Manufacturer)
-                    .Width(500)
-                    .Centered();
+                    .Width(500);
                 columns.Bound(x => x.IsFeaturedProduct)
                     .Width(100)
                     .Template(item => Html.SymbolForBool(item.IsFeaturedProduct))
                     .ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
                     .Centered();
                 columns.Bound(x => x.DisplayOrder)
+					.Centered()
                     .Width(100);
                 columns.Command(commands =>
                 {

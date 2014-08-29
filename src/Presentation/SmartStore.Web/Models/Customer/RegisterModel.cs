@@ -129,5 +129,7 @@ namespace SmartStore.Web.Models.Customer
         public bool DisplayVatNumber { get; set; }
 
         public bool DisplayCaptcha { get; set; }
+
+        public bool ShowPasswordStrengthMeter { get; set; }
     }
 }

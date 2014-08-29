@@ -21,6 +21,7 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
+            ShowPasswordStrengthMeter = false;
 		}
 		
 		/// <summary>
@@ -133,6 +134,10 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether password strength meter is shown
+        /// </summary>
+        public bool ShowPasswordStrengthMeter { get; set; }
 
         #region Form fields
 

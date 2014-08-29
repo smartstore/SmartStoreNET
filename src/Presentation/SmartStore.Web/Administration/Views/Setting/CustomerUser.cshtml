@@ -211,6 +211,15 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.ShowPasswordStrengthMeter)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomerSettings.ShowPasswordStrengthMeter)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.ShowPasswordStrengthMeter)
+            </td>
+        </tr>
     </table>
 }
 @helper TabCustomerFormFields()

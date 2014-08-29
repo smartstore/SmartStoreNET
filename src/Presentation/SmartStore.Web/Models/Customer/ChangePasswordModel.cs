@@ -25,6 +25,8 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.ChangePassword.Fields.ConfirmNewPassword")]
         public string ConfirmNewPassword { get; set; }
 
+        public bool ShowPasswordStrengthMeter { get; set; }
+
         public string Result { get; set; }
 
         public CustomerNavigationModel NavigationModel { get; set; }

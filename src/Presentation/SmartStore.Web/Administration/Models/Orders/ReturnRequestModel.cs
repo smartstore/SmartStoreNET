@@ -29,6 +29,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Customer")]
         public int CustomerId { get; set; }
 		public string CustomerFullName { get; set; }
+		public bool CanSendEmailToCustomer { get; set; }
 
         public int ProductId { get; set; }
 		public string ProductSku { get; set; }
@@ -37,6 +38,9 @@ namespace SmartStore.Admin.Models.Orders
         public string ProductName { get; set; }
 		public string ProductTypeName { get; set; }
 		public string ProductTypeLabelHint { get; set; }
+
+		[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
+		public string StoreName { get; set; }
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Quantity")]
         public int Quantity { get; set; }

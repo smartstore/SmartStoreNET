@@ -123,8 +123,6 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
-
 			var data = _specificationAttributeService.GetSpecificationAttributes()
 				.ForCommand(command)
 				.Select(x => x.ToModel())

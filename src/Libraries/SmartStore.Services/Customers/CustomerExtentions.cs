@@ -210,6 +210,26 @@ namespace SmartStore.Services.Customers
             return result;
         }
 
+		/// <summary>
+		/// Find any email address of customer
+		/// </summary>
+		public static string FindEmail(this Customer customer)
+		{
+			if (customer != null)
+			{
+				if (customer.Email.HasValue())
+					return customer.Email;
+
+				if (customer.BillingAddress != null && customer.BillingAddress.Email.HasValue())
+					return customer.BillingAddress.Email;
+
+				if (customer.ShippingAddress != null && customer.ShippingAddress.Email.HasValue())
+					return customer.ShippingAddress.Email;
+			}
+			return null;
+		}
+
+
 		#region Shopping cart
 
 		public static int CountProductsInCart(this Customer customer, ShoppingCartType cartType, int? storeId = null)

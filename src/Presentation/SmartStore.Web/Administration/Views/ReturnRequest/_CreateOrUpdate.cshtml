@@ -32,6 +32,14 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.StoreName)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.StoreName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ProductName)
         </td>
         <td class="adminData">

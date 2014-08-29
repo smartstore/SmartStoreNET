@@ -947,11 +947,13 @@ namespace SmartStore.Services.Messages
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
-            var toEmail = returnRequest.Customer.Email;
+            var toEmail = returnRequest.Customer.FindEmail();
             var toName = returnRequest.Customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+			if (toEmail.IsNullOrEmpty())
+				return 0;
+
+            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
         }
 
         #endregion

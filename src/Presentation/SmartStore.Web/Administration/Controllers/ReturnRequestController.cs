@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
@@ -16,6 +17,8 @@ using SmartStore.Services.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -35,6 +38,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly OrderSettings _orderSettings;
+		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IStoreService _storeService;
 
         #endregion Fields
 
@@ -46,26 +51,42 @@ namespace SmartStore.Admin.Controllers
             IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
 			IOrderProcessingService orderProcessingService,
-			OrderSettings orderSettings)
+			OrderSettings orderSettings,
+			AdminAreaSettings adminAreaSettings,
+			IStoreService storeService)
         {
-            this._orderService = orderService;
-            this._customerService = customerService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
-            this._workContext = workContext;
-            this._workflowMessageService = workflowMessageService;
-            this._localizationSettings = localizationSettings;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
-			this._orderProcessingService = orderProcessingService;
-			this._orderSettings = orderSettings;
+            _orderService = orderService;
+            _customerService = customerService;
+            _dateTimeHelper = dateTimeHelper;
+            _localizationService = localizationService;
+            _workContext = workContext;
+            _workflowMessageService = workflowMessageService;
+            _localizationSettings = localizationSettings;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
+			_orderProcessingService = orderProcessingService;
+			_orderSettings = orderSettings;
+			_adminAreaSettings = adminAreaSettings;
+			_storeService = storeService;
         }
 
         #endregion
 
         #region Utilities
 
-        [NonAction]
+		private void PrepareReturnRequestListModel(ReturnRequestListModel model)
+		{
+			string allString = _localizationService.GetResource("Admin.Common.All");
+
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+
+			model.AvailableStores.Add(new SelectListItem() { Text = allString, Value = "0" });
+			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
+
+			model.AvailableReturnRequestStatus = ReturnRequestStatus.Pending.ToSelectList(false).ToList();
+			model.AvailableReturnRequestStatus.Insert(0, new SelectListItem() { Text = allString });
+		}
+
         private bool PrepareReturnRequestModel(ReturnRequestModel model, ReturnRequest returnRequest, bool excludeProperties)
         {
             if (model == null)
@@ -78,16 +99,20 @@ namespace SmartStore.Admin.Controllers
             if (orderItem == null)
                 return false;
 
+			var store = _storeService.GetStoreById(returnRequest.StoreId);
+
             model.Id = returnRequest.Id;
             model.ProductId = orderItem.ProductId;
 			model.ProductSku = orderItem.Product.Sku;
 			model.ProductName = orderItem.Product.Name;
 			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint;
+			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
             model.OrderId = orderItem.OrderId;
 			model.OrderNumber = orderItem.Order.GetOrderNumber();
             model.CustomerId = returnRequest.CustomerId;
-			model.CustomerFullName = returnRequest.Customer.GetFullName();
+			model.CustomerFullName = returnRequest.Customer.GetFullName().NaIfEmpty();
+			model.CanSendEmailToCustomer = returnRequest.Customer.FindEmail().HasValue();
             model.Quantity = returnRequest.Quantity;
             model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
@@ -149,35 +174,40 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
-            var gridModel = new GridModel<ReturnRequestModel>();
-            return View(gridModel);
+			var model = new ReturnRequestListModel();
+			PrepareReturnRequestListModel(model);
+
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
+        public ActionResult List(GridCommand command, ReturnRequestListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
 			var data = new List<ReturnRequestModel>();
-			var returnRequests = _orderService.SearchReturnRequests(0, 0, 0, null, command.Page - 1, command.PageSize);
 
-            foreach (var rr in returnRequests)
-            {
-                var m = new ReturnRequestModel();
-                if (PrepareReturnRequestModel(m, rr, false))
-                    data.Add(m);
-            }
+			var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
+				command.Page - 1, command.PageSize, model.SearchId ?? 0);
 
-            var gridModel = new GridModel<ReturnRequestModel>
-            {
-                Data = data,
-                Total = returnRequests.TotalCount,
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
+			foreach (var rr in returnRequests)
+			{
+				var m = new ReturnRequestModel();
+				if (PrepareReturnRequestModel(m, rr, false))
+					data.Add(m);
+			}
+
+			var gridModel = new GridModel<ReturnRequestModel>
+			{
+				Data = data,
+				Total = returnRequests.TotalCount,
+			};
+
+			return new JsonResult
+			{
+				Data = gridModel
+			};
         }
 
         //edit
@@ -188,7 +218,6 @@ namespace SmartStore.Admin.Controllers
 
             var returnRequest = _orderService.GetReturnRequestById(id);
             if (returnRequest == null)
-                //No return request found with the specified id
                 return RedirectToAction("List");
             
             var model = new ReturnRequestModel();
@@ -247,14 +276,14 @@ namespace SmartStore.Admin.Controllers
 
             var returnRequest = _orderService.GetReturnRequestById(model.Id);
             if (returnRequest == null)
-                //No return request found with the specified id
                 return RedirectToAction("List");
 
-            //var customer = returnRequest.Customer;
             var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
             int queuedEmailId = _workflowMessageService.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
+
             if (queuedEmailId > 0)
                 NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
+
             return RedirectToAction("Edit", returnRequest.Id);
         }
 

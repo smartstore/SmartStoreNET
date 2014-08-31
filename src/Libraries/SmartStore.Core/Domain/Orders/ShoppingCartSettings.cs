@@ -15,6 +15,7 @@ namespace SmartStore.Core.Domain.Orders
 			ShowProductBundleImagesOnWishList = true;
 			ShowDiscountBox = true;
 			ShowGiftCardBox = true;
+            ShowCommentBox = true;
 			CrossSellsNumber = 8;
 			EmailWishlistEnabled = true;
 			MiniShoppingCartEnabled = true;
@@ -86,6 +87,11 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool ShowGiftCardBox { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show a comment box on shopping cart page
+        /// </summary>
+        public bool ShowCommentBox { get; set; }
+        
         /// <summary>
         /// Gets or sets a number of "Cross-sells" on shopping cart page
         /// </summary>

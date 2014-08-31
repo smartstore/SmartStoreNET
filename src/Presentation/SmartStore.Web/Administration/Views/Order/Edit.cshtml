@@ -717,8 +717,6 @@
 				</td>
 			</tr>
         }
-        
-        @*codehint: sm-add end*@
 
         @if (Model.DisplayPurchaseOrderNumber)
         {
@@ -856,6 +854,23 @@
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.UpdatedOn)
+            </td>
+        </tr>
+        <tr class="adminSeparator">
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @if (Model.CustomerComment.HasValue())
+                {
+                    <h4>@T("Admin.Order.CustomerComment.Heading")</h4>
+                    <div class="alert alert-info fade in">
+                        <button class="close" data-dismiss="alert">&#215;</button>
+                        @Html.Raw(Model.CustomerComment)
+                    </div>
+                }
             </td>
         </tr>
     </table>

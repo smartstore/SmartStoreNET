@@ -28,6 +28,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
@@ -914,7 +915,7 @@ namespace SmartStore.Web.Controllers
         }
         [HttpPost, ActionName("Confirm")]
         [ValidateInput(false)]
-        public ActionResult ConfirmOrder()
+        public ActionResult ConfirmOrder(FormCollection form)
         {
             //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -953,7 +954,10 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderExtraData = new Dictionary<string, string>();
+                placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
+
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 
                 if (placeOrderResult.Success)
                 {
@@ -1656,7 +1660,7 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, new Dictionary<string,string>());
                 if (placeOrderResult.Success)
                 {
                     _httpContext.Session["OrderPaymentInfo"] = null;

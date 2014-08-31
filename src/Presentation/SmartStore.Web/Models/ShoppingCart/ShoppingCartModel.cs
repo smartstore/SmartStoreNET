@@ -47,6 +47,9 @@ namespace SmartStore.Web.Models.ShoppingCart
 
 		public ButtonPaymentMethodModel ButtonPaymentMethods { get; set; }
 
+        public bool DisplayCommentBox { get; set; }
+        public string CustomerComment { get; set; }
+
 		#region Nested Classes
 
         public partial class ShoppingCartItemModel : EntityModelBase

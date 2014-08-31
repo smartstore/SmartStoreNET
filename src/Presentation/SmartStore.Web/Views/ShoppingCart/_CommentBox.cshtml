@@ -1,0 +1,12 @@
+﻿@model ShoppingCartModel
+@using SmartStore.Web.Models.ShoppingCart;
+@if (Model.DisplayCommentBox)
+{
+    <div class="comment-box cart-box well well-small">
+
+        <h4 class="title">@T("ShoppingCart.CommentBox")</h4>
+
+        @Html.TextAreaFor(model => model.CustomerComment, new { placeholder = "Optional" })
+
+    </div>
+}

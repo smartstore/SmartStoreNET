@@ -312,24 +312,35 @@
 		}
         
 		<div class="cart-footer row-fluid">
-			<!-- Discount Code, Gift Cards, Estimate shipping -->
-			<div class="span8">
-				@if (Model.IsEditable)
-				{
-					@Html.Partial("_DiscountBox", Model.DiscountBox)
-					@Html.Partial("_GiftCardBox", Model.GiftCardBox)
-					@Html.Widget("order_summary_content_deals")
-				}
-			</div>
+			
+            @if (Model.IsEditable)
+			{
+                <!-- Discount Code, Gift Cards, Estimate shipping -->
+			    <div class="span8">
 
-			<!-- Checkout attributes -->
-			<div class="span8">
-				@if (Model.IsEditable)
-				{
-					@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
-					@Html.Partial("EstimateShipping", Model.EstimateShipping)
-				}
-			</div>
+					    @Html.Partial("_DiscountBox", Model.DiscountBox)
+					    @Html.Partial("_GiftCardBox", Model.GiftCardBox)
+					    @Html.Widget("order_summary_content_deals")
+				
+			    </div>
+
+			    <!-- Checkout attributes -->
+			    <div class="span8">
+				
+					    @Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
+					    @Html.Partial("EstimateShipping", Model.EstimateShipping)
+				
+			    </div>
+            }
+            else
+            {
+                if (Model.DisplayCommentBox)
+                { 
+                    <div class="span16">
+                        @Html.Partial("_CommentBox", Model)
+                    </div>
+                }
+            }
 
 			<!-- Totals -->
 			<div class="span8">

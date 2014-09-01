@@ -1411,10 +1411,11 @@ namespace SmartStore.Admin.Controllers
 
 				_orderProcessingService.AutoUpdateOrderDetails(context);
 
-				if (oi.Quantity <= 0)
-				{
-					_orderService.DeleteOrderItem(oi);
-				}
+				// we do not delete order item automatically anymore.
+				//if (oi.Quantity <= 0)
+				//{
+				//	_orderService.DeleteOrderItem(oi);
+				//}
 
 				TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
 			}
@@ -1443,9 +1444,6 @@ namespace SmartStore.Admin.Controllers
 				UpdateRewardPoints = model.UpdateRewardPoints,
 				UpdateTotals = model.UpdateTotals
 			};
-
-			oi.Quantity = 0;
-			_orderService.UpdateOrder(oi.Order);
 
 			_orderProcessingService.AutoUpdateOrderDetails(context);
 

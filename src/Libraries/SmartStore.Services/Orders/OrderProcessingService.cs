@@ -1842,17 +1842,17 @@ namespace SmartStore.Services.Orders
 		{
 			var oi = context.OrderItem;
 
-			context.InventoryOld = context.InventoryNew = oi.Product.StockQuantity;
 			context.RewardPointsOld = context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();
 
 			if (context.UpdateTotals && oi.Order.OrderStatusId <= (int)OrderStatus.Pending)
 			{
-				decimal priceInclTax = Round(oi.Quantity * oi.UnitPriceInclTax);
-				decimal priceExclTax = Round(oi.Quantity * oi.UnitPriceExclTax);
+				decimal priceInclTax = Round(context.QuantityNew * oi.UnitPriceInclTax);
+				decimal priceExclTax = Round(context.QuantityNew * oi.UnitPriceExclTax);
 
 				decimal deltaPriceInclTax = priceInclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceInclTax);
 				decimal deltaPriceExclTax = priceExclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceExclTax);
 
+				oi.Quantity = context.QuantityNew;
 				oi.PriceInclTax = Round(priceInclTax);
 				oi.PriceExclTax = Round(priceExclTax);
 
@@ -1881,9 +1881,8 @@ namespace SmartStore.Services.Orders
 			}
 
 			if (context.AdjustInventory && context.QuantityDelta != 0)
-			{				
-				_productService.AdjustInventory(oi, context.QuantityDelta > 0, Math.Abs(context.QuantityDelta));
-				context.InventoryNew = oi.Product.StockQuantity;
+			{
+				context.Inventory = _productService.AdjustInventory(oi, context.QuantityDelta > 0, Math.Abs(context.QuantityDelta));
 			}
 
 			if (context.UpdateRewardPoints && context.QuantityDelta < 0)
